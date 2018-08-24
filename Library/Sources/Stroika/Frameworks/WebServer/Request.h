@@ -27,6 +27,8 @@
 
 namespace Stroika::Frameworks::WebServer {
 
+    using std::byte;
+
     using namespace Stroika::Foundation;
     using Characters::String;
     using Containers::Mapping;
@@ -43,7 +45,7 @@ namespace Stroika::Frameworks::WebServer {
         Request ()               = delete;
         Request (const Request&) = delete;
         Request (Request&&)      = default;
-        Request (const Streams::InputStream<Memory::Byte>::Ptr& inStream);
+        Request (const Streams::InputStream<byte>::Ptr& inStream);
 
     public:
         nonvirtual Request& operator= (const Request&) = delete;
@@ -124,7 +126,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  @todo unclear if this SB const?
          */
-        nonvirtual Streams::InputStream<Memory::Byte>::Ptr GetInputStream ();
+        nonvirtual Streams::InputStream<byte>::Ptr GetInputStream ();
 
     public:
         /**
@@ -134,7 +136,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  This may ONLY be called after the headers have been set.
          */
-        nonvirtual Streams::InputStream<Memory::Byte>::Ptr GetBodyStream ();
+        nonvirtual Streams::InputStream<byte>::Ptr GetBodyStream ();
 
     public:
         /**
@@ -143,7 +145,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
-        Streams::InputStream<Memory::Byte>::Ptr fInputStream_;
+        Streams::InputStream<byte>::Ptr fInputStream_;
 
     private:
         String                  fHTTPVersion_;
@@ -152,8 +154,8 @@ namespace Stroika::Frameworks::WebServer {
         Mapping<String, String> fHeaders_;
 
     private:
-        Streams::InputStream<Memory::Byte>::Ptr fBodyInputStream_;
-        optional<Memory::BLOB>                  fBody_;
+        Streams::InputStream<byte>::Ptr fBodyInputStream_;
+        optional<Memory::BLOB>          fBody_;
     };
 
 }

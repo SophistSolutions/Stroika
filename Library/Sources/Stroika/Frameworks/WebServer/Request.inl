@@ -57,7 +57,7 @@ namespace Stroika::Frameworks::WebServer {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fHeaders_.Add (headerName, value);
     }
-    inline Streams::InputStream<Memory::Byte>::Ptr Request::GetInputStream ()
+    inline Streams::InputStream<byte>::Ptr Request::GetInputStream ()
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         return fInputStream_;

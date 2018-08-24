@@ -134,13 +134,13 @@ namespace Stroika::Foundation::Traversal {
         static PtrImplementationTemplate<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
 
     public:
-        // [[deprecated ("use PtrImplementationTemplate since version 2.1b6")]] - really deprecated but not sure how to get deprecated attribute working here.
+        // [[deprecated ("use PtrImplementationTemplate since version 2.1d6")]] - really deprecated but not sure how to get deprecated attribute working here.
         template <typename SHARED_T>
         using SharedPtrImplementationTemplate = PtrImplementationTemplate<SHARED_T>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
-        [[deprecated ("use MakeSmartPtr since version 2.1b6")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
+        [[deprecated ("use MakeSmartPtr since version 2.1d6")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
         {
             return MakeSmartPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
         }
@@ -314,7 +314,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        [[deprecated ("use IteratorRepSmartPtr since version 2.1b6")]] typedef RepSmartPtr IteratorRepSharedPtr;
+        [[deprecated ("use IteratorRepSmartPtr since version 2.1d6")]] typedef RepSmartPtr IteratorRepSharedPtr;
 
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     private:

@@ -10,6 +10,8 @@
 
 namespace Stroika::Foundation::IO::Network {
 
+    using std::byte;
+
     /**
      *  \brief ConnectionlessSocket is typically a UDP socket you use for packet oriented communications (ie not tcp/streams)
      *
@@ -147,7 +149,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  @see https://linux.die.net/man/2/sendto
          */
-        nonvirtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) const;
+        nonvirtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const;
 
     public:
         /**
@@ -159,7 +161,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note ***Cancelation Point***
          */
-        nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite) const;
 
     protected:
         /**
@@ -188,8 +190,8 @@ namespace Stroika::Foundation::IO::Network {
     public:
         virtual ~_IRep () = default;
 
-        virtual void    SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)                                            = 0;
-        virtual size_t  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+        virtual void    SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr)                                            = 0;
+        virtual size_t  ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
         virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)                                 = 0;
         virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)                                = 0;
         virtual uint8_t GetMulticastTTL () const                                                                                              = 0;

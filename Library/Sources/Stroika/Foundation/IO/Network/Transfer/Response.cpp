@@ -13,6 +13,8 @@
 
 #include "Response.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
@@ -51,10 +53,10 @@ void    Response::ThrowIfFailed () const
 }
 #endif
 
-InputStream<Byte>::Ptr Response::GetDataBinaryInputStream () const
+InputStream<byte>::Ptr Response::GetDataBinaryInputStream () const
 {
     if (not fDataBinaryInputStream_.has_value ()) {
-        fDataBinaryInputStream_ = fData_.As<InputStream<Byte>::Ptr> ();
+        fDataBinaryInputStream_ = fData_.As<InputStream<byte>::Ptr> ();
     }
     return *fDataBinaryInputStream_;
 }

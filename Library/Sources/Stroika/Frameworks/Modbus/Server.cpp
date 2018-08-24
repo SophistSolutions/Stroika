@@ -20,6 +20,8 @@
 
 #include "Server.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -160,8 +162,8 @@ namespace {
 #endif
 
         SocketStream::Ptr       socketStream = SocketStream::New (connectionSocket);
-        InputStream<Byte>::Ptr  in           = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
-        OutputStream<Byte>::Ptr out          = BufferedOutputStream<Byte>::New (socketStream); // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
+        InputStream<byte>::Ptr  in           = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+        OutputStream<byte>::Ptr out          = BufferedOutputStream<byte>::New (socketStream); // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
 
         auto checkedReadHelperPayload2Shorts = [](const Memory::BLOB& requestPayload, uint16_t minSecondValue, uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
             /*
@@ -186,7 +188,7 @@ namespace {
              */
             while (true) {
                 MBAPHeaderIsh_ requestHeader; // intentionally dont initialize since either all read, or we throw
-                size_t         n = in.ReadAll (reinterpret_cast<Byte*> (&requestHeader), reinterpret_cast<Byte*> (&requestHeader + 1));
+                size_t         n = in.ReadAll (reinterpret_cast<byte*> (&requestHeader), reinterpret_cast<byte*> (&requestHeader + 1));
                 if (n != sizeof (requestHeader)) {
                     if (n == 0) {
                         break; // just EOF - so quietly end/close connection
@@ -232,7 +234,7 @@ namespace {
                             }
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"results bitmask bytes=%s", Characters::ToString (Memory::BLOB (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.end ()))).c_str ());
+                        DbgTrace (L"results bitmask bytes=%s", Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.end ()))).c_str ());
 #endif
                         {
                             // Response ready - format, toNetwork, and write
@@ -303,7 +305,7 @@ namespace {
                             MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
+                            out.Write (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.begin ()) + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
@@ -333,7 +335,7 @@ namespace {
                             MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
+                            out.Write (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.begin ()) + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
@@ -372,7 +374,7 @@ namespace {
                         responseHeader.fFunctionCode  = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
                         out.WriteRaw (ToNetwork_ (responseHeader));
                         uint8_t exceptionCode = static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
-                        out.Write (reinterpret_cast<const Byte*> (&exceptionCode), reinterpret_cast<const Byte*> (&exceptionCode + 1));
+                        out.Write (reinterpret_cast<const byte*> (&exceptionCode), reinterpret_cast<const byte*> (&exceptionCode + 1));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Sent UNREGONIZED_FUNCTION response: header=%s, and exceptionCode=%d", Characters::ToString (responseHeader).c_str (), exceptionCode);
 #endif

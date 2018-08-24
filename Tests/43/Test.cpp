@@ -29,6 +29,8 @@
 
 #include "../TestHarness/TestHarness.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::IO;
@@ -136,9 +138,9 @@ namespace {
 
                 c.SetURL (URL::Parse (L"http://httpbin.org/post"));
                 BLOB roundTripTestData = []() {
-                    Memory::SmallStackBuffer<Byte> buf (1024);
+                    Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
-                        buf[i] = static_cast<Byte> (uniform_int_distribution<unsigned short> () (sRNG_));
+                        buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
@@ -190,9 +192,9 @@ namespace {
 
                 c.SetURL (URL::Parse (L"http://httpbin.org/put"));
                 BLOB roundTripTestData = []() {
-                    Memory::SmallStackBuffer<Byte> buf (1024);
+                    Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
-                        buf[i] = static_cast<Byte> (uniform_int_distribution<unsigned short> () (sRNG_));
+                        buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();

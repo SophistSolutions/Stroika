@@ -23,6 +23,8 @@
 
 #include "Request.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -40,7 +42,7 @@ using namespace Stroika::Frameworks::WebServer;
  ************************* WebServer::Request ***********************************
  ********************************************************************************
  */
-Request::Request (const Streams::InputStream<Byte>::Ptr& inStream)
+Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
     : fInputStream_ (inStream)
     , fHTTPVersion_ ()
     , fURL_ ()
@@ -110,7 +112,7 @@ optional<InternetMediaType> Request::GetContentType () const
     }
 }
 
-Streams::InputStream<Memory::Byte>::Ptr Request::GetBodyStream ()
+Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"Request::GetBodyStream");
@@ -119,7 +121,7 @@ Streams::InputStream<Memory::Byte>::Ptr Request::GetBodyStream ()
     if (fBodyInputStream_ == nullptr) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
         if (optional<uint64_t> contentLength = GetContentLength ()) {
-            fBodyInputStream_ = InputSubStream<Byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*contentLength));
+            fBodyInputStream_ = InputSubStream<byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*contentLength));
         }
         else {
             /*
@@ -133,7 +135,7 @@ Streams::InputStream<Memory::Byte>::Ptr Request::GetBodyStream ()
              *
              *  For now - EMPTY is a better failure mode than reading eveythign and hanging...
              */
-            fBodyInputStream_ = MemoryStream<Byte>::New ();
+            fBodyInputStream_ = MemoryStream<byte>::New ();
         }
     }
     return fBodyInputStream_;

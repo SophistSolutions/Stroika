@@ -24,6 +24,8 @@
 
 #include "Response.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -61,7 +63,7 @@ namespace {
     // 25 and median abit above 32k. Small, not very representative sampling. And the more we use
     // subscripts (script src=x) this number could shrink.
     //
-    // MAY want to switch to using SmallStackBuffer<Byte> - but before doing so, do some cleanups of its bugs and make sure
+    // MAY want to switch to using SmallStackBuffer<byte> - but before doing so, do some cleanups of its bugs and make sure
     // its optimized about how much it copies etc. Its really only tuned for POD-types (OK here but not necessarily good about reallocs).
     //
     //      -- LGP 2011-07-06
@@ -69,13 +71,13 @@ namespace {
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
-Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<Byte>::Ptr& outStream, const InternetMediaType& ct)
+Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct)
     : fSocket_ (s)
     , fState_ (State::eInProgress)
     , fStatus_ (StatusCodes::kOK)
     , fStatusOverrideReason_ ()
     , fUnderlyingOutStream_ (outStream)
-    , fUseOutStream_ (Streams::BufferedOutputStream<Memory::Byte>::New (outStream))
+    , fUseOutStream_ (Streams::BufferedOutputStream<byte>::New (outStream))
     , fHeaders_ ()
     , fContentType_ (ct)
     , fCodePage_ (Characters::kCodePage_UTF8)
@@ -216,14 +218,14 @@ void Response::Flush ()
             wstring version   = L"1.1";
             wstring tmp       = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.c_str ());
             string  utf8      = String (tmp).AsUTF8 ();
-            fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+            fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
 
         {
             Mapping<String, String> headers2Write = GetEffectiveHeaders ();
             for (auto i : headers2Write) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
-                fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
+                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"headers: %s", Characters::ToString (headers2Write).c_str ());
@@ -231,7 +233,7 @@ void Response::Flush ()
         }
 
         const char kCRLF[] = "\r\n";
-        fUseOutStream_.Write (reinterpret_cast<const Byte*> (kCRLF), reinterpret_cast<const Byte*> (kCRLF + 2));
+        fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + 2));
         fState_ = State::eInProgressHeaderSentState;
     }
     // write BYTES to fOutStream
@@ -286,7 +288,7 @@ void Response::Redirect (const String& url)
     fState_ = State::eCompleted;
 }
 
-void Response::write (const Byte* s, const Byte* e)
+void Response::write (const byte* s, const byte* e)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
@@ -312,7 +314,7 @@ void Response::write (const wchar_t* s, const wchar_t* e)
         wstring tmp   = wstring (s, e);
         string  cpStr = Characters::WideStringToNarrow (tmp, fCodePage_);
         if (not cpStr.empty ()) {
-            fBytes_.insert (fBytes_.end (), reinterpret_cast<const Byte*> (cpStr.c_str ()), reinterpret_cast<const Byte*> (cpStr.c_str () + cpStr.length ()));
+            fBytes_.insert (fBytes_.end (), reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
             if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
                 // Because for autocompute - illegal to call flush and then write
                 fContentSize_ = fBytes_.size ();

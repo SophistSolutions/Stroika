@@ -35,11 +35,11 @@
 
 #include "../TestHarness/TestHarness.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Streams;
-
-using Memory::Byte;
 
 namespace {
     uint32_t ToLE_ (uint32_t n)
@@ -57,16 +57,16 @@ namespace {
 #if qPlatform_Windows && qHasFeature_ATLMFC
             namespace {
                 using Encoding::Algorithm::LineBreak;
-                vector<Byte> DecodeBase64_ATL_ (const string& s)
+                vector<byte> DecodeBase64_ATL_ (const string& s)
                 {
                     int                            dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
-                    Memory::SmallStackBuffer<Byte> buf1 (dataSize1);
+                    Memory::SmallStackBuffer<byte> buf1 (dataSize1);
                     if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
-                        return vector<Byte> (buf1.begin (), buf1.begin () + dataSize1);
+                        return vector<byte> (buf1.begin (), buf1.begin () + dataSize1);
                     }
-                    return vector<Byte> ();
+                    return vector<byte> ();
                 }
-                string EncodeBase64_ATL_ (const vector<Byte>& b, LineBreak lb)
+                string EncodeBase64_ATL_ (const vector<byte>& b, LineBreak lb)
                 {
                     size_t totalSize = b.size ();
                     if (totalSize != 0) {
@@ -101,11 +101,11 @@ namespace {
 #endif
 
             namespace {
-                inline void VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
+                inline void VERIFY_ATL_ENCODEBASE64_ (const vector<byte>& bytes)
                 {
 #if qPlatform_Windows && qHasFeature_ATLMFC
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
                 inline void VERIFY_ATL_DECODE_ ()
@@ -117,16 +117,16 @@ namespace {
             }
 
             namespace {
-                void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
+                void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (bytes), end (bytes)))) == bytes);
+                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)))) == bytes);
                 }
             }
 
             namespace {
-                void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
+                void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
                     VerifyTestResult (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
@@ -143,7 +143,7 @@ namespace {
                     "\r\n"
                     "That is a very good thing.****^^^#$#AS\r\n";
                 const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGluZy4qKioqXl5eIyQjQVMNCg==";
-                PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc)));
+                PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
             }
 
             {
@@ -165,13 +165,13 @@ namespace {
                     "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
                     "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
                     "dCB5ZXN0ZXJkYQ0KeS59";
-                PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc)));
+                PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
             }
 
             {
                 const char kSrc[]        = "()'asdf***Adasdf a";
                 const char kEncodedVal[] = "KCknYXNkZioqKkFkYXNkZiBh";
-                PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc)));
+                PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
             }
         }
     }
@@ -187,7 +187,7 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (Format (DIGESTER_::ComputeDigest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+                VerifyTestResult (Format (DIGESTER_::ComputeDigest ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
             }
             {
                 int    tmp       = 3;
@@ -205,10 +205,10 @@ namespace {
 
 namespace {
     template <typename HASHER>
-    void DoCommonHasherTest_ (const Byte* dataStart, const Byte* dataEnd, uint32_t answer)
+    void DoCommonHasherTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
         VerifyTestResult (HASHER::ComputeDigest (dataStart, dataEnd) == answer);
-        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<Byte>::Ptr> ()) == answer);
+        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
     }
 }
 
@@ -223,8 +223,8 @@ namespace {
             {
                 // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<Digester<Algorithm::CRC32>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc), 3692548919);
-                DoCommonHasherTest_<Digester<Algorithm::CRC32, uint32_t>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc), 3692548919);
+                DoCommonHasherTest_<Digester<Algorithm::CRC32>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
+                DoCommonHasherTest_<Digester<Algorithm::CRC32, uint32_t>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
             }
         }
     }
@@ -250,7 +250,7 @@ namespace {
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc), 2786528596);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 2786528596);
             }
         }
     }
@@ -289,13 +289,13 @@ namespace {
             {
                 // special case where these collide
                 const char kSrc1[] = "        90010";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc1, (const Byte*)kSrc1 + ::strlen (kSrc1), 375771507);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc1, (const byte*)kSrc1 + ::strlen (kSrc1), 375771507);
                 const char kSrc2[] = "        10028";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc2, (const Byte*)kSrc2 + ::strlen (kSrc2), 375771507);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc2, (const byte*)kSrc2 + ::strlen (kSrc2), 375771507);
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen (kSrc), 1181771593);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 1181771593);
             }
         }
     }
@@ -313,8 +313,8 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto roundTripTester_ = [](const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
-                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
-                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
+                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
             };
 
@@ -422,8 +422,8 @@ namespace {
                 unsigned int        nRounds = 1; // command-line tool uses this
                 OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                 DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
-                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
-                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>::Ptr> ()).ReadAll ();
+                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
                 VerifyTestResult (encodedData == expected);
                 VerifyTestResult (src == decodedData);

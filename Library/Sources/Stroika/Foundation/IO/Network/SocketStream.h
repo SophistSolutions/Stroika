@@ -21,6 +21,8 @@
 
 namespace Stroika::Foundation::IO::Network {
 
+    using std::byte;
+
     /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
      *
@@ -34,7 +36,7 @@ namespace Stroika::Foundation::IO::Network {
      *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
      *              just that end of the stream.
      */
-    class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
+    class SocketStream : public Streams::InputOutputStream<byte> {
     public:
         SocketStream ()                    = delete;
         SocketStream (const SocketStream&) = delete;
@@ -50,8 +52,8 @@ namespace Stroika::Foundation::IO::Network {
          *      \code
          *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
          *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
-         *           InputStream<Byte>::Ptr              in  = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
-         *           OutputStream<Byte>::Ptr             out = BufferedOutputStream<Byte>::New (socketStream); // more important so we dont write multiple packets
+         *           InputStream<byte>::Ptr              in  = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+         *           OutputStream<byte>::Ptr             out = BufferedOutputStream<byte>::New (socketStream); // more important so we dont write multiple packets
          *      \endcode
          */
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd);
@@ -67,7 +69,7 @@ namespace Stroika::Foundation::IO::Network {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, SocketStream, SocketStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
     };
 
     /**
@@ -76,9 +78,9 @@ namespace Stroika::Foundation::IO::Network {
      *  TODO:
      *      @todo add method to retrieve underlying socket
      */
-    class SocketStream::Ptr : public InputOutputStream<Memory::Byte>::Ptr {
+    class SocketStream::Ptr : public InputOutputStream<byte>::Ptr {
     private:
-        using inherited = InputOutputStream<Memory::Byte>::Ptr;
+        using inherited = InputOutputStream<byte>::Ptr;
 
     public:
         /**

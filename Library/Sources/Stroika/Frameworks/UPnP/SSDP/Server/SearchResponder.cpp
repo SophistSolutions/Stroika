@@ -17,6 +17,8 @@
 #include "../Common.h"
 #include "SearchResponder.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -49,7 +51,7 @@ namespace {
         Debug::TraceContextBumper ctx ("Read SSDP Packet");
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
-        const String kNOTIFY_LEAD = String_Constant (L"M-SEARCH ");
+        static const String kNOTIFY_LEAD = String_Constant (L"M-SEARCH ");
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement da;
             while (true) {
@@ -161,12 +163,12 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
             // only stopped by thread abort
             while (1) {
                 try {
-                    Byte          buf[4 * 1024]; // not sure of max packet size
+                    byte          buf[4 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
                     using namespace Streams;
-                    ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<Byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
+                    ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

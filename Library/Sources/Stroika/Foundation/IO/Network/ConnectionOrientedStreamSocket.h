@@ -10,6 +10,8 @@
 
 namespace Stroika::Foundation::IO::Network {
 
+    using std::byte;
+
     /**
      *  \brief ConnectionOrientedStreamSocket is typically a tcp stream, either setup with Connect, or ConnectionOrientedMasterSocket::Accept ()
      *
@@ -167,7 +169,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note ***Cancelation Point***
          */
-        nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd) const;
+        nonvirtual size_t Read (byte* intoStart, byte* intoEnd) const;
 
     public:
         /**
@@ -179,13 +181,13 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note if intoStart == nullptr, then dont actually read, but return the number of bytes available.
          */
-        nonvirtual optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const;
+        nonvirtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const;
 
     public:
         /**
          *  @todo   Need timeout on this API? Or global (for instance) timeout?
          */
-        nonvirtual void Write (const Byte* start, const Byte* end) const;
+        nonvirtual void Write (const byte* start, const byte* end) const;
 
     public:
         /**
@@ -275,16 +277,15 @@ namespace Stroika::Foundation::IO::Network {
     public:
         virtual ~_IRep ()                                                                                                                  = default;
         virtual void                                 Connect (const SocketAddress& sockAddr) const                                         = 0;
-        virtual size_t                               Read (Byte* intoStart, Byte* intoEnd) const                                           = 0;
-        virtual optional<size_t>                     ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const                                = 0;
-        virtual void                                 Write (const Byte* start, const Byte* end) const                                      = 0;
+        virtual size_t                               Read (byte* intoStart, byte* intoEnd) const                                           = 0;
+        virtual optional<size_t>                     ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                = 0;
+        virtual void                                 Write (const byte* start, const byte* end) const                                      = 0;
         virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
         virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;
         virtual void                                 SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) = 0;
         virtual KeepAliveOptions                     GetKeepAlives () const                                                                = 0;
         virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
     };
-
 }
 
 /*

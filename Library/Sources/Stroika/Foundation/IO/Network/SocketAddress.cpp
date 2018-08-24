@@ -12,6 +12,8 @@
 
 #include "SocketAddress.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
@@ -39,7 +41,7 @@ String SocketAddress::ToString () const
         return Characters::ToString (GetInternetAddress ()) + L":" + Characters::Format (L"%d", static_cast<int> (GetPort ()));
     }
     else {
-        return Characters::ToString (Memory::BLOB (reinterpret_cast<const Byte*> (&fSocketAddress_), reinterpret_cast<const Byte*> (&fSocketAddress_) + sizeof (fSocketAddress_)));
+        return Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (&fSocketAddress_), reinterpret_cast<const byte*> (&fSocketAddress_) + sizeof (fSocketAddress_)));
     }
 }
 

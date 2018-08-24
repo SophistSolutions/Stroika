@@ -20,6 +20,8 @@
 
 #include "DerivedKey.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
@@ -157,17 +159,17 @@ namespace {
          *      o   Use the first n bytes of the result of step 5 as the derived key.
          */
         size_t      usePWDLen     = min (passwd.length (), static_cast<size_t> (64));
-        const Byte* passwordBytes = passwd.begin ();
-        Byte        buf1[64];
+        const byte* passwordBytes = passwd.begin ();
+        byte        buf1[64];
         {
-            std::fill_n (buf1, NEltsOf (buf1), static_cast<Byte> (0x36));
+            std::fill_n (buf1, NEltsOf (buf1), static_cast<byte> (0x36));
             for (unsigned long i = 0; i < usePWDLen; ++i) {
                 buf1[i] ^= passwordBytes[i];
             }
         }
-        Byte buf2[64];
+        byte buf2[64];
         {
-            std::fill_n (buf2, NEltsOf (buf2), static_cast<Byte> (0x5C));
+            std::fill_n (buf2, NEltsOf (buf2), static_cast<byte> (0x5C));
             for (unsigned long i = 0; i < usePWDLen; ++i) {
                 buf2[i] ^= passwordBytes[i];
             }
@@ -239,8 +241,8 @@ namespace {
     pair<BLOB, BLOB> mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
-        SmallStackBuffer<Byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
-        SmallStackBuffer<Byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
+        SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
+        SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
         if (salt and salt->GetSize () != 8) {
             // Could truncate and fill to adapt to differnt sized salt...
             Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
@@ -275,7 +277,7 @@ EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm dig
 namespace {
     pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
-        SmallStackBuffer<Byte> outBuf{SmallStackBufferCommon::eUninitialized, keyLen + ivLen};
+        SmallStackBuffer<byte> outBuf{SmallStackBufferCommon::eUninitialized, keyLen + ivLen};
         Assert (keyLen + ivLen < size_t (numeric_limits<int>::max ())); // for static cast below
         int a = ::PKCS5_PBKDF2_HMAC (
             reinterpret_cast<const char*> (passwd.begin ()),
@@ -289,7 +291,7 @@ namespace {
         if (a == 0) {
             Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
         }
-        const Byte* p = outBuf.begin ();
+        const byte* p = outBuf.begin ();
         return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));
     }
 }

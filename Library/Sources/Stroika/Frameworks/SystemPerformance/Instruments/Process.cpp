@@ -514,7 +514,7 @@ namespace {
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<Byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -656,7 +656,7 @@ namespace {
             return results;
         }
         template <typename T>
-        optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T (const Streams::InputStream<Byte>::Ptr&)>& reader)
+        optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
@@ -666,9 +666,9 @@ namespace {
         Sequence<String> ReadFileStrings_ (const String& fullPath)
         {
             Sequence<String>                results;
-            Streams::InputStream<Byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
+            Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
             StringBuilder                   sb;
-            for (optional<Memory::Byte> b; (b = in.Read ()).has_value ();) {
+            for (optional<byte> b; (b = in.Read ()).has_value ();) {
                 if ((*b) == byte{0}) {
                     results.Append (sb.As<String> ());
                     sb.clear ();
@@ -694,13 +694,13 @@ namespace {
         optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-            auto ReadFileString_ = [](const Streams::InputStream<Byte>::Ptr& in) -> String {
+            auto ReadFileString_ = [](const Streams::InputStream<byte>::Ptr& in) -> String {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_");
 #endif
                 StringBuilder sb;
                 bool          lastCharNullRemappedToSpace = false;
-                for (optional<Memory::Byte> b; (b = in.Read ()).has_value ();) {
+                for (optional<byte> b; (b = in.Read ()).has_value ();) {
                     if (*b == byte{0}) {
                         sb.Append (' '); // frequently - especially for kernel processes - we see nul bytes that really SB spaces
                         lastCharNullRemappedToSpace = true;
@@ -896,8 +896,8 @@ namespace {
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", L"fullPath=%s", fullPath.c_str ());
 #endif
             StatFileInfo_                   result{};
-            Streams::InputStream<Byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
-            Byte                            data[10 * 1024];
+            Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
+            byte                            data[10 * 1024];
             size_t                          nBytes = in.ReadAll (begin (data), end (data));
             Assert (nBytes <= NEltsOf (data));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1185,7 +1185,7 @@ namespace {
             constexpr size_t                 kThreadCnt_Idx_{7};
             constexpr size_t                 kColCountIncludingCmd_{9};
             ProcessRunner                    pr (L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
-            Streams::MemoryStream<Byte>::Ptr useStdOut = Streams::MemoryStream<Byte>::New ();
+            Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
             pr.SetStdOut (useStdOut);
             pr.Run ();
             String                   out;
@@ -1400,7 +1400,7 @@ namespace {
                     }
                     fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
                 }
-                SmallStackBuffer<Byte>            fBuf_;
+                SmallStackBuffer<byte>            fBuf_;
                 const SYSTEM_PROCESS_INFORMATION* GetProcessInfo () const
                 {
                     return reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*> (fBuf_.begin ());
@@ -1719,7 +1719,7 @@ namespace {
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
                     //          TokenUser
                     //              The buffer receives a TOKEN_USER structure that contains the user account of the token.
-                    Byte        tokenUserBuf[1024];
+                    byte        tokenUserBuf[1024];
                     TOKEN_USER* tokenUser = reinterpret_cast<TOKEN_USER*> (begin (tokenUserBuf));
                     if (::GetTokenInformation (processToken, TokenUser, tokenUser, sizeof (tokenUserBuf), &nlen) != 0) {
                         Assert (nlen >= sizeof (TOKEN_USER));

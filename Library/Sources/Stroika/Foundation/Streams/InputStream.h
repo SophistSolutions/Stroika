@@ -43,6 +43,8 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::Streams {
 
+    using std::byte;
+
     /**
      * Design Overview:
      *
@@ -404,16 +406,16 @@ namespace Stroika::Foundation::Streams {
         /**
          * shorthand for declaring
          *      POD_TYPE    tmp;
-         *      size_n = ReadAll ((Byte*)&tmp, (Byte*)(&tmp+1));
+         *      size_n = ReadAll ((byte*)&tmp, (byte*)(&tmp+1));
          *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
          *
          *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
-         *  \note   Only defined on Binary Streams (InputStream<Byte>::Ptr), but POD_TYPE can be any (is_pod) type.
+         *  \note   Only defined on Binary Streams (InputStream<byte>::Ptr), but POD_TYPE can be any (is_pod) type.
          *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
          */
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual POD_TYPE ReadRaw () const;
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const;
 
     public:
@@ -478,7 +480,7 @@ namespace Stroika::Foundation::Streams {
          */
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
         nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 
@@ -518,7 +520,7 @@ namespace Stroika::Foundation::Streams {
     Characters::String InputStream<Characters::Character>::Ptr::ReadAll (size_t upTo) const;
     template <>
     template <>
-    Memory::BLOB InputStream<Memory::Byte>::Ptr::ReadAll (size_t upTo) const;
+    Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const;
 
     /**
      *  \note   \em Thread-Safety   <a href="thread_safety.html#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>

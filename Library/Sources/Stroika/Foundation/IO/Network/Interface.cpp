@@ -47,6 +47,8 @@
 
 #include "Interface.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
@@ -251,7 +253,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
 #elif qPlatform_Windows
     ULONG                          flags  = GAA_FLAG_INCLUDE_PREFIX;
     ULONG                          family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
-    Memory::SmallStackBuffer<Byte> buf;
+    Memory::SmallStackBuffer<byte> buf;
 Again:
     ULONG ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
     PIP_ADAPTER_ADDRESSES pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());

@@ -87,9 +87,9 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         static Ptr New (const Memory::BLOB& blob);
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
 
     private:
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Streams {
          *  Only specifically specialized variants are supported. T can be one of:
          *      o   vector<ElementType>
          *
-         *  And if ElementType is Memory::Byte, then T can also be one of:
+         *  And if ElementType is byte, then T can also be one of:
          *      o   Memory::BLOB
          *      o   string
          *
@@ -141,13 +141,13 @@ namespace Stroika::Foundation::Streams {
 
     template <>
     template <>
-    Memory::BLOB SharedMemoryStream<Memory::Byte>::Ptr::As () const;
+    Memory::BLOB SharedMemoryStream<byte>::Ptr::As () const;
     template <>
     template <>
-    string SharedMemoryStream<Memory::Byte>::Ptr::As () const;
+    string SharedMemoryStream<byte>::Ptr::As () const;
     template <>
     template <>
-    vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::Ptr::As () const;
+    vector<byte> SharedMemoryStream<byte>::Ptr::As () const;
 
     template <>
     template <>

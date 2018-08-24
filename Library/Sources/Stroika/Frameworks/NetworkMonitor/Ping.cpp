@@ -16,6 +16,8 @@
 
 #include "Ping.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -29,8 +31,6 @@ using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMonitor;
 using namespace Stroika::Frameworks::NetworkMonitor::Ping;
-
-using Memory::Byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -92,9 +92,9 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
 {
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (), Characters::ToString (fOptions_).c_str ());
     // use random data as a payload
-    for (Byte* p = (Byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
+    for (byte* p = (byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
         uniform_int_distribution<mt19937::result_type> anyByteDistribution (0, numeric_limits<uint8_t>::max ());
-        *p = static_cast<Byte> (anyByteDistribution (fRng_));
+        *p = static_cast<byte> (anyByteDistribution (fRng_));
     }
 }
 
@@ -127,7 +127,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         ThrowTimeoutExceptionAfter (pingTimeoutAfter);
         SocketAddress          fromAddress;
         constexpr size_t       kExtraSluff_{100};                                                                                                // Leave a little extra room in case some packets return extra
-        SmallStackBuffer<Byte> recv_buf (fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
+        SmallStackBuffer<byte> recv_buf (fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
         size_t                 n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
@@ -136,7 +136,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 
         // Skip ahead to the ICMP header within the IP packet
         unsigned short                header_len      = replyIPHeader->ihl * 4;
-        const ICMP::V4::PacketHeader* replyICMPHeader = (const ICMP::V4::PacketHeader*)((const Byte*)replyIPHeader + header_len);
+        const ICMP::V4::PacketHeader* replyICMPHeader = (const ICMP::V4::PacketHeader*)((const byte*)replyIPHeader + header_len);
 
         // Make sure the reply is sane
         if (n < header_len + ICMP::V4::ICMP_MIN) {
@@ -153,12 +153,12 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
             } break;
             case ICMP::V4::ICMP_TTL_EXPIRE: {
                 // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Time_exceeded - we also can find the first 8 bytes of original datagram's data
-                const ICMP::V4::PacketHeader* echoedICMPHeader = (const ICMP::V4::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
+                const ICMP::V4::PacketHeader* echoedICMPHeader = (const ICMP::V4::PacketHeader*)((const byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
                 echoedID                                       = echoedICMPHeader->id;
             } break;
             case ICMP::V4::ICMP_DEST_UNREACH: {
                 // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Destination_unreachable - we also can find the first 8 bytes of original datagram's data
-                const ICMP::V4::PacketHeader* echoedICMPHeader = (const ICMP::V4::PacketHeader*)((const Byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
+                const ICMP::V4::PacketHeader* echoedICMPHeader = (const ICMP::V4::PacketHeader*)((const byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
                 echoedID                                       = echoedICMPHeader->id;
             } break;
         }

@@ -39,6 +39,8 @@
 
 namespace Stroika::Foundation::Characters {
 
+    using std::byte;
+
     class String;
 
     /*
@@ -332,8 +334,8 @@ namespace Stroika::Foundation::Characters {
     wstring ASCIIStringToWide (const string& s);
     string  WideStringToASCII (const wstring& s);
 
-    wstring           MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
-    vector<std::byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
+    wstring      MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+    vector<byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
 
     /**
      *  Convert between CHAR_TYPE and multibyte charactersets.

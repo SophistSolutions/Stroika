@@ -13,12 +13,13 @@
 
 #include "TextReader.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
 using Characters::String_Constant;
-using Memory::Byte;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 
@@ -28,7 +29,7 @@ namespace {
 
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
-    FromBinaryStreamBaseRep_ (const InputStream<Byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
+    FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : fSource_ (src)
         , fCharConverter_ (charConverter)
         , fOffset_ (0)
@@ -76,7 +77,7 @@ protected:
         wchar_t*                                           outCursor = begin (outBuf);
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         {
-            SmallStackBuffer<Byte, 8 * 1024> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
+            SmallStackBuffer<byte, 8 * 1024> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
             size_t                           inBytes = fSource_.Read (begin (inBuf), end (inBuf));
         again:
             const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
@@ -138,7 +139,7 @@ protected:
         //      o   save existing decode state
         //      o   decode and see if at least one character
         //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
-        SmallStackBuffer<Byte> inBuf{SmallStackBufferCommon::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
+        SmallStackBuffer<byte> inBuf{SmallStackBufferCommon::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
         optional<size_t>       inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
         if (inBytes) {
             if (*inBytes == 0) {
@@ -180,7 +181,7 @@ protected:
     }
 
 protected:
-    InputStream<Byte>::Ptr        fSource_;
+    InputStream<byte>::Ptr        fSource_;
     const MyWCharTConverterType_& fCharConverter_;
 #if !qMaintainingMBShiftStateNotWorking_
     mbstate_t fMBState_{};
@@ -192,7 +193,7 @@ class TextReader::UnseekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    UnseekableBinaryStreamRep_ (const InputStream<Byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
+    UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : inherited (src, charConverter)
     {
     }
@@ -202,7 +203,7 @@ class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseR
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<Byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
+    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : FromBinaryStreamBaseRep_ (src, charConverter)
     {
     }
@@ -480,26 +481,26 @@ namespace {
 
 auto TextReader::New (const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
-    Ptr p = TextReader::New (src.As<InputStream<Byte>::Ptr> (), charset, true);
+    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), charset, true);
     Ensure (p.IsSeekable ());
     return p;
 }
 
-auto TextReader::New (const InputStream<Byte>::Ptr& src, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, bool seekable) -> Ptr
 {
     Ptr p = TextReader::New (src, kUTF8Converter_, seekable);
     Ensure (p.IsSeekable () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<Byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
 {
     Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable);
     Ensure (p.IsSeekable () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
 {
     Ptr p = seekable ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
     Ensure (p.IsSeekable () == seekable);
@@ -543,7 +544,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, bool seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -558,7 +559,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -573,7 +574,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:

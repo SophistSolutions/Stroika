@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Streams {
         // Writes always succeed fully or throw.
         virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
         {
-            Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
+            Require (start < end); // for OutputStream<byte> - this funciton requires non-empty write
             Require (IsOpenWrite ());
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             fRealOut1_.Write (start, end);

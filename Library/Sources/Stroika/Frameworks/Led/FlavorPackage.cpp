@@ -30,6 +30,8 @@
 
 #include "FlavorPackage.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
@@ -226,7 +228,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
     size_t from, size_t to)
 {
     Memory::BLOB b       = IO::FileSystem::FileInputStream::New (String::FromSDKString (fileName)).ReadAll ();
-    const Byte*  fileBuf = b.begin ();
+    const byte*  fileBuf = b.begin ();
     size_t       fileLen = b.size ();
 
     InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
@@ -270,9 +272,8 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (
     Led_ClipFormat* suggestedClipFormat,
     CodePage* /*suggestedCodePage*/,
-    const Byte* /*fileStart*/, const Byte* /*fileEnd*/
+    const byte* /*fileStart*/, const byte* /*fileEnd*/
 )
-
 {
     if (suggestedClipFormat != nullptr) {
         if (*suggestedClipFormat == kBadClipFormat) {

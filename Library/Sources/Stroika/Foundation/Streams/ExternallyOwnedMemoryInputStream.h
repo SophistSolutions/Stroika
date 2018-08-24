@@ -69,19 +69,19 @@ namespace Stroika::Foundation::Streams {
          *
          *  \par Example Usage
          *      \code
-         *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte>::New (begin (buf), begin (buf) + nBytesRead);
+         *          InputStream<byte>::Ptr in = ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead);
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte>::New (begin (buf), begin (buf) + nBytesRead))
+         *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead))
          *      \endcode
          */
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<T, std::byte>>* = nullptr>
+        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<T, byte>>* = nullptr>
         static Ptr New (const uint8_t* start, const uint8_t* end)
         {
-            return New (reinterpret_cast<const std::byte*> (start), reinterpret_cast<const std::byte*> (end));
+            return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const std::byte*> (end));
         }
         template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
         static Ptr New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);

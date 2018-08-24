@@ -8,6 +8,8 @@
 
 #include "OptionsSupport.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 
 using namespace Stroika::Foundation;
@@ -85,7 +87,7 @@ HKEY OptionsFileHelper::OpenWithCreateAlongPath (HKEY parentKey, const Led_SDK_S
 /*
 @METHOD:        OptionsFileHelper::LookupPref
 @DESCRIPTION:   <p>This function is overloaded to return (through pointer parameters) a number of
-            different data types, including string, wstring, int, and vector<Byte>). If the given
+            different data types, including string, wstring, int, and vector<byte>). If the given
             named preference (and type) is available, it is returned through that parameter, and
             true is returned. Otherwise, false is returned.</p>
 */
@@ -190,7 +192,7 @@ bool OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, int* value)
 #endif
 }
 
-bool OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<Byte>* value)
+bool OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<byte>* value)
 {
     RequireNotNull (prefName);
     RequireNotNull (value);
@@ -277,7 +279,7 @@ void OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, int value)
 #endif
 }
 
-void OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, const Byte* data)
+void OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, const byte* data)
 {
     RequireNotNull (prefName);
     RequireNotNull (data);

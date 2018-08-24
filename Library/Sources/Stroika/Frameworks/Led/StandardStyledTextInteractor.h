@@ -21,7 +21,9 @@
 
 namespace Stroika::Frameworks::Led {
 
-/*
+    using std::byte;
+
+    /*
     @CONFIGVAR:     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
     @DESCRIPTION:   <p>This format isn't terribly useful right now. It may become much more useful in future versions, if I decide
                 to rewrite it, to make it much faster than RTF. Then I may use it internally more.</p>
@@ -319,7 +321,7 @@ namespace Stroika::Frameworks::Led {
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
             Led_ClipFormat* suggestedClipFormat,
             CodePage*       suggestedCodePage,
-            const Byte* fileStart, const Byte* fileEnd) override;
+            const byte* fileStart, const byte* fileEnd) override;
 
     public:
 #if qPlatform_MacOS
@@ -482,7 +484,6 @@ namespace Stroika::Frameworks::Led {
     {
         return fSelEnd;
     }
-
 }
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER

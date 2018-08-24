@@ -243,7 +243,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
         Mapping<String, VariantValue> m;
         for (auto i : *fromObjOfTypeT) {
             // really could do either way - but second more efficient
-            //m.Add (i.first, mapper.Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
+            //m.Add (i.first, mapper.Serialize (typeid (String), reinterpret_cast<const byte*> (&i.second)));
             m.Add (i.fKey, i.fValue);
         }
         return VariantValue (m);

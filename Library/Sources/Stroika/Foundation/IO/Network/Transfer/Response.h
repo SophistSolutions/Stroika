@@ -32,16 +32,17 @@
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 
+    using std::byte;
+
 //avoid windows header clash...
 #if qPlatform_Windows
-#undef DELETE
+//#undef DELETE
 #endif
 
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using Memory::BLOB;
-    using Memory::Byte;
     using Streams::InputStream;
     using Time::DurationSecondsType;
 
@@ -131,7 +132,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
          *      \endcode
          */
-        nonvirtual InputStream<Byte>::Ptr GetDataBinaryInputStream () const;
+        nonvirtual InputStream<byte>::Ptr GetDataBinaryInputStream () const;
 
     public:
         /**
@@ -188,13 +189,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     private:
         BLOB                                                      fData_;                  // usually empty, but provided for some methods like POST
-        mutable optional<InputStream<Byte>::Ptr>                  fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+        mutable optional<InputStream<byte>::Ptr>                  fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
         mutable optional<InputStream<Characters::Character>::Ptr> fDataTextInputStream_;
         Mapping<String, String>                                   fHeaders_;
         HTTP::Status                                              fStatus_{};
         optional<SSLResultInfo>                                   fServerEndpointSSLInfo_;
     };
-
 }
 
 /*

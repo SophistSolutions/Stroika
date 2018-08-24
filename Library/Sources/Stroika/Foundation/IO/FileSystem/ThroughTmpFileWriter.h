@@ -35,7 +35,6 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
-    using Memory::Byte;
     using Time::DateTime;
 
     /**

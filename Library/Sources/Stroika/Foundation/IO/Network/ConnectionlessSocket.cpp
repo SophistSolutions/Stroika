@@ -12,6 +12,7 @@
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -30,7 +31,7 @@ namespace {
                 : inherited (sd)
             {
             }
-            virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
+            virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
@@ -46,7 +47,7 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
+            virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems

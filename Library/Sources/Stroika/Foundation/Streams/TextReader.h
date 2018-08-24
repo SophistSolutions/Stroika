@@ -94,15 +94,15 @@ namespace Stroika::Foundation::Streams {
          *
          */
         static Ptr New (const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
-        static Ptr New (const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
-        static Ptr New (const InputStream<Memory::Byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable = true);
-        static Ptr New (const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
+        static Ptr New (const InputStream<byte>::Ptr& src, bool seekable = true);
+        static Ptr New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable = true);
+        static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
         static Ptr New (const InputStream<Character>::Ptr& src);
         static Ptr New (const Traversal::Iterable<Character>& src);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Memory::Byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable = true);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, bool seekable = true);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable = true);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Character>::Ptr& src);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Traversal::Iterable<Character>& src);
 

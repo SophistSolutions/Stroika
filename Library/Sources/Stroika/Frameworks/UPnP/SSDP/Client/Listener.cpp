@@ -23,6 +23,8 @@
 
 #include "Listener.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -87,12 +89,12 @@ public:
         while (true) {
             for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
                 try {
-                    Byte          buf[3 * 1024]; // not sure of max packet size
+                    byte          buf[3 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
                     using namespace Streams;
-                    ParsePacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<Byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
+                    ParsePacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

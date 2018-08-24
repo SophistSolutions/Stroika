@@ -10,13 +10,14 @@
 
 #include "Writer.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
 using Characters::String_Constant;
-using Memory::Byte;
 
 /*
  * TODO:
@@ -245,7 +246,7 @@ public:
     {
         return String_Constant (L".json");
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {
         TextWriter::Ptr textOut = TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (fOptions_, v, textOut, 0);

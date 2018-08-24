@@ -35,7 +35,6 @@ using IPPROTO = int;
 namespace Stroika::Foundation::IO::Network {
 
     using Characters::String;
-    using Memory::Byte;
 
     /**
      *  A Socket has two parts, a _IRep*, and a smart pointer wrapper (like shared_ptr <_IRep>).

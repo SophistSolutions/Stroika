@@ -19,7 +19,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
 
-using Memory::Byte;
 using std::byte;
 
 namespace {
@@ -28,13 +27,13 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New (nullptr, nullptr);
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New (nullptr, nullptr);
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
             }
             {
                 const char              kData[] = "1";
-                MemoryStream<Byte>::Ptr s       = MemoryStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kData)), reinterpret_cast<const Byte*> (std::end (kData)));
+                MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kData)), reinterpret_cast<const byte*> (std::end (kData)));
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
                 byte result[100] = {byte{0}};
@@ -57,12 +56,12 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
             }
             {
-                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
 
@@ -87,14 +86,14 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
-                VerifyTestResult (static_cast<InputStream<Byte>::Ptr> (s).IsSeekable ());
-                VerifyTestResult (static_cast<OutputStream<Byte>::Ptr> (s).IsSeekable ());
+                VerifyTestResult (static_cast<InputStream<byte>::Ptr> (s).IsSeekable ());
+                VerifyTestResult (static_cast<OutputStream<byte>::Ptr> (s).IsSeekable ());
             }
             {
-                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
                 VerifyTestResult (s != nullptr);
 
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
@@ -104,14 +103,14 @@ namespace {
                 VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
             {
-                MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
                 VerifyTestResult (s.GetReadOffset () == 0);
                 VerifyTestResult (s.GetWriteOffset () == 0);
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
                 s.Write (std::begin (kData_), std::end (kData_));
                 VerifyTestResult (s.GetReadOffset () == 0);
                 VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
-                Byte bArr[1024];
+                byte bArr[1024];
                 Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
                 VerifyTestResult (s.GetReadOffset () == sizeof (kData_));
                 VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
@@ -133,9 +132,9 @@ namespace {
         {
             {
                 stringstream                                  s;
-                OutputStreamFromStdOStream<Memory::Byte>::Ptr so       = OutputStreamFromStdOStream<Memory::Byte>::New (s);
+                OutputStreamFromStdOStream<Memory::byte>::Ptr so       = OutputStreamFromStdOStream<Memory::byte>::New (s);
                 const char                                    kData_[] = "ddasdf3294234";
-                so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
+                so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
                 VerifyTestResult (s.str () == kData_);
             }
         }

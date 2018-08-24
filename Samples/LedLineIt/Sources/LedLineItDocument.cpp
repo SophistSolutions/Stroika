@@ -16,6 +16,8 @@
 
 #include "LedLineItDocument.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
@@ -355,12 +357,12 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
             [[maybe_unused]] Led_ClipFormat* suggestedClipFormat,
             CodePage*                        suggestedCodePage,
-            const Byte* fileStart, const Byte* fileEnd) override
+            const byte* fileStart, const byte* fileEnd) override
         {
             size_t curLineSize = 0;
             size_t maxLineSize = 0;
-            for (const Byte* p = fileStart; p != fileEnd; ++p) {
-                if (*p == '\n' or *p == '\r') {
+            for (const byte* p = fileStart; p != fileEnd; ++p) {
+                if (to_integer<char> (*p) == '\n' or to_integer<char> (*p) == '\r') {
                     curLineSize = 0;
                 }
                 else {
@@ -430,10 +432,10 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 return true;
 #else
                 // Copy byte by byte to a new buffer, and break lines that are too long - as I go....
-                SmallStackBuffer<Byte> patchedBytes (nRawBytes + nRawBytes / fBreakWidths);
+                SmallStackBuffer<byte> patchedBytes (nRawBytes + nRawBytes / fBreakWidths);
                 size_t                 curLineSize = 0;
                 size_t                 ourIdx      = 0;
-                for (const Byte* p = reinterpret_cast<const Byte*> (rawBytes); p != reinterpret_cast<const Byte*> (rawBytes) + nRawBytes; ++p) {
+                for (const byte* p = reinterpret_cast<const byte*> (rawBytes); p != reinterpret_cast<const byte*> (rawBytes) + nRawBytes; ++p) {
                     if (*p == '\n' or *p == '\r') {
                         curLineSize = 0;
                     }

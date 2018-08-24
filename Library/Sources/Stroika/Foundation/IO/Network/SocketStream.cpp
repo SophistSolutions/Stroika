@@ -25,13 +25,13 @@ using namespace Stroika::Foundation::IO::Network;
  ********************* IO::Network::SocketStream::Rep_ **************************
  ********************************************************************************
  */
-class SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
+class SocketStream::Rep_ : public InputOutputStream<byte>::_IRep {
 public:
     bool           fOpenForRead_{true};
     bool           fOpenForWrite_{true};
     SeekOffsetType fReadSeekOffset_{};
     Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd)
-        : InputOutputStream<Byte>::_IRep ()
+        : InputOutputStream<byte>::_IRep ()
         , fSD_ (sd)
     {
     }
@@ -77,7 +77,7 @@ public:
         Require (IsOpenRead ());
         return 0;
     }
-    virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
+    virtual size_t Read (byte* intoStart, byte* intoEnd) override
     {
         Require (IsOpenRead ());
         size_t n = fSD_.Read (intoStart, intoEnd);
@@ -106,7 +106,7 @@ public:
         Require (IsOpenWrite ());
         return 0;
     }
-    virtual void Write (const Byte* start, const Byte* end) override
+    virtual void Write (const byte* start, const byte* end) override
     {
         Require (IsOpenWrite ());
         fSD_.Write (start, end);

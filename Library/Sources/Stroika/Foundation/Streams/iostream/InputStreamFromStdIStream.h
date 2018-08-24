@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Streams::iostream {
             using IStreamType = basic_istream<ELEMENT_TYPE>;
         };
         template <>
-        struct TraitsType<Memory::Byte> {
+        struct TraitsType<byte> {
             using IStreamType = istream;
         };
         template <>
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Streams::iostream {
      *      \code
      *      stringstream tmpStrm;
      *      tmpStrm << "some xml";
-     *      XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), MyCallback ());
+     *      XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), MyCallback ());
      *      \endcode
      *
      *      \note   InputStreamFromStdIStream ::Close () does not call close on the owned basic_istream, because there is no such stdC++ method (though filestream has one)
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *      \code
          *          stringstream tmpStrm;
          *          WriteTextStream_ (newDocXML, tmpStrm);
-         *          return InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm).ReadAll ();
+         *          return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
          *      \endcode
          *
          *  \par Example Usage
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *          stringstream tmpStrm;
          *          WriteTextStream_ (newDocXML, tmpStrm);
          *          MyCallback myCallback;
-         *          XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), myCallback);
+         *          XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
          *      \endcode
          *
          *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *      \code
          *          stringstream tmpStrm;
          *          WriteTextStream_ (newDocXML, tmpStrm);
-         *          return InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm).ReadAll ();
+         *          return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
          *      \endcode
          */
         Ptr ()                = default;

@@ -53,7 +53,7 @@ namespace Stroika::Foundation ::Streams {
      *  \par Example Usage
      *      \code
      *          BLOB                    blob    =   ReadRaw ();
-     *          optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte>::New (blob));
+     *          optional<VariantValue>  r       =   reader.Read (MemoryStream<byte>::New (blob));
      *      \endcode
      */
     template <typename ELEMENT_TYPE>
@@ -72,7 +72,7 @@ namespace Stroika::Foundation ::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
+         *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
          *          DataExchange::Variant::JSON::Writer ().Write (v, out);
          *          string xxx = out.As<string> ();
          *      \endcode
@@ -82,9 +82,9 @@ namespace Stroika::Foundation ::Streams {
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnownInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         static Ptr New (const Memory::BLOB& blob);
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
 
     private:
@@ -114,7 +114,7 @@ namespace Stroika::Foundation ::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
+         *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
          *          DataExchange::Variant::JSON::Writer ().Write (v, out);
          *          string xxx = out.As<string> ();
          *      \endcode
@@ -137,7 +137,7 @@ namespace Stroika::Foundation ::Streams {
          *  Only specifically specialized variants are supported. T can be one of:
          *      o   vector<ElementType>
          *
-         *  And if ElementType is Memory::Byte, then T can also be one of:
+         *  And if ElementType is byte, then T can also be one of:
          *      o   Memory::BLOB
          *      o   string
          *
@@ -153,13 +153,13 @@ namespace Stroika::Foundation ::Streams {
 
     template <>
     template <>
-    Memory::BLOB MemoryStream<Memory::Byte>::Ptr::As () const;
+    Memory::BLOB MemoryStream<byte>::Ptr::As () const;
     template <>
     template <>
-    string MemoryStream<Memory::Byte>::Ptr::As () const;
+    string MemoryStream<byte>::Ptr::As () const;
     template <>
     template <>
-    vector<Memory::Byte> MemoryStream<Memory::Byte>::Ptr::As () const;
+    vector<byte> MemoryStream<byte>::Ptr::As () const;
 
     template <>
     template <>

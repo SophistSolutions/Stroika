@@ -73,13 +73,13 @@ namespace {
         Assert (0 <= value_in and static_cast<unsigned char> (value_in) < NEltsOf (kDecoding));
         return kDecoding[(int)value_in];
     }
-    size_t base64_decode_block_ (const signed char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
+    size_t base64_decode_block_ (const signed char* code_in, size_t length_in, byte* plaintext_out, base64_decodestate_* state)
     {
         RequireNotNull (code_in);
         RequireNotNull (plaintext_out);
 
         const signed char* codechar  = code_in;
-        Byte*              plainchar = plaintext_out;
+        byte*              plainchar = plaintext_out;
         signed char        fragment  = '\0';
 
         *plainchar = state->plainchar;
@@ -146,14 +146,14 @@ Memory::BLOB Algorithm::DecodeBase64 (const string& s)
         return Memory::BLOB ();
     }
     size_t                 dataSize1 = s.length ();
-    SmallStackBuffer<Byte> buf1 (SmallStackBufferCommon::eUninitialized, dataSize1); // MUCH more than big enuf
+    SmallStackBuffer<byte> buf1 (SmallStackBufferCommon::eUninitialized, dataSize1); // MUCH more than big enuf
     base64_decodestate_    state;
     size_t                 r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
     Assert (r <= dataSize1);
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
-void Algorithm::DecodeBase64 (const string& s, const Streams::OutputStream<Byte>::Ptr& out)
+void Algorithm::DecodeBase64 (const string& s, const Streams::OutputStream<byte>::Ptr& out)
 {
     // QUICKIE implementation...
     Memory::BLOB tmp = DecodeBase64 (s);
@@ -196,12 +196,12 @@ namespace {
         return BASE64_CHARS_[(int)value_in];
     }
 
-    size_t base64_encode_block_ (const Byte* plaintext_in, size_t length_in, signed char* code_out, base64_encodestate* state)
+    size_t base64_encode_block_ (const byte* plaintext_in, size_t length_in, signed char* code_out, base64_encodestate* state)
     {
         const int CHARS_PER_LINE = 76;
 
-        const Byte*       plainchar    = plaintext_in;
-        const Byte* const plaintextend = plaintext_in + length_in;
+        const byte*       plainchar    = plaintext_in;
+        const byte* const plaintextend = plaintext_in + length_in;
         signed char*      codechar     = code_out;
         signed char       result       = state->result;
 
@@ -277,15 +277,15 @@ namespace {
     }
 }
 
-string Algorithm::EncodeBase64 (const Streams::InputStream<Byte>::Ptr& from, LineBreak lb)
+string Algorithm::EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, LineBreak lb)
 {
 #if 0
     // Use look doing multiple base64_encode_block_() calls!
 #elif 1
     // quick hack impl
-    Memory::BLOB bytes = Streams::InputStream<Byte>::Ptr (from).ReadAll ();
-    const Byte*  start = bytes.begin ();
-    const Byte*  end   = bytes.end ();
+    Memory::BLOB bytes = Streams::InputStream<byte>::Ptr (from).ReadAll ();
+    const byte*  start = bytes.begin ();
+    const byte*  end   = bytes.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
     base64_encodestate state (lb);
@@ -317,8 +317,8 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<Byte>::Ptr& from, Lin
 
 string Algorithm::EncodeBase64 (const Memory::BLOB& from, LineBreak lb)
 {
-    const Byte* start = from.begin ();
-    const Byte* end   = from.end ();
+    const byte* start = from.begin ();
+    const byte* end   = from.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
     base64_encodestate state (lb);

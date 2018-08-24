@@ -50,7 +50,7 @@ namespace Stroika::Frameworks::Led {
 
     using namespace std;
 
-    using Foundation::Memory::Byte;
+    using std::byte;
 
     constexpr size_t kBadIndex = size_t (-1);
 

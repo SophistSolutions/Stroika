@@ -11,6 +11,8 @@
 
 #include "InputStream.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
@@ -18,7 +20,6 @@ using Characters::Character;
 using Characters::String;
 using Characters::StringBuilder;
 using Memory::BLOB;
-using Memory::Byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -126,13 +127,13 @@ DISABLE_COMPILER_MSC_WARNING_END (6262)
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
-Memory::BLOB InputStream<Byte>::Ptr::ReadAll (size_t upTo) const
+Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"InputStream<Byte>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
+    Debug::TraceContextBumper ctx (L"InputStream<byte>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo));
 #endif
     Require (upTo >= 1);
-    vector<Byte> r; // @todo Consider using SmallStackBuffer<>
+    vector<byte> r; // @todo Consider using SmallStackBuffer<>
     if (IsSeekable ()) {
         /*
          * Avoid realloc's if not hard.
@@ -152,9 +153,9 @@ Memory::BLOB InputStream<Byte>::Ptr::ReadAll (size_t upTo) const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("nEltsLeft=%llu", static_cast<unsigned long long> (nEltsLeft));
 #endif
-        Byte  buf[64 * 1024];
-        Byte* s = std::begin (buf);
-        Byte* e = std::end (buf);
+        byte  buf[64 * 1024];
+        byte* s = std::begin (buf);
+        byte* e = std::end (buf);
         if (nEltsLeft < NEltsOf (buf)) {
             e = s + nEltsLeft;
         }

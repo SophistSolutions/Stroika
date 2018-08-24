@@ -18,13 +18,13 @@
 
 namespace Stroika::Foundation::Streams::iostream {
 
-    using Memory::Byte;
+    using std::byte;
 
     wstring ReadTextStream (istream& in);
     wstring ReadTextStream (wistream& in);
 
-    vector<Byte> ReadBytes (istream& in);
-    void         WriteBytes (ostream& out, const vector<Byte>& s);
+    vector<byte> ReadBytes (istream& in);
+    void         WriteBytes (ostream& out, const vector<byte>& s);
 
 }
 

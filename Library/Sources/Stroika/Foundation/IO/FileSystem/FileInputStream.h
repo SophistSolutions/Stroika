@@ -38,6 +38,8 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
+    using std::byte;
+
     using Characters::String;
 
     /**
@@ -49,7 +51,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
      *          but then the results are 'on you.
      */
-    class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStream {
+    class FileInputStream : public Streams::InputStream<byte>, public FileStream {
     public:
         FileInputStream ()                       = delete;
         FileInputStream (const FileInputStream&) = delete;
@@ -82,14 +84,14 @@ namespace Stroika::Foundation::IO::FileSystem {
          *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
          *      \endcode
          */
-        static Ptr                            New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static Ptr                            New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static InputStream<Memory::Byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
-        static InputStream<Memory::Byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
-        static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
-        static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
+        static Ptr                    New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                    New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static InputStream<byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
+        static InputStream<byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
+        static InputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
+        static InputStream<byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
 
     private:
         class Rep_;
@@ -101,15 +103,15 @@ namespace Stroika::Foundation::IO::FileSystem {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, FileInputStream, FileInputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<byte, FileInputStream, FileInputStream::Rep_>;
     };
 
     /**
      *  Ptr is a copyable smart pointer to a FileInputStream.
      */
-    class FileInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
+    class FileInputStream::Ptr : public Streams::InputStream<byte>::Ptr {
     private:
-        using inherited = Streams::InputStream<Memory::Byte>::Ptr;
+        using inherited = Streams::InputStream<byte>::Ptr;
 
     public:
         /**

@@ -31,7 +31,6 @@ using namespace Stroika::Foundation::Streams;
 using Characters::String;
 using Containers::Sequence;
 using Memory::BLOB;
-using Memory::Byte;
 
 namespace {
     struct Options_ {

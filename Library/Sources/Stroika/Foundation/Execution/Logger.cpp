@@ -25,6 +25,8 @@
 
 #include "Logger.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
@@ -449,7 +451,7 @@ private:
     Synchronized<Streams::OutputStream<Characters::Character>::Ptr> fWriter_; // All Stroika-provided appenders must be internally synchronized - https://stroika.atlassian.net/browse/STK-610
 };
 
-Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>::Ptr& out)
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream<byte>::Ptr& out)
     : fRep_ (make_shared<Rep_> (out))
 {
 }

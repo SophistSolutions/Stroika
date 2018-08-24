@@ -17,7 +17,7 @@
 
 namespace Stroika::Foundation::Memory::Platform::Windows {
 
-    using Foundation::Memory::Byte;
+    using std::byte;
 
     /**
      */
@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
     public:
         /**
          */
-        nonvirtual Byte* GetPointer () const;
+        nonvirtual byte* GetPointer () const;
 
     public:
         /**
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
 
     private:
         HANDLE fHandle_;
-        Byte*  fPointer_;
+        byte*  fPointer_;
     };
 
 }

@@ -188,14 +188,14 @@ namespace Stroika::Foundation::Streams {
         return _GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     POD_TYPE InputStream<ELEMENT_TYPE>::Ptr::ReadRaw () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
         static_assert (is_pod_v<POD_TYPE>);
         POD_TYPE tmp; // intentionally don't zero-initialize
-        size_t   n{ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1))};
+        size_t   n{ReadAll (reinterpret_cast<byte*> (&tmp), reinterpret_cast<byte*> (&tmp + 1))};
         if (n == sizeof (tmp)) {
             return tmp;
         }
@@ -204,13 +204,13 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void InputStream<ELEMENT_TYPE>::Ptr::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
         static_assert (is_pod_v<POD_TYPE>);
-        size_t n{ReadAll (reinterpret_cast<Memory::Byte*> (start), reinterpret_cast<Memory::Byte*> (end))};
+        size_t n{ReadAll (reinterpret_cast<byte*> (start), reinterpret_cast<byte*> (end))};
         if (n != sizeof (POD_TYPE) * (end - start)) {
             Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
         }

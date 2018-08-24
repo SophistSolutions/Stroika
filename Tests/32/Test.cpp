@@ -136,7 +136,7 @@ namespace {
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback myCallback;
-        XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), myCallback);
+        XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
     }
 }
 
@@ -174,7 +174,7 @@ namespace {
                                                             L"</Calendar>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         void Test_2a_ObjectReader_viaRegistry_ ()
         {
@@ -266,7 +266,7 @@ namespace {
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         void DoTest ()
         {
@@ -360,7 +360,7 @@ namespace {
                 L"</soapenv:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
 
         void DoTest ()
@@ -415,7 +415,7 @@ namespace {
             ;
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         void DoTest1 ()
         {
@@ -488,7 +488,7 @@ namespace {
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
 
         void DoTest ()
@@ -602,7 +602,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         /*
          *   <blk201605:LaserTemperature>\n"
@@ -732,7 +732,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         void DoTest ()
         {
@@ -823,7 +823,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         namespace PRIVATE_ {
             struct SpectrumReader_ : public ObjectReader::IElementConsumer {
@@ -951,7 +951,7 @@ namespace {
                     L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
-                return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+                return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
             }
         }
         void DoTest ()
@@ -1036,7 +1036,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
 
         static const ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
@@ -1164,7 +1164,7 @@ namespace {
                     L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
-                return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+                return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
             }
         }
         void DoTest ()
@@ -1223,7 +1223,7 @@ namespace {
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<Memory::Byte>::Ptr{InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
         void DoTest ()
         {

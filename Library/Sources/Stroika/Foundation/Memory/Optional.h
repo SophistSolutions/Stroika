@@ -65,6 +65,8 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Memory {
 
+    using std::byte;
+
     /**
      *  This storage style is the default, and is usually fastest. However, it requires the
      *  sizeof (T) be know at the time Optional<T> is used (so not forward declared).
@@ -137,7 +139,7 @@ namespace Stroika::Foundation::Memory {
 #else
                 alignas (T)
 #endif
-                Memory::Byte fBuffer_[sizeof (T)]; // intentionally uninitialized
+                byte fBuffer_[sizeof (T)]; // intentionally uninitialized
             };
             DISABLE_COMPILER_MSC_WARNING_END (4324)
 

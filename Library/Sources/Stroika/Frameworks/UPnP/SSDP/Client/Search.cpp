@@ -19,6 +19,8 @@
 
 #include "Search.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -97,7 +99,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: %s", request.c_str ());
 #endif
-            s.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), useSocketAddress);
+            s.SendTo (reinterpret_cast<const byte*> (request.c_str ()), reinterpret_cast<const byte*> (request.c_str () + request.length ()), useSocketAddress);
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
@@ -105,12 +107,12 @@ public:
         while (1) {
             for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
                 try {
-                    Byte          buf[3 * 1024]; // not sure of max packet size
+                    byte          buf[3 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
                     using namespace Streams;
-                    ReadPacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<Byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
+                    ReadPacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();
@@ -132,7 +134,7 @@ public:
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
 
-        const String kOKRESPONSELEAD_ = String_Constant (L"HTTP/1.1 200");
+        static const String kOKRESPONSELEAD_ = String_Constant (L"HTTP/1.1 200");
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
             SSDP::Advertisement d;
             while (true) {

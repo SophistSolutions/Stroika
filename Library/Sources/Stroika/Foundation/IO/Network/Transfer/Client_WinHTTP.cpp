@@ -277,7 +277,7 @@ RetryWithAuth:
         ThrowIfFalseGetLastError (::WinHttpSendRequest (
             hRequest,
             useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
-            const_cast<Byte*> (request.fData.begin ()), request.fData.size (),
+            const_cast<byte*> (request.fData.begin ()), request.fData.size (),
             request.fData.size (),
             NULL));
         DISABLE_COMPILER_MSC_WARNING_END (4267)
@@ -297,7 +297,7 @@ RetryWithAuth:
         Execution::ReThrow ();
     }
 
-    list<vector<Byte>> bytesRead;
+    list<vector<byte>> bytesRead;
     unsigned int       totalBytes = 0;
     {
         // Keep reading data til all done
@@ -311,13 +311,13 @@ RetryWithAuth:
             // Check for available data.
             dwSize = 0;
             ThrowIfFalseGetLastError (::WinHttpQueryDataAvailable (hRequest, &dwSize));
-            SmallStackBuffer<Byte> outBuffer (SmallStackBufferCommon::eUninitialized, dwSize);
+            SmallStackBuffer<byte> outBuffer (SmallStackBufferCommon::eUninitialized, dwSize);
             memset (outBuffer, 0, dwSize);
             DWORD dwDownloaded = 0;
             ThrowIfFalseGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
             Assert (dwDownloaded <= dwSize);
             totalBytes += dwDownloaded;
-            bytesRead.push_back (vector<Byte> (outBuffer.begin (), outBuffer.begin () + dwDownloaded));
+            bytesRead.push_back (vector<byte> (outBuffer.begin (), outBuffer.begin () + dwDownloaded));
         } while (dwSize > 0);
     }
 
@@ -326,7 +326,7 @@ RetryWithAuth:
     //
     // probably should check header content-type for codepage, but this SB OK for now...
     {
-        SmallStackBuffer<Byte> bytesArray (SmallStackBufferCommon::eUninitialized, totalBytes);
+        SmallStackBuffer<byte> bytesArray (SmallStackBufferCommon::eUninitialized, totalBytes);
         size_t                 iii = 0;
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             auto v2 = *i;

@@ -87,13 +87,13 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    template <typename T, enable_if_t<is_same_v<std::byte, T>>*>
+    template <typename T, enable_if_t<is_same_v<byte, T>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const uint8_t* start, const uint8_t* end) const
     {
         Write (reinterpret_cast<const std::byte*> (start), reinterpret_cast<const std::byte*> (end));
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Streams {
         Write (s + Characters::GetEOL<wchar_t> ());
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE& p) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -136,13 +136,13 @@ namespace Stroika::Foundation::Streams {
         WriteRaw (&p, &p + 1);
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
         static_assert (is_pod_v<POD_TYPE>);
-        Write (reinterpret_cast<const Memory::Byte*> (start), reinterpret_cast<const Memory::Byte*> (end));
+        Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Close () const

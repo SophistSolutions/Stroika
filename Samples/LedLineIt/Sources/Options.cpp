@@ -13,6 +13,8 @@
 #pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
@@ -86,7 +88,7 @@ const CDockState& Options::GetDocBarState () const
 {
     static CDockState dockState; // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
     dockState.Clear ();
-    vector<Byte> bytes;
+    vector<byte> bytes;
     if (gMyPrefsFile.LookupPref (kDockBarStateEntry, &bytes)) {
         CMemFile file;
         file.Write (&*bytes.begin (), bytes.size ());
@@ -107,7 +109,7 @@ void Options::SetDocBarState (const CDockState& dockState)
     ar.Close ();
     ULONG nSize = static_cast<ULONG> (file.GetLength ());
     ASSERT (nSize < 4096);
-    BYTE* p = new BYTE[nSize];
+    byte* p = new byte[nSize];
     file.SeekToBegin ();
     file.Read (p, nSize);
     gMyPrefsFile.StorePref (kDockBarStateEntry, nSize, p);
@@ -178,7 +180,7 @@ void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 
 Led_FontSpecification Options::GetDefaultNewDocFont () const
 {
-    vector<Byte> bytes;
+    vector<byte> bytes;
     if (gMyPrefsFile.LookupPref (kDefaultNewDocFont, &bytes)) {
         if (bytes.size () == sizeof (LOGFONT)) {
             Led_FontSpecification fsp;
@@ -200,5 +202,5 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
 void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
 {
     auto tmp = defaultNewDocFont.GetOSRep ();
-    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const Byte*> (&tmp));
+    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const byte*> (&tmp));
 }

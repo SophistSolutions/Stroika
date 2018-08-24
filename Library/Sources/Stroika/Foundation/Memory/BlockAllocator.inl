@@ -252,14 +252,14 @@ namespace Stroika::Foundation::Memory {
         size_t originalSize = links.size ();
         size_t index        = 0;
         while (index < links.size ()) {
-            Byte*  deleteCandidate = (Byte*)links[index];
+            byte*  deleteCandidate = (byte*)links[index];
             bool   canDelete       = true;
             size_t i               = 1;
             for (; i < kChunks; ++i) {
                 if ((index + i) >= links.size ())
                     break;
-                Byte* next = (Byte*)links[index + i];
-                Byte* prev = (Byte*)links[index + i - 1];
+                byte* next = (byte*)links[index + i];
+                byte* prev = (byte*)links[index + i - 1];
                 if (canDelete and ((next - prev) != SIZE)) {
                     canDelete = false; // don't break here, as have to find end up this block, which could be further on
                 }
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Memory {
                     ::free ((void*)deleteCandidate);
                 }
                 else {
-                    delete static_cast<Byte*> ((void*)deleteCandidate);
+                    delete static_cast<byte*> ((void*)deleteCandidate);
                 }
             }
             else {

@@ -50,6 +50,8 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::Streams {
 
+    using std::byte;
+
     /**
      * Design Overview:
      *
@@ -192,9 +194,9 @@ namespace Stroika::Foundation::Streams {
          *  \req IsOpen ()
          */
         nonvirtual void Write (const ElementType* start, const ElementType* end) const;
-        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<std::byte, T>>* = nullptr>
+        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<byte, T>>* = nullptr>
         nonvirtual void Write (const uint8_t* start, const uint8_t* end) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual void Write (const Memory::BLOB& blob) const;
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
         nonvirtual void Write (const wchar_t* start, const wchar_t* end) const;
@@ -214,7 +216,7 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *      WriteRaw () only applies to binary (ELEMENT_TYPE=Byte) streams. It allows easily writing POD (plain old data) types
+         *      WriteRaw () only applies to binary (ELEMENT_TYPE=byte) streams. It allows easily writing POD (plain old data) types
          *      to the stream.
          *
          *      WriteRaw (X) is an alias for WriteRaw (&x, &x+1)
@@ -224,16 +226,16 @@ namespace Stroika::Foundation::Streams {
          *            non-POD data, not hard, but we dont want to encourage it.
          *
          *  \req is_pod_v<POD_TYPE>
-         *  \req ELEMENT_TYPE==Byte
+         *  \req ELEMENT_TYPE==byte
          *  \req IsOpen ()
          *
          *  shorthand for declaring
          *      POD_TYPE    tmp;
-         *      Write ((Byte*)&tmp, (Byte*)(&tmp+1));
+         *      Write ((byte*)&tmp, (byte*)(&tmp+1));
          */
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual void WriteRaw (const POD_TYPE& p) const;
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
+        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const;
 
     public:

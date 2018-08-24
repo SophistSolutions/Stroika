@@ -98,9 +98,9 @@ namespace Stroika::Foundation::Streams {
          *          textOut.Write (L"Hello World\n");
          *      \endcode
          */
-        static Ptr New (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+        static Ptr New (const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
         static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src);
 
     public:
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Streams {
         class UnSeekable_WCharT_Rep_;
 
     private:
-        static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<Memory::Byte>::Ptr& src, Format format);
+        static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<byte>::Ptr& src, Format format);
 
     private:
         using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;

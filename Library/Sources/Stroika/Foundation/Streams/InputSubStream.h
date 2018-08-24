@@ -48,12 +48,12 @@ namespace Stroika::Foundation::Streams {
          *
          *  \par Example Usage
          *      \code
-         *          InputStream<Byte>::Ptr in = InputSubStream<Byte>::New (fromStream, 0, contentLength);
+         *          InputStream<byte>::Ptr in = InputSubStream<byte>::New (fromStream, 0, contentLength);
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          CallExpectingBinaryInputStreamPtr (InputSubStream<Byte>::New (fromStream, 0, contentLength))
+         *          CallExpectingBinaryInputStreamPtr (InputSubStream<byte>::New (fromStream, 0, contentLength))
          *      \endcode
          */
         static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end);

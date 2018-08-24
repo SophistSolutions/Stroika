@@ -185,7 +185,7 @@ namespace Stroika::Frameworks::Led::Platform {
     public:
         virtual void           PostCreateSpecifyExtraInfo (Led_TWIPS_Point size) override;
         virtual Led_SDK_String GetObjClassName () const override;
-        virtual void           DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) override;
+        virtual void           DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) override;
         virtual Led_Size       GetSize () override;
 
     public:
@@ -200,18 +200,18 @@ namespace Stroika::Frameworks::Led::Platform {
     };
 
     /*
-        *  Because this mkLed_MFC_ControlItemStyleMarker () gets called from so many levels
-        *  removed from anything that knows about MFC/COleDocuments, and since building
-        *  control items really requires we know the document (before we can call
-        *  serialize), we need some sort of hack to communicate this info from that code
-        *  that knows, to this produdure.
-        *
-        *  The hack chosen, is the venerable global variable. But we do this hack with
-        *  a little but of control/circumspection. We use a tmp stack-based class which defines
-        *  a context, and methods which might indirectly call this must create one of these
-        *  little objects on the stack which will have the side-effect of setting/restoring
-        *  the global variable. We don't support nested calls (cuz no need, would be easy).
-        */
+     *  Because this mkLed_MFC_ControlItemStyleMarker () gets called from so many levels
+     *  removed from anything that knows about MFC/COleDocuments, and since building
+     *  control items really requires we know the document (before we can call
+     *  serialize), we need some sort of hack to communicate this info from that code
+     *  that knows, to this produdure.
+     *
+     *  The hack chosen, is the venerable global variable. But we do this hack with
+     *  a little but of control/circumspection. We use a tmp stack-based class which defines
+     *  a context, and methods which might indirectly call this must create one of these
+     *  little objects on the stack which will have the side-effect of setting/restoring 
+     *  the global variable. We don't support nested calls (cuz no need, would be easy).
+     */
     struct Led_MFC_ControlItem::DocContextDefiner {
     public:
         DocContextDefiner (COleDocument* doc);
@@ -232,10 +232,10 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
     //  class   WordProcessorCommonCommandHelper_MFC<BASECLASS>
     template <typename BASECLASS>
     inline WordProcessorCommonCommandHelper_MFC<BASECLASS>::WordProcessorCommonCommandHelper_MFC ()

@@ -761,7 +761,7 @@ namespace {
 
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
-        //static  array<Byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
+        //static  array<byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
         static constexpr byte kCArr_4k_[4 * 1024] = {
             byte{0x1},
             byte{0x2},
@@ -1072,7 +1072,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
         }
-        ScanDetails_ doRead_ (const InputStream<Byte>::Ptr in)
+        ScanDetails_ doRead_ (const InputStream<byte>::Ptr in)
         {
             using namespace DataExchange;
             VariantValue                     o{Variant::JSON::Reader ().Read (in)};
@@ -1082,18 +1082,18 @@ namespace {
         Memory::BLOB doWrite_ (const ScanDetails_& scan)
         {
             using namespace DataExchange;
-            Streams::MemoryStream<Byte>::Ptr out      = Streams::MemoryStream<Byte>::New ();
+            Streams::MemoryStream<byte>::Ptr out      = Streams::MemoryStream<byte>::New ();
             static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             Variant::JSON::Writer ().Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();
         }
         void DoRunPerfTest ()
         {
-            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
             Assert (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             Assert (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
-            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (begin (b), end (b)));
+            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (b), end (b)));
             Assert (sd2.fScanID == sd.fScanID);
             Assert (sd2.fAuxData == sd.fAuxData);
             Assert (sd2.fRawSpectrum == sd.fRawSpectrum);
@@ -1413,8 +1413,8 @@ namespace {
             1.7,
             &failedTests);
         Tester (
-            L"BLOB versus vector<Byte>",
-            Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
+            L"BLOB versus vector<byte>",
+            Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             13000,
             0.55,

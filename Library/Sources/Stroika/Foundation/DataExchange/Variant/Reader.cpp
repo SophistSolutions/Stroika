@@ -9,6 +9,8 @@
 
 #include "Reader.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
@@ -26,12 +28,12 @@ VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Charac
 
 VariantValue Variant::Reader::Read (const Memory::BLOB& in)
 {
-    return Read (in.As<Streams::InputStream<Memory::Byte>::Ptr> ());
+    return Read (in.As<Streams::InputStream<byte>::Ptr> ());
 }
 
 VariantValue Variant::Reader::Read (istream& in)
 {
-    return Read (Streams::TextReader::New (InputStreamFromStdIStream<Memory::Byte>::New (in), true));
+    return Read (Streams::TextReader::New (InputStreamFromStdIStream<byte>::New (in), true));
 }
 
 VariantValue Variant::Reader::Read (wistream& in)

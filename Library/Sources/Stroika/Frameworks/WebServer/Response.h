@@ -43,6 +43,8 @@
 
 namespace Stroika::Frameworks::WebServer {
 
+    using std::byte;
+
     using namespace Stroika::Foundation;
     using namespace Stroika::Foundation::IO::Network::HTTP;
 
@@ -50,7 +52,6 @@ namespace Stroika::Frameworks::WebServer {
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using Memory::BLOB;
-    using Memory::Byte;
 
     /*
      * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
@@ -60,7 +61,7 @@ namespace Stroika::Frameworks::WebServer {
         Response ()                = delete;
         Response (const Response&) = delete;
         Response (Response&&)      = default;
-        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<Byte>::Ptr& outStream, const InternetMediaType& ct);
+        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct);
 
     public:
         // Reponse must be completed (OK to Abort ()) before being destroyed
@@ -167,7 +168,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          */
         nonvirtual void write (const BLOB& b);
-        nonvirtual void write (const Byte* start, const Byte* end);
+        nonvirtual void write (const byte* start, const byte* end);
         nonvirtual void write (const wchar_t* e);
         nonvirtual void write (const wchar_t* s, const wchar_t* e);
         nonvirtual void write (const String& e);
@@ -198,7 +199,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
         // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
         */
-        nonvirtual const vector<Byte>& GetBytes () const;
+        nonvirtual const vector<byte>& GetBytes () const;
 
     public:
         /*
@@ -268,18 +269,18 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
-        IO::Network::Socket::Ptr                         fSocket_;
-        State                                            fState_;
-        Status                                           fStatus_;
-        String                                           fStatusOverrideReason_;
-        Streams::OutputStream<Byte>::Ptr                 fUnderlyingOutStream_;
-        Streams::BufferedOutputStream<Memory::Byte>::Ptr fUseOutStream_;
-        Mapping<String, String>                          fHeaders_;
-        InternetMediaType                                fContentType_;
-        Characters::CodePage                             fCodePage_;
-        vector<Byte>                                     fBytes_;
-        ContentSizePolicy                                fContentSizePolicy_;
-        uint64_t                                         fContentSize_; // only  maintained for some fContentSizePolicy_ values
+        IO::Network::Socket::Ptr                 fSocket_;
+        State                                    fState_;
+        Status                                   fStatus_;
+        String                                   fStatusOverrideReason_;
+        Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
+        Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
+        Mapping<String, String>                  fHeaders_;
+        InternetMediaType                        fContentType_;
+        Characters::CodePage                     fCodePage_;
+        vector<byte>                             fBytes_;
+        ContentSizePolicy                        fContentSizePolicy_;
+        uint64_t                                 fContentSize_; // only  maintained for some fContentSizePolicy_ values
     };
 
 }

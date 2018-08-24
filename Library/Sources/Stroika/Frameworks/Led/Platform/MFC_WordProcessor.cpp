@@ -14,6 +14,8 @@
 
 #include "MFC_WordProcessor.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
@@ -100,9 +102,9 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
 
 struct MyOLEStream_input : OLESTREAM {
     OLESTREAMVTBL theVTbl;
-    const Byte*   start;
-    const Byte*   end;
-    const Byte*   cur;
+    const byte*   start;
+    const byte*   end;
+    const byte*   cur;
     static DWORD __stdcall MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb)
     {
         MyOLEStream_input* myStream    = (MyOLEStream_input*)lpoleStr;
@@ -497,7 +499,7 @@ struct MyOLEStream_output : OLESTREAM {
         theVTbl.Put = MyOLE1STREAMPutter;
     }
 };
-void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData)
+void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, byte** resultData)
 {
     IStorage*        pStorage = NULL;
     IPersistStorage* ips      = NULL;
@@ -523,7 +525,7 @@ void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData
         MyOLEStream_output myStream;
         CheckGeneral (::OleConvertIStorageToOLESTREAM (pStorage, &myStream));
         *nBytes     = myStream.fData.size ();
-        *resultData = new Byte[*nBytes];
+        *resultData = new byte[*nBytes];
         (void)::memcpy (*resultData, Traversal::Iterator2Pointer (myStream.fData.begin ()), *nBytes);
     }
     catch (...) {

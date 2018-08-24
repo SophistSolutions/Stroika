@@ -19,28 +19,28 @@ namespace Stroika::Foundation::IO::FileSystem {
      ******************************* FileOutputStream *******************************
      ********************************************************************************
      */
-    inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
-            return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fileName, flushFlag));
+            return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fileName, flushFlag));
         }
         else {
             return FileOutputStream::New (fileName, flushFlag);
         }
     }
-    inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
-            return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fileName, appendFlag, flushFlag));
+            return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fileName, appendFlag, flushFlag));
         }
         else {
             return FileOutputStream::New (fileName, appendFlag, flushFlag);
         }
     }
-    inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
-            return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag));
+            return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag));
         }
         else {
             return FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag);

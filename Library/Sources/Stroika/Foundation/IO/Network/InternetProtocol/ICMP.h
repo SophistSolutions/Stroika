@@ -29,8 +29,6 @@
 
 namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
 
-    using Memory::Byte;
-
     namespace V4 {
 
         /*

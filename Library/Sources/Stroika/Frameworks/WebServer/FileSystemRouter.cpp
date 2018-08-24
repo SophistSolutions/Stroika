@@ -15,6 +15,8 @@
 
 #include "FileSystemRouter.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO::FileSystem;
@@ -50,7 +52,7 @@ namespace {
 #endif
             try {
                 Response&              response = *m->PeekResponse ();
-                InputStream<Byte>::Ptr in{FileInputStream::New (fn)};
+                InputStream<byte>::Ptr in{FileInputStream::New (fn)};
                 response.write (in.ReadAll ());
                 if (optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
                     response.SetContentType (*oMediaType);

@@ -58,12 +58,12 @@ namespace Stroika::Foundation::IO::Network {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         _ref ().LeaveMulticastGroup (iaddr, onInterface);
     }
-    inline void ConnectionlessSocket::Ptr::SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) const
+    inline void ConnectionlessSocket::Ptr::SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         _ref ().SendTo (start, end, sockAddr);
     }
-    inline size_t ConnectionlessSocket::Ptr::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) const
+    inline size_t ConnectionlessSocket::Ptr::ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return _ref ().ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);

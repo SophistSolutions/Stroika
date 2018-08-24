@@ -11,6 +11,8 @@
 
 #include "Utilities.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -38,12 +40,12 @@ wstring Streams::iostream::ReadTextStream (istream& in)
         Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
     }
     size_t                         bufLen = static_cast<size_t> (end - start);
-    Memory::SmallStackBuffer<Byte> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
+    Memory::SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<char*> (buf.begin ()), bufLen);
     size_t readLen = static_cast<size_t> (in.gcount ());
     Assert (readLen <= bufLen);
-    const char* startOfBuf = reinterpret_cast<const char*> (static_cast<const Byte*> (buf));
+    const char* startOfBuf = reinterpret_cast<const char*> (static_cast<const byte*> (buf));
     return Characters::MapUNICODETextWithMaybeBOMTowstring (startOfBuf, startOfBuf + readLen);
     DISABLE_COMPILER_MSC_WARNING_END (6237)
     DISABLE_COMPILER_MSC_WARNING_END (4127)
@@ -77,7 +79,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
  *********************** Streams::iostream::ReadBytes ***************************
  ********************************************************************************
  */
-vector<Byte> Streams::iostream::ReadBytes (istream& in)
+vector<byte> Streams::iostream::ReadBytes (istream& in)
 {
     streamoff start = in.tellg ();
     in.seekg (0, ios_base::end);
@@ -89,12 +91,12 @@ vector<Byte> Streams::iostream::ReadBytes (istream& in)
         Execution::Throw (StringException (String_Constant (L"stream too large")));
     }
     size_t                 len = static_cast<size_t> (end - start);
-    SmallStackBuffer<Byte> buf (Memory::SmallStackBufferCommon::eUninitialized, len);
+    SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, len);
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<char*> (buf.begin ()), len);
     size_t xxx = static_cast<size_t> (in.gcount ());
     Assert (xxx <= len);
-    return vector<Byte> (static_cast<const Byte*> (buf), static_cast<const Byte*> (buf) + xxx);
+    return vector<byte> (static_cast<const byte*> (buf), static_cast<const byte*> (buf) + xxx);
     DISABLE_COMPILER_MSC_WARNING_END (6237)
     DISABLE_COMPILER_MSC_WARNING_END (4127)
 }
@@ -104,7 +106,7 @@ vector<Byte> Streams::iostream::ReadBytes (istream& in)
  ********************** Streams::iostream::WriteBytes ***************************
  ********************************************************************************
  */
-void Streams::iostream::WriteBytes (ostream& out, const vector<Byte>& s)
+void Streams::iostream::WriteBytes (ostream& out, const vector<byte>& s)
 {
     out.write (reinterpret_cast<const char*> (Containers::Start (s)), s.size ());
 }

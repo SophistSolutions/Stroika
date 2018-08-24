@@ -42,8 +42,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
-    using Memory::BLOB;
-    using Memory::Byte;
     using Time::DurationSecondsType;
 
     /**

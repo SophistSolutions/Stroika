@@ -11,6 +11,8 @@
 
 #include "MessageStartTextInputStreamBinaryAdapter.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
@@ -32,7 +34,7 @@ namespace {
 
 class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
-    Rep_ (const InputStream<Byte>::Ptr& src)
+    Rep_ (const InputStream<byte>::Ptr& src)
         : fSource_ (src)
         , fAllDataReadBuf_ (kDefaultBufSize_)
         , fOffset_ (0)
@@ -181,7 +183,7 @@ protected:
                 }
             }
 
-            Byte*  startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
+            byte*  startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
             size_t n           = fSource_.Read (startReadAt, startReadAt + roomLeftInBuf);
             Assert (n <= roomLeftInBuf);
             // if n == 0, OK, just means EOF
@@ -267,8 +269,8 @@ protected:
     }
 
 private:
-    InputStream<Byte>::Ptr         fSource_;
-    Memory::SmallStackBuffer<Byte> fAllDataReadBuf_;           // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
+    InputStream<byte>::Ptr         fSource_;
+    Memory::SmallStackBuffer<byte> fAllDataReadBuf_;           // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
     size_t                         fOffset_;                   // text stream offset
     size_t                         fBufferFilledUpValidBytes_; // nbytes of valid text in fAllDataReadBuf_
 };
@@ -278,7 +280,7 @@ private:
  ********* IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter **********
  ********************************************************************************
  */
-MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream<Byte>::Ptr& src)
+MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream<byte>::Ptr& src)
 {
     return Ptr (make_shared<Rep_> (src));
 }

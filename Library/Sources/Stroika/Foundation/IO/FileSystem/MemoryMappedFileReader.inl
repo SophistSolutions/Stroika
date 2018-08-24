@@ -16,11 +16,11 @@ namespace Stroika::Foundation::IO::FileSystem {
      ******************* IO::FileSystem::MemoryMappedFileReader *********************
      ********************************************************************************
      */
-    inline const std::byte* MemoryMappedFileReader::begin () const
+    inline const byte* MemoryMappedFileReader::begin () const
     {
         return fFileDataStart_;
     }
-    inline const std::byte* MemoryMappedFileReader::end () const
+    inline const byte* MemoryMappedFileReader::end () const
     {
         return fFileDataEnd_;
     }

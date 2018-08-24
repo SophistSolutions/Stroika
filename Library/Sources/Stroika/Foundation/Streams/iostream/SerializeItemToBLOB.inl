@@ -17,11 +17,11 @@ namespace Stroika::Foundation::Streams::iostream {
     template <typename T>
     Memory::BLOB SerializeItemToBLOB (const T& elt)
     {
-        using Memory::Byte;
+        using std::byte;
         stringstream out;
         out << elt;
         string tmp = out.str ();
-        return Memory::BLOB (vector<Byte> (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::End (tmp))));
+        return Memory::BLOB (vector<byte> (reinterpret_cast<const byte*> (Containers::Start (tmp)), reinterpret_cast<const byte*> (Containers::End (tmp))));
     }
 
 }

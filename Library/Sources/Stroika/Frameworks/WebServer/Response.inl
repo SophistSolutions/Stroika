@@ -81,7 +81,7 @@ namespace Stroika::Frameworks::WebServer {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fBytes_.empty ();
     }
-    inline const vector<Byte>& Response::GetBytes () const
+    inline const vector<byte>& Response::GetBytes () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fBytes_;

@@ -189,8 +189,8 @@ namespace Stroika::Foundation::Memory {
             bool newInPlaceBuffer = nElements <= BUF_SIZE;
             // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
             if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
-                bool          memoryAllocationNeeded = not newInPlaceBuffer;
-                Memory::Byte* newPtr                 = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (nElements)) : std::begin (fInlinePreallocatedBuffer_);
+                bool  memoryAllocationNeeded = not newInPlaceBuffer;
+                byte* newPtr                 = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (nElements)) : std::begin (fInlinePreallocatedBuffer_);
 
                 // Initialize new memory from old
                 Assert (this->begin () != reinterpret_cast<T*> (newPtr));
@@ -330,9 +330,9 @@ namespace Stroika::Foundation::Memory {
     }
 #if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
     template <typename T, size_t BUF_SIZE>
-    constexpr Byte SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8];
+    constexpr byte SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8];
     template <typename T, size_t BUF_SIZE>
-    constexpr Byte SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8];
+    constexpr byte SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8];
 #endif
     template <typename T, size_t BUF_SIZE>
     void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ () const
@@ -359,20 +359,20 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline Memory::Byte* SmallStackBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ ()
+    inline byte* SmallStackBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ ()
     {
         Require (fLiveData_ != BufferAsT_ ());
-        return reinterpret_cast<Memory::Byte*> (fLiveData_);
+        return reinterpret_cast<byte*> (fLiveData_);
     }
     template <typename T, size_t BUF_SIZE>
-    inline Memory::Byte* SmallStackBuffer<T, BUF_SIZE>::Allocate_ (size_t bytes)
+    inline byte* SmallStackBuffer<T, BUF_SIZE>::Allocate_ (size_t bytes)
     {
         void* p = ::malloc (bytes);
         Execution::ThrowIfNull (p);
-        return reinterpret_cast<Memory::Byte*> (p);
+        return reinterpret_cast<byte*> (p);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void SmallStackBuffer<T, BUF_SIZE>::Deallocate_ (Memory::Byte* bytes)
+    inline void SmallStackBuffer<T, BUF_SIZE>::Deallocate_ (byte* bytes)
     {
         if (bytes != nullptr) {
             ::free (bytes);

@@ -10,6 +10,8 @@
 
 #include "Writer.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
@@ -22,7 +24,7 @@ using Streams::iostream::OutputStreamFromStdOStream;
  */
 void Variant::Writer::Write (const VariantValue& v, ostream& out)
 {
-    Write (v, OutputStreamFromStdOStream<Memory::Byte>::New (out));
+    Write (v, OutputStreamFromStdOStream<byte>::New (out));
 }
 
 void Variant::Writer::Write (const VariantValue& v, wostream& out)
@@ -32,7 +34,7 @@ void Variant::Writer::Write (const VariantValue& v, wostream& out)
 
 Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)
 {
-    Streams::MemoryStream<Memory::Byte>::Ptr buf = Streams::MemoryStream<Memory::Byte>::New ();
+    Streams::MemoryStream<byte>::Ptr buf = Streams::MemoryStream<byte>::New ();
     Write (v, buf);
     return buf.As<Memory::BLOB> ();
 }

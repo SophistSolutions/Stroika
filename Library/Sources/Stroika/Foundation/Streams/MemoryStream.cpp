@@ -12,12 +12,13 @@
 
 #include "MemoryStream.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
 using Characters::String;
-using Memory::Byte;
 
 /*
  ********************************************************************************
@@ -26,7 +27,7 @@ using Memory::Byte;
  */
 template <>
 template <>
-Memory::BLOB MemoryStream<Byte>::Ptr::As () const
+Memory::BLOB MemoryStream<byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
@@ -44,7 +45,7 @@ Memory::BLOB MemoryStream<uint8_t>::Ptr::As () const
 
 template <>
 template <>
-string MemoryStream<Byte>::Ptr::As () const
+string MemoryStream<byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());

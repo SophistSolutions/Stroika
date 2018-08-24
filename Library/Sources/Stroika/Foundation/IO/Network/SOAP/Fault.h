@@ -18,8 +18,9 @@
 
 namespace Stroika::Foundation::IO::Network::SOAP {
 
+    using std::byte;
+
     using Characters::String;
-    using Memory::Byte;
     using Streams::InputStream;
     /*
      *      SUPER PRIMITIVE PRELIMINARY DRAFT support for SOAP...
@@ -31,7 +32,7 @@ namespace Stroika::Foundation::IO::Network::SOAP {
         String faultstring;
         //BLOB    detail;     // NYI
     };
-    optional<Fault> Deserialize_Fault (const Streams::InputStream<Byte>::Ptr& from);
+    optional<Fault> Deserialize_Fault (const Streams::InputStream<byte>::Ptr& from);
     optional<Fault> Deserialize_Fault (const Memory::BLOB& from);
 
 }

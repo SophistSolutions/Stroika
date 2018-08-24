@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
      */
     inline StackBasedHandleLocker::StackBasedHandleLocker (HANDLE h)
         : fHandle_ (h)
-        , fPointer_ (reinterpret_cast<Byte*> (::GlobalLock (h)))
+        , fPointer_ (reinterpret_cast<byte*> (::GlobalLock (h)))
     {
         RequireNotNull (h);
         Execution::ThrowIfNull (fPointer_);
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
         AssertNotNull (fHandle_);
         ::GlobalUnlock (fHandle_);
     }
-    inline Byte* StackBasedHandleLocker::GetPointer () const
+    inline byte* StackBasedHandleLocker::GetPointer () const
     {
         return fPointer_;
     }

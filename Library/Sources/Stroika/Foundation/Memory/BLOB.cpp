@@ -13,6 +13,8 @@
 
 #include "BLOB.h"
 
+using std::byte;
+
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -27,7 +29,7 @@ using Memory::BLOB;
  ********************************************************************************
  */
 namespace {
-    size_t len_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+    size_t len_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)
     {
         size_t sz = 0;
         for (auto i : startEndPairs) {
@@ -45,10 +47,10 @@ namespace {
     }
 }
 
-BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)
     : fData{len_ (startEndPairs)}
 {
-    Byte* pb = fData.begin ();
+    byte* pb = fData.begin ();
     for (auto i : startEndPairs) {
         (void)::memcpy (pb, i.first, i.second - i.first);
         pb += (i.second - i.first);
@@ -59,7 +61,7 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*
 BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
     : fData{len_ (list2Concatenate)}
 {
-    Byte* pb = fData.begin ();
+    byte* pb = fData.begin ();
     for (auto i : list2Concatenate) {
         (void)::memcpy (pb, i.begin (), i.GetSize ());
         pb += i.GetSize ();
@@ -67,10 +69,10 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
     Ensure (pb == fData.end ());
 }
 
-pair<const Byte*, const Byte*> BLOB::BasicRep_::GetBounds () const
+pair<const byte*, const byte*> BLOB::BasicRep_::GetBounds () const
 {
     Ensure (fData.begin () <= fData.end ());
-    return pair<const Byte*, const Byte*> (fData.begin (), fData.end ());
+    return pair<const byte*, const byte*> (fData.begin (), fData.end ());
 }
 
 /*
@@ -78,9 +80,9 @@ pair<const Byte*, const Byte*> BLOB::BasicRep_::GetBounds () const
  ************************** Memory::BLOB::ZeroRep_ ******************************
  ********************************************************************************
  */
-pair<const Byte*, const Byte*> BLOB::ZeroRep_::GetBounds () const
+pair<const byte*, const byte*> BLOB::ZeroRep_::GetBounds () const
 {
-    return pair<const Byte*, const Byte*> (nullptr, nullptr);
+    return pair<const byte*, const byte*> (nullptr, nullptr);
 }
 
 /*
@@ -88,7 +90,7 @@ pair<const Byte*, const Byte*> BLOB::ZeroRep_::GetBounds () const
  ************************* Memory::BLOB::AdoptRep_ ******************************
  ********************************************************************************
  */
-BLOB::AdoptRep_::AdoptRep_ (const Byte* start, const Byte* end)
+BLOB::AdoptRep_::AdoptRep_ (const byte* start, const byte* end)
     : fStart (start)
     , fEnd (end)
 {
@@ -100,10 +102,10 @@ BLOB::AdoptRep_::~AdoptRep_ ()
     delete[] fStart;
 }
 
-pair<const Byte*, const Byte*> BLOB::AdoptRep_::GetBounds () const
+pair<const byte*, const byte*> BLOB::AdoptRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
-    return pair<const Byte*, const Byte*> (fStart, fEnd);
+    return pair<const byte*, const byte*> (fStart, fEnd);
 }
 
 /*
@@ -111,17 +113,17 @@ pair<const Byte*, const Byte*> BLOB::AdoptRep_::GetBounds () const
  ******************* Memory::BLOB::AdoptAppLifetimeRep_ *************************
  ********************************************************************************
  */
-BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, const Byte* end)
+BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const byte* start, const byte* end)
     : fStart (start)
     , fEnd (end)
 {
     Require (start <= end);
 }
 
-pair<const Byte*, const Byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
+pair<const byte*, const byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
-    return pair<const Byte*, const Byte*> (fStart, fEnd);
+    return pair<const byte*, const byte*> (fStart, fEnd);
 }
 
 /*
@@ -130,33 +132,33 @@ pair<const Byte*, const Byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
  ********************************************************************************
  */
 namespace {
-    Byte HexChar2Num_ (char c)
+    byte HexChar2Num_ (char c)
     {
         if ('0' <= c and c <= '9') {
-            return Byte (c - '0');
+            return byte (c - '0');
         }
         if ('A' <= c and c <= 'F') {
-            return Byte ((c - 'A') + 10);
+            return byte ((c - 'A') + 10);
         }
         if ('a' <= c and c <= 'f') {
-            return Byte ((c - 'a') + 10);
+            return byte ((c - 'a') + 10);
         }
         Execution::Throw (Execution::StringException (L"Invalid HEX character in BLOB::Hex"));
     }
 }
 BLOB BLOB::Hex (const char* s, const char* e)
 {
-    SmallStackBuffer<Byte> buf;
+    SmallStackBuffer<byte> buf;
     for (const char* i = s; i < e; ++i) {
         if (isspace (*i)) {
             continue;
         }
-        Byte b = HexChar2Num_ (*i);
+        byte b = HexChar2Num_ (*i);
         ++i;
         if (i == e) {
             Execution::Throw (Execution::StringException (L"Invalid partial HEX character in BLOB::Hex"));
         }
-        b = Byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));
+        b = byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));
         buf.push_back (b);
     }
     return BLOB (buf.begin (), buf.end ());
@@ -165,8 +167,8 @@ BLOB BLOB::Hex (const char* s, const char* e)
 int BLOB::Compare (const BLOB& rhs) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    pair<const Byte*, const Byte*>                      l = fRep_->GetBounds ();
-    pair<const Byte*, const Byte*>                      r = rhs.fRep_->GetBounds ();
+    pair<const byte*, const byte*>                      l = fRep_->GetBounds ();
+    pair<const byte*, const byte*>                      r = rhs.fRep_->GetBounds ();
 
     size_t lSize        = l.second - l.first;
     size_t rSize        = r.second - r.first;
@@ -184,12 +186,12 @@ int BLOB::Compare (const BLOB& rhs) const
 
 namespace {
     using namespace Streams;
-    struct BLOBBINSTREAM_ : InputStream<Byte>::Ptr {
+    struct BLOBBINSTREAM_ : InputStream<byte>::Ptr {
         BLOBBINSTREAM_ (const BLOB& b)
-            : InputStream<Byte>::Ptr (make_shared<REP> (b))
+            : InputStream<byte>::Ptr (make_shared<REP> (b))
         {
         }
-        struct REP : InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+        struct REP : InputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
             bool fIsOpenForRead_{true};
             REP (const BLOB& b)
                 : fCur (b.begin ())
@@ -210,7 +212,7 @@ namespace {
             {
                 return fIsOpenForRead_;
             }
-            virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
+            virtual size_t Read (byte* intoStart, byte* intoEnd) override
             {
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
@@ -277,15 +279,15 @@ namespace {
                 Ensure ((fStart <= fCur) and (fCur <= fEnd));
                 return GetReadOffset ();
             }
-            const Byte* fCur;
-            const Byte* fStart;
-            const Byte* fEnd;
+            const byte* fCur;
+            const byte* fStart;
+            const byte* fEnd;
         };
     };
 }
 
 template <>
-Streams::InputStream<Byte>::Ptr BLOB::As () const
+Streams::InputStream<byte>::Ptr BLOB::As () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return BLOBBINSTREAM_{*this};
@@ -297,7 +299,7 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     StringBuilder                                       sb;
     size_t                                              cnt{};
-    for (Byte b : *this) {
+    for (byte b : *this) {
         if (cnt++ > maxBytesToShow) {
             break;
         }

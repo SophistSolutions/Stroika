@@ -85,23 +85,23 @@ private:
 
 private:
     static size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP);
-    nonvirtual size_t RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize);
+    nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize);
 
 private:
     static size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
-    nonvirtual size_t ResponseWriteHandler_ (const Byte* ptr, size_t nBytes);
+    nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes);
 
 private:
     static size_t s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
-    nonvirtual size_t ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
+    nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes);
 
 private:
     void*                   fCurlHandle_{nullptr};
     URL                     fURL_;
     bool                    fDidCustomMethod_{false};
-    vector<Byte>            fUploadData_;
+    vector<byte>            fUploadData_;
     size_t                  fUploadDataCursor_{};
-    vector<Byte>            fResponseData_;
+    vector<byte>            fResponseData_;
     Mapping<String, String> fResponseHeaders_;
     curl_slist*             fSavedHeaders_{nullptr};
 };
@@ -191,10 +191,10 @@ void Connection_LibCurl::Rep_::Close ()
 
 size_t Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
 {
-    return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<Byte*> (buffer), size * nitems);
+    return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
 }
 
-size_t Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize)
+size_t Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_");
@@ -214,10 +214,10 @@ size_t Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size
 #if qStroika_FeatureSupported_Valgrind
     VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
 #endif
-    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
+    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
 }
 
-size_t Connection_LibCurl::Rep_::ResponseWriteHandler_ (const Byte* ptr, size_t nBytes)
+size_t Connection_LibCurl::Rep_::ResponseWriteHandler_ (const byte* ptr, size_t nBytes)
 {
     fResponseData_.insert (fResponseData_.end (), ptr, ptr + nBytes);
     return nBytes;
@@ -228,10 +228,10 @@ size_t Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_
 #if qStroika_FeatureSupported_Valgrind
     VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
 #endif
-    return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
+    return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
 }
 
-size_t Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes)
+size_t Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes)
 {
     String from = String::FromUTF8 (reinterpret_cast<const char*> (ptr), reinterpret_cast<const char*> (ptr) + nBytes);
     String to;
@@ -252,7 +252,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     Debug::TraceContextBumper ctx{L"Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str ()};
 #endif
     MakeHandleIfNeeded_ ();
-    fUploadData_       = request.fData.As<vector<Byte>> ();
+    fUploadData_       = request.fData.As<vector<byte>> ();
     fUploadDataCursor_ = 0;
     fResponseData_.clear ();
     fResponseHeaders_.clear ();

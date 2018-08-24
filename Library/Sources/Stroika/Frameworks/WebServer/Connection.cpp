@@ -29,6 +29,8 @@
 
 #include "Connection.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -64,7 +66,7 @@ String Connection::Remaining::ToString () const
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream)
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream)
     : Message (
           Request (socketStream),
           Response (socket, socketStream, DataExchange::PredefinedInternetMediaType::kOctetStream),
@@ -169,7 +171,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     {
         String socketName = Characters::Format (L"%ld-%d", (long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
-        fSocketStream_    = Streams::LoggingInputOutputStream<Memory::Byte>::New (
+        fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
             fSocketStream_,
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-input-trace.txt", socketName.c_str ())),
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-output-trace.txt", socketName.c_str ())));

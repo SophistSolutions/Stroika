@@ -12,6 +12,8 @@
 
 #include "Reader.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
@@ -20,7 +22,6 @@ using Characters::String;
 using Characters::String_Constant;
 using Containers::Sequence;
 using Containers::Set;
-using Memory::Byte;
 using Traversal::Iterable;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -46,7 +47,7 @@ public:
     {
         return String_Constant (L".txt");
     }
-    virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {
         return Read (Streams::TextReader::New (in));
     }
@@ -86,7 +87,7 @@ Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDe
 {
 }
 
-Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>::Ptr& in) const
+Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<byte>::Ptr& in) const
 {
     return ReadMatrix (Streams::TextReader::New (in));
 }

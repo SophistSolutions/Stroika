@@ -23,6 +23,8 @@
 
 namespace Stroika::Foundation::Cryptography::Digest {
 
+    using std::byte;
+
     namespace Algorithm {
         struct CRC32 {
         };
@@ -36,8 +38,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     struct Digester<Algorithm::CRC32, uint32_t> {
         using ReturnType = uint32_t;
 
-        static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from);
-        static ReturnType ComputeDigest (const std::byte* from, const std::byte* to);
+        static ReturnType ComputeDigest (const Streams::InputStream<byte>::Ptr& from);
+        static ReturnType ComputeDigest (const byte* from, const byte* to);
         static ReturnType ComputeDigest (const BLOB& from);
     };
 

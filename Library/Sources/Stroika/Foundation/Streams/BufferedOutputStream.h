@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          OutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>::New (FileOutputStream (fileName, flushFlag));
+         *          OutputStream<byte>::Ptr out = BufferedOutputStream<byte>::New (FileOutputStream (fileName, flushFlag));
          *      \endcode
          */
         static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          BufferedOutputStream<Byte>::Ptr out = BufferedOutputStream<Memory::Byte>::New (FileOutputStream (fileName, flushFlag));
+         *          BufferedOutputStream<byte>::Ptr out = BufferedOutputStream<byte>::New (FileOutputStream (fileName, flushFlag));
          *          out.SetBufferSize (1000);
          *      \endcode
          */

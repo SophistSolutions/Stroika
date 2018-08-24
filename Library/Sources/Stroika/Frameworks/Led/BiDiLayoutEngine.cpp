@@ -32,6 +32,8 @@
 #include <fstream>
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 
 using namespace Stroika::Foundation;
@@ -874,7 +876,7 @@ TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from)
     neededSize += sizeof (Led_tChar) * strLength;             // fRealText
     neededSize += sizeof (Led_tChar) * strLength;             // fVirtualText
     neededSize += sizeof (ScriptRunElt) * scriptRuns.size (); // fScriptRuns
-    fRep = shared_ptr<BlockRep> (reinterpret_cast<BlockRep*> (new Byte[neededSize]));
+    fRep = shared_ptr<BlockRep> (reinterpret_cast<BlockRep*> (new byte[neededSize]));
 
     fRep->fTextLength = strLength;
 
@@ -945,7 +947,7 @@ vector<TextLayoutBlock_Copy::ScriptRunElt> TextLayoutBlock_Copy::GetScriptRuns (
  */
 void TextLayoutBlock_Copy::BlockRep::operator delete (void* p)
 {
-    // Because we allocate using new Byte[] in TextLayoutBlock_Copy::CTOR (see SPR#1596)
+    // Because we allocate using new byte[] in TextLayoutBlock_Copy::CTOR (see SPR#1596)
     delete[](reinterpret_cast<char*> (p));
 }
 

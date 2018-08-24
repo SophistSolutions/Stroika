@@ -2592,11 +2592,11 @@ namespace {
 class Zip::Reader::Rep_ : public Reader::_IRep {
 private:
     struct MyISeekInStream : zlib_filefunc64_def {
-        Streams::InputStream<Memory::Byte>::Ptr fInStream_;
+        Streams::InputStream<byte>::Ptr fInStream_;
 #if qDebug
         bool fOpened_{false};
 #endif
-        MyISeekInStream (const Streams::InputStream<Memory::Byte>::Ptr& in)
+        MyISeekInStream (const Streams::InputStream<byte>::Ptr& in)
             : fInStream_ (in)
         {
             this->zopen64_file = [](voidpf opaque, const void* /*filename*/, int /*mode*/) -> voidpf {
@@ -2677,7 +2677,7 @@ private:
     unzFile         fZipFile_;
 
 public:
-    Rep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
+    Rep_ (const Streams::InputStream<byte>::Ptr& in)
         : fInSeekStream_ (in)
         , fZipFile_ (unzOpen2_64 ("", &fInSeekStream_))
     {
@@ -2809,9 +2809,9 @@ public:
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
         [[maybe_unused]] auto&&          cleanup  = Execution::Finally ([this]() { unzCloseCurrentFile_ (fZipFile_); });
-        Streams::MemoryStream<Byte>::Ptr tmpBuf   = Streams::MemoryStream<Byte>::New ();
+        Streams::MemoryStream<byte>::Ptr tmpBuf   = Streams::MemoryStream<byte>::New ();
         do {
-            Byte buf[10 * 1024];
+            byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (NEltsOf (buf)));
             if (err < 0) {
                 Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
@@ -2825,7 +2825,7 @@ public:
     }
 };
 
-Zip::Reader::Reader (const Streams::InputStream<Memory::Byte>::Ptr& in)
+Zip::Reader::Reader (const Streams::InputStream<byte>::Ptr& in)
     : DataExchange::Archive::Reader (make_shared<Rep_> (in))
 {
 }

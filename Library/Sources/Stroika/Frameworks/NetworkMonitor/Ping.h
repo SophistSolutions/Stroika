@@ -28,6 +28,8 @@
 
 namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
+    using std::byte;
+
     using namespace Stroika::Foundation;
 
     using IO::Network::InternetAddress;
@@ -112,7 +114,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
         InternetAddress                                          fDestination_;
         Options                                                  fOptions_;
         size_t                                                   fICMPPacketSize_;
-        Memory::SmallStackBuffer<Memory::Byte>                   fSendPacket_;
+        Memory::SmallStackBuffer<byte>                           fSendPacket_;
         IO::Network::ConnectionlessSocket::Ptr                   fSocket_;
         uint16_t                                                 fNextSequenceNumber_;
         Time::DurationSecondsType                                fPingTimeout_;

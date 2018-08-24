@@ -24,6 +24,8 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
+    using std::byte;
+
     /**
      *  MemoryMappedFileReader is a utility to allow memory mapping of a file.
      */
@@ -39,12 +41,12 @@ namespace Stroika::Foundation::IO::FileSystem {
     public:
         /**
          */
-        nonvirtual const std::byte* begin () const;
+        nonvirtual const byte* begin () const;
 
     public:
         /**
          */
-        nonvirtual const std::byte* end () const;
+        nonvirtual const byte* end () const;
 
     public:
         /**
@@ -52,8 +54,8 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual size_t size () const;
 
     private:
-        const std::byte* fFileDataStart_;
-        const std::byte* fFileDataEnd_;
+        const byte* fFileDataStart_;
+        const byte* fFileDataEnd_;
 #if qPlatform_Windows
         HANDLE fFileHandle_;
         HANDLE fFileMapping_;

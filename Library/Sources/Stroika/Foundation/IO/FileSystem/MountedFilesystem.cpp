@@ -30,6 +30,8 @@
 
 #include "MountedFilesystem.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -101,7 +103,7 @@ namespace {
     /* 
      *  Something like this is used on many unix systems.
      */
-    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<Memory::Byte>::Ptr& readStream)
+    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<byte>::Ptr& readStream)
     {
         /*
          *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.

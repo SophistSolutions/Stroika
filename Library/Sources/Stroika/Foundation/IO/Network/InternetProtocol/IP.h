@@ -27,8 +27,6 @@
 
 namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
 
-    using Memory::Byte;
-
     /**
      * This type is frequently used to select what versions of IP protocol to use in higher level services.
      *

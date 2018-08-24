@@ -13,8 +13,6 @@
 
 namespace Stroika::Foundation::Execution::Resources {
 
-    using Memory::Byte;
-
     /**
      * A resource Manager is a abstract class (effectively smart pointer) to a source of resources. You instantiate
      * an appropriate resource manager subclass, and call ReadResource() as needed. ReadResource() returns a proxy
@@ -29,7 +27,7 @@ namespace Stroika::Foundation::Execution::Resources {
         };
 
     protected:
-        static Accessor _mkAccessor (const Byte* start, const Byte* end);
+        static Accessor _mkAccessor (const std::byte* start, const std::byte* end);
 
     protected:
         explicit Manager (const shared_ptr<_IRep>& rep);

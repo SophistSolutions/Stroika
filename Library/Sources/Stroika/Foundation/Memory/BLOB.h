@@ -23,7 +23,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <Byte> and
+ *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <byte> and
  *              only (or handle differently) random access iterators versus just plain forward iteraotrs.
  *
  *      @todo   Consider the name Attach() and AttachApplicationLifetime (). This was meant to parallel
@@ -45,7 +45,7 @@
  *              BLOB (object slicing) � and have different CTOR, and different virtual Rep
  *              (decide semantics � not clear � readonly)
  *
- *      @todo   Do CTOR that uses iterator start/end not just const Byte* start, const Byte* end.
+ *      @todo   Do CTOR that uses iterator start/end not just const byte* start, const byte* end.
  *
  */
 
@@ -64,6 +64,7 @@ namespace Stroika::Foundation::Memory {
     constexpr bool kBLOBUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
     using namespace std;
+    using std::byte;
 
     using namespace Configuration;
 
@@ -86,13 +87,13 @@ namespace Stroika::Foundation::Memory {
         BLOB ();
         BLOB (const BLOB& src) = default;
         BLOB (BLOB&& src);
-        template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
+        template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
         BLOB (const CONTAINER_OF_BYTE& data);
-        BLOB (const Byte* start, const Byte* end);
+        BLOB (const byte* start, const byte* end);
         BLOB (const uint8_t* start, const uint8_t* end);
-        BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
+        BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
         BLOB (const initializer_list<BLOB>& list2Concatenate);
-        BLOB (const initializer_list<Byte>& bytes);
+        BLOB (const initializer_list<byte>& bytes);
         BLOB (const initializer_list<uint8_t>& bytes);
 
     public:
@@ -178,7 +179,7 @@ namespace Stroika::Foundation::Memory {
             *
             *  @see AttachApplicationLifetime
             */
-        static BLOB Attach (const Byte* start, const Byte* end);
+        static BLOB Attach (const byte* start, const byte* end);
 
     public:
         /*
@@ -192,9 +193,9 @@ namespace Stroika::Foundation::Memory {
             *
             *  @see Attach
             */
-        static BLOB AttachApplicationLifetime (const Byte* start, const Byte* end);
+        static BLOB AttachApplicationLifetime (const byte* start, const byte* end);
         template <size_t SIZE>
-        static BLOB AttachApplicationLifetime (const Byte (&data)[SIZE]);
+        static BLOB AttachApplicationLifetime (const byte (&data)[SIZE]);
 
     public:
         /**
@@ -206,18 +207,18 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Convert BLOB losslessly into a standard C++ type.
          *      Supported Types for 'T' include:
-         *          o   vector<Byte>
-         *          o   Streams::InputStream<Byte>::Ptr
-         *          o   pair<const Byte*, const Byte*>
+         *          o   vector<byte>
+         *          o   Streams::InputStream<byte>::Ptr
+         *          o   pair<const byte*, const byte*>
          */
         template <typename T>
         nonvirtual T As () const;
         /**
          *  Convert BLOB losslessly into a standard C++ type.
          *      Supported Types for 'T' include:
-         *          o   vector<Byte>
-         *          o   Streams::InputStream<Byte>::Ptr
-         *          o   pair<const Byte*, const Byte*>
+         *          o   vector<byte>
+         *          o   Streams::InputStream<byte>::Ptr
+         *          o   pair<const byte*, const byte*>
          */
         template <typename T>
         nonvirtual void As (T* into) const;
@@ -251,13 +252,13 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
          */
-        nonvirtual const Byte* begin () const;
+        nonvirtual const byte* begin () const;
 
     public:
         /**
          *  Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
          */
-        nonvirtual const Byte* end () const;
+        nonvirtual const byte* end () const;
 
     public:
         /**
@@ -323,11 +324,11 @@ namespace Stroika::Foundation::Memory {
     };
 
     template <>
-    void BLOB::As (vector<Byte>* into) const;
+    void BLOB::As (vector<byte>* into) const;
     template <>
     void BLOB::As (vector<uint8_t>* into) const;
     template <>
-    vector<Byte> BLOB::As () const;
+    vector<byte> BLOB::As () const;
     template <>
     vector<uint8_t> BLOB::As () const;
 
@@ -340,13 +341,13 @@ namespace Stroika::Foundation::Memory {
         _IRep ()                                                  = default;
         _IRep (const _IRep&)                                      = delete;
         virtual ~_IRep ()                                         = default;
-        virtual pair<const Byte*, const Byte*> GetBounds () const = 0;
+        virtual pair<const byte*, const byte*> GetBounds () const = 0;
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
     };
 
     template <>
-    Streams::InputStream<Byte>::Ptr BLOB::As () const;
+    Streams::InputStream<byte>::Ptr BLOB::As () const;
 
     /**
      *  operator indirects to BLOB::Compare()
@@ -377,7 +378,6 @@ namespace Stroika::Foundation::Memory {
      *  operator indirects to BLOB::Compare()
      */
     bool operator> (const BLOB& lhs, const BLOB& rhs);
-
 }
 
 /*

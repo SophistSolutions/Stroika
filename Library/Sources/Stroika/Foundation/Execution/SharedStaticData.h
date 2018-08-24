@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Execution {
         inline static unsigned int                                                 sCountUses_{};
         inline static T*                                                           sOnceObj_{};
 #endif
-        //                alignas (alignof (T)) Memory::Byte fOnceObj_Storage_[sizeof (T)]; // avoid actual memory allocation call - since only one of these
+        //                alignas (alignof (T)) byte fOnceObj_Storage_[sizeof (T)]; // avoid actual memory allocation call - since only one of these
     };
 
 }

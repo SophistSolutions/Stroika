@@ -16,11 +16,11 @@ namespace Stroika::Foundation::IO::FileSystem {
      ********************************** FileInputStream *****************************
      ********************************************************************************
      */
-    inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (const String& fileName, BufferFlag bufferFlag)
+    inline Streams::InputStream<byte>::Ptr FileInputStream::New (const String& fileName, BufferFlag bufferFlag)
     {
         return New (fileName, SeekableFlag::eDEFAULT, bufferFlag);
     }
-    inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
+    inline Streams::InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
     {
         return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
     }

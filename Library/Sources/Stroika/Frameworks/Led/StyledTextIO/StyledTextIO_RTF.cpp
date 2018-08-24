@@ -4666,7 +4666,7 @@ bool StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writ
     {
         // Get encoded format of the object in OLE1 OLESTREAM format
         size_t nBytes;
-        Byte*  theDataBytes = nullptr;
+        byte*  theDataBytes = nullptr;
         anRTFOLEEmbedding->DoWriteToOLE1Stream (&nBytes, &theDataBytes);
 
         write ("\r\n");

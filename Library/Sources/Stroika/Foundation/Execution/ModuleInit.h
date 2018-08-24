@@ -25,8 +25,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    using Memory::Byte;
-
     /**
      *  For the most part, using ModuleInitializer<> automatically takes care of all your module interdependencies
      *  automatically, just by #including the right files. This is true because the #include dependency graph
@@ -151,7 +149,7 @@ namespace Stroika::Foundation::Execution {
         static ModuleDependency GetDependency ();
 
     private:
-        alignas (alignof (MODULE_DATA)) static Byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+        alignas (alignof (MODULE_DATA)) static std::byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
         static uint16_t sInitCnt_;
 #else

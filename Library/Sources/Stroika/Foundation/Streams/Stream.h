@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Streams {
      *     o   Streams have two parallel hierarchies, which mirror one another, of smart pointers and related
      *         'virtual rep' objects which provide the API which implementers override.
      *
-     *     o   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<Byte>, and
+     *     o   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<byte>, and
      *         in Characters for a Stream<Character>).
      *
      *     o   Two important subclasses of Stream<> are InputStreamPtr<> (for reading) and OutputStream<> for

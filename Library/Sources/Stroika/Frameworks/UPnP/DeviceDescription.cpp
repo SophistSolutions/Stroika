@@ -14,6 +14,8 @@
 
 #include "DeviceDescription.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 
 using namespace Stroika::Frameworks;
@@ -189,7 +191,7 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
     }
     tmp << "    </device>" << endl;
     tmp << "</root>" << endl;
-    return Streams::iostream::InputStreamFromStdIStream<Memory::Byte>::New (tmp).ReadAll ();
+    return Streams::iostream::InputStreamFromStdIStream<byte>::New (tmp).ReadAll ();
 }
 
 /*

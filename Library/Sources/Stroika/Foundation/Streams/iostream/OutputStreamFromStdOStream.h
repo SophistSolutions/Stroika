@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Streams::iostream {
             using IStreamType = basic_ostream<ELEMENT_TYPE>;
         };
         template <>
-        struct TraitsType<Memory::Byte> {
+        struct TraitsType<byte> {
             using OStreamType = ostream;
         };
         template <>
@@ -63,9 +63,9 @@ namespace Stroika::Foundation::Streams::iostream {
          *  \par Example Usage
          *      \code
          *          stringstream                                  s;
-         *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>::New (s);
+         *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
          *          const char                                    kData_[] = "ddasdf3294234";
-         *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
+         *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
          *          VerifyTestResult (s.str () == kData_);
          *      \endcode
          *
@@ -103,9 +103,9 @@ namespace Stroika::Foundation::Streams::iostream {
          *  \par Example Usage
          *      \code
          *          stringstream                                  s;
-         *          OutputStreamFromStdOStream<Memory::Byte>::Ptr so = OutputStreamFromStdOStream<Memory::Byte>::New (s);
+         *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
          *          const char                                    kData_[] = "ddasdf3294234";
-         *          so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
+         *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
          *          VerifyTestResult (s.str () == kData_);
          *      \endcode
          */

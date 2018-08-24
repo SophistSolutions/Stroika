@@ -21,6 +21,7 @@
 #include "Stroika/Frameworks/SystemPerformance/Measurement.h"
 
 using namespace std;
+using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
@@ -29,12 +30,11 @@ using namespace Stroika::Frameworks::SystemPerformance;
 using Characters::Character;
 using Characters::String;
 using Containers::Sequence;
-using Memory::Byte;
 
 namespace {
     string Serialize_ (VariantValue v, bool oneLineMode)
     {
-        Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
+        Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
         DataExchange::Variant::JSON::Writer ().Write (v, out);
         // strip CRLF - so shows up on one line
         String result = String::FromUTF8 (out.As<string> ());

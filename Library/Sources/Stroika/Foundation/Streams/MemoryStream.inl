@@ -233,8 +233,8 @@ namespace Stroika::Foundation::Streams {
 
     private:
         // @todo - COULD redo using
-        //      constexpr size_t  USE_BUFFER_BYTES = 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep);
-        //      Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
+        //      constexpr size_t  USE_BUFFER_BYTES = 1024 - sizeof(recursive_mutex) - sizeof(byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep);
+        //      Memory::SmallStackBuffer < byte, USE_BUFFER_BYTES>  fData_;
         // Or Stroika chunked array code
 
     private:
@@ -280,13 +280,13 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline auto MemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
     {
         return New (blob.begin (), blob.end ());
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
     {
         switch (internallySyncrhonized) {
@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Streams {
     }
     template <>
     template <>
-    inline vector<Memory::Byte> MemoryStream<Memory::Byte>::Ptr::As () const
+    inline vector<byte> MemoryStream<byte>::Ptr::As () const
     {
         RequireNotNull (_GetSharedRep ().get ());
         AssertMember (_GetSharedRep ().get (), Rep_);

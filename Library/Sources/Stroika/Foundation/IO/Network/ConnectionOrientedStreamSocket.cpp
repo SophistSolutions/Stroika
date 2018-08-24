@@ -14,6 +14,8 @@
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+using std::byte;
+
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 namespace {
@@ -75,7 +77,7 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual size_t Read (Byte* intoStart, Byte* intoEnd) const override
+            virtual size_t Read (byte* intoStart, byte* intoEnd) const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 
@@ -94,7 +96,7 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const override
+            virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Assert (fCurrentPendingReadsCount++ == 0);
@@ -137,7 +139,7 @@ namespace {
                 return {};
 #endif
             }
-            virtual void Write (const Byte* start, const Byte* end) const override
+            virtual void Write (const byte* start, const byte* end) const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -149,11 +151,11 @@ namespace {
                  *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
                  *  docs aren't fully clear, so play it safe --LGP 2017-04-13
                  */
-                BreakWriteIntoParts_<Byte> (
+                BreakWriteIntoParts_<byte> (
                     start,
                     end,
                     numeric_limits<int>::max (),
-                    [this](const Byte* start, const Byte* end) -> size_t {
+                    [this](const byte* start, const byte* end) -> size_t {
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int     len = static_cast<int> (end - start);
                         ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
@@ -169,11 +171,11 @@ namespace {
                  *          int       n   =   ::_write (fSD_, start, end - start);
                  */
                 size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
-                BreakWriteIntoParts_<Byte> (
+                BreakWriteIntoParts_<byte> (
                     start,
                     end,
                     maxSendAtATime,
-                    [this, maxSendAtATime](const Byte* start, const Byte* end) -> size_t {
+                    [this, maxSendAtATime](const byte* start, const byte* end) -> size_t {
                         Require (static_cast<size_t> (end - start) <= maxSendAtATime);
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int len = static_cast<int> (end - start);

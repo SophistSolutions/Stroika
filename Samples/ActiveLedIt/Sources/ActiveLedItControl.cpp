@@ -60,6 +60,8 @@
 
 const int kEditorWindowID = 100;
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
@@ -877,7 +879,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
         if (hglobal != NULL) {
             try {
                 Led_StackBasedHandleLocker hdl (hglobal);
-                const Byte*                data = reinterpret_cast<Byte*> (hdl.GetPointer ());
+                const byte*                data = reinterpret_cast<byte*> (hdl.GetPointer ());
                 if (data != NULL) {
                     size_t size = *(size_t*)data;
                     string s    = string (((const char*)data) + sizeof (size_t), size);

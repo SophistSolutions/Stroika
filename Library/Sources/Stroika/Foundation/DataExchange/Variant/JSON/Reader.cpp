@@ -15,13 +15,14 @@
 
 #include "Reader.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
 using Characters::Character;
 using Characters::String_Constant;
 using Characters::StringBuilder;
-using Memory::Byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -394,7 +395,7 @@ public:
     {
         return String_Constant{L".json"};
     }
-    virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {
         constexpr bool kSeekable_{true};
         return Read (Streams::TextReader::New (in, kSeekable_));

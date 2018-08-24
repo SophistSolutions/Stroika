@@ -43,6 +43,8 @@
 
 #include "ProcessRunner.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -351,7 +353,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>::Ptr& in, const Streams::OutputStream<Byte>::Ptr& out, const Streams::OutputStream<Byte>::Ptr& error)
+ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
@@ -361,7 +363,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
 {
 }
 
-ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>::Ptr& in, const Streams::OutputStream<Byte>::Ptr& out, const Streams::OutputStream<Byte>::Ptr& error)
+ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
@@ -400,13 +402,13 @@ void ProcessRunner::SetWorkingDirectory (const optional<String>& d)
     fWorkingDirectory_ = d;
 }
 
-Streams::InputStream<Byte>::Ptr ProcessRunner::GetStdIn () const
+Streams::InputStream<byte>::Ptr ProcessRunner::GetStdIn () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fStdIn_;
 }
 
-void ProcessRunner::SetStdIn (const Streams::InputStream<Byte>::Ptr& in)
+void ProcessRunner::SetStdIn (const Streams::InputStream<byte>::Ptr& in)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdIn_ = in;
@@ -415,28 +417,28 @@ void ProcessRunner::SetStdIn (const Streams::InputStream<Byte>::Ptr& in)
 void ProcessRunner::SetStdIn (const Memory::BLOB& in)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    fStdIn_ = in.As<Streams::InputStream<Byte>::Ptr> ();
+    fStdIn_ = in.As<Streams::InputStream<byte>::Ptr> ();
 }
 
-Streams::OutputStream<Byte>::Ptr ProcessRunner::GetStdOut () const
+Streams::OutputStream<byte>::Ptr ProcessRunner::GetStdOut () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fStdOut_;
 }
 
-void ProcessRunner::SetStdOut (const Streams::OutputStream<Byte>::Ptr& out)
+void ProcessRunner::SetStdOut (const Streams::OutputStream<byte>::Ptr& out)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdOut_ = out;
 }
 
-Streams::OutputStream<Byte>::Ptr ProcessRunner::GetStdErr () const
+Streams::OutputStream<byte>::Ptr ProcessRunner::GetStdErr () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fStdErr_;
 }
 
-void ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>::Ptr& err)
+void ProcessRunner::SetStdErr (const Streams::OutputStream<byte>::Ptr& err)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fStdErr_ = err;
@@ -475,11 +477,11 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
 Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Streams::InputStream<Byte>::Ptr                    oldStdIn  = GetStdIn ();
-    Streams::OutputStream<Byte>::Ptr                   oldStdOut = GetStdOut ();
+    Streams::InputStream<byte>::Ptr                    oldStdIn  = GetStdIn ();
+    Streams::OutputStream<byte>::Ptr                   oldStdOut = GetStdOut ();
     try {
-        Streams::MemoryStream<Memory::Byte>::Ptr useStdIn  = Streams::MemoryStream<Memory::Byte>::New ();
-        Streams::MemoryStream<Memory::Byte>::Ptr useStdOut = Streams::MemoryStream<Memory::Byte>::New ();
+        Streams::MemoryStream<byte>::Ptr useStdIn  = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
 
         // Prefill stream
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
@@ -524,9 +526,9 @@ namespace {
         ProgressMonitor::Updater                                  progress,
         const String&                                             cmdLine,
         const SDKChar*                                            currentDir,
-        const Streams::InputStream<Byte>::Ptr&                    in,
-        const Streams::OutputStream<Byte>::Ptr&                   out,
-        const Streams::OutputStream<Byte>::Ptr&                   err,
+        const Streams::InputStream<byte>::Ptr&                    in,
+        const Streams::OutputStream<byte>::Ptr&                   out,
+        const Streams::OutputStream<byte>::Ptr&                   err,
         const String&                                             effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
@@ -730,7 +732,7 @@ namespace {
             ThrowErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
+            auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 uint8_t buf[10 * 1024];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -782,13 +784,13 @@ namespace {
                     *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
                 }
             };
-            auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache) {
+            auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
                 bool maybeMoreData = true;
                 while (maybeMoreData) {
                     readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
                 }
             };
-            auto readTilEOF = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache) {
+            auto readTilEOF = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
                 Execution::WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
@@ -798,19 +800,19 @@ namespace {
             };
 
             if (in != nullptr) {
-                Byte stdinBuf[10 * 1024];
+                byte stdinBuf[10 * 1024];
                 // read to 'in' til it reaches EOF (returns 0). But dont fully block, cuz we want to at least trickle in the stdout/stderr data
                 // even if no input is ready to send to child.
                 while (true) {
                     if (optional<size_t> oNBytes = in.ReadNonBlocking (begin (stdinBuf), end (stdinBuf))) {
                         Assert (*oNBytes <= NEltsOf (stdinBuf));
-                        const Byte* p = begin (stdinBuf);
-                        const Byte* e = p + *oNBytes;
+                        const byte* p = begin (stdinBuf);
+                        const byte* e = p + *oNBytes;
                         if (p == e) {
                             break;
                         }
                         else {
-                            for (const Byte* i = p; i != e;) {
+                            for (const byte* i = p; i != e;) {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out, false);
                                 readSoNotBlocking (useSTDERR, err, true);
@@ -892,9 +894,9 @@ namespace {
         ProgressMonitor::Updater                                  progress,
         const String&                                             cmdLine,
         const SDKChar*                                            currentDir,
-        const Streams::InputStream<Byte>::Ptr&                    in,
-        const Streams::OutputStream<Byte>::Ptr&                   out,
-        const Streams::OutputStream<Byte>::Ptr&                   err,
+        const Streams::InputStream<byte>::Ptr&                    in,
+        const Streams::OutputStream<byte>::Ptr&                   out,
+        const Streams::OutputStream<byte>::Ptr&                   err,
         const String&                                             effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
@@ -971,9 +973,9 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [](HANDLE p, const Streams::OutputStream<Byte>::Ptr& o) {
+            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [](HANDLE p, const Streams::OutputStream<byte>::Ptr& o) {
                 RequireNotNull (p);
-                Byte buf[kReadBufSize_];
+                byte buf[kReadBufSize_];
 #if qUsePeekNamedPipe_
                 DWORD nBytesAvail{};
 #endif
@@ -1018,12 +1020,12 @@ namespace {
                      *  Fill child-process' stdin with the source document.
                      */
                     if (in != nullptr) {
-                        Byte stdinBuf[10 * 1024];
+                        byte stdinBuf[10 * 1024];
                         // blocking read to 'in' til it reaches EOF (returns 0)
                         while (size_t nbytes = in.Read (begin (stdinBuf), end (stdinBuf))) {
                             Assert (nbytes <= NEltsOf (stdinBuf));
-                            const Byte* p = begin (stdinBuf);
-                            const Byte* e = p + nbytes;
+                            const byte* p = begin (stdinBuf);
+                            const byte* e = p + nbytes;
                             while (p < e) {
                                 DWORD written = 0;
                                 if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
@@ -1125,7 +1127,7 @@ namespace {
                      *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
                      */
                     if (out != nullptr) {
-                        Byte  buf[kReadBufSize_];
+                        byte  buf[kReadBufSize_];
                         DWORD nBytesRead = 0;
                         while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
                             out.Write (buf, buf + nBytesRead);
@@ -1165,9 +1167,9 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessRe
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     String                                              cmdLine          = fCommandLine_.value_or (String{});
     optional<String>                                    workingDir       = GetWorkingDirectory ();
-    Streams::InputStream<Byte>::Ptr                     in               = GetStdIn ();
-    Streams::OutputStream<Byte>::Ptr                    out              = GetStdOut ();
-    Streams::OutputStream<Byte>::Ptr                    err              = GetStdErr ();
+    Streams::InputStream<byte>::Ptr                     in               = GetStdIn ();
+    Streams::OutputStream<byte>::Ptr                    out              = GetStdOut ();
+    Streams::OutputStream<byte>::Ptr                    err              = GetStdErr ();
     String                                              effectiveCmdLine = GetEffectiveCmdLine_ ();
 
     return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {

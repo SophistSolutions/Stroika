@@ -24,8 +24,9 @@
 
 namespace Stroika::Frameworks::Led {
 
+    using std::byte;
+
     using Foundation::Characters::CodePage;
-    using Foundation::Memory::Byte;
 
     class ReaderFlavorPackage;
     class WriterFlavorPackage;
@@ -100,7 +101,7 @@ namespace Stroika::Frameworks::Led {
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
             Led_ClipFormat* suggestedClipFormat,
             CodePage*       suggestedCodePage,
-            const Byte* fileStart, const Byte* fileEnd);
+            const byte* fileStart, const byte* fileEnd);
         virtual bool InternalizeFlavor_FILEDataRawBytes (
             Led_ClipFormat* suggestedClipFormat,
             CodePage*       suggestedCodePage,

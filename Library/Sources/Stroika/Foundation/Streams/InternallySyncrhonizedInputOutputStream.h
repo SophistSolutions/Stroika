@@ -47,12 +47,12 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::InputOutputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputOutputStream<Byte>::New (otherInputOutputStreamToBeSharedAcrossThread);
+         *          Streams::InputOutputStream<byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputOutputStream<byte>::New (otherInputOutputStreamToBeSharedAcrossThread);
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, SocketStream, SocketStream::Rep_>;
+         *          using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
          *          Ptr unsyncStream;// = ... get from someplace - maybe make_shared<Rep_> ()...;
          *          Ptr syncStream = InternalSyncRep_::New (unsyncStream);
          *      \endcode

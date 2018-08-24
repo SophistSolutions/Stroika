@@ -20,13 +20,13 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
+using std::byte;
+
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
 
 using namespace TestHarness;
-
-//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
 
 namespace {
     void Test1_Optional ()
@@ -273,7 +273,7 @@ namespace {
         {
             vector<uint8_t> b  = {1, 2, 3, 4, 5};
             Memory::BLOB    bl = b;
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == b);
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<byte>> () == b);
         }
         {
             Memory::BLOB bl{1, 2, 3, 4, 5};
@@ -285,15 +285,15 @@ namespace {
             const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
             const char kSrc4_[] = "0123456789";
 
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc3_, (const Byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
 
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc3_, (const Byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
-            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
         }
         {
             using Memory::BLOB;

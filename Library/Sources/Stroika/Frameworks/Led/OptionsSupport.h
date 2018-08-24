@@ -14,12 +14,14 @@
 
 namespace Stroika::Frameworks::Led {
 
-    /*
-    @CLASS:         OptionsFileHelper
-    @DESCRIPTION:   <p>Helper class to access options files (on Win32 -
-                registry based, and on MacOS - resource file based).</p>
-                    <p>NB: only Windows is implemented so far (2003-12-30).</p>
-    */
+    using std::byte;
+
+    /**
+     *  Helper class to access options files (on Win32 -
+     *  registry based, and on MacOS - resource file based).
+     *  
+     *  NB: only Windows is implemented so far (2003-12-30).
+     */
     class OptionsFileHelper {
     public:
 #if qPlatform_MacOS
@@ -63,7 +65,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool LookupPref (const Led_SDK_Char* prefName, wstring* value);
         nonvirtual bool LookupPref (const Led_SDK_Char* prefName, bool* value);
         nonvirtual bool LookupPref (const Led_SDK_Char* prefName, int* value);
-        nonvirtual bool LookupPref (const Led_SDK_Char* prefName, vector<Byte>* value);
+        nonvirtual bool LookupPref (const Led_SDK_Char* prefName, vector<byte>* value);
         nonvirtual bool LookupPref (const Led_SDK_Char* prefName, vector<string>* value);
         nonvirtual bool LookupPref (const Led_SDK_Char* prefName, vector<wstring>* value);
 
@@ -72,7 +74,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void StorePref (const Led_SDK_Char* prefName, const wstring& value);
         nonvirtual void StorePref (const Led_SDK_Char* prefName, bool value);
         nonvirtual void StorePref (const Led_SDK_Char* prefName, int value);
-        nonvirtual void StorePref (const Led_SDK_Char* prefName, size_t nBytes, const Byte* data);
+        nonvirtual void StorePref (const Led_SDK_Char* prefName, size_t nBytes, const byte* data);
         nonvirtual void StorePref (const Led_SDK_Char* prefName, const vector<string>& value);
         nonvirtual void StorePref (const Led_SDK_Char* prefName, const vector<wstring>& value);
 
@@ -153,7 +155,6 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #endif
-
 }
 
 #endif /*_Stroika_Frameworks_Led_OptionsSupport_h_*/

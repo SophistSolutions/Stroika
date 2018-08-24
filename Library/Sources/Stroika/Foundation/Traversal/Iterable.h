@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
-        [[deprecated ("use MakeSmartPtr since version 2.1b6")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
+        [[deprecated ("use MakeSmartPtr since version 2.1bd")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
         {
             return MakeSmartPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
         }

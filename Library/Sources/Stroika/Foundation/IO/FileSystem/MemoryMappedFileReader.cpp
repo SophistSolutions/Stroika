@@ -28,6 +28,8 @@
 
 #include "MemoryMappedFileReader.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
@@ -57,7 +59,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
     size_t fileLength = IO::FileSystem::Default ().GetFileSize (fileName);
     //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
     //  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
-    fFileDataStart_ = reinterpret_cast<const Byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
+    fFileDataStart_ = reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
     fFileDataEnd_   = fFileDataStart_ + fileLength;
     ::close (fd); //http://linux.die.net/man/2/mmap says dont need to keep FD open while mmapped
 #elif qPlatform_Windows
@@ -70,7 +72,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
             fFileMapping_ = ::CreateFileMapping (fFileHandle_, nullptr, PAGE_READONLY, 0, fileSize, 0);
             ThrowIfFalseGetLastError (fFileMapping_ != nullptr);
             AssertNotNull (fFileMapping_);
-            fFileDataStart_ = reinterpret_cast<const Byte*> (::MapViewOfFile (fFileMapping_, FILE_MAP_READ, 0, 0, 0));
+            fFileDataStart_ = reinterpret_cast<const byte*> (::MapViewOfFile (fFileMapping_, FILE_MAP_READ, 0, 0, 0));
             ThrowIfFalseGetLastError (fFileDataStart_ != nullptr);
             fFileDataEnd_ = fFileDataStart_ + fileSize;
         }
@@ -92,7 +94,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 MemoryMappedFileReader::~MemoryMappedFileReader ()
 {
 #if qPlatform_POSIX
-    int res = ::munmap (const_cast<Byte*> (fFileDataStart_), fFileDataEnd_ - fFileDataStart_);
+    int res = ::munmap (const_cast<byte*> (fFileDataStart_), fFileDataEnd_ - fFileDataStart_);
     // check result!
     AssertNotImplemented ();
 #elif qPlatform_Windows

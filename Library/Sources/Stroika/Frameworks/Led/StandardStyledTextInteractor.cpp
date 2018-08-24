@@ -16,6 +16,8 @@
 #include "StyledTextIO/Led_StyledTextIO_LedNative.h"
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
@@ -863,8 +865,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (
     Led_ClipFormat* suggestedClipFormat,
     CodePage*       suggestedCodePage,
-    const Byte* fileStart, const Byte* fileEnd)
-
+    const byte* fileStart, const byte* fileEnd)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromStartOfData (suggestedClipFormat, suggestedCodePage, fileStart, fileEnd);
     if (suggestedClipFormat != nullptr) {

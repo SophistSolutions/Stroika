@@ -139,13 +139,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             nonvirtual void FillCache ();
 
         private:
-            SrcStream& fRealSrcStream;
-            using Byte = char;
-            Byte        fWindowTop_Data[4 * 1024]; // buffer for how much we buffer at a time...
+            SrcStream&  fRealSrcStream;
+            char        fWindowTop_Data[4 * 1024]; // buffer for how much we buffer at a time...
             size_t      fWindowTop_Offset;
-            const Byte* fWindowBottom_Data;
+            const char* fWindowBottom_Data;
             size_t      fWindowBottom_Offset;
-            const Byte* fCursor_Data;
+            const char* fCursor_Data;
             size_t      fCursor_Offset;
         };
 
@@ -628,7 +627,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         RequireNotNull (buffer);
 
-        Byte*  destCursor     = reinterpret_cast<Byte*> (buffer);
+        byte*  destCursor     = reinterpret_cast<byte*> (buffer);
         size_t bytesReadSoFar = 0;
 
         /*

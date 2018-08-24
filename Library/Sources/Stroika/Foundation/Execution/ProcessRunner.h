@@ -90,6 +90,8 @@
 
 namespace Stroika::Foundation::Execution {
 
+    using std::byte;
+
     using Characters::String;
 
     /**
@@ -127,8 +129,8 @@ namespace Stroika::Foundation::Execution {
         *
         *      \code
         *          Memory::BLOB kData_{ Memory::BLOB::Raw ("this is a test")  };
-        *          Streams::MemoryStream<Byte>::Ptr processStdIn = Streams::MemoryStream<Byte> { kData_ };
-        *          Streams::MemoryStream<Byte>::Ptr processStdOut = Streams::MemoryStream<Byte> {};
+        *          Streams::MemoryStream<byte>::Ptr processStdIn = Streams::MemoryStream<byte> { kData_ };
+        *          Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte> {};
         *          ProcessRunner               pr (L"cat", processStdIn, processStdOut);
         *          pr.Run ();
         *          VerifyTestResult (processStdOut.ReadAll () == kData_);
@@ -141,14 +143,14 @@ namespace Stroika::Foundation::Execution {
         ProcessRunner (const ProcessRunner&) = delete;
 
     public:
-        ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr);
-        ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr);
+        ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
+        ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
 #if !qTargetPlatformSDKUseswchar_t && 0
-        ProcessRunner (const SDKString& commandLine, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr)
+        ProcessRunner (const SDKString& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
             : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
         {
         }
-        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream<Byte>::Ptr& in = nullptr, const Streams::OutputStream<Byte>::Ptr& out = nullptr, const Streams::OutputStream<Byte>::Ptr& error = nullptr)
+        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
             : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
         {
         }
@@ -174,23 +176,23 @@ namespace Stroika::Foundation::Execution {
          *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
          *  the running subprocess.
          */
-        nonvirtual Streams::InputStream<Byte>::Ptr GetStdIn () const;
-        nonvirtual void                            SetStdIn (const Streams::InputStream<Byte>::Ptr& in);
+        nonvirtual Streams::InputStream<byte>::Ptr GetStdIn () const;
+        nonvirtual void                            SetStdIn (const Streams::InputStream<byte>::Ptr& in);
         nonvirtual void                            SetStdIn (const Memory::BLOB& in);
 
     public:
         /**
          *  If empty, stdout will not be captured (redirected to /dev/null)
          */
-        nonvirtual Streams::OutputStream<Byte>::Ptr GetStdOut () const;
-        nonvirtual void                             SetStdOut (const Streams::OutputStream<Byte>::Ptr& out);
+        nonvirtual Streams::OutputStream<byte>::Ptr GetStdOut () const;
+        nonvirtual void                             SetStdOut (const Streams::OutputStream<byte>::Ptr& out);
 
     public:
         /**
          *  If empty, stderr will not be captured (redirected to /dev/null)
          */
-        nonvirtual Streams::OutputStream<Byte>::Ptr GetStdErr () const;
-        nonvirtual void                             SetStdErr (const Streams::OutputStream<Byte>::Ptr& err);
+        nonvirtual Streams::OutputStream<byte>::Ptr GetStdErr () const;
+        nonvirtual void                             SetStdErr (const Streams::OutputStream<byte>::Ptr& err);
 
     public:
         /**
@@ -260,9 +262,9 @@ namespace Stroika::Foundation::Execution {
         optional<String>                 fExecutable_;
         Containers::Sequence<String>     fArgs_; // ignored if fExecutable empty
         optional<String>                 fWorkingDirectory_;
-        Streams::InputStream<Byte>::Ptr  fStdIn_;
-        Streams::OutputStream<Byte>::Ptr fStdOut_;
-        Streams::OutputStream<Byte>::Ptr fStdErr_;
+        Streams::InputStream<byte>::Ptr  fStdIn_;
+        Streams::OutputStream<byte>::Ptr fStdOut_;
+        Streams::OutputStream<byte>::Ptr fStdErr_;
     };
 
     /**

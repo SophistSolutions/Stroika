@@ -23,53 +23,53 @@ namespace Stroika::Foundation::Memory {
         //  May not be any universal, good answer...
         //  Remember - users can subclass BLOB, and provider their own
         //  'rep' type tuned to their application.
-        SmallStackBuffer<Byte, 64> fData;
+        SmallStackBuffer<byte, 64> fData;
 
         template <typename BYTE_ITERATOR>
         BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
             : fData (SmallStackBufferCommon::eUninitialized, end - start)
         {
-            // use memcpy instead of std::copy because std::copy doesn't work between uint8_t, and std::byte arrays.
+            // use memcpy instead of std::copy because std::copy doesn't work between uint8_t, and byte arrays.
             static_assert (sizeof (*start) == 1);
             static_assert (is_trivially_copyable_v<typename iterator_traits<BYTE_ITERATOR>::value_type>);
             (void)::memcpy (fData.begin (), Traversal::Iterator2Pointer (start), end - start);
         }
 
-        BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
+        BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
         BasicRep_ (const initializer_list<BLOB>& list2Concatenate);
         BasicRep_ (const BasicRep_&) = delete;
         BasicRep_& operator= (const BasicRep_&) = delete;
 
-        virtual pair<const Byte*, const Byte*> GetBounds () const override;
+        virtual pair<const byte*, const byte*> GetBounds () const override;
     };
 
     struct BLOB::ZeroRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<ZeroRep_> {
-        virtual pair<const Byte*, const Byte*> GetBounds () const override;
+        virtual pair<const byte*, const byte*> GetBounds () const override;
         ZeroRep_ ()                = default;
         ZeroRep_ (const ZeroRep_&) = delete;
         ZeroRep_& operator= (const ZeroRep_&) = delete;
     };
 
     struct BLOB::AdoptRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptRep_> {
-        const Byte* fStart;
-        const Byte* fEnd;
+        const byte* fStart;
+        const byte* fEnd;
 
         AdoptRep_ (const AdoptRep_&) = delete;
-        AdoptRep_ (const Byte* start, const Byte* end);
+        AdoptRep_ (const byte* start, const byte* end);
         ~AdoptRep_ ();
         AdoptRep_&                             operator= (const AdoptRep_&) = delete;
-        virtual pair<const Byte*, const Byte*> GetBounds () const override;
+        virtual pair<const byte*, const byte*> GetBounds () const override;
     };
 
     struct BLOB::AdoptAppLifetimeRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAppLifetimeRep_> {
-        const Byte* fStart;
-        const Byte* fEnd;
+        const byte* fStart;
+        const byte* fEnd;
 
         AdoptAppLifetimeRep_ ()                            = delete;
         AdoptAppLifetimeRep_ (const AdoptAppLifetimeRep_&) = delete;
-        AdoptAppLifetimeRep_ (const Byte* start, const Byte* end);
+        AdoptAppLifetimeRep_ (const byte* start, const byte* end);
         AdoptAppLifetimeRep_&                  operator= (const AdoptAppLifetimeRep_&) = delete;
-        virtual pair<const Byte*, const Byte*> GetBounds () const override;
+        virtual pair<const byte*, const byte*> GetBounds () const override;
     };
 
     /*
@@ -95,12 +95,12 @@ namespace Stroika::Foundation::Memory {
         : fRep_{move (src.fRep_)}
     {
     }
-    template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
+    template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
         : fRep_{move ((std::begin (data) == std::end (data)) ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ())))}
     {
     }
-    inline BLOB::BLOB (const initializer_list<Byte>& bytes)
+    inline BLOB::BLOB (const initializer_list<byte>& bytes)
         : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
     {
     }
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Memory {
         : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
     {
     }
-    inline BLOB::BLOB (const std::byte* start, const std::byte* end)
+    inline BLOB::BLOB (const byte* start, const byte* end)
         : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
     {
     }
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Memory {
         : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
     {
     }
-    inline BLOB::BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+    inline BLOB::BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)
         : fRep_{_MakeSharedPtr<BasicRep_> (startEndPairs)}
     {
     }
@@ -144,12 +144,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     inline BLOB BLOB::Raw (const T* s, const T* e)
     {
-        return BLOB (reinterpret_cast<const Byte*> (s), reinterpret_cast<const Byte*> (e));
+        return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (e));
     }
     template <typename T>
     inline BLOB BLOB::Raw (const T* s, size_t sz)
     {
-        return BLOB (reinterpret_cast<const Byte*> (s), reinterpret_cast<const Byte*> (s + sz));
+        return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (s + sz));
     }
     inline BLOB BLOB::Raw (const char* s)
     {
@@ -168,29 +168,29 @@ namespace Stroika::Foundation::Memory {
         // also - Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1
         return s.empty () ? BLOB{} : Raw (Traversal::Iterator2Pointer (s.begin ()), Traversal::Iterator2Pointer (s.begin ()) + s.size ());
     }
-    inline BLOB BLOB::Attach (const Byte* start, const Byte* end)
+    inline BLOB BLOB::Attach (const byte* start, const byte* end)
     {
         Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
         Require (start <= end);
         return BLOB{_MakeSharedPtr<AdoptRep_> (start, end)};
     }
-    inline BLOB BLOB::AttachApplicationLifetime (const Byte* start, const Byte* end)
+    inline BLOB BLOB::AttachApplicationLifetime (const byte* start, const byte* end)
     {
         Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
         Require (start <= end);
         return BLOB{_MakeSharedPtr<AdoptAppLifetimeRep_> (start, end)};
     }
     template <size_t SIZE>
-    inline BLOB BLOB::AttachApplicationLifetime (const Byte (&data)[SIZE])
+    inline BLOB BLOB::AttachApplicationLifetime (const byte (&data)[SIZE])
     {
         return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
     }
     template <>
-    inline void BLOB::As (vector<Byte>* into) const
+    inline void BLOB::As (vector<byte>* into) const
     {
         RequireNotNull (into);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
+        pair<const byte*, const byte*>                      tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         into->assign (tmp.first, tmp.second);
     }
@@ -199,15 +199,15 @@ namespace Stroika::Foundation::Memory {
     {
         RequireNotNull (into);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
+        pair<const byte*, const byte*>                      tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         into->assign (reinterpret_cast<const uint8_t*> (tmp.first), reinterpret_cast<const uint8_t*> (tmp.second));
     }
     template <>
-    inline vector<Byte> BLOB::As () const
+    inline vector<byte> BLOB::As () const
     {
-        vector<Byte> result;
-        As<vector<Byte>> (&result);
+        vector<byte> result;
+        As<vector<byte>> (&result);
         return result;
     }
     template <>
@@ -218,33 +218,33 @@ namespace Stroika::Foundation::Memory {
         return result;
     }
     template <>
-    inline void BLOB::As (pair<const Byte*, const Byte*>* into) const
+    inline void BLOB::As (pair<const byte*, const byte*>* into) const
     {
         RequireNotNull (into);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         *into = fRep_->GetBounds ();
     }
     template <>
-    inline pair<const Byte*, const Byte*> BLOB::As () const
+    inline pair<const byte*, const byte*> BLOB::As () const
     {
-        pair<const Byte*, const Byte*>                      result;
+        pair<const byte*, const byte*>                      result;
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        As<pair<const Byte*, const Byte*>> (&result);
+        As<pair<const byte*, const byte*>> (&result);
         return result;
     }
     inline bool BLOB::empty () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
+        pair<const byte*, const byte*>                      tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         return tmp.first == tmp.second;
     }
-    inline const Byte* BLOB::begin () const
+    inline const byte* BLOB::begin () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fRep_->GetBounds ().first;
     }
-    inline const Byte* BLOB::end () const
+    inline const byte* BLOB::end () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fRep_->GetBounds ().second;
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Memory {
     inline size_t BLOB::GetSize () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
+        pair<const byte*, const byte*>                      tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         return tmp.second - tmp.first;
     }
@@ -283,8 +283,8 @@ namespace Stroika::Foundation::Memory {
         if (fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
-        pair<const Byte*, const Byte*> l     = fRep_->GetBounds ();
-        pair<const Byte*, const Byte*> r     = rhs.fRep_->GetBounds ();
+        pair<const byte*, const byte*> l     = fRep_->GetBounds ();
+        pair<const byte*, const byte*> r     = rhs.fRep_->GetBounds ();
         size_t                         lSize = l.second - l.first;
         size_t                         rSize = r.second - r.first;
         if (lSize != rSize) {

@@ -38,6 +38,8 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
+    using std::byte;
+
     using Characters::String;
 
     /**
@@ -60,7 +62,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class FileOutputStream : public Streams::OutputStream<Memory::Byte>, public FileStream {
+    class FileOutputStream : public Streams::OutputStream<byte>, public FileStream {
     public:
         /**
          *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() funciton
@@ -128,15 +130,15 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  \note   The overloads taking no BufferFlag produce a non-buffered stream.
          */
-        static Ptr                             New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                             New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                             New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                             New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                             New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                             New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static OutputStream<Memory::Byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
-        static OutputStream<Memory::Byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
-        static OutputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
+        static Ptr                     New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static OutputStream<byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
+        static OutputStream<byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
+        static OutputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
 
     private:
         class Rep_;
@@ -148,15 +150,15 @@ namespace Stroika::Foundation::IO::FileSystem {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, FileOutputStream, FileOutputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<byte, FileOutputStream, FileOutputStream::Rep_>;
     };
 
     /**
      *  Ptr is a copyable smart pointer to a FileOutputStream.
      */
-    class FileOutputStream::Ptr : public Streams::OutputStream<Memory::Byte>::Ptr {
+    class FileOutputStream::Ptr : public Streams::OutputStream<byte>::Ptr {
     private:
-        using inherited = Streams::OutputStream<Memory::Byte>::Ptr;
+        using inherited = Streams::OutputStream<byte>::Ptr;
 
     public:
         /**

@@ -20,6 +20,8 @@
 
 namespace Stroika::Foundation::Memory {
 
+    using std::byte;
+
     /**
      */
     class SmallStackBufferCommon {
@@ -45,12 +47,12 @@ namespace Stroika::Foundation::Memory {
      *  \par Example Usage
      *      @see Samples/SimpleService project
      *      \code
-     *          Memory::SmallStackBuffer<Byte> useKey{keyLen};  // no need to default initialize cuz done automatically
+     *          Memory::SmallStackBuffer<byte> useKey{keyLen};  // no need to default initialize cuz done automatically
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      * OR
      *      \code
-     *          Memory::SmallStackBuffer<Byte> useKey{Memory::SmallStackBuffer::eUninitiialized, keyLen};
+     *          Memory::SmallStackBuffer<byte> useKey{Memory::SmallStackBuffer::eUninitiialized, keyLen};
      *          (void)::memset (useKey.begin (), 0, keyLen);
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
@@ -229,25 +231,25 @@ namespace Stroika::Foundation::Memory {
 
 #if qDebug
     private:
-        static constexpr std::byte kGuard1_[8] = {
-            std::byte{0x45},
-            std::byte{0x23},
-            std::byte{0x12},
-            std::byte{0x56},
-            std::byte{0x99},
-            std::byte{0x76},
-            std::byte{0x12},
-            std::byte{0x55},
+        static constexpr byte kGuard1_[8] = {
+            byte{0x45},
+            byte{0x23},
+            byte{0x12},
+            byte{0x56},
+            byte{0x99},
+            byte{0x76},
+            byte{0x12},
+            byte{0x55},
         };
-        static constexpr std::byte kGuard2_[8] = {
-            std::byte{0x15},
-            std::byte{0x32},
-            std::byte{0xa5},
-            std::byte{0x16},
-            std::byte{0x11},
-            std::byte{0x7a},
-            std::byte{0x90},
-            std::byte{0x10},
+        static constexpr byte kGuard2_[8] = {
+            byte{0x15},
+            byte{0x32},
+            byte{0xa5},
+            byte{0x16},
+            byte{0x11},
+            byte{0x7a},
+            byte{0x90},
+            byte{0x10},
         };
 #endif
 
@@ -258,28 +260,28 @@ namespace Stroika::Foundation::Memory {
         }
 
     private:
-        nonvirtual Memory::Byte* LiveDataAsAllocatedBytes_ ();
+        nonvirtual byte* LiveDataAsAllocatedBytes_ ();
 
     private:
-        static Memory::Byte* Allocate_ (size_t bytes);
+        static byte* Allocate_ (size_t bytes);
 
     private:
-        static void Deallocate_ (Memory::Byte* bytes);
+        static void Deallocate_ (byte* bytes);
 
     private:
         size_t fSize_{};
 #if qDebug
-        Byte fGuard1_[sizeof (kGuard1_)];
+        byte fGuard1_[sizeof (kGuard1_)];
 #endif
         DISABLE_COMPILER_MSC_WARNING_START (4324)
         union {
-            size_t fCapacityOfFreeStoreAllocation_;                                       // only valid if fLiveData_ != &fInlinePreallocatedBuffer_[0]
-            alignas (T) Memory::Byte fInlinePreallocatedBuffer_[SizeInBytes_ (BUF_SIZE)]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
+            size_t fCapacityOfFreeStoreAllocation_;                               // only valid if fLiveData_ != &fInlinePreallocatedBuffer_[0]
+            alignas (T) byte fInlinePreallocatedBuffer_[SizeInBytes_ (BUF_SIZE)]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
         };
         DISABLE_COMPILER_MSC_WARNING_END (4324)
 
 #if qDebug
-        Byte fGuard2_[sizeof (kGuard2_)];
+        byte fGuard2_[sizeof (kGuard2_)];
 #endif
         T* fLiveData_{};
 

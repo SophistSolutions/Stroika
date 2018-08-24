@@ -14,6 +14,8 @@
 
 #include "MemoryAllocator.h"
 
+using std::byte;
+
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
@@ -129,18 +131,18 @@ void* SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
     MemWithExtraStuff* p             = reinterpret_cast<MemWithExtraStuff*> (fBaseAllocator_.Allocate (effectiveSize));
     p->fPreGuard                     = kPreGUARD;
     p->fBlockSize                    = size;
-    memcpy (reinterpret_cast<Byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
+    memcpy (reinterpret_cast<byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
     fNetAllocationCount_++;
     fNetAllocatedByteCount_ += static_cast<int32_t> (size);
-    return (reinterpret_cast<Byte*> (p) + sizeof (MemWithExtraStuff));
+    return (reinterpret_cast<byte*> (p) + sizeof (MemWithExtraStuff));
 }
 
 void SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr)
 {
     RequireNotNull (ptr);
-    MemWithExtraStuff* p = reinterpret_cast<MemWithExtraStuff*> (reinterpret_cast<Byte*> (ptr) - sizeof (MemWithExtraStuff));
+    MemWithExtraStuff* p = reinterpret_cast<MemWithExtraStuff*> (reinterpret_cast<byte*> (ptr) - sizeof (MemWithExtraStuff));
     SUPER_ASSERT_ (p->fPreGuard == kPreGUARD);
-    SUPER_ASSERT_ (::memcmp (reinterpret_cast<Byte*> (p) + p->fBlockSize + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD)) == 0);
+    SUPER_ASSERT_ (::memcmp (reinterpret_cast<byte*> (p) + p->fBlockSize + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD)) == 0);
     --fNetAllocationCount_;
     fNetAllocatedByteCount_ -= p->fBlockSize;
     fBaseAllocator_.Deallocate (p);
@@ -267,7 +269,7 @@ namespace {
         ExtractInfo_ (curSnapshot.fAllocations, &sizes, &totalRemainingAlloced);
         ExtractInfo_ (sinceSnapshot.fAllocations, &prevSizes, &prevTotalRemainingAlloced);
         DbgTrace ("Net Allocation Count = %d (prev %d)", curSnapshot.fAllocations.size (), sinceSnapshot.fAllocations.size ());
-        DbgTrace ("Net Allocation Byte Count = %d (prev %d)", totalRemainingAlloced, prevTotalRemainingAlloced);
+        DbgTrace ("Net Allocation byte Count = %d (prev %d)", totalRemainingAlloced, prevTotalRemainingAlloced);
         if (totalRemainingAlloced > prevTotalRemainingAlloced) {
             DbgTrace ("Leaked %d bytes", totalRemainingAlloced - prevTotalRemainingAlloced);
         }

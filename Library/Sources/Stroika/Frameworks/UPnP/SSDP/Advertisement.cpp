@@ -15,6 +15,8 @@
 
 #include "Advertisement.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::IO::Network;
@@ -22,8 +24,6 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
-
-using Memory::Byte;
 
 /*
  ********************************************************************************
@@ -56,7 +56,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     Require (not headLine.Contains (L"\n"));
     Require (not headLine.Contains (L"\r"));
     Require (headLine.StartsWith (L"NOTIFY") or (headLine == L"HTTP/1.1 200 OK"));
-    Streams::MemoryStream<Byte>::Ptr out     = Streams::MemoryStream<Byte>::New ();
+    Streams::MemoryStream<byte>::Ptr out     = Streams::MemoryStream<byte>::New ();
     Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
 
     //// SUPER ROUGH FIRST DRAFT
@@ -104,7 +104,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
     RequireNotNull (advertisement);
     *advertisement = Advertisement{};
 
-    TextReader::Ptr in = TextReader::New (ExternallyOwnedMemoryInputStream<Byte>::New (b.begin (), b.end ()));
+    TextReader::Ptr in = TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (b.begin (), b.end ()));
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {

@@ -152,7 +152,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         struct MyMessage_ : Message {
-            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream);
+            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream);
 
             // Only valid until the end of a successful ReadHeaders
             MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
@@ -169,11 +169,11 @@ namespace Stroika::Frameworks::WebServer {
         };
 
     private:
-        InterceptorChain                              fInterceptorChain_;
-        ConnectionOrientedStreamSocket::Ptr           fSocket_;
-        Streams::InputOutputStream<Memory::Byte>::Ptr fSocketStream_;
-        shared_ptr<MyMessage_>                        fMessage_; // always there, but ptr so it can be replaced
-        optional<Remaining>                           fRemaining_;
+        InterceptorChain                      fInterceptorChain_;
+        ConnectionOrientedStreamSocket::Ptr   fSocket_;
+        Streams::InputOutputStream<byte>::Ptr fSocketStream_;
+        shared_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
+        optional<Remaining>                   fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif

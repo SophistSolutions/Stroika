@@ -15,6 +15,8 @@
 
 #include "OpenSSLCryptoStream.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
@@ -64,7 +66,7 @@ namespace {
             return n + EVP_MAX_BLOCK_LENGTH;
         }
         // return nBytes in outBuf, throws on error
-        size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, [[maybe_unused]] Byte* outBufEnd)
+        size_t _runOnce (const byte* data2ProcessStart, const byte* data2ProcessEnd, byte* outBufStart, [[maybe_unused]] byte* outBufEnd)
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart)); // always need out buf big enuf for inbuf
             int outLen = 0;
@@ -75,7 +77,7 @@ namespace {
         }
         // return nBytes in outBuf, throws on error
         // Can call multiple times - it keeps track itself if finalized.
-        size_t _cipherFinal (Byte* outBufStart, [[maybe_unused]] Byte* outBufEnd)
+        size_t _cipherFinal (byte* outBufStart, [[maybe_unused]] byte* outBufEnd)
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (0));
             if (fFinalCalled_) {
@@ -95,13 +97,13 @@ namespace {
 #endif
 
 #if qHasFeature_OpenSSL
-class OpenSSLInputStream::Rep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
+class OpenSSLInputStream::Rep_ : public InputStream<byte>::_IRep, private InOutStrmCommon_ {
 private:
     static constexpr size_t kInBufSize_ = 10 * 1024;
 
 public:
-    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>::Ptr& realIn)
-        : InputStream<Byte>::_IRep ()
+    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<byte>::Ptr& realIn)
+        : InputStream<byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fOutBuf_ (_GetMinOutBufSize (kInBufSize_))
@@ -137,7 +139,7 @@ public:
         Require (IsOpenRead ());
         return 0;
     }
-    virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
+    virtual size_t Read (byte* intoStart, byte* intoEnd) override
     {
         /*
          *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
@@ -152,7 +154,7 @@ public:
              *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
              *  on our own.
              */
-            Byte toDecryptBuf[kInBufSize_];
+            byte toDecryptBuf[kInBufSize_];
         Again:
             size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
             if (n2Decrypt == 0) {
@@ -191,7 +193,7 @@ public:
         Require (IsOpenRead ());
         // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         if (fOutBufStart_ == fOutBufEnd_) {
-            Byte toDecryptBuf[kInBufSize_];
+            byte toDecryptBuf[kInBufSize_];
         Again:
             optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
             if (not n2Decrypt.has_value ()) {
@@ -224,18 +226,18 @@ public:
 
 private:
     mutable recursive_mutex                                            fCriticalSection_;
-    Memory::SmallStackBuffer<Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
-    Byte*                                                              fOutBufStart_;
-    Byte*                                                              fOutBufEnd_;
-    InputStream<Byte>::Ptr                                             fRealIn_;
+    Memory::SmallStackBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
+    byte*                                                              fOutBufStart_;
+    byte*                                                              fOutBufEnd_;
+    InputStream<byte>::Ptr                                             fRealIn_;
 };
 #endif
 
 #if qHasFeature_OpenSSL
-class OpenSSLOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private InOutStrmCommon_ {
+class OpenSSLOutputStream::Rep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
 public:
-    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<Byte>::Ptr& realOut)
-        : OutputStream<Byte>::_IRep ()
+    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<byte>::Ptr& realOut)
+        : OutputStream<byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fRealOut_ (realOut)
@@ -280,11 +282,11 @@ public:
     }
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
     // Writes always succeed fully or throw.
-    virtual void Write (const Byte* start, const Byte* end) override
+    virtual void Write (const byte* start, const byte* end) override
     {
-        Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
+        Require (start < end); // for OutputStream<byte> - this funciton requires non-empty write
         Require (IsOpenWrite ());
-        SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (SmallStackBufferCommon::eUninitialized, _GetMinOutBufSize (end - start));
+        SmallStackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (SmallStackBufferCommon::eUninitialized, _GetMinOutBufSize (end - start));
         [[maybe_unused]] auto&&                             critSec        = lock_guard{fCriticalSection_};
         size_t                                              nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
@@ -294,7 +296,7 @@ public:
     virtual void Flush () override
     {
         Require (IsOpenWrite ());
-        Byte   outBuf[EVP_MAX_BLOCK_LENGTH];
+        byte   outBuf[EVP_MAX_BLOCK_LENGTH];
         size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
         Assert (nBytesInOutBuf < sizeof (outBuf));
         fRealOut_.Write (begin (outBuf), begin (outBuf) + nBytesInOutBuf);
@@ -302,7 +304,7 @@ public:
 
 private:
     mutable recursive_mutex fCriticalSection_;
-    OutputStream<Byte>::Ptr fRealOut_;
+    OutputStream<byte>::Ptr fRealOut_;
 };
 #endif
 
@@ -330,8 +332,8 @@ namespace {
             Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 1);
         }
 
-        SmallStackBuffer<Byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
-        SmallStackBuffer<Byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
+        SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
+        SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
 
         (void)::memset (useKey.begin (), 0, keyLen);
         (void)::memset (useIV.begin (), 0, ivLen);
@@ -395,12 +397,12 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn) -> Ptr
+auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
 {
     return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realIn));
 }
 
-auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>::Ptr& realIn) -> Ptr
+auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -420,12 +422,12 @@ auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrh
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
+auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
 {
     return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realOut));
 }
 
-auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
+auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:

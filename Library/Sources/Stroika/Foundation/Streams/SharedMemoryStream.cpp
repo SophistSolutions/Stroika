@@ -12,12 +12,13 @@
 
 #include "SharedMemoryStream.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
 using Characters::String;
-using Memory::Byte;
 
 /*
  ********************************************************************************
@@ -26,7 +27,7 @@ using Memory::Byte;
  */
 template <>
 template <>
-Memory::BLOB SharedMemoryStream<Byte>::Ptr::As () const
+Memory::BLOB SharedMemoryStream<byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
@@ -35,7 +36,7 @@ Memory::BLOB SharedMemoryStream<Byte>::Ptr::As () const
 
 template <>
 template <>
-string SharedMemoryStream<Byte>::Ptr::As () const
+string SharedMemoryStream<byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());

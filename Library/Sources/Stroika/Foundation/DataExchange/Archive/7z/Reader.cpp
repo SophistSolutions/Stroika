@@ -20,6 +20,8 @@ extern "C" {
 #pragma comment(lib, "lzma.lib")
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
@@ -45,11 +47,11 @@ private:
     static void* Alloc_ (void* /*p*/, size_t size)
     {
         Require (size > 0);
-        return new Byte[size];
+        return new byte[size];
     }
     static void Free_ (void* /*p*/, void* address)
     {
-        delete[] reinterpret_cast<Byte*> (address);
+        delete[] reinterpret_cast<byte*> (address);
     }
 
 private:
@@ -57,8 +59,8 @@ private:
     mutable ISzAlloc fAllocTempImp_{};
     CSzArEx          fDB_{};
     struct MyISeekInStream : ISeekInStream {
-        Streams::InputStream<Memory::Byte>::Ptr fInStream_;
-        MyISeekInStream (const Streams::InputStream<Memory::Byte>::Ptr& in)
+        Streams::InputStream<byte>::Ptr fInStream_;
+        MyISeekInStream (const Streams::InputStream<byte>::Ptr& in)
             : fInStream_ (in)
         {
             Read = Stream_Read_;
@@ -96,7 +98,7 @@ private:
     mutable CLookToRead fLookStream_{};
 
 public:
-    Rep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
+    Rep_ (const Streams::InputStream<byte>::Ptr& in)
         : fInSeekStream_ (in)
     {
         fAllocImp_     = ISzAlloc{Alloc_, Free_};
@@ -140,7 +142,7 @@ public:
             throw "bad"; //filenotfound
         }
 
-        Byte*  outBuffer     = 0;          // it must be 0 before first call for each new archive
+        byte*  outBuffer     = 0;          // it must be 0 before first call for each new archive
         UInt32 blockIndex    = 0xFFFFFFFF; // can have any value if outBuffer = 0
         size_t outBufferSize = 0;          // can have any value if outBuffer = 0
 
@@ -150,7 +152,7 @@ public:
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&outBuffer, this]() { IAlloc_Free (&fAllocImp_, outBuffer); });
 
         SRes ret;
-        if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, &outBuffer, &outBufferSize, &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
+        if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, reinterpret_cast<uint8_t**> (&outBuffer), &outBufferSize, &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
             throw "bad";
         }
         return Memory::BLOB (outBuffer + offset, outBuffer + offset + outSizeProcessed);
@@ -175,7 +177,7 @@ public:
     }
 };
 
-_7z::Reader::Reader (const Streams::InputStream<Memory::Byte>::Ptr& in)
+_7z::Reader::Reader (const Streams::InputStream<byte>::Ptr& in)
     : DataExchange::Archive::Reader (make_shared<Rep_> (in))
 {
 }

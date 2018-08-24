@@ -405,7 +405,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
             virtual void           PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)       = 0;
             virtual Led_SDK_String GetObjClassName () const                                = 0;
-            virtual void           DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) = 0;
+            virtual void           DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) = 0;
             virtual Led_Size       GetSize ()                                              = 0;
         };
     };

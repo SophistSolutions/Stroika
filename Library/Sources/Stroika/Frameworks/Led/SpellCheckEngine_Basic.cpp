@@ -15,6 +15,8 @@
 
 #include "SpellCheckEngine_Basic.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
@@ -1152,8 +1154,8 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     size_t                 outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
     SmallStackBuffer<char> fileData2 (outCharCnt);
     cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2, &outCharCnt);
-    writer.Write (reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)) + outCharCnt);
+    writer.Write (reinterpret_cast<const byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const byte*> (static_cast<char*> (fileData2)) + outCharCnt);
 #else
-    writer.Append (reinterpret_cast<const Byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
+    writer.Append (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
 #endif
 }

@@ -343,7 +343,7 @@ namespace Stroika::Foundation::Execution {
      */
     class Logger::StreamAppender : public Logger::IAppenderRep {
     public:
-        StreamAppender (const Streams::OutputStream<Byte>::Ptr& out);
+        StreamAppender (const Streams::OutputStream<std::byte>::Ptr& out);
         StreamAppender (const Streams::OutputStream<Characters::Character>::Ptr& out);
 
     public:

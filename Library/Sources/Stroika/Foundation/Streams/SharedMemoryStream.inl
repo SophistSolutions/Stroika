@@ -291,13 +291,13 @@ namespace Stroika::Foundation::Streams {
         return New (start, end);
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
     {
         return New (blob.begin (), blob.end ());
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
+    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
     {
         return New (blob.begin (), blob.end ());
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Streams {
     }
     template <>
     template <>
-    inline vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::Ptr::As () const
+    inline vector<byte> SharedMemoryStream<byte>::Ptr::As () const
     {
         RequireNotNull (_GetSharedRep ().get ());
         AssertMember (_GetSharedRep ().get (), Rep_);
