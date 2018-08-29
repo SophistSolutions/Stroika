@@ -19,12 +19,13 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0b5">v2.0b5</a><br/>2018-08-22</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0b5">v2.0b5</a><br/>2018-08-28</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0b4...v2.0b5</li>
 		<li>Support latest msvc compiler - 15.8 - _MSC_VER_2k17_15Pt8_ 1915</li>
 		<li>Added bug define for new MSFT compiler - qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy - and workarounds</li>
+		<li>Added bug define for new MSFT compiler - define and workaround qCompilerAndStdLib_new_MSFT_optimizer_modulegettersetter_lambda_dates_Buggy</li>
 		<li>improved regression test for OptionsFile - so it doesn't do arithmatic on 'empty' date object (not clearly sensible)</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0b5.txt</li>
 		<li>Tested (passed regtests)
