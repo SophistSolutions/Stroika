@@ -296,6 +296,22 @@ ABORTING...
 
 #endif
 
+// Apparently optimizer regression in MSVC code gen - _MSC_VER_2k17_15Pt8_
+// See if windows RegTest 35 passes or fails (release build - debug build already works fine without this workaround)
+//
+// NOTE - this probably has something todo with my implementation of Optional (so maybe not compiler bug but subtle bug with my optional)
+// because this doesn't happen on hte v2.1 branch, and the main difference there is using std::optional
+#ifndef qCompilerAndStdLib_new_MSFT_optimizer_modulegettersetter_lambda_dates_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_new_MSFT_optimizer_modulegettersetter_lambda_dates_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#else
+#define qCompilerAndStdLib_new_MSFT_optimizer_modulegettersetter_lambda_dates_Buggy 0
+#endif
+
+#endif
+
 /*
 @ see https://stroika.atlassian.net/browse/STK-635
 

@@ -194,6 +194,9 @@ namespace {
                     sModuleConfiguration_.Set (n);
                 }
             }
+#if qCompilerAndStdLib_new_MSFT_optimizer_modulegettersetter_lambda_dates_Buggy
+#pragma optimize("", off)
+#endif
             void TestUse2_ ()
             {
                 sModuleConfiguration_.Update ([](MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
@@ -204,6 +207,9 @@ namespace {
                     // e.g. trigger someone to wakeup and used changes?
                 }
             }
+#if qCompilerAndStdLib_new_MSFT_optimizer_modulegettersetter_lambda_dates_Buggy
+#pragma optimize("", on)
+#endif
         }
         void DoAll ()
         {
