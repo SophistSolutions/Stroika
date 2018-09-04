@@ -7,7 +7,6 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
-#include "../../Streams/Stream.h"
 
 /**
  *  \file
