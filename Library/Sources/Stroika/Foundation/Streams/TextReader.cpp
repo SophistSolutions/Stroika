@@ -481,29 +481,29 @@ namespace {
 
 auto TextReader::New (const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
-    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), charset, true);
+    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), charset, SeekableFlag::eSeekable);
     Ensure (p.IsSeekable ());
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, SeekableFlag seekable) -> Ptr
 {
     Ptr p = TextReader::New (src, kUTF8Converter_, seekable);
-    Ensure (p.IsSeekable () == seekable);
+    Ensure (p.GetSeekability () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable) -> Ptr
 {
     Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable);
-    Ensure (p.IsSeekable () == seekable);
+    Ensure (p.GetSeekability () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable) -> Ptr
 {
-    Ptr p = seekable ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
-    Ensure (p.IsSeekable () == seekable);
+    Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
+    Ensure (p.GetSeekability () == seekable);
     return p;
 }
 
@@ -544,7 +544,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -559,7 +559,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -574,7 +574,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -602,4 +602,36 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             RequireNotReached ();
             return New (src);
     }
+}
+
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (const InputStream<byte>::Ptr& src, bool seekable)
+{
+    return New (src, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
+}
+
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable)
+{
+    return New (src, charset, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
+}
+
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
+{
+    return New (src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
+}
+
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, bool seekable)
+{
+    return New (internallySyncrhonized, src, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
+}
+#if 0
+// no idea why wont compile on msvc, but unimportant, since deprecated, and could easily be never used...
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::TextReader::Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable)
+{
+    return New (internallySyncrhonized, src, charset, (seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable));
+}
+#endif
+
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
+{
+    return New (internallySyncrhonized, src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
 }

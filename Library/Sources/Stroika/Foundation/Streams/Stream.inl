@@ -57,6 +57,12 @@ namespace Stroika::Foundation::Streams {
         return fSeekable_;
     }
     template <typename ELEMENT_TYPE>
+    inline SeekableFlag Stream<ELEMENT_TYPE>::Ptr::GetSeekability () const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        return fSeekable_ ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
+    }
+    template <typename ELEMENT_TYPE>
     inline void Stream<ELEMENT_TYPE>::Ptr::reset () noexcept
     {
         lock_guard<AssertExternallySynchronizedLock> critSec{*this};

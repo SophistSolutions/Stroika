@@ -33,7 +33,7 @@ VariantValue Variant::Reader::Read (const Memory::BLOB& in)
 
 VariantValue Variant::Reader::Read (istream& in)
 {
-    return Read (Streams::TextReader::New (InputStreamFromStdIStream<byte>::New (in), true));
+    return Read (Streams::TextReader::New (InputStreamFromStdIStream<byte>::New (in), Streams::SeekableFlag::eSeekable));
 }
 
 VariantValue Variant::Reader::Read (wistream& in)

@@ -37,4 +37,5 @@ namespace Stroika::Foundation::Streams {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_TextReader_inl_*/

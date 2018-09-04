@@ -222,8 +222,20 @@ namespace Stroika::Foundation::Streams {
          *
          *  Returns true iff this object was constructed with a seekable input stream rep. Note -
          *  seekability cannot change over the lifetime of an object.
+         *
+         *  @see GetSeekability
          */
         nonvirtual bool IsSeekable () const;
+
+    public:
+        /**
+         * \brief   Returns SeekableFlag of the input stream rep.
+         *
+         *  Note - seekability cannot change over the lifetime of an object.
+         *
+         *  @see IsSeekable
+         */
+        nonvirtual SeekableFlag GetSeekability () const;
 
     private:
         _SharedIRep fRep_;
