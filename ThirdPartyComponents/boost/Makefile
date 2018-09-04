@@ -221,7 +221,7 @@ B2_CONFIGURATION_ARGS +=	--without-filesystem
 B2_CONFIGURATION_ARGS +=	--without-python
 B2_CONFIGURATION_ARGS +=	--without-regex
 B2_CONFIGURATION_ARGS +=	--without-signals
-B2_CONFIGURATION_ARGS +=	--without-system
+#B2_CONFIGURATION_ARGS +=	--without-system
 B2_CONFIGURATION_ARGS +=	--without-wave
 
 ### shorter paths avoids problems building on windows (abbrevpaths not enuf on windows when root dir is maybe 100 chars, so use --hash which works better)
