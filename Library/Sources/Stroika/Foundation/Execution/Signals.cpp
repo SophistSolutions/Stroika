@@ -99,5 +99,6 @@ errno_t Execution::SendSignal ([[maybe_unused]] std::thread::native_handle_type 
     return e;
 #else
     AssertNotImplemented ();
+    return 0;
 #endif
 }
