@@ -2001,6 +2001,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedLRUCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Copy.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3254,6 +3257,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedLRUCache.inl">
       <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\Copy.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

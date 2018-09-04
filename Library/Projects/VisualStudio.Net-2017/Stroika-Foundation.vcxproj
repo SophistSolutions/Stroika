@@ -1557,6 +1557,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Copy.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
@@ -1991,6 +1992,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\Copy.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />

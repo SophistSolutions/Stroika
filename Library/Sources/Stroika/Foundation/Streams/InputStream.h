@@ -477,6 +477,7 @@ namespace Stroika::Foundation::Streams {
          *
          *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
          *  @see ReadRaw()
+         *  @see Streams::CopyAll()
          */
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;

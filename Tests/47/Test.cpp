@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Streams/Copy.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
@@ -262,6 +263,30 @@ namespace {
 }
 
 namespace {
+    namespace Streams_Copy_Test9 {
+        namespace Private_ {
+            void T1_ ()
+            {
+                using Characters::Character;
+                using Characters::String;
+                MemoryStream<Character>::Ptr in = MemoryStream<Character>::New ();
+                in << L"abc";
+                VerifyTestResult (in.As<String> () == L"abc");
+
+                MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
+                Streams::CopyAll<Character> (in, out);
+                VerifyTestResult (out.As<String> () == L"abc");
+            }
+        }
+
+        void Tests_ ()
+        {
+            Private_::T1_ ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         BasicBinaryInputStream_::Tests_ ();
@@ -272,6 +297,7 @@ namespace {
         TextReaderFromIterableAndString::Tests_ ();
         TextReaderFromBLOB::Tests_ ();
         SharedMemoryStream_Doc_Example_Test8::Tests_ ();
+        Streams_Copy_Test9::Tests_ ();
     }
 }
 
