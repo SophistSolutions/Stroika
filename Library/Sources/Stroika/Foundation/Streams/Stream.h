@@ -53,6 +53,16 @@ namespace Stroika::Foundation::Streams {
     using SignedSeekOffsetType = int64_t;
 
     /**
+     *  Used in some subclasses as a flag to indicate stream seekability.
+     */
+    enum class SeekableFlag {
+        eSeekable,
+        eNotSeekable,
+
+        Stroika_Define_Enum_Bounds (eSeekable, eNotSeekable)
+    };
+
+    /**
      * Design Overview:
      *     o   A Streams is a sequence of data elements made available over time. These elements
      *         are typically 'Bytes' - or 'Characters' - but can be any copyable type.

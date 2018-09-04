@@ -103,12 +103,21 @@ namespace Stroika::Foundation::IO::FileSystem {
             eBuffered,
             eUnbuffered,
 
-            eDEFAULT = eUnbuffered,
-
             Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
         };
         static constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
         static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
+
+    public:
+        /**
+         */
+        static constexpr BufferFlag kBufferFlag_DEFAULT = BufferFlag::eBuffered;
+
+    public:
+        using SeekableFlag                                  = Streams::SeekableFlag;
+        static constexpr SeekableFlag eSeekable             = SeekableFlag::eSeekable;
+        static constexpr SeekableFlag eNotSeekable          = SeekableFlag::eNotSeekable;
+        static constexpr SeekableFlag kSeekableFlag_DEFAULT = SeekableFlag::eNotSeekable;
 
     public:
         FileOutputStream ()                        = delete;
@@ -132,10 +141,10 @@ namespace Stroika::Foundation::IO::FileSystem {
          */
         static Ptr                     New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static OutputStream<byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
         static OutputStream<byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
         static OutputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);

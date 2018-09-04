@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
+#include "../../Streams/Stream.h"
 
 /**
  *  \file
@@ -24,20 +25,6 @@ namespace Stroika::Foundation::IO::FileSystem {
     struct FileStream {
     protected:
         FileStream () = default;
-
-    public:
-        /**
-                     */
-        enum class SeekableFlag {
-            eSeekable,
-            eNotSeekable,
-
-            eDEFAULT = eSeekable,
-
-            Stroika_Define_Enum_Bounds (eSeekable, eNotSeekable)
-        };
-        static constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
-        static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
 
     public:
         /**

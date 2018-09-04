@@ -18,7 +18,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     inline Streams::InputStream<byte>::Ptr FileInputStream::New (const String& fileName, BufferFlag bufferFlag)
     {
-        return New (fileName, SeekableFlag::eDEFAULT, bufferFlag);
+        return New (fileName, kSeekableFlag_DEFAULT, bufferFlag);
     }
     inline Streams::InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
     {

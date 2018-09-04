@@ -57,16 +57,49 @@ namespace Stroika::Foundation::IO::FileSystem {
         FileInputStream (const FileInputStream&) = delete;
 
     public:
+        /**
+         */
         enum class BufferFlag {
             eBuffered,
             eUnbuffered,
 
-            eDEFAULT = eBuffered,
-
             Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
         };
-        static constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
+
+    public:
+        /**
+         */
+        static constexpr BufferFlag eBuffered = BufferFlag::eBuffered;
+
+    public:
+        /**
+         */
         static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
+
+    public:
+        /**
+         */
+        static constexpr BufferFlag kBufferFlag_DEFAULT = BufferFlag::eBuffered;
+
+    public:
+        /**
+         */
+        using SeekableFlag = Streams::SeekableFlag;
+
+    public:
+        /**
+         */
+        static constexpr SeekableFlag eSeekable = SeekableFlag::eSeekable;
+
+    public:
+        /**
+         */
+        static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
+
+    public:
+        /**
+         */
+        static constexpr SeekableFlag kSeekableFlag_DEFAULT = SeekableFlag::eNotSeekable;
 
     public:
         class Ptr;
@@ -84,10 +117,10 @@ namespace Stroika::Foundation::IO::FileSystem {
          *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
          *      \endcode
          */
-        static Ptr                    New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static Ptr                    New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                    New (const String& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+        static Ptr                    New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
         static InputStream<byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
         static InputStream<byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
         static InputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
@@ -132,7 +165,6 @@ namespace Stroika::Foundation::IO::FileSystem {
     private:
         friend class FileInputStream;
     };
-
 }
 
 /*

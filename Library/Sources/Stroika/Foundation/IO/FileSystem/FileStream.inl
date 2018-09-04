@@ -14,19 +14,6 @@ namespace Stroika::Foundation::IO::FileSystem {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    struct DefaultNames<IO::FileSystem::FileStream::SeekableFlag> : EnumNames<IO::FileSystem::FileStream::SeekableFlag> {
-        static constexpr EnumNames<IO::FileSystem::FileStream::SeekableFlag> k{
-            EnumNames<IO::FileSystem::FileStream::SeekableFlag>::BasicArrayInitializer{
-                {
-                    {IO::FileSystem::FileStream::SeekableFlag::eSeekable, L"Seekable"},
-                    {IO::FileSystem::FileStream::SeekableFlag::eNotSeekable, L"NotSeekable"},
-                }}};
-        DefaultNames ()
-            : EnumNames<IO::FileSystem::FileStream::SeekableFlag> (k)
-        {
-        }
-    };
-    template <>
     struct DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy> : EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> {
         static constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> k{
             EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy>::BasicArrayInitializer{
