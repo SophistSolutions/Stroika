@@ -215,8 +215,8 @@ namespace Stroika::Foundation::Cache {
 
     private:
         struct KeyValuePair_ {
-            KEY   fKey{};
-            VALUE fValue{};
+            KEY   fKey;
+            VALUE fValue;
         };
 
     private:
