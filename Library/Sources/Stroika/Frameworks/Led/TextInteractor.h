@@ -23,19 +23,8 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if defined(qSupportEnterIdleCallback)
-#pragma warn "OBSOLETE - use new IdleManager class (as of Led 3.1a4)"
-#endif
 
-/*
-    @CONFIGVAR:     qUseGDIScrollbitsForScrolling
-    @DESCRIPTION:   <p>OBSOLETE (as of Led 3.0d3, 991228). Instead - use @'TextInteractor::SetUseBitmapScrollingOptimization'</p>
-        */
-#if defined(qUseGDIScrollbitsForScrolling)
-#pragma warn "OBSOLETE - just call TextInteractor::SetUseBitmapScrollingOptimization"
-#endif
-
-// Private Led Macro utility to define command numbers
+// Private Led Macro utility to define command numbers (cannot use Math::RoundUpTo use used to init enums - at least on msvc2k17)
 #define RoundUpToNearest_CMDNUMs_MACRO(x, n) (((x + 1) & ~(n - 1)) + n)
 
     /*
@@ -66,11 +55,11 @@ namespace Stroika::Frameworks::Led {
         virtual ~TextInteractor ();
 
         /*
-            *  By default we have none. If you set one, it will be notified/used for undo
-            *  support. It is callers responsability to free the command handler, and must be
-            *  done BEFORE we are destroyed, and we must be notified (via SetCommandHandler(nullptr))
-            *  BEFORE CommandHandler is destroyed.
-            */
+         *  By default we have none. If you set one, it will be notified/used for undo
+         *  support. It is callers responsability to free the command handler, and must be
+         *  done BEFORE we are destroyed, and we must be notified (via SetCommandHandler(nullptr))
+         *  BEFORE CommandHandler is destroyed.
+         */
     public:
         nonvirtual CommandHandler* GetCommandHandler () const;
         virtual void               SetCommandHandler (CommandHandler* commandHandler);
@@ -259,9 +248,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void Refresh (const Marker* range, UpdateMode updateMode = eDefaultUpdate) const;
 
     protected:
-#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
-    public:
-#endif
         /*
         @METHOD:        TextInteractor::RefreshWindowRect_
         @DESCRIPTION:   <p>pure virtual method called by @'TextInteractor::RefreshWindowRect_'. Generally
@@ -308,9 +294,9 @@ namespace Stroika::Frameworks::Led {
         virtual void    HookGainedNewTextStore () override;
         nonvirtual void HookGainedNewTextStore_ ();
 
-        /*
-            *  Mouse clicks.
-            */
+    /*
+     *  Mouse clicks.
+     */
     protected:
         virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor);
 
@@ -365,9 +351,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void UpdateWindowRect (const Led_Rect& windowRectArea, bool ignoreCannotUpdateNowErrors = true) const;
 
     protected:
-#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
-    public:
-#endif
         // These are to be overriden in the actual class library mixin to hook into its
         // update mechanism.
         virtual void UpdateWindowRect_ (const Led_Rect& windowRectArea) const = 0;
@@ -485,13 +468,9 @@ namespace Stroika::Frameworks::Led {
             Led_Distance    fStableTypingRegionHeight;
 
         private:
-#if qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug
-            friend class TextInteractor;
-#else
             friend void TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
             friend void TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo);
             friend void TextInteractor::AbortReplace (PreReplaceInfo& preReplaceInfo);
-#endif
         };
 
         /*
@@ -708,9 +687,6 @@ namespace Stroika::Frameworks::Led {
          *  Query of the windowing system if there are any pending keystrokes.
          */
     protected:
-#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
-    public:
-#endif
         virtual bool QueryInputKeyStrokesPending () const = 0;
 
     protected:
@@ -965,12 +941,8 @@ namespace Stroika::Frameworks::Led {
         size_t         fOldLastRowStart;
 
     private:
-#if qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug
-        friend class TextInteractor;
-#else
         friend void TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);
         friend void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo);
-#endif
     };
 
     /*

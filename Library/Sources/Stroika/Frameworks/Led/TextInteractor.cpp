@@ -456,15 +456,8 @@ TextInteractor::TextInteractor ()
     , fLastMouseDownAt (Led_Point (0, 0))
     , fWholeWindowInvalid (false)
     , fUseSecondaryHilight (false)
-    ,
-#if defined(qUseGDIScrollbitsForScrolling) && qUseGDIScrollbitsForScrolling == 0
-    fUseBitmapScrollingOptimization (false)
-    ,
-#else
-    fUseBitmapScrollingOptimization (true)
-    ,
-#endif
-    fSuppressTypedControlCharacters (true)
+    , fUseBitmapScrollingOptimization (true)
+    , fSuppressTypedControlCharacters (true)
     , fInteractiveUpdadeMode (eIndeterminateInteractiveUpdateMode)
     , fTmpPreReplaceInfo ()
     , fDoingUpdateModeReplaceOn (nullptr)

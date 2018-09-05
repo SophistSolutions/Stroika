@@ -182,9 +182,6 @@ namespace Stroika::Frameworks::Led {
         };
 
     protected:
-#if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
-    public:
-#endif
         /*
         @METHOD:        TextImager::AcquireTablet
         @DESCRIPTION:
