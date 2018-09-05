@@ -638,7 +638,7 @@ void ActiveLedItControl::OnDrawMetafile (CDC* pDC, const CRect& rcBounds)
     }
 }
 
-BOOL ActiveLedItControl::OnEraseBkgnd (CDC* pDC)
+BOOL ActiveLedItControl::OnEraseBkgnd ([[maybe_unused]] CDC* pDC)
 {
     RequireNotNull (pDC);
     return true; // cuz we erase our own background...

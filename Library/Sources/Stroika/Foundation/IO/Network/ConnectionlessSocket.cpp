@@ -75,12 +75,16 @@ namespace {
                 socklen_t               salen = sizeof (sa);
 #if qPlatform_POSIX
                 size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); })));
-                *fromAddress  = sa;
+                if (fromAddress != nullptr) {
+                    *fromAddress = sa;
+                }
                 return result;
 #elif qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
                 size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen)));
-                *fromAddress  = sa;
+                if (fromAddress != nullptr) {
+                    *fromAddress = sa;
+                }
                 return result;
 #else
                 AssertNotImplemented ();

@@ -23,19 +23,6 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 
 using std::byte;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#endif
-
-/**
- *  @todo   Must fix to properly support 32-bit and 64-bit safety
- */
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4244)
-#pragma warning(4 : 4267)
-#endif
-
 #if qSupportOLEControlEmbedding
 
 inline SIZE HIMETRICtoDP (SIZE s)

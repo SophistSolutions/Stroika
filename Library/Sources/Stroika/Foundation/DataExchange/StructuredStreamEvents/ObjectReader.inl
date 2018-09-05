@@ -233,7 +233,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         : fObjectReaderRegistry_ (registry)
     {
     }
-    inline Context::Context (Context&& from)
+    inline Context::Context (Context&& from) noexcept
         : fObjectReaderRegistry_ (from.fObjectReaderRegistry_)
         , fStack_ (move (from.fStack_))
     {

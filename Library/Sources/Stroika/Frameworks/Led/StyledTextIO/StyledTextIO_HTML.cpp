@@ -12,10 +12,6 @@
 
 #include "../Config.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#endif
-
 #include "../StyledTextEmbeddedObjects.h"
 
 #include "StyledTextIO_HTML.h"

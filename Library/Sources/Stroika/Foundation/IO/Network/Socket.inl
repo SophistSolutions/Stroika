@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network {
         : fRep_ (move (rep))
     {
     }
-    inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s)
+    inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s) noexcept
     {
         fRep_ = move (s.fRep_);
         return *this;

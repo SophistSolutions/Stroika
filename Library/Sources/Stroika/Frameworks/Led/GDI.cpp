@@ -21,14 +21,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-/**
- *  @todo   Must fix to properly support 32-bit and 64-bit safety
- */
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4244)
-#pragma warning(4 : 4267)
-#endif
-
 #if qPlatform_Windows
 // Often included by <Windows.h> automaticly, but sometimes people define NOIME or VC_EXTRALEAN, and then we
 // must include this manaully.
@@ -1030,10 +1022,6 @@ inline COLORREF Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const
     return MapColor (RGB (c.rgbRed, c.rgbGreen, c.rgbBlue));
 }
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(4 : 4351)
-#endif
 Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
     : fDibData (nullptr)
     //fMappingTable ()
@@ -1058,9 +1046,6 @@ Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color
     fOldBitmap        = reinterpret_cast<HBITMAP> (::SelectObject (fHMemDC, fDibSection));
     MakeMappingTable ();
 }
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 Led_Tablet_::RecolorHelper::~RecolorHelper ()
 {

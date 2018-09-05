@@ -8,10 +8,6 @@
 
 #include "SimpleLed.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#endif
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;

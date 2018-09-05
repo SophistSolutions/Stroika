@@ -93,8 +93,7 @@
 
 /*
 @CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
-@DESCRIPTION:   <p>Replaces 'qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings', 'qQuiteAnnoyingDominanceWarnings',
-    'qQuiteAnnoyingDebugSymbolTruncationWarnings'</p>
+@DESCRIPTION:   <p>Replaces 'qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings', 'qQuiteAnnoyingDominanceWarnings'</p>
  *
  *  &note   I looked into doing a simple set of macros to hide the
  *          #if qSilenceAnnoyingCompilerWarnings && __MSVCVER \n#pragma stuff, but VC11 didn't like having

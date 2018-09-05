@@ -44,11 +44,11 @@ namespace Stroika::Foundation::DataExchange {
         : VariantValue (Sequence<VariantValue> (val))
     {
     }
-    inline VariantValue::VariantValue (VariantValue&& src)
+    inline VariantValue::VariantValue (VariantValue&& src) noexcept
         : fVal_ (move (src.fVal_))
     {
     }
-    inline VariantValue& VariantValue::operator= (VariantValue&& rhs)
+    inline VariantValue& VariantValue::operator= (VariantValue&& rhs) noexcept
     {
         fVal_ = move (rhs.fVal_);
         return *this;

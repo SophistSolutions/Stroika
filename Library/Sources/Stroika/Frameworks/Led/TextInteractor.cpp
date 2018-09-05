@@ -25,10 +25,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(disable : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#endif
-
 using SavedTextRep = InteractiveReplaceCommand::SavedTextRep;
 
 namespace {

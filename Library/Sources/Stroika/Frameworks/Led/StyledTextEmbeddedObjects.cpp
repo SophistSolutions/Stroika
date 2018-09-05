@@ -12,13 +12,6 @@
 
 #include "StyledTextEmbeddedObjects.h"
 
-/**
- *  @todo   Must fix to properly support 32-bit and 64-bit safety
- */
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4267)
-#endif
-
 #if qUseQuicktimeForWindows
 #include "QTW.H"
 #endif

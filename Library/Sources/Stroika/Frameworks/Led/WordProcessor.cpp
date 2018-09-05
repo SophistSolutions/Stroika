@@ -28,13 +28,6 @@
 #pragma warning(4 : 4786)
 #endif
 
-/**
- *  @todo   Must fix to properly support 32-bit and 64-bit safety
- */
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4267)
-#endif
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 

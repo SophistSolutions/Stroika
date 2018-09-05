@@ -452,8 +452,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         Context (const Registry& registry);
         Context (const Registry& registry, const shared_ptr<IElementConsumer>& initialTop);
         Context (const Context&) = delete;
-        Context (Context&& from);
-        Context& operator= (const Context&) = delete;
+        Context (Context&& from) noexcept;
+        nonvirtual Context& operator= (const Context&) = delete;
 
     public:
         nonvirtual const Registry& GetObjectReaderRegistry () const;

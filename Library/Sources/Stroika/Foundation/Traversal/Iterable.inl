@@ -231,7 +231,7 @@ namespace Stroika::Foundation::Traversal {
         return *this;
     }
     template <typename T>
-    inline Iterable<T>& Iterable<T>::operator= (Iterable<T>&& rhs)
+    inline Iterable<T>& Iterable<T>::operator= (Iterable<T>&& rhs) noexcept
     {
         RequireNotNull (rhs._fRep);
         _fRep = move (rhs._fRep);

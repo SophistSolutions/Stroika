@@ -190,8 +190,8 @@ namespace Stroika::Foundation::IO::Network {
          * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
          */
     public:
-        Ptr (const Ptr& s) = default;
-        Ptr (Ptr&& s)      = default;
+        Ptr (const Ptr& s)     = default;
+        Ptr (Ptr&& s) noexcept = default;
         Ptr (nullptr_t);
 
     protected:
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual Ptr& operator= (Ptr&& s);
+        nonvirtual Ptr& operator= (Ptr&& s) noexcept;
         nonvirtual Ptr& operator= (const Ptr& s);
 
     public:

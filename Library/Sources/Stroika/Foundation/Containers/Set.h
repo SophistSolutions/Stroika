@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Set& operator= (const Set& rhs) = default;
-        nonvirtual Set& operator= (Set&& rhs) = default;
+        nonvirtual Set& operator= (Set&& rhs) noexcept = default;
 
     public:
         /**

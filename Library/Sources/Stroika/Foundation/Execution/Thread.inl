@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Execution {
         : fRep_ (src.fRep_)
     {
     }
-    inline Thread::Ptr::Ptr (Ptr&& src)
+    inline Thread::Ptr::Ptr (Ptr&& src) noexcept
         : fRep_ (move (src.fRep_))
     {
     }
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Execution {
         fRep_ = rhs.fRep_;
         return *this;
     }
-    inline Thread::Ptr& Thread::Ptr::operator= (Ptr&& rhs)
+    inline Thread::Ptr& Thread::Ptr::operator= (Ptr&& rhs) noexcept
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs};
         lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};

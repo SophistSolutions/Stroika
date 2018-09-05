@@ -23,10 +23,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(disable : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#endif
-
 #if qPlatform_MacOS
 const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
 const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';

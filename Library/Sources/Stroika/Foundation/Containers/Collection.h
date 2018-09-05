@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     public:
         nonvirtual Collection& operator= (const Collection& rhs) = default;
-        nonvirtual Collection& operator= (Collection&& rhs) = default;
+        nonvirtual Collection& operator= (Collection&& rhs) noexcept = default;
 
     public:
         /**

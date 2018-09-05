@@ -16,11 +16,9 @@ namespace Stroika::Foundation::Traversal {
         struct GenItWrapper_ : Iterator<T>::IRep {
             function<optional<T> ()> fFun_;
             optional<T>              fCur_;
-            bool                     fAtEnd_;
+            bool                     fAtEnd_{false};
             GenItWrapper_ (function<optional<T> ()> f)
                 : fFun_ (f)
-                , fCur_ ()
-                , fAtEnd_ (false)
             {
                 fCur_ = fFun_ ();
                 if (not fCur_.has_value ()) {
@@ -61,8 +59,8 @@ namespace Stroika::Foundation::Traversal {
             virtual IteratorOwnerID GetOwner () const override
             {
                 /*
-                    *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
-                    */
+                 *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
+                 */
                 return typeid (*this).name ();
             }
         };

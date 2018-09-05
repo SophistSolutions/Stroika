@@ -23,11 +23,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#endif
-
 #if defined(qSupportEnterIdleCallback)
 #pragma warn "OBSOLETE - use new IdleManager class (as of Led 3.1a4)"
 #endif
@@ -389,8 +384,8 @@ namespace Stroika::Frameworks::Led {
         virtual void DrawAfter (const Led_Rect& subsetToDraw, bool printing);
 
         /*
-            *  Overrides to add optional UpdateMode argument.
-            */
+         *  Overrides to add optional UpdateMode argument.
+         */
     public:
         virtual void    SetSelection (size_t start, size_t end) override;
         nonvirtual void SetSelection (size_t start, size_t end, UpdateMode updateMode);
@@ -403,9 +398,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode);
 
         /*
-            *  Same as SetTopRowInWindow, but uses a marker position instead of a row#. This can be MUCH
-            *  more efficient, since it doesn't force word-wrapping in subclasses which support that.
-            */
+         *  Same as SetTopRowInWindow, but uses a marker position instead of a row#. This can be MUCH
+         *  more efficient, since it doesn't force word-wrapping in subclasses which support that.
+         */
     public:
         virtual void SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate) = 0;
 
@@ -710,8 +705,8 @@ namespace Stroika::Frameworks::Led {
 #endif
 
         /*
-            *  Query of the windowing system if there are any pending keystrokes.
-            */
+         *  Query of the windowing system if there are any pending keystrokes.
+         */
     protected:
 #if qAccessCheckAcrossInstancesSometimesWrongWithVirtualBase
     public:
@@ -1094,10 +1089,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
 
     //  class   TextInteractor::SuppressCommandBreaksContext
     inline TextInteractor::SuppressCommandBreaksContext::SuppressCommandBreaksContext (TextInteractor& ti)
@@ -1811,9 +1806,5 @@ namespace Stroika::Frameworks::Led {
     }
 
 }
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 #endif /*_Stroika_Frameworks_Led_TextInteractor_h_*/

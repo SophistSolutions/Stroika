@@ -86,7 +86,8 @@ namespace Stroika::Foundation::Memory {
          */
         BLOB ();
         BLOB (const BLOB& src) = default;
-        BLOB (BLOB&& src);
+        BLOB (BLOB&& src)
+        noexcept;
         template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
         BLOB (const CONTAINER_OF_BYTE& data);
         BLOB (const byte* start, const byte* end);

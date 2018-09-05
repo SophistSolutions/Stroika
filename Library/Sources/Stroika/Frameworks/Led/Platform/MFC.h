@@ -166,11 +166,6 @@ namespace Stroika::Frameworks::Led::Platform {
         Led_Tablet_ fTablet;
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250)
-#endif
-
     /*
     @CLASS:         Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>
     @BASES:         MFC_BASE_CLASS=@'CWnd', @'Led_Win32_Helper<BASE_INTERACTOR>', BASE_INTERACTOR=@'TextInteractor'
@@ -455,11 +450,6 @@ namespace Stroika::Frameworks::Led::Platform {
         DECLARE_MESSAGE_MAP ()
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250)
-#endif
-
     /*
     @CLASS:         Led_MFC_CViewHelper<BASECLASS>
     @BASES:         BASECLASS
@@ -548,10 +538,6 @@ namespace Stroika::Frameworks::Led::Platform {
         DECLARE_MESSAGE_MAP ()
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
-
     /*
     @CLASS:         Led_MFC
     @BASES:         @'Led_MFC_CViewHelper<BASECLASS>', where BASECLASS=@'Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>, where BASECLASS=@'Led_MFC_MimicMFCAPIHelper<BASECLASS>', where BASECLASS == @'Led_MFC_Helper<BASECLASS>', where BASECLASS=CView
@@ -603,6 +589,10 @@ namespace Stroika::Frameworks::Led::Platform {
         }
     };
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250) // inherits via dominance warning
+#endif
     /*
     @CLASS:         Led_MFC_ExceptionHandlerHelper<BASECLASS>
     @BASES:         BASECLASS = @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'
@@ -632,7 +622,14 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         DECLARE_MESSAGE_MAP ()
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250) // inherits via dominance warning
+#endif
     /*
     @CLASS:         Led_MFC_X
     @BASES:         ChosenInteractor, @'Led_MFC'
@@ -656,6 +653,9 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
         virtual void DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
     /*
     @CLASS:         Led_MFCReaderDAndDFlavorPackage
@@ -772,9 +772,6 @@ namespace Stroika::Frameworks::Led::Platform {
     LED_MFC_HANDLE_COMMAND_RANGE (MFC_CommandNumberMapping::Get ().ReverseLookup (A), MFC_CommandNumberMapping::Get ().ReverseLookup (B))
 }
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 #endif /*_Stroika_Frameworks_Led_Platform_MFC_h_*/
 
 /*

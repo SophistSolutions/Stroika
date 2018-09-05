@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Mapping& operator= (const Mapping& rhs) = default;
-        nonvirtual Mapping& operator= (Mapping&& rhs) = default;
+        nonvirtual Mapping& operator= (Mapping&& rhs) noexcept = default;
 
     public:
         /**

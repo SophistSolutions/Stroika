@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Memory {
         : fRep_{_MakeSharedPtr<ZeroRep_> ()}
     {
     }
-    inline BLOB::BLOB (BLOB&& src)
+    inline BLOB::BLOB (BLOB&& src) noexcept
         : fRep_{move (src.fRep_)}
     {
     }

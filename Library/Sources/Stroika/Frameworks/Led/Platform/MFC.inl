@@ -382,7 +382,6 @@ namespace Stroika::Frameworks::Led::Platform {
                             ON_WM_PAINT ()
                                 ON_WM_MOUSEMOVE ()
                                     ON_WM_LBUTTONDOWN ()
-
                                         ON_WM_SETCURSOR ()
                                             ON_WM_GETDLGCODE ()
                                                 ON_WM_LBUTTONUP ()
@@ -399,7 +398,6 @@ namespace Stroika::Frameworks::Led::Platform {
                                                                                             ON_MESSAGE (WM_IME_CHAR, &OnIMEChar)
                                                                                                 ON_MESSAGE (WM_IME_COMPOSITION, &OnIME_COMPOSITION)
                                                                                                     ON_MESSAGE (WM_IME_ENDCOMPOSITION, &OnIME_ENDCOMPOSITION)
-
                                                                                                         LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kUndo_CmdID)
                                                                                                             LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kRedo_CmdID)
                                                                                                                 LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectAll_CmdID)
@@ -1803,7 +1801,6 @@ namespace Stroika::Frameworks::Led::Platform {
         EnsureNotNull (fCmdUI);
         return fCmdUI;
     }
-
 }
 
 #endif /*_Stroika_Frameworks_Led_Platform_MFC_inl_*/

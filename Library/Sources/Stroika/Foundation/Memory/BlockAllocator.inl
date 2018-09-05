@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Memory {
     {
         Require (SIZE >= sizeof (void*));
 
-        const size_t kChunks = ComputeChunks_ ();
+        constexpr size_t kChunks = ComputeChunks_ ();
         Assert (kChunks >= 1);
 
         /*

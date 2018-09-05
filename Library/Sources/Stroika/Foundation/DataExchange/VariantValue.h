@@ -205,7 +205,7 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (const Traversal::Iterable<VariantValue>& val);
         VariantValue (Sequence<VariantValue>&& val);
         VariantValue (const VariantValue& src) = default;
-        VariantValue (VariantValue&& src);
+        VariantValue (VariantValue&& src) noexcept;
 
     private:
         VariantValue (const string& val) = delete;
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         nonvirtual VariantValue& operator= (const VariantValue& rhs) = default;
-        nonvirtual VariantValue& operator                            = (VariantValue&& rhs);
+        nonvirtual VariantValue& operator                            = (VariantValue&& rhs) noexcept;
 
     public:
         /**

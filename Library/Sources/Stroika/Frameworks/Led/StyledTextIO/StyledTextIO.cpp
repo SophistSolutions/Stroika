@@ -40,11 +40,6 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 #endif
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
-#endif
-
 /*
  ********************************************************************************
  *************************** StyledTextIOReader::SinkStream *********************

@@ -31,12 +31,6 @@ namespace Stroika::Frameworks::Led::Platform {
  **************** MFC/WordProcessor specific Configuration variables **************
  */
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// silence inherits 'Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore' via dominance
-#pragma warning(push)
-#pragma warning(disable : 4250)
-#endif
-
 /*
     @CONFIGVAR:     qSupportOLEControlEmbedding
     @DESCRIPTION:   <p>You may want to shut this off for building an OLE control itself. Or for building applications that
@@ -51,6 +45,11 @@ namespace Stroika::Frameworks::Led::Platform {
     class Led_MFC_ControlItem;
 #endif
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// silence inherits 'Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore' via dominance
+#pragma warning(push)
+#pragma warning(disable : 4250)
+#endif
     /*
     @CLASS:         WordProcessorCommonCommandHelper_MFC<BASECLASS>
     @BASES:         BASECLASS
@@ -118,6 +117,9 @@ namespace Stroika::Frameworks::Led::Platform {
         friend class Led_MFC_ControlItem;
 #endif
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
 #if qSupportOLEControlEmbedding
     /*
@@ -286,7 +288,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #pragma warning(push)
 #pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 #endif
-
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_PAINT ()
 
@@ -365,10 +366,6 @@ namespace Stroika::Frameworks::Led::Platform {
         return sDoc;
     }
 #endif
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
-
 }
 
 #endif /*_Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_*/

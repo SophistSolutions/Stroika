@@ -503,7 +503,7 @@ namespace Stroika::Foundation::Execution {
         Ptr () = default;
         Ptr (nullptr_t);
         Ptr (const Ptr& src);
-        Ptr (Ptr&& src);
+        Ptr (Ptr&& src) noexcept;
 
     protected:
         Ptr (const shared_ptr<Rep_>& rep);
@@ -512,7 +512,7 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         nonvirtual Ptr& operator= (const Ptr& rhs);
-        nonvirtual Ptr& operator= (Ptr&& rhs);
+        nonvirtual Ptr& operator= (Ptr&& rhs) noexcept;
 
     public:
         /**

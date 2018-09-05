@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         nonvirtual String& operator= (const String& rhs) = default;
-        nonvirtual String& operator= (String&& newString) = default;
+        nonvirtual String& operator= (String&& newString) noexcept = default;
 
     public:
         /**

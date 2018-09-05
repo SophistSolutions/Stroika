@@ -26,9 +26,9 @@
 
 namespace Stroika::Frameworks::Led::Platform {
 
-/*
-        **************** Windows Specific configuration variables **************
-        */
+    /*
+     **************** Windows Specific configuration variables **************
+     */
 
 /*
     @CONFIGVAR:     qSupportWindowsSDKCallbacks
@@ -94,12 +94,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #define qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug (qWideCharacters && !qSDK_UNICODE)
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250)
-#pragma warning(disable : 4018)
-#endif
-
     /*
     @CLASS:     FunnyMSPageUpDownAdjustSelectionHelper
     @DESCRIPTION:   <p>Helper class to implement common MS-Windows UI where  paging up/down, and sometimes other activities try
@@ -119,6 +113,10 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t fRowNum;
     };
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250) // inherits via dominance warning
+#endif
     /*
     @CLASS:         Led_Win32_Helper<BASE_INTERACTOR>
     @BASES:         BASE_INTERACTOR = @'TextInteractor'
@@ -210,8 +208,8 @@ namespace Stroika::Frameworks::Led::Platform {
         nonvirtual void OnSize_ ();
 
         /*
-            * Overrides of the Led (TextInteractor) code that must thunk down to Win32 SDK calls
-            */
+         * Overrides of the Led (TextInteractor) code that must thunk down to Win32 SDK calls
+         */
     protected:
         virtual void RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const override;
         virtual void UpdateWindowRect_ (const Led_Rect& windowRectArea) const override;
@@ -344,7 +342,14 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         nonvirtual HWND GetValidatedHWND () const;
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250) // inherits via dominance warning
+#endif
     /*
     @CLASS:         Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>
     @BASES:         BASECLASS
@@ -391,6 +396,9 @@ namespace Stroika::Frameworks::Led::Platform {
     private:
         Led_FontObject fDefaultFontCache; // used to be able to answer WM_GETFONT calls...
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
     /*
     @CLASS:         SimpleWin32WndProcHelper
@@ -448,6 +456,10 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam);
     };
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250) // inherits via dominance warning
+#endif
     /*
     @CLASS:         Led_Win32_SimpleWndProc_Helper
     @BASES:         @'Led_Win32_Helper<BASE_INTERACTOR>'
@@ -502,7 +514,14 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         virtual LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam) override;
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4250) // inherits via dominance warning
+#endif
     /*
     @CLASS:         Led_Win32_SimpleWndProc_HelperWithSDKMessages
     @BASES:         @'Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>' with BASE_INTERACTOR= @'Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>'
@@ -519,12 +538,15 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         virtual LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
     };
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning(pop)
+#endif
 
-/*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
 #if (_WIN32_WINNT < 0x0501)
 //  Make sure WM_UNICHAR & UNICODE_NOCHAR are defined, even if a user builds with old header files
 //  or inconsistent settings of _WIN32_WINNT ... LGP 2003-01-29
@@ -561,9 +583,9 @@ namespace Stroika::Frameworks::Led::Platform {
 
     namespace Private {
         /*
-            * Hack to assure the Led_Win32.o module is linked in. Without it being linked in,
-            * the IdleManagerOSImpl_Win32 won't get installed.
-            */
+         * Hack to assure the Led_Win32.o module is linked in. Without it being linked in,
+         * the IdleManagerOSImpl_Win32 won't get installed.
+         */
         struct IdleMangerLinkerSupport {
             IdleMangerLinkerSupport ();
         };
@@ -852,11 +874,11 @@ namespace Stroika::Frameworks::Led::Platform {
         bool controlPressed = !!(::GetKeyState (VK_CONTROL) & 0x8000);
 
         /*
-            *  There are zillions of these virtual keycodes, and I'm unsure exactly if/how
-            *  I'm to respond to each. All the ones here are listed in numeric order (the
-            *  order they are found in WinUser.h). We (will) omit any which we do nothing
-            *  for - and only include those we react to.
-            */
+         *  There are zillions of these virtual keycodes, and I'm unsure exactly if/how
+         *  I'm to respond to each. All the ones here are listed in numeric order (the
+         *  order they are found in WinUser.h). We (will) omit any which we do nothing
+         *  for - and only include those we react to.
+         */
         switch (nChar) {
             case VK_BACK: {
                 // Seems to get called in OnChar() - so ignore it here...
@@ -1103,12 +1125,12 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         if (nHitTest == HTCLIENT and hWnd == GetValidatedHWND ()) {
             /*
-                *  The SDK docs seem to indicate that you should call the inherited one, to see
-                *  if your parent changed the cursor. But if you do, it changes the cursor
-                *  to an arrow, and we switch back quickly - producing flicker. I probably
-                *  should do something closer to what the SDK recmends - but this seems good
-                *  enuf for now - LGP 950212
-                */
+             *  The SDK docs seem to indicate that you should call the inherited one, to see
+             *  if your parent changed the cursor. But if you do, it changes the cursor
+             *  to an arrow, and we switch back quickly - producing flicker. I probably
+             *  should do something closer to what the SDK recmends - but this seems good
+             *  enuf for now - LGP 950212
+             */
             BOOL result = false;
             if (result) {
                 return true; // parent window handled it - see SDK docs
@@ -1270,9 +1292,9 @@ namespace Stroika::Frameworks::Led::Platform {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode=%d,...)\n"), nSBCode);
 
         /*
-            *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
-            *  than using this parameter.
-            */
+         *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
+         *  than using this parameter.
+         */
         if (nSBCode == SB_LINEDOWN or nSBCode == SB_LINEUP or
             nSBCode == SB_PAGEDOWN or nSBCode == SB_PAGEUP) {
             if (not DelaySomeForScrollBarClick ()) {
@@ -1329,11 +1351,11 @@ namespace Stroika::Frameworks::Led::Platform {
                 size_t newPos = 0;
                 {
                     /*
-                            *  It is not totally clear why we use GetVScrollInfo instead of the passed in
-                            *  'nPos' for tracking. The current docs (2003-01-20) seem to indicate
-                            *  we should use the passed in 'nPos'. Oh well - this seems to be working OK.
-                            *      --  LGP 2003-01-20.
-                            */
+                     *  It is not totally clear why we use GetVScrollInfo instead of the passed in
+                     *  'nPos' for tracking. The current docs (2003-01-20) seem to indicate
+                     *  we should use the passed in 'nPos'. Oh well - this seems to be working OK.
+                     *      --  LGP 2003-01-20.
+                     */
                     SCROLLINFO scrollInfo = GetVScrollInfo ();
 #if qScrollTextDuringThumbTracking
                     newPos = scrollInfo.nTrackPos;
@@ -1343,10 +1365,10 @@ namespace Stroika::Frameworks::Led::Platform {
                     newPos = min (newPos, GetLength ());
 
                     /*
-                            *  Beware about the fact that the verticalWindow size changes as we scroll (since it
-                            *  is measured in number of Led_tChars on display in the window).
-                            */
-                    if (newPos + scrollInfo.nPage >= scrollInfo.nMax) {
+                     *  Beware about the fact that the verticalWindow size changes as we scroll (since it
+                     *  is measured in number of Led_tChars on display in the window).
+                     */
+                    if (newPos + scrollInfo.nPage >= static_cast<UINT> (scrollInfo.nMax)) {
                         newPos = GetLength ();
                     }
 
@@ -1953,7 +1975,7 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_Helper<BASE_INTERACTOR>::TypeAndScrollInfoSBVisible (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo) const
     {
         return (scrollbarAppears == eScrollBarAlways) or
-               (scrollbarAppears == eScrollBarAsNeeded and scrollInfo.nMin + scrollInfo.nPage <= scrollInfo.nMax);
+               (scrollbarAppears == eScrollBarAsNeeded and scrollInfo.nMin + static_cast<int> (scrollInfo.nPage) <= scrollInfo.nMax);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -3267,9 +3289,5 @@ namespace Stroika::Frameworks::Led::Platform {
     }
 
 }
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 #endif /*_Stroika_Frameworks_Led_Platform_Windows_h_*/
