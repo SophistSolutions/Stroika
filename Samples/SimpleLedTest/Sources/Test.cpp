@@ -70,7 +70,8 @@ inline const void* LoadAppResource (HINSTANCE hIntstance, long resID, LPCTSTR re
 {
     HRSRC hrsrc = ::FindResource (hIntstance, MAKEINTRESOURCE (resID), resType);
     AssertNotNull (hrsrc);
-    HGLOBAL     hglobal    = ::LoadResource (hIntstance, hrsrc);
+    HGLOBAL hglobal = ::LoadResource (hIntstance, hrsrc);
+    AssertNotNull (hglobal);
     const void* lockedData = ::LockResource (hglobal);
     AssertNotNull (lockedData);
     return (lockedData);
