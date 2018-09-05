@@ -168,19 +168,19 @@ namespace Stroika::Foundation::Containers::Concrete {
             return false;
             //return this->_Equals_Reference_Implementation (rhs);
         }
-        virtual bool Contains (T item) const override
+        virtual bool Contains (ArgByValueType<T> item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return fData_.Lookup (item, Common::mkEqualsComparerAdapter (fInorderComparer_)) != nullptr;
         }
-        virtual void Remove (T item) override
+        virtual void Remove (ArgByValueType<T> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Remove (item, Common::mkEqualsComparerAdapter (fInorderComparer_));
         }
 
     private:
-        nonvirtual void AddWithoutLocks_ (T item)
+        nonvirtual void AddWithoutLocks_ (ArgByValueType<T> item)
         {
             using Traversal::kUnknownIteratorOwnerID;
             typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);

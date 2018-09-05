@@ -77,11 +77,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom);
 
     public:
-        nonvirtual bool Contains (value_type item) const;
+        nonvirtual bool Contains (ArgByValueType<value_type> item) const;
 
     public:
-        /*
-            */
+        /**
+         */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
         template <typename FUNCTION>

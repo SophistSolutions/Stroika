@@ -180,6 +180,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         friend class SkipListIterator<KEY, VALUE, TRAITS>;
     };
+
 }
 
 /*

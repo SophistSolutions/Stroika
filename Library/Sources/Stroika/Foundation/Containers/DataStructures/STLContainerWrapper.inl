@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
     template <typename STL_CONTAINER_OF_T>
-    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (value_type item) const
+    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (ArgByValueType<value_type> item) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return this->find (item) != this->end ();

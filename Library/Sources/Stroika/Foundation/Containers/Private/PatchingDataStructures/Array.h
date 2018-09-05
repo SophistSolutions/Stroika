@@ -84,19 +84,19 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
          * class version.
          */
     public:
-        nonvirtual void SetLength (size_t newLength, T fillValue);
-        nonvirtual void InsertAt (size_t index, T item);
+        nonvirtual void SetLength (size_t newLength, ArgByValueType<T> fillValue);
+        nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
         nonvirtual void RemoveAt (size_t index);
         nonvirtual void RemoveAll ();
         nonvirtual void RemoveAt (const ForwardIterator& i);
         nonvirtual void RemoveAt (const BackwardIterator& i);
         nonvirtual void SetAt (size_t i, T item);
-        nonvirtual void SetAt (const ForwardIterator& i, T newValue);
-        nonvirtual void SetAt (const BackwardIterator& i, T newValue);
-        nonvirtual void AddBefore (const ForwardIterator& i, T item);
-        nonvirtual void AddBefore (const BackwardIterator& i, T item);
-        nonvirtual void AddAfter (const ForwardIterator& i, T item);
-        nonvirtual void AddAfter (const BackwardIterator& i, T item);
+        nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
+        nonvirtual void SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
+        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
         nonvirtual void SetCapacity (size_t slotsAlloced);
         nonvirtual void Compact ();
 

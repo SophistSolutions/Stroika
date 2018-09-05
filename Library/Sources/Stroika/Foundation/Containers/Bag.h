@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers {
          * The value pointed to by 'i' is removed.
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void Remove (T item);
+        nonvirtual void Remove (ArgByValueType<T> item);
         nonvirtual void Remove (const Iterator<T>& i);
 
     public:

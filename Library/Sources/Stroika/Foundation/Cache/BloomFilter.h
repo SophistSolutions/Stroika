@@ -32,10 +32,10 @@ namespace Stroika::Foundation::Cache {
     template <typename T>
     class BloomFilter<T> {
     public:
-        nonvirtual void Add (T elt);
+        nonvirtual void Add (ArgByValueType<T> elt);
 
     public:
-        nonvirtual void Remove (T elt);
+        nonvirtual void Remove (ArgByValueType<T> elt);
 
     public:
         /**

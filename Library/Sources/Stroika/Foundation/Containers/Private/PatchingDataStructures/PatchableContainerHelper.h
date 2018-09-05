@@ -85,9 +85,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     protected:
         /*
-            *  Apply the given function (with the argument type) to each iterator. The lock is only intended to be so the interation works,
-            *  but there is no obvious way to do tha twithout holding the lock during the call to 'f'. So the f's should be short!
-            */
+         *  Apply the given function (with the argument type) to each iterator. The lock is only intended to be so the interation works,
+         *  but there is no obvious way to do tha twithout holding the lock during the call to 'f'. So the f's should be short!
+         */
         template <typename ACTIVE_ITERATOR_SUBTYPE, typename FUNCTION>
         nonvirtual void _ApplyToEachOwnedIterator (FUNCTION f) const;
 
@@ -97,14 +97,14 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     };
 
     /*
-        *  When converting a non-patchable container backend (like DataStructures::Array) to a
-        *  PatchableDataStructues (like PatchableDataStructues::Array) you must mix something into
-        *  each associated iterator class (
-        *      eg. Array<T...>::_ArrayIteratorBase
-        *          : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
-        *          , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn
-        *
-        */
+     *  When converting a non-patchable container backend (like DataStructures::Array) to a
+     *  PatchableDataStructues (like PatchableDataStructues::Array) you must mix something into
+     *  each associated iterator class (
+     *      eg. Array<T...>::_ArrayIteratorBase
+     *          : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
+     *          , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn
+     *
+     */
     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
     struct PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
     private:
@@ -138,6 +138,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend struct PatchableContainerHelper;
     };
+
 }
 
 /*

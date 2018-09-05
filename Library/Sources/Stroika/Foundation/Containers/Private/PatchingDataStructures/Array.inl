@@ -66,13 +66,13 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         });
     }
     template <typename T>
-    inline void Array<T>::SetLength (size_t newLength, T fillValue)
+    inline void Array<T>::SetLength (size_t newLength, ArgByValueType<T> fillValue)
     {
         // For now, not sure how to patch the iterators, so just Assert out - fix later ...
         AssertNotImplemented ();
     }
     template <typename T>
-    inline void Array<T>::InsertAt (size_t index, T item)
+    inline void Array<T>::InsertAt (size_t index, ArgByValueType<T> item)
     {
         this->Invariant ();
         inherited::InsertAt (index, item);
@@ -116,37 +116,37 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         inherited::SetAt (i, newValue);
     }
     template <typename T>
-    inline void Array<T>::SetAt (const ForwardIterator& i, T newValue)
+    inline void Array<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Require (not i.Done ());
         inherited::SetAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
-    void Array<T>::SetAt (const BackwardIterator& i, T newValue)
+    void Array<T>::SetAt (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
         Require (not i.Done ());
         inherited::SetAt (newValue, i.CurrentIndex ());
     }
     template <typename T>
-    inline void Array<T>::AddBefore (const ForwardIterator& i, T newValue)
+    inline void Array<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         // i CAN BE DONE OR NOT
         InsertAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
-    inline void Array<T>::AddBefore (const BackwardIterator& i, T newValue)
+    inline void Array<T>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
         // i CAN BE DONE OR NOT
         InsertAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
-    inline void Array<T>::AddAfter (const ForwardIterator& i, T newValue)
+    inline void Array<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Require (not i.Done ());
         InsertAt (i.CurrentIndex () + 1, newValue);
     }
     template <typename T>
-    inline void Array<T>::AddAfter (const BackwardIterator& i, T newValue)
+    inline void Array<T>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
         Require (not i.Done ());
         InsertAt (i.CurrentIndex () + 1, newValue);

@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(1)
          *      Average Case: O(1)
          */
-        nonvirtual void Prepend (T item);
+        nonvirtual void Prepend (ArgByValueType<T> item);
 
     public:
         /**
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Performance:
          *      Worst Case: O(1)
          */
-        nonvirtual void SetAt (const ForwardIterator& i, T newValue);
+        nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
     public:
         /**
@@ -158,14 +158,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *
          *  NB: Can be called if done
          */
-        nonvirtual void AddBefore (const ForwardIterator& i, T item);
+        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
 
     public:
         /**
          *  Performance:
          *      Worst Case: O(1)
          */
-        nonvirtual void AddAfter (const ForwardIterator& i, T item);
+        nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
 #if 0
     public:

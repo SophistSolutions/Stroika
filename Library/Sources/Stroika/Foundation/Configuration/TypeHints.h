@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Configuration {
      *          releative cost of main memory access versus stack).
      */
     template <typename T, typename CHECK_T = T>
-    using ArgByValueType = conditional_t<(sizeof (CHECK_T) <= 2 * sizeof (void*)) and is_trivially_copyable<CHECK_T>::value, CHECK_T, const CHECK_T&>;
+    using ArgByValueType = conditional_t<(sizeof (CHECK_T) <= 2 * sizeof (void*)) and is_trivially_copyable_v<CHECK_T>, CHECK_T, const CHECK_T&>;
 
 }
 

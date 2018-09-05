@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline void Bag<T>::Remove (T item)
+    inline void Bag<T>::Remove (ArgByValueType<T> item)
     {
         for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
             if (EQUALS_COMPARER{}(*i, item)) {

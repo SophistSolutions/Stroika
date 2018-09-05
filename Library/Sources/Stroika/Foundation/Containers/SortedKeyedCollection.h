@@ -125,9 +125,9 @@ namespace Stroika::Foundation::Containers {
     class SortedKeyedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
     public:
         virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
-        virtual bool Contains (T item) const                                 = 0;
+        virtual bool Contains (ArgByValueType<T> item) const                 = 0;
         using Collection<T>::_IRep::Remove;
-        virtual void Remove (T item) = 0;
+        virtual void Remove (ArgByValueType<T> item) = 0;
     };
 
 }

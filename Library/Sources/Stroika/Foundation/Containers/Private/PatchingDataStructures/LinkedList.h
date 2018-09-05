@@ -22,6 +22,7 @@
 
 namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
+    using Configuration::ArgByValueType;
     using Traversal::IteratorOwnerID;
 
     /*
@@ -81,15 +82,15 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
          * class version.
          */
     public:
-        nonvirtual void Prepend (T item);
+        nonvirtual void Prepend (ArgByValueType<T> item);
         template <typename EQUALS_COMPARER>
-        nonvirtual void Remove (T item, const EQUALS_COMPARER& equalsComparer);
+        nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer);
         nonvirtual void RemoveFirst ();
         nonvirtual void RemoveAll ();
-        nonvirtual void Append (T item);
+        nonvirtual void Append (ArgByValueType<T> item);
         nonvirtual void RemoveAt (const ForwardIterator& i);
-        nonvirtual void AddBefore (const ForwardIterator& i, T newValue);
-        nonvirtual void AddAfter (const ForwardIterator& i, T newValue);
+        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue);
+        nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue);
 
     public:
         /*

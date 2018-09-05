@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
-        nonvirtual void SetAt (size_t i, T item);
+        nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
     public:
         class ForwardIterator;

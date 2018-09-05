@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         }
     }
     template <typename T>
-    inline void LinkedList<T>::Prepend (T item)
+    inline void LinkedList<T>::Prepend (ArgByValueType<T> item)
     {
         Invariant ();
         inherited::Prepend (item);
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     }
     //tmphack - must fix to have in  base class and just hook for patch here
     template <typename T>
-    inline void LinkedList<T>::Append (T item)
+    inline void LinkedList<T>::Append (ArgByValueType<T> item)
     {
         if (this->_fHead == nullptr) {
             Prepend (item);
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline void LinkedList<T>::Remove (T item, const EQUALS_COMPARER& equalsComparer)
+    inline void LinkedList<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
         /*
          *  Base class impl is fine, but doesn't do patching, and doesn't
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         Invariant ();
     }
     template <typename T>
-    inline void LinkedList<T>::AddBefore (const ForwardIterator& i, T newValue)
+    inline void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Invariant ();
 
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         Invariant ();
     }
     template <typename T>
-    inline void LinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
+    inline void LinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Invariant ();
         inherited::AddAfter (i, newValue);

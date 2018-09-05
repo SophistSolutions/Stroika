@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return (cur->fItem);
     }
     template <typename T>
-    void DoublyLinkedList<T>::SetAt (size_t i, T item)
+    void DoublyLinkedList<T>::SetAt (size_t i, ArgByValueType<T> item)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (i >= 0);

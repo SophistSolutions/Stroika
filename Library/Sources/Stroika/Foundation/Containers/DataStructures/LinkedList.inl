@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return _fHead->fItem;
     }
     template <typename T>
-    inline void LinkedList<T>::Prepend (T item)
+    inline void LinkedList<T>::Prepend (ArgByValueType<T> item)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Invariant ();
@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    inline void LinkedList<T>::SetAt (const ForwardIterator& i, T newValue)
+    inline void LinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (not i.Done ());
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    void LinkedList<T>::AddBefore (const ForwardIterator& i, T newValue)
+    void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         /*
@@ -246,7 +246,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    inline void LinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
+    inline void LinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (not i.Done ());
