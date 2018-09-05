@@ -1041,7 +1041,7 @@ namespace Stroika::Frameworks::Led {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4250)
+#pragma warning(disable : 4250) // inherits via dominance warning
 #endif
     /*
     @CLASS:         TrivialImager_Interactor<TEXTSTORE,IMAGER>

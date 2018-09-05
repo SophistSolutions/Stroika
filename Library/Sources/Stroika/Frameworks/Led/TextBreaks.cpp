@@ -21,10 +21,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#endif
-
 // These SHOULD work for UNICODE, MBYTE and SingleByte case...
 inline bool IsASCIISpace (Led_tChar c)
 {

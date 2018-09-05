@@ -20,9 +20,6 @@
 #include <UWindows.h>
 #endif
 #if defined(WIN32)
-#if _MSC_VER && (qSilenceAnnoyingCompilerWarnings || !defined(qSilenceAnnoyingCompilerWarnings))
-#pragma warning(4 : 4786)
-#endif
 
 #include <afxwin.h>
 #elif qXWindows

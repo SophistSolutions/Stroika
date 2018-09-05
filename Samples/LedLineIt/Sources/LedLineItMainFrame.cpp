@@ -141,13 +141,7 @@ END_MESSAGE_MAP ()
 
 bool LedLineItMainFrame::GetStatusBarShown () const
 {
-#if qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#pragma warning(disable : 4800)
-#endif
     return !!fStatusBar.IsWindowVisible ();
-#if qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#pragma warning(default : 4800)
-#endif
 }
 
 void LedLineItMainFrame::SetStatusBarShown (bool shown)

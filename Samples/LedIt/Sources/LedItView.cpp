@@ -36,10 +36,6 @@
 
 #include "LedItView.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#endif
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;

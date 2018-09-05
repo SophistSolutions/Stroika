@@ -5,9 +5,6 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if WIN32
-#if _MSC_VER && (qSilenceAnnoyingCompilerWarnings || !defined(qSilenceAnnoyingCompilerWarnings))
-#pragma warning(4 : 4786)
-#endif
 
 #include <afxole.h>
 #include <atlconv.h>
@@ -16,7 +13,6 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 
-//#include  "FontMenu.h"
 #include "LedItApplication.h"
 #include "LedItResources.h"
 

@@ -17,10 +17,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#endif
-
 #if qPlatform_MacOS
 inline void GDI_TextFont (short font)
 {

@@ -32,7 +32,7 @@ using LedItViewAlmostBASE = Platform::Led_MFC_X<WordProcessor>;
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4250)
+#pragma warning(disable : 4250) // inherits via dominance warning
 #endif
 class LedItView :
 #if qPlatform_MacOS

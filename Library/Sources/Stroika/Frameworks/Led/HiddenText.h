@@ -20,11 +20,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4786)
-#endif
-
     /*
     @CLASS:         HidableTextMarkerOwner
     @DESCRIPTION:   <p>HidableTextMarkerOwner is a @'MarkerOwner' class, collecting together a set of
@@ -123,10 +118,6 @@ namespace Stroika::Frameworks::Led {
     public:
         friend class HidableTextMarker;
     };
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
     /*
     @CLASS:         UniformHidableTextMarkerOwner

@@ -46,9 +46,8 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// silence inherits 'Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore' via dominance
 #pragma warning(push)
-#pragma warning(disable : 4250)
+#pragma warning(disable : 4250) // inherits via dominance warning (Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore)
 #endif
     /*
     @CLASS:         WordProcessorCommonCommandHelper_MFC<BASECLASS>

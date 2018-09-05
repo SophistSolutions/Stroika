@@ -9,10 +9,6 @@
 
 #include "Options.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
-#endif
-
 using std::byte;
 
 using namespace Stroika::Foundation;

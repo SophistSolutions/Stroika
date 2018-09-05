@@ -24,10 +24,6 @@ using namespace Stroika::Frameworks::Led;
 
 using Memory::SmallStackBuffer;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(disable : 4800)
-#endif
-
 class My_CMDNUM_MAPPING : public MFC_CommandNumberMapping {
 public:
     My_CMDNUM_MAPPING ()

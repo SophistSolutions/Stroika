@@ -133,7 +133,7 @@ namespace Stroika::Frameworks::Led {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4250)
+#pragma warning(disable : 4250) // inherits via dominance warning
 #endif
     class LedDialogWidget : public LedDialogWidget_Private::LedDialogWidget_BASE {
     private:
@@ -250,7 +250,7 @@ namespace Stroika::Frameworks::Led {
     protected:
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4250)
+#pragma warning(disable : 4250) // inherits via dominance warning
 #endif
         struct MyTextWidget : public LedDialogWidget {
             using inherited = LedDialogWidget;

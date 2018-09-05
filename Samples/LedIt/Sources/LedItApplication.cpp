@@ -31,10 +31,6 @@
 #include <UModalDialogs.h>
 #include <URegistrar.h>
 #elif defined(WIN32)
-#if _MSC_VER && (qSilenceAnnoyingCompilerWarnings || !defined(qSilenceAnnoyingCompilerWarnings))
-#pragma warning(4 : 4800)
-#pragma warning(4 : 4786)
-#endif
 
 #include <afx.h>
 #elif qXWindows

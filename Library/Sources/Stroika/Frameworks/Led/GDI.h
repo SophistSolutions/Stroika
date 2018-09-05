@@ -16,12 +16,6 @@
     easily.</p>
  */
 
-#if _MSC_VER == 1200
-//A bit of a hack for MSVC60, cuz this needs to be done before including <vector> - otherwise we get
-// lots of needless warnigns - regardless of what is done later -- LGP 980925
-#pragma warning(4 : 4786)
-#endif
-
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -2876,7 +2870,7 @@ namespace Stroika::Frameworks::Led {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4018)
+#pragma warning(disable : 4018) // signed/unsigned mismatch
 #endif
         if ((winLeft + winWidth) > enlosingR.GetRight ()) {
             winLeft = enlosingR.GetRight () - winWidth;

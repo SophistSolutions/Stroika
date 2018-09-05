@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::Led {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4250)
+#pragma warning(disable : 4250) // inherits via dominance warning
 #endif
     /*
     @CLASS:         SimpleTextInteractor
@@ -41,8 +41,8 @@ namespace Stroika::Frameworks::Led {
         virtual void ChangedInterLineSpace (PartitionMarker* pm) override;
 
         /*
-            *  Must combine behaviors of different mixins.
-            */
+         *  Must combine behaviors of different mixins.
+         */
     public:
         virtual void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
         nonvirtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode);
@@ -81,4 +81,5 @@ namespace Stroika::Frameworks::Led {
     }
 
 }
+
 #endif /*_Stroika_Frameworks_Led_SimpleTextInteractor_h_*/
