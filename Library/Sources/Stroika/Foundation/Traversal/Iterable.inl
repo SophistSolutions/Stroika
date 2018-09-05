@@ -496,7 +496,7 @@ namespace Stroika::Foundation::Traversal {
                 nItemsToSkip--;
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : nullopt;
+            return tmpIt ? *tmpIt++ : optional<T>{};
         };
         return CreateGenerator (getNext);
     }
@@ -511,7 +511,7 @@ namespace Stroika::Foundation::Traversal {
                 return nullopt;
             }
             nItemsToTake--;
-            return tmpIt ? *tmpIt++ : nullopt;
+            return tmpIt ? *tmpIt++ : optional<T>{};
         };
         return CreateGenerator (getNext);
     }
