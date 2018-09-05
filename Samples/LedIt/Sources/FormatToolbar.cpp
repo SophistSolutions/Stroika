@@ -236,7 +236,7 @@ int FormatToolbar::OnCreate (LPCREATESTRUCT lpCreateStruct)
     SetBarStyle (GetBarStyle () | CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC | CBRS_HIDE_INPLACE);
     SetSizes (CSize (23, 22), CSize (16, 16));
     CString str;
-    str.LoadString (IDS_TITLE_FORMATBAR);
+    (void)str.LoadString (IDS_TITLE_FORMATBAR);
     SetWindowText (str);
     PositionCombos ();
 

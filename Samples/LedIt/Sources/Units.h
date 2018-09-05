@@ -15,15 +15,15 @@
 
 class Unit {
 public:
-    int     m_nTPU;
-    int     m_nSmallDiv;    // small divisions - small line displayed
-    int     m_nMediumDiv;   // medium divisions - large line displayed
-    int     m_nLargeDiv;    // large divisions - numbers displayed
-    int     m_nMinMove;     // minimum tracking movements
-    BOOL    m_bSpaceAbbrev; // put space before abbreviation
-    CString m_strAbbrev;    // cm, pt, pi, ", in, inch, inches
+    int     m_nTPU{};
+    int     m_nSmallDiv{};    // small divisions - small line displayed
+    int     m_nMediumDiv{};   // medium divisions - large line displayed
+    int     m_nLargeDiv{};    // large divisions - numbers displayed
+    int     m_nMinMove{};     // minimum tracking movements
+    BOOL    m_bSpaceAbbrev{}; // put space before abbreviation
+    CString m_strAbbrev{};    // cm, pt, pi, ", in, inch, inches
 
-    Unit () {}
+    Unit () = default;
     Unit (int nTPU, int nSmallDiv, int nMediumDiv, int nLargeDiv,
           int nMinMove, const char* nAbbrev, BOOL bSpaceAbbrev);
 

@@ -23,7 +23,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-
 // Private Led Macro utility to define command numbers (cannot use Math::RoundUpTo use used to init enums - at least on msvc2k17)
 #define RoundUpToNearest_CMDNUMs_MACRO(x, n) (((x + 1) & ~(n - 1)) + n)
 
@@ -294,7 +293,7 @@ namespace Stroika::Frameworks::Led {
         virtual void    HookGainedNewTextStore () override;
         nonvirtual void HookGainedNewTextStore_ ();
 
-    /*
+        /*
      *  Mouse clicks.
      */
     protected:

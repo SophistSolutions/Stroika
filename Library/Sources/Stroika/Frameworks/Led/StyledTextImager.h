@@ -172,8 +172,8 @@ namespace Stroika::Frameworks::Led {
     struct StyledTextImager::RunElement {
         RunElement (StyleMarker* marker, size_t length);
 
-        StyleMarker*         fMarker;
-        size_t               fLength;
+        StyleMarker*         fMarker{nullptr};
+        size_t               fLength{0};
         vector<StyleMarker*> fSupercededMarkers;
     };
 

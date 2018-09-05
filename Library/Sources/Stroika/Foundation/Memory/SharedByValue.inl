@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename TRAITS>
-    inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS>&& rhs)
+    inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS>&& rhs) noexcept
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
