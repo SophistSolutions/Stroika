@@ -668,7 +668,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void      SetListStyle (ListStyle listStyle);
 
     private:
-        ListStyle fListStyle;
+        ListStyle fListStyle{eListStyle_None};
 
     public:
         nonvirtual unsigned char GetListIndentLevel () const;

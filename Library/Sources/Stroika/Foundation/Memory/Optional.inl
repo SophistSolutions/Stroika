@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Memory {
     {
     }
     template <typename T>
-    inline Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (StorageType&& src)
+    inline Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (StorageType&& src) noexcept
         : fValue_{src.fValue_} // no move () needed cuz its a pointer
     {
         src.fValue_ = nullptr;
@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename T>
-    inline auto Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (StorageType&& rhs) -> StorageType&
+    inline auto Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (StorageType&& rhs) noexcept -> StorageType&
     {
         // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
         Require (this != &rhs);

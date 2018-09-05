@@ -77,10 +77,12 @@ namespace Stroika::Foundation::Memory {
     {
         Invariant ();
         DestroyElts_ (this->begin (), this->end ());
-        if (fLiveData_ != BufferAsT_ ()) {
-            // we must have used the heap...
-            Deallocate_ (LiveDataAsAllocatedBytes_ ());
-        }
+        if (fLiveData_ != BufferAsT_ ())
+            [[UNLIKELY_ATTR]]
+            {
+                // we must have used the heap...
+                Deallocate_ (LiveDataAsAllocatedBytes_ ());
+            }
     }
     template <typename T, size_t BUF_SIZE>
     template <size_t FROM_BUF_SIZE>

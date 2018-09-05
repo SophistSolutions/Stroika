@@ -74,9 +74,9 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual InternetAddressRange GetRange () const;
 
     public:
-        /*
-            *  return true if the CIDRs are equal. This SHOULD only pay attention to the 'significant bits' of the base address, but currently doesn't (@todo fix/bug)
-            */
+        /**
+         *  return true if the CIDRs are equal. This SHOULD only pay attention to the 'significant bits' of the base address, but currently doesn't (@todo fix/bug)
+         */
         nonvirtual bool operator== (const CIDR& rhs) const;
 
     public:

@@ -39,6 +39,7 @@ namespace Stroika::Foundation::Execution {
     public:
         explicit errno_ErrorException (errno_t e);
 
+    public:
         operator errno_t () const;
 
     public:
@@ -51,7 +52,7 @@ namespace Stroika::Foundation::Execution {
         [[noreturn]] static void Throw (errno_t error);
 
     private:
-        errno_t fError;
+        errno_t fError{0};
     };
 
     /*

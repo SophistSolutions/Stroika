@@ -249,9 +249,11 @@ namespace Stroika::Foundation::Traversal {
         vector<T>                tmp (from.begin (), from.end ()); // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
-            if (idx < tmp.size ()) {
-                return tmp[idx++];
-            }
+            if (idx < tmp.size ())
+                [[LIKELY_ATTR]]
+                {
+                    return tmp[idx++];
+                }
             else {
                 return nullopt;
             }
@@ -494,7 +496,7 @@ namespace Stroika::Foundation::Traversal {
                 nItemsToSkip--;
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : optional<T> ();
+            return tmpIt ? *tmpIt++ : nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -509,7 +511,7 @@ namespace Stroika::Foundation::Traversal {
                 return nullopt;
             }
             nItemsToTake--;
-            return tmpIt ? *tmpIt++ : optional<T> ();
+            return tmpIt ? *tmpIt++ : nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -678,9 +680,11 @@ namespace Stroika::Foundation::Traversal {
         vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
         sort (tmp.begin (), tmp.end (), compare);
         size_t sz{tmp.size ()};
-        if (sz == 0) {
-            return optional<RESULT_TYPE>{};
-        }
+        if (sz == 0)
+            [[UNLIKELY_ATTR]]
+            {
+                return optional<RESULT_TYPE>{};
+            }
         if ((sz % 2) == 0) {
             return (static_cast<RESULT_TYPE> (tmp[sz / 2]) + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
         }

@@ -386,8 +386,8 @@ namespace Stroika::Frameworks::Led {
         // Can return position - note we didn't say STRICTLY after
 
         /*
-            *  Search/Find/Replace support.
-            */
+         *  Search/Find/Replace support.
+         */
     public:
         struct SearchParameters {
             SearchParameters (const Led_tString& searchString = LED_TCHAR_OF (""), bool wrap = true, bool wholeWord = false, bool caseSensative = false);

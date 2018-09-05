@@ -254,6 +254,7 @@ namespace Stroika::Foundation::Traversal {
     {
         return lhs.Intersection (rhs);
     }
+
 }
 
 #endif /* _Stroika_Foundation_Traversal_DiscreteRange_inl_ */

@@ -190,13 +190,13 @@ namespace Stroika::Foundation::Memory {
             StorageType (const T&);
             StorageType (T&& src);
             StorageType (const StorageType& src);
-            StorageType (StorageType&& src);
+            StorageType (StorageType&& src) noexcept;
             ~StorageType ();
 
             nonvirtual StorageType& operator= (const T& rhs);
             nonvirtual StorageType& operator= (T&& rhs);
             nonvirtual StorageType& operator= (const StorageType& rhs);
-            nonvirtual StorageType& operator= (StorageType&& rhs);
+            nonvirtual StorageType& operator= (StorageType&& rhs) noexcept;
 
             nonvirtual void destroy ();
             nonvirtual T*    peek ();

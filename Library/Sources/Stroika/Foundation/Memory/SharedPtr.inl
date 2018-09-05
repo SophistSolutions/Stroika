@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Memory {
                 fCountHolder_ = rhs.fCountHolder_;
                 return *this;
             }
-            inline Envelope_& operator= (Envelope_&& rhs)
+            inline Envelope_& operator= (Envelope_&& rhs) noexcept
             {
                 fPtr_             = rhs.fPtr_;
                 fCountHolder_     = rhs.fCountHolder_;
