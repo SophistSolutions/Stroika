@@ -1087,17 +1087,47 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
-*
-*   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont
-*   use this til debugged.
-*/
+ *  qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
+ *
+ *   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont
+ *   use this til debugged.
+ */
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy 0
+#endif
+
+#endif
+
+/*
+ * https://developercommunity.visualstudio.com/content/problem/330322/stdlocale-l2-en-usutf-8-broken-crashes-now.html
+ *      Take the example code from 
+            https://en.cppreference.com/w/cpp/locale/locale/locale
+
+            and create a new visual stdio C++ windows console application from it.
+
+            Run, and you will get
+                Debug Assertion Failed!
+
+                Program: C:\WINDOWS\SYSTEM32\MSVCP140D.dll
+                File: f:\dd\vctools\crt\crtw32\stdcpp\xmbtowc.c
+                Line: 89
+
+                Expression: ploc->_Mbcurmax == 1 || ploc->_Mbcurmax == 2
+
+            This is a very receent regression in your libraries. This worked in 15.8.0, I believe (or just before it).
+            But its broken in 15.8.2 and 15.8.3.
+ */
+#ifndef qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#else
+#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
 #endif
 
 #endif
