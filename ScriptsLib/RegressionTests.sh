@@ -138,8 +138,13 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
 	if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 		STAGE_STARTAT_INT=$(date +%s)
 		RASPBERRYPICONFIGS=`./ScriptsLib/GetConfigurations.sh | grep -oh "raspberrypi-.*\w"`
+		RASPBERRYPIVALGRINDCONFIGS=`./ScriptsLib/GetConfigurations.sh | grep -oh "raspberrypi-valgrind.*\w"`
 		for i in $RASPBERRYPICONFIGS; do 
 			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		done; 
+		for i in $RASPBERRYPIVALGRINDCONFIGS; do 
+			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=memcheck >>$TEST_OUT_FILE 2>&1
+			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=helgrind >>$TEST_OUT_FILE 2>&1
 		done; 
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
