@@ -69,3 +69,8 @@
    fun:_dl_start_final
    fun:_dl_start
 }
+{
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Addr8
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem.so
+}
