@@ -225,13 +225,25 @@ namespace {
                 try {
                     {
                         T1_httpbin_SimpleGET_ (factory ());
+#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                        if (not Debug::IsRunningUnderValgrind ()) {
+                            T2_httpbin_SimplePOST_ (factory ());
+                        }
+#else
                         T2_httpbin_SimplePOST_ (factory ());
+#endif
                     }
                     {
                         // Connection re-use
                         Connection conn = factory ();
                         T1_httpbin_SimpleGET_ (conn);
+#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                        if (not Debug::IsRunningUnderValgrind ()) {
+                            T2_httpbin_SimplePOST_ (conn);
+                        }
+#else
                         T2_httpbin_SimplePOST_ (conn);
+#endif
                         T3_httpbin_SimplePUT_ (conn);
                     }
                 }
