@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler{DefaultCrashSignalHandler, SignalHandler::Type::eDirect}, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 
     private:
-        Synchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;
+        RWSynchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;
 
     private:
         mutable atomic<unsigned int>     fDirectSignalHandlersCache_Lock_{0};
