@@ -769,7 +769,18 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper traceCtx ("{}Test11_SyncrhonizedCaches_...");
-            Private_::SyncLRUCacheT1_ ();
+            static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+#if defined(__arm__)
+            static constexpr bool kARM_ = true;
+#else
+            static constexpr bool kARM_ = false;
+#endif
+            if ( kRunningValgrind_ and kARM_) {
+                // https://stroika.atlassian.net/browse/STK-632 - this workaround ONLY needed on ARM and HELGRIND (not memcheck)
+            }
+            else {
+                Private_::SyncLRUCacheT1_ ();
+            }
         }
     }
 }
