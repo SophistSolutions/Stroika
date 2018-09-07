@@ -31,14 +31,6 @@
  *      @todo   Consider if BOTH overloads for get() should take COPY forward args - even if not needed?
  *              Especially reasonable todo now that we have cget () - which always takes zero arguments.
  *
- *      @todo   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it
- *              saves it as a data member and has min-size 1 byte it wastes space in SharedByValue<T>.
- *              See if this is optimized away in release builds and if not, see if we can find some
- *              clever way around it. (template specializaiton?). Note - this is exactly what the
- *              msvc vector<T> template does so presumably it IS optimized.
- *
- *              I THINK I maybe able to fix/workaround this with enable_if(sizeof(C) ==1???).
- *
  */
 
 namespace Stroika::Foundation::Memory {
