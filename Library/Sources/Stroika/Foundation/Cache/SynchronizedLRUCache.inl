@@ -87,13 +87,17 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline optional<VALUE> SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Configuration::ArgByValueType<KEY> key) const
     {
-        [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
+        // Avoid issue with Lookup updating the stats object - if there is one - with whichKindOfLocker
+        using whichKindOfLocker      = conditional_t<is_same_v<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, lock_guard<decltype (fMutex_)>>;
+        [[maybe_unused]] auto&& lock = whichKindOfLocker{fMutex_};
         return inherited::Lookup (key);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     VALUE SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher)
     {
-        auto&& lock = shared_lock{fMutex_};
+        // Avoid issue with Lookup updating the stats object - if there is one - with whichKindOfLocker
+        using whichKindOfLocker = conditional_t<is_same_v<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, lock_guard<decltype (fMutex_)>>;
+        auto&& lock             = whichKindOfLocker{fMutex_};
         if (optional<VALUE> o = inherited::Lookup (key)) {
             return *o;
         }
