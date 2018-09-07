@@ -1120,6 +1120,9 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
             This is a very receent regression in your libraries. This worked in 15.8.0, I believe (or just before it).
             But its broken in 15.8.2 and 15.8.3.
+            
+            NOTE - Debug version asserts out, and release version doesn't. BUT - for at least some cases (stroika regtests)
+            the release version builds a locale that doesnt work (with my test cases - unicode utf8 conversion).
  */
 #ifndef qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
 

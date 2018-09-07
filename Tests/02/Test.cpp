@@ -1163,7 +1163,7 @@ namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
-#if !qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy || !qDebug
+#if !qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
         auto testRoundtrip = [](const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
             try {
@@ -1172,9 +1172,13 @@ namespace {
                 VerifyTestResult (String::FromNarrowString (localMBString, l) == wideStr);
                 VerifyTestResult (String (wideStr).AsNarrowString (l) == localMBString);
             }
-            catch (...) {
+            catch (const runtime_error&) {
+                // https://en.cppreference.com/w/cpp/locale/locale/locale says must throw std::runtime_error if invalid locale
                 // if no such locale, just skip the test...
                 VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
+            }
+            catch (...) {
+                VerifyTestResult (false); // I think docs say must throw std::runtime_error
             }
         };
         //testRoundtrip ("en_US.utf8", u8"z\u00df\u6c34\U0001d10b", L"zß水𝄋");
