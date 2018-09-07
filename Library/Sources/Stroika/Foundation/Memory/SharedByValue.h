@@ -64,8 +64,7 @@ namespace Stroika::Foundation::Memory {
             return (*fCopier) (t);
         }
 
-        SHARED_IMLP (*fCopier)
-        (const T&);
+        SHARED_IMLP (*fCopier) (const T&);
     };
 
     /**
@@ -157,17 +156,17 @@ namespace Stroika::Foundation::Memory {
          */
         SharedByValue () noexcept;
         SharedByValue (nullptr_t n) noexcept;
-        SharedByValue (const SharedByValue<TRAITS>& from) noexcept;
-        SharedByValue (SharedByValue<TRAITS>&& from) noexcept;
+        SharedByValue (const SharedByValue& from) noexcept;
+        SharedByValue (SharedByValue&& from) noexcept;
         explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
         explicit SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier = element_copier_type ()) noexcept;
         explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type ());
 
     public:
-        nonvirtual SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
-        nonvirtual SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS>&& src) noexcept;
-        nonvirtual SharedByValue<TRAITS>& operator= (const shared_ptr_type& from);
-        nonvirtual SharedByValue<TRAITS>& operator= (shared_ptr_type&& from);
+        nonvirtual SharedByValue& operator= (const SharedByValue& src);
+        nonvirtual SharedByValue& operator= (SharedByValue&& src) noexcept;
+        nonvirtual SharedByValue& operator= (const shared_ptr_type& from);
+        nonvirtual SharedByValue& operator= (shared_ptr_type&& from);
 
     public:
         /**
@@ -220,12 +219,12 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual bool operator== (const SharedByValue<TRAITS>& rhs) const;
+        nonvirtual bool operator== (const SharedByValue& rhs) const;
 
     public:
         /**
          */
-        nonvirtual bool operator!= (const SharedByValue<TRAITS>& rhs) const;
+        nonvirtual bool operator!= (const SharedByValue& rhs) const;
 
     public:
         /**

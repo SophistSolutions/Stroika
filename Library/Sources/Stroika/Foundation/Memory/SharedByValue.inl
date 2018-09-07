@@ -60,13 +60,13 @@ namespace Stroika::Foundation::Memory {
     {
     }
     template <typename TRAITS>
-    inline SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from) noexcept
+    inline SharedByValue<TRAITS>::SharedByValue (const SharedByValue& from) noexcept
         : fCopier_ (from.fCopier_)
         , fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
     {
     }
     template <typename TRAITS>
-    inline SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from) noexcept
+    inline SharedByValue<TRAITS>::SharedByValue (SharedByValue&& from) noexcept
         : fCopier_ (from.fCopier_)
         , fSharedImpl_ (move (from.fSharedImpl_))
     {
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Memory {
     {
     }
     template <typename TRAITS>
-    inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& rhs)
+    inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue& rhs)
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename TRAITS>
-    inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS>&& rhs) noexcept
+    inline SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue&& rhs) noexcept
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
