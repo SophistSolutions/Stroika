@@ -35,3 +35,13 @@
    fun:_ZNK7Stroika10Foundation10Characters6String14AsNarrowStringERKSt6localePNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
    ...
 }
+{
+   DLL-LOAD-EXCEPTIONS-ISSUE-arm-rasperrypi-Conditional jump or move depends on uninitialised value(s)
+   Memcheck:Cond
+   ...
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:do_preload
+   fun:handle_ld_preload
+   fun:dl_main
+}
