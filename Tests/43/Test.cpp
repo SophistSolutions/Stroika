@@ -452,7 +452,13 @@ namespace {
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
         Test3_TextStreamResponse_::DoTests_ ();
         Test_4_RefDocsTests_::DoTests_ ();
+#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+        if (not Debug::IsRunningUnderValgrind ()) {
+            Test_5_SSLCertCheckTests_::DoTests_ ();
+        }
+#else
         Test_5_SSLCertCheckTests_::DoTests_ ();
+#endif
     }
 }
 
