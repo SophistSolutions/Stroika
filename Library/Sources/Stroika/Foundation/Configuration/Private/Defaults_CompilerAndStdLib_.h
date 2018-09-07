@@ -1150,8 +1150,10 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
  * OpenSSL calls under valgrind memcheck mysteriously cause failure/crash
  *
  *      On raspberry pi:
- *            lewis@raspberrypi:/tmp $ valgrind --gen-suppressions=yes -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  /tmp/Test43
- *            FAILED: SIGNAL= SIGILL
+ *          lewis@raspberrypi:/tmp $ valgrind --gen-suppressions=yes -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  /tmp/Test43
+ *          FAILED: SIGNAL= SIGILL
+ *
+ *          NOTE - we get the same failure with helgrind!
  *
  */
 #ifndef qCompilerAndStdLib_arm_openssl_valgrind_Buggy
