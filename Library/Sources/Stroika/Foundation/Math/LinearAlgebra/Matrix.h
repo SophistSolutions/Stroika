@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         class Rep_;
 
     private:
-        Memory::SharedByValue<Memory::SharedByValue_Traits<Rep_>> fRep_;
+        Memory::SharedByValue<Rep_> fRep_;
     };
 
 }

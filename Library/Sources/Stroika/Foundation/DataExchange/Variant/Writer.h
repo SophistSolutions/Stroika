@@ -89,7 +89,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         struct _Rep_Cloner {
             inline _SharedPtrIRep operator() (const _IRep& t) const;
         };
-        using SharedRepByValuePtr_ = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
+        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
 
     private:
         SharedRepByValuePtr_ fRep_;

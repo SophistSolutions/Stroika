@@ -56,7 +56,8 @@ namespace Stroika::Foundation::Memory {
             return (*fCopier) (t);
         }
 
-        SHARED_IMLP (*fCopier) (const T&);
+        SHARED_IMLP (*fCopier)
+        (const T&);
     };
 
     /**
@@ -124,15 +125,25 @@ namespace Stroika::Foundation::Memory {
      *
      *  This class template was originally called CopyOnWrite.
      *
+     *  \par Example Usage
+     *      \code
+     *          SharedByValue<vector<byte>> b{BLOB::Hex ("abcd1245").Repeat (100).As<vector<byte>> ()};
+     *          SharedByValue<vector<byte>> c = b;  // copied by reference until 'c' or 'b' changed values
+     *          VerifyTestResult (c == b);
+     *      \endcode
+     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename TRAITS>
+    template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {
     public:
         using element_type            = typename TRAITS::element_type;
         using element_copier_type     = typename TRAITS::element_copier_type;
         using shared_ptr_type         = typename TRAITS::shared_ptr_type;
         using shared_impl_copier_type = typename TRAITS::shared_impl_copier_type;
+
+    public:
+        static_assert (is_same_v<T, typename TRAITS::element_type>);
 
     public:
         /**
@@ -145,11 +156,14 @@ namespace Stroika::Foundation::Memory {
          *  with a copier (defaults to SharedByValue_CopyByDefault). If passed a bare pointer, that
          *  pointer will be wrapped in a shared_ptr (so it better not be already), and the SharedByValue()
          *  will take ownership of the lifetime of that pointer.
+         *
+         *  You can also copy a straight 'element_type' value into a SharedByValue.
          */
         SharedByValue () noexcept;
         SharedByValue (nullptr_t n) noexcept;
         SharedByValue (const SharedByValue& from) noexcept;
         SharedByValue (SharedByValue&& from) noexcept;
+        explicit SharedByValue (const element_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
         explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
         explicit SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier = element_copier_type ()) noexcept;
         explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type ());
@@ -248,7 +262,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual unsigned int use_count () const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] element_copier_type fCopier_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] element_copier_type fCopier_; // often zero sized
         shared_ptr_type                                fSharedImpl_;
 
     public:

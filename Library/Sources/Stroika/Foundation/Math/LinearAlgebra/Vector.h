@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         class IRep_;
 
     private:
-        Memory::SharedByValue<Memory::SharedByValue_Traits<IRep_>> fRep_;
+        Memory::SharedByValue<IRep_> fRep_;
     };
 
     template <typename T>
