@@ -141,28 +141,3 @@
    fun:GetMem_Util_
    fun:Allocate
 }
-{
-   https://stroika.atlassian.net/browse/STK-661 part1 (ARM/DEBIAN/RASPBERRYPI)
-   Memcheck:Cond
-   ...
-   fun:_dl_open
-   fun:do_dlopen
-   fun:_dl_catch_exception
-   fun:_dl_catch_error
-   fun:dlerror_run
-   fun:__libc_dlopen_mode
-   fun:__gconv_find_shlib
-}
-{
-   https://stroika.atlassian.net/browse/STK-661 part2 (ARM/DEBIAN/RASPBERRYPI)
-   Memcheck:Cond
-   ...
-   fun:_dl_catch_exception
-   fun:_dl_catch_error
-   fun:do_preload
-   fun:handle_ld_preload
-   fun:dl_main
-   fun:_dl_sysdep_start
-   fun:_dl_start_final
-   fun:_dl_start
-}
