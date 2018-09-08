@@ -35,21 +35,7 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (remainingInSleep); // else call the over overload
         CheckForThreadInterruption ();
         // @todo lose if the #if stuff and use just if constexpr (but not working on msvc)
-#if qPlatform_Windows
-        if constexpr (qPlatform_Windows) {
-            Time::DurationSecondsType tc = Time::GetTickCount ();
-            if (::SleepEx (static_cast<int> (seconds2Wait * 1000), true) == 0) {
-                *remainingInSleep = 0;
-            }
-            else {
-                Time::DurationSecondsType remaining = (tc + seconds2Wait) - Time::GetTickCount ();
-                if (remaining < 0) {
-                    remaining = 0;
-                }
-                *remainingInSleep = remaining;
-            }
-        }
-#elif qPlatform_POSIX
+#if qPlatform_POSIX
         if constexpr (qPlatform_POSIX) {
             const long kNanoSecondsPerSecond = 1000L * 1000L * 1000L;
             timespec   ts;
@@ -62,6 +48,20 @@ namespace Stroika::Foundation::Execution {
             }
             else {
                 *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
+            }
+        }
+#elif qPlatform_Windows
+        if constexpr (qPlatform_Windows) {
+            Time::DurationSecondsType tc = Time::GetTickCount ();
+            if (::SleepEx (static_cast<int> (seconds2Wait * 1000), true) == 0) {
+                *remainingInSleep = 0;
+            }
+            else {
+                Time::DurationSecondsType remaining = (tc + seconds2Wait) - Time::GetTickCount ();
+                if (remaining < 0) {
+                    remaining = 0;
+                }
+                *remainingInSleep = remaining;
             }
         }
 #else
@@ -87,4 +87,5 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Execution_Sleep_inl_*/
