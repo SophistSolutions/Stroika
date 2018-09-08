@@ -1354,6 +1354,7 @@ sub PostProcessOptions_ ()
 					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
 				}
 
+				# https://stroika.atlassian.net/browse/STK-663
 				# Otherwise (with c++17 and XCode 10beta)
 				#	Undefined symbols for architecture x86_64:
 				#	"boost::system::detail::generic_category_instance", referenced from:
