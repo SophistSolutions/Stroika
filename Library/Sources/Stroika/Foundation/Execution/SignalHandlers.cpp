@@ -350,7 +350,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal)
     SetSignalHandlers (signal, Set<SignalHandler> ());
 }
 
-void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler handler)
+void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHandler& handler)
 {
     SetSignalHandlers (signal, Set<SignalHandler> ({handler}));
 }
@@ -449,14 +449,14 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     }
 }
 
-void SignalHandlerRegistry::AddSignalHandler (SignalID signal, SignalHandler handler)
+void SignalHandlerRegistry::AddSignalHandler (SignalID signal, const SignalHandler& handler)
 {
     Set<SignalHandler> s = GetSignalHandlers (signal);
     s.Add (handler);
     SetSignalHandlers (signal, s);
 }
 
-void SignalHandlerRegistry::RemoveSignalHandler (SignalID signal, SignalHandler handler)
+void SignalHandlerRegistry::RemoveSignalHandler (SignalID signal, const SignalHandler& handler)
 {
     Set<SignalHandler> s = GetSignalHandlers (signal);
     Require (s.Contains (handler));

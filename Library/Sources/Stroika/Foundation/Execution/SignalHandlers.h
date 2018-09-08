@@ -7,7 +7,6 @@
 #include "../StroikaPreComp.h"
 
 #include <csignal>
-#include <mutex>
 
 #include "../Configuration/Common.h"
 #include "../Containers/Mapping.h"
@@ -208,7 +207,7 @@ namespace Stroika::Foundation::Execution {
          *  \note Setting any 'Safe' signal handlers requires that SafeSignalsManager has been created.
          */
         nonvirtual void SetSignalHandlers (SignalID signal);
-        nonvirtual void SetSignalHandlers (SignalID signal, SignalHandler handler);
+        nonvirtual void SetSignalHandlers (SignalID signal, const SignalHandler& handler);
         nonvirtual void SetSignalHandlers (SignalID signal, const Containers::Set<SignalHandler>& handlers);
 
     public:
@@ -220,13 +219,13 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note Adding any 'Safe' signal handlers requires that SafeSignalsManager has been created.
          */
-        nonvirtual void AddSignalHandler (SignalID signal, SignalHandler handler);
+        nonvirtual void AddSignalHandler (SignalID signal, const SignalHandler& handler);
 
     public:
         /**
          * @see GetSignalHandlers()
          */
-        nonvirtual void RemoveSignalHandler (SignalID signal, SignalHandler handler);
+        nonvirtual void RemoveSignalHandler (SignalID signal, const SignalHandler& handler);
 
     public:
         /**
