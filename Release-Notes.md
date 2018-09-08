@@ -19,6 +19,952 @@ History
 
 
 
+
+    
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d6">v2.1d6</a><br/>2018-09-09xxx</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d5...v2.1d6</li>
+		<li>Compiler Versions supported
+			<ul>
+				<li>XCode 10 beta 6</li>
+				<li>Support _MSC_VER_2k17_15Pt7_,_MSC_VER_2k17_15Pt8_</li>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>gcc 8.2 instead of 8.1 (still ubuntus default gcc8  - 8.0)</li>
+				<li>switch VS bug tests to using _MSC_VER <= _MSC_VER_2k17_15Pt7_ instead of _MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt5_ so less need to recheck with each build change</li>
+			</ul>
+		</li>
+		<li>***breaking changes***
+			<ul>
+				<li>move (not backward compatible) ThrowIfErrorHRESULT to namespace Execution::Platform::Windows; (from Exection)</li>
+				<li>renamed the const overload of GetRep() on Iterator to ConstGetRep() - and fixed various calls to it. Rarely called except by implementers of Iterators so change should rarely cause problems (and be obvious - not compiling)</li>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</li>
+		<li>xxxx
+			<ul>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</li>
+		<li>xxxx
+			<ul>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</li>
+		<li>Iterator changes
+			<ul>
+				<li>Iterator::CTOR move CTOR for rep</li>
+				<li>support qStroika_Foundation_Traversal_Iterator_UseSharedByValue to see if works better without sharedbyvalue (performance/thread issues) and set (CHANGE) to to 0 by default</li>
+				<li>Inside Iterator<> template - renamed IteratorRepSharedPtr to RepSmartPtr; renamed MakeSharedPtr to MakeSmartPtr, etc. Deprecated old names. Reason for the agnostic about type of smart ptr names - since we may use unique_ptr (or maybe shared_ptr - still testing)</li>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>libcurl 7.61.1</li>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</li>
+		<li>xxxx
+			<ul>
+				<li>added overload of ThrowIfNull for unique_ptr, </li>
+				<li>added (and used) macro IgnoreExceptionsExceptThreadInterruptForCall and documented all the IgnoreExceptionsExcept...... macros</li>
+				<li>xxx</li>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</li>
+		<li>Implement Execution::IsProcessRunning () for windoze</li>
+		<li>Tweak DiscreteRange<>::begin () and docs</li>
+		<li>xxxx</li>
+		<li>xxxx</li>
+		<li>xxxx</li>
+		<li>xxxx</li>
+		<li>xxxx</li>
+		<li>xxxx</li>
+		<li>xxxx</li>
+
+#if 0
+
+    
+
+    
+
+commit 31f031235b848785da7f51917e7091b6ef1cd839
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Aug 11 18:46:22 2018 -0400
+
+    use IteratorBase::PtrImplementationTemplate<> instead of deprecated IteratorBase::SharedPtrImplementationTemplate
+
+commit ba156f7eec92c26a43c63a9848b540535bd11930
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 10:40:57 2018 -0400
+
+    comments
+
+commit deeda9f4a540113bcfb2e1eb1d5929887d32952f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 12:09:15 2018 -0400
+
+    renamed MakeSharedPtr<> to MakeSmartPtr<> in Iteratble<> template
+
+commit b6b9aa29288ce2ef88dd1f2dc57a0a497a5f8c1b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 12:51:23 2018 -0400
+
+    minor cleanups - comments, and a few constexrp changes
+
+commit c25093d8de937c0a37c1e95f49dd556646b80eab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 16:53:09 2018 -0400
+
+    cosmetic
+
+commit fdcbd0f78d75a558b83ec82ed1c3de8dfad94f17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 17:15:11 2018 -0400
+
+    cosmetic
+
+commit 3262efbcde2a17fd26dffea9beec5b98a73213b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 17:20:02 2018 -0400
+
+    cosmetic
+
+commit 59f642f1984e9a94f6764c5d4ca0528835ac13bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 19:44:33 2018 -0400
+
+    cosmetic
+
+commit 39db230d6994ec04bca60cd070ef71d1ae41ba04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 19:45:13 2018 -0400
+
+    cosmetic
+
+commit 2e96bdf5d51b0e112a2413567138a683ab76065f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 20:06:36 2018 -0400
+
+    Cosmetic
+
+commit 5de507d9601be405be31e077190e072415804b6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 20:58:38 2018 -0400
+
+    SmallStackBuffer<> cleanups - store array of butes not array of T, in preps to only construct live items
+
+commit 4cd1b8ac92b28365bf137a9f540ebb0465cf1a00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 21:11:55 2018 -0400
+
+    minor cleanups to SmallStackBuffer<>
+
+commit 2f6ece6a6cf917255bd307ede529b54ae6bd2ca2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 21:24:25 2018 -0400
+
+    SmallStackBuffer<>: use qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy, and rename a few fields for clarity
+
+commit 4bffb04a60a682c25d7aa6962633c37b713324ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 22:30:31 2018 -0400
+
+    Beginning/more support for https://stroika.atlassian.net/browse/STK-159
+    SmallStackBuffer<> to support non POD types (INCOMPLETE).
+
+commit f0b2b771ef4e39b862dfc6b13d72400a1c207e29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Aug 12 23:31:03 2018 -0400
+
+    SmallStackBuffer<>: https://stroika.atlassian.net/browse/STK-159 progress on non-POD support
+
+commit c8ddb1fde02887276255d1b7f4bbaf3bd0b53eea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 12:14:12 2018 -0400
+
+    moved PRIVATE_::uninitialized_copy_n_MSFT_BWA to Configuraiton file/module so can be used elsewhere
+
+commit 9dfbdb0e32aa2c49cc4fef7f478631104cc24f2b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 12:14:47 2018 -0400
+
+    fixed https://stroika.atlassian.net/browse/STK-159 - SmallStackBuffer<> now supports constructed objects (still more cleanup toodo and regtests)
+
+commit 1a864b048c521f46ed7526c6310d5d603d7227f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 14:54:10 2018 -0400
+
+    more cleanups/tweaks of SmallStackBuffer template
+
+commit f062fdca559dd29524cd7d4a420593842c706e50
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 15:41:40 2018 -0400
+
+    fixed SmallStackBuffer<T>... so reserve () now allows shrinking as well. And other cleanups;
+
+commit 3525c19df74e51375342630469d1b4a7a83ac93c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 15:49:26 2018 -0400
+
+    more assertions for SmallStackBuffer
+
+commit 7a0fb9b98a1f2dc2b3bf3c4a392c1835998f433a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 15:55:07 2018 -0400
+
+    comments and regression tests for SmallStackBuffer new non-POD support
+
+commit ba7c47e309a4dd4c62edf8ba7957c8177053cfe0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 16:50:42 2018 -0400
+
+    refactor LRUCache<> code a bit so LRUCache_ private object gone and other small cleanups
+
+commit a25d21b6d27740b783d12a9c5959170d98e09247
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 13 16:51:18 2018 -0400
+
+    typo
+
+commit ff0196e08fc022af3510dd50bc509a00539557c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 11:21:22 2018 -0400
+
+    Added class hash<Stroika::Foundation::Characters::String> specialization
+
+commit 0649c0cd070ca6f1dd60fcd41d8ce84a933cca72
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 11:22:45 2018 -0400
+
+    redid LRUCache to use SmallStackBuffer instead of explicit array, so can pass in argument hashtable size instead of template param, and then lose template params for hashtablesize; LOSE DEfaultTraits support for LRUCache - and TRAITS altogehter  - and instead re-organized template parameters (NOT BACKWARD COMPATIBLE FOR USERS USING TEMPLATE TRAITS!)
+
+commit 5da8b41bce0e2fbd6303ceda0d171dfbf86ab71d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 12:47:52 2018 -0400
+
+    Imporved deduction guide/overloads/docs for LRUCache
+
+commit 18c1e5e3d36da677960bf2cf37b1816128ef921e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 12:50:53 2018 -0400
+
+    cosmetic
+
+commit ca49b52c1bce7b47764dd458e09487cd96ea0259
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 13:49:20 2018 -0400
+
+    fixed typo in LRUCache (and related minor cleanups) and draft of SynchronizedLRUCache
+
+commit 060cebbd0bb35c664c4f99116e066c4345e00077
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 19:27:59 2018 -0400
+
+    react to change in LRUCache API (template params)
+
+commit c6ceb28a2428a6d9b5129252b61c6e8b7b57a6d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 19:38:13 2018 -0400
+
+    Started support for _MSC_VER_2k17_15Pt8_ 1915; and added bug workaround define for qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+
+commit e721492b8f79fc0d6b6ca47d33c0096475556350
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 19:38:55 2018 -0400
+
+    cosmetic
+
+commit 978a366884c336b81750fb6e2da7ac4709cc85ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 14 19:39:23 2018 -0400
+
+    qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy workarounds (first draft but seems adequate)
+
+commit eec10de08c3939097143c2f0753faebb80b107e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 09:53:38 2018 -0400
+
+    missing checkin of Cache_SynchronizedLRUCache
+
+commit 3efbaeb47dacc40812f33c50e8ce532d50cb6eb7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 11:12:27 2018 -0400
+
+    fixed name of sample html file in WebServer sample
+
+commit b81a8fc75fe8a42a59ea9bb589f901422613a5d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 11:12:56 2018 -0400
+
+    update Archive sample to use optional instead of Memory::Optional
+
+commit a96a086319169bc9979be5447df94e0086facef0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 11:14:35 2018 -0400
+
+    Update bug test defines for _MSC_VER_2k17_15Pt8_ (maybe incomplete due to warnings but mostly right)
+
+commit 02021e80445408b691261cbecad8f87d2e407279
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 13:35:03 2018 -0400
+
+    renamed usage of SharedPtrImplementationTemplate to PtrImplementationTemplate
+
+commit ff951ec9d80801e7685fa103177af72d81ef34ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 13:48:06 2018 -0400
+
+    qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy  still broken in msvc 15.8
+
+commit 2a741a0a35b5d5233cce1854b22925c3030b9020
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 14:36:57 2018 -0400
+
+    Lots of cleanups, and docs improvements to various cache classes/methods, esp the synchonized verisons: not 100% backeard compatible, but mostly (one TimedCache Lookup overload deleted, and one TimedCache::Lookup overload new delets items - as it should have all along)
+
+commit b149e364f51a0ea6a3b90118d4ca1ed3f518f010
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 20:41:24 2018 -0400
+
+    qCompilerAndStdLib_inline_static_align_Buggy still broken for _MSC_VER_2k17_15Pt8_ but just for release builds
+
+commit ea3d67067c35f72425be685d7dc24ca3546384ca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 21:33:50 2018 -0400
+
+    a few tweaks to SynchronizedLRUCache to get it working, and a regression test
+
+commit 420288b9b3ddf58490f5acab71e4e500269fb599
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 15 22:24:42 2018 -0400
+
+    qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy workaround
+
+commit 96bd78286ee2e89f2a6f9b04eb954bb68ed64d07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Aug 16 10:10:16 2018 -0400
+
+    readme comments
+
+commit c6d09c9f42c475eb7d49a357e4c2f612d38e6338
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Aug 16 10:10:40 2018 -0400
+
+    require and readme comments on Cache code
+
+commit cc449f1c3e058890fdc1cb5e7f083ed15f543f02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 17 10:44:53 2018 -0400
+
+    docs
+
+commit fe48c1484768e599db9168a9e4c91b016d71ed2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 17 10:58:53 2018 -0400
+
+    doc comments/cleanups cache  / regtest code
+
+commit 142b7f6b84591fd1a8259e486fd8a2d74e27d4ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 15:57:34 2018 -0400
+
+    ***not backward compatible*** change to SharedByValue - changed COPIER template argument to be functor style () instead of method Copy()
+
+commit d7acfd38c46b9bfe6cdfd5c23a39c913632ff52a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 16:09:43 2018 -0400
+
+    fix SynchronizedLRUCache  template mistake
+
+commit d9396509c4f61b2980e4c37d1d95cd83560eb03a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 16:09:55 2018 -0400
+
+    SharedByValue_CopySharedPtrAtomicSynchronized deprecated
+
+commit 15fc08bb364651dfd131f1fafd8804f6f247988c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 21:02:09 2018 -0400
+
+    tweak recent Cache changes (not compiling)
+
+commit 8a48ddbe16aa1fa44bf986f9b1a7520835899315
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 21:12:54 2018 -0400
+
+    Defined NO_UNIQUE_ADDRESS_ATTR conditionally, and used it in a few places
+
+commit 46f65a16f4c6db905dc7ac5b59dc0359be39482c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 21:15:30 2018 -0400
+
+    SharedByValue_CopySharedPtrAtomicSynchronized deprecated; [[NO_UNIQUE_ADDRESS_ATTR]] used in one place
+
+commit f7d87c6d72ea8bfaf6df1775b45b941403767cc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 20 21:36:40 2018 -0400
+
+    cosmetic, and [[maybe_unused]] in a couple places
+
+commit bf69a4dbb9a4ee60f8f799f04ad9910e747f017e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 11:01:56 2018 -0400
+
+    increased max time diff between String Format () and sprintf cuz somtimes failing on windows (could be new compiler but not big diff)
+
+commit b06834830d6842a735667dbeaae0c24856c1f967
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 11:03:05 2018 -0400
+
+    fixed a couple calls to lock_guard to shared_lock in LRUCache.inl (debug thread asserts failing erroniously in sync lru regression test on raspberrypi)
+
+commit a8f4d9ef4dad4f4f37741f8f7db1d7d463813545
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 12:32:03 2018 -0400
+
+    new LIKELY_ATTR and UNLIKELY_ATTR - and used in a few places (and comment cleanups)
+
+commit e7e694d545458a58662a7978d9ad1082ac584663
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 14:20:01 2018 -0400
+
+    reverted / addressed performance regression with SMallStackBuffer: added optional CTOR param: SmallStackBufferCommon::eUninitialized, and provided _uninitialized variants of resize and GrowToSize() methods, and used them as appropriate thorughout stroika
+
+commit 2aa1d999f88cf46ee7613b7a0c373fd711ead2ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 14:20:23 2018 -0400
+
+    Revert "increased max time diff between String Format () and sprintf cuz somtimes failing on windows (could be new compiler but not big diff)"
+    
+    This reverts commit bf69a4dbb9a4ee60f8f799f04ad9910e747f017e.
+    
+    Because instead fixed by addressing underlying performance regression with SmallStackBuffer
+
+commit 6d7114785ebfe662b41b9dbb258fed89083b7518
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 14:29:00 2018 -0400
+
+    small tweak to SmallStackBuffer::push_back
+
+commit 6335f4d7fa3539261e2e4d07c7f032ddcbc7b564
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 15:13:23 2018 -0400
+
+    a few cleanups and  [[UNLIKELY_ATTR]] usage
+
+commit 801a92de1ddb74e60f12d1329af3488e7b615f5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 15:13:49 2018 -0400
+
+    a few cleanups and  [[UNLIKELY_ATTR]] usage
+
+commit 1c6c34d74f0fbfea33782e3f4a08ba2bbeb2074d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 16:02:31 2018 -0400
+
+    small performance tweaks to TextReader
+
+commit 86a1485ae63c927ca2eccad74105f840c7e3beb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 19:38:53 2018 -0400
+
+    openssl 1.1.1-pre9
+
+commit 7d684509730f95011d91db85c2465ce25bcebbdd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 19:43:27 2018 -0400
+
+    boost 1.68
+
+commit 03a874fd69addfede5a66dfaf37d70ce076525f7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 21 21:35:35 2018 -0400
+
+    openssl makefile (unix): added imporved logging for CONFIGURE process (to debug); and got rid of -no-engines options - saw it was causing problems with latest openssl (emits warning -no-engines not supported) and no clear notes on why its needed (may not be anymore - maybe was workaround for centos6 issue we may not have anymore)
+
+commit f69fcfaf6807dee5ff00e4375d103d8085045a3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 10:33:22 2018 -0400
+
+    Improved docs on Debug/AssertExternallySynchronizedLock
+
+commit c90a409aa1784558e1850239444787c4b91cb89e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 10:33:51 2018 -0400
+
+    fixed thread safety checks (debug exterally sync) in LRUCache (they were wrong)
+
+commit b89b078c0483aca801607663e4ba0c16d3666350
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 11:03:27 2018 -0400
+
+    use C++17 class type deduction in a few places/uses of lock_guard (so not repeating type)
+
+commit 934cd464ef1b1e92e7b88081fa37add20ace489e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 12:34:28 2018 -0400
+
+    cosmetic changes due to constexpr statics being inline since c++17; commanets and major semantics change on Date::AddDays () - **not backward compatible** - empty now treated as kMin not GetToday() for purpsoe of AddDays (already treated that way everplace else)
+
+commit 7314857298f2eeec6eea665f62f1543fb0022fc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 12:34:59 2018 -0400
+
+    cosmetic, lose obsolete constexpr definition (cuz constexpr inline)
+
+commit d4e48ba6820c360a544913ef1dd2ef4aa4cec2c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 12:37:51 2018 -0400
+
+    lose DateRange.cpp and DateTimeRange.cpp since they just include static definition now handled by 'constexpr inline'
+
+commit ff1ec192f920da8d502b58e1b2ff51e7422ad373
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 12:47:09 2018 -0400
+
+    doc comments/improvemnts
+
+commit 9ed6cb27f78d2b7aa20346b99c0f81e2ea8480d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 13:01:31 2018 -0400
+
+    added overload to LRUCache<>::Add - taking one argument. I may have a use case in HF that makes this make sense. Testing/trying and will revisit with more data
+
+commit a92752182fb73446a2d9d6dfab0d5443775ac613
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 14:48:10 2018 -0400
+
+    ReserveSpeedTweekAdjustCapacity () tweak - so grows faster initially. That should help more than it hurts, but I dont have good empirical data for this (and the added computation cost could outweigh)
+
+commit 4703812fe074e13e8a33c647d237c4fd9541f7c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 14:48:56 2018 -0400
+
+    use for (const auto&& in a few places for for loops - in hopes of speedup
+
+commit 7fb741bc2e4d26fd628cccfb403538e1dcefda01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 14:49:17 2018 -0400
+
+    docs todo
+
+commit 42db3244947097281d0f1774812d9e27c1c9c141
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 14:55:52 2018 -0400
+
+    Cosmetic
+
+commit 9168daa878f320487f4f52167e1219371042bfce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 14:56:30 2018 -0400
+
+    very slight performance tweak - TextReader::CachingSeekableBinaryStreamRep_ now uses SmallStackBuffer instead of vector
+
+commit f1c301da9a44376780942d3678b1ec2598633a23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 21:04:57 2018 -0400
+
+    a few more cases qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy needed
+
+commit 2fbb272aa0bc98108b460897a54747e86ffb8f3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Aug 22 21:31:47 2018 -0400
+
+    Replace use of using Byte = uint8_t to just using std::byte throughout Stroika. NOT PERFRECT switch. NOT going to be backward compatible. But probably a good idea. AND INCOMPLETE - but testable
+
+commit 2c61a2d077c4fa42294bab1adb45f062b7e2a1cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 24 09:40:43 2018 -0400
+
+    switch more code to using std::byte instead of Memory::Byte
+
+commit dbff03ddd868446fd04cdaad545739246683450b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 24 12:10:52 2018 -0400
+
+    completed migration from using (deprecated) Memory::Byte to std::byte (c++17)
+
+commit 0d1e776ce23b4df52583e476340981a3735aa1ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 4 08:59:06 2018 -0400
+
+    silence warning
+
+commit 4c0d418203cffd3aa8f9d52437fa44d9a0a1ab5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 4 10:47:05 2018 -0400
+
+    new Streams::Copy module (and simple regtest)
+
+commit 5d6442e17c88457353bb23508db6a348f059b734
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 4 14:11:34 2018 -0400
+
+    ***not backward compatible*** - new Streams::SeekableFlag replacing  SeekableFlag in FileStream - rarely used directly - use kSeekableFlag_DEFAULT intead of SeekableFlag::eDEFAULT
+
+commit de0cb00185a0bded1ee828c5d8b08e2740f73072
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 4 14:12:22 2018 -0400
+
+    ***not backward compatible*** - new Streams::SeekableFlag replacing  SeekableFlag in FileStream - rarely used directly - use kSeekableFlag_DEFAULT intead of SeekableFlag::eDEFAULT
+
+commit c5086953f1eeb4cea72c8fe2e519f8e3a398bf36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 4 14:53:53 2018 -0400
+
+    use new SeekabilityFlag enum in TextReader, in place of deprecated overloads wtih bool for seekability
+
+commit 7141ddecc3a76d326019de0ee9da605e4785174a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 4 14:56:23 2018 -0400
+
+    lose --without-system on boost makefile since appears ignored and always included
+
+commit 1741a4f718a233748892c93d2e7f540bfe076792
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 09:33:52 2018 -0400
+
+    get make run-tests REMOTE= and VALGRIND= working togehter
+
+commit af11b99b005c550f5f8b650446b9c33e5b8a0377
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 10:51:46 2018 -0400
+
+    use ArgByValueType in a few more places, and related minor tweaks
+
+commit 3b2be87b890f8a52c84eb5cabb18f22f58b800ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 15:28:55 2018 -0400
+
+    major celanups to warnings (esp on windows); [[maybe_unused]] used, cleanued up lots of unneeded qSilenceAnnoyingCompilerWarnings/#pragma warnings, and use alot of noexcepts on move CTORs/operator= calls
+
+commit aac901c5ba1a8e02977eba8ef41c9e6ade784a3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 15:56:17 2018 -0400
+
+    more warning cleanups (esp on windows) - comment details of why suppression; simplify some no longer needed #pragma warnings
+
+commit ba40f7181c335144178b1e712e26cccd510cd3a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 16:25:38 2018 -0400
+
+    lose obsolete bug and feature defines qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug qAccessCheckAcrossInstancesSometimesWrongWithVirtualBaseqSupportEnterIdleCallback qUseGDIScrollbitsForScrolling
+
+commit 72be4197a81341ed100267fd3498346b643aa40b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 16:38:18 2018 -0400
+
+    a few more trivial cleanups based on running msft code analysis tool
+
+commit e5b8e96d7f0ea4ce259a44fe20b9abeb4e158403
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 17:25:59 2018 -0400
+
+    more cosemtic changes - noexcept CTORs, initialized files (already initialized in CTOR to silence bad warning from msvc analayzer, and similar)
+
+commit 1ff49be69e88c048e8b79e04231cae308ec0fa86
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 17:33:59 2018 -0400
+
+    silence one more msft analysis warning
+
+commit 73ee8afeb81e81897a4227ab4133e20c9a0cc54a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 17:37:59 2018 -0400
+
+    fixed small regression in make runtests script
+
+commit 9b49b1662ef799441c211b16f03200696285c572
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 17:41:34 2018 -0400
+
+    fixed valgrind options in make run-tests
+
+commit 8ecf99cdd8aa7a5d8faf8d41ce33d32743d20de0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 19:52:20 2018 -0400
+
+    typo fixed
+
+commit 8826856b8f0f6fda9a38f00ad7595ad7d6ae56ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 19:53:56 2018 -0400
+
+    undo recent cleanup cuz cannot have default ctor called on LRUCache items
+
+commit d5811725d44734c5c24a19683ab7462c9a8cf0c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 20:35:36 2018 -0400
+
+    also run raspberrypi valgrind configs under valgrind
+
+commit c5775c138ab1828513b6c77f77e23dea07dd0c4d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 5 20:42:03 2018 -0400
+
+    update WindowsTargetPlatform from 10.0.16299.0 to 10.0.17134.0
+
+commit c5fa09db2c75972ca6fed40c2fadb3f334858a9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 10:39:22 2018 -0400
+
+    Revert "update WindowsTargetPlatform from 10.0.16299.0 to 10.0.17134.0"
+    The newer SDK has something broken with locales
+    
+    This reverts commit c5775c138ab1828513b6c77f77e23dea07dd0c4d.
+
+commit 11bfaa3aabff77ffe9345a4472ceab4669d81658
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 18:43:15 2018 -0400
+
+    qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy  bug definition and workaround
+
+commit ed4f8a3e67144fd57ec5f197fcdd21d3f503beba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 20:03:22 2018 -0400
+
+    raspberrypi memcheck valgrind issue suppression
+
+commit 045380e065bb94be5120f59f1cbd0c764c217dce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 20:04:13 2018 -0400
+
+    Revert "Revert "update WindowsTargetPlatform from 10.0.16299.0 to 10.0.17134.0""
+    
+    This reverts commit c5fa09db2c75972ca6fed40c2fadb3f334858a9d.
+    
+    OK - the issue was another issue with this msvc compiler release, and had nothing todo with
+    the SDK change
+
+commit 5705ac68bfc079830c619559e9fe748de15aec01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 20:31:10 2018 -0400
+
+    minor mostly cosmetic tweaks to SharedByValue template code
+
+commit 2e83c5a334a61ecba3281fc6e7cc9679bf2f692f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 20:31:38 2018 -0400
+
+    lose obsolete todo item
+
+commit d8d59ead848aa462aaf2fe5393cd640d45556186
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 6 21:00:00 2018 -0400
+
+    ***INCOMPATIBLE CHANGES*** - SharedByValue<> template now takes T as first argument, and TRAITS as default. OK to change existing code to just have T as first arg; then added new CTOR for SharedByValue, defaulted TRAITS type, and added docs examples on usage, and regression test
+
+commit 4b01baf4c174d37bf35f3484a1bb5697a2270f0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 09:53:03 2018 -0400
+
+    Improved regtest for locale lookup code (runtime_error thrown); and fixed test for !qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy workaround - broken (just differently) for release builds
+
+commit ba12638ae5c31a4e382ac4df77d5ddc364fb2ffb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 10:17:02 2018 -0400
+
+    SynchronizedLRUCache<> issue with Lookup and thread santizer fixed: Lookup is logically const, but does change the accounting object (stored inline). So make the caller use a lock_guard or shared_lock depending on the STATS_TYPE.
+
+commit 096d759cac0792fccebbfe84541c6936e0150a11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 10:41:51 2018 -0400
+
+    https://stroika.atlassian.net/browse/STK-661 valgrind memcheck raspberrypi suppression
+
+commit b89f1eadbc18149e25cc33a75df83121a54250c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 11:12:56 2018 -0400
+
+    sslpurify on valgrind/raspberrypi config
+
+commit 4bd3c95864619e54aa188eaed4bd6ba36e287b34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 11:22:27 2018 -0400
+
+    Moved valgrind suppresisons from Valgrind-MemCheck-BlockAllocation.supp to Valgrind-MemCheck-Common.supp
+    and remove one filter so a test applies more widely.
+
+commit a67c0d9b4483086dd8a6c2f77c3500d3d5ead912
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 11:51:56 2018 -0400
+
+    https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI) suppression added to workaround likely arm/raspberrypi distro bug
+
+commit 2a00c14c64c825f558626b3b91da26dc51404546
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 13:19:03 2018 -0400
+
+    start trying to workaround qCompilerAndStdLib_arm_openssl_valgrind_Buggy bug
+
+commit fd4f343919e2cba4c151d09bcbeb86679da8a475
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 13:31:51 2018 -0400
+
+    format output better for running regtests
+
+commit a6a5b1802f9ac62137dcb49470df7637534d31d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 13:48:02 2018 -0400
+
+    cosmetic
+
+commit 68f2b54e1ee07e97fb319afa250a3c0e129baa56
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 13:55:13 2018 -0400
+
+    another workaround for qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+
+commit dcf0b4d354511c8d9821ad0ee90af9ac0736e995
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 13:55:45 2018 -0400
+
+    anohter workaround for https://stroika.atlassian.net/browse/STK-620 but for linux/arm/raspberrypi
+
+commit 30640382d17e713aeb2ffec60f0b4a12242faaad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 13:59:20 2018 -0400
+
+    https://stroika.atlassian.net/browse/STK-628 (same but for ARM)
+
+commit ce65a08c9cfb45b52c605a771edea883d92dab5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 14:21:28 2018 -0400
+
+    Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled heldgrind suppression for ARM compiler
+
+commit 3c5ae7fb634266c43dc22447194d9ba9877d3465
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 16:30:44 2018 -0400
+
+    arm workaround for https://stroika.atlassian.net/browse/STK-483 - helgrind suppression
+
+commit d92a79269dca3488d3858ebffbafc7988bfad53d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 16:53:16 2018 -0400
+
+    used RWSynchronized<> for fDirectHandlers_; with signalhandlers since best if multiple reads dont block as this updated rarely
+
+commit 35ab796a05120c6597ca1b831f276de3044dd592
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 18:06:32 2018 -0400
+
+    avoid running :SyncLRUCacheT1_ (); regtest on valgrind ARM helgrind cuz it makes it crash
+
+commit 734297e68f1f512a1312d0e47f06d392c2c71c18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 7 18:17:29 2018 -0400
+
+    cosmetic
+
+commit f937cb0e74e2a8ecb8b67f012a21e5478786cb1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 08:13:21 2018 -0400
+
+    tweak raspberrypi helgrind suppression rule
+
+commit 3fcc26b3cf1ba81896145696aaf548341b81ca33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 08:20:24 2018 -0400
+
+    hopefully fixed accounting for arm tests in regression test script
+
+commit 55e9c26e63bb9b0b905659c278b4a6f6b0988b35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 16:53:10 2018 -0400
+
+    cosmetic
+
+commit ff65a918068c7ee6f76d00ab23371524b5af2986
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 16:53:34 2018 -0400
+
+    mostly comsetic
+
+commit 476cea2e22eba74e482a6f43d2dfd17929a2d224
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 16:54:00 2018 -0400
+
+    libcurl 7.61.1
+
+commit aa86df8a7881fd6d822c71dd788dcec0aed021bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 17:15:07 2018 -0400
+
+    test fix for boost/xcode10beta issue with Undefined symbols boost::system::detail::generic_category_instance
+
+commit 9ce10734910a823982e5bea8803298f57baad071
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 17:17:51 2018 -0400
+
+    added my+g++-8.2 to regtests
+
+commit da7ab2c5c7c044bc742c5cef8d686843d718f653
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 17:20:42 2018 -0400
+
+    update notes on https://stroika.atlassian.net/browse/STK-663
+
+commit 8aeb60e2960fb36f9a33e3985efa205807de60e2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 17:58:39 2018 -0400
+
+    Lose regtest  my-g++-8.1-debug-c++17 config
+
+commit dcb92359148590f2498b3990970e5088ef5cceab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 8 18:00:10 2018 -0400
+
+    replaced my-g++-8.1-debug-c++17  config with my-g++-8.2-debug-c++2a
+#endif
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d6.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d6-OUT.txt</li>
+				<li>vc++2k17  (15.8.3)</li>
+				<li>MacOS, XCode 10 (beta6)</li>
+				<li>gcc 7, gcc 8</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 
 <tr>
