@@ -45,26 +45,19 @@ History
 				<li>commanets and major semantics change on Date::AddDays () - **not backward compatible** - empty now treated as kMin not GetToday() for purpsoe of AddDays (already treated that way everplace else)</li>
 				<li>Replace use of using Byte = uint8_t to just using std::byte throughout Stroika. NOT PERFRECT switch. NOT going to be backward compatible. But probably a good idea. AND INCOMPLETE - but testable</li>
 				<li>***not backward compatible*** - new Streams::SeekableFlag replacing  SeekableFlag in FileStream - rarely used directly - use kSeekableFlag_DEFAULT intead of SeekableFlag::eDEFAULT</li>
-				<li> ***INCOMPATIBLE CHANGES*** - SharedByValue<> template now takes T as first argument, and TRAITS as default. OK to change existing code to just have T as first arg; then added new CTOR for SharedByValue, defaulted TRAITS type, and added docs examples on usage, and regression test</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
+				<li>***INCOMPATIBLE CHANGES*** - SharedByValue<> template now takes T as first argument, and TRAITS as default. OK to change existing code to just have T as first arg; then added new CTOR for SharedByValue, defaulted TRAITS type, and added docs examples on usage, and regression test</li>
 			</ul>
 		</li>
 		<li>Prelim C++21 support
 			<ul>
 				<li>Defined NO_UNIQUE_ADDRESS_ATTR conditionally, and used it in a few places</li>
 				<li>new LIKELY_ATTR and UNLIKELY_ATTR - and used in a few places (and comment cleanups)</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>Memory
 			<ul>
 				<li>***not backward compatible*** change to SharedByValue - changed COPIER template argument to be functor style () instead of method Copy()</li>
 				<li>SharedByValue_CopySharedPtrAtomicSynchronized deprecated</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>Documentation
@@ -86,23 +79,6 @@ History
 		<li>std::hash<T> support
 			<ul>
 				<li>Added class hash<Stroika::Foundation::Characters::String> specialization</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
-			</ul>
-		</li>
-		<li>xxxx
-			<ul>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
-			</ul>
-		</li>
-		<li>xxxx
-			<ul>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>Speed Tweaks
@@ -111,23 +87,25 @@ History
 				<li>ReserveSpeedTweekAdjustCapacity () tweak - so grows faster initially. That should help more than it hurts, but I dont have good empirical data for this (and the added computation cost could outweigh)</li>
 				<li>very slight performance tweak - TextReader::CachingSeekableBinaryStreamRep_ now uses SmallStackBuffer instead of vector</li>
 				<li>use ArgByValueType in a few more places, and related minor tweaks</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>make run-tests and regression tests
 			<ul>
 				<li>get make run-tests REMOTE= and VALGRIND= working togehter</li>
 				<li>Use that to update regression tests to include remote running valgrind helgrind/memcheck on raspberrypi (and lots of work to get passing)</li>
-				<li>xxx</li>
 			</ul>
 		</li>
-		<li>xxxx
+		<li>get raspberrypi regtests passing with valgrind/helgrind
 			<ul>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
+				<li>test fix for boost/xcode10beta issue with Undefined symbols boost::system::detail::generic_category_instance</li>
+				<li>sslpurify on valgrind/raspberrypi config</li>
+				<li>https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI) suppression added to workaround likely arm/raspberrypi distro bug</li>
+				<li>start trying to workaround qCompilerAndStdLib_arm_openssl_valgrind_Buggy bug</li>
+				<li>anohter workaround for https://stroika.atlassian.net/browse/STK-620 but for linux/arm/raspberrypi</li>
+				<li>https://stroika.atlassian.net/browse/STK-628 (same but for ARM)</li>
+				<li>Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled heldgrind suppression for ARM compiler</li>
+				<li>arm workaround for https://stroika.atlassian.net/browse/STK-483 - helgrind suppression</li>
+				<li>https://stroika.atlassian.net/browse/STK-661 valgrind memcheck raspberrypi suppression</li>
 			</ul>
 		</li>
 		<li>Cache classes
@@ -142,8 +120,6 @@ History
 				<li>fixed thread safety checks (debug exterally sync) in LRUCache (they were wrong)</li>
 				<li>added overload to LRUCache<>::Add - taking one argument. I may have a use case in HF that makes this make sense. Testing/trying and will revisit with more data</li>
 				<li>SynchronizedLRUCache<> issue with Lookup and thread santizer fixed: Lookup is logically const, but does change the accounting object (stored inline). So make the caller use a lock_guard or shared_lock depending on the STATS_TYPE.</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>SmallStackBuffer<> changes
@@ -152,12 +128,8 @@ History
 				<li>Support for https://stroika.atlassian.net/browse/STK-159 - SmallStackBuffer<> to support non POD types</li>
 				<li>fixed SmallStackBuffer<T>... so reserve () now allows shrinking as well. And other cleanups</li>
 				<li>comments and regression tests for SmallStackBuffer new non-POD support</li>
-				<li> added optional CTOR param: SmallStackBufferCommon::eUninitialized, and provided _uninitialized variants of resize and GrowToSize() methods, and used them as appropriate thorughout stroika</li>
+				<li>added optional CTOR param: SmallStackBufferCommon::eUninitialized, and provided _uninitialized variants of resize and GrowToSize() methods, and used them as appropriate thorughout stroika</li>
 				<li>small tweak to SmallStackBuffer::push_back</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>Iterator/Iterable changes
@@ -168,10 +140,6 @@ History
 				<li>use IteratorBase::PtrImplementationTemplate<> instead of deprecated IteratorBase::SharedPtrImplementationTemplate</li>
 				<li>renamed MakeSharedPtr<> to MakeSmartPtr<> in Iteratble<> template</li>
 				<li>renamed usage of SharedPtrImplementationTemplate to PtrImplementationTemplate</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>ThirdPartyComponents
@@ -181,23 +149,16 @@ History
 				<li>boost 1.68 (caused problem on MacOS XCode 10, but worked around - linker constexpr issue)</li>
 				<li>openssl makefile (unix): added imporved logging for CONFIGURE process (to debug); and got rid of -no-engines options - saw it was causing problems with latest openssl (emits warning -no-engines not supported) and no clear notes on why its needed (may not be anymore - maybe was workaround for centos6 issue we may not have anymore)</li>
 				<li>lose --without-system on boost makefile since appears ignored and always included</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
-		<li>xxxx
+		<li>Execution module cleanups
 			<ul>
 				<li>added overload of ThrowIfNull for unique_ptr, </li>
 				<li>added (and used) macro IgnoreExceptionsExceptThreadInterruptForCall and documented all the IgnoreExceptionsExcept...... macros</li>
-				<li>xxx</li>
-				<li>xxx</li>
-				<li>xxx</li>
+				<li>Implement Execution::IsProcessRunning () for windoze</li>
 			</ul>
 		</li>
-		<li>Implement Execution::IsProcessRunning () for windoze</li>
 		<li>Tweak DiscreteRange<>::begin () and docs</li>
-		<li>xxxx</li>
 		<li>moved PRIVATE_::uninitialized_copy_n_MSFT_BWA to Configuraiton file/module so can be used elsewhere</li>
 		<li>small performance tweaks to TextReader</li>
 		<li>use C++17 class type deduction in a few places/uses of lock_guard (so not repeating type)</li>
@@ -209,22 +170,11 @@ History
 		<li>update WindowsTargetPlatform from 10.0.16299.0 to 10.0.17134.0</li>
 		<li>qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy  bug definition and workaround</li>
 		<li>Improved regtest for locale lookup code (runtime_error thrown); and fixed test for !qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy workaround - broken (just differently) for release builds</li>
-		<li>https://stroika.atlassian.net/browse/STK-661 valgrind memcheck raspberrypi suppression</li>
-		<li>sslpurify on valgrind/raspberrypi config</li>
-		<li>https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI) suppression added to workaround likely arm/raspberrypi distro bug</li>
-		<li>start trying to workaround qCompilerAndStdLib_arm_openssl_valgrind_Buggy bug</li>
-		<li>anohter workaround for https://stroika.atlassian.net/browse/STK-620 but for linux/arm/raspberrypi</li>
-		<li>https://stroika.atlassian.net/browse/STK-628 (same but for ARM)</li>
-		<li>Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled heldgrind suppression for ARM compiler</li>
-		<li>arm workaround for https://stroika.atlassian.net/browse/STK-483 - helgrind suppression</li>
 		<li>used RWSynchronized<> for fDirectHandlers_; with signalhandlers since best if multiple reads dont block as this updated rarely</li>
 		<li>avoid running :SyncLRUCacheT1_ (); regtest on valgrind ARM helgrind cuz it makes it crash</li>
-		<li>test fix for boost/xcode10beta issue with Undefined symbols boost::system::detail::generic_category_instance</li>
 		<li>added my+g++-8.2 to regtests; Lose regtest  my-g++-8.1-debug-c++17 config; change 8.2 gcc config test to user C++21</li>
 		<li>update notes on https://stroika.atlassian.net/browse/STK-663</li>
-		<li>xxxx</li>
-	
-		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d6.txt</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d6.txt - NOTE  - ignoring irreproducible (hard to repro) rasppi valgrind issue and 2 temp networking issues on retetsts)</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d6-OUT.txt</li>
