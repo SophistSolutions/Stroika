@@ -580,8 +580,8 @@ namespace Stroika::Foundation::Containers {
     bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
     /**
-         *  operator indirects to Sequence<>::Compare()
-         */
+     *  operator indirects to Sequence<>::Compare()
+     */
     template <typename T>
     bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
