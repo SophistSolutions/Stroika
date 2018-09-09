@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Append (ArgByValueType<T> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kBadSequenceIndex, &item, &item + 1);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
@@ -289,14 +289,14 @@ namespace Stroika::Foundation::Containers {
                 if (ww == nullptr) {
                     ww = &tmp._GetWriteableRep ();
                 }
-                ww->Insert (_IRep::_kBadSequenceIndex, &item, &item + 1);
+                ww->Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
             });
 #else
-        for (auto i : s) {
+        for (auto&& i : s) {
             if (ww == nullptr) {
                 ww = &tmp._GetWriteableRep ();
             }
-            ww->Insert (_IRep::_kBadSequenceIndex, &i, &i + 1);
+            ww->Insert (_IRep::_kSentinalLastItemIndex, &i, &i + 1);
         }
 #endif
     }
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
         for (auto i = start; i != end; ++i) {
             T tmp = *i;
-            accessor._GetWriteableRep ().Insert (_IRep::_kBadSequenceIndex, &tmp, &tmp + 1);
+            accessor._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &tmp, &tmp + 1);
         }
     }
     template <typename T>
@@ -363,8 +363,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline optional<T> Sequence<T>::Last () const
     {
-        // IRep::GetAt() defined to allow special _IRep::_kBadSequenceIndex
-        return this->IsEmpty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kBadSequenceIndex);
+        // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
+        return this->IsEmpty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
     }
     template <typename T>
     inline optional<T> Sequence<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
@@ -375,8 +375,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline T Sequence<T>::LastValue (ArgByValueType<T> defaultValue) const
     {
-        // IRep::GetAt() defined to allow special _IRep::_kBadSequenceIndex
-        return this->IsEmpty () ? defaultValue : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kBadSequenceIndex);
+        // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
+        return this->IsEmpty () ? defaultValue : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
     }
     template <typename T>
     inline void Sequence<T>::push_back (ArgByValueType<T> item)
@@ -453,7 +453,6 @@ namespace Stroika::Foundation::Containers {
     {
         return lhs.Compare (rhs) > 0;
     }
-
 }
 
 #endif /* _Stroika_Foundation_Containers_Sequence_inl_ */

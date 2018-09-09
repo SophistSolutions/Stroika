@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
     protected:
-        static constexpr size_t _kBadSequenceIndex = inherited::_kBadSequenceIndex;
+        static constexpr size_t _kSentinalLastItemIndex = inherited::_kSentinalLastItemIndex;
 
     public:
         Rep_ ()                 = default;
@@ -106,9 +106,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual T GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
-            Require (i == _kBadSequenceIndex or i < GetLength ());
+            Require (i == _kSentinalLastItemIndex or i < GetLength ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            if (i == _kBadSequenceIndex) {
+            if (i == _kSentinalLastItemIndex) {
                 i = GetLength () - 1;
             }
             return fData_.GetAt (i);
@@ -146,9 +146,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Insert (size_t at, const T* from, const T* to) override
         {
             using Traversal::kUnknownIteratorOwnerID;
-            Require (at == _kBadSequenceIndex or at <= GetLength ());
+            Require (at == _kSentinalLastItemIndex or at <= GetLength ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            if (at == _kBadSequenceIndex) {
+            if (at == _kSentinalLastItemIndex) {
                 for (const T* p = from; p != to; ++p) {
                     fData_.Append (*p);
                 }

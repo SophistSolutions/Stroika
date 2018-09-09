@@ -550,7 +550,7 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        static constexpr size_t _kBadSequenceIndex = numeric_limits<size_t>::max ();
+        static constexpr size_t _kSentinalLastItemIndex = numeric_limits<size_t>::max ();
 
     protected:
         using _SequenceRepSharedPtr = typename Sequence<T>::_SequenceRepSharedPtr;
