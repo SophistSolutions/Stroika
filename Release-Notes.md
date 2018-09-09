@@ -23,7 +23,7 @@ History
     
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d6">v2.1d6</a><br/>2018-09-09xxx</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d6">v2.1d6</a><br/>2018-09-09</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d5...v2.1d6</li>
@@ -228,7 +228,7 @@ History
 				<li>use ManuallyBlockAllocated<T> instead of AutomaticallyBlockAllocated<T> in Optional</li>
 			</ul>
 		</li>
-		<li>Cleanup file formatting - using namespace a::b::c { instead of namespace a { namespace b {namespace c {; 
+		<li>Cleanup file formatting - using namespace a :: b :: c { instead of namespace a { namespace b {namespace c {; 
 		regualrizing spacing around headers and namespaces (space before/after blocks that contain comments and none of they have no function header comments)</li>
 		<li>Documentation</li>
 		<li>Some more constexpr function usage (Math::AtLeast etc)</li>
