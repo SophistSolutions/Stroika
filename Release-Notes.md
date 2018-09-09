@@ -65,15 +65,12 @@ History
 				<li>readme comments</li>
 				<li>require and readme comments on Cache code</li>
 				<li>Improved docs on Debug/AssertExternallySynchronizedLock</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>Samples
 			<ul>
 				<li>fixed name of sample html file in WebServer sample</li>
 				<li>update Archive sample to use optional instead of Memory::Optional</li>
-				<li>xxx</li>
-				<li>xxx</li>
 			</ul>
 		</li>
 		<li>std::hash<T> support
