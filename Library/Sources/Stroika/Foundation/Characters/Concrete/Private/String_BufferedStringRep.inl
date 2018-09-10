@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Characters::Concrete {
             Require (newCapacity > 0); // always must be nul-terminated
             Require (newCapacity > _GetLength ());
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-            Require (newCapacity >= kNElts1_ or newCapacity >= kNElts2_);
+            Require (newCapacity >= kNElts1_ or newCapacity >= kNElts2_ or newCapacity >= kNElts3_);
 #endif
             if (fCapacity_ != newCapacity) {
                 size_t len = _GetLength ();
@@ -68,6 +68,10 @@ namespace Stroika::Foundation::Characters::Concrete {
                             static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
                             newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
                             break;
+                        case kNElts3_:
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts3_>)));
+                            break;
 #endif
                         default:
                             newBuf = new wchar_t[newCapacity];
@@ -82,6 +86,9 @@ namespace Stroika::Foundation::Characters::Concrete {
                     case kNElts2_:
                         Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
                         break;
+                    case kNElts3_:
+                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Deallocate (_PeekStart ());
+                        break;
 #endif
                     default:
                         delete[] _PeekStart ();
@@ -95,11 +102,15 @@ namespace Stroika::Foundation::Characters::Concrete {
         inline size_t BufferedStringRep::_Rep::AdjustCapacity_ (size_t initialCapacity)
         {
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+            static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
             if (initialCapacity <= kNElts1_) {
                 return kNElts1_;
             }
             else if (initialCapacity <= kNElts2_) {
                 return kNElts2_;
+            }
+            else if (initialCapacity <= kNElts3_) {
+                return kNElts3_;
             }
 #endif
             constexpr size_t kChunkSize_ = 32;
@@ -121,7 +132,7 @@ namespace Stroika::Foundation::Characters::Concrete {
             size_t   capacity = AdjustCapacity_ (len + 1 + reserveExtraCharacters);
             wchar_t* newBuf   = nullptr;
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-            Assert (capacity >= kNElts1_ or capacity >= kNElts2_);
+            Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or  capacity >= kNElts3_);
 #endif
             DISABLE_COMPILER_MSC_WARNING_START (4065)
             switch (capacity) {
@@ -133,6 +144,10 @@ namespace Stroika::Foundation::Characters::Concrete {
                 case kNElts2_: {
                     static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
                     newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
+                } break;
+                case kNElts3_: {
+                    static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
+                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts3_>)));
                 } break;
 #endif
                 default: {
@@ -159,6 +174,9 @@ namespace Stroika::Foundation::Characters::Concrete {
                 } break;
                 case kNElts2_: {
                     Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
+                } break;
+                case kNElts3_: {
+                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Deallocate (_PeekStart ());
                 } break;
 #endif
                 default: {
