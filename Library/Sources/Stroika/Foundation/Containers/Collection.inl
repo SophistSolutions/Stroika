@@ -98,9 +98,9 @@ namespace Stroika::Foundation::Containers {
     inline void Collection<T>::AddAll (const CONTAINER_OF_ADDABLE& c)
     {
         /*
-            * Because adding items to a Collection COULD result in those items appearing in a running iterator,
-            * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
-            */
+         * Because adding items to a Collection COULD result in those items appearing in a running iterator,
+         * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
+         */
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
             CONTAINER_OF_ADDABLE tmp = c;
             AddAll (std::begin (tmp), std::end (tmp));
