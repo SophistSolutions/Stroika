@@ -715,13 +715,9 @@ void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
     TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
     [[maybe_unused]] Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
-
-    /*
-     *  This code USED TO (until Stroika 2.0a234) - call CheckForThreadInterupption () in most cases. But that appeared to cause some trouble
-     *  problably because of Windows library code calling an altertable function without being prepared for it to throw. So we adopted 
-     *  a safer apporach, and just follow all these alertable calls with CheckForThreadInterruption().
-     *  -- LGP 2018-05-19
-     */
+    if (GetThrowInterruptExceptionInsideUserAPC ())  [[UNLIKELY_ATTR]] {
+        CheckForThreadInterruption ();
+    }
 }
 #endif
 

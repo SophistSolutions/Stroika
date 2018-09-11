@@ -547,6 +547,24 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual void Start () const;
 
+#if qPlatform_Windows
+    public:
+        /**
+         *  CalledInRepThreadAbortProc_ USED TO (until Stroika 2.0a234) - call CheckForThreadInterupption () in most cases. But that appeared to cause some trouble
+         *  problably because of Windows library code calling an altertable function without being prepared for it to throw. So we adopted 
+         *  a safer apporach, and just follow all these alertable calls with CheckForThreadInterruption().
+         *
+         *  However, occasionally you use a library (like gsoap) that makes this difficult, so for those cases, enable this throw from APC feature.
+         */
+        nonvirtual bool GetThrowInterruptExceptionInsideUserAPC () const;
+
+    public:
+        /**
+         *  @see GetThrowInterruptExceptionInsideUserAPC
+         */
+        nonvirtual void SetThrowInterruptExceptionInsideUserAPC (bool throwInterruptExceptionInsideUserAPC);
+#endif
+
     public:
         /**
          *  Abort gracefully shuts down and terminates the given thread.
