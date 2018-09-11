@@ -286,4 +286,5 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_Sequence_stdvector_inl_ */
