@@ -268,13 +268,6 @@ namespace Stroika::Foundation::Characters {
  */
 Thread::Rep_::Rep_ (const Function<void()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
     : fRunnable_ (runnable)
-    , fAccessSTDThreadMutex_ ()
-    , fThread_ ()
-    , fStatus_ (Status::eNotYetRunning)
-    , fRefCountBumpedEvent_{}
-    , fOK2StartEvent_{}
-    , fThreadDoneAndCanJoin_{}
-    , fThreadName_ ()
 {
     // @todo - never used anything from configuration (yet) - should!)
 #if qPlatform_POSIX

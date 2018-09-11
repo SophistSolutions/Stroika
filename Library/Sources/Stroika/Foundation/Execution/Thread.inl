@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Execution {
         InterruptFlagType_*              fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
         mutable mutex                    fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
         thread                           fThread_;
-        atomic<Status>                   fStatus_;
+        atomic<Status>                   fStatus_{Status::eNotYetRunning};
         WaitableEvent                    fRefCountBumpedEvent_;
         WaitableEvent                    fOK2StartEvent_;
         WaitableEvent                    fThreadDoneAndCanJoin_;
