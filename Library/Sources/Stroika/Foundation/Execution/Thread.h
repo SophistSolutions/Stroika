@@ -246,6 +246,10 @@ namespace Stroika::Foundation::Execution {
              *              Peryaps for windows just add to end of stacksize
              */
             optional<size_t> fStackGuard;
+
+#if qPlatform_Windows
+            optional<bool> fThrowInterruptExceptionInsideUserAPC;
+#endif
         };
 
     public:

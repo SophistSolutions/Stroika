@@ -276,6 +276,10 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, [[maybe_unused]] const opt
         sDidInit_                               = true;
         kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect);
     }
+#elif qPlatform_Windows
+    if (configuration.has_value () and configuration->fThrowInterruptExceptionInsideUserAPC.has_value ()) {
+        fThrowInterruptExceptionInsideUserAPC_ = configuration->fThrowInterruptExceptionInsideUserAPC.value ();
+    }
 #endif
 }
 
