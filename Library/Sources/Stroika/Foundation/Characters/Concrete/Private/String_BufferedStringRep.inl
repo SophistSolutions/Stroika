@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Characters::Concrete {
             size_t   capacity = AdjustCapacity_ (len + 1 + reserveExtraCharacters);
             wchar_t* newBuf   = nullptr;
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-            Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or  capacity >= kNElts3_);
+            Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or capacity >= kNElts3_);
 #endif
             DISABLE_COMPILER_MSC_WARNING_START (4065)
             switch (capacity) {
