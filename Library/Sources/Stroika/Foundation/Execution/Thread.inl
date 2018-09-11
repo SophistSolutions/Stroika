@@ -99,6 +99,9 @@ namespace Stroika {
                 wstring                                  fThreadName_;
                 exception_ptr                            fSavedException_;
                 Synchronized<Memory::Optional<Priority>> fInitialPriority_; // where we store priority before start
+#if qPlatform_Windows
+                bool fThrowInterruptExceptionInsideUserAPC_{false};
+#endif
 
             private:
                 friend class Thread;
@@ -209,6 +212,19 @@ namespace Stroika {
                 shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
                 return fRep_ != nullptr;
             }
+#if qPlatform_Windows
+            inline bool Thread::Ptr::GetThrowInterruptExceptionInsideUserAPC () const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                return fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
+            }
+            inline void Thread::Ptr::SetThrowInterruptExceptionInsideUserAPC (bool throwInterruptExceptionInsideUserAPC)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1{*this};
+                RequireNotNull (fRep_);
+                fRep_->fThrowInterruptExceptionInsideUserAPC_ = throwInterruptExceptionInsideUserAPC;
+            }
+#endif
             inline Thread::Status Thread::Ptr::GetStatus () const noexcept
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

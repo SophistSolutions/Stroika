@@ -288,6 +288,10 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
         sDidInit_                               = true;
         kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect);
     }
+#elif qPlatform_Windows
+    if (configuration.has_value () and configuration->fThrowInterruptExceptionInsideUserAPC.has_value ()) {
+        fThrowInterruptExceptionInsideUserAPC_ = configuration->fThrowInterruptExceptionInsideUserAPC.value ();
+    }
 #endif
 }
 
@@ -720,13 +724,9 @@ void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
     TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
     Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
-
-    /*
-     *  This code USED TO (until Stroika 2.0a234) - call CheckForThreadInterupption () in most cases. But that appeared to cause some trouble
-     *  problably because of Windows library code calling an altertable function without being prepared for it to throw. So we adopted 
-     *  a safer apporach, and just follow all these alertable calls with CheckForThreadInterruption().
-     *  -- LGP 2018-05-19
-     */
+    if (rep->fThrowInterruptExceptionInsideUserAPC_) {
+        CheckForThreadInterruption ();
+    }
 }
 #endif
 
@@ -753,6 +753,11 @@ namespace {
             if (cfg->fStackGuard) {
                 result.fStackSize = *cfg->fStackGuard;
             }
+#if qPlatform_Windows
+            if (cfg->fThrowInterruptExceptionInsideUserAPC) {
+                result.fThrowInterruptExceptionInsideUserAPC = *cfg->fThrowInterruptExceptionInsideUserAPC;
+            }
+#endif
         }
         return result;
     }
