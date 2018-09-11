@@ -743,6 +743,11 @@ namespace {
             if (cfg->fStackGuard) {
                 result.fStackSize = *cfg->fStackGuard;
             }
+#if qPlatform_Windows
+            if (cfg->fThrowInterruptExceptionInsideUserAPC) {
+                result.fThrowInterruptExceptionInsideUserAPC = *cfg->fThrowInterruptExceptionInsideUserAPC;
+            }
+#endif
         }
         return result;
     }
