@@ -19,11 +19,12 @@ History
 
     
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0b6">v2.0b6</a><br/>2018-09-11</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0b6">v2.0b6</a><br/>2018-09-12</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0b5...v2.0b6</li>
 		<li>***fixed 2.0b5 regression*** - qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy still broken in vs2k17 15.8 compiler (mistakenly marked fixed cuz only visible sign is crash of webserver)</li>
+		<li>openssl 1.1.1 (TLS 1.3)</li>
 		<li>GetThrowInterruptExceptionInsideUserAPC/SetThrowInterruptExceptionInsideUserAPC and Coniguration::fThrowInterruptExceptionInsideUserAPC support in Thread (windows only); 
 		to fix issues with interrupting threads doing gsoap (or other non-stroika code/calls)</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0b6.txt</li>
