@@ -990,7 +990,6 @@ namespace Stroika::Foundation::Execution {
         Traversal::Iterable<IDType> fRunningThreads;
     };
 #endif
-
 }
 
 namespace Stroika::Foundation::Characters {

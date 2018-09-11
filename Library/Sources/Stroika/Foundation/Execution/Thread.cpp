@@ -715,9 +715,11 @@ void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
     TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
     [[maybe_unused]] Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
-    if (GetThrowInterruptExceptionInsideUserAPC ())  [[UNLIKELY_ATTR]] {
-        CheckForThreadInterruption ();
-    }
+    if (rep->fThrowInterruptExceptionInsideUserAPC_)
+        [[UNLIKELY_ATTR]]
+        {
+            CheckForThreadInterruption ();
+        }
 }
 #endif
 
