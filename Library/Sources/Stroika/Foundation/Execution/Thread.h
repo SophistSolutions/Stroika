@@ -565,6 +565,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  @see GetThrowInterruptExceptionInsideUserAPC
+         *
+         * \req *this != nullptr
          */
         nonvirtual void SetThrowInterruptExceptionInsideUserAPC (bool throwInterruptExceptionInsideUserAPC);
 #endif

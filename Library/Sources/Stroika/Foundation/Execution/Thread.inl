@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Execution {
         return fRep_ != nullptr;
     }
 #if qPlatform_Windows
-    bool Thread::Ptr::GetThrowInterruptExceptionInsideUserAPC () const
+    inline bool Thread::Ptr::GetThrowInterruptExceptionInsideUserAPC () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
         return fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
