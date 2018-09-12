@@ -106,6 +106,7 @@
 // _MSC_VER=1915
 #define _MSC_VER_2k17_15Pt8_ 1915
 #define _MS_VS_2k17_15Pt8Pt0_ 191526726
+#define _MS_VS_2k17_15Pt8Pt4_ 191526729
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -205,8 +206,10 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt5_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-// Verified FIXED in _MSC_VER_2k17_15Pt8_ (webserver no longer crashes)
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt7_)
+// Verified FIXED(BROKEN) in _MSC_VER_2k17_15Pt8_ (webserver no longer crashes - misleading - still broken 
+// but we no longer use Memory::Optional, so we will have to lose this BWA, but bug NOT FIXED)
+// Can really only test this bug in stroika v2.0 branch since only place really still using Optional (that has this bug workaround)
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
 #endif
