@@ -20,7 +20,7 @@ if [ "$(uname -s)" == "Darwin" ] ; then
     CMDRUN_PREFIX="nice -10 "
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
-    EXE=${EXE-"Builds/my-gcc-7.2.0-release-c++17/Test45"}
+    EXE=${EXE-"Builds/g++-8-release-c++17/Test45"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-gcc-7.2.0-x64"; fi
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
