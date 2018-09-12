@@ -34,4 +34,5 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Execution_VirtualConstant_inl_*/

@@ -320,6 +320,8 @@ namespace Stroika::Foundation::Execution {
          *    \brief foreach Thread t: t.Abort ()
          *
          * \req    foreach Thread t: t != nullptr
+         *
+         *  \see Thread::Ptr::Abort
          */
         static void Abort (const Traversal::Iterable<Thread::Ptr>& threads);
 
@@ -573,6 +575,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief Abort gracefully shuts down and terminates the given thread.
+         *
          *  Abort gracefully shuts down and terminates the given thread.
          *
          *  This works by setting a flag in that thread, which is chekced at each 'cancelation point', and
@@ -586,6 +590,10 @@ namespace Stroika::Foundation::Execution {
          *
          *  Note that its legal to call Abort on a thread in any state - including if done (except == nullptr).
          *  Some may just have no effect.
+         *
+         *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that dont
+         *          check for thread interruption, those threads may not BE interruptible during that region of code.
+         *          @see Thread::GetThrowInterruptExceptionInsideUserAPC()
          *
          *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
          *
@@ -971,7 +979,7 @@ namespace Stroika::Foundation::Execution {
     void CheckForThreadInterruption ();
 
     /*
-     *  Avoid interference with Windows SDK headers. I hate needless C macros
+     *  Avoid interference with Windows SDK headers. I hate needless C macros (with short, common names)
      */
 #ifdef Yield
 #undef Yield

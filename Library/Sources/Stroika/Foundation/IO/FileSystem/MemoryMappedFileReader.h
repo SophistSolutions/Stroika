@@ -14,8 +14,6 @@
 
 /**
  * TODO:
- *          @todo   implement POSIX mmap()
- *
  *          @todo   Add API variant that allows multiple sub-regions of a file to be mapped.
  *
  *          @todo   Consider adding a writable MemoryMappedFileReader variant

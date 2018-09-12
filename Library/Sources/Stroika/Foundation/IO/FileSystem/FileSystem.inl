@@ -27,4 +27,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_FileSystem_inl_*/

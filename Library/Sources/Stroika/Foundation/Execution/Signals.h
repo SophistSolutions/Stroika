@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Execution {
      *          zero if no error
      */
     errno_t SendSignal (thread::native_handle_type target, SignalID signal);
+
 }
 
 /*

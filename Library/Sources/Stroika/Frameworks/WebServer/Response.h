@@ -65,7 +65,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         // Reponse must be completed (OK to Abort ()) before being destroyed
-        ~Response ();
+        ~Response () = default;
 
     public:
         nonvirtual Response& operator= (const Response&) = delete;

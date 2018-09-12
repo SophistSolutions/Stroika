@@ -45,19 +45,19 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  \par Example Usage
      *      \code
-     *      IO::FileSystem::FileOutputStream::New (L"/tmp/foo").Write (Memory::BLOB {0x3});
+     *          IO::FileSystem::FileOutputStream::New (L"/tmp/foo").Write (Memory::BLOB {0x3});
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-     *      JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+     *          String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
+     *          JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      TextWriter tw { IO::FileSystem::FileOutputStream::New (L"/tmp/fred.txt") };
-     *      tw.PrintF (L"Hello %s\n", L"World");
+     *          TextWriter tw { IO::FileSystem::FileOutputStream::New (L"/tmp/fred.txt") };
+     *          tw.PrintF (L"Hello %s\n", L"World");
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>

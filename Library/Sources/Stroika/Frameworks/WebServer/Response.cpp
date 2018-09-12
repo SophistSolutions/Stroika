@@ -88,10 +88,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     AddHeader (IO::Network::HTTP::HeaderName::kServer, String_Constant (L"Stroka-Based-Web-Server"));
 }
 
-Response::~Response ()
-{
-}
-
 void Response::SetContentSizePolicy (ContentSizePolicy csp)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

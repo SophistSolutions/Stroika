@@ -328,6 +328,7 @@ namespace Stroika::Foundation::Execution {
                 CheckForThreadInterruption ();
             }
     }
+
 }
 
 namespace Stroika::Foundation::Configuration {
