@@ -44,17 +44,6 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_B
 
 
 
-###@todo rewrite this to NOT be a one-off, but just change a few variable (defaults) and then do the code below - common code 
-#if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
-#    echo "Doing quick regression test with default configurations only..."
-#    rm -rf ConfigurationFiles
-#    make default-configurations
-#    make clobber
-#    echo -n "make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE ... "
-#    make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE 2>&1
-#    echo done
-#    exit 0;
-#fi
 if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
 	INCLUDE_VALGRIND_MEMCHECK_TESTS=0
 	INCLUDE_VALGRIND_HELGRIND_TESTS=0
