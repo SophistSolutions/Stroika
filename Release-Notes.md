@@ -23,6 +23,43 @@ History
     
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d7">v2.1d7</a><br/>2018-09-13x</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d6...v2.1d7</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>openssl 1.1.1 (TLS 1.3 support)</li>
+			</ul>
+		</li>
+		<li>Added Thread GetThrowInterruptExceptionInsideUserAPC/SetThrowInterruptExceptionInsideUserAPC option to optionally re-enable this feature (helpful for when using gsoap)</li>
+		<li>Concrete/Private/String_BufferedStringRep now has 3 block sizes - 16 32 and 64</li>
+		<li>renamed (protected - not bacwkward compat but OK cuz probablynever used outside stroika) - Seqeunce::_kBadSequenceIndex to Seqienece::_kSentinalLastItemIndex</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7.txt - NOTE  - ignoring irreproducible (hard to repro) rasppi valgrind issue and 2 temp networking issues on retetsts)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7-OUT.txt</li>
+				<li>vc++2k17  (15.8.3)</li>
+				<li>MacOS, XCode 10 (beta6)</li>
+				<li>gcc 7, gcc 8</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+    
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d6">v2.1d6</a><br/>2018-09-09</td>
 <td>
 	<ul>
