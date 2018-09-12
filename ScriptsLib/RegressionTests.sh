@@ -119,8 +119,8 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 
 ### @todo - cleanup so have better logical test
 # cuz arm tests done explicitly below (maybe should automatically substract 'cross-compiled tests')
-NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
 if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
+	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
 	RASPBERRYPI_REMOTE_MACHINE=raspberrypi
 	RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
 	echo -n "Run-Tests raspberrypi remote..."
