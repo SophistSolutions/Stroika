@@ -23,13 +23,21 @@ History
     
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d7">v2.1d7</a><br/>2018-09-13x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d7">v2.1d7</a><br/>2018-09-14x</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d6...v2.1d7</li>
 		<li>ThirdPartyComponents
 			<ul>
 				<li>openssl 1.1.1 (TLS 1.3 support)</li>
+			</ul>
+		</li>
+		<li>Time
+			<ul>
+				<li>Add support for kBiasInMinutesFromUTCTypeValidRange - for docs and assertions</li>
+				<li>***not backward compatible*** - DateTime::Parse () returns missing timezone if its mising from input string</li>
+				<li>renamed Timezone::GetBiasInMinutesFromUTCType to Timezone::GetBiasInMinutesFromUTC (deprecating old name)</li>
+				<li>FIXED that routine to return the right answer for localtime (was returning seconds instead of minutes)</li>
 			</ul>
 		</li>
 		<li>Added Thread GetThrowInterruptExceptionInsideUserAPC/SetThrowInterruptExceptionInsideUserAPC option to optionally re-enable this feature (helpful for when using gsoap)</li>
