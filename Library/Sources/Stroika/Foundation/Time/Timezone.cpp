@@ -89,7 +89,7 @@ Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const 
         case TZ_::eFixedOffsetBias:
             return fBiasInMinutesFromUTC_;
         case TZ_::eLocalTime:
-            return static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)));
+            return static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)) / 60);
         default:
             AssertNotReached ();
             return 0;

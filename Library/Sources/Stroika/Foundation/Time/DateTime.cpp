@@ -301,10 +301,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                     tz = Timezone (tzHr * 60 + tzMn);
                 }
             }
-            else {
-                tz = Timezone::LocalTime ();
-            }
-            return DateTime (d, t, tz);
+            // WRONG/BAD - did this up until Stroika 2.1d6 (and 2.0b6 on v2 branch)
+            //else {
+            //    tz = Timezone::LocalTime ();
+            //}
+            return t.empty () ? d : DateTime (d, t, tz);
         } break;
         default: {
             AssertNotReached ();
@@ -332,7 +333,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l)
 DateTime DateTime::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
-        return DateTime ();
+        return DateTime{};
     }
     DATE d{};
     try {
