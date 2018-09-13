@@ -26,6 +26,7 @@ namespace Stroika::Foundation::Time {
         : fTZ_ (TZ_::eFixedOffsetBias)
         , fBiasInMinutesFromUTC_ (biasInMinutesFromUTC)
     {
+        Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
     inline constexpr Timezone Timezone::UTC ()
     {

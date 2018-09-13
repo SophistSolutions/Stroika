@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "../Characters/String.h"
+#include "../Traversal/Range.h"
 
 /**
  *  \file
@@ -101,6 +102,15 @@ namespace Stroika::Foundation::Time {
         using BiasInMinutesFromUTCType = int16_t;
 
     public:
+        /**
+         *  According to https://en.wikipedia.org/wiki/List_of_UTC_time_offsets, these actually vary from -12, to 14. But logically, the only thing really crazy would be > 24 or < -24 hours.
+         */
+        static constexpr Traversal::Range<BiasInMinutesFromUTCType> kBiasInMinutesFromUTCTypeValidRange{-24 * 60, 24 * 60};
+
+    public:
+        /**
+         *  \req kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)
+         */
         Timezone () = delete;
         constexpr Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC);
         constexpr Timezone (const Timezone& src) = default;
@@ -175,6 +185,8 @@ namespace Stroika::Foundation::Time {
          *  Depending on the form of the timezone, the offset from UTC could depned on the date (cuz of daylight savings time)
          *
          *  \note returns minutes
+         *
+         *  \ens  (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
          */
         nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const;
 
