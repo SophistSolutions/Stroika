@@ -180,6 +180,8 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  Parse will throw if the argument cannot be parsed as a valid DateTime.
+         *
+         *  \note If the timezone cannot be identified in the source string, it will be returned as 'unknown'.
          */
         static DateTime Parse (const String& rep, ParseFormat pf);
         static DateTime Parse (const String& rep, const locale& l);
