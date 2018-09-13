@@ -100,9 +100,9 @@ namespace Stroika::Foundation::Execution {
             // NB: further checks for interruption happen inside wait_until() called here...
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {
                 /*
-                        *  Somewhat ambiguous if this should check readyToWake just return false. Probably best to check, since the condition is met, and thats
-                        *  probably more important than the timeout.
-                        */
+                 *  Somewhat ambiguous if this should check readyToWake just return false. Probably best to check, since the condition is met, and thats
+                 *  probably more important than the timeout.
+                 */
                 return readyToWake ();
             }
             // Maybe a real wakeup, or a spurious one, so just check the readyToWake() predicate again, and keep looping!
