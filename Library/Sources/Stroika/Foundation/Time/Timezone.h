@@ -188,11 +188,17 @@ namespace Stroika::Foundation::Time {
          *
          *  \ens  (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
          */
-        nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const;
+        nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTC (const Date& date, const TimeOfDay& tod) const;
+
+    public:
+        [[deprecated ("use GetBiasInMinutesFromUTC since version 2.1d7")]] nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
+        {
+            return GetBiasInMinutesFromUTC (date, tod);
+        }
 
     public:
         /**
-         *  Depending on the form of the timezone, the offset from UTC could depned on the date (cuz of daylight savings time)
+         *  Depending on the form of the timezone, the offset from UTC could depend on the date (cuz of daylight savings time)
          *
          *  \note returns seconds
          */
@@ -224,7 +230,6 @@ namespace Stroika::Foundation::Time {
         };
     }
     static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_), "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
-
 }
 
 /*

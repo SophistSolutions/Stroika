@@ -81,15 +81,18 @@ constexpr Timezone           Timezone::kUTC;
 constexpr optional<Timezone> Timezone::kUnknown;
 #endif
 
-Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
+Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTC (const Date& date, const TimeOfDay& tod) const
 {
     switch (fTZ_) {
         case TZ_::eUTC:
             return 0;
         case TZ_::eFixedOffsetBias:
-            return fBiasInMinutesFromUTC_;
-        case TZ_::eLocalTime:
-            return static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)));
+            Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
+        case TZ_::eLocalTime: {
+            auto result = static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)) / 60);
+            Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (result));
+            return result;
+        }
         default:
             AssertNotReached ();
             return 0;

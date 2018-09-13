@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Time {
     }
     inline make_signed_t<time_t> Timezone::GetOffset (const Date& date, const TimeOfDay& tod) const
     {
-        return 60 * GetBiasInMinutesFromUTCType (date, tod);
+        return 60 * GetBiasInMinutesFromUTC (date, tod);
     }
     inline constexpr bool Timezone::operator== (const Timezone& rhs) const
     {
