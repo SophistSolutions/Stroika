@@ -75,7 +75,7 @@ namespace {
 const Timezone           Timezone::kLocalTime{Timezone::LocalTime ()};
 const Timezone           Timezone::kUTC{Timezone::UTC ()};
 const optional<Timezone> Timezone::kUnknown{Timezone::Unknown ()};
-#else
+#elif qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 constexpr Timezone           Timezone::kLocalTime;
 constexpr Timezone           Timezone::kUTC;
 constexpr optional<Timezone> Timezone::kUnknown;
