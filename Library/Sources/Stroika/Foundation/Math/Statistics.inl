@@ -54,7 +54,9 @@ namespace Stroika::Foundation::Math {
         Memory::SmallStackBuffer<RESULT_TYPE> tmp{start, end}; // copy cuz data modified
         size_t                                size = distance (start, end);
         nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end ());
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // warning with gcc cross-compile to raspberrypi - no idea why --LGP 2018-09-13
         RESULT_TYPE result{tmp[size / 2]};
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"");
         if ((size % 2) == 0) {
             Assert (size >= 2); // cuz require at start >=1 and since even
             // NB: Could use sort instead of nth_element, and some on the web suggest faster, but sort is O(n*log(n)), and nth_elemnet is O(n) (even
