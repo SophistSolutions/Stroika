@@ -339,7 +339,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l)
 DateTime DateTime::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
-        return DateTime {};
+        return DateTime{};
     }
     DATE d{};
     try {
