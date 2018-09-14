@@ -313,23 +313,31 @@ namespace Stroika::Foundation::Streams {
         : inherited (from)
     {
     }
+    template <typename ELEMENT_TYPE>
+    inline auto SharedMemoryStream<ELEMENT_TYPE>::Ptr::GetRepConstRef_ () const -> const Rep_&
+    {
+        // reinterpret_cast faster than dynamic_cast - check equivilent
+        Assert (dynamic_cast<const Rep_*> (&inherited::_GetRepConstRef ()) == reinterpret_cast<const Rep_*> (&inherited::_GetRepConstRef ()));
+        return *reinterpret_cast<const Rep_*> (&inherited::_GetRepConstRef ());
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto SharedMemoryStream<ELEMENT_TYPE>::Ptr::GetRepRWRef_ () const -> Rep_&
+    {
+        // reinterpret_cast faster than dynamic_cast - check equivilent
+        Assert (dynamic_cast<Rep_*> (&inherited::_GetRepRWRef ()) == reinterpret_cast<Rep_*> (&inherited::_GetRepRWRef ()));
+        return *reinterpret_cast<Rep_*> (&inherited::_GetRepRWRef ());
+    }
     template <>
     template <>
     inline vector<byte> SharedMemoryStream<byte>::Ptr::As () const
     {
-        RequireNotNull (_GetSharedRep ().get ());
-        AssertMember (_GetSharedRep ().get (), Rep_);
-        const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
-        return rep.AsVector ();
+        return GetRepConstRef_ ().AsVector ();
     }
     template <>
     template <>
     inline vector<Characters::Character> SharedMemoryStream<Characters::Character>::Ptr::As () const
     {
-        RequireNotNull (_GetSharedRep ().get ());
-        AssertMember (_GetSharedRep ().get (), Rep_);
-        const Rep_& rep = *dynamic_cast<const Rep_*> (_GetSharedRep ().get ());
-        return rep.AsVector ();
+        return GetRepConstRef_ ().AsVector ();
     }
 
 }

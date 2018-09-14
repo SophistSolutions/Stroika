@@ -136,6 +136,18 @@ namespace Stroika::Foundation::Streams {
         nonvirtual T As () const;
 
     private:
+        /**
+         * \req *this != nullptr
+         */
+        nonvirtual const Rep_& GetRepConstRef_ () const;
+
+    private:
+        /**
+         * \req *this != nullptr
+         */
+        nonvirtual Rep_& GetRepRWRef_ () const;
+
+    private:
         friend class SharedMemoryStream;
     };
 
