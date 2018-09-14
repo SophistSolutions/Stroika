@@ -305,7 +305,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             //else {
             //    tz = Timezone::LocalTime ();
             //}
-            return t.empty () ? d : DateTime (d, t, tz);
+            return DateTime (d, t, tz);
         } break;
         default: {
             AssertNotReached ();
