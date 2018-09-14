@@ -23,7 +23,7 @@ History
     
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d7">v2.1d7</a><br/>2018-09-14x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d7">v2.1d7</a><br/>2018-09-15</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d6...v2.1d7</li>
@@ -40,6 +40,7 @@ History
 				<li>FIXED that routine to return the right answer for localtime (was returning seconds instead of minutes)</li>
 			</ul>
 		</li>
+		<li>Major OutputStream&lt;&gt; performance optimization (like I already had for InputStream) - using reinterpret_cast instead of dynamic_pointer_cast<> for shared_ptr</li>
 		<li>Added Thread GetThrowInterruptExceptionInsideUserAPC/SetThrowInterruptExceptionInsideUserAPC option to optionally re-enable this feature (helpful for when using gsoap)</li>
 		<li>Concrete/Private/String_BufferedStringRep now has 3 block sizes - 16 32 and 64</li>
 		<li>renamed (protected - not bacwkward compat but OK cuz probablynever used outside stroika) - Seqeunce::_kBadSequenceIndex to Seqienece::_kSentinalLastItemIndex</li>
