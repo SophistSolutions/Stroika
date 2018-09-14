@@ -48,7 +48,7 @@ History
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7-OUT.txt</li>
 				<li>vc++2k17  (15.8.3)</li>
-				<li>MacOS, XCode 10 (beta6)</li>
+				<li>MacOS, XCode 10 (GM-seed)</li>
 				<li>gcc 7, gcc 8</li>
 				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
