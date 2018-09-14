@@ -333,6 +333,18 @@ namespace Stroika::Foundation::Streams {
          */
         nonvirtual _SharedIRep _GetSharedRep () const;
 
+    protected:
+        /**
+         * \req *this != nullptr
+         */
+        nonvirtual const _IRep& _GetRepConstRef () const;
+
+    protected:
+        /**
+         * \req *this != nullptr
+         */
+        nonvirtual _IRep& _GetRepRWRef () const;
+
     private:
         friend class OutputStream<ELEMENT_TYPE>;
     };

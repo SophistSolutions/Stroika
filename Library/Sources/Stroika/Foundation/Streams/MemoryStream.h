@@ -120,7 +120,7 @@ namespace Stroika::Foundation ::Streams {
          *      \endcode
          */
         Ptr () = delete; // 95% of time would be a bug - init with nullptr
-        // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev sematnics
+        // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev semantics
         Ptr (nullptr_t) {}
         Ptr (const Ptr& from) = default;
 
@@ -146,6 +146,18 @@ namespace Stroika::Foundation ::Streams {
          */
         template <typename T>
         nonvirtual T As () const;
+
+    private:
+        /**
+         * \req *this != nullptr
+         */
+        nonvirtual const Rep_& GetRepConstRef_ () const;
+
+    private:
+        /**
+         * \req *this != nullptr
+         */
+        nonvirtual Rep_& GetRepRWRef_ () const;
 
     private:
         friend class MemoryStream;

@@ -81,13 +81,17 @@ namespace Stroika::Foundation::Streams {
     inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
     {
         EnsureMember (&inherited::_GetRepConstRef (), _IRep);
-        return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+        // reinterpret_cast faster than dynamic_cast - check equivilent
+        Assert (dynamic_cast<const _IRep*> (&inherited::_GetRepConstRef ()) == reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()));
+        return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
     {
         EnsureMember (&inherited::_GetRepRWRef (), _IRep);
-        return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
+        // reinterpret_cast faster than dynamic_cast - check equivilent
+        Assert (dynamic_cast<_IRep*> (&inherited::_GetRepRWRef ()) == reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()));
+        return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::GetOffset () const

@@ -41,11 +41,27 @@ namespace Stroika::Foundation::Streams {
         return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
+    inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        // reinterpret_cast faster than dynamic_cast - check equivilent
+        Assert (dynamic_cast<const _IRep*> (&inherited::_GetRepConstRef ()) == reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()));
+        return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ());
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        // reinterpret_cast faster than dynamic_cast - check equivilent
+        Assert (dynamic_cast<_IRep*> (&inherited::_GetRepRWRef ()) == reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()));
+        return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ());
+    }
+    template <typename ELEMENT_TYPE>
     inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffset () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
-        return _GetSharedRep ()->GetWriteOffset ();
+        return _GetRepConstRef ().GetWriteOffset ();
     }
     template <typename ELEMENT_TYPE>
     SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffsetToEndOfStream () const
@@ -65,14 +81,14 @@ namespace Stroika::Foundation::Streams {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
         Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
-        return _GetSharedRep ()->SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
+        return _GetRepRWRef ().SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (Whence whence, SignedSeekOffsetType offset) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
-        return _GetSharedRep ()->SeekWrite (whence, offset);
+        return _GetRepRWRef ().SeekWrite (whence, offset);
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType* start, const ElementType* end) const
@@ -83,7 +99,7 @@ namespace Stroika::Foundation::Streams {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
-            _GetSharedRep ()->Write (start, end);
+            _GetRepRWRef ().Write (start, end);
         }
     }
     template <typename ELEMENT_TYPE>
@@ -149,14 +165,14 @@ namespace Stroika::Foundation::Streams {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
-        _GetSharedRep ()->CloseWrite ();
+        _GetRepRWRef ().CloseWrite ();
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Close (bool reset)
     {
         lock_guard<AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
-        _GetSharedRep ()->CloseWrite ();
+        _GetRepRWRef ().CloseWrite ();
         if (reset) {
             this->reset ();
         }
@@ -165,13 +181,13 @@ namespace Stroika::Foundation::Streams {
     inline bool OutputStream<ELEMENT_TYPE>::Ptr::IsOpen () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return _GetSharedRep ()->IsOpenWrite ();
+        return _GetRepConstRef ().IsOpenWrite ();
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Flush () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        _GetSharedRep ()->Flush ();
+        _GetRepRWRef ().Flush ();
     }
     template <>
     template <>
