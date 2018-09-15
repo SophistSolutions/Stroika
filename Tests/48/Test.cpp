@@ -48,7 +48,7 @@ namespace {
 #endif
 
         // should add test like this...
-        //Verify (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
+        //VerifyTestResult (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
     }
 }
 
@@ -365,7 +365,7 @@ namespace {
 #if qPlatform_Windows
             // Should be portable, but buggy on UNIX
             // https://stroika.atlassian.net/browse/STK-107
-            Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
+            VerifyTestResult (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
 #endif
         }
         {
@@ -405,21 +405,21 @@ namespace {
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
     }
     {
         const Date          kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
     }
     {
         const Date          kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
     }
 }
 }
