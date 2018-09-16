@@ -88,6 +88,7 @@ Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTC (const Date
             return 0;
         case TZ_::eFixedOffsetBias:
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
+            return fBiasInMinutesFromUTC_;
         case TZ_::eLocalTime: {
             auto result = static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)) / 60);
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (result));
