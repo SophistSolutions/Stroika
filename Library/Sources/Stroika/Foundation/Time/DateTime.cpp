@@ -360,7 +360,7 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::UTC ()) {
-        DateTime tmp = AddSeconds (fTimezone_->GetOffset (fDate_, fTimeOfDay_));
+        DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::LocalTime ());
     }
     else {
@@ -375,7 +375,7 @@ DateTime DateTime::AsUTC () const
         return *this;
     }
     else {
-        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetOffset (fDate_, fTimeOfDay_)) : *this;
+        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_)) : *this;
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
     }
 }
@@ -458,7 +458,7 @@ String DateTime::Format (PrintFormat pf) const
                         r += String_Constant (L"Z");
                     }
                     else {
-                        auto tzBias     = fTimezone_->GetOffset (fDate_, fTimeOfDay_);
+                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_);
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;

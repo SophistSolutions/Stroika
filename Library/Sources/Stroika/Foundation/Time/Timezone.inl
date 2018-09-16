@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Time {
     {
         return {};
     }
-    inline make_signed_t<time_t> Timezone::GetOffset (const Date& date, const TimeOfDay& tod) const
+    inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {
         return 60 * GetBiasInMinutesFromUTC (date, tod);
     }
