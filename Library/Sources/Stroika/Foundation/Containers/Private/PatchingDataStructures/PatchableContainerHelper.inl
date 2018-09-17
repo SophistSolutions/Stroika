@@ -113,9 +113,11 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     {
         // This speed tweak is safe because the underlying type is atomic, so its always up to date. And its a performance
         // tweak because this situation is common, and it avoids a mutex lock (even a spinlock avoidance helps)
-        if (this->template GetFirstActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> () == nullptr) [[LIKELY_ATTR]] {
-            return;
-        }
+        if (this->template GetFirstActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> () == nullptr)
+            [[LIKELY_ATTR]]
+            {
+                return;
+            }
         [[maybe_unused]] auto&& critSec = lock_guard{fActiveIteratorsMutex_};
         for (auto ai = this->template GetFirstActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> (); ai != nullptr; ai = ai->template GetNextActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> ()) {
             f (ai);
