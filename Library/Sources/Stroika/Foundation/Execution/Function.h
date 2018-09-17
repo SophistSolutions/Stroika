@@ -46,6 +46,9 @@ namespace Stroika::Foundation::Execution {
      *      Callbacks you need to be able to create, and then later remove (by value) - and this class
      *      lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
      *      and then later removed by value.
+     *
+     *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
+     *          until Stroika v2.1d8.
      */
     template <typename FUNCTION_SIGNATURE>
     class Function {
@@ -63,12 +66,14 @@ namespace Stroika::Foundation::Execution {
         Function () = default;
         Function (nullptr_t);
         Function (const Function&) = default;
+        Function (Function&&)      = default;
         template <typename CTOR_FUNC_SIG>
         Function (const CTOR_FUNC_SIG& f);
 
     public:
         /**
          */
+        nonvirtual Function& operator= (Function&&) = default;
         nonvirtual Function& operator= (const Function&) = default;
 
     public:
@@ -92,7 +97,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual int Compare (const Function& rhs) const;
 
     private:
-        shared_ptr<STDFUNCTION> fFun_;
+        STDFUNCTION fFun_;
+        void*       fOrdering_{};   // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
     };
 
     /**

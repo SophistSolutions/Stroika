@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include "../Common/Compare.h"
+
 namespace Stroika::Foundation::Execution {
 
     /*
@@ -20,41 +22,33 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (const CTOR_FUNC_SIG& f)
-        : fFun_ (new STDFUNCTION (f))
+        : fFun_ (STDFUNCTION{f})
+        , fOrdering_{fFun_.template target<CTOR_FUNC_SIG> ()}
     {
+        Assert ((fOrdering_ == nullptr) == (fFun_ == nullptr));
     }
     template <typename FUNCTION_SIGNATURE>
     inline Function<FUNCTION_SIGNATURE>::Function (nullptr_t)
         : fFun_{}
     {
+        Assert (fOrdering_ == nullptr);
     }
     template <typename FUNCTION_SIGNATURE>
     inline Function<FUNCTION_SIGNATURE>::operator STDFUNCTION () const
     {
-        if (fFun_ == nullptr) {
-            return nullptr;
-        }
-        return *fFun_;
+        return fFun_;
     }
     template <typename FUNCTION_SIGNATURE>
     template <typename... Args>
     inline typename Function<FUNCTION_SIGNATURE>::result_type Function<FUNCTION_SIGNATURE>::operator() (Args... args) const
     {
         RequireNotNull (fFun_);
-        return (*fFun_) (forward<Args> (args)...);
+        return fFun_ (forward<Args> (args)...);
     }
     template <typename FUNCTION_SIGNATURE>
     inline int Function<FUNCTION_SIGNATURE>::Compare (const Function& rhs) const
     {
-        if (fFun_.get () < rhs.fFun_.get ()) {
-            return -1;
-        }
-        else if (fFun_.get () == rhs.fFun_.get ()) {
-            return 0;
-        }
-        else {
-            return 1;
-        }
+        return Common::ThreeWayCompareNormalizer (fOrdering_, rhs.fOrdering_);
     }
 
     /*
