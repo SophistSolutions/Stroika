@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         STDFUNCTION fFun_;
-        void*       fOrdering_{};   // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
+        void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
     };
 
     /**
