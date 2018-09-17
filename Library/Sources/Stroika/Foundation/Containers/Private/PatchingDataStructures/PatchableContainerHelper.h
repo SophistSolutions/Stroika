@@ -6,6 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Execution/SpinLock.h"
 #include "../../../Memory/SmallStackBuffer.h"
 #include "../../../Traversal/Iterator.h"
 
@@ -138,7 +139,6 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend struct PatchableContainerHelper;
     };
-
 }
 
 /*

@@ -836,7 +836,6 @@ WORKAROUND:
 
 #endif
 
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
