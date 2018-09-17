@@ -47,6 +47,7 @@ History
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7.txt - NOTE  - ignoring irreproducible (hard to repro) rasppi valgrind issue and 2 temp networking issues on retetsts)</li>
 		<li>Tested (passed regtests)
 			<ul>
+				<li>one small helgrind/raspberrypi regression ignored - because the introduction was just cuz we recently started running valgrind on raspberrypi and looks innocuous)</li>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7-OUT.txt</li>
 				<li>vc++2k17  (15.8.3)</li>
 				<li>MacOS, XCode 10 (GM-seed)</li>
