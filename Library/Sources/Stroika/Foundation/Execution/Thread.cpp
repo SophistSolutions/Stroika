@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Characters {
  ********************************** Thread::Rep_ ********************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const Function<void()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
+Thread::Rep_::Rep_ (const function<void()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
     : fRunnable_ (runnable)
 {
     // @todo - never used anything from configuration (yet) - should!)
@@ -1035,19 +1035,12 @@ Thread::CleanupPtr::~CleanupPtr ()
  *********************************** Thread *************************************
  ********************************************************************************
  */
-Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
+Thread::Ptr Thread::New (const function<void()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
     Thread::Ptr ptr = Ptr{make_shared<Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
     if (name) {
         ptr.SetThreadName (*name);
     }
-    return ptr;
-}
-
-Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name, const optional<Configuration>& configuration)
-{
-    Thread::Ptr ptr = Thread::New (fun2CallOnce, name, configuration);
-    ptr.Start ();
     return ptr;
 }
 

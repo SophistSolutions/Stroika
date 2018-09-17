@@ -15,7 +15,6 @@
 #include "../Time/Realtime.h"
 #include "../Traversal/Iterable.h"
 
-#include "Function.h"
 #include "Signals.h"
 #include "StringException.h"
 
@@ -301,13 +300,25 @@ namespace Stroika::Foundation::Execution {
          *      \code
          *          Thread::Ptr t = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name");
          *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          Thread::Ptr t = Thread::New ([r]() { r->Run (); });
+         *          t.Start ();
+         *          t.WaitForDone ();
+         *      \endcode
          */
-        static Ptr New (const Function<void()>& fun2CallOnce, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
-        static Ptr New (const Function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void()>& fun2CallOnce, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void()>& fun2CallOnce, const optional<Configuration>& configuration);
+        static Ptr New (const function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration);
+#if 0
         template <typename FUNCTION>
         static Ptr New (FUNCTION f, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, enable_if_t<is_function_v<FUNCTION>>* = nullptr);
         template <typename FUNCTION>
         static Ptr New (FUNCTION f, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, enable_if_t<is_function_v<FUNCTION>>* = nullptr);
+#endif
 
     public:
         /**
@@ -533,7 +544,7 @@ namespace Stroika::Foundation::Execution {
          *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
          *  via GetFunction(), but is only settable in the thread constructor.
          */
-        nonvirtual Function<void()> GetFunction () const;
+        nonvirtual function<void()> GetFunction () const;
 
     public:
         /**
