@@ -93,8 +93,8 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         nonvirtual void _ApplyToEachOwnedIterator (FUNCTION f) const;
 
     private:
-        mutable std::mutex      fActiveIteratorsMutex_;
-        PatchableIteratorMixIn* fActiveIteratorsListHead_ = nullptr;
+        mutable conditional_t<Execution::kSpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> fActiveIteratorsMutex_;
+        PatchableIteratorMixIn*                                                                    fActiveIteratorsListHead_ = nullptr;
     };
 
     /*
@@ -139,6 +139,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend struct PatchableContainerHelper;
     };
+
 }
 
 /*
