@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         Assert (not HasActiveIterators ());
         [[maybe_unused]] auto&& critSec = lock_guard{rhs->fActiveIteratorsMutex_};
     Again:
-        for (auto v = rhs->fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
+        for (auto v = rhs->fActiveIteratorsListHead_.load (); v != nullptr; v = v->fNextActiveIterator_) {
             if (v->fOwnerID_ == newOwnerID) {
                 COMBINED_ITERATOR* x = static_cast<COMBINED_ITERATOR*> (v);
                 this->MoveIteratorAfterClone_ (x, rhs);
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename ACTUAL_ITERATOR_TYPE>
     inline ACTUAL_ITERATOR_TYPE* PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::GetFirstActiveIterator_ () const
     {
-        return static_cast<ACTUAL_ITERATOR_TYPE*> (fActiveIteratorsListHead_);
+        return static_cast<ACTUAL_ITERATOR_TYPE*> (fActiveIteratorsListHead_.load ());
     }
     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
     inline void PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
@@ -56,14 +56,14 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
     inline bool PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::HasActiveIterators () const
     {
-        return fActiveIteratorsListHead_ != nullptr;
+        return fActiveIteratorsListHead_.load () != nullptr;
     }
 #if qDebug
     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
     void PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fActiveIteratorsMutex_};
-        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
+        for (auto v = fActiveIteratorsListHead_.load (); v != nullptr; v = v->fNextActiveIterator_) {
             Assert (v->fOwnerID_ != oBeingDeleted);
         }
     }
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     {
         RequireNotNull (pi);
         Assert (pi->fNextActiveIterator_ == nullptr);
-        pi->fNextActiveIterator_  = fActiveIteratorsListHead_;
+        pi->fNextActiveIterator_  = fActiveIteratorsListHead_.load ();
         fActiveIteratorsListHead_ = pi;
         pi->fPatchableContainer_  = this;
     }
@@ -91,11 +91,11 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator_ (PatchableIteratorMixIn* pi)
     {
         RequireNotNull (pi);
-        if (fActiveIteratorsListHead_ == pi) {
+        if (fActiveIteratorsListHead_.load () == pi) {
             fActiveIteratorsListHead_ = pi->fNextActiveIterator_;
         }
         else {
-            PatchableIteratorMixIn* v = fActiveIteratorsListHead_;
+            PatchableIteratorMixIn* v = fActiveIteratorsListHead_.load ();
             for (; v->fNextActiveIterator_ != pi; v = v->fNextActiveIterator_) {
                 AssertNotNull (v);
                 AssertNotNull (v->fNextActiveIterator_);
@@ -111,6 +111,11 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename ACTIVE_ITERATOR_SUBTYPE, typename FUNCTION>
     inline void PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::_ApplyToEachOwnedIterator (FUNCTION f) const
     {
+        // This speed tweak is safe because the underlying type is atomic, so its always up to date. And its a performance
+        // tweak because this situation is common, and it avoids a mutex lock (even a spinlock avoidance helps)
+        if (this->template GetFirstActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> () == nullptr) [[LIKELY_ATTR]] {
+            return;
+        }
         [[maybe_unused]] auto&& critSec = lock_guard{fActiveIteratorsMutex_};
         for (auto ai = this->template GetFirstActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> (); ai != nullptr; ai = ai->template GetNextActiveIterator_<ACTIVE_ITERATOR_SUBTYPE> ()) {
             f (ai);
@@ -147,7 +152,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     {
         RequireNotNull (containerHelper);
         [[maybe_unused]] auto&& critSec            = lock_guard{containerHelper->fActiveIteratorsMutex_};
-        fNextActiveIterator_                       = containerHelper->fActiveIteratorsListHead_;
+        fNextActiveIterator_                       = containerHelper->fActiveIteratorsListHead_.load ();
         containerHelper->fActiveIteratorsListHead_ = this;
     }
     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
@@ -158,7 +163,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     {
         RequireNotNull (fPatchableContainer_);
         [[maybe_unused]] auto&& critSec                 = lock_guard{fPatchableContainer_->fActiveIteratorsMutex_};
-        fNextActiveIterator_                            = from.fPatchableContainer_->fActiveIteratorsListHead_;
+        fNextActiveIterator_                            = from.fPatchableContainer_->fActiveIteratorsListHead_.load ();
         fPatchableContainer_->fActiveIteratorsListHead_ = this;
     }
     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>

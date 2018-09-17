@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     private:
         mutable conditional_t<Execution::kSpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> fActiveIteratorsMutex_;
-        PatchableIteratorMixIn*                                                                    fActiveIteratorsListHead_ = nullptr;
+        atomic<PatchableIteratorMixIn*>                                                            fActiveIteratorsListHead_ = nullptr;
     };
 
     /*
