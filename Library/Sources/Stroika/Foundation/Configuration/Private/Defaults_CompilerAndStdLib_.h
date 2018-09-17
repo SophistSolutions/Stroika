@@ -118,7 +118,7 @@
 #endif
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt8_
 // check which pointer-version of MSVC2k17 (15.8.x)
-#if _MSC_FULL_VER > _MS_VS_2k17_15Pt8Pt0_
+#if _MSC_FULL_VER > _MS_VS_2k17_15Pt8Pt4_
 // @todo figure out how to add arg to message
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 15.8.x - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -286,7 +286,7 @@ ABORTING...
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt5_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-// verified still broken in _MSC_VER_2k17_15Pt8_
+// still broken in _MSC_VER_2k17_15Pt8_
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
@@ -828,12 +828,14 @@ WORKAROUND:
 
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k17_15Pt8_  (_MS_VS_2k17_15Pt8Pt0_)
+// still broken in _MS_VS_2k17_15Pt8Pt4_
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
 
 #endif
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
@@ -998,6 +1000,7 @@ NOTE:
 // assume broken in _MS_VS_2k17_15Pt7Pt5_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // verified broken in _MSC_VER_2k17_15Pt8_
+// verified still broken in _MS_VS_2k17_15Pt8Pt4_
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
