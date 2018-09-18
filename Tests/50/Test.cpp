@@ -170,7 +170,7 @@ namespace {
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
             DurationSecondsType start = Time::GetTickCount ();
             // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
-            for (volatile unsigned int ii = 0; ii < Math::AtLeast <unsigned int> (runCount / kNParts2Divide_, 1); ++ii) {
+            for (volatile unsigned int ii = 0; ii < Math::AtLeast<unsigned int> (runCount / kNParts2Divide_, 1); ++ii) {
                 t ();
             }
             times[i] = Time::GetTickCount () - start;
@@ -221,7 +221,7 @@ namespace {
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
 #if qDebug
-        runCount = Math::AtLeast <unsigned int>(static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio), 1);
+        runCount = Math::AtLeast<unsigned int> (static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio), 1);
 #endif
         baselineTime *= runCount;
         DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
