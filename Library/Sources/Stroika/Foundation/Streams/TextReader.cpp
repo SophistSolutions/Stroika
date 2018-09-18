@@ -249,7 +249,7 @@ protected:
                 fCache_[i + static_cast<size_t> (origOffset)] = bufStart[i].As<wchar_t> ();
             }
         };
-        // if not a cache hit, use inherited Read (), and fill the cache. 
+        // if not a cache hit, use inherited Read (), and fill the cache.
         // If the calling read big enough, re-use that buffer.
         constexpr size_t kMinCachedReadSize_{512};
         if (intoEnd - intoStart >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
