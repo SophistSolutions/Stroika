@@ -380,6 +380,7 @@ namespace Stroika::Foundation::Memory {
             ::free (bytes);
         }
     }
+
 }
 
 #endif /*_Stroika_Foundation_Memory_SmallStackBuffer_inl_*/
