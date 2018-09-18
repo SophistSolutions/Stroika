@@ -30,9 +30,9 @@ namespace {
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
     FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
-        : fSource_ (src)
-        , fCharConverter_ (charConverter)
-        , fOffset_ (0)
+        : _fSource (src)
+        , _fCharConverter (charConverter)
+        , _fOffset (0)
     {
     }
 
@@ -44,12 +44,12 @@ protected:
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
-        fSource_.Close ();
-        Assert (fSource_ == nullptr);
+        _fSource.Close ();
+        Assert (_fSource == nullptr);
     }
     virtual bool IsOpenRead () const override
     {
-        return fSource_ != nullptr;
+        return _fSource != nullptr;
     }
 
 // at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
@@ -78,17 +78,17 @@ protected:
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         {
             SmallStackBuffer<byte, 8 * 1024> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
-            size_t                           inBytes = fSource_.Read (begin (inBuf), end (inBuf));
+            size_t                           inBytes = _fSource.Read (begin (inBuf), end (inBuf));
         again:
             const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
             const char* endB   = firstB + inBytes;
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
 #if qMaintainingMBShiftStateNotWorking_
-            mbstate_t                     mbState_ = mbstate_t{};
-            codecvt_utf8<wchar_t>::result r        = fCharConverter_.in (mbState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+            mbstate_t                     mbState = mbstate_t{};
+            codecvt_utf8<wchar_t>::result r       = _fCharConverter.in (mbState, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
 #else
-            codecvt_utf8<wchar_t>::result r = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+            codecvt_utf8<wchar_t>::result r = _fCharConverter.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
 #endif
             Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
             switch (r) {
@@ -97,7 +97,7 @@ protected:
 #if qMaintainingMBShiftStateNotWorking_
                     size_t prevInBufSize = inBuf.size ();
                     inBuf.GrowToSize_uninitialized (prevInBufSize + 1);
-                    size_t thisReadNBytes = fSource_.Read (begin (inBuf) + prevInBufSize, end (inBuf));
+                    size_t thisReadNBytes = _fSource.Read (begin (inBuf) + prevInBufSize, end (inBuf));
                     if (thisReadNBytes != 0) {
                         outCursor = begin (outBuf);
                         inBytes += thisReadNBytes;
@@ -124,8 +124,8 @@ protected:
             ++resultCharP;
         }
         size_t n = resultCharP - intoStart;
-        fOffset_ += n;
-        Ensure (n != 0 or not fSource_.Read ().has_value ()); // if we read no characters, upstream binary source must be at EOF
+        _fOffset += n;
+        Ensure (n != 0 or not _fSource.Read ().has_value ()); // if we read no characters, upstream binary source must be at EOF
         return n;
     }
 
@@ -140,7 +140,7 @@ protected:
         //      o   decode and see if at least one character
         //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         SmallStackBuffer<byte> inBuf{SmallStackBufferCommon::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
-        optional<size_t>       inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
+        optional<size_t>       inBytes = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf));
         if (inBytes) {
             if (*inBytes == 0) {
                 return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not
@@ -150,13 +150,13 @@ protected:
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
 #if qMaintainingMBShiftStateNotWorking_
-            mbstate_t mbState_ = mbstate_t{};
+            mbstate_t mbState = mbstate_t{};
 #else
-            mbstate_t mbState_ = fMBState_;
+            mbstate_t mbState = fMBState_;
 #endif
             wchar_t                                        outChar;
             wchar_t*                                       outCursor = &outChar;
-            [[maybe_unused]] codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (mbState_, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
+            [[maybe_unused]] codecvt_utf8<wchar_t>::result r         = _fCharConverter.in (mbState, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
             // we could read one byte upstream, but not ENOUGH to get a full character output!
             if (outCursor != &outChar) {
                 return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 1);
@@ -169,7 +169,7 @@ protected:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenRead ());
-        return fOffset_;
+        return _fOffset;
     }
 
     virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
@@ -177,16 +177,16 @@ protected:
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenRead ());
         AssertNotReached (); // not seekable
-        return fOffset_;
+        return _fOffset;
     }
 
 protected:
-    InputStream<byte>::Ptr        fSource_;
-    const MyWCharTConverterType_& fCharConverter_;
+    InputStream<byte>::Ptr        _fSource;
+    const MyWCharTConverterType_& _fCharConverter;
 #if !qMaintainingMBShiftStateNotWorking_
     mbstate_t fMBState_{};
 #endif
-    SeekOffsetType fOffset_;
+    SeekOffsetType _fOffset;
 };
 
 class TextReader::UnseekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
@@ -223,21 +223,21 @@ protected:
 
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
         // and not say 'eof'
-        if (fOffset_ < fCache_.size ()) {
+        if (_fOffset < fCache_.size ()) {
             // return data from cache
             size_t nToRead     = intoEnd - intoStart;
-            size_t nInBufAvail = fCache_.size () - static_cast<size_t> (fOffset_);
+            size_t nInBufAvail = fCache_.size () - static_cast<size_t> (_fOffset);
             nToRead            = min (nToRead, nInBufAvail);
             Assert (nToRead > 0);
             for (size_t i = 0; i < nToRead; ++i) {
-                intoStart[i] = fCache_[i + static_cast<size_t> (fOffset_)];
+                intoStart[i] = fCache_[i + static_cast<size_t> (_fOffset)];
             }
-            fOffset_ += nToRead;
+            _fOffset += nToRead;
             return nToRead;
         }
 
         // if not already cached, add to cache, and then return the data
-        SeekOffsetType origOffset       = fOffset_;
+        SeekOffsetType origOffset       = _fOffset;
         auto           pushIntoCacheBuf = [origOffset, this](Character* bufStart, Character* bufEnd) {
             size_t n            = bufEnd - bufStart;
             size_t newCacheSize = static_cast<size_t> (origOffset + n);
@@ -277,7 +277,7 @@ protected:
                 pushIntoCacheBuf (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::begin (buf)) + n);
                 n = intoEnd - intoStart;
                 (void)::memcpy (intoStart, std::begin (buf), n * sizeof (wchar_t));
-                fOffset_ = origOffset + n;
+                _fOffset = origOffset + n;
             }
             return n;
         }
@@ -294,7 +294,7 @@ protected:
                 SeekTo_ (static_cast<SeekOffsetType> (offset));
             } break;
             case Whence::eFromCurrent: {
-                Streams::SeekOffsetType       curOffset = fOffset_;
+                Streams::SeekOffsetType       curOffset = _fOffset;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                 if (newOffset < 0) {
                     Execution::Throw (range_error ("seek"));
@@ -307,38 +307,38 @@ protected:
                 while (Read (&c, &c + 1) == 1) {
                     break; // read til EOF
                 }
-                SeekTo_ (fOffset_ + offset);
+                SeekTo_ (_fOffset + offset);
             } break;
         }
-        return fOffset_;
+        return _fOffset;
     }
 
 private:
     void SeekFowardTo_ (SeekOffsetType offset)
     {
         // easy - keep reading
-        while (fOffset_ < offset) {
+        while (_fOffset < offset) {
             Character c;
             if (Read (&c, &c + 1) == 0) {
                 Execution::Throw (range_error ("seek"));
             }
         }
-        Ensure (fOffset_ == offset);
+        Ensure (_fOffset == offset);
     }
     void SeekBackwardTo_ (SeekOffsetType offset)
     {
-        fOffset_ = offset;
+        _fOffset = offset;
         // no need to adjust seekpos of base FromBinaryStreamBaseRep_ readpos, because that is always left at end of cache
     }
     void SeekTo_ (SeekOffsetType offset)
     {
-        if (offset > fOffset_) {
+        if (offset > _fOffset) {
             SeekFowardTo_ (offset);
         }
-        else if (offset < fOffset_) {
+        else if (offset < _fOffset) {
             SeekBackwardTo_ (offset);
         }
-        Ensure (fOffset_ == offset);
+        Ensure (_fOffset == offset);
     }
 
 private:
