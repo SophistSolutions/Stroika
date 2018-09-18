@@ -3,8 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <mutex>
-
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Execution/Exceptions.h"
