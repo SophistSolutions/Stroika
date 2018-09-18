@@ -990,9 +990,7 @@ namespace {
         return STRCMPCASENOSENTIVEFUNCTION (fileName1, fileName2);
     }
 
-#ifndef BUFREADCOMMENT
-#define BUFREADCOMMENT (0x400)
-#endif
+    constexpr size_t BUFREADCOMMENT = 0x400;
 
     /*
       Locate the Central directory of a zipfile (at the end, just before
@@ -1000,25 +998,22 @@ namespace {
     */
     ZPOS64_T unz64local_SearchCentralDir (const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream)
     {
-        unsigned char* buf;
-        ZPOS64_T       uSizeFile;
-        ZPOS64_T       uBackRead;
-        ZPOS64_T       uMaxBack  = 0xffff; /* maximum size of global comment */
-        ZPOS64_T       uPosFound = 0;
+        ZPOS64_T uPosFound = 0;
 
         if (ZSEEK64 (*pzlib_filefunc_def, filestream, 0, ZLIB_FILEFUNC_SEEK_END) != 0)
             return 0;
 
-        uSizeFile = ZTELL64 (*pzlib_filefunc_def, filestream);
+        ZPOS64_T uSizeFile = ZTELL64 (*pzlib_filefunc_def, filestream);
 
+        ZPOS64_T uMaxBack = 0xffff; /* maximum size of global comment */
         if (uMaxBack > uSizeFile)
             uMaxBack = uSizeFile;
 
-        buf = (unsigned char*)ALLOC (BUFREADCOMMENT + 4);
+        unsigned char* buf = (unsigned char*)ALLOC (BUFREADCOMMENT + 4);
         if (buf == NULL)
             return 0;
 
-        uBackRead = 4;
+        ZPOS64_T uBackRead = 4;
         while (uBackRead < uMaxBack) {
             uLong    uReadSize;
             ZPOS64_T uReadPos;
@@ -1179,10 +1174,7 @@ namespace {
         us.z_filefunc          = *pzlib_filefunc64_32_def;
         us.is64bitOpenFunction = is64bitOpenFunction;
 
-        us.filestream = ZOPEN64 (us.z_filefunc,
-                                 path,
-                                 ZLIB_FILEFUNC_MODE_READ |
-                                     ZLIB_FILEFUNC_MODE_EXISTING);
+        us.filestream = ZOPEN64 (us.z_filefunc, path, ZLIB_FILEFUNC_MODE_READ | ZLIB_FILEFUNC_MODE_EXISTING);
         if (us.filestream == NULL)
             return NULL;
 
@@ -1426,7 +1418,6 @@ namespace {
         int                      err = UNZ_OK;
         uLong                    uMagic;
         long                     lSeek = 0;
-        uLong                    uL;
 
         if (file == NULL)
             return UNZ_PARAMERROR;
@@ -1464,13 +1455,19 @@ namespace {
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &file_info.crc) != UNZ_OK)
             err = UNZ_ERRNO;
 
-        if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
-            err = UNZ_ERRNO;
-        file_info.compressed_size = uL;
+        {
+            uLong uL;
+            if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
+                err = UNZ_ERRNO;
+            file_info.compressed_size = uL;
+        }
 
-        if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
-            err = UNZ_ERRNO;
-        file_info.uncompressed_size = uL;
+        {
+            uLong uL;
+            if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
+                err = UNZ_ERRNO;
+            file_info.uncompressed_size = uL;
+        }
 
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &file_info.size_filename) != UNZ_OK)
             err = UNZ_ERRNO;
@@ -1491,9 +1488,12 @@ namespace {
             err = UNZ_ERRNO;
 
         // relative offset of local header
-        if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
-            err = UNZ_ERRNO;
-        file_info_internal.offset_curfile = uL;
+        {
+            uLong uL;
+            if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
+                err = UNZ_ERRNO;
+            file_info_internal.offset_curfile = uL;
+        }
 
         lSeek += file_info.size_filename;
         if ((err == UNZ_OK) and (szFileName != NULL)) {
@@ -2599,18 +2599,18 @@ private:
         MyISeekInStream (const Streams::InputStream<byte>::Ptr& in)
             : fInStream_ (in)
         {
-            this->zopen64_file = [](voidpf opaque, const void* /*filename*/, int /*mode*/) -> voidpf {
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+            this->zopen64_file = [](voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
+                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
 #if qDebug
                 Assert (not myThis->fOpened_);
                 myThis->fOpened_ = true;
 #endif
                 return myThis;
             };
-            this->zread_file = [](voidpf opaque, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
+            this->zread_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
                 Lambda_Arg_Unused_BWA (stream);
-                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 size_t sz = myThis->fInStream_.Read (reinterpret_cast<byte*> (buf), reinterpret_cast<byte*> (buf) + size);
                 Assert (sz <= size);
@@ -2620,17 +2620,17 @@ private:
                 RequireNotReached (); // read only zip
                 return static_cast<uLong> (UNZ_PARAMERROR);
             };
-            this->ztell64_file = [](voidpf opaque, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
+            this->ztell64_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
                 Lambda_Arg_Unused_BWA (stream);
-                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 return myThis->fInStream_.GetOffset ();
             };
-            this->zseek64_file = [](voidpf opaque, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
+            this->zseek64_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
                 Lambda_Arg_Unused_BWA (stream);
-                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 switch (origin) {
                     case ZLIB_FILEFUNC_SEEK_SET:
@@ -2648,21 +2648,21 @@ private:
                 }
                 return UNZ_OK;
             };
-            this->zclose_file = []([[maybe_unused]] voidpf opaque, [[maybe_unused]] voidpf stream) -> int {
-                Lambda_Arg_Unused_BWA (opaque);
+            this->zclose_file = []([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
+                Lambda_Arg_Unused_BWA (opaqueStream);
                 Lambda_Arg_Unused_BWA (stream);
 #if qDebug
-                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 myThis->fOpened_ = false;
 #endif
                 return UNZ_OK;
             };
-            this->zerror_file = [](voidpf opaque, [[maybe_unused]] voidpf stream) -> int {
+            this->zerror_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
                 Lambda_Arg_Unused_BWA (stream);
-                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
-                [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+                [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 return UNZ_OK; // @todo - see what this means?
             };
