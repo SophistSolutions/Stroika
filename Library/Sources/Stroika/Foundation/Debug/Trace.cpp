@@ -465,7 +465,7 @@ void Emitter::DoEmit_ (const char* p) noexcept
     }
     else {
         char buf[1024]; // @todo if/when we always support constexpr can use that here!
-        memcpy (buf, p, sizeof (buf));
+        (void)::memcpy (buf, p, sizeof (buf));
         buf[NEltsOf (buf) - 1] = 0;
         ::OutputDebugStringA (buf);
         ::OutputDebugStringA ("...");
@@ -486,7 +486,7 @@ void Emitter::DoEmit_ (const wchar_t* p) noexcept
     }
     else {
         wchar_t buf[1024]; // @todo if/when we always support constexpr can use that here!
-        memcpy (buf, p, sizeof (buf));
+        (void)::memcpy (buf, p, sizeof (buf));
         buf[NEltsOf (buf) - 1] = 0;
         ::OutputDebugStringW (buf);
         ::OutputDebugStringW (L"...");

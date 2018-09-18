@@ -29,8 +29,8 @@ namespace Stroika::Foundation::Memory {
         : fLiveData_ (BufferAsT_ ())
     {
 #if qDebug
-        ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
-        ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
+        (void)::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
+        (void)::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
 #endif
         Invariant ();
     }
