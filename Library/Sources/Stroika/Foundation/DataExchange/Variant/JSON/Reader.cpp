@@ -393,12 +393,13 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return String_Constant{L".json"};
+        static const String kResult_ = String_Constant{L".json"};
+        return kResult_;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {
-        constexpr Streams::SeekableFlag kSeekable_{Streams::SeekableFlag::eSeekable};
-        return Read (Streams::TextReader::New (in, kSeekable_));
+        using namespace Streams;
+        return Read (TextReader::New (in, SeekableFlag::eSeekable));
     }
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
     {
