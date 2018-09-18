@@ -203,8 +203,9 @@ class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseR
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
+    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter, ReadAhead readAhead)
         : FromBinaryStreamBaseRep_ (src, charConverter)
+        , fReadAheadAllowed_ (readAhead == ReadAhead::eReadAheadAllowed)
     {
     }
 
@@ -220,7 +221,8 @@ protected:
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenRead ());
 
-        // if already cached, return from cache. If not already cached, add to cache
+        // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
+        // and not say 'eof'
         if (fOffset_ < fCache_.size ()) {
             // return data from cache
             size_t nToRead     = intoEnd - intoStart;
@@ -233,24 +235,52 @@ protected:
             fOffset_ += nToRead;
             return nToRead;
         }
-        // if not a cache hit, use inherited Read (), and fill the cache
-        SeekOffsetType origOffset = fOffset_;
-        size_t         n          = inherited::Read (intoStart, intoEnd);
-        if (n != 0) {
-            if (origOffset + n > numeric_limits<size_t>::max ()) {
-                // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                Execution::Throw (range_error ("seek past max size for size_t"));
-            }
+
+        // if not already cached, add to cache, and then return the data
+        SeekOffsetType origOffset       = fOffset_;
+        auto           pushIntoCacheBuf = [origOffset, this](Character* bufStart, Character* bufEnd) {
+            size_t n            = bufEnd - bufStart;
             size_t newCacheSize = static_cast<size_t> (origOffset + n);
             Assert (fCache_.size () == static_cast<size_t> (origOffset));
             Assert (newCacheSize > fCache_.size ());
             Containers::ReserveSpeedTweekAddN (fCache_, n);
             fCache_.resize_uninitialized (newCacheSize);
             for (size_t i = 0; i < n; ++i) {
-                fCache_[i + static_cast<size_t> (origOffset)] = intoStart[i].As<wchar_t> ();
+                fCache_[i + static_cast<size_t> (origOffset)] = bufStart[i].As<wchar_t> ();
             }
+        };
+        // if not a cache hit, use inherited Read (), and fill the cache. 
+        // If the calling read big enough, re-use that buffer.
+        constexpr size_t kMinCachedReadSize_{512};
+        if (intoEnd - intoStart >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
+            size_t n = inherited::Read (intoStart, intoEnd);
+            if (n != 0) {
+                if (origOffset + n > numeric_limits<size_t>::max ()) {
+                    // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                    Execution::Throw (range_error ("seek past max size for size_t"));
+                }
+                pushIntoCacheBuf (intoStart, intoStart + n);
+            }
+            return n;
         }
-        return n;
+        else {
+            // if argument buffer not big enough, read into a temporary buffer
+            constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
+            static_assert (sizeof (wchar_t) == sizeof (Character));
+            wchar_t buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
+            size_t  n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
+            if (n != 0) {
+                if (origOffset + n > numeric_limits<size_t>::max ()) {
+                    // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                    Execution::Throw (range_error ("seek past max size for size_t"));
+                }
+                pushIntoCacheBuf (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::begin (buf)) + n);
+                n = intoEnd - intoStart;
+                (void)::memcpy (intoStart, std::begin (buf), n * sizeof (wchar_t));
+                fOffset_ = origOffset + n;
+            }
+            return n;
+        }
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
@@ -312,6 +342,7 @@ private:
     }
 
 private:
+    bool                      fReadAheadAllowed_{false};
     SmallStackBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
@@ -486,23 +517,23 @@ auto TextReader::New (const Memory::BLOB& src, const optional<Characters::String
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, SeekableFlag seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    Ptr p = TextReader::New (src, kUTF8Converter_, seekable);
+    Ptr p = TextReader::New (src, kUTF8Converter_, seekable, readAhead);
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable);
+    Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable, readAhead);
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
+    Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
@@ -544,7 +575,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -552,40 +583,40 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             //return InternalSyncRep_::New ();
             return New (src, seekable);
         case Execution::eNotKnownInternallySynchronized:
-            return New (src, seekable);
+            return New (src, seekable, readAhead);
         default:
             RequireNotReached ();
-            return New (src, seekable);
+            return New (src, seekable, readAhead);
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
-            return New (src, charset, seekable);
+            return New (src, charset, seekable, readAhead);
         case Execution::eNotKnownInternallySynchronized:
-            return New (src, charset, seekable);
+            return New (src, charset, seekable, readAhead);
         default:
             RequireNotReached ();
-            return New (src, charset, seekable);
+            return New (src, charset, seekable, readAhead);
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
-            return New (src, codeConverter, seekable);
+            return New (src, codeConverter, seekable, readAhead);
         case Execution::eNotKnownInternallySynchronized:
-            return New (src, codeConverter, seekable);
+            return New (src, codeConverter, seekable, readAhead);
         default:
             RequireNotReached ();
-            return New (src, codeConverter, seekable);
+            return New (src, codeConverter, seekable, readAhead);
     }
 }
 

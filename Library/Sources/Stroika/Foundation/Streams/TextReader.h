@@ -73,6 +73,21 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
+         * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
+         * a good thing, but for some stream uses, its important to not read ahead - e.g. in the underlying binary stream contains multiple objects and we
+         * are just reading one).
+         *
+         *  \note eReadAheadAllowed doesn't mean the underlying class actually WILL read ahead, only that it is permitted to.
+         */
+        enum class ReadAhead {
+            eReadAheadNever,
+            eReadAheadAllowed,
+        };
+        static constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
+        static constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
+
+    public:
+        /**
          * IF handed 'bytes' - the TextReader interprets the bytes (@todo add support for code page spec, and autodetect
          * etc - https://stroika.atlassian.net/browse/STK-274). 
          * If handled an InputStream<Character>::Ptr - it just passes through characters.
@@ -95,15 +110,15 @@ namespace Stroika::Foundation::Streams {
          *
          */
         static Ptr New (const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
-        static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable);
-        static Ptr New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable);
-        static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable);
+        static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<Character>::Ptr& src);
         static Ptr New (const Traversal::Iterable<Character>& src);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Character>::Ptr& src);
         static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Traversal::Iterable<Character>& src);
 
@@ -155,7 +170,6 @@ namespace Stroika::Foundation::Streams {
     private:
         friend class TextReader;
     };
-
 }
 
 /*
