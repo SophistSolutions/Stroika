@@ -17,10 +17,10 @@
 namespace Stroika::Foundation::Containers::Factory {
 
     /*
-        ********************************************************************************
-        ****** Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> **************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****** Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> **************
+     ********************************************************************************
+     */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
@@ -34,12 +34,12 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() () const
     {
         /*
-            *  Would have been more performant to just and assure always properly set, but to initialize
-            *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-            *  with containers constructed before main.
-            *
-            *  This works more generally (and with hopefully modest enough performance impact).
-            */
+         *  Would have been more performant to just and assure always properly set, but to initialize
+         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+         *  with containers constructed before main.
+         *
+         *  This works more generally (and with hopefully modest enough performance impact).
+         */
         if (auto f = sFactory_.load ()) {
             return f (fKeyEqualsComparer_);
         }
@@ -56,13 +56,13 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Default_ (const KEY_EQUALS_COMPARER& keyEqualsComparer)
     {
         /*
-            *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most
-            *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
-            *  a hash function. And its quite reasonable for small Mapping's - which are often the case.
-            *
-            *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
-            *  maps.
-            */
+         *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most
+         *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
+         *  a hash function. And its quite reasonable for small Mapping's - which are often the case.
+         *
+         *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
+         *  maps.
+         */
         return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE> (keyEqualsComparer);
     }
 
@@ -74,12 +74,12 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::operator() () const
     {
         /*
-        *  Would have been more performant to just and assure always properly set, but to initialize
-        *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-        *  with containers constructed before main.
-        *
-        *  This works more generally (and with hopefully modest enough performance impact).
-        */
+         *  Would have been more performant to just and assure always properly set, but to initialize
+         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+         *  with containers constructed before main.
+         *
+         *  This works more generally (and with hopefully modest enough performance impact).
+         */
         if (auto f = sFactory_.load ()) {
             return f ();
         }
@@ -96,8 +96,8 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::Default_ ()
     {
         /*
-        *  Use SFINAE to select best default implementation.
-        */
+         *  Use SFINAE to select best default implementation.
+         */
         return Default_SFINAE_ (static_cast<KEY_TYPE*> (nullptr));
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
@@ -110,14 +110,16 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::Default_SFINAE_ (...)
     {
         /*
-            *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most
-            *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
-            *  a hash function. And its quite reasonable for small Mapping's - which are often the case.
-            *
-            *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
-            *  maps.
-            */
+         *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most
+         *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
+         *  a hash function. And its quite reasonable for small Mapping's - which are often the case.
+         *
+         *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
+         *  maps.
+         */
         return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE>{};
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_ */
