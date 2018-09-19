@@ -154,6 +154,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Invariant ();
+#if 1
+            (void)fData_.insert_or_assign (key, newElt);
+#else
             auto i = fData_.find (key);
             if (i == fData_.end ()) {
                 i = fData_.insert (pair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt)).first;
@@ -162,6 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             else {
                 i->second = newElt;
             }
+#endif
             fData_.Invariant ();
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
@@ -238,7 +242,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
-
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_ */
