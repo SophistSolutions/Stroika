@@ -1033,8 +1033,25 @@ namespace {
                     {ScanKindType::Reference, L"Reference"},
                     {ScanKindType::Sample, L"Sample"},
                 }}};
-        using ScanIDType                 = int;
-        using SpectrumType               = Mapping<double, double>;
+        using ScanIDType = int;
+        struct SpectrumType : Mapping<double, double> {
+            struct CompareNumbersEqual_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+                bool operator() (double lhs, double rhs) const
+                {
+                    return Math::NearlyEquals (lhs, rhs, .001);     //return lhs == rhs; due to convert to / from json we lose precision
+                }
+            };
+            SpectrumType ()
+                : Mapping<double, double>{CompareNumbersEqual_{}}
+            {
+            }
+            bool operator== (const Mapping& rhs) const
+            {
+                DbgTrace (L"*this = %s ", Characters::ToString (*this).c_str ());
+                DbgTrace (L"rhs = %s", Characters::ToString (rhs).c_str ());
+                return Equals (rhs, CompareNumbersEqual_{});
+            }
+        };
         using PersistenceScanAuxDataType = Mapping<String, String>;
         struct ScanDetails_ {
             ScanIDType                 fScanID{};
@@ -1096,7 +1113,7 @@ namespace {
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (b), end (b)));
             VerifyTestResult (sd2.fScanID == sd.fScanID);
             VerifyTestResult (sd2.fAuxData == sd.fAuxData);
-            //VerifyTestResult (sd2.fRawSpectrum == sd.fRawSpectrum);   // @todo - FIX - this test should pass!
+            VerifyTestResult (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
         }
     }
 }
