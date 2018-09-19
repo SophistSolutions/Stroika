@@ -84,8 +84,8 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-        *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
-        */
+         *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+         */
         nonvirtual Mapping<KEY_TYPE, VALUE_TYPE> operator() () const;
 
     public:
@@ -102,6 +102,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt<CHECK_KEY>::value>* = 0);
         static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (...);
     };
+
 }
 
 /*
