@@ -1058,7 +1058,7 @@ namespace {
             }
             bool operator== (const Mapping& rhs) const
             {
-                return Equals (rhs, CompareNumbersEqual_{});    // must compare values with 'nearlyequals'
+                return Equals (rhs, CompareNumbersEqual_{}); // must compare values with 'nearlyequals'
             }
         };
         using PersistenceScanAuxDataType = Mapping<String, String>;
