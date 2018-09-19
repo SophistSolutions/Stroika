@@ -1041,8 +1041,19 @@ namespace {
                     return Math::NearlyEquals (lhs, rhs, .001); //return lhs == rhs; due to convert to / from json we lose precision
                 }
             };
+            struct CompareNumbersLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+                bool operator() (double lhs, double rhs) const
+                {
+                    // special case handle numbers that are close
+                    if (CompareNumbersEqual_{}(lhs, rhs)) {
+                        return false;
+                    }
+                    return less<double>{}(lhs, rhs);
+                }
+            };
             SpectrumType ()
-                : Mapping<double, double>{CompareNumbersEqual_{}}
+                // : Mapping<double, double>{CompareNumbersEqual_{}} //works but slower
+                : Mapping<double, double>{Containers::Concrete::Mapping_stdmap<double, double>{CompareNumbersLess_{}}}
             {
             }
             bool operator== (const Mapping& rhs) const
