@@ -16,12 +16,21 @@ namespace {
     {
         // TODO: Need a more efficient implementation - but this should do for starters...
         Assert (lhsStart <= lhsEnd);
-        size_t lLen   = (lhsEnd - lhsStart);
-        size_t rLen   = (rhsEnd - rhsStart);
-        size_t length = min (lLen, rLen);
-        for (size_t i = 0; i < length; i++) {
-            if (lhsStart[i].GetCharacterCode () != rhsStart[i].GetCharacterCode ()) {
-                return (lhsStart[i].GetCharacterCode () - rhsStart[i].GetCharacterCode ());
+        size_t         lLen                    = (lhsEnd - lhsStart);
+        size_t         rLen                    = (rhsEnd - rhsStart);
+        size_t         length                  = min (lLen, rLen);
+        constexpr bool kUseMemCmpAsSpeedTweek_ = true; // In Visual studio.net 2k17 (15.8.4) this made a big difference (but on a small time so unclear) in one benchmark
+        if constexpr (kUseMemCmpAsSpeedTweek_) {
+            int tmp = ::memcmp (lhsStart, rhsStart, length * sizeof (Character));
+            if (tmp != 0) {
+                return Containers::CompareResultNormalizeHelper<int, int> (tmp);
+            }
+        }
+        else {
+            for (size_t i = 0; i < length; i++) {
+                if (lhsStart[i].GetCharacterCode () != rhsStart[i].GetCharacterCode ()) {
+                    return (lhsStart[i].GetCharacterCode () - rhsStart[i].GetCharacterCode ());
+                }
             }
         }
         return Containers::CompareResultNormalizeHelper<ptrdiff_t, int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
