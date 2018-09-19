@@ -1038,7 +1038,7 @@ namespace {
             struct CompareNumbersEqual_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
                 bool operator() (double lhs, double rhs) const
                 {
-                    return Math::NearlyEquals (lhs, rhs, .001);     //return lhs == rhs; due to convert to / from json we lose precision
+                    return Math::NearlyEquals (lhs, rhs, .001); //return lhs == rhs; due to convert to / from json we lose precision
                 }
             };
             SpectrumType ()
@@ -1047,8 +1047,6 @@ namespace {
             }
             bool operator== (const Mapping& rhs) const
             {
-                DbgTrace (L"*this = %s ", Characters::ToString (*this).c_str ());
-                DbgTrace (L"rhs = %s", Characters::ToString (rhs).c_str ());
                 return Equals (rhs, CompareNumbersEqual_{});
             }
         };
