@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <cstring>
+
 #include "../Containers/Common.h"
 
 #include "Character.h"
