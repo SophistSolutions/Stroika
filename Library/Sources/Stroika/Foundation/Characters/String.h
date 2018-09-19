@@ -394,7 +394,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Create a String object from ascii text. This function requires that its arguments all ascii (no high-bit set)
+         *  Create a String object from ascii text. 
+         *
+         *  \req This function requires that its arguments all ascii (no high-bit set)
          */
         static String FromASCII (const char* from);
         static String FromASCII (const string& from);

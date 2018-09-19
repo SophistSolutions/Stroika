@@ -340,24 +340,24 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
 String String::FromASCII (const char* from)
 {
     RequireNotNull (from);
-// @todo FIX PERFORMANCE
-#if qDebug
-    for (auto i = from; i != from; ++i) {
+    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (::strlen (from))};
+    wchar_t*                  pOut = buf.begin ();
+    for (const char* i = from; *i != '\0'; ++i, pOut++) {
         Require (isascii (*i));
+        *pOut = *i;
     }
-#endif
-    return ASCIIStringToWide (from);
+    return String{buf.begin (), pOut};
 }
 
 String String::FromASCII (const string& from)
 {
-// @todo FIX PERFORMANCE
-#if qDebug
-    for (auto i = from.begin (); i != from.end (); ++i) {
+    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (from.length ())};
+    wchar_t*                  pOut = buf.begin ();
+    for (string::const_iterator i = from.begin (); i != from.end (); ++i, pOut++) {
         Require (isascii (*i));
+        *pOut = *i;
     }
-#endif
-    return ASCIIStringToWide (from);
+    return String{buf.begin (), pOut};
 }
 
 String String::FromISOLatin1 (const char* start, const char* end)
