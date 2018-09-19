@@ -88,18 +88,18 @@ namespace Stroika::Foundation::Configuration {
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x < x));
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));
 
     /*
-        *  has_beginend<T>::value is true iff T has a begin/end method
-        *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
-        */
+     *  has_beginend<T>::value is true iff T has a begin/end method
+     *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
+     */
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x)));
 
     /*
-        *  has_beginend<T>::value is true iff T has a begin/end method
-        *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
-        */
+     *  has_beginend<T>::value is true iff T has a begin/end method
+     *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
+     */
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));
 
     /**
