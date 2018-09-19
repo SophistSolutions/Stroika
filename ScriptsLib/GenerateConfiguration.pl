@@ -1361,7 +1361,6 @@ sub PostProcessOptions_ ()
 				#	boost::system::generic_category() in Stroika-Foundation.a(WellKnownLocations.o)
 				#		-- LGP 2018-09-08
 				push (@useExtraCDefines, "#define BOOST_NO_CXX14_CONSTEXPR");
-
 			}
 			else {
 				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
@@ -1369,6 +1368,16 @@ sub PostProcessOptions_ ()
 						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 						push @LIB_DEPENDENCIES_ADD, "-lc++";
 						push @LIB_DEPENDENCIES_ADD, "-lc++experimental";
+					}
+					else {
+						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
+					}
+				}
+				else {
+					if ($STDLIB eq "libc++") {
+						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+						push @LIB_DEPENDENCIES_ADD, "-lc++";
+						push @LIB_DEPENDENCIES_ADD, "-lc++fs";
 					}
 					else {
 						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
