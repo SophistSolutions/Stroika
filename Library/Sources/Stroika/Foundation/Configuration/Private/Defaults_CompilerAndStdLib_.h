@@ -906,7 +906,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // Broken in _LIBCPP_VERSION  4000
 // Broken in _LIBCPP_VERSION  5000
 // Broken in _LIBCPP_VERSION  6000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (_LIBCPP_VERSION <= 6000)
+// Broken in _LIBCPP_VERSION  7000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 7000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
