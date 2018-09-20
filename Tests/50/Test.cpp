@@ -1299,7 +1299,7 @@ namespace {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             65000,
-            0.41,
+            0.43,
             &failedTests);
         Tester (
             L"Simple Struct With Strings Filling And Copying2",
@@ -1368,7 +1368,7 @@ namespace {
             []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             []() { Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([](const MemStreamOfChars_& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
             210000,
-            1.1,
+            1.3,
             &failedTests);
 #endif
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
