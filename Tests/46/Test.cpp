@@ -377,19 +377,27 @@ namespace {
                 // ASSIGN
                 {
                     Optional<int> x;
+                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
                     x = x;
+                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
                 }
                 {
                     Optional<Characters::String> x;
+                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
                     x = x;
+                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
                 }
                 {
                     Optional<int> x{1};
+                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
                     x = x;
+                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
                 }
                 {
                     Optional<Characters::String> x{L"x"};
+                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
                     x = x;
+                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
                 }
             }
             // note - see https://stroika.atlassian.net/browse/STK-556 - we DONT support Optional self-move

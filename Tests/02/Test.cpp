@@ -267,7 +267,9 @@ namespace {
         VerifyTestResult (t3 == L"a");
         VerifyTestResult (t3 == String (L"a"));
         VerifyTestResult (t4 == L"a");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
         t1 = t1;
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
         VerifyTestResult (t1 == L"");
 
         t1 += 'F';
@@ -318,7 +320,9 @@ namespace {
 
         t5 = t1;
         t1 = t5;
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
         t1 = t1;
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
         VerifyTestResult (t1 == L"");
         VerifyTestResult (t5 == L"");
 
