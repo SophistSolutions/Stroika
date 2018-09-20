@@ -1272,7 +1272,7 @@ namespace {
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
             24500,
-            .65,
+            .5,
             &failedTests);
 #endif
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1313,21 +1313,21 @@ namespace {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1350000,
-            4.3,
+            2.8,
             &failedTests);
         Tester (
             L"Simple String append test (+=wchar_t[]) 10x",
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1500000,
-            4.0,
+            2.8,
             &failedTests);
         Tester (
             L"Simple String append test (+=wchar_t[]) 100x",
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             360000,
-            10.4,
+            9.0,
             &failedTests);
         Tester (
             L"String a + b",
@@ -1350,7 +1350,7 @@ namespace {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             2700000,
-            2.8,
+            2.0,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 211, 0)
@@ -1377,7 +1377,7 @@ namespace {
             []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             []() { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
             220000,
-            .25,
+            .17,
             &failedTests);
 #endif
         Tester (
@@ -1393,42 +1393,42 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             125000,
-            7.7,
+            1.1,
             &failedTests);
         Tester (
             L"Sequence<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             9900,
-            1.55,
+            0.3,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>, L"Sequence_DoublyLinkedList<int>",
             120000,
-            9.0,
+            6.0,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>, L"Sequence_DoublyLinkedList<string>",
             9900,
-            1.0,
+            0.5,
             &failedTests);
         Tester (
             L"Collection<int> basics",
             []() { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             []() { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) { c->Add (2); }); }, L"Collection<int>",
             113000,
-            7.9,
+            5.0,
             &failedTests);
         Tester (
             L"Collection<string> basics",
             []() { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
             []() { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
             9600,
-            0.8,
+            0.6,
             &failedTests);
 #endif
         Tester (
@@ -1436,7 +1436,7 @@ namespace {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             2100000,
-            1.7,
+            1.6,
             &failedTests);
         Tester (
             L"BLOB versus vector<byte>",
@@ -1449,13 +1449,13 @@ namespace {
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
             64,
-            0.4,
+            0.2,
             &failedTests);
         Tester (
             L"Test_Optional_",
             Test_Optional_::DoRunPerfTest, L"Test_Optional_",
             4875,
-            1.1,
+            0.5,
             &failedTests);
 #if qPlatform_Windows
         Tester (
@@ -1463,7 +1463,7 @@ namespace {
             Test_UTF82WString_win32API, L"win32API",
             Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
             4900000,
-            2.4,
+            1.7,
             &failedTests);
 #endif
 #if qPlatform_Windows
