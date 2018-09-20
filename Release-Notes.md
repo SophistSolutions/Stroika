@@ -19,6 +19,105 @@ History
 
 
 
+    
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d8">v2.1d8</a><br/>2018-09-21x</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d7...v2.1d8</li>
+		<li>Compilers
+			<ul>
+				<li>Support vs2k 17 15.8.5</li>
+				<li>Support clang-7 (no sanitizers cuz private build and missing libraries)</li>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>xxx
+			<ul>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>xxx
+			<ul>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>xxx
+			<ul>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>Performance Improvements
+			<ul>
+				<li>rewrote Function&lt;&gt; object storing void* - we can use to compare later- instead of shared_ptr - so slight performance improvment - and I think safe</li>
+				<li>use  conditional_t&lt;Execution::kSpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex&gt; instead of just
+	mutex in PatchingDataStructures/PatchableContainerHelper - pretty big speed improvmenet (30% maybe) for performance regression tests involving containers</li>
+				<li>PatchableContainerHelper: small optimizaiton  - make fActiveIteratorsListHead_ atomic and in _ApplyToEachOwnedIterator () dont check lock</li>
+				<li>Added optional ReadAhead parameter to TextReader - which allows it (defaults true) to readahead binary data more at a time, allowing fewer copies/reallocs, so its noticably faster (10-20% ish or more).</li>
+				<li>improved performance on Mapping_stdmap/SortedMapping_stdmap to use insert_or_assign instead of find/insert</li>
+				<li>kUseMemCmpAsSpeedTweek_  for String (case sensative) compare optimizaiton</li>
+				<li>performance tweak String::FromASCII</li>
+				<li>Rewrote much of Float2String() to run faster: using thread_local static stringstream instead of constructing new one each time, and variant that directly calls sprint for common cases</li>
+				<li>tweak some performance regression test warning thresholds (downward/tighter/noiser): reacting to various performance improvements. </li>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>Thread
+			<ul>
+				<li>Simplify Thread::New () 'constructor', overload allows omit thread name but specify thread config, etc</li>
+				<li>xxxx</li>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>Regression Tests/Valgrind
+			<ul>
+				<li>tweak Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled regtest for raspberrypi (helgrind workaround)</li>
+				<li>another probable https://stroika.atlassian.net/browse/STK-483 (ARM - I THINK EQUIV) helgrind workaround</li>
+				<li>fixed regressiontest (performance) runner to always do at least one loop for debug builds</li>
+				<li>fixed a couple spots in regtests (could affect timing slightly) - change assert to VerifyTestResult</li>
+				<li>fixed bug with performance regtest where we were never properly comparing read/write result for spectrum roundtrip - now done correctly with NearlyEquals - so forgive slower time!!! - REALLY sped up this release - just slower cuz of this extra testing in release build</li>
+				<li>improved performance of Test_JSONReadWriteFile_ performacne test using Containers::Concrete::Mapping_stdmap&lt;double, double&gt;{CompareNumbersLess_{}} for Spectrum object - not as good as before (for this) but more accurate since uses nearlyequals for both compares</li>
+				<li>xxxx</li>
+				<li>xxxx</li>
+				<li>xxxx</li>
+			</ul>
+		</li>
+		<li>use auto&& crit_sec = lock_guard instead of explicly typed lockgurad in PatchingDataStructures_PatchableContainerHelper to faciliate chaning types</li>
+		<li>minor tweaks to Archive/Zip/Reader code to silence warnings</li>
+		<li>fixed has_minus concept</li>
+		<li>README.md updates to note integration with ohter libraries</li>
+		<li>xxx</li>
+		<li>xxx</li>
+		<li>xxx</li>
+
+
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7.txt - NOTE  - ignoring irreproducible (hard to repro) rasppi valgrind issue and 2 temp networking issues on retetsts)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d8-OUT.txt</li>
+				<li>vc++2k17  (15.8.3)</li>
+				<li>MacOS, XCode 10 (GM-seed)</li>
+				<li>gcc 7, gcc 8</li>
+				<li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
 
     
 
