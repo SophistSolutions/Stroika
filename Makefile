@@ -382,8 +382,9 @@ regression-test-configurations:
 		#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
 		./configure clang++-6-debug-libc++ --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
 		./configure clang++-6-release-libstdc++ --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
-		./configure my-clang++-7-debug-libc++ --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
-		./configure my-clang++-7-release-libstdc++ --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
+		# --no-sanitize and --lto disable calls for clang7 just because of how I built it...\
+		./configure my-clang++-7-debug-libc++ --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined;\
+		./configure my-clang++-7-release-libstdc++ --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable --lto disable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
