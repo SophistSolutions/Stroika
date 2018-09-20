@@ -1421,7 +1421,7 @@ namespace {
             []() { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             []() { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) { c->Add (2); }); }, L"Collection<int>",
             113000,
-            4.1,
+            4.4,
             &failedTests);
         Tester (
             L"Collection<string> basics",
