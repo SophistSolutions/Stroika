@@ -107,14 +107,14 @@ namespace Stroika::Foundation::Characters {
          *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
          *          basic ios flags
          */
-        Float2StringOptions () = default;
-        Float2StringOptions (UseCLocale); // same as default
+        constexpr Float2StringOptions () = default;
+        constexpr Float2StringOptions (UseCLocale); // same as default
         Float2StringOptions (UseCurrentLocale);
         Float2StringOptions (const locale& l);
-        Float2StringOptions (ios_base::fmtflags fmtFlags);
-        Float2StringOptions (Precision precision);
-        Float2StringOptions (FloatFormatType floatFormat);
-        Float2StringOptions (TrimTrailingZerosType trimTrailingZeros);
+        constexpr Float2StringOptions (ios_base::fmtflags fmtFlags);
+        constexpr Float2StringOptions (Precision precision);
+        constexpr Float2StringOptions (FloatFormatType floatFormat);
+        constexpr Float2StringOptions (TrimTrailingZerosType trimTrailingZeros);
         Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2);
         template <typename... ARGS>
         Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args);
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Characters {
     private:
         optional<unsigned int>       fPrecision_;
         optional<ios_base::fmtflags> fFmtFlags_;
-        optional<locale>             fUseLocale_;
+        optional<locale>             fUseLocale_; // if missing, use locale::classic
         optional<bool>               fTrimTrailingZeros_;
         optional<FloatFormatType>    fFloatFormat_;
     };

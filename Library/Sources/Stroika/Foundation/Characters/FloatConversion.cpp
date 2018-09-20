@@ -24,19 +24,11 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
-
-
 /*
  ********************************************************************************
  ************************** Float2StringOptions *********************************
  ********************************************************************************
  */
-Float2StringOptions::Float2StringOptions (UseCLocale)
-{
-    static const locale kCLocale_ = locale::classic ();
-    fUseLocale_                   = kCLocale_;
-}
-
 Float2StringOptions::Float2StringOptions (UseCurrentLocale)
     : fUseLocale_ (locale{})
 {
@@ -133,7 +125,7 @@ namespace {
 
         // expensive to construct, and slightly cheaper to just use thread_local version of
         // the same stringstream each time (only one per thread can be in use)
-        static thread_local stringstream s;                                 
+        static thread_local stringstream s;
         static const int                 kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
 
         s.str (string ());

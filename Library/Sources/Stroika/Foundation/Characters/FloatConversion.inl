@@ -31,23 +31,26 @@ namespace Stroika::Foundation::Characters {
      ****************************** Float2StringOptions *****************************
      ********************************************************************************
      */
+    constexpr Float2StringOptions::Float2StringOptions (UseCLocale)
+    {
+    }
     inline Float2StringOptions::Float2StringOptions (const locale& l)
         : fUseLocale_ (l)
     {
     }
-    inline Float2StringOptions::Float2StringOptions (ios_base::fmtflags fmtFlags)
+    constexpr Float2StringOptions::Float2StringOptions (ios_base::fmtflags fmtFlags)
         : fFmtFlags_ (fmtFlags)
     {
     }
-    inline Float2StringOptions::Float2StringOptions (Precision precision)
+    constexpr Float2StringOptions::Float2StringOptions (Precision precision)
         : fPrecision_ (precision.fPrecision)
     {
     }
-    inline Float2StringOptions::Float2StringOptions (FloatFormatType scientificNotation)
+    constexpr Float2StringOptions::Float2StringOptions (FloatFormatType scientificNotation)
         : fFloatFormat_ (scientificNotation)
     {
     }
-    inline Float2StringOptions::Float2StringOptions (TrimTrailingZerosType trimTrailingZeros)
+    constexpr Float2StringOptions::Float2StringOptions (TrimTrailingZerosType trimTrailingZeros)
         : fTrimTrailingZeros_ (trimTrailingZeros == TrimTrailingZerosType::eTrim)
     {
     }
