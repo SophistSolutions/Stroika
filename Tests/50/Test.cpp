@@ -1327,7 +1327,7 @@ namespace {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             360000,
-            9.0,
+            9.4,
             &failedTests);
         Tester (
             L"String a + b",
@@ -1350,7 +1350,7 @@ namespace {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             2700000,
-            2.0,
+            2.1,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 211, 0)
@@ -1377,7 +1377,7 @@ namespace {
             []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             []() { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
             220000,
-            .17,
+            .18,
             &failedTests);
 #endif
         Tester (
