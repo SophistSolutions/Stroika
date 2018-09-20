@@ -1299,14 +1299,14 @@ namespace {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             65000,
-            0.5,
+            0.41,
             &failedTests);
         Tester (
             L"Simple Struct With Strings Filling And Copying2",
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
             66000,
-            0.68,
+            0.48,
             &failedTests);
         Tester (
             L"Simple String append test (+='string object') 10x",
@@ -1334,7 +1334,7 @@ namespace {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2200000,
-            3.2, // so high cuz AWS vm running Release-memleak config
+            1.6,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
@@ -1342,7 +1342,7 @@ namespace {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             6000,
-            1.8,
+            1.5,
             &failedTests);
 #endif
         Tester (
@@ -1385,7 +1385,7 @@ namespace {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             51000,
-            1.4,
+            1.3,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
@@ -1421,7 +1421,7 @@ namespace {
             []() { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             []() { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) { c->Add (2); }); }, L"Collection<int>",
             113000,
-            5.0,
+            4.1,
             &failedTests);
         Tester (
             L"Collection<string> basics",
@@ -1436,7 +1436,7 @@ namespace {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             2100000,
-            1.6,
+            1.5,
             &failedTests);
         Tester (
             L"BLOB versus vector<byte>",
