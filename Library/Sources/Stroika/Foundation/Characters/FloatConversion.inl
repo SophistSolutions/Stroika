@@ -20,10 +20,11 @@ namespace Stroika::Foundation::Characters {
      *********************** Float2StringOptions::Precision *************************
      ********************************************************************************
      */
-    inline Float2StringOptions::Precision::Precision (unsigned int p)
+    constexpr Float2StringOptions::Precision::Precision (unsigned int p)
         : fPrecision (p)
     {
     }
+    constexpr Float2StringOptions::Precision kDefaultPrecision{6};
 
     /*
      ********************************************************************************

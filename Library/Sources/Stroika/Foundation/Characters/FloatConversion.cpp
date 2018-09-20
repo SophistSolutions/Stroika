@@ -36,7 +36,7 @@ Float2StringOptions::Float2StringOptions (UseCLocale)
 }
 
 Float2StringOptions::Float2StringOptions (UseCurrentLocale)
-    : fUseLocale_ (locale ())
+    : fUseLocale_ (locale{})
 {
 }
 
@@ -90,14 +90,47 @@ namespace {
             }
         }
     }
+    inline char* mkFmtWithPrecisionArg_ (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec)
+    {
+        char* fmtPtr = formatBufferStart;
+        *fmtPtr++    = '%';
+        // include precision arg
+        *fmtPtr++ = '.';
+        *fmtPtr++ = '*';
+        if (_Spec != '\0') {
+            *fmtPtr++ = _Spec; // e.g. 'L' qualifier
+        }
+        *fmtPtr++ = 'g'; // format specifier
+        *fmtPtr   = '\0';
+        Require (fmtPtr < formatBufferEnd);
+        return formatBufferStart;
+    }
+
+    template <typename FLOAT_TYPE>
+    inline String Float2String_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, int precision, bool trimTrailingZeros)
+    {
+        Require (not isnan (f));
+        Require (not isinf (f));
+        size_t                 sz = precision + 100; // I think precision is enough
+        SmallStackBuffer<char> buf (SmallStackBuffer<char>::eUninitialized, sz);
+        char                   format[100];
+        int                    resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
+        Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
+        String tmp = String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
+        if (trimTrailingZeros) {
+            TrimTrailingZeros_ (&tmp);
+        }
+        return tmp;
+    }
+
     template <typename FLOAT_TYPE>
     inline String Float2String_GenericCase_ (FLOAT_TYPE f, const Float2StringOptions& options)
     {
         Require (not isnan (f));
         Require (not isinf (f));
 
-        static thread_local stringstream s;                                                   // expensive to construct, and slightly cheaper to just use thread_local version of the same variable each time (only one per thread can be in use)
-        static const int                 kDefaultIOSFmtFlags_ = s.flags (ios_base::_Fmtmask); // Just copy out of the first constructed stringstream
+        static thread_local stringstream s;                                 // expensive to construct, and slightly cheaper to just use thread_local version of the same variable each time (only one per thread can be in use)
+        static const int                 kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
 
         s.str (string ());
         s.clear ();
@@ -106,10 +139,10 @@ namespace {
         s.imbue (options.GetUseLocale ().value_or (kCLocale_));
 
         //  must set explictly (even if defaulted)  because of the thread_local thing
-        s.setf (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_), ios_base::_Fmtmask);
+        s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
         // todo must set default precision because of the thread_local thing
-        unsigned int usePrecision = options.GetPrecision ().value_or (6); // find reference/docs - default is 6 I beleive
+        unsigned int usePrecision = options.GetPrecision ().value_or (kDefaultPrecision.fPrecision);
         s.precision (usePrecision);
 
         {
@@ -169,6 +202,12 @@ namespace {
         }
         Assert (!isnan (f));
         Assert (!isinf (f));
+
+        if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
+            auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (true));
+            Ensure (result == Float2String_GenericCase_<FLOAT_TYPE> (f, options));
+            return result;
+        }
         return Float2String_GenericCase_<FLOAT_TYPE> (f, options);
     }
 }

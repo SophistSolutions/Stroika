@@ -70,9 +70,14 @@ namespace Stroika::Foundation::Characters {
         /**
          */
         struct Precision {
-            Precision (unsigned int p);
+            constexpr Precision (unsigned int p);
             unsigned int fPrecision;
         };
+        // From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
+        // init (basic_streambuf...) initializes precision to 6
+        // Stroika need not maintain that default here, but it seems a sensible one...
+        //
+        //static constexpr Precision kDefaultPrecision{6};
 
         /**
          * Automatic picks based on the precision and the number used, so for example, 0.0000001
