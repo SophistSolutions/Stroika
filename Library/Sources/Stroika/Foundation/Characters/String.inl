@@ -172,6 +172,15 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowString (from.c_str (), from.c_str () + from.length (), l);
     }
+    inline String String::FromASCII (const char* from)
+    {
+        RequireNotNull (from);
+        return FromASCII (from, from + ::strlen (from));
+    }
+    inline String String::FromASCII (const string& from)
+    {
+        return FromASCII (from.c_str (), from.c_str () + from.length ());
+    }
     inline String String::FromISOLatin1 (const char* from)
     {
         return FromISOLatin1 (from, from + ::strlen (from));
@@ -747,7 +756,6 @@ namespace Stroika::Foundation::Characters {
         String_ModuleInit_ ();
         Execution::ModuleDependency fBlockAllocationDependency;
     };
-
 }
 
 namespace {

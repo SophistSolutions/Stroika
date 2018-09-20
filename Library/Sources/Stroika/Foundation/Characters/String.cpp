@@ -337,23 +337,13 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
     return resultWStr;
 }
 
-String String::FromASCII (const char* from)
+String String::FromASCII (const char* from, const char* to)
 {
     RequireNotNull (from);
-    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (::strlen (from))};
+    Require (from <= to);
+    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (to - from)};
     wchar_t*                  pOut = buf.begin ();
-    for (const char* i = from; *i != '\0'; ++i, pOut++) {
-        Require (isascii (*i));
-        *pOut = *i;
-    }
-    return String{buf.begin (), pOut};
-}
-
-String String::FromASCII (const string& from)
-{
-    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (from.length ())};
-    wchar_t*                  pOut = buf.begin ();
-    for (string::const_iterator i = from.begin (); i != from.end (); ++i, pOut++) {
+    for (const char* i = from; i != to; ++i, pOut++) {
         Require (isascii (*i));
         *pOut = *i;
     }

@@ -399,6 +399,7 @@ namespace Stroika::Foundation::Characters {
          *  \req This function requires that its arguments all ascii (no high-bit set)
          */
         static String FromASCII (const char* from);
+        static String FromASCII (const char* from, const char* to);
         static String FromASCII (const string& from);
 
     public:
