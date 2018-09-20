@@ -67,7 +67,7 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 6) || (__clang_major__ == 6 && (__clang_minor__ > 0))
+#if (__clang_major__ > 7) || (__clang_major__ == 7 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -496,7 +496,7 @@ that doesn't work (duplicate definitions - works in a single file but not across
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
@@ -566,7 +566,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -617,8 +617,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-// surprising broken in clang++6 on linux, but not xcode10 (clang10) on macos (which is based on llvm6)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
@@ -867,7 +866,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -1085,7 +1084,9 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 6)
+/// CANNOT TEST YET - cuz dont have sanitzer stuff working with my private clang-7 build. For now assume broken so I have less trouble
+// getting the clang-7 sanitzer stuff owrking (and when the rest is working, retry this maybe)
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 7)
 #else
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
 #endif
