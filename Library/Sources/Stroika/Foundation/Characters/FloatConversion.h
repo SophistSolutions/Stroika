@@ -104,6 +104,8 @@ namespace Stroika::Foundation::Characters {
 
         /**
          * Default is to use use C-locale
+         *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
+         *          basic ios flags
          */
         Float2StringOptions () = default;
         Float2StringOptions (UseCLocale); // same as default
@@ -131,6 +133,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         nonvirtual optional<ios_base::fmtflags> GetIOSFmtFlags () const;
+
+    public:
+        static constexpr bool kDefaultTrimTrailingZeros{true};
 
     public:
         /**

@@ -24,6 +24,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
+
+
 /*
  ********************************************************************************
  ************************** Float2StringOptions *********************************
@@ -129,7 +131,9 @@ namespace {
         Require (not isnan (f));
         Require (not isinf (f));
 
-        static thread_local stringstream s;                                 // expensive to construct, and slightly cheaper to just use thread_local version of the same variable each time (only one per thread can be in use)
+        // expensive to construct, and slightly cheaper to just use thread_local version of
+        // the same stringstream each time (only one per thread can be in use)
+        static thread_local stringstream s;                                 
         static const int                 kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
 
         s.str (string ());
@@ -177,7 +181,7 @@ namespace {
         s << f;
 
         String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
-        if (options.GetTrimTrailingZeros ().value_or (true)) {
+        if (options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros)) {
             TrimTrailingZeros_ (&tmp);
         }
         return tmp;
@@ -204,7 +208,7 @@ namespace {
         Assert (!isinf (f));
 
         if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
-            auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (true));
+            auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros));
             Ensure (result == Float2String_GenericCase_<FLOAT_TYPE> (f, options));
             return result;
         }
