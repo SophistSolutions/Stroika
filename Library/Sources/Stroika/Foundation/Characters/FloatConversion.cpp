@@ -69,81 +69,107 @@ String Float2StringOptions::ToString () const
   ********************************************************************************
   */
 namespace {
-    template <typename FLOAT_TYPE>
-    inline String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    inline void TrimTrailingZeros_ (String* strResult)
     {
-        if (isnan (f)) {
-            static const String_Constant kNAN_STR_{L"NAN"};
-            return kNAN_STR_;
+        RequireNotNull (strResult);
+        // strip trailing zeros - except for the last first one after the decimal point.
+        // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
+        bool hasE = strResult->Find ('e', CompareOptions::eCaseInsensitive).has_value ();
+        //Assert (hasE == (strResult->find ('e') != String::npos or strResult->find ('E') != String::npos));
+        if (not hasE) {
+            size_t pastDot = strResult->find ('.');
+            if (pastDot != String::npos) {
+                pastDot++;
+                size_t pPastLastZero = strResult->length ();
+                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+                    if ((*strResult)[pPastLastZero - 1] != '0') {
+                        break;
+                    }
+                }
+                *strResult = strResult->SubString (0, pPastLastZero);
+            }
         }
-        else if (isinf (f)) {
-            static const String_Constant kNEG_INF_STR_{L"-INF"};
-            static const String_Constant kINF_STR_{L"INF"};
-            return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
-        }
-        stringstream s;
+    }
+    template <typename FLOAT_TYPE>
+    inline String Float2String_GenericCase_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    {
+        Require (not isnan (f));
+        Require (not isinf (f));
+
+        static thread_local stringstream s;                                                   // expensive to construct, and slightly cheaper to just use thread_local version of the same variable each time (only one per thread can be in use)
+        static const int                 kDefaultIOSFmtFlags_ = s.flags (ios_base::_Fmtmask); // Just copy out of the first constructed stringstream
+
+        s.str (string ());
+        s.clear ();
 
         static const locale kCLocale_ = locale::classic ();
         s.imbue (options.GetUseLocale ().value_or (kCLocale_));
 
-        if (options.GetIOSFmtFlags ()) {
-            s << setiosflags (*options.GetIOSFmtFlags ());
-        }
+        //  must set explictly (even if defaulted)  because of the thread_local thing
+        s.setf (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_), ios_base::_Fmtmask);
 
-        optional<unsigned int> precision{options.GetPrecision ()};
-        unsigned int           usePrecision = precision ? *precision : static_cast<unsigned int> (s.precision ());
-        if (precision) {
-            s << setprecision (usePrecision);
-        }
+        // todo must set default precision because of the thread_local thing
+        unsigned int usePrecision = options.GetPrecision ().value_or (6); // find reference/docs - default is 6 I beleive
+        s.precision (usePrecision);
 
-        switch (options.GetFloatFormat ().value_or (Float2StringOptions::FloatFormatType::eDEFAULT)) {
-            case Float2StringOptions::FloatFormatType::eScientific:
-                s.setf (ios_base::scientific, ios_base::floatfield);
-                break;
-            case Float2StringOptions::FloatFormatType::eDefaultFloat:
+        {
+            optional<ios_base::fmtflags> useFloatField;
+            switch (options.GetFloatFormat ().value_or (Float2StringOptions::FloatFormatType::eDEFAULT)) {
+                case Float2StringOptions::FloatFormatType::eScientific:
+                    useFloatField = ios_base::scientific;
+                    break;
+                case Float2StringOptions::FloatFormatType::eDefaultFloat:
+                    break;
+                case Float2StringOptions::FloatFormatType::eFixedPoint:
+                    useFloatField = ios_base::fixed;
+                    break;
+                case Float2StringOptions::FloatFormatType::eAutomatic: {
+                    bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
+                    if (useScientificNotation) {
+                        useFloatField = ios_base::scientific;
+                    }
+                } break;
+                default:
+                    RequireNotReached ();
+                    break;
+            }
+            if (useFloatField) {
+                s.setf (*useFloatField, ios_base::floatfield);
+            }
+            else {
                 s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                break;
-            case Float2StringOptions::FloatFormatType::eFixedPoint:
-                s.setf (ios_base::fixed, ios_base::floatfield);
-                break;
-            case Float2StringOptions::FloatFormatType::eAutomatic: {
-                bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
-                if (useScientificNotation) {
-                    s.setf (ios_base::scientific, ios_base::floatfield);
-                }
-                else {
-                    s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                }
-            } break;
-            default:
-                RequireNotReached ();
-                break;
+            }
         }
 
         s << f;
 
         String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
-
-        bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().value_or (true);
-        if (useTrimTrailingZeros) {
-            // strip trailing zeros - except for the last first one after the decimal point.
-            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            bool hasE = tmp.find ('e') != String::npos or tmp.find ('E') != String::npos;
-            if (not hasE) {
-                size_t pastDot = tmp.find ('.');
-                if (pastDot != String::npos) {
-                    pastDot++;
-                    size_t pPastLastZero = tmp.length ();
-                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                        if (tmp[pPastLastZero - 1] != '0') {
-                            break;
-                        }
-                    }
-                    tmp = tmp.SubString (0, pPastLastZero);
-                }
-            }
+        if (options.GetTrimTrailingZeros ().value_or (true)) {
+            TrimTrailingZeros_ (&tmp);
         }
         return tmp;
+    }
+    template <typename FLOAT_TYPE>
+    inline String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    {
+        switch (fpclassify (f)) {
+            case FP_INFINITE: {
+                Assert (isinf (f));
+                Assert (!isnan (f));
+                static const String_Constant kNEG_INF_STR_{L"-INF"};
+                static const String_Constant kINF_STR_{L"INF"};
+                return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
+            }
+            case FP_NAN: {
+                Assert (isnan (f));
+                Assert (!isinf (f));
+                static const String_Constant kNAN_STR_{L"NAN"};
+                return kNAN_STR_;
+            }
+        }
+        Assert (!isnan (f));
+        Assert (!isinf (f));
+        return Float2String_GenericCase_<FLOAT_TYPE> (f, options);
     }
 }
 String Characters::Float2String (float f, const Float2StringOptions& options)
