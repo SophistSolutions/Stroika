@@ -55,7 +55,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-        */
+         */
         static Ptr New (const Streams::InputStream<byte>::Ptr& src);
 
     private:
@@ -78,13 +78,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /*
-            *  Do low level non-blocking reads to assure all the bytes (but not a single byte more) is read in and available to be read in a blocking
-            *  fasion.
-            *
-            *  Return false if not available, and return true if all read in. This automatically resets the Read seek pointer to 0.
-            *
-            *  \note - this returns true EVEN if the header is incomplete on EOF - so the caller can use this as a test to see if its time to try to read the header).
-            */
+         *  Do low level non-blocking reads to assure all the bytes (but not a single byte more) is read in and available to be read in a blocking
+         *  fasion.
+         *
+         *  Return false if not available, and return true if all read in. This automatically resets the Read seek pointer to 0.
+         *
+         *  \note - this returns true EVEN if the header is incomplete on EOF - so the caller can use this as a test to see if its time to try to read the header).
+         */
         nonvirtual bool AssureHeaderSectionAvailable ();
 
     public:
