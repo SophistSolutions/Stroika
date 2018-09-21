@@ -22,7 +22,7 @@ History
     
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d8">v2.1d8</a><br/>2018-09-21x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d8">v2.1d8</a><br/>2018-09-21</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d7...v2.1d8</li>
@@ -70,6 +70,8 @@ History
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7.txt - NOTE  - ignoring irreproducible (hard to repro) rasppi valgrind issue and 2 temp networking issues on retetsts)</li>
 		<li>Tested (passed regtests)
 			<ul>
+				<li>Ignore one windows failure due to virus checker false positive</li>
+				<li>Ignore (several instances of same problem) failures due to valgrind false assertion error about nans</li>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d8-OUT.txt</li>
 				<li>vc++2k17  (15.8.5)</li>
 				<li>MacOS, XCode 10</li>
