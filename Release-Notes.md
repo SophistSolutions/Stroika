@@ -30,26 +30,7 @@ History
 			<ul>
 				<li>Support vs2k 17 15.8.5</li>
 				<li>Support clang-7 (no sanitizers cuz private build and missing libraries)</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>XCode 10 (final release)</li>
 			</ul>
 		</li>
 		<li>Performance Improvements
@@ -65,16 +46,11 @@ History
 				<li>Rewrote much of Float2String() to run faster: using thread_local static stringstream instead of constructing new one each time, and variant that directly calls sprint for common cases</li>
 				<li>Change many performance regression test warning thresholds (downward/tighter/noiser): reacting to various performance improvements.</li>
 				<li>Wrap many more if tests in [[LIKELY_ATTR]] or [[UNLIKELY_ATTR]] - e.g when about to throw which we know is unlikely and going to bubble pipeline anyhow</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
 			</ul>
 		</li>
 		<li>Thread
 			<ul>
 				<li>Simplify Thread::New () 'constructor', overload allows omit thread name but specify thread config, etc</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
 			</ul>
 		</li>
 		<li>Regression Tests/Valgrind
@@ -85,26 +61,18 @@ History
 				<li>fixed a couple spots in regtests (could affect timing slightly) - change assert to VerifyTestResult</li>
 				<li>fixed bug with performance regtest where we were never properly comparing read/write result for spectrum roundtrip - now done correctly with NearlyEquals - so forgive slower time!!! - REALLY sped up this release - just slower cuz of this extra testing in release build</li>
 				<li>improved performance of Test_JSONReadWriteFile_ performacne test using Containers::Concrete::Mapping_stdmap&lt;double, double&gt;{CompareNumbersLess_{}} for Spectrum object - not as good as before (for this) but more accurate since uses nearlyequals for both compares</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
 			</ul>
 		</li>
 		<li>use auto&& crit_sec = lock_guard instead of explicly typed lockgurad in PatchingDataStructures_PatchableContainerHelper to faciliate chaning types</li>
 		<li>minor tweaks to Archive/Zip/Reader code to silence warnings</li>
 		<li>fixed has_minus concept</li>
-		<li>README.md updates to note integration with ohter libraries</li>
-		<li>xxx</li>
-		<li>xxx</li>
-		<li>xxx</li>
-
-
+		<li>README.md updates to note integration with other libraries</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d7.txt - NOTE  - ignoring irreproducible (hard to repro) rasppi valgrind issue and 2 temp networking issues on retetsts)</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d8-OUT.txt</li>
-				<li>vc++2k17  (15.8.3)</li>
-				<li>MacOS, XCode 10 (GM-seed)</li>
+				<li>vc++2k17  (15.8.5)</li>
+				<li>MacOS, XCode 10</li>
 				<li>gcc 7, gcc 8</li>
 				<li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
