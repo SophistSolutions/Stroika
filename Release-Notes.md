@@ -64,6 +64,7 @@ History
 				<li>performance tweak String::FromASCII</li>
 				<li>Rewrote much of Float2String() to run faster: using thread_local static stringstream instead of constructing new one each time, and variant that directly calls sprint for common cases</li>
 				<li>Change many performance regression test warning thresholds (downward/tighter/noiser): reacting to various performance improvements.</li>
+				<li>Wrap many more if tests in [[LIKELY_ATTR]] or [[UNLIKELY_ATTR]] - e.g when about to throw which we know is unlikely and going to bubble pipeline anyhow</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 			</ul>
