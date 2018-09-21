@@ -139,9 +139,11 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
          * Avoid realloc's if not hard.
          */
         SeekOffsetType size = GetOffsetToEndOfStream ();
-        if (size >= numeric_limits<size_t>::max ()) {
-            Execution::Throw (bad_alloc ());
-        }
+        if (size >= numeric_limits<size_t>::max ())
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (bad_alloc ());
+            }
         size_t sb = static_cast<size_t> (size);
         sb        = min (sb, upTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

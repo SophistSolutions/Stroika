@@ -107,7 +107,7 @@ namespace {
         Require (not isinf (f));
         size_t                 sz = precision + 100; // I think precision is enough
         SmallStackBuffer<char> buf (SmallStackBuffer<char>::eUninitialized, sz);
-        char                   format[100];
+        char                   format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
         int                    resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
         Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
         String tmp = String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
@@ -199,10 +199,14 @@ namespace {
         Assert (!isnan (f));
         Assert (!isinf (f));
 
-        if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
-            auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros));
-            Ensure (result == Float2String_GenericCase_<FLOAT_TYPE> (f, options));
-            return result;
+        // Handle special cases as a performance optimization
+        constexpr bool kUsePerformanceOptimizedCases_ = true;
+        if constexpr (kUsePerformanceOptimizedCases_) {
+            if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
+                auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros));
+                Ensure (result == Float2String_GenericCase_<FLOAT_TYPE> (f, options));
+                return result;
+            }
         }
         return Float2String_GenericCase_<FLOAT_TYPE> (f, options);
     }

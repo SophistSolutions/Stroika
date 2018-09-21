@@ -155,9 +155,11 @@ namespace Stroika::Foundation::Streams {
                 Execution::Throw (range_error ("offset before beginning"));
             }
             if (fForcedEndInReal_) {
-                if (offset > static_cast<SignedSeekOffsetType> (*fForcedEndInReal_)) {
-                    Execution::Throw (EOFException::kThe);
-                }
+                if (offset > static_cast<SignedSeekOffsetType> (*fForcedEndInReal_))
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (EOFException::kThe);
+                    }
             }
         }
 

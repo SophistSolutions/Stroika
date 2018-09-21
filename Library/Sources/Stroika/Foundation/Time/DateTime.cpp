@@ -542,10 +542,12 @@ time_t DateTime::As () const
     DateTime useDT = this->AsUTC (); // time_t defined in UTC
     Date     d     = useDT.GetDate ();
 
-    if (useDT.GetDate ().GetYear () < Year (1970)) {
-        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
-        Execution::Throw (kRangeErrror_);
-    }
+    if (useDT.GetDate ().GetYear () < Year (1970))
+        [[UNLIKELY_ATTR]]
+        {
+            static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
+            Execution::Throw (kRangeErrror_);
+        }
 
     struct tm tm {
     };
@@ -566,10 +568,12 @@ time_t DateTime::As () const
 template <>
 tm DateTime::As () const
 {
-    if (GetDate ().GetYear () < Year (1900)) {
-        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
-        Execution::Throw (kRangeErrror_);
-    }
+    if (GetDate ().GetYear () < Year (1900))
+        [[UNLIKELY_ATTR]]
+        {
+            static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
+            Execution::Throw (kRangeErrror_);
+        }
     struct tm tm {
     };
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;

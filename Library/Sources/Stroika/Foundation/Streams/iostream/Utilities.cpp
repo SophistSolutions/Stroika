@@ -36,9 +36,11 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     DISABLE_COMPILER_MSC_WARNING_START (4127)
-    if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
-        Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
-    }
+    if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ())))
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
+        }
     size_t                         bufLen = static_cast<size_t> (end - start);
     Memory::SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
     in.seekg (start, ios_base::beg);
@@ -59,9 +61,11 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
-    if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
-        Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
-    }
+    if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ())))
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
+        }
     size_t                            bufLen = static_cast<size_t> (end - start);
     Memory::SmallStackBuffer<wchar_t> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
     in.seekg (start, ios_base::beg);
@@ -87,9 +91,11 @@ vector<byte> Streams::iostream::ReadBytes (istream& in)
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
-    if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
-        Execution::Throw (StringException (String_Constant (L"stream too large")));
-    }
+    if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ())))
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (StringException (String_Constant (L"stream too large")));
+        }
     size_t                 len = static_cast<size_t> (end - start);
     SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, len);
     in.seekg (start, ios_base::beg);

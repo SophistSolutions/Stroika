@@ -71,16 +71,20 @@ namespace {
             : fKey (hkey)
         {
             Assert (nullptr != INVALID_HANDLE_VALUE);
-            if (hkey == INVALID_HANDLE_VALUE or hkey == nullptr) {
-                Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_HANDLE), "OptionsFileHelper::CTOR - bad handle");
-            }
+            if (hkey == INVALID_HANDLE_VALUE or hkey == nullptr)
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_HANDLE), "OptionsFileHelper::CTOR - bad handle");
+                }
         }
         OptionsFileHelper_ (HKEY parentKey, const String& path, REGSAM samDesired = KEY_READ | KEY_WRITE)
             : fKey (OpenWithCreateAlongPath (parentKey, path, samDesired))
         {
-            if (parentKey == INVALID_HANDLE_VALUE or parentKey == nullptr) {
-                Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_HANDLE), "OptionsFileHelper::CTOR - bad handle");
-            }
+            if (parentKey == INVALID_HANDLE_VALUE or parentKey == nullptr)
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_HANDLE), "OptionsFileHelper::CTOR - bad handle");
+                }
         }
         OptionsFileHelper_ ()                          = delete;
         OptionsFileHelper_ (const OptionsFileHelper_&) = delete;

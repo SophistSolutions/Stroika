@@ -61,9 +61,11 @@ namespace Stroika::Foundation::Execution {
                 // Only notify_all() on additions
                 return *tmp;
             }
-            if (fEndOfInput_) {
-                Execution::Throw (Execution::TimeOutException::kThe); // Since we always must return, and know we never will, throw timeout now
-            }
+            if (fEndOfInput_)
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::TimeOutException::kThe); // Since we always must return, and know we never will, throw timeout now
+                }
             ThrowTimeoutExceptionAfter (waitTil);
             fCondtionVariable_.wait_until (waitableLock, waitTil);
         }

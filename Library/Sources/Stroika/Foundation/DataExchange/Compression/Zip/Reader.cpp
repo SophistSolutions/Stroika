@@ -34,18 +34,20 @@ namespace {
     void ThrowIfZLibErr_ (int err)
     {
         // VERY ROUGH DRAFT - probably need a more specific exception object type
-        if (err != Z_OK) {
-            switch (err) {
-                case Z_VERSION_ERROR:
-                    Execution::Throw (Execution::StringException (L"ZLIB Z_VERSION_ERROR"));
-                case Z_DATA_ERROR:
-                    Execution::Throw (Execution::StringException (L"ZLIB Z_DATA_ERROR"));
-                case Z_ERRNO:
-                    Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)));
-                default:
-                    Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB ERR %d", err)));
+        if (err != Z_OK)
+            [[UNLIKELY_ATTR]]
+            {
+                switch (err) {
+                    case Z_VERSION_ERROR:
+                        Execution::Throw (Execution::StringException (L"ZLIB Z_VERSION_ERROR"));
+                    case Z_DATA_ERROR:
+                        Execution::Throw (Execution::StringException (L"ZLIB Z_DATA_ERROR"));
+                    case Z_ERRNO:
+                        Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)));
+                    default:
+                        Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB ERR %d", err)));
+                }
             }
-        }
     }
 
     struct MyCompressionStream_ : InputStream<byte>::Ptr {

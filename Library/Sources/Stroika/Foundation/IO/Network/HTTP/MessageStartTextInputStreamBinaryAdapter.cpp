@@ -228,38 +228,50 @@ protected:
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
-                if (offset < 0) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (offset < 0)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
                 SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
-                if (uOffset > fBufferFilledUpValidBytes_) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (uOffset > fBufferFilledUpValidBytes_)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
                 fOffset_ = static_cast<size_t> (offset);
             } break;
             case Whence::eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = fOffset_;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                if (newOffset < 0) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (newOffset < 0)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                if (uNewOffset > fBufferFilledUpValidBytes_) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (uNewOffset > fBufferFilledUpValidBytes_)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                 fOffset_ = static_cast<size_t> (newOffset);
             } break;
             case Whence::eFromEnd: {
                 Streams::SignedSeekOffsetType newOffset = fBufferFilledUpValidBytes_ + offset;
-                if (newOffset < 0) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (newOffset < 0)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                if (uNewOffset > fBufferFilledUpValidBytes_) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (uNewOffset > fBufferFilledUpValidBytes_)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                 fOffset_ = static_cast<size_t> (newOffset);
             } break;

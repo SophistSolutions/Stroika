@@ -33,9 +33,11 @@ namespace {
     {
         // use for (Character c : s) {... when that works -- LGP 2013-05-29)
         for (size_t i = 0; i < s.GetLength (); ++i) {
-            if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
-                Execution::Throw (Execution::StringException (String_Constant (L"bad character in scheme")));
-            }
+            if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+'))
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::StringException (String_Constant (L"bad character in scheme")));
+                }
         }
     }
 }
@@ -128,10 +130,12 @@ URL URL::Parse (const String& w, ParseOptions po)
     // @todo EXPOSE THIS AS PARAMETER!!!
     bool flexibleURLParsingMode = (po != URL::eAsFullURL);
 
-    if (w.empty ()) {
-        Execution::Throw (Execution::StringException (L"Cannot parse empty URL"));
-        //return result;
-    }
+    if (w.empty ())
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (Execution::StringException (L"Cannot parse empty URL"));
+            //return result;
+        }
 
     /*
      *  We MIGHT need to canonicalize the URL:

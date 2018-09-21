@@ -165,11 +165,13 @@ namespace Stroika::Foundation::Streams {
             fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
             switch (whence) {
                 case Whence::eFromStart: {
-                    if (offset < 0) {
+                    if (offset < 0)
+                        [[UNLIKELY_ATTR]] {
                         Execution::Throw (range_error ("seek"));
                     }
                     SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
-                    if (uOffset > fData_.size ()) {
+                    if (uOffset > fData_.size ())
+                        [[UNLIKELY_ATTR]]  {
                         Execution::Throw (range_error ("seek"));
                     }
                     fReadCursor_ = fData_.begin () + static_cast<size_t> (uOffset);
@@ -177,22 +179,26 @@ namespace Stroika::Foundation::Streams {
                 case Whence::eFromCurrent: {
                     Streams::SeekOffsetType       curOffset = fReadCursor_ - fData_.begin ();
                     Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                    if (newOffset < 0) {
+                    if (newOffset < 0)
+                        [[UNLIKELY_ATTR]] {
                         Execution::Throw (range_error ("seek"));
                     }
                     SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                    if (uNewOffset > fData_.size ()) {
+                    if (uNewOffset > fData_.size ())
+                        [[UNLIKELY_ATTR]]  {
                         Execution::Throw (range_error ("seek"));
                     }
                     fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                 } break;
                 case Whence::eFromEnd: {
                     Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
-                    if (newOffset < 0) {
+                    if (newOffset < 0)
+                        [[UNLIKELY_ATTR]]  {
                         Execution::Throw (range_error ("seek"));
                     }
                     SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                    if (uNewOffset > fData_.size ()) {
+                    if (uNewOffset > fData_.size ())
+                        [[UNLIKELY_ATTR]] {
                         Execution::Throw (range_error ("seek"));
                     }
                     fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
@@ -214,10 +220,11 @@ namespace Stroika::Foundation::Streams {
             fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
             switch (whence) {
                 case Whence::eFromStart: {
-                    if (offset < 0) {
+                    if (offset < 0)
+                        [[UNLIKELY_ATTR]] {
                         Execution::Throw (range_error ("seek"));
-                    }
-                    if (static_cast<SeekOffsetType> (offset) > fData_.size ()) {
+                    } if (static_cast<SeekOffsetType> (offset) > fData_.size ())[[UNLIKELY_ATTR]]
+                         {
                         Execution::Throw (range_error ("seek"));
                     }
                     fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
@@ -225,20 +232,22 @@ namespace Stroika::Foundation::Streams {
                 case Whence::eFromCurrent: {
                     Streams::SeekOffsetType       curOffset = fWriteCursor_ - fData_.begin ();
                     Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                    if (newOffset < 0) {
+                    if (newOffset < 0)
+                        [[UNLIKELY_ATTR]]  {
                         Execution::Throw (range_error ("seek"));
-                    }
-                    if (static_cast<size_t> (newOffset) > fData_.size ()) {
+                    } if (static_cast<size_t> (newOffset) > fData_.size ())[[UNLIKELY_ATTR]]
+                        {
                         Execution::Throw (range_error ("seek"));
                     }
                     fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                 } break;
                 case Whence::eFromEnd: {
                     Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
-                    if (newOffset < 0) {
+                    if (newOffset < 0)
+                        [[UNLIKELY_ATTR]] {
                         Execution::Throw (range_error ("seek"));
-                    }
-                    if (static_cast<size_t> (newOffset) > fData_.size ()) {
+                    } if (static_cast<size_t> (newOffset) > fData_.size ())[[UNLIKELY_ATTR]]
+                         {
                         Execution::Throw (range_error ("seek"));
                     }
                     fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);

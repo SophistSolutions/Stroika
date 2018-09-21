@@ -255,7 +255,8 @@ protected:
         if (intoEnd - intoStart >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
             size_t n = inherited::Read (intoStart, intoEnd);
             if (n != 0) {
-                if (origOffset + n > numeric_limits<size_t>::max ()) {
+                if (origOffset + n > numeric_limits<size_t>::max ())
+                    [[UNLIKELY_ATTR]] {
                     // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                     Execution::Throw (range_error ("seek past max size for size_t"));
                 }
@@ -270,7 +271,8 @@ protected:
             wchar_t buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
             size_t  n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
             if (n != 0) {
-                if (origOffset + n > numeric_limits<size_t>::max ()) {
+                if (origOffset + n > numeric_limits<size_t>::max ())
+                    [[UNLIKELY_ATTR]]  {
                     // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                     Execution::Throw (range_error ("seek past max size for size_t"));
                 }
@@ -288,7 +290,8 @@ protected:
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
-                if (offset < 0) {
+                if (offset < 0)
+                    [[UNLIKELY_ATTR]] {
                     Execution::Throw (range_error ("seek"));
                 }
                 SeekTo_ (static_cast<SeekOffsetType> (offset));
@@ -296,7 +299,8 @@ protected:
             case Whence::eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = _fOffset;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                if (newOffset < 0) {
+                if (newOffset < 0)
+                    [[UNLIKELY_ATTR]] {
                     Execution::Throw (range_error ("seek"));
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
@@ -319,7 +323,8 @@ private:
         // easy - keep reading
         while (_fOffset < offset) {
             Character c;
-            if (Read (&c, &c + 1) == 0) {
+            if (Read (&c, &c + 1) == 0)
+                [[UNLIKELY_ATTR]] {
                 Execution::Throw (range_error ("seek"));
             }
         }
@@ -433,30 +438,33 @@ protected:
         SeekOffsetType                                     newOffset{};
         switch (whence) {
             case Whence::eFromStart: {
-                if (offset < 0) {
+                if (offset < 0)
+                    [[UNLIKELY_ATTR]]  {
                     Execution::Throw (range_error ("seek"));
-                }
-                if (static_cast<SeekOffsetType> (offset) > sourceLen) {
+                } if (static_cast<SeekOffsetType> (offset) > sourceLen)[[UNLIKELY_ATTR]]
+                    {
                     Execution::Throw (range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (offset);
             } break;
             case Whence::eFromCurrent: {
                 Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
-                if (tmpOffset < 0) {
+                if (tmpOffset < 0)
+                    [[UNLIKELY_ATTR]] {
                     Execution::Throw (range_error ("seek"));
-                }
-                if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) {
+                } if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) [[UNLIKELY_ATTR]]
+                    {
                     Execution::Throw (range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
             } break;
             case Whence::eFromEnd: {
                 Streams::SignedSeekOffsetType tmpOffset = fSource_.GetLength () + offset;
-                if (tmpOffset < 0) {
+                if (tmpOffset < 0)
+                    [[UNLIKELY_ATTR]]  {
                     Execution::Throw (range_error ("seek"));
-                }
-                if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) {
+                } if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen)[[UNLIKELY_ATTR]]
+                     {
                     Execution::Throw (range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);

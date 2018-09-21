@@ -532,9 +532,11 @@ namespace Stroika::Foundation::Characters {
     {
         _SafeReadRepAccessor accessor{this};
         size_t               thisLen = accessor._ConstGetRep ()._GetLength ();
-        if (from > thisLen) {
-            Execution::Throw (out_of_range ("string index out of range"));
-        }
+        if (from > thisLen)
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (out_of_range ("string index out of range"));
+            }
         // @todo
         // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));

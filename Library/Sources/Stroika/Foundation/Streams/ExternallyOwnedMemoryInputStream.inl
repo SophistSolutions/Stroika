@@ -88,33 +88,43 @@ namespace Stroika::Foundation::Streams {
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart: {
-                    if (offset < 0) {
-                        Execution::Throw (range_error ("seek"));
-                    }
-                    if (offset > (fEnd_ - fStart_)) {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    if (offset < 0)
+                        [[UNLIKELY_ATTR]]
+                        {
+                            Execution::Throw (range_error ("seek"));
+                        }
+                    if (offset > (fEnd_ - fStart_)) [[UNLIKELY_ATTR]] {
+                            Execution::Throw (range_error ("seek"));
+                        }
                     fCursor_ = fStart_ + offset;
                 } break;
                 case Whence::eFromCurrent: {
                     Streams::SeekOffsetType       curOffset = fCursor_ - fStart_;
                     Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                    if (newOffset < 0) {
-                        Execution::Throw (range_error ("seek"));
-                    }
-                    if (newOffset > (fEnd_ - fStart_)) {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    if (newOffset < 0)
+                        [[UNLIKELY_ATTR]]
+                        {
+                            Execution::Throw (range_error ("seek"));
+                        }
+                    if (newOffset > (fEnd_ - fStart_))
+                        [[UNLIKELY_ATTR]]
+                        {
+                            Execution::Throw (range_error ("seek"));
+                        }
                     fCursor_ = fStart_ + newOffset;
                 } break;
                 case Whence::eFromEnd: {
                     Streams::SignedSeekOffsetType newOffset = (fEnd_ - fStart_) + offset;
-                    if (newOffset < 0) {
-                        Execution::Throw (range_error ("seek"));
-                    }
-                    if (newOffset > (fEnd_ - fStart_)) {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    if (newOffset < 0)
+                        [[UNLIKELY_ATTR]]
+                        {
+                            Execution::Throw (range_error ("seek"));
+                        }
+                    if (newOffset > (fEnd_ - fStart_))
+                        [[UNLIKELY_ATTR]]
+                        {
+                            Execution::Throw (range_error ("seek"));
+                        }
                     fCursor_ = fStart_ + newOffset;
                 } break;
             }

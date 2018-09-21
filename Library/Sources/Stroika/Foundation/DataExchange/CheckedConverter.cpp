@@ -43,9 +43,11 @@ template <>
 Characters::String DataExchange::CheckedConverter<Characters::String, ASCII, const string&> (const string& from, [[maybe_unused]] const ASCII& extraData)
 {
     for (auto i = from.begin (); i != from.end (); ++i) {
-        if (not isascii (*i)) {
-            Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
-        }
+        if (not isascii (*i))
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
+            }
     }
     return ASCIIStringToWide (from);
 }
@@ -61,9 +63,11 @@ Characters::String DataExchange::CheckedConverter<Characters::String, ASCII, con
 {
     RequireNotNull (from);
     for (auto i = from; *i != '\0'; ++i) {
-        if (not isascii (*i)) {
-            Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
-        }
+        if (not isascii (*i))
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
+            }
     }
     return ASCIIStringToWide (from);
 }
@@ -73,9 +77,11 @@ Characters::String DataExchange::CheckedConverter<Characters::String, ASCII, cha
 {
     RequireNotNull (from);
     for (auto i = from; *i != '\0'; ++i) {
-        if (not isascii (*i)) {
-            Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
-        }
+        if (not isascii (*i))
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
+            }
     }
     return ASCIIStringToWide (from);
 }

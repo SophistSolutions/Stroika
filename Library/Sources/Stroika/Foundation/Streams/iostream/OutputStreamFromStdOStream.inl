@@ -85,18 +85,22 @@ namespace Stroika::Foundation::Streams::iostream {
 
             using StreamElementType = typename OStreamType::char_type;
             fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
-            if (fOriginalStream_.fail ()) {
-                Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to write from ostream")));
-            }
+            if (fOriginalStream_.fail ())
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to write from ostream")));
+                }
         }
         virtual void Flush () override
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             Require (IsOpenWrite ());
             fOriginalStream_.flush ();
-            if (fOriginalStream_.fail ()) {
-                Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to flush ostream")));
-            }
+            if (fOriginalStream_.fail ())
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to flush ostream")));
+                }
         }
 
     private:

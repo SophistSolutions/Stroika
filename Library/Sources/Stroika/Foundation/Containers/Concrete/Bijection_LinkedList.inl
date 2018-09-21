@@ -204,9 +204,11 @@ namespace Stroika::Foundation::Containers::Concrete {
                 case Bijection_Base::InjectivityViolationPolicy::eThrowException: {
                     optional<DOMAIN_TYPE> back;
                     if (InverseLookup (newElt, &back)) {
-                        if (not fDomainEqualsComparer_ (key, *back)) {
-                            Execution::Throw (Bijection_Base::InjectivityViolation{});
-                        }
+                        if (not fDomainEqualsComparer_ (key, *back))
+                            [[UNLIKELY_ATTR]]
+                            {
+                                Execution::Throw (Bijection_Base::InjectivityViolation{});
+                            }
                     }
                 } break;
                 default:

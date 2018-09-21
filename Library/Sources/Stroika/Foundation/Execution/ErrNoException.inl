@@ -35,9 +35,11 @@ namespace Stroika::Foundation::Execution {
     template <typename INT_TYPE>
     inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
     {
-        if (returnCode < 0) {
-            errno_ErrorException::Throw (errno);
-        }
+        if (returnCode < 0)
+            [[UNLIKELY_ATTR]]
+            {
+                errno_ErrorException::Throw (errno);
+            }
         return returnCode;
     }
 
@@ -48,9 +50,11 @@ namespace Stroika::Foundation::Execution {
      */
     inline void ThrowErrNoIfNull (void* returnCode)
     {
-        if (returnCode == nullptr) {
-            errno_ErrorException::Throw (errno);
-        }
+        if (returnCode == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                errno_ErrorException::Throw (errno);
+            }
     }
 
     /*

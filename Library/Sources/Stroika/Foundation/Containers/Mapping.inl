@@ -181,9 +181,11 @@ namespace Stroika::Foundation::Containers {
     template <typename THROW_IF_MISSING>
     inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
     {
-        if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) {
-            return *r;
-        }
+        if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)})
+            [[LIKELY_ATTR]]
+            {
+                return *r;
+            }
         Execution::Throw (throwIfMissing);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

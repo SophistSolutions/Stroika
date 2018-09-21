@@ -66,9 +66,11 @@ namespace {
 #else
                     int nresults = Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });
 #endif
-                    if (nresults == 0) {
-                        Execution::Throw (Execution::TimeOutException ());
-                    }
+                    if (nresults == 0)
+                        [[UNLIKELY_ATTR]]
+                        {
+                            Execution::Throw (Execution::TimeOutException ());
+                        }
                 }
 
                 struct sockaddr_storage sa;

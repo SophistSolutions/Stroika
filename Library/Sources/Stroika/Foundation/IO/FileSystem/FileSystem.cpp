@@ -313,10 +313,12 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
 String IO::FileSystem::Ptr::GetFullPathName (const String& pathName)
 {
 #if qPlatform_POSIX
-    if (pathName.empty ()) {
-        //throw bad path name @todo improve exception
-        Execution::Throw (Execution::StringException (L"invalid pathname"));
-    }
+    if (pathName.empty ())
+        [[UNLIKELY_ATTR]]
+        {
+            //throw bad path name @todo improve exception
+            Execution::Throw (Execution::StringException (L"invalid pathname"));
+        }
     if (pathName[0] == '/') {
         return pathName;
     }

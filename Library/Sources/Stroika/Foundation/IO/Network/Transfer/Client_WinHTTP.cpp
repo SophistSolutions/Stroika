@@ -303,10 +303,12 @@ RetryWithAuth:
         // Keep reading data til all done
         DWORD dwSize = 0;
         do {
-            if (Time::GetTickCount () > endBy) {
-                DbgTrace (_T ("throwing Timeout"));
-                Execution::Throw (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
-            }
+            if (Time::GetTickCount () > endBy)
+                [[UNLIKELY_ATTR]]
+                {
+                    DbgTrace (_T ("throwing Timeout"));
+                    Execution::Throw (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
+                }
 
             // Check for available data.
             dwSize = 0;

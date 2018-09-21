@@ -824,9 +824,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             virtual void Deactivating () override
             {
-                if (auto optVal = fNameMap.InverseLookup (fBuf_.str ())) {
-                    *fValue_ = *optVal;
-                }
+                if (auto optVal = fNameMap.InverseLookup (fBuf_.str ()))
+                    [[LIKELY_ATTR]]
+                    {
+                        *fValue_ = *optVal;
+                    }
                 else {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
                     Execution::Throw (BadFormatException (Characters::String_Constant{L"Enumeration value out of range"}));
@@ -863,9 +865,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             {
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 SerializeAsType tmp   = Characters::String2Int<SerializeAsType> (fBuf_.str ());
-                if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND)) {
-                    *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
-                }
+                if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND))
+                    [[LIKELY_ATTR]]
+                    {
+                        *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
+                    }
                 else {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
                     Execution::Throw (BadFormatException (Characters::String_Constant{L"Enumeration value out of range"}));

@@ -82,9 +82,11 @@ namespace Stroika::Foundation::Streams::iostream {
             size_t n = static_cast<size_t> (fOriginalStream_.gcount ()); // cast safe cuz amount asked to read was also size_t
 
             // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
-            if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-                Execution::Throw (Execution::StringException (Characters::String_Constant{L"Failed to read from istream"}));
-            }
+            if (not fOriginalStream_.eof () and fOriginalStream_.fail ())
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (Execution::StringException (Characters::String_Constant{L"Failed to read from istream"}));
+                }
             return n;
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override

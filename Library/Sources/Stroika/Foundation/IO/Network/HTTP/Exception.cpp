@@ -108,9 +108,11 @@ String Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
 
 void Exception::ThrowIfError (Status status, const String& reason)
 {
-    if (IsHTTPStatusOK (status)) {
-        // OK - ignore
-    }
+    if (IsHTTPStatusOK (status))
+        [[LIKELY_ATTR]]
+        {
+            // OK - ignore
+        }
     else {
         // not sure we should throw on status 100 etc, but not sure what else todo...
         Execution::Throw (Exception (status, reason));

@@ -28,9 +28,11 @@ using namespace Stroika::Foundation::IO::Network;
 SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
     : fSocketAddress_ ()
 {
-    if (sockaddr.iSockaddrLength > sizeof (fSocketAddress_)) {
-        Execution::Throw (Execution::StringException (L"bad socket address size"));
-    }
+    if (sockaddr.iSockaddrLength > sizeof (fSocketAddress_))
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (Execution::StringException (L"bad socket address size"));
+        }
     (void)::memcpy (&fSocketAddress_, sockaddr.lpSockaddr, sockaddr.iSockaddrLength);
 }
 #endif

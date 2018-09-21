@@ -243,10 +243,12 @@ namespace {
         Require (nRounds >= 1);
         SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
         SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
-        if (salt and salt->GetSize () != 8) {
-            // Could truncate and fill to adapt to differnt sized salt...
-            Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
-        }
+        if (salt and salt->GetSize () != 8)
+            [[UNLIKELY_ATTR]]
+            {
+                // Could truncate and fill to adapt to differnt sized salt...
+                Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
+            }
         int i = ::EVP_BytesToKey (
             FakeCryptoAlgo_ (keyLen, ivLen),
             Convert2OpenSSL (digestAlgorithm),
@@ -288,9 +290,11 @@ namespace {
             Convert2OpenSSL (digestAlgorithm),
             static_cast<int> (keyLen + ivLen),
             reinterpret_cast<unsigned char*> (outBuf.begin ()));
-        if (a == 0) {
-            Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
-        }
+        if (a == 0)
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
+            }
         const byte* p = outBuf.begin ();
         return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));
     }

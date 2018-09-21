@@ -122,8 +122,10 @@ Response Connection::OPTIONS (const Mapping<String, String>& extraHeaders)
 Response Connection::Send (const Request& r)
 {
     Response response = fRep_->Send (r);
-    if (not response.GetSucceeded ()) {
-        Execution::Throw (Exception (response));
-    }
+    if (not response.GetSucceeded ())
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (Exception (response));
+        }
     return response;
 }

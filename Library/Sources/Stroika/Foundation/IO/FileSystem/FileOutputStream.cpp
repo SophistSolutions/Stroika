@@ -162,9 +162,11 @@ public:
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         switch (whence) {
             case Whence::eFromStart: {
-                if (offset < 0) {
-                    Execution::Throw (range_error ("seek"));
-                }
+                if (offset < 0)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (range_error ("seek"));
+                    }
 #if qPlatform_Windows
                 return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
 #elif qPlatform_Linux

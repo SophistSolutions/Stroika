@@ -618,9 +618,11 @@ namespace Stroika::Foundation::Memory {
     inline T Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
     {
         shared_lock<const MutexBase_> critSec{*this};
-        if (has_value ()) {
-            return *this->fStorage_.peek ();
-        }
+        if (has_value ())
+            [[LIKELY_ATTR]]
+            {
+                return *this->fStorage_.peek ();
+            }
         else {
             Execution::Throw (exception2ThrowIfMissing);
         }

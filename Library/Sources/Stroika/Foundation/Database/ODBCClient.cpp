@@ -49,11 +49,13 @@ Database::NoDataException::NoDataException ()
  ********************************************************************************
  */
 namespace {
-    void ThrowIfSQLError (SQLRETURN r, const wstring& message)
+    void ThrowIfSQLError_ (SQLRETURN r, const wstring& message)
     {
-        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO)) {
-            Execution::Throw (Exception (message));
-        }
+        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO))
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (Exception (message));
+            }
     }
 }
 class Database::DBConnection::Rep {
@@ -69,9 +71,9 @@ public:
         , fNestedTransactionCount (0)
     {
         try {
-            ThrowIfSQLError (SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), L"Error AllocHandle");
-            ThrowIfSQLError (SQLSetEnvAttr (fODBCEnvironmentHandle, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*> (SQL_OV_ODBC3), 0), L"Error SetEnv");
-            ThrowIfSQLError (SQLAllocHandle (SQL_HANDLE_DBC, fODBCEnvironmentHandle, &fConnectionHandle), L"Error AllocHDB");
+            ThrowIfSQLError_ (SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), L"Error AllocHandle");
+            ThrowIfSQLError_ (SQLSetEnvAttr (fODBCEnvironmentHandle, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*> (SQL_OV_ODBC3), 0), L"Error SetEnv");
+            ThrowIfSQLError_ (SQLAllocHandle (SQL_HANDLE_DBC, fODBCEnvironmentHandle, &fConnectionHandle), L"Error AllocHDB");
 
             SQLSetConnectAttr (fConnectionHandle, SQL_LOGIN_TIMEOUT, reinterpret_cast<SQLPOINTER*> (5), 0);
             {

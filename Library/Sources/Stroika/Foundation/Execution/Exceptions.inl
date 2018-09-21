@@ -139,30 +139,38 @@ namespace Stroika::Foundation::Execution {
      */
     inline void ThrowIfNull (const void* p)
     {
-        if (p == nullptr) {
-            Throw (bad_alloc (), "ThrowIfNull (nullptr) - throwing bad_alloc");
-        }
+        if (p == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Throw (bad_alloc (), "ThrowIfNull (nullptr) - throwing bad_alloc");
+            }
     }
     template <typename E>
     inline void ThrowIfNull (const void* p, const E& e)
     {
-        if (p == nullptr) {
-            Throw (e, "ThrowIfNull (nullptr,X) - throwing X");
-        }
+        if (p == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Throw (e, "ThrowIfNull (nullptr,X) - throwing X");
+            }
     }
     template <typename T>
     inline void ThrowIfNull (const unique_ptr<T>& p)
     {
-        if (p.get () == nullptr) {
-            Throw (bad_alloc (), "ThrowIfNull (unique_ptr<> (nullptr)) - throwing bad_alloc");
-        }
+        if (p.get () == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Throw (bad_alloc (), "ThrowIfNull (unique_ptr<> (nullptr)) - throwing bad_alloc");
+            }
     }
     template <typename T>
     inline void ThrowIfNull (const shared_ptr<T>& p)
     {
-        if (p.get () == nullptr) {
-            Throw (bad_alloc (), "ThrowIfNull (shared_ptr<> (nullptr)) - throwing bad_alloc");
-        }
+        if (p.get () == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Throw (bad_alloc (), "ThrowIfNull (shared_ptr<> (nullptr)) - throwing bad_alloc");
+            }
     }
 
 }

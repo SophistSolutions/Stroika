@@ -73,9 +73,11 @@ DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags)
     if (module == nullptr) {
         // either main module or not found
         const char* err = dlerror ();
-        if (err != nullptr) {
-            Execution::Throw (DLLException (err));
-        }
+        if (err != nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (DLLException (err));
+            }
     }
     return module;
 }
@@ -90,9 +92,11 @@ DLLLoader::~DLLLoader ()
 #else
     if (dlclose (fModule) != 0) {
         const char* err = dlerror ();
-        if (err != nullptr) {
-            Execution::Throw (DLLException (err));
-        }
+        if (err != nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (DLLException (err));
+            }
     }
 #endif
 }

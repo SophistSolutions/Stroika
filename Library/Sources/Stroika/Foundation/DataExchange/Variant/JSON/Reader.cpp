@@ -76,24 +76,30 @@ namespace {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
         wchar_t c = NextChar_ (in);
-        if (c != '\"') {
-            Execution::Throw (BadFormatException (String_Constant{L"JSON: Expected quoted string"}));
-        }
+        if (c != '\"')
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (BadFormatException (String_Constant{L"JSON: Expected quoted string"}));
+            }
         // accumulate chars, and check for close-quote
         StringBuilder result;
         while (true) {
-            if (in.IsAtEOF ()) {
-                Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
-            }
+            if (in.IsAtEOF ())
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
+                }
             c = NextChar_ (in);
             if (c == '\"') {
                 return VariantValue (result.str ());
             }
             else if (c == '\\') {
                 // quoted character read...
-                if (in.IsAtEOF ()) {
-                    Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
-                }
+                if (in.IsAtEOF ())
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
+                    }
                 c = NextChar_ (in);
                 switch (c) {
                     case 'b':
@@ -115,9 +121,11 @@ namespace {
                         // Not sure this is right -- But I hope so ... -- LGP 2012-11-29
                         wchar_t newC = '\0';
                         for (int n = 0; n < 4; ++n) {
-                            if (in.IsAtEOF ()) {
-                                Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
-                            }
+                            if (in.IsAtEOF ())
+                                [[UNLIKELY_ATTR]]
+                                {
+                                    Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for close quote)"}));
+                                }
                             newC += HexChar2Num_ (static_cast<char> (NextChar_ (in)));
                             if (n != 3) {
                                 newC <<= 4;
@@ -186,10 +194,12 @@ namespace {
         optional<String> curName;
         while (true) {
             optional<Character> oNextChar = in.Read ();
-            if (not oNextChar.has_value ()) {
-                in.Seek (Streams::Whence::eFromCurrent, -1);
-                Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for '}')"}));
-            }
+            if (not oNextChar.has_value ())
+                [[UNLIKELY_ATTR]]
+                {
+                    in.Seek (Streams::Whence::eFromCurrent, -1);
+                    Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for '}')"}));
+                }
             wchar_t nextChar = oNextChar->As<wchar_t> ();
             if (nextChar == '}') {
                 if (lf == eName or lf == eComma) {
@@ -205,20 +215,24 @@ namespace {
                 // skip char
             }
             else if (nextChar == ',') {
-                if (lf == eComma) {
-                    // skip char
-                    lf = eName; // next elt
-                }
+                if (lf == eComma)
+                    [[LIKELY_ATTR]]
+                    {
+                        // skip char
+                        lf = eName; // next elt
+                    }
                 else {
                     in.Seek (Streams::Whence::eFromCurrent, -1);
                     Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected ',' reading object"}));
                 }
             }
             else if (nextChar == ':') {
-                if (lf == eColon) {
-                    // skip char
-                    lf = eValue; // next elt
-                }
+                if (lf == eColon)
+                    [[LIKELY_ATTR]]
+                    {
+                        // skip char
+                        lf = eValue; // next elt
+                    }
                 else {
                     in.Seek (Streams::Whence::eFromCurrent, -1);
                     Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected ':' reading object"}));
@@ -230,12 +244,14 @@ namespace {
                     curName = Reader_String_ (in).As<wstring> ();
                     lf      = eColon;
                 }
-                else if (lf == eValue) {
-                    Assert (curName.has_value ());
-                    result.Add (*curName, Reader_value_ (in));
-                    curName = nullopt;
-                    lf      = eComma;
-                }
+                else if (lf == eValue)
+                    [[LIKELY_ATTR]]
+                    {
+                        Assert (curName.has_value ());
+                        result.Add (*curName, Reader_value_ (in));
+                        curName = nullopt;
+                        lf      = eComma;
+                    }
                 else {
                     Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected character looking for colon or comma reading object"}));
                 }
@@ -252,9 +268,11 @@ namespace {
         // accumulate elements, and check for close-array
         bool lookingForElt = true;
         while (true) {
-            if (in.IsAtEOF ()) {
-                Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for ']')"}));
-            }
+            if (in.IsAtEOF ())
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for ']')"}));
+                }
             if (in.Peek () == ']') {
                 if (lookingForElt) {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
@@ -263,9 +281,11 @@ namespace {
                 return VariantValue (result);
             }
             else if (in.Peek () == ',') {
-                if (lookingForElt) {
-                    Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected second ',' in reading array"}));
-                }
+                if (lookingForElt)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected second ',' in reading array"}));
+                    }
                 else {
                     lookingForElt = true;
                 }
@@ -276,11 +296,13 @@ namespace {
             }
             else {
                 // not looking at whitespace, in midst of array, and array not terminated, so better be looking at a value
-                if (lookingForElt) {
-                    Containers::ReserveSpeedTweekAdd1 (result);
-                    result.push_back (Reader_value_ (in));
-                    lookingForElt = false;
-                }
+                if (lookingForElt)
+                    [[LIKELY_ATTR]]
+                    {
+                        Containers::ReserveSpeedTweekAdd1 (result);
+                        result.push_back (Reader_value_ (in));
+                        lookingForElt = false;
+                    }
                 else {
                     Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected character (missing ',' ?) in reading array"}));
                 }
@@ -366,9 +388,11 @@ namespace {
                     return Reader_SpecialToken_ (oc->As<wchar_t> (), in);
 
                 default: {
-                    if (iswspace (oc->As<wchar_t> ())) {
-                        // ignore
-                    }
+                    if (iswspace (oc->As<wchar_t> ()))
+                        [[LIKELY_ATTR]]
+                        {
+                            // ignore
+                        }
                     else {
                         Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected character looking for start of value"}));
                     }

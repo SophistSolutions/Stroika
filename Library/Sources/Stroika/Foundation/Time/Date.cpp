@@ -229,7 +229,8 @@ Date Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStr
     istreambuf_iterator<wchar_t> itend;         // end-of-stream
     tm                           when{};
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
-    if (state & ios::failbit) {
+    if (state & ios::failbit)
+        [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
@@ -437,7 +438,8 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
      */
     Date result = empty () ? Date::min () : *this;
     result.fJulianDateRep_ += dayCount;
-    if (result.fJulianDateRep_ < Date::kMinJulianRep) {
+    if (result.fJulianDateRep_ < Date::kMinJulianRep)
+        [[UNLIKELY_ATTR]] {
         static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
         Execution::Throw (kRangeErrror_);
     }

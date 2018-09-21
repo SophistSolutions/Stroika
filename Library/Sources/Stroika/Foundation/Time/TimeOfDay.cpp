@@ -315,7 +315,8 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
     }
 #endif
 
-    if (state & ios::failbit) {
+    if (state & ios::failbit)
+        [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
     Assert (0 <= when.tm_hour and when.tm_hour <= 23);
