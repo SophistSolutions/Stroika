@@ -93,7 +93,9 @@ namespace Stroika::Foundation::Streams {
                         {
                             Execution::Throw (range_error ("seek"));
                         }
-                    if (offset > (fEnd_ - fStart_)) [[UNLIKELY_ATTR]] {
+                    if (offset > (fEnd_ - fStart_))
+                        [[UNLIKELY_ATTR]]
+                        {
                             Execution::Throw (range_error ("seek"));
                         }
                     fCursor_ = fStart_ + offset;
