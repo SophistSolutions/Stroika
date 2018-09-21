@@ -230,9 +230,10 @@ Date Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStr
     tm                           when{};
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
     if (state & ios::failbit)
-        [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe);
-    }
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (FormatException::kThe);
+        }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
@@ -439,10 +440,11 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
     Date result = empty () ? Date::min () : *this;
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep)
-        [[UNLIKELY_ATTR]] {
-        static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
-        Execution::Throw (kRangeErrror_);
-    }
+        [[UNLIKELY_ATTR]]
+        {
+            static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
+            Execution::Throw (kRangeErrror_);
+        }
     return result;
 }
 
