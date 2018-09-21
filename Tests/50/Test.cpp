@@ -1327,7 +1327,7 @@ namespace {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             360000,
-            9.5,
+            9.7,
             &failedTests);
         Tester (
             L"String a + b",
