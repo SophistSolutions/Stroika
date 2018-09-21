@@ -1320,14 +1320,14 @@ namespace {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1500000,
-            2.8,
+            2.9,
             &failedTests);
         Tester (
             L"Simple String append test (+=wchar_t[]) 100x",
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             360000,
-            9.4,
+            9.5,
             &failedTests);
         Tester (
             L"String a + b",
@@ -1393,14 +1393,14 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             125000,
-            1.1,
+            1.2,
             &failedTests);
         Tester (
             L"Sequence<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             9900,
-            0.3,
+            0.33,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<int> basics",
@@ -1449,7 +1449,7 @@ namespace {
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
             64,
-            0.2,
+            0.25,
             &failedTests);
         Tester (
             L"Test_Optional_",
@@ -1472,7 +1472,7 @@ namespace {
             Test_WString2UTF8_win32API, L"win32API",
             Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
             3150000,
-            2.9,
+            3.0,
             &failedTests);
 #endif
 
