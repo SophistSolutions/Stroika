@@ -126,7 +126,7 @@ namespace {
         // expensive to construct, and slightly cheaper to just use thread_local version of
         // the same stringstream each time (only one per thread can be in use)
         static thread_local stringstream s;
-        static const ios_base::fmtflags    kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
+        static const ios_base::fmtflags  kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
 
         s.str (string ());
         s.clear ();
