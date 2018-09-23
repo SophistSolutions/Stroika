@@ -14,6 +14,7 @@
 #include "../Containers/Common.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
+#include "../Debug/Valgrind.h"
 #include "../Math/Common.h"
 #include "../Memory/SmallStackBuffer.h"
 #include "CodePage.h"
@@ -196,8 +197,17 @@ namespace {
                 return kNAN_STR_;
             }
         }
+#if qCompilerAndStdLib_valgrind_nancheck_Buggy
+        {
+            if (Debug::IsRunningUnderValgrind ()) {
+                Assert (!isnan (f));
+                Assert (!isinf (f));
+            }
+        }
+#else
         Assert (!isnan (f));
         Assert (!isinf (f));
+#endif
 
         // Handle special cases as a performance optimization
         constexpr bool kUsePerformanceOptimizedCases_ = true;

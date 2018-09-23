@@ -1178,6 +1178,23 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 /*
+ *     Running Stroka Tests {g++-valgrind-debug-SSLPurify-NoBlockAlloc}:
+ *      [Succeeded]  (3  seconds)  [01]  Foundation::Caching  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test01)
+ *              FAILED: Assert; !isinf (f);Stroika::Foundation::Characters::String {anonymous}::Float2String_(FLOAT_TYPE, const Stroika::Foundation::Characters::Float2StringOptions&) [with FLOAT_TYPE = long double];FloatConversion.cpp: 200
+ *      []  (28 seconds)  [02]  Foundation::Characters::Strings  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test02)
+ */
+#ifndef qCompilerAndStdLib_valgrind_nancheck_Buggy
+
+#if defined(__GNUC__)
+// tested still generates warning with gcc8
+#define arm_openssl_ qCompilerAndStdLib_valgrind_nancheck_Buggy (__GNUC__ <= 8)
+#else
+#define arm_openssl_ 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
