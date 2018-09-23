@@ -1186,10 +1186,10 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #ifndef qCompilerAndStdLib_valgrind_nancheck_Buggy
 
 #if defined(__GNUC__)
-// tested still generates warning with gcc8
-#define arm_openssl_ qCompilerAndStdLib_valgrind_nancheck_Buggy (__GNUC__ <= 8)
+// tested and fails gcc8 on Ubuntu 1804 (could be OS config/valgrind version)
+#define qCompilerAndStdLib_valgrind_nancheck_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #else
-#define arm_openssl_ 0
+#define qCompilerAndStdLib_valgrind_nancheck_Buggy 0
 #endif
 
 #endif
