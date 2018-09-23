@@ -199,7 +199,7 @@ namespace {
         }
 #if qCompilerAndStdLib_valgrind_nancheck_Buggy
         {
-            if (Debug::IsRunningUnderValgrind ()) {
+            if (not Debug::IsRunningUnderValgrind ()) {
                 Assert (!isnan (f));
                 Assert (!isinf (f));
             }
