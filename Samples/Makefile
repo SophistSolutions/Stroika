@@ -30,7 +30,7 @@ SUBPROJECTS+=	Serialization
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
-SUBPROJECTS+=	SimpleService
+SUBPROJECTS+=	Service
 SUBPROJECTS+=	SSDPClient
 SUBPROJECTS+=	SSDPServer
 SUBPROJECTS+=	SystemPerformanceClient
