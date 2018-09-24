@@ -1182,14 +1182,25 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
  *      [Succeeded]  (3  seconds)  [01]  Foundation::Caching  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test01)
  *              FAILED: Assert; !isinf (f);Stroika::Foundation::Characters::String {anonymous}::Float2String_(FLOAT_TYPE, const Stroika::Foundation::Characters::Float2StringOptions&) [with FLOAT_TYPE = long double];FloatConversion.cpp: 200
  *      []  (28 seconds)  [02]  Foundation::Characters::Strings  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test02)
+ *
+ *      Under VALGRIND, 
+ *                                  DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
+ *          prints:
+ *                [-------MAIN-------][0022.587]  fpclassify (inf) = 4
+ *                [-------MAIN-------][0022.595]  fpclassify (-inf) = 4
+ * and from math.h:
+ *              # define FP_NORMAL 4
+ *
+ *  \note - This maybe just a known valgrind bug/feature:
+ *              https://stackoverflow.com/questions/44316523/wrong-result-of-stdfpclassify-for-long-double-using-valgrind
  */
-#ifndef qCompilerAndStdLib_valgrind_nancheck_Buggy
+#ifndef qCompilerAndStdLib_valgrind_fpclassify_check_Buggy
 
 #if defined(__GNUC__)
 // tested and fails gcc8 on Ubuntu 1804 (could be OS config/valgrind version)
-#define qCompilerAndStdLib_valgrind_nancheck_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#define qCompilerAndStdLib_valgrind_fpclassify_check_Buggy 1
 #else
-#define qCompilerAndStdLib_valgrind_nancheck_Buggy 0
+#define qCompilerAndStdLib_valgrind_fpclassify_check_Buggy 0
 #endif
 
 #endif

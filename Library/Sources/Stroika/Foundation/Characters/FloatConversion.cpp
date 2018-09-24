@@ -196,7 +196,7 @@ namespace {
                 static const String_Constant kNAN_STR_{L"NAN"};
                 return kNAN_STR_;
             }
-#if qCompilerAndStdLib_valgrind_nancheck_Buggy && qDebug
+#if qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug
             default: {
                 if (Debug::IsRunningUnderValgrind ()) {
                     if (isinf (f)) {
