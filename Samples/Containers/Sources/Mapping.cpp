@@ -1,3 +1,6 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"

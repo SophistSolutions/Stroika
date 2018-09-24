@@ -29,6 +29,8 @@ VPATH	=			$(SrcDir)/Sources/
 
 Objs	=	\
 	$(ObjDir)Main.o\
+	\
+	$(ObjDir)ObjectVariantMapper.o\
 
 
 all:

@@ -1,3 +1,6 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
@@ -27,6 +30,7 @@ using std::byte;
 namespace {
     void SimpleGettingStarted_ ()
     {
+        Debug::TraceContextBumper ctx{L"SimpleGettingStarted_"};
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
             bool fEnabled{false};
@@ -70,6 +74,7 @@ namespace {
 namespace {
     void UseObjectVariantMapperTry2_ ()
     {
+        Debug::TraceContextBumper ctx{L"UseObjectVariantMapperTry2_"};
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
             bool                    fEnabled{false};
