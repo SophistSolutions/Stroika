@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <bitset>
 #include <set>
 
 #include "../Debug/Assertions.h"
@@ -400,35 +401,54 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T>
-    Iterable<T> Iterable<T>::Distinct () const
+    template <typename EQUALS_COMPARER>
+    Iterable<T> Iterable<T>::Distinct (const EQUALS_COMPARER& equalsComparer) const
     {
-        set<T>                   t1 (begin (), end ()); // Somewhat simplistic/stupid/weak implementation
-        vector<T>                tmp (t1.begin (), t1.end ());
-        size_t                   idx{0};
-        function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
-            if (idx < tmp.size ()) {
-                return tmp[idx++];
+        vector<T> tmp; // Simplistic/stupid/weak implementation
+        if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
+            set<T> t1 (begin (), end ());
+            tmp = vector<T> (t1.begin (), t1.end ());
+        }
+        else {
+            for (const T&& i : *this) {
+                if (find_if (tmp.begin (), tmp.end (), [&](ArgByValueType<T> n) { return equalsComparer (n, i); }) == tmp.end ()) {
+                    tmp.push_back (i);
+                }
             }
-            else {
-                return nullopt;
+        }
+        return Distinct_mkGenerator_<T> (tmp);
+    }
+    template <typename T>
+    template <typename RESULT, typename EQUALS_COMPARER>
+    Iterable<RESULT> Iterable<T>::Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, const EQUALS_COMPARER& equalsComparer) const
+    {
+        RequireNotNull (extractElt);
+        vector<RESULT> tmp; // Simplistic/stupid/weak implementation
+        if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
+            set<RESULT> t1;
+            for (T i : *this) {
+                t1.add (extractElt (i));
             }
-        };
-        return CreateGenerator (getNext);
+            tmp = vector<RESULT> (t1.begin (), t1.end ());
+        }
+        else {
+            for (const T&& i : *this) {
+                RESULT item2Test = extractElt (i);
+                if (find_if (tmp.begin (), tmp.end (), [&](ArgByValueType<T> n) { return equalsComparer (n, item2Test); }) == tmp.end ()) {
+                    tmp.push_back (item2Test);
+                }
+            }
+        }
+        return Distinct_mkGenerator_<RESULT> (tmp);
     }
     template <typename T>
     template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt) const
+    Iterable<RESULT> Iterable<T>::Distinct_mkGenerator_ (const vector<RESULT>& container)
     {
-        RequireNotNull (extractElt);
-        set<RESULT> t1;
-        for (T i : *this) {
-            t1.add (extractElt (i));
-        }
-        vector<RESULT>                tmp (t1.begin (), t1.end ());
         size_t                        idx{0};
-        function<optional<RESULT> ()> getNext = [tmp, idx]() mutable -> optional<RESULT> {
-            if (idx < tmp.size ()) {
-                return tmp[idx++];
+        function<optional<RESULT> ()> getNext = [container, idx]() mutable -> optional<RESULT> {
+            if (idx < container.size ()) {
+                return container[idx++];
             }
             else {
                 return nullopt;
@@ -436,6 +456,7 @@ namespace Stroika::Foundation::Traversal {
         };
         return CreateGenerator (getNext);
     }
+
     template <typename T>
     template <typename T1, typename RESULT>
     Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1) const
@@ -788,7 +809,6 @@ namespace Stroika::Foundation::Traversal {
         }
         return defaultValue;
     }
-
 }
 
 #endif /* _Stroika_Foundation_Traversal_Iterable_inl_ */

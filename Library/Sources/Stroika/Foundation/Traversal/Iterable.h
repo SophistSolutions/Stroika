@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <shared_mutex>
+#include <vector>
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
@@ -601,9 +602,14 @@ namespace Stroika::Foundation::Traversal {
          *  @todo need overloads taking lambda that projects
          *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
          */
-        nonvirtual Iterable<T> Distinct () const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual Iterable<T> Distinct (const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        template <typename RESULT, typename EQUALS_COMPARER = equal_to<RESULT>>
+        nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+
+    private:
         template <typename RESULT>
-        nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt) const;
+        static Iterable<RESULT> Distinct_mkGenerator_ (const vector<RESULT>& container);
 
     public:
         /**
@@ -1169,7 +1175,6 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual void _Apply (_APPLY_ARGTYPE doToElement) const;
         nonvirtual Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
     };
-
 }
 
 /*
