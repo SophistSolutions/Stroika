@@ -20,10 +20,12 @@ ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	ActiveLedIt
 endif
 SUBPROJECTS+=	ArchiveUtility
+SUBPROJECTS+=	Containers
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
+SUBPROJECTS+=	Serialization
 # SOMEDAY SOON GET IF BUILT FROM CONFIGURATION FILE!!!
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
