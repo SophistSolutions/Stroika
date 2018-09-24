@@ -58,17 +58,20 @@ namespace {
             fruits += L"bananas";
             fruits += L"cherries";
             DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
-            Assert (fruits.size () == 4); // only one apple or the other (case squished)
+            Assert (fruits.size () == 4); // they are all there
 
-            // Like changing the backend. But this still respects all the rules of a Collection (no order specified) - 
+            // Like changing the backend. But this still respects all the rules of a Collection (no order specified) -
             // except now it will happen to be ordered (using the default compare function)
-            fruits = SortedCollection<String>{fruits}; 
+            fruits = SortedCollection<String>{fruits};
             DbgTrace (L"sorted fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // only one apple or the other (case squished)
+            Assert (fruits.SequnceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
 
-            // But, we can do the same thing with a compare function that sorts case insenstively, and then we get a change
-            fruits = SortedCollection<String>{ String::LessCI{}, fruits };
+            // But, we can do the same thing with a compare function that sorts case insenstively
+            fruits = SortedCollection<String>{String::LessCI{}, fruits};
             DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
+            Assert (fruits.SequnceEquals (initializer_list<String>{L"apple", L"APPLE", L"bananas", L"cherries"}) or
+                    fruits.SequnceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
         }
     }
 }
