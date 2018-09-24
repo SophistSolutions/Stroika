@@ -49,7 +49,8 @@ namespace {
             // Unclear what the performance characteristics of this will be - with a linked list - O(1), but with array, O(N) worst case.
             c += 4;
 
-            // 'c' will not operate identically (same API) - but use a differnt backend datastructure for storage, always showing O(1) worst case addition time
+            // 'c' will now operate identically (same API) - but use a differnt backend datastructure for storage,
+            // always showing O(1) worst case addition time
             c = Concrete::Collection_stdforward_list<int>{c};
             c += 4;
         }
