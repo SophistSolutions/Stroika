@@ -54,6 +54,6 @@ fi
 	systemctl start stroika-sampleservice
 
 %files
-/opt/Stroika-Service/Stroika-SampleService
+/opt/Stroika-SampleService/Stroika-SampleService
 /usr/lib/systemd/system/stroika-sampleservice.service
 %config(noreplace) /var/opt/Stroika-SampleService/
