@@ -16,9 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Makefile" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\ReadMe.txt" />
+    <None Include="..\..\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Main.cpp">
