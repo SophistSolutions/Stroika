@@ -28,7 +28,12 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)Containers.o\
+	$(ObjDir)Main.o\
+	\
+	$(ObjDir)Collection.o\
+	$(ObjDir)Mapping.o\
+	$(ObjDir)Sequence.o\
+	$(ObjDir)Set.o\
 
 
 all:

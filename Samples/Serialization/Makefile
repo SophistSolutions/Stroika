@@ -28,7 +28,7 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)Serialization.o\
+	$(ObjDir)Main.o\
 
 
 all:
