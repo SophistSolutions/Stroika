@@ -196,18 +196,20 @@ namespace {
                 static const String_Constant kNAN_STR_{L"NAN"};
                 return kNAN_STR_;
             }
-        }
-#if qCompilerAndStdLib_valgrind_nancheck_Buggy
-        {
-            if (not Debug::IsRunningUnderValgrind ()) {
-                Assert (!isnan (f));
-                Assert (!isinf (f));
+#if qCompilerAndStdLib_valgrind_nancheck_Buggy && qDebug
+            default: {
+                if (Debug::IsRunningUnderValgrind ()) {
+                    if (isinf (f)) {
+                        static const String_Constant kNEG_INF_STR_{L"-INF"};
+                        static const String_Constant kINF_STR_{L"INF"};
+                        return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
+                    }
+                }
             }
+#endif
         }
-#else
         Assert (!isnan (f));
         Assert (!isinf (f));
-#endif
 
         // Handle special cases as a performance optimization
         constexpr bool kUsePerformanceOptimizedCases_ = true;
