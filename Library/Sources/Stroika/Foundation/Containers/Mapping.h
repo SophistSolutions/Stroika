@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *      Mapping which allows for the association of two elements, and key and
+     *      Mapping which allows for the association of two elements: a key and
      *  a value. The key UNIQUELY specifies its associated value.
      *
      *  @see    SortedMapping<Key,T>
