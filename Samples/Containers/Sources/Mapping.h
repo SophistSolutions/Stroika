@@ -8,7 +8,8 @@
 
 namespace Samples::Containers::Mapping {
 
-    void RunTests ();
+    void RunDemo ();
+
 }
 
 /*

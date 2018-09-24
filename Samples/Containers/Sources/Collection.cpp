@@ -3,6 +3,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/SortedCollection.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
 // Not generally included, but you can include these if you want to select a particular backend implementation
@@ -39,14 +40,36 @@ namespace {
 namespace {
     void UseParticularConcreteRepresentation_ ()
     {
-        Collection<int> c{3, 5, 19, 3040, 34, 1, 33, 33, 4, 19};
+        {
+            Collection<int> c{3, 5, 19, 3040, 34, 1, 33, 33, 4, 19};
 
-        // Unclear what the performance characteristics of this will be - with a linked list - O(1), but with array, O(N) worst case.
-        c += 4;
+            // Unclear what the performance characteristics of this will be - with a linked list - O(1), but with array, O(N) worst case.
+            c += 4;
 
-        // 'c' will not operate identically (same API) - but use a differnt backend datastructure for storage, always showing O(1) worst case addition time
-        c = Concrete::Collection_stdforward_list<int>{c};
-        c += 4;
+            // 'c' will not operate identically (same API) - but use a differnt backend datastructure for storage, always showing O(1) worst case addition time
+            c = Concrete::Collection_stdforward_list<int>{c};
+            c += 4;
+        }
+        {
+            using Characters::String;
+            Collection<String> fruits;
+            fruits += L"apple";
+            fruits += L"APPLE";
+            fruits += L"bananas";
+            fruits += L"cherries";
+            DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
+            Assert (fruits.size () == 4); // only one apple or the other (case squished)
+
+            // Like changing the backend. But this still respects all the rules of a Collection (no order specified) - 
+            // except now it will happen to be ordered (using the default compare function)
+            fruits = SortedCollection<String>{fruits}; 
+            DbgTrace (L"sorted fruits=%s", Characters::ToString (fruits).c_str ());
+            Assert (fruits.size () == 4); // only one apple or the other (case squished)
+
+            // But, we can do the same thing with a compare function that sorts case insenstively, and then we get a change
+            fruits = SortedCollection<String>{ String::LessCI{}, fruits };
+            DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
+        }
     }
 }
 
@@ -146,7 +169,33 @@ namespace {
     }
 }
 
-void Samples::Containers::Collection::RunTests ()
+namespace {
+    void IteratorsAndSafeUpdateIteration_ ()
+    {
+        using Characters::String;
+        Collection<String> fruits;
+        fruits += L"apple";
+        fruits += L"APPLE";
+        fruits += L"bananas";
+        fruits += L"cherries";
+
+        {
+            Iterator<String> i = fruits.FindFirstThat ([](String i) { return i == L"apple"; });
+            Assert (i != fruits.end ());
+            Assert (fruits.size () == 4);
+        }
+        for (Iterator<String> i = fruits.begin (); i != fruits.end (); ++i) {
+            if (i->Equals (L"apple", Characters::CompareOptions::eCaseInsensitive)) {
+                fruits.Remove (i);
+                // with STL containers, it would be illegal to reference i again, as in i++.
+                // However, with Stroika iterators, they are smart about doing the right thing, when they point to a deleted item, and this code will work as expected.
+            }
+        }
+        Assert (fruits.size () == 2);
+    }
+}
+
+void Samples::Containers::Collection::RunDemo ()
 {
     SimplestCollectionTest_ ();
     UseParticularConcreteRepresentation_ ();
@@ -155,4 +204,5 @@ void Samples::Containers::Collection::RunTests ()
     StoreOtherSortsOfElements_ ();
     UseLinqLikeFunctionalAPIs_ ();
     CollectionOfThingsWithNoOpEqualsAndNotDefaultConstructibleEtc_ ();
+    IteratorsAndSafeUpdateIteration_ ();
 }

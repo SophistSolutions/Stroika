@@ -35,7 +35,7 @@ namespace {
     }
 }
 
-void Samples::Containers::Mapping::RunTests ()
+void Samples::Containers::Mapping::RunDemo ()
 {
     SimplestMappingTest_ ();
 }

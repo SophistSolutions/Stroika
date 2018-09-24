@@ -8,7 +8,7 @@
 
 namespace Samples::Containers::Collection {
 
-    void RunTests ();
+    void RunDemo ();
 
 }
 
