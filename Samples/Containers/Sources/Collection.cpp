@@ -24,6 +24,7 @@ namespace {
     {
         /*
          *  A Collection is the simplest form of Stroika container. You can add things, and remove them, and iterate over them.
+         *  View the class declaration, with all the methods well documented, must with examples of usage.
          */
         Collection<int> c;
         c.Add (3);
@@ -67,6 +68,9 @@ namespace {
 namespace {
     void PrintTheContentsOfAContainerToTheTraceLog_ ()
     {
+        /*
+         *  Use DbgTrace and Characters::ToString () to echo objects to a tracelog file (and/or debugger output under windows)
+         */
         Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
         Collection<int>           tmp{1, 3, 5, 7, 9};
         DbgTrace (L"tmp=%s", Characters::ToString (tmp).c_str ());
@@ -85,10 +89,15 @@ namespace {
         DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
     }
 }
+
 namespace {
     void UseLinqLikeFunctionalAPIs_ ()
     {
         Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
+        /*
+         *  See the Iterable<> template in Iterable.h - for a ton more of this functional style linq-like operations
+         *  you can do on any Stroika container.
+         */
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
             auto            whereTestResult = tmp.Where ([](int i) { return i % 2 == 1; });
@@ -98,8 +107,42 @@ namespace {
             Collection<int> tmp{1, 2, 3, 4, 5, 1, 2, 3, 4, 5};
             auto            d = tmp.Distinct ();
             DbgTrace (L"d=%s", Characters::ToString (d).c_str ());
-            Assert (d.SetEquals (initializer_list<int> {1, 2, 3, 4, 5}));
+            Assert (d.SetEquals (initializer_list<int>{1, 2, 3, 4, 5}));
         }
+        {
+            using Characters::String;
+            Collection<String> fruits;
+            fruits += L"apple";
+            fruits += L"APPLE";
+            fruits += L"bananas";
+            fruits += L"cherries";
+            DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (String::EqualToCI{})).c_str ());
+            Assert (fruits.Distinct (String::EqualToCI{}).size () == 3); // only one apple or the other (case squished)
+        }
+    }
+}
+
+namespace {
+    void CollectionOfThingsWithNoOpEqualsAndNotDefaultConstructibleEtc_ ()
+    {
+        struct MyFunnyObject_ {
+            MyFunnyObject_ () = delete; // no need to be default constructible
+            MyFunnyObject_ (int /*n*/)
+            {
+                // need some constructor to test
+            }
+            MyFunnyObject_ (const MyFunnyObject_&) = default; // OK, but you do need to be copyable
+        };
+        Collection<MyFunnyObject_> myObjects;
+        myObjects.Add (MyFunnyObject_{3});
+        myObjects += MyFunnyObject_{4}; // use whatever add syntax you want
+
+        // THIS WONT WORK, because no operator== defined
+        //      myObjects.Remove (MyFunnyObject_{3});
+        // but this will remove the first object found
+        Assert (myObjects.size () == 2);
+        myObjects.Remove (MyFunnyObject_{3}, [](const MyFunnyObject_&, const MyFunnyObject_&) { return true; });
+        Assert (myObjects.size () == 1);
     }
 }
 
@@ -111,4 +154,5 @@ void Samples::Containers::Collection::RunTests ()
     PrintTheContentsOfAContainerToTheTraceLog_ ();
     StoreOtherSortsOfElements_ ();
     UseLinqLikeFunctionalAPIs_ ();
+    CollectionOfThingsWithNoOpEqualsAndNotDefaultConstructibleEtc_ ();
 }

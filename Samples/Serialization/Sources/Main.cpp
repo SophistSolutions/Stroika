@@ -19,7 +19,7 @@ using Characters::String;
 using Containers::Collection;
 using Containers::Sequence;
 
-int main (int argc, const char* argv[])
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     return EXIT_SUCCESS;
 }
