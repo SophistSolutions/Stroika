@@ -3,23 +3,18 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <iostream>
+#include <cstdlib>
 
-#include "Stroika/Foundation/Characters/String2Int.h"
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Collection.h"
-#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "ObjectVariantMapper.h"
+
 
 using namespace std;
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Time;
 
-using Characters::String;
-using Containers::Collection;
-using Containers::Sequence;
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    Samples::Serialization::ObjectVariantMapper::RunDemo ();
     return EXIT_SUCCESS;
 }
