@@ -11,7 +11,8 @@
 */
 
 namespace Samples {
-    namespace SimpleService {
+    namespace Service {
     }
 }
+
 #endif /*_Samples_Service_inl_*/

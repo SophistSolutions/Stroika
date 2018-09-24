@@ -1,8 +1,8 @@
-Package: stroika-simpleservice
+Package: stroika-sampleservice
 Priority: optional
 Section: admin
 Maintainer: Lewis G. Pringle, Jr <lewis@sophists.com>
 Architecture: amd64
 Depends: 
-Description: Stroika SimpleService sample
+Description: Stroika Sample Service
 

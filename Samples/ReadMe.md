@@ -26,16 +26,16 @@
    demonstrates facilities for serializing (and deserializing) objects - the basis of many Stroika
    features (e.g. webservices, OptionsFile).
  
+ * [Service](Service/)
+   is a simple demonstration of how to use the Stroika Service Framework. Makes it easy to create
+   services that integrate with UNIX service systems (init/systemd etc) or windows service manager.
+ 
  * [SimpleLedText](SimpleLedText/)
    tests the simple-to-use Led library wrapper code. This can easily
    be adapted to work for MacOS (Carbon SDK) and Linux / X-Windows, but
    this code is only tested for Windows).
    SimpleLedTest is based on the Stroika Led WordProcessor framework.
 
- * [SimpleService](SimpleService/)
-   is a simple demonstration of how to use the Stroika Service Framework. Makes it easy to create
-   services that integrate with UNIX service systems (init/systemd etc) or windows service manager.
- 
  * [SSDPClient](SSDPClient/)
    shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.
 

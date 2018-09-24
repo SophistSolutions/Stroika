@@ -26,7 +26,7 @@ using namespace Stroika::Frameworks::Service;
 using Characters::String_Constant;
 using Execution::Thread;
 
-using namespace Samples::SimpleService;
+using namespace Samples::Service;
 
 #if qUseLogger
 #include "Stroika/Foundation/Execution/Logger.h"

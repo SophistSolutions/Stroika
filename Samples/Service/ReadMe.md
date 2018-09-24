@@ -24,21 +24,21 @@ Read the documentation on Stroika::Frameworks::Service::Main for more details.
 Special platform instructions:
 WINDOWS:
 	o	Quick summary
-		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
-		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --start
-		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --stop
-		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --uninstall
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --install
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --start
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --stop
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --uninstall
 		Run Windows EventViewer and examine 'Windows Logs/Application', and note the entries from source Stroika-Sample-SimpleServer
 	o	Install
-		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --install
 		(this maybe required as administrator)
 	o	Then either run from the console using
-		SimpleService.exe --run-directly			***RECOMMENDED***
+		Service.exe --run-directly			***RECOMMENDED***
 	o	Or use the service manager gui, and start and stop the service with that
 	o	Or use 
 		net start Test-Service
 	o	Un-Install
-		..\..\Builds\Debug-U-32\Samples-SimpleService\SimpleService.exe --uninstall
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --uninstall
 
 
 

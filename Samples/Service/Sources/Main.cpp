@@ -90,7 +90,7 @@ namespace {
             cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
             cerr << endl;
         }
-        cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
+        cerr << "Usage: Sample-Service [options] where options can be:\n";
         if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
             cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
             cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kUnInstall) << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
@@ -156,9 +156,9 @@ int main (int argc, const char* argv[])
         Logger::ShutdownSingleton (); // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
 #if qHas_Syslog
-    Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-SimpleService"));
+    Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-Service"));
 #elif qPlatform_Windows
-    Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-SimpleService"));
+    Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-Service"));
 #endif
     /*
      *  Optional - use buffering feature
@@ -184,7 +184,7 @@ int main (int argc, const char* argv[])
     /*
      *  Create service handler instance.
      */
-    Main m (make_shared<Samples::SimpleService::SampleAppServiceRep> (), serviceIntegrationRep);
+    Main m (make_shared<Samples::Service::SampleAppServiceRep> (), serviceIntegrationRep);
 
     /*
      *  Run request.

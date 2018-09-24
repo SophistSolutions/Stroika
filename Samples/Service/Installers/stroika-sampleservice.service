@@ -1,7 +1,7 @@
-# INSTALL THIS FILE TO /etc/systemd/system/stroika-simpleservice.service
+# INSTALL THIS FILE TO /etc/systemd/system/stroika-sampleservice.service
 
 [Unit]
-Description=Stroika SimpleService
+Description=Stroika Sample Service
 After=syslog.target
 #After=syslog.target network.target
 #Conflicts=sendmail.service exim.service
@@ -12,9 +12,9 @@ PIDFile=/run/Test-Service.pid
 #EnvironmentFile=-/etc/sysconfig/network
 #ExecStartPre=-/usr/libexec/postfix/aliasesdb
 #ExecStartPre=-/usr/libexec/postfix/chroot-update
-ExecStart=/opt/Stroika-SimpleService/Stroika-SimpleService --start
-ExecReload=/opt/Stroika-SimpleService/Stroika-SimpleService --restart
-ExecStop=/opt/Stroika-SimpleService/Stroika-SimpleService --stop
+ExecStart=/opt/Stroika-SampleService/Stroika-SampleService --start
+ExecReload=/opt/Stroika-SampleService/Stroika-SampleService --restart
+ExecStop=/opt/Stroika-SampleService/Stroika-SampleService --stop
 
 [Install]
 WantedBy=multi-user.target

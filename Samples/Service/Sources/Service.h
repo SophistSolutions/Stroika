@@ -12,7 +12,7 @@
 */
 
 namespace Samples {
-    namespace SimpleService {
+    namespace Service {
 
         using namespace Stroika::Foundation;
         using namespace Stroika::Frameworks::Service;
@@ -24,9 +24,9 @@ namespace Samples {
  *  To test, on many systems, you can do
  *      tail -f /var/log/syslog (in one window - note - depending on your system, the logfile could be elsewhere)
  *  and
- *      Samples_SimpleService -start
- *      Samples_SimpleService -status
- *      Samples_SimpleService -stop
+ *      Samples_SampleService -start
+ *      Samples_SampleService -status
+ *      Samples_SampleService -stop
  *  and see the log messages appear in the logfile.
  */
 #ifndef qUseLogger

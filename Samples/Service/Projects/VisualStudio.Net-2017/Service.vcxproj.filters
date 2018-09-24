@@ -33,13 +33,13 @@
     <None Include="..\..\Installers\Makefile">
       <Filter>Installers</Filter>
     </None>
-    <None Include="..\..\Installers\stroika-simpleservice.control">
+    <None Include="..\..\Installers\stroika-sampleservice.control">
       <Filter>Installers</Filter>
     </None>
-    <None Include="..\..\Installers\stroika-simpleservice.service">
+    <None Include="..\..\Installers\stroika-sampleservice.rpm.spec">
       <Filter>Installers</Filter>
     </None>
-    <None Include="..\..\Installers\stroika-simpleservice.rpm.spec">
+    <None Include="..\..\Installers\stroika-sampleservice.service">
       <Filter>Installers</Filter>
     </None>
   </ItemGroup>

@@ -6,8 +6,8 @@
 %define          debug_package %{nil}
 %define        __os_install_post %{_dbpath}/brp-compress
 
-Summary: Stroika Simple-Service Sample
-Name: stroika-simpleservice
+Summary: Stroika Sample Service
+Name: stroika-sampleservice
 License: Open-Source
 Group: System Environment/Daemons
 SOURCE0 : %{name}-%{version}.tar.gz
@@ -41,19 +41,19 @@ if [ "$1" = "1" ]; then
    echo "Nothing needed for initial installation" > /dev/null
 elif [ "$1" == "2" ]; then
    echo "Stop the service if its already running" > /dev/null
-   systemctl stop stroika-simpleservice
+   systemctl stop stroika-sampleservice
 fi
 
 %preun
 if [ $1 -eq 0 ] ; then
-	systemctl disable stroika-simpleservice
+	systemctl disable stroika-sampleservice
 fi
 
 %post
-	systemctl enable stroika-simpleservice
-	systemctl start stroika-simpleservice
+	systemctl enable stroika-sampleservice
+	systemctl start stroika-sampleservice
 
 %files
-/opt/Stroika-SimpleService/Stroika-SimpleService
-/usr/lib/systemd/system/stroika-simpleservice.service
-%config(noreplace) /var/opt/Stroika-SimpleService/
+/opt/Stroika-Service/Stroika-SampleService
+/usr/lib/systemd/system/stroika-sampleservice.service
+%config(noreplace) /var/opt/Stroika-SampleService/

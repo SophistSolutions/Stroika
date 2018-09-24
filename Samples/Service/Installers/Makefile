@@ -1,12 +1,12 @@
 ###
-### @todo https://stroika.atlassian.net/browse/STK-614 -  Add WIX support to Sample SimpleService installers
+### @todo https://stroika.atlassian.net/browse/STK-614 -  Add WIX support to Sample Service installers
 ###
 
 -include ../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 StroikaRoot=$(shell realpath ../../..)/
 
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleService/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
@@ -46,8 +46,8 @@ endif
 	fi
 
 
-BASIC_NAME_LC=stroika-simpleservice
-BASIC_NAME=Stroika-SimpleService
+BASIC_NAME_LC=stroika-sampleservice
+BASIC_NAME=Stroika-SampleService
 
 #The 'deb' package creator requires the directory have particular permissions. on WSL (windows subsystem for linux)
 #using the /mnt filesystem, the permissions dont work. So use /tmp for these. But that means creating the directories
@@ -83,14 +83,14 @@ endif
 	@chmod 755 $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
-	@install -m 755 --strip --strip-program=$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) STRIP) $(TARGET_OUT_DIR)Samples-SimpleService/SimpleService $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 755 --strip --strip-program=$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) STRIP) $(TARGET_OUT_DIR)Samples-Service/Service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 	@install -m 644 $(BASIC_NAME_LC).service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 
 	@dpkg --build $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION) 2>&1 > $(DEB_BUILD_OUT)
-	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_DIR)Samples-SimpleService/$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
+	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_DIR)Samples-Service/$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
 	
 	@rm -rf $(DEB_WORKDIR)
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_DIR)Samples-SimpleService/$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb"`
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_DIR)Samples-Service/$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb"`
 
 
 RPM_WORKDIR=$(ObjDir)RPM_TMP/
@@ -110,7 +110,7 @@ endif
 	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system
 	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/var/opt/$(BASIC_NAME)/
 
-	@install -m 755 --strip --strip-program=$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) STRIP) $(TARGET_OUT_DIR)Samples-SimpleService/SimpleService $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 755 --strip --strip-program=$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) STRIP) $(TARGET_OUT_DIR)Samples-Service/Service $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 	@install -m 644 $(BASIC_NAME_LC).service $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 	
 	@cd $(RPM_WORKDIR) && tar -zcf $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/
@@ -121,5 +121,5 @@ endif
 	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT)
 
-	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)Samples-SimpleService/$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_DIR)Samples-SimpleService/$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm"`
+	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)Samples-Service/$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_DIR)Samples-Service/$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm"`
