@@ -4,16 +4,15 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-
 
 #include "ObjectVariantMapper.h"
 
@@ -30,7 +29,7 @@ namespace {
     {
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
-            bool     fEnabled{false};
+            bool fEnabled{false};
 
             // Not needed to use ObjectVariantMapper - just needed to 'test' if the data round-tripped properly
             bool operator== (const SharedContactsConfig_& rhs) const
@@ -49,7 +48,7 @@ namespace {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
-        tmp.fEnabled            = true;
+        tmp.fEnabled = true;
 
         /// Map any arbitrary (defined in ObjectVariantMapper) object to a VariantValue
         VariantValue v = mapper.FromObject (tmp);
@@ -83,7 +82,6 @@ namespace {
                 return fEnabled == rhs.fEnabled and
                        fLastSynchronizedAt == rhs.fLastSynchronizedAt and
                        fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID;
-            
             }
 
             // Not needed to use ObjectVariantMapper - just to be able to print to debugger/trace-log this type
