@@ -693,6 +693,12 @@ namespace {
         {
             Iterable<int> c{1, 2, 2, 5, 9, 4, 5, 6};
             VerifyTestResult (c.Distinct ().SetEquals (Iterable<int>{1, 2, 4, 5, 6, 9}));
+            auto resultsEqualMod5 = c.Distinct ([](int l, int r) { return l % 5 == r % 5; });
+            DbgTrace (L"x=%s", Characters::ToString (resultsEqualMod5).c_str ());
+            VerifyTestResult (resultsEqualMod5.size () == 4);
+            for (auto i : resultsEqualMod5) {
+                VerifyTestResult (i != 3);
+            }
         }
         {
             Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
