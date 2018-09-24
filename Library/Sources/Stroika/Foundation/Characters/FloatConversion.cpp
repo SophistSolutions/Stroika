@@ -200,6 +200,7 @@ namespace {
             default: {
                 if (Debug::IsRunningUnderValgrind ()) {
                     if (isinf (f)) {
+                        DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
                         static const String_Constant kNEG_INF_STR_{L"-INF"};
                         static const String_Constant kINF_STR_{L"INF"};
                         return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
