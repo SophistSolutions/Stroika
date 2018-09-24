@@ -58,9 +58,10 @@ namespace {
             using Characters::String;
             Collection<String> fruits;
             fruits += L"apple";
-            fruits += L"APPLE";
             fruits += L"bananas";
             fruits += L"cherries";
+            fruits += L"APPLE";
+            // Print (to debugger/tracelog) the fruits - but now they could come out in any order
             DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // they are all there
 
@@ -69,9 +70,10 @@ namespace {
             fruits = SortedCollection<String>{fruits};
             DbgTrace (L"sorted fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // only one apple or the other (case squished)
+            // note they must now be in alphabetic order
             Assert (fruits.SequnceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
 
-            // But, we can do the same thing with a compare function that sorts case insenstively
+            // But, we can do the same thing with a compare function that sorts case insensitively
             fruits = SortedCollection<String>{String::LessCI{}, fruits};
             DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.SequnceEquals (initializer_list<String>{L"apple", L"APPLE", L"bananas", L"cherries"}) or
@@ -86,12 +88,14 @@ namespace {
         vector<int>     aVector{1, 3, 5, 7, 9, 11};
         Collection<int> c{aVector};
 
-        // CANNOT guarantee the ordering is the same, as Collection guarantees it keeps all the same elements, but does not guarantee maintaining order.
+        // CANNOT guarantee the ordering is the same, as Collection guarantees it keeps all the same elements,
+        // but does not guarantee maintaining order.
         Assert (c.SetEquals (aVector));
         Assert (c.SequnceEquals (aVector) or not c.SequnceEquals (aVector));
 
         vector<int> v2 = c.As<vector<int>> ();
-        // V will contain all the same elements as aVector, but maybe not in the same order
+        // V will contain all the same elements as aVector, but maybe not in the same order.
+        // it will be in the order the 'c' collection happened to produce
     }
 }
 
@@ -195,7 +199,8 @@ namespace {
             if (i->Equals (L"apple", Characters::CompareOptions::eCaseInsensitive)) {
                 fruits.Remove (i);
                 // with STL containers, it would be illegal to reference i again, as in i++.
-                // However, with Stroika iterators, they are smart about doing the right thing, when they point to a deleted item, and this code will work as expected.
+                // However, with Stroika iterators, they are smart about doing the right thing,
+                // when they point to a deleted item, and this code will work as expected.
             }
         }
         Assert (fruits.size () == 2);
