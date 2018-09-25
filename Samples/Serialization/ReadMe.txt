@@ -1,2 +1,3 @@
- * Traceroute
-   is networking example, implementing both the 'ping' application and 'traceroute' - based on Stroika-layer networking
+ * Serialization
+   demonstrates facilities for serializing (and deserializing) objects - the basis of many Stroika
+   features (e.g. webservices, OptionsFile).

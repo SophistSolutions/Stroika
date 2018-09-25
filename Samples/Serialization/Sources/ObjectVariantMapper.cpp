@@ -31,12 +31,13 @@ namespace {
     void SimpleGettingStarted_ ()
     {
         Debug::TraceContextBumper ctx{L"SimpleGettingStarted_"};
+        
         // Define some types that you want serialized
-        struct SharedContactsConfig_ {
+        struct MyType2Serialize1_ {
             bool fEnabled{false};
 
             // Not needed to use ObjectVariantMapper - just needed to 'test' if the data round-tripped properly
-            bool operator== (const SharedContactsConfig_& rhs) const
+            bool operator== (const MyType2Serialize1_& rhs) const
             {
                 return fEnabled == rhs.fEnabled;
             }
@@ -45,28 +46,33 @@ namespace {
         // Define an ObjectVariantMapper which knows how to map your types to/from VariantValue objects
         ObjectVariantMapper mapper;
 
+        // Add the types to the mapper, which it will need
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled)},
+        mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyType2Serialize1_, fEnabled)},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
-        SharedContactsConfig_ tmp;
+        // Create a test object to serialize
+        MyType2Serialize1_ tmp;
         tmp.fEnabled = true;
 
         /// Map any arbitrary (defined in ObjectVariantMapper) object to a VariantValue
         VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
+        // This can then be displayed for debugging purposes using
         DbgTrace ("v = %s", Characters::ToString (v).c_str ());
 
-        // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant
+        // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
+        // And dump the results into a temporary memory-based stream
         Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
+        // THEN deserialize, and map back to C++ object form
+        MyType2Serialize1_ tmp2 = mapper.ToObject<MyType2Serialize1_> (Variant::JSON::Reader ().Read (tmpStream));
+
+        // make sure new object matches
         Assert (tmp2 == tmp);
     }
 }
@@ -75,6 +81,7 @@ namespace {
     void UseObjectVariantMapperTry2_ ()
     {
         Debug::TraceContextBumper ctx{L"UseObjectVariantMapperTry2_"};
+        
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
             bool                    fEnabled{false};
@@ -113,20 +120,23 @@ namespace {
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
-        bool                  newEnabled = true;
+        // fill in a sample object to write
         SharedContactsConfig_ tmp;
-        tmp.fEnabled = newEnabled;
-        tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
-        tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
+        {
+            bool newEnabled = true;
+            tmp.fEnabled    = newEnabled;
+            tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
+            tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
+        }
 
-        /// Map any arbitrary (defined in ObjectVariantMapper) object to a VariantValue
+        /// Map that object to a VariantValue
         VariantValue v = mapper.FromObject (tmp);
 
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
+        // at this point - we should have VariantValue object with "Enabled", "Last-Synchronized-At" etc fields set properly.
+        // This can then be displayed using
         DbgTrace (L"v = %s", Characters::ToString (v).c_str ());
 
-        // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant
+        // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we selected JSON)
         Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
         Variant::JSON::Writer ().Write (v, tmpStream);
 
@@ -135,18 +145,18 @@ namespace {
         if (kWrite2FileAsWell_) {
             IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             Variant::JSON::Writer ().Write (v, tmpFileStream);
-        }
 
-        if (kWrite2FileAsWell_) {
-            // try reading it back
+            // , and then if you want, try reading it back
             IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpFileStream));
             DbgTrace (L"tmp2 = %s", Characters::ToString (tmp2).c_str ());
             Assert (tmp2 == tmp);
         }
 
-        // THEN deserialized, and mapped back to C++ object form
+        // THEN deserialize, and map back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
+
+        // and check the roundtrip worked
         Assert (tmp2 == tmp);
     }
 }
