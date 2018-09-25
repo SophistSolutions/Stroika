@@ -19,6 +19,48 @@ History
 
 
 
+      
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d9">v2.1d9</a><br/>2018-09-25</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d8...v2.1d9</li>
+		<li>Sample Apps
+			<ul>
+				<li>Lose obsolete Samples/SimpleSequenceUsage</li>
+				<li>Add Containers Sample App</li>
+				<li>Add Serialization Sample App</li>
+				<li>renamed sample SimpleService to just Service (and some places sample.service for unix)</li>
+			</ul>
+		</li>
+		<li>workaround for  qCompilerAndStdLib_valgrind_fpclassify_check_Buggy</li>
+		<li>fixed Iterable<>::Distinct to work with explicit equals comparer, and work right with default behavior when EqualsComparer not equal_to (dont use less then)</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d9.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d9-OUT.txt</li>
+				<li>vc++2k17  (15.8.5)</li>
+				<li>MacOS, XCode 10</li>
+				<li>gcc 7, gcc 8</li>
+				<li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
     
 
 <tr>
