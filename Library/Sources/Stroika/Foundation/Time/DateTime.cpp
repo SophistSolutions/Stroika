@@ -366,7 +366,7 @@ DateTime DateTime::AsLocalTime () const
     else if (GetTimezone () == Timezone::LocalTime ()) {
         return *this;
     }
-    else if ( GetTimezone () == Timezone::Unknown ()) {
+    else if (GetTimezone () == Timezone::Unknown ()) {
         return DateTime (GetDate (), GetTimeOfDay (), Timezone::LocalTime ());
     }
     else {
@@ -391,14 +391,14 @@ DateTime DateTime::Now () noexcept
 #if qPlatform_Windows
     SYSTEMTIME st{};
     ::GetLocalTime (&st);
-    return DateTime {st, Timezone::LocalTime ()};
+    return DateTime{st, Timezone::LocalTime ()};
 #elif qPlatform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
-    return DateTime {::time (nullptr)}.AsLocalTime ();
+    return DateTime{::time (nullptr)}.AsLocalTime ();
 #else
     AssertNotImplemented ();
-    return DateTime {};
+    return DateTime{};
 #endif
 }
 
@@ -549,13 +549,14 @@ time_t DateTime::As () const
     Date     d     = useDT.GetDate ();
 
     if (useDT.GetDate ().GetYear () < Year (1970))
-        [[UNLIKELY_ATTR]] {
+        [[UNLIKELY_ATTR]]
+        {
             static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
             Execution::Throw (kRangeErrror_);
         }
 
-        struct tm tm {
-        };
+    struct tm tm {
+    };
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
@@ -574,11 +575,13 @@ template <>
 tm DateTime::As () const
 {
     if (GetDate ().GetYear () < Year (1900))
-        [[UNLIKELY_ATTR]] {
+        [[UNLIKELY_ATTR]]
+        {
             static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
             Execution::Throw (kRangeErrror_);
-        } struct tm tm {
-        };
+        }
+    struct tm tm {
+    };
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
