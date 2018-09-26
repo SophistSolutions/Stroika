@@ -3041,28 +3041,28 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         constexpr char32_t UNI_SUR_LOW_END{(char32_t)0xDFFF};
 
         /*
-     * Magic values subtracted from a buffer value during UTF8 conversion.
-     * This table contains as many values as there might be trailing bytes
-     * in a UTF-8 sequence.
-     */
+         * Magic values subtracted from a buffer value during UTF8 conversion.
+         * This table contains as many values as there might be trailing bytes
+         * in a UTF-8 sequence.
+         */
         constexpr char32_t offsetsFromUTF8[6] = {0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL};
 
         /*
-     * Once the bits are split out into bytes of UTF-8, this is a mask OR-ed
-     * into the first byte, depending on how many bytes follow.  There are
-     * as many entries in this table as there are UTF-8 sequence types.
-     * (I.e., one byte sequence, two byte... etc.). Remember that sequencs
-     * for *legal* UTF-8 will be 4 or fewer bytes total.
-     */
+         * Once the bits are split out into bytes of UTF-8, this is a mask OR-ed
+         * into the first byte, depending on how many bytes follow.  There are
+         * as many entries in this table as there are UTF-8 sequence types.
+         * (I.e., one byte sequence, two byte... etc.). Remember that sequencs
+         * for *legal* UTF-8 will be 4 or fewer bytes total.
+         */
         constexpr UTFConvert::UTF8 firstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
 
         /*
-     * Index into the table below with the first byte of a UTF-8 sequence to
-     * get the number of trailing bytes that are supposed to follow it.
-     * Note that *legal* UTF-8 values can't have 4 or 5-bytes. The table is
-     * left as-is for anyone who may want to do such conversion, which was
-     * allowed in earlier algorithms.
-     */
+         * Index into the table below with the first byte of a UTF-8 sequence to
+         * get the number of trailing bytes that are supposed to follow it.
+         * Note that *legal* UTF-8 values can't have 4 or 5-bytes. The table is
+         * left as-is for anyone who may want to do such conversion, which was
+         * allowed in earlier algorithms.
+         */
         constexpr char trailingBytesForUTF8[256] = {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -3074,15 +3074,15 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
 
         /*
-     * Utility routine to tell whether a sequence of bytes is legal UTF-8.
-     * This must be called with the length pre-determined by the first byte.
-     * If not calling this from ConvertUTF8to*, then the length can be set by:
-     *  length = trailingBytesForUTF8[*source]+1;
-     * and the sequence is illegal right away if there aren't that many bytes
-     * available.
-     * If presented with a length > 4, this returns false.  The Unicode
-     * definition of UTF-8 goes up to 4-byte sequences.
-     */
+         * Utility routine to tell whether a sequence of bytes is legal UTF-8.
+         * This must be called with the length pre-determined by the first byte.
+         * If not calling this from ConvertUTF8to*, then the length can be set by:
+         *  length = trailingBytesForUTF8[*source]+1;
+         * and the sequence is illegal right away if there aren't that many bytes
+         * available.
+         * If presented with a length > 4, this returns false.  The Unicode
+         * definition of UTF-8 goes up to 4-byte sequences.
+         */
         bool isLegalUTF8_ (const UTFConvert::UTF8* source, int length)
         {
             UTFConvert::UTF8        a;
@@ -3148,22 +3148,26 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 break;
             }
             ch = *source++;
-            if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
-                                     /* UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                    if (flags == strictConversion) {
-                        --source; /* return to the illegal value itself */
-                        result = sourceIllegal;
-                        break;
-                    }
+            if (ch <= UNI_MAX_BMP)
+                [[LIKELY_ATTR]]
+                { /* Target is a character <= 0xFFFF */
+                    /*   UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
+                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END)
+                        [[UNLIKELY_ATTR]]
+                        {
+                            if (flags == strictConversion) {
+                                --source; /* return to the illegal value itself */
+                                result = sourceIllegal;
+                                break;
+                            }
+                            else {
+                                *target++ = UNI_REPLACEMENT_CHAR;
+                            }
+                        }
                     else {
-                        *target++ = UNI_REPLACEMENT_CHAR;
+                        *target++ = (char16_t)ch; /* normal case */
                     }
                 }
-                else {
-                    *target++ = (char16_t)ch; /* normal case */
-                }
-            }
             else if (ch > UNI_MAX_LEGAL_UTF32) {
                 if (flags == strictConversion) {
                     result = sourceIllegal;
@@ -3201,27 +3205,29 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             const char16_t* oldSource = source; /*  In case we have to back up because of target overflow. */
             ch                        = *source++;
             /* If we have a surrogate pair, convert to UTF32 first. */
-            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) {
-                /* If the 16 bits following the high surrogate are in the source buffer... */
-                if (source < sourceEnd) {
-                    ch2 = *source;
-                    /* If it's a low surrogate, convert to UTF32. */
-                    if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
-                        ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
-                        ++source;
+            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END)
+                [[UNLIKELY_ATTR]]
+                {
+                    /* If the 16 bits following the high surrogate are in the source buffer... */
+                    if (source < sourceEnd) {
+                        ch2 = *source;
+                        /* If it's a low surrogate, convert to UTF32. */
+                        if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
+                            ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                            ++source;
+                        }
+                        else if (flags == strictConversion) { /* it's an unpaired high surrogate */
+                            --source;                         /* return to the illegal value itself */
+                            result = sourceIllegal;
+                            break;
+                        }
                     }
-                    else if (flags == strictConversion) { /* it's an unpaired high surrogate */
-                        --source;                         /* return to the illegal value itself */
-                        result = sourceIllegal;
+                    else {        /* We don't have the 16 bits following the high surrogate. */
+                        --source; /* return to the high surrogate */
+                        result = sourceExhausted;
                         break;
                     }
                 }
-                else {        /* We don't have the 16 bits following the high surrogate. */
-                    --source; /* return to the high surrogate */
-                    result = sourceExhausted;
-                    break;
-                }
-            }
             else if (flags == strictConversion) {
                 /* UTF-16 surrogate values are illegal in UTF-32 */
                 if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
@@ -3263,27 +3269,31 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             const char16_t*    oldSource    = source; /* In case we have to back up because of target overflow. */
             ch                              = *source++;
             /* If we have a surrogate pair, convert to char32_t first. */
-            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) {
-                /* If the 16 bits following the high surrogate are in the source buffer... */
-                if (source < sourceEnd) {
-                    char32_t ch2 = *source;
-                    /* If it's a low surrogate, convert to char32_t. */
-                    if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
-                        ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
-                        ++source;
-                    }
-                    else if (flags == strictConversion) { /* it's an unpaired high surrogate */
-                        --source;                         /* return to the illegal value itself */
-                        result = sourceIllegal;
+            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END)
+                [[UNLIKELY_ATTR]]
+                {
+                    /* If the 16 bits following the high surrogate are in the source buffer... */
+                    if (source < sourceEnd)
+                        [[LIKELY_ATTR]]
+                        {
+                            char32_t ch2 = *source;
+                            /* If it's a low surrogate, convert to char32_t. */
+                            if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
+                                ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                                ++source;
+                            }
+                            else if (flags == strictConversion) { /* it's an unpaired high surrogate */
+                                --source;                         /* return to the illegal value itself */
+                                result = sourceIllegal;
+                                break;
+                            }
+                        }
+                    else {        /* We don't have the 16 bits following the high surrogate. */
+                        --source; /* return to the high surrogate */
+                        result = sourceExhausted;
                         break;
                     }
                 }
-                else {        /* We don't have the 16 bits following the high surrogate. */
-                    --source; /* return to the high surrogate */
-                    result = sourceExhausted;
-                    break;
-                }
-            }
             else if (flags == strictConversion) {
                 /* UTF-16 surrogate values are illegal in UTF-32 */
                 if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
@@ -3357,8 +3367,8 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 break;
             }
             /*
-         * The cases all fall through. See "Note A" below.
-         */
+             * The cases all fall through. See "Note A" below.
+             */
             switch (extraBytesToRead) {
                 case 5:
                     ch += *source++;
@@ -3380,11 +3390,13 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             }
             ch -= offsetsFromUTF8[extraBytesToRead];
 
-            if (target >= targetEnd) {
-                source -= (extraBytesToRead + 1); /* Back up source pointer! */
-                result = targetExhausted;
-                break;
-            }
+            if (target >= targetEnd)
+                [[UNLIKELY_ATTR]]
+                {
+                    source -= (extraBytesToRead + 1); /* Back up source pointer! */
+                    result = targetExhausted;
+                    break;
+                }
             if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
                 /* UTF-16 surrogate values are illegal in UTF-32 */
                 if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
@@ -3443,16 +3455,18 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             ch                          = *source++;
             if (flags == strictConversion) {
                 /* UTF-16 surrogate values are illegal in UTF-32 */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                    --source; /* return to the illegal value itself */
-                    result = sourceIllegal;
-                    break;
-                }
+                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        --source; /* return to the illegal value itself */
+                        result = sourceIllegal;
+                        break;
+                    }
             }
             /*
-         * Figure out how many bytes the result will require. Turn any
-         * illegally large UTF32 things (> Plane 17) into replacement chars.
-         */
+             * Figure out how many bytes the result will require. Turn any
+             * illegally large UTF32 things (> Plane 17) into replacement chars.
+             */
             if (ch < (char32_t)0x80) {
                 bytesToWrite = 1;
             }
@@ -3508,18 +3522,20 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         while (source < sourceEnd) {
             char32_t       ch               = 0;
             unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-            if (source + extraBytesToRead >= sourceEnd) {
-                result = sourceExhausted;
-                break;
-            }
+            if (source + extraBytesToRead >= sourceEnd)
+                [[UNLIKELY_ATTR]]
+                {
+                    result = sourceExhausted;
+                    break;
+                }
             /* Do this check whether lenient or strict */
             if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
                 result = sourceIllegal;
                 break;
             }
             /*
-         * The cases all fall through. See "Note A" below.
-         */
+             * The cases all fall through. See "Note A" below.
+             */
             switch (extraBytesToRead) {
                 case 5:
                     ch += *source++;
@@ -3541,30 +3557,34 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             }
             ch -= offsetsFromUTF8[extraBytesToRead];
 
-            if (target >= targetEnd) {
-                source -= (extraBytesToRead + 1); /* Back up the source pointer! */
-                result = targetExhausted;
-                break;
-            }
-            if (ch <= UNI_MAX_LEGAL_UTF32) {
-                /*
-             * UTF-16 surrogate values are illegal in UTF-32, and anything
-             * over Plane 17 (> 0x10FFFF) is illegal.
-             */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                    if (flags == strictConversion) {
-                        source -= (extraBytesToRead + 1); /* return to the illegal value itself */
-                        result = sourceIllegal;
-                        break;
+            if (target >= targetEnd)
+                [[UNLIKELY_ATTR]]
+                {
+                    source -= (extraBytesToRead + 1); /* Back up the source pointer! */
+                    result = targetExhausted;
+                    break;
+                }
+            if (ch <= UNI_MAX_LEGAL_UTF32)
+                [[LIKELY_ATTR]]
+                {
+                    /*
+                     * UTF-16 surrogate values are illegal in UTF-32, and anything
+                     * over Plane 17 (> 0x10FFFF) is illegal.
+                     */
+                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
+                        if (flags == strictConversion) {
+                            source -= (extraBytesToRead + 1); /* return to the illegal value itself */
+                            result = sourceIllegal;
+                            break;
+                        }
+                        else {
+                            *target++ = UNI_REPLACEMENT_CHAR;
+                        }
                     }
                     else {
-                        *target++ = UNI_REPLACEMENT_CHAR;
+                        *target++ = ch;
                     }
                 }
-                else {
-                    *target++ = ch;
-                }
-            }
             else { /* i.e., ch > UNI_MAX_LEGAL_UTF32 */
                 result    = sourceIllegal;
                 *target++ = UNI_REPLACEMENT_CHAR;
