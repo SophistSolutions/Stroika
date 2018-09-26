@@ -9,9 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Debug/Assertions.h"
 #include <algorithm>
 #include <cstring>
+
+#include "../Debug/Assertions.h"
 
 #if qPlatform_Windows
 #include "Platform/Windows/CodePage.h"
@@ -80,6 +81,26 @@ namespace Stroika::Foundation::Characters {
         inline size_t QuickComputeConversionOutputBufferSize<UTF8, char32_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
         {
             return sourceEnd - sourceStart;
+        }
+
+        template <typename FROM, typename TO>
+        inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
+        {
+            RequireNotNull (sourceStart);
+            RequireNotNull (targetStart);
+            Require (((targetEnd - *targetStart) >= QuickComputeConversionOutputBufferSize<FROM,TO> (*sourceStart, sourceEnd)));
+            ConversionResult cr = ConvertQuietly (sourceStart, sourceEnd, targetStart, targetEnd, flags);
+            switch (cr) {
+                case ConversionResult::conversionOK:
+                    return;
+                case ConversionResult::sourceIllegal:
+                case ConversionResult::sourceExhausted:
+                    Private_::DoThrowBadSourceString_ ();
+                case ConversionResult::targetExhausted:
+                    AssertNotReached ();   // this means you didn't pass in a large enough buffer, but we checked that!
+                default:
+                    AssertNotReached ();
+            }
         }
     }
 

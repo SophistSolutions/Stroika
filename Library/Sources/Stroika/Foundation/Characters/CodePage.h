@@ -84,18 +84,18 @@ namespace Stroika::Foundation::Characters {
     };
 
     /*
-        *       <p>A codePage is a Win32 (really DOS) concept which describes a particular single or
-        *    multibyte (narrow) character set encoding. Use Win32 CodePage numbers. Maybe someday add
-        *  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
-        *      <p>Use this with @'CodePageConverter'.</p>
-        */
+     *       <p>A codePage is a Win32 (really DOS) concept which describes a particular single or
+     *    multibyte (narrow) character set encoding. Use Win32 CodePage numbers. Maybe someday add
+     *  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
+     *      <p>Use this with @'CodePageConverter'.</p>
+     */
     using CodePage = int;
 
     /*
-        * TODO:
-        *      Returns a printable (DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS)
-        *
-    */
+     * TODO:
+     *      Returns a printable (DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS)
+     *
+     */
     wstring GetCharsetString (CodePage cp);
 
     /*
@@ -223,37 +223,37 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     * BASED on
+     *  BASED on
      *      https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.h
      *      https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.c
      *      http://docs.ros.org/lunar/api/rtabmap/html/ConvertUTF_8h_source.html,
      *
-     *  but updated for C++.
+     *      but updated for C++.
      *
-     * Copyright 2001-2004 Unicode, Inc.
+     *  Copyright 2001-2004 Unicode, Inc.
      * 
-     * Disclaimer
+     *  Disclaimer
      * 
-     * This source code is provided as is by Unicode, Inc. No claims are
-     * made as to fitness for any particular purpose. No warranties of any
-     * kind are expressed or implied. The recipient agrees to determine
-     * applicability of information provided. If this file has been
-     * purchased on magnetic or optical media from Unicode, Inc., the
-     * sole remedy for any claim will be exchange of defective media
-     * within 90 days of receipt.
+     *  This source code is provided as is by Unicode, Inc. No claims are
+     *  made as to fitness for any particular purpose. No warranties of any
+     *  kind are expressed or implied. The recipient agrees to determine
+     *  applicability of information provided. If this file has been
+     *  purchased on magnetic or optical media from Unicode, Inc., the
+     *  sole remedy for any claim will be exchange of defective media
+     *  within 90 days of receipt.
      * 
-     * Limitations on Rights to Redistribute This Code
+     *  Limitations on Rights to Redistribute This Code
      * 
-     * Unicode, Inc. hereby grants the right to freely use the information
-     * supplied in this file in the creation of products supporting the
-     * Unicode Standard, and to make copies of this file in any form
-     * for internal or external distribution as long as this notice
-     * remains attached.
+     *  Unicode, Inc. hereby grants the right to freely use the information
+     *  supplied in this file in the creation of products supporting the
+     *  Unicode Standard, and to make copies of this file in any form
+     *  for internal or external distribution as long as this notice
+     *  remains attached.
      * 
      *
-     *   Author: Mark E. Davis, 1994.
-     *   Rev History: Rick McGowan, fixes & updates May 2001.
-     *                Fixes & updates, Sept 2001.
+     *      Author: Mark E. Davis, 1994.
+     *      Rev History: Rick McGowan, fixes & updates May 2001.
+     *      Fixes & updates, Sept 2001.
      */
     namespace UTFConvert {
         static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
@@ -328,9 +328,17 @@ namespace Stroika::Foundation::Characters {
          *      in UTF-8 when a sequence is malformed, it points to the start of the
          *      malformed sequence.  
          *
+         *  @See QuickComputeConversionOutputBufferSize for the size required for the targetStart/targetEnd buffer.
          */
         template <typename FROM, typename TO>
-        ConversionResult Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
+
+        /**
+         *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffiient for buffer).
+         *  Note - even with argument lenientConversion, some checking is done, so this can still throw.
+         */
+        template <typename FROM, typename TO>
+        void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
 
         /*
          *  Quickly compute the buffer size needed for a call to Convert, to avoid targetExhausted error.
@@ -348,17 +356,17 @@ namespace Stroika::Foundation::Characters {
 
         // Only these specializations supported
         template <>
-        ConversionResult Convert (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
         template <>
-        ConversionResult Convert (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
         template <>
-        ConversionResult Convert (const char16_t** sourceStart, const char16_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
         template <>
-        ConversionResult Convert (const UTF8** sourceStart, const UTF8* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
         template <>
-        ConversionResult Convert (const char32_t** sourceStart, const char32_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
         template <>
-        ConversionResult Convert (const UTF8** sourceStart, const UTF8* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
         template <>
         size_t QuickComputeConversionOutputBufferSize<char32_t, char16_t> (const char32_t* sourceStart, const char32_t* sourceEnd);
         template <>
@@ -375,6 +383,10 @@ namespace Stroika::Foundation::Characters {
         /**
          */
         bool IsLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd);
+
+        namespace Private_ {
+            void DoThrowBadSourceString_ ();
+        }
     };
 
     /*
