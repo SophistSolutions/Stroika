@@ -222,6 +222,135 @@ namespace Stroika::Foundation::Characters {
         nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
     };
 
+    /**
+     * BASED on
+     *      https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.h
+     *      https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.c
+     *      http://docs.ros.org/lunar/api/rtabmap/html/ConvertUTF_8h_source.html,
+     *
+     *  but updated for C++.
+     *
+     * Copyright 2001-2004 Unicode, Inc.
+     * 
+     * Disclaimer
+     * 
+     * This source code is provided as is by Unicode, Inc. No claims are
+     * made as to fitness for any particular purpose. No warranties of any
+     * kind are expressed or implied. The recipient agrees to determine
+     * applicability of information provided. If this file has been
+     * purchased on magnetic or optical media from Unicode, Inc., the
+     * sole remedy for any claim will be exchange of defective media
+     * within 90 days of receipt.
+     * 
+     * Limitations on Rights to Redistribute This Code
+     * 
+     * Unicode, Inc. hereby grants the right to freely use the information
+     * supplied in this file in the creation of products supporting the
+     * Unicode Standard, and to make copies of this file in any form
+     * for internal or external distribution as long as this notice
+     * remains attached.
+     * 
+     *
+     *   Author: Mark E. Davis, 1994.
+     *   Rev History: Rick McGowan, fixes & updates May 2001.
+     *                Fixes & updates, Sept 2001.
+     */
+    namespace UTFConvert {
+        static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
+        static constexpr char32_t UNI_MAX_BMP          = (char32_t)0x0000FFFF;
+        static constexpr char32_t UNI_MAX_UTF16        = (char32_t)0x0010FFFF;
+        static constexpr char32_t UNI_MAX_UTF32        = (char32_t)0x7FFFFFFF;
+        static constexpr char32_t UNI_MAX_LEGAL_UTF32  = (char32_t)0x0010FFFF;
+
+        enum ConversionResult {
+            conversionOK,    /* conversion successful */
+            sourceExhausted, /* partial character in source, but hit end */
+            targetExhausted, /* insuff. room in target for conversion */
+            sourceIllegal    /* source sequence is illegal/malformed */
+        };
+        enum ConversionFlags {
+            strictConversion = 0,
+            lenientConversion
+        };
+
+        using UTF8 = char;
+
+        /**
+         *  FROM and TO can be
+         *      UTF8
+         *      char16_t
+         *      char32_t
+         *
+         *  Except that FROM and TO cannot both the the same.
+         *
+         *  Each of these routines takes pointers to input buffers and output
+         *  buffers.  The input buffers are const.
+         * 
+         *  Each routine converts the text between *sourceStart and sourceEnd,
+         *  putting the result into the buffer between *targetStart and
+         *  targetEnd. Note: the end pointers are *after* the last item: e.g. 
+         *  *(sourceEnd - 1) is the last item.
+         *
+         *  The return result indicates whether the conversion was successful,
+         *  and if not, whether the problem was in the source or target buffers.
+         *  (Only the first encountered problem is indicated.)
+         *
+         *  After the conversion, *sourceStart and *targetStart are both
+         *  updated to point to the end of last text successfully converted in
+         *  the respective buffers.
+         *
+         *  Input parameters:
+         *      sourceStart - pointer to a pointer to the source buffer.
+         *                    The contents of this are modified on return so that
+         *                    it points at the next thing to be converted.
+         *      targetStart -  similarly, pointer to pointer to the target buffer.
+         *      sourceEnd, targetEnd - respectively pointers to the ends of the
+         *                    two buffers, for overflow checking only.
+         *
+         *  These conversion functions take a ConversionFlags argument. When this
+         *  flag is set to strict, both irregular sequences and isolated surrogates
+         *  will cause an error.  When the flag is set to lenient, both irregular
+         *  sequences and isolated surrogates are converted.
+         *
+         *  Whether the flag is strict or lenient, all illegal sequences will cause
+         *  an error return. This includes sequences such as: <F4 90 80 80>, <C0 80>,
+         *  or <A0> in UTF-8, and values above 0x10FFFF in UTF-32. Conformant code
+         *  must check for illegal sequences.
+         *
+         *  When the flag is set to lenient, characters over 0x10FFFF are converted
+         *  to the replacement character; otherwise (when the flag is set to strict)
+         *  they constitute an error.
+         *
+         *  Output parameters:
+         *      The value "sourceIllegal" is returned from some routines if the input
+         *      sequence is malformed.  When "sourceIllegal" is returned, the source
+         *      value will point to the illegal value that caused the problem. E.g.,
+         *      in UTF-8 when a sequence is malformed, it points to the start of the
+         *      malformed sequence.  
+         *
+         */
+        template <typename FROM, typename TO>
+        ConversionResult Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
+
+        // Only these specializations supported
+        template <>
+        ConversionResult Convert (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+        template <>
+        ConversionResult Convert (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+        template <>
+        ConversionResult Convert (const char16_t** sourceStart, const char16_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+        template <>
+        ConversionResult Convert (const UTF8** sourceStart, const UTF8* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+        template <>
+        ConversionResult Convert (const char32_t** sourceStart, const char32_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+        template <>
+        ConversionResult Convert (const UTF8** sourceStart, const UTF8* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+
+        /**
+         */
+        bool IsLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd);
+    };
+
     /*
     @CLASS:         CodePagesInstalled
     @DESCRIPTION:
@@ -346,7 +475,6 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename CHAR_TYPE>
     const codecvt<CHAR_TYPE, char, mbstate_t>& LookupCodeConverter (const String& charset);
-
 }
 
 /*
