@@ -31,7 +31,7 @@ namespace {
     void SimpleGettingStarted_ ()
     {
         Debug::TraceContextBumper ctx{L"SimpleGettingStarted_"};
-        
+
         // Define some types that you want serialized
         struct MyType2Serialize1_ {
             bool fEnabled{false};
@@ -81,7 +81,7 @@ namespace {
     void UseObjectVariantMapperTry2_ ()
     {
         Debug::TraceContextBumper ctx{L"UseObjectVariantMapperTry2_"};
-        
+
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
             bool                    fEnabled{false};
