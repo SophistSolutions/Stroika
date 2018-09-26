@@ -261,15 +261,21 @@ namespace Stroika::Foundation::Time {
 
     public:
         /** 
-         *  Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
-         * conversion is also unknown (but either treat Kind as localtime or UTC)
+         *  Creates a new DateTime object known to be in localtime. If this DateTime timezone is unknown, then the
+         *  the datetime will be just assumed to have been in localtime.
+         *
+         *  \ens result.GetTimezone () == Timezone::LocalTime ()
          */
         nonvirtual DateTime AsLocalTime () const;
 
     public:
         /**
-         *  Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
-         *  conversion is also unknown (but either treat Kind as localtime or UTC)
+         *  Creates a new DateTime object known to be in UTC. If this DateTime timezone is unknown, then the
+         *  the datetime will be just assumed to have been in UTC.
+         *
+         *  Either way, this will always produce a result in the timezone UTC.
+         *
+         *  \ens result.GetTimezone () == Timezone::UTC ()
          */
         nonvirtual DateTime AsUTC () const;
 
