@@ -43,6 +43,48 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     *********************************** UTFConvert *********************************
+     ********************************************************************************
+     */
+    namespace UTFConvert {
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char32_t, char16_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
+        {
+            return (sourceEnd - sourceStart) * 2;
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char16_t, char32_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
+        {
+            return sourceEnd - sourceStart;
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char16_t, UTF8> (const char16_t* sourceStart, const char16_t* sourceEnd)
+        {
+            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+            // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
+            return (sourceEnd - sourceStart) * 4;
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<UTF8, char16_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
+        {
+            return sourceEnd - sourceStart;
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char32_t, UTF8> (const char32_t* sourceStart, const char32_t* sourceEnd)
+        {
+            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+            // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
+            return (sourceEnd - sourceStart) * 6;
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<UTF8, char32_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
+        {
+            return sourceEnd - sourceStart;
+        }
+    }
+
+    /*
+     ********************************************************************************
      *********************************** UTF8Converter ******************************
      ********************************************************************************
      */
@@ -217,7 +259,6 @@ namespace Stroika::Foundation::Characters {
     {
         return NarrowStringToWide (s, kCodePage_UTF8);
     }
-
 }
 
 #endif /*_Stroika_Foundation_Characters_CodePage_inl_*/

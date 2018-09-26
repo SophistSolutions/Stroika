@@ -332,6 +332,20 @@ namespace Stroika::Foundation::Characters {
         template <typename FROM, typename TO>
         ConversionResult Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
 
+        /*
+         *  Quickly compute the buffer size needed for a call to Convert, to avoid targetExhausted error.
+         *
+         *  This will frequently (greatly) over-estimate the amount of space needed.
+         *
+         *  FROM and TO can be
+         *      UTF8
+         *      char16_t
+         *      char32_t
+         *
+         */
+        template <typename FROM, typename TO>
+        size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd);
+
         // Only these specializations supported
         template <>
         ConversionResult Convert (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
@@ -345,6 +359,18 @@ namespace Stroika::Foundation::Characters {
         ConversionResult Convert (const char32_t** sourceStart, const char32_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
         template <>
         ConversionResult Convert (const UTF8** sourceStart, const UTF8* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char32_t, char16_t> (const char32_t* sourceStart, const char32_t* sourceEnd);
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char16_t, char32_t> (const char16_t* sourceStart, const char16_t* sourceEnd);
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char16_t, UTF8> (const char16_t* sourceStart, const char16_t* sourceEnd);
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<UTF8, char16_t> (const UTF8* sourceStart, const UTF8* sourceEnd);
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char32_t, UTF8> (const char32_t* sourceStart, const char32_t* sourceEnd);
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<UTF8, char32_t> (const UTF8* sourceStart, const UTF8* sourceEnd);
 
         /**
          */
