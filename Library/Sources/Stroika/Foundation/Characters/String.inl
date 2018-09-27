@@ -181,6 +181,11 @@ namespace Stroika::Foundation::Characters {
     {
         return FromASCII (from.c_str (), from.c_str () + from.length ());
     }
+    inline String String::FromUTF8 (const char* from)
+    {
+        RequireNotNull (from);
+        return FromUTF8 (from, from + ::strlen (from));
+    }
     inline String String::FromISOLatin1 (const char* from)
     {
         return FromISOLatin1 (from, from + ::strlen (from));

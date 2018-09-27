@@ -836,17 +836,17 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *      String  t { L"ABC DEF G" };
-         *      Assert (t.Tokenize ().length () == 3);
-         *      Assert (t.Tokenize ()[1] == L"DEF");
+         *          String  t { L"ABC DEF G" };
+         *          Assert (t.Tokenize ().length () == 3);
+         *          Assert (t.Tokenize ()[1] == L"DEF");
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *      String  t { L"foo=   7" };
-         *      auto    tt = t.Tokenize (Set<Character> { '=' });
-         *      Assert (t.length () == 2);
-         *      Assert (t[1] == L"7");
+         *          String  t { L"foo=   7" };
+         *          auto    tt = t.Tokenize (Set<Character> { '=' });
+         *          Assert (t.length () == 2);
+         *          Assert (t[1] == L"7");
          *      \endcode
          *
          *  @see Find

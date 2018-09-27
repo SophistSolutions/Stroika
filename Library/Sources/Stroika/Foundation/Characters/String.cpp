@@ -242,24 +242,16 @@ String::String (const Character& c)
 {
 }
 
-String String::FromUTF8 (const char* from)
-{
-    RequireNotNull (from);
-    return FromUTF8 (from, from + ::strlen (from));
-}
-
 String String::FromUTF8 (const char* from, const char* to)
 {
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    size_t                    fromLen = to - from;
-    UTF8Converter             cvt;
-    size_t                    cvtBufSize = cvt.MapToUNICODE_QuickComputeOutBufSize (from, fromLen);
+    size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<UTFConvert::UTF8, wchar_t> (from, to);
     SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-    size_t                    outCharCnt = cvtBufSize;
-    cvt.MapToUNICODE (from, fromLen, buf, &outCharCnt);
-    return String{buf.begin (), buf.begin () + outCharCnt};
+    wchar_t*                  outStr = buf.begin ();
+    UTFConvert::Convert<UTFConvert::UTF8, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
+    return String{buf.begin (), outStr};
 }
 
 String String::FromUTF8 (const string& from)
@@ -458,9 +450,11 @@ String String::Concatenate (const String& rhs) const
     }
     _SafeReadRepAccessor                     rhsAccessor{&rhs};
     pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
-    if (rhsD.first == rhsD.second) {
-        return *this;
-    }
+    if (rhsD.first == rhsD.second)
+        [[UNLIKELY_ATTR]]
+        {
+            return *this;
+        }
     return String (
         mk_ (
             reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
@@ -473,9 +467,11 @@ String String::Concatenate (const wchar_t* appendageCStr) const
     _SafeReadRepAccessor                     thisAccessor{this};
     pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
     size_t                                   lhsLen = lhsD.second - lhsD.first;
-    if (lhsLen == 0) {
-        return String (appendageCStr);
-    }
+    if (lhsLen == 0)
+        [[UNLIKELY_ATTR]]
+        {
+            return String (appendageCStr);
+        }
     return String (
         mk_ (
             reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
