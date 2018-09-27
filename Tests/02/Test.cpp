@@ -1314,6 +1314,11 @@ namespace {
             VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
         }
         {
+            StringBuilder tmp;
+            tmp.Append (String::FromUTF8 (u8"€"));
+            Verify (tmp.str () == L"€");
+        }
+        {
             // Intentionally no operator+ etc stuff for utf8 because type of u8"" is same as "", so no way to overload
         }
     }
@@ -1351,6 +1356,26 @@ namespace {
             StringBuilder tmp;
             tmp += u"שלום";
             Verify (tmp.str () == u"שלום");
+        }
+        {
+            StringBuilder tmp;
+            tmp.Append (u"€");
+            Verify (tmp.str () == u"€");
+        }
+        {
+            // test surrogates
+            // From https://en.wikipedia.org/wiki/UTF-16
+            // http://www.fileformat.info/info/unicode/char/2008a/index.htm
+            static const u16string kTestWithSurrogates_ = u16string (u"\U0002008A");
+            VerifyTestResult (kTestWithSurrogates_.size () == 2);
+            VerifyTestResult (kTestWithSurrogates_ == String (kTestWithSurrogates_).AsUTF16 ());
+            // For now (as of v2.1d10) - Stroika stores strings as 'wchar_t' so the length of this will depend on if wchar_t is 2bytes or 4
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                VerifyTestResult (String (kTestWithSurrogates_).length () == 2); // surrogate  surrogate pairs
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                VerifyTestResult (String (kTestWithSurrogates_).length () == 1); // surrogate  surrogate pairs
+            }
         }
     }
 }
