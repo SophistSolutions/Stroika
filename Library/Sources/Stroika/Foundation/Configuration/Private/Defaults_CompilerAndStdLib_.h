@@ -616,14 +616,30 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
  */
 #ifndef qCompiler_noSanitizeAttribute_Buggy
 #if defined(__clang__) && defined(__APPLE__)
+// appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+//todo retest with gnu::no_sanitize
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7)
 #else
 #define qCompiler_noSanitizeAttribute_Buggy 1
+#endif
+#endif
+
+#ifndef qCompiler_noSanitizeAttributeForLamdas_Buggy
+#if defined(__clang__) && defined(__APPLE__)
+// appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+#elif defined(__GNUC__)
+// tested still generates warning with gcc8
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#else
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy 1
 #endif
 #endif
 
