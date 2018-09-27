@@ -630,9 +630,15 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    char* outCharsResult = outChars;
-    UTFConvert::Convert (&inChars, inChars + inCharCnt, &outCharsResult, outCharsResult + *outCharCnt, UTFConvert::lenientConversion);
-    *outCharCnt = outCharsResult - outChars;
+    // @todo fix weak implementation (slow)
+    // First convert to char16_t, and then apply that overload
+    SmallStackBuffer<char16_t> char16Buf (SmallStackBufferCommon::eUninitialized, *outCharCnt);
+    {
+        char16_t* tmpOutCharsResult = char16Buf;
+        UTFConvert::Convert (&inChars, inChars + inCharCnt, &tmpOutCharsResult, tmpOutCharsResult + char16Buf.size (), UTFConvert::lenientConversion);
+        char16Buf.resize (tmpOutCharsResult - char16Buf);
+    }
+    MapFromUNICODE (char16Buf, char16Buf.size (), outChars, outCharCnt);
 }
 
 /*
