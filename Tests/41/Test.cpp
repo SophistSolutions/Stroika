@@ -362,7 +362,7 @@ namespace {
                 DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>::k.GetName (*iFace.fType));
             }
             for (InternetAddress ipAddr : iFace.fBindings) {
-                DbgTrace (L"addr: %s", ipAddr.As<String> ().c_str ());
+                DbgTrace (L"binding-addr: %s", ipAddr.As<String> ().c_str ());
             }
             if (iFace.fStatus.has_value ()) {
                 for (Interface::Status s : *iFace.fStatus) {
