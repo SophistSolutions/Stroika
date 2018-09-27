@@ -632,7 +632,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #ifndef qCompiler_noSanitizeAttributeForLamdas_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #elif defined(__GNUC__)
