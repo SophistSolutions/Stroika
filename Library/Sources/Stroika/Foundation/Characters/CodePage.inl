@@ -128,6 +128,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
                 return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
             }
+            AssertNotReached ();
+            return sourceIllegal;
         }
         template <>
         inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
@@ -138,6 +140,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
                 return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
             }
+            AssertNotReached ();
+            return sourceIllegal;
         }
         template <>
         inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
@@ -148,6 +152,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
                 return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
             }
+            AssertNotReached ();
+            return sourceIllegal;
         }
         template <>
         inline ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
@@ -158,6 +164,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
                 return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
             }
+            AssertNotReached ();
+            return sourceIllegal;
         }
         template <>
         inline ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
@@ -165,6 +173,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
                 return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
             }
+            AssertNotReached ();
+            return sourceIllegal;
         }
         template <>
         inline ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
@@ -172,6 +182,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
                 return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
             }
+            AssertNotReached ();
+            return sourceIllegal;
         }
 
         template <typename FROM, typename TO>
