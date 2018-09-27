@@ -3211,6 +3211,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         return result;
     }
 
+    DISABLE_COMPILER_MSC_WARNING_START (4701) // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
     template <>
     ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
     {
@@ -3264,12 +3265,11 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         *sourceStart = source;
         *targetStart = target;
         if (result == sourceIllegal) {
-            DISABLE_COMPILER_MSC_WARNING_START (4701) // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
             DbgTrace (L"ConvertUTF16toUTF32 illegal seq 0x%04x,%04x\n", ch, ch2);
-            DISABLE_COMPILER_MSC_WARNING_END (4701)
         }
         return result;
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4701)
 
     template <>
     ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
