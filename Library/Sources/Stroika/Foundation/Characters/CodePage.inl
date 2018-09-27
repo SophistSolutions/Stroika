@@ -315,7 +315,6 @@ namespace Stroika::Foundation::Characters {
     {
         return (find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
     }
-
     inline void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
     {
         RequireNotNull (intoResult);
@@ -340,7 +339,6 @@ namespace Stroika::Foundation::Characters {
         NarrowStringToWide (s, codePage, &result);
         return result;
     }
-
     inline wstring ASCIIStringToWide (const string& s)
     {
 #if qDebug
@@ -359,7 +357,6 @@ namespace Stroika::Foundation::Characters {
 #endif
         return string (s.begin (), s.end ());
     }
-
     inline string WideStringToUTF8 (const wstring& ws)
     {
         return WideStringToNarrow (ws, kCodePage_UTF8);
