@@ -590,9 +590,10 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 }
             }
             {
+                auto  ic          = inChars;
                 char* outCharsPtr = useOutChars;
-                UTFConvert::Convert (&inChars, inChars + inCharCnt, &useOutChars, outChars + useOutCharCount, UTFConvert::lenientConversion);
-                useOutCharCount = outCharsPtr - outChars;
+                UTFConvert::Convert (&ic, inChars + inCharCnt, &outCharsPtr, outCharsPtr + useOutCharCount, UTFConvert::lenientConversion);
+                useOutCharCount = outCharsPtr - useOutChars;
             }
             if (GetHandleBOM ()) {
                 if (*outCharCnt >= 3) {
