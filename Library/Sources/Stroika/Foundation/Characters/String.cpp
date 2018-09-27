@@ -490,15 +490,15 @@ String String::RemoveAt (size_t from, size_t to) const
 {
     Require (from <= to);
     Require (to <= GetLength ());
-    _SafeReadRepAccessor accessor{this};
-    size_t               length = accessor._ConstGetRep ()._GetLength ();
     if (from == to) {
-        return *this; // @todo - fix to return accessor.AsString()
+        return *this;
     }
     else if (from == 0) {
         return SubString (to);
     }
-    else if (to == length) {
+    _SafeReadRepAccessor accessor{this};
+    size_t               length = accessor._ConstGetRep ()._GetLength ();
+    if (to == length) {
         return SubString (0, from);
     }
     else {
