@@ -118,7 +118,6 @@ namespace Stroika::Foundation::Characters {
             using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
             return QuickComputeConversionOutputBufferSize<ReplaceCharType, char32_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
         }
-
         template <>
         inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
         {
@@ -185,7 +184,6 @@ namespace Stroika::Foundation::Characters {
             AssertNotReached ();
             return sourceIllegal;
         }
-
         template <typename FROM, typename TO>
         inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
         {

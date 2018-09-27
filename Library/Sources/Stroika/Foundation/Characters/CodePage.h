@@ -14,25 +14,10 @@
 #include "../Memory/Common.h"
 
 /**
-@MODULE:    CodePage
-@DESCRIPTION:
-        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
-    and UNICODE encodings.</p>
+ *  \file
+ *      This module is designed to provide mappings between wide UNICODE and various other code pages
+ *      and UNICODE encodings.</p>
  *
- *
- *  TODO:
- *
- *  (o)     FIRST - we need to fix PortableWideStringToNarrow_ and CodePageConverter to have a MORE SPACE
- *          EFFICNET (COMPUTE OUT BUF SIZE). Run basic xlate algortihm without writing to OUTPUTR, and find
- *          use that WOUDL be used.
- *
- *  (o)     THEN - test performance, and see if windows version can get away with using portable version
- *          (where codes overlap)
- *
- *  (o)     Current support for char32_t is almost totally wrong. I don't understand exactly how char16_t
- *          and char32_t are interrelated, but I'm sure its not as simplistic as what is implemented here.
- *          Probably - its that bit about Character(t).IsSurrogate() - for combiing characters. But this
- *          should be good enuf to get us started...
  */
 
 namespace Stroika::Foundation::Characters {
@@ -81,17 +66,19 @@ namespace Stroika::Foundation::Characters {
 #endif
     };
 
-    /*
-     *       <p>A codePage is a Win32 (really DOS) concept which describes a particular single or
+    /**
+     *       A codePage is a Win32 (really DOS) concept which describes a particular single or
      *    multibyte (narrow) character set encoding. Use Win32 CodePage numbers. Maybe someday add
      *  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
      *      <p>Use this with @'CodePageConverter'.</p>
      */
     using CodePage = int;
 
-    /*
+    /**
      * TODO:
-     *      Returns a printable (DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS)
+     *      @todo   DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS
+     *
+     *      Returns a printable (user-friendly displayable) representation of the given codepage.
      *
      */
     wstring GetCharsetString (CodePage cp);
@@ -102,12 +89,10 @@ namespace Stroika::Foundation::Characters {
     */
     CodePage GetDefaultSDKCodePage ();
 
-    /*
-    @CLASS:         CodePageConverter
-    @DESCRIPTION:
-            <p>Helper class to wrap conversions between code pages (on Mac known as scripts)
-        and UTF-16 (WIDE UNICODE).</p>
-    */
+    /**
+     *  Helper class to wrap conversions between code pages (on Mac known as scripts)
+     *  and UTF-16 (WIDE UNICODE).</p>
+     */
     class CodePageConverter {
     public:
         class CodePageNotSupportedException;
@@ -196,29 +181,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         CodePage fCodePage;
-    };
-
-    /*
-    @CLASS:         UTF8Converter
-    @DESCRIPTION:
-            <p>Helper class to wrap conversions between between UTF8 and wide-character UNICODE.</p>
-    */
-    class [[deprecated ("in Stroika v2.1d10 - use UTFConvert instead")]] UTF8Converter
-    {
-    public:
-        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
-
-        nonvirtual size_t MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
-
-        nonvirtual void MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-
-        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
-        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
-        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
     };
 
     /**
@@ -529,6 +491,26 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename CHAR_TYPE>
     const codecvt<CHAR_TYPE, char, mbstate_t>& LookupCodeConverter (const String& charset);
+
+    /*
+     */
+    class [[deprecated ("in Stroika v2.1d10 - use UTFConvert instead")]] UTF8Converter
+    {
+    public:
+        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
+
+        nonvirtual size_t MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
+
+        nonvirtual void MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+
+        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
+        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
+        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
+    };
 
 }
 

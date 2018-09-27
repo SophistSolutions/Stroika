@@ -26,6 +26,9 @@ using namespace Stroika::Foundation::Memory;
 
 using std::byte;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 #ifndef qBuildInTableDrivenCodePageBuilderProc
 #define qBuildInTableDrivenCodePageBuilderProc 0
 #endif
@@ -3260,12 +3263,11 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         }
         *sourceStart = source;
         *targetStart = target;
-#ifdef CVTUTF_DEBUG
         if (result == sourceIllegal) {
-            fprintf (stderr, "ConvertUTF16toUTF32 illegal seq 0x%04x,%04x\n", ch, ch2);
-            fflush (stderr);
+            DISABLE_COMPILER_MSC_WARNING_START (4701)    // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
+            DbgTrace (L"ConvertUTF16toUTF32 illegal seq 0x%04x,%04x\n", ch, ch2);
+            DISABLE_COMPILER_MSC_WARNING_END (4701)
         }
-#endif
         return result;
     }
 
