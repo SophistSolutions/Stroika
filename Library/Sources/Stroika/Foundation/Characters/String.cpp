@@ -213,32 +213,29 @@ String::String (const char32_t* cString)
 }
 
 namespace {
-    wstring mkWS_ (const Traversal::Iterable<Character>& src)
+    inline String mkWS_ (const Traversal::Iterable<Character>& src)
     {
-        wstring r;
+        StringBuilder r;
         for (const auto&& i : src) {
             Containers::ReserveSpeedTweekAdd1 (r);
             r.push_back (i.As<wchar_t> ());
         }
-        return r;
+        return r.str ();
+    }
+    inline String mkWS_ (const Character& src)
+    {
+        wchar_t c = src.As<wchar_t> ();
+        return String (&c, &c + 1);
     }
 }
 
 String::String (const Iterable<Character>& src)
-    : String (mkWS_ (src)) // @todo SLOPPY INEFFICIENT IMPLEMENTATION!
+    : String (mkWS_ (src))
 {
 }
 
-namespace {
-    wstring mkWS_ (const Character& src)
-    {
-        wchar_t c = src.As<wchar_t> ();
-        return wstring (&c, &c + 1);
-    }
-}
-
 String::String (const Character& c)
-    : String (mkWS_ (c)) // @todo SLOPPY INEFFICIENT IMPLEMENTATION!
+    : String (mkWS_ (c))
 {
 }
 
@@ -253,12 +250,6 @@ String String::FromUTF8 (const char* from, const char* to)
     UTFConvert::Convert<UTFConvert::UTF8, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
     return String{buf.begin (), outStr};
 }
-
-String String::FromUTF8 (const string& from)
-{
-    return FromUTF8 (from.c_str (), from.c_str () + from.length ());
-}
-
 String String::FromSDKString (const SDKChar* from)
 {
     RequireNotNull (from);
