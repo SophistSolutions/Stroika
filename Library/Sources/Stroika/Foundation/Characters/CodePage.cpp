@@ -630,12 +630,9 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
-    SmallStackBuffer<char16_t> tmpBuf (SmallStackBufferCommon::eUninitialized, *outCharCnt);
-    for (size_t i = 0; i < inCharCnt; ++i) {
-        tmpBuf[i] = inChars[i];
-    }
-    MapFromUNICODE (tmpBuf, inCharCnt, outChars, outCharCnt);
+    char* outCharsResult = outChars;
+    UTFConvert::Convert (&inChars, inChars + inCharCnt, &outCharsResult, outCharsResult + *outCharCnt, UTFConvert::lenientConversion);
+    *outCharCnt = outCharsResult - outChars;
 }
 
 /*

@@ -22,8 +22,6 @@
  *
  *  TODO:
  *
- *  @todo      Consdier LOSING THIS FILE - and use <codecvt>
- *
  *  (o)     FIRST - we need to fix PortableWideStringToNarrow_ and CodePageConverter to have a MORE SPACE
  *          EFFICNET (COMPUTE OUT BUF SIZE). Run basic xlate algortihm without writing to OUTPUTR, and find
  *          use that WOUDL be used.
@@ -331,6 +329,7 @@ namespace Stroika::Foundation::Characters {
          *      malformed sequence.  
          *
          *  @See QuickComputeConversionOutputBufferSize for the size required for the targetStart/targetEnd buffer.
+         *  @see Convert
          */
         template <typename FROM, typename TO>
         ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
@@ -338,6 +337,17 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffiient for buffer).
          *  Note - even with argument lenientConversion, some checking is done, so this can still throw.
+         *
+         *  \par Example Usage
+         *      \code
+         *          size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<UTFConvert::UTF8, wchar_t> (from, to);
+         *          SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+         *          wchar_t*                  outStr = buf.begin ();
+         *          UTFConvert::Convert<UTFConvert::UTF8, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
+         *          return String{buf.begin (), outStr};
+         *      \endcode
+         *
+         *  @see ConvertQuietly
          */
         template <typename FROM, typename TO>
         void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags);
@@ -519,6 +529,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename CHAR_TYPE>
     const codecvt<CHAR_TYPE, char, mbstate_t>& LookupCodeConverter (const String& charset);
+
 }
 
 /*

@@ -372,6 +372,7 @@ namespace Stroika::Foundation::Characters {
     {
         return NarrowStringToWide (s, kCodePage_UTF8);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Characters_CodePage_inl_*/
