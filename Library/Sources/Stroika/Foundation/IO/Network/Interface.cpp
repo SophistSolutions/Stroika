@@ -20,6 +20,7 @@
 #include <linux/ethtool.h>
 #include <linux/sockios.h>
 #include <linux/types.h> // needed on RedHat5
+#include <linux/wireless.h>
 #endif
 #elif qPlatform_Windows
 #include <WinSock2.h>
@@ -35,6 +36,7 @@
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Mapping.h"
+#include "../../Debug/Sanitizer.h"
 #include "../../Execution/ErrNoException.h"
 #include "../../Execution/Finally.h"
 #if qPlatform_Windows
@@ -57,7 +59,7 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if defined(_MSC_VER)
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
@@ -144,12 +146,15 @@ String Interface::ToString () const
  ************************** Network::GetInterfaces ******************************
  ********************************************************************************
  */
-Traversal::Iterable<Interface> Network::GetInterfaces ()
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
+    Traversal::Iterable<Interface> Network::GetInterfaces ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Network::GetInterfaces");
 #endif
-    Collection<Interface> result;
+    // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
+    //Collection<Interface> result;
+    Mapping<String, Interface> results;
 #if qPlatform_POSIX
     auto getFlags = [](int sd, const char* name) {
         struct ifreq ifreq {
@@ -160,12 +165,21 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
         Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
         return r == 0 ? ifreq.ifr_flags : 0;
     };
+#if qPlatform_Linux
+    auto getWirelessFlag = [](int sd, const char* name) {
+        struct iwreq pwrq {
+        };
+        Characters::CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
+
+        int r = ::ioctl (sd, SIOCGIWNAME, (char*)&pwrq);
+        return r == 0;
+    };
+#endif
 
     struct ifreq  ifreqs[128]{};
     struct ifconf ifconf {
+        sizeof (ifreqs), { reinterpret_cast<char*> (ifreqs) }
     };
-    ifconf.ifc_req = ifreqs;
-    ifconf.ifc_len = sizeof (ifreqs);
 
     int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
@@ -174,27 +188,32 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
     int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
 
-    for (int i = 0; i < ifconf.ifc_len / sizeof (struct ifreq); ++i) {
+    for (const ifreq* i = std::begin (ifreqs); reinterpret_cast<const char*> (i) - reinterpret_cast<const char*> (std::begin (ifreqs)) < ifconf.ifc_len;) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", ifreqs[i].ifr_name, ifreqs[i].ifr_addr.sa_family);
+        DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", i->ifr_name, i->ifr_addr.sa_family);
 #endif
-        Interface newInterface;
-        String    interfaceName{String::FromSDKString (ifreqs[i].ifr_name)};
+        String    interfaceName{String::FromSDKString (i->ifr_name)};
+        Interface newInterface            = results.LookupValue (interfaceName);
         newInterface.fInternalInterfaceID = interfaceName;
         newInterface.fFriendlyName        = interfaceName; // not great - maybe find better name - but this will do for now...
-        int flags                         = getFlags (sd, ifreqs[i].ifr_name);
+        int flags                         = getFlags (sd, i->ifr_name);
 
         if (flags & IFF_LOOPBACK) {
             newInterface.fType = Interface::Type::eLoopback;
         }
+#if qPlatform_Linux
+        else if (getWirelessFlag (sd, i->ifr_name)) {
+            newInterface.fType = Interface::Type::eWIFI;
+        }
+#endif
         else {
             // NYI
-            newInterface.fType = Interface::Type::eWiredEthernet; // WAY - not the right way to tell!
+            newInterface.fType = Interface::Type::eWiredEthernet; // WAG - not the right way to tell!
         }
 
 #if qPlatform_Linux
         {
-            ifreq tmp = ifreqs[i];
+            ifreq tmp = *i;
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
                 newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
             }
@@ -233,13 +252,13 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
                         return nullopt;
                 }
             };
-            newInterface.fTransmitSpeedBaud    = getSpeed (sd, ifreqs[i].ifr_name);
+            newInterface.fTransmitSpeedBaud    = getSpeed (sd, i->ifr_name);
             newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
         }
 #endif
 
         {
-            Containers::Set<Interface::Status> status;
+            Containers::Set<Interface::Status> status = Memory::ValueOrDefault (newInterface.fStatus);
             if (flags & IFF_RUNNING) {
                 // not right!!! But a start...
                 status.Add (Interface::Status::eConnected);
@@ -247,8 +266,26 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
             }
             newInterface.fStatus = status;
         }
-        newInterface.fBindings.Add (InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr)); // @todo fix so works for ipv6 addresses as well!
-        result.Add (newInterface);
+        {
+            SocketAddress sa{i->ifr_addr};
+            if (sa.IsInternetAddress ()) {
+                newInterface.fBindings.Add (sa.GetInternetAddress ());
+            }
+        }
+        results.Add (newInterface.fInternalInterfaceID, newInterface);
+
+        // On MacOS (at least) I needed to use IFNAMESIZ + addr.size - as suggested
+        // in https://gist.githubusercontent.com/OrangeTide/909204/raw/ed097cf0fc73eb0c44de1b26118f041a36424e3f/showif.c
+        //
+        // https://linux.die.net/man/7/netdevice strongly suggests ("array of structures" to treat as array - fixed offset per element
+        //
+        // We'll have to see what other OSes require... --LGP 2018-09-27
+#if qPlatform_Linux
+        size_t len = sizeof (*i);
+#else
+        size_t len = IFNAMSIZ + i->ifr_addr.sa_len;
+#endif
+        i = reinterpret_cast<const ifreq*> (reinterpret_cast<const byte*> (i) + len);
     }
 #elif qPlatform_Windows
     ULONG                          flags  = GAA_FLAG_INCLUDE_PREFIX;
@@ -261,8 +298,8 @@ Again:
     DWORD dwRetVal = ::GetAdaptersAddresses (family, flags, nullptr, pAddresses, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
         for (PIP_ADAPTER_ADDRESSES currAddresses = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
-            Interface newInterface;
             String adapterName{String::FromNarrowSDKString (currAddresses->AdapterName)};
+            Interface newInterface = results.LookupValue (adapterName);
             newInterface.fInternalInterfaceID = adapterName;
             newInterface.fFriendlyName = currAddresses->FriendlyName;
             newInterface.fDescription = currAddresses->Description;
@@ -285,10 +322,10 @@ Again:
             }
             switch (currAddresses->OperStatus) {
                 case IfOperStatusUp:
-                    newInterface.fStatus = Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
+                    newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
                     break;
                 case IfOperStatusDown:
-                    newInterface.fStatus = Set<Interface::Status> ();
+                    newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus); // keep any existing status values, but dont leave unknown
                     break;
                 default:
                     // Dont know how to interpret the other status states
@@ -323,7 +360,7 @@ Again:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0
             DbgTrace (L"newInterface=%s", Characters::ToString (newInterface).c_str ());
 #endif
-            result.Add (newInterface);
+            results.Add (newInterface.fInternalInterfaceID, newInterface);
         }
     }
     else if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
@@ -340,9 +377,9 @@ Again:
     AssertNotImplemented ();
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning %s", Characters::ToString (result).c_str ());
+    DbgTrace (L"returning %s", Characters::ToString (results.MappedValues ()).c_str ());
 #endif
-    return result;
+    return results.MappedValues ();
 }
 
 /*
