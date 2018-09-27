@@ -18,10 +18,11 @@ namespace Stroika::Foundation::Debug {
 
 #if qCompiler_noSanitizeAttribute_Buggy
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS)
+#elif defined(__clang__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[clang::no_sanitize (ARGS)]]
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #endif
-
 }
 #endif
 
