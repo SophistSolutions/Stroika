@@ -1138,8 +1138,8 @@ void String::AsUTF16 (u16string* into) const
     }
     else {
         Assert (sizeof (Character) == sizeof (wchar_t));
-        const wchar_t* wcp = (const wchar_t*)cp;
-        size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (wcp, wcp + n);
+        const wchar_t*             wcp        = (const wchar_t*)cp;
+        size_t                     cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (wcp, wcp + n);
         SmallStackBuffer<char16_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
         char16_t*                  outStr = buf.begin ();
         UTFConvert::Convert (&wcp, wcp + n, &outStr, buf.end (), UTFConvert::lenientConversion);

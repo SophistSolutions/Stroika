@@ -3264,7 +3264,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         *sourceStart = source;
         *targetStart = target;
         if (result == sourceIllegal) {
-            DISABLE_COMPILER_MSC_WARNING_START (4701)    // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
+            DISABLE_COMPILER_MSC_WARNING_START (4701) // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
             DbgTrace (L"ConvertUTF16toUTF32 illegal seq 0x%04x,%04x\n", ch, ch2);
             DISABLE_COMPILER_MSC_WARNING_END (4701)
         }
