@@ -17,8 +17,6 @@
 
 #include "../../../Configuration/Common.h"
 
-#include "../../CodePage.h"
-
 /**
  * TODO:
  *

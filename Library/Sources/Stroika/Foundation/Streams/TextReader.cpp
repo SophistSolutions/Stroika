@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/CodePage.h"
 #include "../Characters/String_Constant.h"
 #include "../Containers/Common.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"

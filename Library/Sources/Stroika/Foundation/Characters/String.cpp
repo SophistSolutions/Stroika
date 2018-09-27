@@ -1122,7 +1122,6 @@ void String::AsUTF8 (string* into) const
     RequireNotNull (into);
     _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
-#if 1
     Assert (sizeof (Character) == sizeof (wchar_t));
     const wchar_t*                     wcp        = (const wchar_t*)lhsD.first;
     const wchar_t*                     wcpe       = (const wchar_t*)lhsD.second;
@@ -1131,9 +1130,6 @@ void String::AsUTF8 (string* into) const
     UTFConvert::UTF8*                  outStr = buf.begin ();
     UTFConvert::Convert (&wcp, wcpe, &outStr, buf.end (), UTFConvert::lenientConversion);
     into->assign (buf.begin (), outStr);
-#else
-    WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), kCodePage_UTF8, into);
-#endif
 }
 
 void String::AsUTF16 (u16string* into) const

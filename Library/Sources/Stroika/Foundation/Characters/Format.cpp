@@ -15,7 +15,6 @@
 #include "../Debug/Trace.h"
 #include "../Math/Common.h"
 #include "../Memory/SmallStackBuffer.h"
-#include "CodePage.h"
 
 #include "Format.h"
 
