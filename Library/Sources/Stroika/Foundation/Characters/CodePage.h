@@ -205,7 +205,8 @@ namespace Stroika::Foundation::Characters {
     @DESCRIPTION:
             <p>Helper class to wrap conversions between between UTF8 and wide-character UNICODE.</p>
     */
-    class UTF8Converter {
+    class [[deprecated ("in Stroika v2.1d10 - use UTFConvert instead")]] UTF8Converter
+    {
     public:
         nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
         nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
@@ -280,6 +281,7 @@ namespace Stroika::Foundation::Characters {
          *      UTF8
          *      char16_t
          *      char32_t
+         *      wchar_t
          *
          *  Except that FROM and TO cannot both the the same.
          *
@@ -349,7 +351,10 @@ namespace Stroika::Foundation::Characters {
          *      UTF8
          *      char16_t
          *      char32_t
+         *      wchar_t
          *
+         *  @See ConvertQuietly ()
+         *  @See Convert ()
          */
         template <typename FROM, typename TO>
         size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd);
@@ -385,7 +390,8 @@ namespace Stroika::Foundation::Characters {
         bool IsLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd);
 
         namespace Private_ {
-            void DoThrowBadSourceString_ ();
+            void DoThrowBadSourceString_ThrowSourceExhausted_ ();
+            void DoThrowBadSourceString_ThrowSourceIllegal_ ();
         }
     };
 

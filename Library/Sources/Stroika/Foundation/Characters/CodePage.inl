@@ -82,22 +82,114 @@ namespace Stroika::Foundation::Characters {
         {
             return sourceEnd - sourceStart;
         }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<UTF8, wchar_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<UTF8, ReplaceCharType> (sourceStart, sourceEnd);
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<char16_t, ReplaceCharType> (sourceStart, sourceEnd);
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char32_t, wchar_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<char32_t, ReplaceCharType> (sourceStart, sourceEnd);
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, UTF8> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<ReplaceCharType, UTF8> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char16_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
+        }
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char32_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char32_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
+        }
+
+        template <>
+        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+        }
+        template <>
+        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+        }
+        template <>
+        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+        }
+        template <>
+        inline ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
+            }
+        }
+        template <>
+        inline ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
+            }
+        }
+        template <>
+        inline ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
+            }
+        }
 
         template <typename FROM, typename TO>
         inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
         {
             RequireNotNull (sourceStart);
             RequireNotNull (targetStart);
-            Require (((targetEnd - *targetStart) >= QuickComputeConversionOutputBufferSize<FROM,TO> (*sourceStart, sourceEnd)));
+            Require ((static_cast<size_t> (targetEnd - *targetStart) >= QuickComputeConversionOutputBufferSize<FROM, TO> (*sourceStart, sourceEnd)));
             ConversionResult cr = ConvertQuietly (sourceStart, sourceEnd, targetStart, targetEnd, flags);
             switch (cr) {
                 case ConversionResult::conversionOK:
                     return;
                 case ConversionResult::sourceIllegal:
+                    Private_::DoThrowBadSourceString_ThrowSourceIllegal_ ();
                 case ConversionResult::sourceExhausted:
-                    Private_::DoThrowBadSourceString_ ();
+                    Private_::DoThrowBadSourceString_ThrowSourceExhausted_ ();
                 case ConversionResult::targetExhausted:
-                    AssertNotReached ();   // this means you didn't pass in a large enough buffer, but we checked that!
+                    AssertNotReached (); // this means you didn't pass in a large enough buffer, but we checked that!
                 default:
                     AssertNotReached ();
             }
