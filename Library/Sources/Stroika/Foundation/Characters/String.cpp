@@ -393,18 +393,11 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
-        // @todo https://stroika.atlassian.net/browse/STK-506
-        Assert (sizeof (char16_t) != sizeof (wchar_t));
-        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, to - from);
-        size_t                    len{0};
-
-        // @todo FIX - WRONG but adequate for now
-        wchar_t* outI = buf.begin ();
-        for (const char16_t* i = from; i != to;) {
-            *outI++ = *i++;
-            len++;
-        }
-        return mk_ (buf.begin (), buf.begin () + len);
+        size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (from, to);
+        SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+        wchar_t*                  outStr = buf.begin ();
+        UTFConvert::Convert<char16_t, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
+        return mk_ (buf.begin (), outStr);
     }
 }
 
@@ -417,17 +410,11 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
-        // @todo https://stroika.atlassian.net/browse/STK-506
-        Assert (sizeof (char32_t) != sizeof (wchar_t));
-        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, 2 * (to - from));
-        size_t                    len{0};
-        // @todo FIX - WRONG but adequate for now
-        wchar_t* outI = buf.begin ();
-        for (const char32_t* i = from; i != to;) {
-            *outI++ = *i++;
-            len++;
-        }
-        return mk_ (buf.begin (), buf.begin () + len);
+        size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char32_t, wchar_t> (from, to);
+        SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+        wchar_t*                  outStr = buf.begin ();
+        UTFConvert::Convert<char32_t, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
+        return mk_ (buf.begin (), outStr);
     }
 }
 
