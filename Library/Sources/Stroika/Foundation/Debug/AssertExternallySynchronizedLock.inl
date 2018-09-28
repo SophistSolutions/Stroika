@@ -18,6 +18,8 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
 #if qDebug
+    // workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") 
     DISABLE_COMPILER_MSC_WARNING_START (4297)
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept try : fSharedLockThreads_ () {
     }
