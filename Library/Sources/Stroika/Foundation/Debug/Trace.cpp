@@ -13,6 +13,8 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
+#include "../Debug/Sanitizer.h"
+#include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"
 #include "../Execution/Module.h"
 #include "../Execution/Process.h"
@@ -172,10 +174,14 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     sTraceFile = new ofstream ();
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
+    DbgTrace (L"***Starting TraceLog***");
+    DbgTrace (L"***Debug::kBuiltWithAddressSanitizer = %d", Debug::kBuiltWithAddressSanitizer);
+    DbgTrace (L"***Debug::IsRunningUnderValgrind () = %d", Debug::IsRunningUnderValgrind ());
 }
 
 Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
 {
+    DbgTrace (L"***Ending TraceLog***");
     delete sEmitTraceCritSec_;
     sEmitTraceCritSec_ = nullptr;
 #if qTraceToFile
