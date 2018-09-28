@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     [[noreturn]] inline void Throw (const T& e2Throw)
     {
+        static_assert (is_convertible_v<T*, exception*>);
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
         DbgTrace ("Throwing exception: %s from %s", Private_::Except2String_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
@@ -52,12 +53,14 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     [[noreturn]] inline void Throw (const T& e2Throw, const char* traceMsg)
     {
+        static_assert (is_convertible_v<T*, exception*>);
         DbgTrace ("%s", traceMsg);
         Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
     }
     template <typename T>
     [[noreturn]] inline void Throw (const T& e2Throw, const wchar_t* traceMsg)
     {
+        static_assert (is_convertible_v<T*, exception*>);
         DbgTrace (L"%s", traceMsg);
         Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
     }
@@ -148,6 +151,7 @@ namespace Stroika::Foundation::Execution {
     template <typename E>
     inline void ThrowIfNull (const void* p, const E& e)
     {
+        static_assert (is_convertible_v<E*, exception*>);
         if (p == nullptr)
             [[UNLIKELY_ATTR]]
             {
@@ -157,7 +161,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline void ThrowIfNull (const unique_ptr<T>& p)
     {
-        if (p.get () == nullptr)
+        if (p == nullptr)
             [[UNLIKELY_ATTR]]
             {
                 Throw (bad_alloc (), "ThrowIfNull (unique_ptr<> (nullptr)) - throwing bad_alloc");
@@ -166,7 +170,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline void ThrowIfNull (const shared_ptr<T>& p)
     {
-        if (p.get () == nullptr)
+        if (p == nullptr)
             [[UNLIKELY_ATTR]]
             {
                 Throw (bad_alloc (), "ThrowIfNull (shared_ptr<> (nullptr)) - throwing bad_alloc");

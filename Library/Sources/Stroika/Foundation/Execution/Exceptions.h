@@ -18,6 +18,18 @@
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
+ *  \note \em Design Note
+ *      (essentially) All exceptions thrown by Stroika (except where needed by quirks of underlying library
+ *      integrated with) inherit from std::exception, or Stroika::Foundation::Execution::SilentException.
+ *
+ *      This means that any code which wishes to report an exception can catch these two types, and use
+ *      the 'what()' method to report the text of the exception message.
+ *
+ *      Sadly, there is no documentation (I'm aware of) or specification of the characterset/code page reported
+ *      back by the what () on an exception. It tends to be ascii. Stroika guarantees that all exceptions it throws
+ *      will use the current SDK characters (@see SDKString). But - its best to check for inheriting from
+ *      StringException, since the SDK characterset might not allow representing some unicode characters.
+ *
  *  TODO:
  *      @todo   Review new <system_error> stuff
  *              like http://en.cppreference.com/w/cpp/error/error_condition

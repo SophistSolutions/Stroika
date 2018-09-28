@@ -14,3 +14,8 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 const SilentException SilentException::kThe{};
+
+const char* SilentException::what () const noexcept
+{
+    return "Silent Exception";
+}

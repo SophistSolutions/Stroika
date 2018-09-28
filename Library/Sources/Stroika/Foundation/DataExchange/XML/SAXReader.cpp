@@ -188,7 +188,8 @@ namespace {
 #endif
             }
             catch (...) {
-                Execution::Throw (OutOfMemoryException ()); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
+                // NB: use throw not Exception::Throw () since that requires its a subclass of exception (or SilentException)
+                throw (OutOfMemoryException ()); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
             }
         }
         virtual void deallocate (void* p) override
