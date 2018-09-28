@@ -100,10 +100,11 @@ namespace Stroika::Foundation::Debug {
          *  \note   Copy/Move constructor checks for existing locks while copying.
          *          Must be able to readlock source on copy, and have zero existing locks on src for move.
          */
-#if !qDebug
-        constexpr
+#if qDebug
+        AssertExternallySynchronizedLock () noexcept;
+#else
+        constexpr AssertExternallySynchronizedLock () noexcept = default;
 #endif
-            AssertExternallySynchronizedLock () noexcept;
         AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept;
         AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept;
 

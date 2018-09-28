@@ -17,6 +17,16 @@ using namespace Stroika::Foundation::Debug;
  ****************** Debug::AssertExternallySynchronizedLock *********************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4297)
+// workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
+    AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") try : fSharedLockThreads_ () {
+}
+catch (...) {
+    AssertNotReached ();
+}
+DISABLE_COMPILER_MSC_WARNING_END (4297)
+
 void AssertExternallySynchronizedLock::lock_ () const noexcept
 {
     try {
