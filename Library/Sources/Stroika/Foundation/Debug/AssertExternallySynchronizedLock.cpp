@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "Sanitizer.h"
+
 #include "AssertExternallySynchronizedLock.h"
 
 using namespace Stroika;
