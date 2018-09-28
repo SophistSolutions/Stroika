@@ -190,6 +190,11 @@ namespace Stroika::Foundation::Characters {
          */
         virtual const char* what () const noexcept override;
 
+    public:
+        /**
+         */
+        nonvirtual CodePage GetCodePage () const;
+
     private:
         string   fMsg_;
         CodePage fCodePage_;
@@ -523,7 +528,6 @@ namespace Stroika::Foundation::Characters {
         nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
         nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
     };
-
 }
 
 /*
