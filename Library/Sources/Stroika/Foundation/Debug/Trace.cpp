@@ -13,6 +13,7 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
+#include "../Characters/ToString.h"
 #include "../Debug/Sanitizer.h"
 #include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"
@@ -175,8 +176,8 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
     DbgTrace (L"***Starting TraceLog***");
-    DbgTrace (L"***Debug::kBuiltWithAddressSanitizer = %d", Debug::kBuiltWithAddressSanitizer);
-    DbgTrace (L"***Debug::IsRunningUnderValgrind () = %d", Debug::IsRunningUnderValgrind ());
+    DbgTrace (L"***Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
+    DbgTrace (L"***Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
 }
 
 Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
