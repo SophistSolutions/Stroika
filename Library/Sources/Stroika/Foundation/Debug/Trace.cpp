@@ -176,8 +176,9 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
     DbgTrace (L"***Starting TraceLog***");
-    DbgTrace (L"***Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
-    DbgTrace (L"***Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
+    TraceContextBumper ctx{L"debug-state"};
+    DbgTrace (L"Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
+    DbgTrace (L"Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
 }
 
 Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
