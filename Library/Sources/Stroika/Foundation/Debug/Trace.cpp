@@ -182,7 +182,6 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
 
 Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
 {
-    DbgTrace (L"***Ending TraceLog***");
     delete sEmitTraceCritSec_;
     sEmitTraceCritSec_ = nullptr;
 #if qTraceToFile
