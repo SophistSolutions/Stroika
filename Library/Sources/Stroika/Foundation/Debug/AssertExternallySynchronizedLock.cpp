@@ -45,8 +45,7 @@ void AssertExternallySynchronizedLock::unlock_ () const noexcept
 }
 
 // workaround https://stroika.atlassian.net/browse/STK-665
-Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") 
-void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
 {
     try {
         // OK to shared lock from various threads
