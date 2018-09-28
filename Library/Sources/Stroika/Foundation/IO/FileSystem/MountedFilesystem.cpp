@@ -21,6 +21,7 @@
 #include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
 #include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "../../Debug/Sanitizer.h"
 #include "../../Execution/Finally.h"
 #include "../../Execution/Synchronized.h"
 #include "../../Memory/SmallStackBuffer.h"
@@ -146,7 +147,12 @@ namespace {
     {
         // Note - /procfs files always unseekable
         static const String_Constant kUseFile2List_{L"/proc/mounts"};
-        constexpr bool               kUseWatcher_{true}; // seems safe and much faster
+        // kUseWatcher_ seems safe and much faster. But on gcc8, produces a mysterious error with address sanitizer, do disable
+        // for now
+        //  @todo fix address sanitizer issue? APPEARS not my bug --LGP 2018-09-28
+        //  RETRY AFTER gcc8
+        //
+        constexpr bool kUseWatcher_{Debug::kBuiltWithAddressSanitizer ? false : true};
         if (kUseWatcher_) {
             static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
             static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;

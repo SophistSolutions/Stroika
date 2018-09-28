@@ -36,6 +36,15 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #endif
 
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+    constexpr bool kBuiltWithAddressSanitizer = true;
+#else
+    constexpr bool kBuiltWithAddressSanitizer = false;
+#endif
+#else
+    constexpr bool kBuiltWithAddressSanitizer = false;
+#endif
 }
 #endif
 
