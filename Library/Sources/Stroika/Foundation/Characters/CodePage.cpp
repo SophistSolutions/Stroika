@@ -330,6 +330,22 @@ void Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
 
 /*
  ********************************************************************************
+ ************ CodePageConverter::CodePageNotSupportedException ******************
+ ********************************************************************************
+ */
+CodePageConverter::CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage)
+    : fMsg_ (Characters::Format (L"Code page %d not supported", codePage).AsNarrowSDKString ())
+    , fCodePage_ (codePage)
+{
+}
+
+const char* CodePageConverter::CodePageNotSupportedException::what () const noexcept
+{
+    return fMsg_.c_str ();
+}
+
+/*
+ ********************************************************************************
  ******************************** CodePageConverter *****************************
  ********************************************************************************
  */

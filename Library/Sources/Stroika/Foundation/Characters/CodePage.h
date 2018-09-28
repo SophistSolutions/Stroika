@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <codecvt>
+#include <exception>
 #include <string>
 #include <vector>
 
@@ -175,12 +176,23 @@ namespace Stroika::Foundation::Characters {
     // was NUL-terminated (and there is enough space in the buffer).
     void MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
 
-    class CodePageConverter::CodePageNotSupportedException {
+    /**
+     */
+    class CodePageConverter::CodePageNotSupportedException : public exception {
     public:
         CodePageNotSupportedException (CodePage codePage);
 
     public:
-        CodePage fCodePage;
+        /**
+         *  Provide a 'c string' variant of the exception message. Convert the UNICODE
+         *  string argument to a narrow-string (multibyte) in the SDK code page.
+         *  @see GetDefaultSDKCodePage()
+         */
+        virtual const char* what () const noexcept override;
+
+    private:
+        string   fMsg_;
+        CodePage fCodePage_;
     };
 
     /**

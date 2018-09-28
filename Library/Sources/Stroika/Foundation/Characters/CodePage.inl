@@ -292,16 +292,6 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ************ CodePageConverter::CodePageNotSupportedException ******************
-     ********************************************************************************
-     */
-    inline CodePageConverter::CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage)
-        : fCodePage (codePage)
-    {
-    }
-
-    /*
-     ********************************************************************************
      ****************************** CodePagesInstalled ******************************
      ********************************************************************************
      */
