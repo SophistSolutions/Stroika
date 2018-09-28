@@ -42,6 +42,9 @@ namespace Stroika::Foundation::Debug {
 #else
     constexpr bool kBuiltWithAddressSanitizer = false;
 #endif
+#elif defined(__SANITIZE_ADDRESS__)
+    // sadly, even gcc8 doesn't __has_feature, but defines this instead
+    constexpr bool kBuiltWithAddressSanitizer = true;
 #else
     constexpr bool kBuiltWithAddressSanitizer = false;
 #endif
