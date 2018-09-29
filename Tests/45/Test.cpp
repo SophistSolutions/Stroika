@@ -333,6 +333,9 @@ namespace {
             DownhillSimplexMinimization::Options<double> options;
             options.fNoImprovementThreshold                     = 1e-12;
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], -0.52946138144, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[1], 0.54376305163, 1e-5));
+            // Silly to use Nth here, but I used to, and it used to trigger an address sanitizer issue (probably a bug with asan). But still - leave test in -- LGP 2018-09-28
             VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
             VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
         }
