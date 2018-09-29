@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Execution {
         return *reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_);
     }
     template <typename MODULE_DATA>
-    ModuleDependency ModuleInitializer<MODULE_DATA>::GetDependency ()
+    inline ModuleDependency ModuleInitializer<MODULE_DATA>::GetDependency ()
     {
         return ModuleDependency (Start, End);
     }
