@@ -373,10 +373,9 @@ regression-test-configurations:
 		#\
 		./configure g++-7-debug-c++17 --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-7-release-c++17 --compiler-driver g++-7 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-		###--no-sanitize address due to https://stroika.atlassian.net/browse/STK-654\
-		./configure g++-8-debug-c++17 --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --no-sanitize address --trace2file enable --cppstd-version c++17;\
+		./configure g++-8-debug-c++17 --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-8-release-c++17 --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-		./configure g++-8-debug-c++2a --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --no-sanitize address --trace2file enable --cppstd-version c++2a;\
+		./configure g++-8-debug-c++2a --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
 		./configure my-g++-8.2-debug-c++2a --compiler-driver ~/gcc-8.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/gcc-8.2.0/lib64' --only-if-has-compiler --cppstd-version c++2a;\
 		#\
 		#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
