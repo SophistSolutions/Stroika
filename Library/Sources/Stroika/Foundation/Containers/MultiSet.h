@@ -282,9 +282,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *      MultiSet<T> t;
-         *      for (T i : t.Elements ()) {
-         *      }
+         *          MultiSet<T> t;
+         *          for (T i : t.Elements ()) {
+         *          }
          *      \endcode
          *
          *  Elements () makes no guarantess about whether or not modifications to the underlying MultiSet<> will

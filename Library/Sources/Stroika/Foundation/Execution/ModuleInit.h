@@ -74,25 +74,27 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief  ModuleInitializer<> is a utility class to support controlled order of initialization across modules
      *
-     *  OVERVIEW:
+     *  \par OVERVIEW:
      *
      *      This class does little but DOCUMENT a useful design pattern to avoid the nasty cross-module deadly
      *      embrace caused by unreliable static object construction order.
      *
-     *  USAGE EXAPMPLE:
-     *      namespace   ExampleModule {
-     *          namespace   Private {
-     *              struct  MyModuleData_ {
-     *                  MyModuleData_ () {}
-     *                  ~MyModuleData_ () {}
-     *                  recursive_mutex fCritSection;
-     *              };
+     *  \par Example Usage
+     *      \code
+     *          namespace   ExampleModule {
+     *              namespace   Private {
+     *                  struct  MyModuleData_ {
+     *                      MyModuleData_ () {}
+     *                      ~MyModuleData_ () {}
+     *                      recursive_mutex fCritSection;
+     *                  };
+     *              }
+     *          };
+     *          namespace   {
+     *              Execution::ModuleInitializer<ExampleModule::Private::MyModuleData_>  _MI_;   // this object constructed for the CTOR/DTOR per-module side-effects
+     *              inline recursive_mutex&    GetCritSection_ () { return Execution::ModuleInitializer<Private::MyModuleData_>::Actual ().fCritSection; }
      *          }
-     *      };
-     *      namespace   {
-     *          Execution::ModuleInitializer<ExampleModule::Private::MyModuleData_>  _MI_;   // this object constructed for the CTOR/DTOR per-module side-effects
-     *          inline recursive_mutex&    GetCritSection_ () { return Execution::ModuleInitializer<Private::MyModuleData_>::Actual ().fCritSection; }
-     *      }
+     *      \endcode
      *
      *  In the MyModuleData_::CTOR you initialize your module (in this case, fCritSection). And in the
      *  ActualModuleInit::DTOR - you uninitialize (e.g. delete fCritSection);
@@ -145,6 +147,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  In order for one module to depend on another, the other module calls this modules 'GetDependency' method, and stores
+         *  the ModuleDependency object in its ModuleInitializer. That way - this dependency gets started before, and gets terminated after
+         *  the referring dependent module.
          */
         static ModuleDependency GetDependency ();
 
