@@ -190,6 +190,15 @@ namespace Stroika::Foundation::Traversal {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
+    inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
+        : _fRep (move (rep))
+    {
+        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
+        if constexpr (!kIterableUsesStroikaSharedPtr) {
+            Require (rep == nullptr); // after move
+        }
+    }
+    template <typename T>
     inline Iterable<T>::Iterable (const Iterable<T>& from) noexcept
         : _fRep (from._fRep)
     {
@@ -214,15 +223,6 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T>::Iterable (const initializer_list<T>& from)
         : _fRep (mk_ (from)._fRep)
     {
-    }
-    template <typename T>
-    inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
-        : _fRep (move (rep))
-    {
-        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-        if constexpr (!kIterableUsesStroikaSharedPtr) {
-            Require (rep == nullptr); // after move
-        }
     }
     template <typename T>
     inline Iterable<T>& Iterable<T>::operator= (const Iterable<T>& rhs)
