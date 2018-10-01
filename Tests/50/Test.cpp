@@ -35,6 +35,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/StringException.h"
@@ -115,7 +116,7 @@ namespace {
 #if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
     double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
-    double sTimeMultiplier_ = Debug::IsRunningUnderValgrind () ? .001 : 1.0;
+    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () || Debug::kBuiltWithAddressSanitizer) ? .001 : 1.0;
 #endif
 }
 
