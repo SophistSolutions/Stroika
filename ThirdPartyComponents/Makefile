@@ -14,7 +14,7 @@ ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
@@ -52,7 +52,7 @@ endif
 check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents:"
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
@@ -85,7 +85,7 @@ endif
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else

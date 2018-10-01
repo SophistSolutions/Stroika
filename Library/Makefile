@@ -8,7 +8,7 @@ ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory CONFIGURATION=$$i all || exit $$?;\
 	done
 else
@@ -20,7 +20,7 @@ endif
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory CONFIGURATION=$$i check || exit $$?;\
 	done
 else
@@ -45,7 +45,7 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clean;\
 	done
 else
@@ -66,7 +66,7 @@ endif
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clobber;\
 	done
 else

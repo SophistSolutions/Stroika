@@ -1,5 +1,4 @@
 #!/bin/bash
-#####DEPRECATED - use GetConfigurations
 MY_PATH="`dirname \"$0\"`"
 MY_PATH=`realpath $MY_PATH`
 SORT=/usr/bin/sort

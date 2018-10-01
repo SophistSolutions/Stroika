@@ -81,13 +81,13 @@ else
 	fi
 fi
 
-NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
+NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
 echo "Building configurations ($NUM_CONFIGURATIONS):"
 echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
-for i in `ScriptsLib/GetConfigurations.sh`; do
+for i in `ScriptsLib/GetConfigurations`; do
 	echo "   $i";
 	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
 done
@@ -128,8 +128,8 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
 	ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
 	if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 		STAGE_STARTAT_INT=$(date +%s)
-		RASPBERRYPICONFIGS=`./ScriptsLib/GetConfigurations.sh | grep -oh "raspberrypi-.*\w"`
-		RASPBERRYPIVALGRINDCONFIGS=`./ScriptsLib/GetConfigurations.sh | grep -oh "raspberrypi-valgrind.*\w"`
+		RASPBERRYPICONFIGS=`./ScriptsLib/GetConfigurations | grep -oh "raspberrypi-.*\w"`
+		RASPBERRYPIVALGRINDCONFIGS=`./ScriptsLib/GetConfigurations | grep -oh "raspberrypi-valgrind.*\w"`
 		for i in $RASPBERRYPICONFIGS; do 
 			echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
@@ -269,7 +269,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 #VERY ROUGH GUESTIMATE - I think excludes 2 clang tests, and a few more?
-TOTALCONFIGS_=`./ScriptsLib/GetConfigurations.sh  | wc -w`
+TOTALCONFIGS_=`./ScriptsLib/GetConfigurations | wc -w`
 #TOTAL_WARNINGS_EXPECTED=$(($TOTALCONFIGS_ - 2))
 TOTAL_WARNINGS_EXPECTED=0
 

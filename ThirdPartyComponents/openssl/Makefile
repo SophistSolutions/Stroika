@@ -149,7 +149,7 @@ endif
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
