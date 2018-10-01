@@ -1,7 +1,5 @@
 #!/usr/bin/perl 
 
-#####DEPRECATED#### AS OF STROIKA v2.1d10 - use GetConfigurationParameter
-
 BEGIN{ @INC = ( "./", @INC ); }
 
 sub	GetThisScriptDir {
@@ -18,4 +16,11 @@ require "$thisScriptDir/ConfigurationReader.pl";
 
 my $configuratioName=$ARGV[0];
 my $envVarName=$ARGV[1];
+if ("$configuratioName" eq "" ) {
+	die "Missing configuration name argument"; 
+}
+if ("$envVarName" eq "" ) {
+	die "Missing configuration parameter name argument"; 
+}
+
 print GetConfigurationParameter($configuratioName, $envVarName);

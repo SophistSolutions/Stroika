@@ -19,31 +19,31 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ActivePerl), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_ActivePerl), use)
 	@$(MAKE) --directory ActivePerl --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), use)
 	@$(MAKE) --directory cmake --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ZLib), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_ZLib), use)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_boost), use)
 	@$(MAKE) --directory boost --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_OpenSSL), use)
 	@$(MAKE) --directory openssl --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_LibCurl), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_LibCurl), use)
 	@$(MAKE) --directory curl --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_LZMA), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_LZMA), use)
 	@$(MAKE) --directory lzma --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_Xerces), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_Xerces), use)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_sqlite), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_sqlite), use)
 	@$(MAKE) --directory sqlite --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
@@ -57,7 +57,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_boost), use)
 	@$(MAKE) --directory boost --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
@@ -90,7 +90,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+ifeq ($(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_boost), use)
 	@$(MAKE) --directory boost --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_libcurl), 1)
