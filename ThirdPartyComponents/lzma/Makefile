@@ -1,5 +1,5 @@
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+ProjectPlatformSubdir	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
 
@@ -47,7 +47,7 @@ TOOLPATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFI
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+CC=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
 LIBS=-lstdc++ -lc
 endif
 

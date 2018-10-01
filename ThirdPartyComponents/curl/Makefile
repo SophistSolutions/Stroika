@@ -1,5 +1,5 @@
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+ProjectPlatformSubdir	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
 SHELL=/bin/bash
@@ -42,14 +42,14 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl/)
 
 
-qFeatureFlag_OpenSSL	=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_OpenSSL)
+qFeatureFlag_OpenSSL	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_OpenSSL)
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-CXX=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
-AR=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) AR)
-RANLIB=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RANLIB)
+CC=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+CXX=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
+AR=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) AR)
+RANLIB=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RANLIB)
 endif
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -141,7 +141,7 @@ endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGURE_ARGS=
-ifeq ($(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CrossCompiling),true)
+ifeq ($(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CrossCompiling),true)
 CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
 endif
 endif

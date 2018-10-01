@@ -1,4 +1,4 @@
-ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+ProjectPlatformSubdir	=	$(shell ../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
 
 SHELL=/bin/bash
 

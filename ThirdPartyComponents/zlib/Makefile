@@ -1,4 +1,4 @@
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+ProjectPlatformSubdir	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
 
 .PHONY:	all
 .DEFAULT_GOAL := all
@@ -37,7 +37,7 @@ WIN_AR=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBu
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+CC=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
 endif
 
 BUILDS_ROOT=../../Builds/

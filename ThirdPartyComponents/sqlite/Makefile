@@ -1,8 +1,8 @@
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir			=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
-OptimizerFlag					=	$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
+ProjectPlatformSubdir			=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
+OptimizerFlag					=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
 endif
 
 SHELL=/bin/bash
@@ -42,10 +42,10 @@ INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIG
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-ENABLE_GLIBCXX_DEBUG=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
-AR=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) AR)
-RANLIB=$(shell perl ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RANLIB)
+CC=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+ENABLE_GLIBCXX_DEBUG=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
+AR=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) AR)
+RANLIB=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RANLIB)
 endif
 
 

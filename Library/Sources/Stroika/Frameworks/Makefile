@@ -6,7 +6,7 @@ ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
-ProjectPlatformSubdir			=	$(shell perl $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+ProjectPlatformSubdir			=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
