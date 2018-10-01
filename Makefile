@@ -389,8 +389,10 @@ regression-test-configurations:
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 		#\
 		# (@todo - see if --lto disable still needed on release asan/tsan (was needed for gcc 7.2)\
-		./configure g++-debug-sanitize_address_undefined --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-		./configure g++-debug-sanitize_thread_undefined --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined;\
+		./configure g++-debug-sanitize_leak --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
+		./configure g++-debug-sanitize_address --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
+		./configure g++-debug-sanitize_thread --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined;\
+		./configure g++-debug-sanitize_undefined --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
 		./configure g++-release-sanitize_address_undefined --apply-default-release-flags --trace2file enable --lto disable --cppstd-version c++17 --sanitize none,address,undefined;\
 		./configure g++-release-sanitize_thread_undefined --apply-default-release-flags --trace2file enable --lto disable --cppstd-version c++17 --sanitize none,thread,undefined;\
 		./configure g++-optimized --apply-default-release-flags;\
@@ -411,8 +413,9 @@ regression-test-configurations:
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
 		#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
 		#./configure raspberrypi-g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5' --append-compiler-warning-args -Wno-psabi;\
-		./configure raspberrypi-g++-8-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize address,undefined --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5' --append-compiler-warning-args -Wno-psabi;\
+		./configure raspberrypi-g++-8-release-sanitize_address --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5' --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi-g++-8-debug-sanitize_undefined --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
+		##Couldn't get tsan to link (/usr/bin/arm-linux-gnueabihf-ld: cannot find -ltsan) - so retry on next ubuntu release\
 		./configure raspberrypi-valgrind-g++-8-SSLPurify-NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-8' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 	fi
 
