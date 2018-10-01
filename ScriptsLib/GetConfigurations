@@ -1,6 +1,25 @@
 #!/bin/bash
 MY_PATH="`dirname \"$0\"`"
 MY_PATH=`realpath $MY_PATH`
+
+CONFIG_TAG_RESTRICTION=
+while (( "$#" )); do
+  case "$1" in
+    --config-tag)
+      CONFIG_TAG_RESTRICTION=$2
+      shift 2
+      ;;
+    --) # end argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
 SORT=/usr/bin/sort
 if [ ! -e $SORT ]; then
 	SORT=sort
@@ -8,5 +27,21 @@ fi
 #NB: need full path top find cuz of winDoze
 if [ -e "$MY_PATH/../ConfigurationFiles/" ] ; then
 	#/usr/bin/find "$MY_PATH/../ConfigurationFiles/" -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 -I {} basename "{}" .xml | tr '\n' ' '
-	/usr/bin/find "$MY_PATH/../ConfigurationFiles/" -type f -exec basename \{} .xml \; | $SORT | tr '\n' ' '
+	RAW_CONFIGS=`/usr/bin/find "$MY_PATH/../ConfigurationFiles/" -type f -exec basename \{} .xml \; | $SORT | tr '\n' ' '`
+fi
+if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
+	echo $RAW_CONFIGS
+else
+	echo xxxx
+	NEW_CONFIGS=""
+	for c in $RAW_CONFIGS ; do
+		echo aaaa
+		ITS_TAGS=`$MY_PATH/../ScriptsLib/GetConfigurationParameter $c ConfigTags`
+		echo ITS_TAGS=$ITS_TAGS
+
+		if [[ $ITS_TAGS = *"$CONFIG_TAG_RESTRICTION"* ]]; then
+		  NEW_CONFIGS .= $c
+		fi
+	done
+	echo $NEW_CONFIGS
 fi

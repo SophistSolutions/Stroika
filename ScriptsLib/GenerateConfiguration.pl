@@ -78,6 +78,8 @@ $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-co
 $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef ';
 $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
 
+my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
+
 my $FEATUREFLAG_ActivePerl = undef;
 my $FEATUREFLAG_PrivateOverrideOfCMake = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
@@ -125,6 +127,7 @@ sub	DoHelp_
     print("Usage:\n");
         print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
         print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
+        print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
         print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
@@ -812,6 +815,20 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_ActivePerl = $var;
         }
+        elsif ((lc ($var) eq "-config-tag") or (lc ($var) eq "--config-tag")) {
+            $i++;
+            $var = $ARGV[$i];
+			if ($var=~/[\s+.]+/)  {
+				die "No spaces allowed in config-tag" 
+			}
+			if (! defined $Config_Tag) {
+				$Config_Tag = "";
+			}
+			else {
+				$Config_Tag .= " ";
+			}
+            $Config_Tag .= $var;
+        }
         elsif ((lc ($var) eq "-private-cmake-override") or (lc ($var) eq "--private-cmake-override")) {
             $i++;
             $var = $ARGV[$i];
@@ -1412,7 +1429,12 @@ sub	WriteConfigFile_
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
-
+	if (defined $Config_Tag) {
+		print (OUT "    <ConfigTags>$Config_Tag</ConfigTags>\n");
+	}
+	else {
+		print (OUT "    <ConfigTags></ConfigTags>\n");
+	}
 	print (OUT "    <CompilerDriver-C>$COMPILER_DRIVER_C</CompilerDriver-C>\n");
 	print (OUT "    <CompilerDriver-C++>$COMPILER_DRIVER_CPlusPlus</CompilerDriver-C++>\n");
 

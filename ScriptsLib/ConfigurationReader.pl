@@ -82,6 +82,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ARCH'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<ConfigTags>");
+		if (defined $pps) {
+			$configuration {'ConfigTags'} = $pps;
+		}
 		#my $pps = ReadValue_($line, "<Platform>");
 		#if (defined $pps) {
 		#	$configuration {'Platform'} = $pps;

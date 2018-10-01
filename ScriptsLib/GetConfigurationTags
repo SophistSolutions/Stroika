@@ -1,0 +1,13 @@
+#!/bin/bash
+MY_PATH="`dirname \"$0\"`"
+MY_PATH=`realpath $MY_PATH`
+declare -A MYMAP
+for config in `$MY_PATH/../ScriptsLib/GetConfigurations` ; do
+	NEW_TAGS=`$MY_PATH/../ScriptsLib/GetConfigurationParameter $config ConfigTags`
+	#echo $NEW_TAGS
+	for t in $NEW_TAGS ; do
+		#echo $t
+		MYMAP[$t]=1
+	done
+done
+for K in "${!MYMAP[@]}"; do echo $K; done
