@@ -6,6 +6,16 @@
 
 #include "../StroikaPreComp.h"
 
+#if __has_include(<sanitizer/asan_interface.h>)
+#include <sanitizer/asan_interface.h>
+#endif
+#if __has_include(<sanitizer/lsan_interface.h>)
+#include <sanitizer/lsan_interface.h>
+#endif
+#if __has_include(<sanitizer/tsan_interface.h>)
+#include <sanitizer/tsan_interface.h>
+#endif
+
 /**
  *  \file
  *
