@@ -16,7 +16,7 @@ require "$thisScriptDir/ConfigurationReader.pl";
 
 my $configuratioName=$ARGV[0];
 my $envVarName=$ARGV[1];
-if ("$configuratioName" eq "" ) {
+if ($# -lt 1) {
 	die "Missing configuration name argument"; 
 }
 if ("$envVarName" eq "" ) {
