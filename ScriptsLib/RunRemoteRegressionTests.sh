@@ -26,7 +26,7 @@ fi
 #see RegressionTests.sh for this name, and why we require $USE_TEST_BASENAME set
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
-echo "Invoking remote regression tests"
+echo "Invoking remote RegressionTests.sh"
 CMD2Exec=''
 CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
 CMD2Exec+="export DO_ONLY_DEFAULT_CONFIGURATIONS=$DO_ONLY_DEFAULT_CONFIGURATIONS;"
