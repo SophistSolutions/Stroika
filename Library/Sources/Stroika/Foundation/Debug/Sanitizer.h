@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Debug {
 #endif
 
 #if defined(__has_feature)
-#if __has_feature(address_sanitizer)
+#if __has_feature(address_sanitizer) or defined(__SANITIZE_ADDRESS__)
     constexpr bool kBuiltWithAddressSanitizer = true;
 #else
     constexpr bool kBuiltWithAddressSanitizer = false;
