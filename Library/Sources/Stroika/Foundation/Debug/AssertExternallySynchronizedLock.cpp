@@ -17,14 +17,14 @@ using namespace Stroika::Foundation::Debug;
  ****************** Debug::AssertExternallySynchronizedLock *********************
  ********************************************************************************
  */
-//DISABLE_COMPILER_MSC_WARNING_START (4297)
-// workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
-Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
-    AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept
+AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept
 {
+    // NOTE - this will generate a throw and std::unexpected violation if there is no memory and multiset CTOR
+    // throws. There is no good answer in this case. We declare the constructors noexcept so the footprint of
+    // AssertExternallySynchronizedLock is as light as possible and the same (API/constraints) between debug and release
+    // builds. And if we run out of memory here, there isn't much we can do to continue -- LGP 2018-10-02
     fSharedLockThreads_ = multiset<thread::id>{};
 }
-//DISABLE_COMPILER_MSC_WARNING_END (4297)
 
 void AssertExternallySynchronizedLock::lock_ () const noexcept
 {
