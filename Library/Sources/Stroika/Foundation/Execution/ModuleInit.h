@@ -19,6 +19,9 @@
  *      @todo   Consider if we should add assertion usage here. Trouble is - interdependenceis may
  *              cause trouble? Maybe just document in comments requirements (like fStart != nullptr).
  *
+ *              NO NEED, because C++2a will have builtin (attribute) assertion support, which will hopefully
+ *              work better.
+ *
  *      @todo   Better Document new Module Dependency code, and verify there is as little wasted overhead
  *              as possible...
  */
