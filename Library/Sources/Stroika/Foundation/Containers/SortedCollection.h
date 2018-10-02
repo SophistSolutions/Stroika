@@ -130,6 +130,19 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual InOrderComparerType GetInOrderComparer () const;
 
+    public:
+        /**
+         * \brief Compares items with the already associated GetInOrderComparer(), and returns true if the item is found.
+         */
+        nonvirtual bool Contains (ArgByValueType<T> item) const;
+
+    public:
+        /**
+         * \brief Removes the argument item with the already associated GetInOrderComparer(), and returns true if the item is found.
+         */
+        using inherited::Remove;
+        nonvirtual bool Remove (ArgByValueType<T> item);
+
     protected:
         /**
          */
@@ -161,6 +174,7 @@ namespace Stroika::Foundation::Containers {
         using Collection<T>::_IRep::Remove;
         virtual void Remove (ArgByValueType<T> item) = 0;
     };
+
 }
 
 /*

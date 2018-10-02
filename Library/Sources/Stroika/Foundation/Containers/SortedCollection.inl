@@ -100,6 +100,17 @@ namespace Stroika::Foundation::Containers {
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
     }
+    template <typename T>
+    inline bool SortedCollection<T>::Contains (ArgByValueType<T> item) const
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
+    }
+    template <typename T>
+    inline void SortedCollection<T>::Remove (ArgByValueType<T> item)
+    {
+        _SafeReadRepAccessor<_IRep>{this}._GetRep ().Remove (item);
+    }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_SortedCollection_inl_ */
