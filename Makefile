@@ -27,21 +27,26 @@ help:
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
-	@$(ECHO) "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load project-files-qt-creator-save)"
+	@$(ECHO) "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load"
+	@$(ECHO) "                                      project-files-qt-creator-save)"
 	@$(ECHO) "    tests:"
 	@$(ECHO) "    format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards"
 	@$(ECHO) "    samples:"
 	@$(ECHO) "    documentation:"
 	@$(ECHO) "    third-party-components:"
 	@$(ECHO) "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
-	@$(ECHO) "                                      [VALGRIND=memcheck or helgrind, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@$(ECHO) "                                      [VALGRIND=memcheck or helgrind, etc] to run with valgrind"
+	@$(ECHO) "                                      (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                      OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\""
 	@$(ECHO) "                                      OR VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\""
 	@$(ECHO) "                                      EG: VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\" make VALGRIND=helgrind run-tests"
-	@$(ECHO) "    apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations folder (not needed, automatic)"
+	@$(ECHO) "    apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations"
+	@$(ECHO) "                                      folder (not needed, automatic)"
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; [DEFAULT_CONFIGURATION_ARGS]')"
 	@$(ECHO) "                                      e.g. DEFAULT_CONFIGURATION_ARGS=--help OR"
 	@$(ECHO) "                                      DEFAULT_CONFIGURATION_ARGS='--openssl-extraargs purify --block-allocation disable'"
+	@$(ECHO) "    list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURAITON= make lines)"
+	@$(ECHO) "    list-configuration-tags:     -    prints a list of all configurtion tags (configuration tags impute groups of configurations)"
 	@$(ECHO) "    check-prerequisite-tools:    -    Check the tools needed to build Stroika are installed."
 	@$(ECHO) "Special Variables:               -    Extra params you can pass to the make line that may help..."
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
@@ -419,7 +424,11 @@ regression-test-configurations:
 		./configure raspberrypi-valgrind-g++-8-SSLPurify-NoBlockAlloc --config-tag Unix --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-8' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 	fi
 
+list-configurations:
+	@ScriptsLib/GetConfigurations
 
+list-configuration-tags:
+	@ScriptsLib/GetConfigurationTags
 
 install-realpath:
 	g++ --std=c++17 -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
