@@ -20,7 +20,11 @@ using namespace Stroika::Foundation::Debug;
 DISABLE_COMPILER_MSC_WARNING_START (4297)
 // workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
 Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
-    AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept try : fSharedLockThreads_ () {
+    AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept
+#if __GNUC__ == 8
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
+#endif
+        try : fSharedLockThreads_ () {
 }
 catch (...) {
     AssertNotReached ();
