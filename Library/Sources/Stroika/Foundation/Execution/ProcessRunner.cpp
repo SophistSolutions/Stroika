@@ -488,7 +488,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
         // Prefill stream
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
         if (not cmdStdInValue.empty ()) {
-            // for now while we write BOM, dont write empty string as just a BOM!
+            // for now while we write BOM, don't write empty string as just a BOM!
             Streams::TextWriter::New (useStdIn).Write (cmdStdInValue.c_str ());
         }
         Assert (useStdIn.GetReadOffset () == 0);
@@ -655,7 +655,7 @@ namespace {
             if (childPID == 0) {
                 try {
                     /*
-                     *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
+                     *  In child process. Don't DBGTRACE here, or do anything that could raise an exception. In the child process
                      *  this would be bad...
                      */
                     if (currentDir != nullptr) {
@@ -803,7 +803,7 @@ namespace {
 
             if (in != nullptr) {
                 byte stdinBuf[10 * 1024];
-                // read to 'in' til it reaches EOF (returns 0). But dont fully block, cuz we want to at least trickle in the stdout/stderr data
+                // read to 'in' til it reaches EOF (returns 0). But don't fully block, cuz we want to at least trickle in the stdout/stderr data
                 // even if no input is ready to send to child.
                 while (true) {
                     if (optional<size_t> oNBytes = in.ReadNonBlocking (begin (stdinBuf), end (stdinBuf))) {
@@ -815,7 +815,7 @@ namespace {
                         }
                         else {
                             for (const byte* i = p; i != e;) {
-                                // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
+                                // read stuff from stdout, stderr while pushing to stdin, so that we don't get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out, false);
                                 readSoNotBlocking (useSTDERR, err, true);
                                 int bytesWritten = ThrowErrNoIfNegative (
@@ -1061,7 +1061,7 @@ namespace {
                                     // Do timeout handling at a higher level
                                     if (Time::GetTickCount () > timeoutAt) {
                                         DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
-                                        // then we've timed out - kill the process and DONT return the partial result!
+                                        // then we've timed out - kill the process and DON'T return the partial result!
                                         (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
                                         Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
                                     }
@@ -1219,7 +1219,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
 
     // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
 
-    //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
+    //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but don't bother for
     // now...
     //IO::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
 

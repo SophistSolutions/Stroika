@@ -302,7 +302,7 @@ bool InternetAddress::IsMulticastAddress () const
 
 bool InternetAddress::Equals (const InternetAddress& rhs) const
 {
-    // @todo could optimize slightly since we dont care about order of element comparison
+    // @todo could optimize slightly since we don't care about order of element comparison
     return Compare (rhs) == 0;
 }
 

@@ -38,7 +38,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  A filesystem can span multiple disks (as with RAID), or multiple filesystems cover a single disk (as with partitioning).
      *
-     *  In UNIX, a filesystem has only a single point point, where as in windows (???), it CAN have multiple (we dont
+     *  In UNIX, a filesystem has only a single point point, where as in windows (???), it CAN have multiple (we don't
      *  currently model that, but we could make mount point be a set).
      */
     struct MountedFilesystemType {

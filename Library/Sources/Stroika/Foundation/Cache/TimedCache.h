@@ -29,7 +29,7 @@
  *              clear. Use a time value (max age), and time last checked or something like that).
  *
  *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
- *              Basically - KEY=RESULT? And then the arg to add/lookup dont take key? Maybe key is void?
+ *              Basically - KEY=RESULT? And then the arg to add/lookup don't take key? Maybe key is void?
  *
  *              That maybe best. Template specialization where KEY=void?
  *
@@ -41,9 +41,9 @@
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
  *
  *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
- *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we dont ahve problem with
+ *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we don't ahve problem with
  *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,
- *              we dont force having operator< for BTREE map).
+ *              we don't force having operator< for BTREE map).
  *
  *      @todo   add bool option to TRAITS for 'accessDoesBookkeeping' - if false, then this ASSUMES/REQUIRES
  *              caller respponsability to arragen for periodic call of bookkeeping task.
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Cache {
          *          VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *      \endcode
          *
-         *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
+         *  However, the overload returing an optional is occasionally useful, if you don't want to fill the cache
          *  but just see if a value is present.
          *
          *  The overload with cacheFiller, will update the 'time stored' for the argument key if a new value is fetched.

@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we dont have a full wrapper on the sqlite API.
+         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
          */
         nonvirtual sqlite3* Peek ();
 

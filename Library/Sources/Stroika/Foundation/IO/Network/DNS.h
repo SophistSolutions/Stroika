@@ -68,7 +68,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  Lookup the dns name associated with the given ip address. This uses internet
-         *  DNS PTR records, but dont through except in extreme (low memory) circumstances. Just return missing.
+         *  DNS PTR records, but don't through except in extreme (low memory) circumstances. Just return missing.
          */
         nonvirtual optional<String> QuietReverseLookup (const InternetAddress& address) const;
 

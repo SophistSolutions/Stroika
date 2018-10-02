@@ -20,7 +20,7 @@
  *
  *      @todo   interesting if we want to have an AsIterable<T>() method - so you can iterate
  *              over something in the filter? But probably NOT since its not clear what you could
- *              return (due to nature of bloom filter you dont store the stuff, but the hashes)
+ *              return (due to nature of bloom filter you don't store the stuff, but the hashes)
  *
  */
 

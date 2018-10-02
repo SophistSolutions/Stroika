@@ -169,7 +169,7 @@ namespace {
                 out << L"123";
                 VerifyTestResult (out.As<String> () == L"abc123");
                 out.SeekWrite (2);
-                out.SeekRead (3); // safe but irrelevant, as we dont read
+                out.SeekRead (3); // safe but irrelevant, as we don't read
                 out << L"C";
                 VerifyTestResult (out.As<String> () == L"abC123");
             }

@@ -20,7 +20,7 @@
  *
  *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
  *
- *      @todo   Add() overload where caller provides the time data was captured (dont assume now)
+ *      @todo   Add() overload where caller provides the time data was captured (don't assume now)
  *
  *      @todo   Consider defect - easy to misinterpret 'TimeStampType staleIfOlderThan' arg to Lookup()
  *              as offset (see Ago() API), instead of timestamp to compare with timestamp on data.
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Cache {
          *  Usually one will use this as (cache fillter overload):
          *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *
-         *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
+         *  However, the overload returing an optional is occasionally useful, if you don't want to fill the cache
          *  but just see if a value is present.
          *
          *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.

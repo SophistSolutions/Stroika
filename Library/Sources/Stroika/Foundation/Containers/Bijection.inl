@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Containers {
     {
         // see https://stroika.atlassian.net/browse/STK-645
         /*
-         *  Note - unlike some other containers - we dont need to check for this != &s because if we
+         *  Note - unlike some other containers - we don't need to check for this != &s because if we
          *  attempt to add items that already exist, it would do nothing to our iteration
          *  and therefore not lead to an infinite loop.
          */

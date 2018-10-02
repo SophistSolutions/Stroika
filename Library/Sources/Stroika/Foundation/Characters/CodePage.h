@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Characters {
         kCodePage_UTF7 = 65000,
         kCodePage_UTF8 = 65001
 
-/// NOT CURRENTLY USED - SO DONT DEFINE CUZ I DONT UNDERSTAND! kCodePage_OEM        =   1,                  // What does this mean??? PC ONLY???
+/// NOT CURRENTLY USED - SO DON'T DEFINE CUZ I DON'T UNDERSTAND! kCodePage_OEM        =   1,                  // What does this mean??? PC ONLY???
 #if 0
                                                 // Only supported on Win2K
                                                 kCodePage_SYMBOL    =   42,

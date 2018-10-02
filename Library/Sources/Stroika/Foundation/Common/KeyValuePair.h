@@ -17,7 +17,7 @@
  *
  *      @todo   Consider adding Compare () method (enableif exists compare fucntions - operator<).
  *              And then implment operaotr<, etc using Comapre(). Leave independent Comapare and Equals
- *              so equals can be used forhtis whne types dont have operator <
+ *              so equals can be used forhtis whne types don't have operator <
  */
 
 namespace Stroika::Foundation::Common {

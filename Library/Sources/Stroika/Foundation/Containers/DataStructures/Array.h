@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /*
          * Memory savings/optimization methods.  Use this to tune useage
-         * of arrays so that they dont waste time in Realloc's.
+         * of arrays so that they don't waste time in Realloc's.
          */
         nonvirtual size_t GetCapacity () const;
         nonvirtual void   SetCapacity (size_t slotsAlloced);

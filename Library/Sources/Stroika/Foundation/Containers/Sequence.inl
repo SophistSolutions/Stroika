@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers {
         {
             // now remaining problem with this strategy is that if we have
             // String a = sequence[i] = the temporary may get MOVE()d to 'a', and so *this is now invalid, and cannot be used in a set.
-            // We dont need to set in that case, but we have no way to reliably tell that we got moved.
+            // We don't need to set in that case, but we have no way to reliably tell that we got moved.
 
             // needed cuz modifications CAN come from from something like Sequence<String> x; x[1].clear ();
             if (fV != nullptr) {
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Containers {
     void Sequence<T>::AppendAll (const CONTAINER_OF_ADDABLE& s)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp = {this};
-        _IRep*                           ww  = nullptr; // lazy _GetWriteableRep... in case we dont need
+        _IRep*                           ww  = nullptr; // lazy _GetWriteableRep... in case we don't need
 #if 0
             // faster but doesn't work if container doesn't have 'Apply' method - like vector
             s.Apply ([&ww] (const T & item) {

@@ -48,7 +48,7 @@ namespace Stroika::Foundation::DataExchange {
      *  between disk and module-specific C++ objects.
      *
      *  This is SOMEWHAT flexible and customizable, but not so much. Its mostly intended to be a one-size-fits all
-     *  utility that will often be useful, and will save some typing. If it does fit your needs, dont use it, and
+     *  utility that will often be useful, and will save some typing. If it does fit your needs, don't use it, and
      *  use ObjectVariantMapper and the reader abstractions directly.
      *
      *  \par Example Usage

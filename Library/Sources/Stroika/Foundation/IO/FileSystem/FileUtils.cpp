@@ -321,7 +321,7 @@ void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
 #if qPlatform_Windows
     // see if can be/should be rewritten to use Win32 API of same name!!!
     //
-    // If I DONT do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
+    // If I DON'T do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
     IO::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
     CreateDirectoryForFile (destPath);
     ThrowIfFalseGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));

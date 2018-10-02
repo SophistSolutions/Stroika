@@ -1285,7 +1285,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 (void)pDC->SetViewportExt (pDC->GetDeviceCaps (LOGPIXELSX), pDC->GetDeviceCaps (LOGPIXELSY));
                 // I REMOVED calls to SetWindowRect/TabletChangedMetrics for WYSYWIG (SPR#0869),
                 // This created a new problem - SPR#1079 - which is now fixed (or largely worked around here).
-                // Probably there is still a real latent problem inside TabletChangedMetrics - but I dont
+                // Probably there is still a real latent problem inside TabletChangedMetrics - but I don't
                 // need to debug that now, and this whole thing will go away if I rewrite the printing code
                 // after 3.0 - as is anticipated.
                 // I changed the args to CalculateWindowRect() to accomodate this bugfix.

@@ -215,7 +215,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
 #elif qPlatform_POSIX
     {
-        // @todo - I dont think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
+        // @todo - I don't think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
         bool                  succeeded{false};
         const String_Constant kProcUptimeFileName_{L"/proc/uptime"};
         if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
@@ -404,7 +404,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                     Memory::CopyToIf (currentModelName, &useModelName); // currentModelName takes precedence but I doubt both present
                     result.fCores.Append (CPU::CoreDetails{Memory::ValueOrDefault (currentSocketID), useModelName});
                 }
-                // intentionally dont clear foundProcessor cuz occurs once it appears
+                // intentionally don't clear foundProcessor cuz occurs once it appears
                 currentProcessorID = nullopt;
                 currentModelName   = nullopt;
                 currentSocketID    = nullopt;
@@ -420,7 +420,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     /*
      *  Based on https://msdn.microsoft.com/en-us/library/ms683194?f=255&MSPPError=-2147217396
      *
-     *  I deleted code to capture NUMA nodes, and processor caches, and dont currently use number of physical cores, but could
+     *  I deleted code to capture NUMA nodes, and processor caches, and don't currently use number of physical cores, but could
      *  get that from original code.
      */
     DWORD logicalProcessorCount = 0;

@@ -66,7 +66,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
-         *  Call this anytime (for example if you dont want to bother with callbacks or if
+         *  Call this anytime (for example if you don't want to bother with callbacks or if
          *  some other process needs to query the latest values from the instrument measurers.
          */
         nonvirtual MeasurementSet GetMostRecentMeasurements () const;

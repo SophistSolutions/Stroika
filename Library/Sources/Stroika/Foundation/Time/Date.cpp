@@ -279,7 +279,7 @@ String Date::Format (PrintFormat pf) const
              *      01:03:05 to 1:03:05
              *
              *  and map
-             *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
+             *      12/05/00 to 12/05, but DON'T map 12/15/2000 to 12/15/2000
              */
             static const String_Constant kZero_ = String_Constant (L"0");
             optional<size_t>             i      = 0;
@@ -308,7 +308,7 @@ String Date::Format (PrintFormat pf) const
         }
         case PrintFormat::eISO8601:
         case PrintFormat::eXML: {
-            wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I dont think is allowed)
+            wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
             MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
             DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
             Year        y = Year::eEmptyYear;
@@ -328,7 +328,7 @@ String Date::Format (PrintFormat pf) const
              *
              *  @see    explicit Date (const String& rep, Javascript);
              */
-            wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I dont think is allowed)
+            wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
             MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
             DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
             Year        y = Year::eEmptyYear;
@@ -432,7 +432,7 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
 {
     /*
      * empty () calls to AddDays were interpretted as DateTime::GetToday () until Stroika v2.1d6;
-     *  surprising semantics - say what you mean - dont use empty for this
+     *  surprising semantics - say what you mean - don't use empty for this
      *  And it violates documented princple that 'empty' means like negative infinity, a little less than kMin.
      *      WAS:
      *          Date result = empty () ? DateTime::GetToday () : *this;

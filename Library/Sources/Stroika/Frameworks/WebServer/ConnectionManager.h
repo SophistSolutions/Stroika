@@ -256,7 +256,7 @@ namespace Stroika::Frameworks::WebServer {
         //
         // But for now - KISS
         //
-        // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
+        // Note - for now - we don't even handle servicing connections in the threadpool!!! - just one thread
         Execution::ThreadPool fActiveConnectionThreads_;
 
         // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch

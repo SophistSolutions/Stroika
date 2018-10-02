@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Containers {
          *  Supported types include:
          *      o   vector<T>
          *      o   list<T>
-         *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but dont count on that yet...
+         *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but don't count on that yet...
          */
         template <typename CONTAINER_OF_ADDABLE>
         nonvirtual CONTAINER_OF_ADDABLE As () const;

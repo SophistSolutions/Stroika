@@ -893,7 +893,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         size_t                  fTCharsInSmallBuffer;
         mutable bool            fParaEndedFlag;
 
-        // RETHINK - MAYBE DONT NEED???
+        // RETHINK - MAYBE DON'T NEED???
         mutable bool fParaEndBeforeNewContext; // SPR#0968 - if we get BOTH delayed paraend and delayed setcontext call, AND
         // finally have to flush - then we need to preserve the ordering with a flag
     private:
@@ -934,8 +934,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ~GroupContext ();
 
     private:
-        GroupContext (const GroupContext&);   // DONT COPY not ever implemented, so you should get link error if you call them
-        void operator= (const GroupContext&); // ""
+        GroupContext (const GroupContext&) = delete;
+        GroupContext& operator= (const GroupContext&) = delete;
 
     private:
         ReaderContext& fReaderContext;

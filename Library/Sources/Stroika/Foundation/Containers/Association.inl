@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Containers {
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
     {
         /*
-         *  Note - unlike other containers - we dont need to check for this != &s because if we
+         *  Note - unlike other containers - we don't need to check for this != &s because if we
          *  attempt to add items that already exist, it would do nothing to our iteration
          *  and therefore not lead to an infinite loop.
          */
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers {
         }
         *this = result;
 #else
-        // cannot easily use STL::less because our Association class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But dont want cross-dependencies if not needed
+        // cannot easily use STL::less because our Association class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But don't want cross-dependencies if not needed
         set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
         for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
             if (tmp.find (i->fKey) == tmp.end ()) {
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Containers {
             // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
             return true;
         }
-        // Check length, so we dont need to check both iterators for end/done
+        // Check length, so we don't need to check both iterators for end/done
         if (lhs._ConstGetRep ().GetLength () != rhsR._ConstGetRep ().GetLength ()) {
             return false;
         }

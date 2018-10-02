@@ -38,7 +38,7 @@
 /*
  *  @eee StroikaConfig.cpp
  *
- * We want to issue a warning about the compiler/build system compatability flags, but we dont want to issue the warning for every file
+ * We want to issue a warning about the compiler/build system compatability flags, but we don't want to issue the warning for every file
  * compiled.
  *
  * That way -for the COMMON case of using Stroika with a NEWER compiler than has been tested, you get ONE message, not one per file in stroika. This isnt perfect, because
@@ -1103,7 +1103,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
 
 #if defined(__clang__) && !defined(__APPLE__)
-/// CANNOT TEST YET - cuz dont have sanitzer stuff working with my private clang-7 build. For now assume broken so I have less trouble
+/// CANNOT TEST YET - cuz don't have sanitzer stuff working with my private clang-7 build. For now assume broken so I have less trouble
 // getting the clang-7 sanitzer stuff owrking (and when the rest is working, retry this maybe)
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 7)
 #else
@@ -1115,7 +1115,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 /*
  *  qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
  *
- *   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont
+ *   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just don't
  *   use this til debugged.
  */
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
@@ -1287,7 +1287,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 // Stroika v2.1 requires C++17, but due to this bug, to enable that with clang, you must say c++14, and then a special warning define
-// so you dont get warnings for using C++17 features. Not perfect, but will have to do
+// so you don't get warnings for using C++17 features. Not perfect, but will have to do
 #if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
 #pragma clang diagnostic ignored "-Wc++17-extensions"
 #endif

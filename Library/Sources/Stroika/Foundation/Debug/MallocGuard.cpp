@@ -111,7 +111,7 @@ sDoInit_x_;
 
     void OhShit_ (const char* why)
     {
-        static bool sDone_{false}; // doing terminate MIGHT allocate more memory ... just go with the flow if that happens - and dont re-barf (e.g. allow backtrace if possible)
+        static bool sDone_{false}; // doing terminate MIGHT allocate more memory ... just go with the flow if that happens - and don't re-barf (e.g. allow backtrace if possible)
         if (not sDone_) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
             sDone_             = true;

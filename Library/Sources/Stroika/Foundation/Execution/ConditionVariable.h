@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Execution {
      *              >   Uinsg EINTR (POSIX) and alertable states on windows - this is what we do most other places
      *                  in Stroika for thread cancelability.
      *
-     *                  Sadly, the POSIX (gcc/clang) of condition_variable dont appear to support EINTR, the windows
+     *                  Sadly, the POSIX (gcc/clang) of condition_variable don't appear to support EINTR, the windows
      *                  implementation doesn't support alertable states, and (FIND REFERENCE***) I THINK I saw documented
      *                  someplace the standard metnions that this cannot be done (no idea why)
      *
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Execution {
      *
      *              If its set before, condition variable sees that on entry (in its pred check).
      *
-     *              If its after, then on the mutex unlock (I DONT KNOW HOW THIS HAPPENS YET) - the Condition
+     *              If its after, then on the mutex unlock (I DON'T KNOW HOW THIS HAPPENS YET) - the Condition
      *              var must somehow get 'awkakened' - probably by a TLS list (queue) of waiters to get notififed
      *              and that gets hooked in the mutex code???? GUESSING.
      *
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Execution {
      *              lock/unlock.
      *
      *              This MAYBE related to why "std::condition_variable works only with std::unique_lock<std::mutex>".
-     *              BUT - then i dont understand how " std::condition_variable_any provides a condition variable that works with any BasicLockable"
+     *              BUT - then i don't understand how " std::condition_variable_any provides a condition variable that works with any BasicLockable"
      */
     template <typename MUTEX = mutex, typename CONDITION_VARIABLE = conditional_t<is_same_v<mutex, MUTEX>, condition_variable, condition_variable_any>>
     struct ConditionVariable {
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesn't advertise support for
          *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
-         *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
+         *  for aborts. This 'feature' allows us to periodically check. You don't want to check too often, or you
          *  effecitvely busy wait, and this checking is ONLY needed for the special, rare case of thread abort.
          */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy

@@ -3,7 +3,7 @@ TODO (Foundation::Containers)
 
 	(o)		Performance tweak: where its costly to allocate a mutex (in each iterable<> wrapper object)
 			allocate it as a free pool of objects (a bit like the block-allocated code but they remain
-			constructed and I dont make an array of them).
+			constructed and I don't make an array of them).
 
 	(o)		In PatchingDataStructures - we do more or less the same thing on top of each basic
 			cotnainer. Especially code to track iterators.
@@ -124,7 +124,7 @@ Notes from obsolete Collection.h
             *      Note that Collections and Iterators are INTIMATELY related. The definition of most of the Collection methods is in terms of what would happen
             *  when you iterate.
             *
-            *      CONCEPT (I HAVENT READ ABOUT THIS - SO I DONT KNOW THE RIGHT SYNTAX - IM FAKING IT)
+            *      CONCEPT (I HAVENT READ ABOUT THIS - SO I DON'T KNOW THE RIGHT SYNTAX - IM FAKING IT)
             *          Concept<T>  =   TWithCompareEquals<T>, or pass default TTRAITS param with operator==
             */
 

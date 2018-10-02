@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Memory {
      *
      *   Using ManuallyBlockAllocated, only the particular places ManuallyBlockAllocated<T>::New ()/Delete are used will participate in block allocations, and other uses
      *   of T wont be block allocated. Note that means you MUST BE VERY CAREFUL with this and assure all objects allocated this way are deleted this way, and vice versa, and 
-     *   dont mix with regular free-store.
+     *   don't mix with regular free-store.
      */
     template <typename T>
     class ManuallyBlockAllocated {

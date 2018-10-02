@@ -699,7 +699,7 @@ optional<size_t> String::RFind (const String& subString) const
     const String threadSafeCopy{*this};
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     /*
-     * Do quickie implementation, and dont worry about efficiency...
+     * Do quickie implementation, and don't worry about efficiency...
      */
     size_t subStrLen = subString.GetLength ();
     if (subStrLen == 0) {

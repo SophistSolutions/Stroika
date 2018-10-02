@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Containers {
     {
         /*
          *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
-         *  if someone calls AddIf() - they dont know/care if this call or another at the same time is doing the
+         *  if someone calls AddIf() - they don't know/care if this call or another at the same time is doing the
          *  addition. Any 'race' would be in the logical of the calling code.
          */
         if (Contains (item)) {
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
     inline void Set<T>::AddAll (const CONTAINER_OF_ADDABLE& s)
     {
-        // Note - unlike Collection<T, TRAITS> - we dont need to check for this != &s because if we
+        // Note - unlike Collection<T, TRAITS> - we don't need to check for this != &s because if we
         // attempt to add items that already exist, it would do nothing, and not lead to
         // an infinite loop
         AddAll (std::begin (s), std::end (s));
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Containers {
     {
         /*
          *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
-         *  if someone calls RemoveIf() - they dont know/care if this call or another at the same time is doing the
+         *  if someone calls RemoveIf() - they don't know/care if this call or another at the same time is doing the
          *  addition. Any 'race' would be in the logical of the calling code.
          */
         if (Contains (item)) {

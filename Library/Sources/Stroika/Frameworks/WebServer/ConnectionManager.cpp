@@ -165,7 +165,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ()));
 #endif
     s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
-    s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
+    s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
     fInactiveOpenConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
     fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too

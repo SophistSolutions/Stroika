@@ -25,7 +25,7 @@
  *
  *      @todo   Consider adding 'max-size' feature to Q. With this set, attempt to add item past
  *              max size would throw. This can be handy with stuff like blocking q? and probably
- *              other cases as well (when you dont want q to grow indefinitely).
+ *              other cases as well (when you don't want q to grow indefinitely).
  *
  *      @todo   Select carefully thoguht through principle descriptive documemtatnion (probably: HEAD/TAIL)
  *              and use that docuemntation PRINCIPLALLY THORUHGOUT THE API (and class docs).

@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Streams {
      *
      *          Each of these approaches has some advantages and disadvantages. Just using Seek() is
      *          the simplest approach. IF all your streams support seeking, there is no reason for another
-     *          mechanism. But we dont want to alwys require seeking.
+     *          mechanism. But we don't want to alwys require seeking.
      *
      *          PutBack () is like Seek, but then the question is - do we support just a PutBack of
      *          one character? So only lookahead of one character? That deals with many cases, but not all.
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Streams {
          *  will be no more reading done.
          *
          *  \note Most calls on an InputStream after it is closed are illegal, and result in Require () errors. It is up
-         *        to the caller/user of the shared output streams to assure they dont use them after being closed. Note - if that
+         *        to the caller/user of the shared output streams to assure they don't use them after being closed. Note - if that
          *        sounds hard its not: it naturally falls out of normal usage.
          *
          *        The rationale is just that I can think of no useful case where a caller might want to allow writing after close, and
@@ -546,7 +546,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  May (but typically not) called before destruction. If called, \req no other write or seek etc operations.
          *
-         *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Read, so subclassers dont need to
+         *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Read, so subclassers don't need to
          *          do that in implementing reps, but probably good docs/style todo in both places.'
          */
         virtual void CloseRead () = 0;

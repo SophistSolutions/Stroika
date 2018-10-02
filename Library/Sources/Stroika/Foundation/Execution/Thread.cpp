@@ -632,7 +632,7 @@ void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
         /*
          *  Only upgrade
          *
-         *  If was none, upgrade to interrupted. If was interrupted, already done. If was aborted, dont actually want to change.
+         *  If was none, upgrade to interrupted. If was interrupted, already done. If was aborted, don't actually want to change.
          */
         InterruptFlagState_ v = InterruptFlagState_::eNone;
         if (not fTLSInterruptFlag_->compare_exchange_strong (v, InterruptFlagState_::eInterrupted)) {
@@ -1147,7 +1147,7 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
     Thread::SuppressInterruptionInContext suppressAborts;
 
     /*
-     *  stdc++ doesn't define a way to get the INT thread id, just a string. But they dont format it the
+     *  stdc++ doesn't define a way to get the INT thread id, just a string. But they don't format it the
      *  way we usually format a thread ID (hex, fixed width). So do that, so thread IDs look more consistent.
      */
     stringstream out;
@@ -1174,7 +1174,7 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
         /*
          *  Often, it appears ThreadIDs IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
          *
-         *  However, I dont see any reliable way to tell this is the case, so don't bother for now. A trouble with checking on
+         *  However, I don't see any reliable way to tell this is the case, so don't bother for now. A trouble with checking on
          *  a per-thread-id basis is that often the MAIN THREAD is 0, which is < 0xffff. Then we get one size and then
          *  on the rest a differnt size, so the layout in the debug trace log looks funny.
          */

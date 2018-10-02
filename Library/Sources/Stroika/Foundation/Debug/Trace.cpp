@@ -121,7 +121,7 @@ namespace {
         // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
         // (could fix of course, but I'm not sure desirable - reasonable defaults)
         //
-        // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
+        // Don't want to use TempFileLibrarian cuz we don't want these deleted on app exit
         SDKString mfname;
         {
             try {

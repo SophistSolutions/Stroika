@@ -20,7 +20,7 @@
  *
  *  TODO:
  *      @todo   Add an "Update (iterator<T> i, Value)" method, similar to other containers
- *              like Sequence. Note - intentionally dont allow updating the key???
+ *              like Sequence. Note - intentionally don't allow updating the key???
  *
  *      @todo   Consider adding optional way to add that ASSERTS (or throws?) AddIfNotPresnet()??? --
  *              if the value not presnet.

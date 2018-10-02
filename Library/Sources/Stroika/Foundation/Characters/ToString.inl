@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Characters {
         inline String ToString_ (const T& t, enable_if_t<is_enum_v<T>>* = 0)
         {
             // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
-            // not a problem: just dont call this, or replace it with a specific specialization of ToString
+            // not a problem: just don't call this, or replace it with a specific specialization of ToString
             return Configuration::DefaultNames<T>::k.GetName (t);
         }
         template <typename T, size_t SZ>

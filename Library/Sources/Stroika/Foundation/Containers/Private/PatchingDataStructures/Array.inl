@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         this->Invariant ();
         PatchViewsRemove (index);
         inherited::RemoveAt (index);
-        // Dont call PatchViewsRealloc () since removeat does not do a SetCapacity, it
+        // don't call PatchViewsRealloc () since removeat does not do a SetCapacity, it
         // just destructs things.
         this->Invariant ();
     }

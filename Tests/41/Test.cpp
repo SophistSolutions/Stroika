@@ -203,7 +203,7 @@ namespace {
             VerifyTestResult (url.GetScheme () == L"http");
             VerifyTestResult (url.GetHost () == L"www.cwi.nl");
             VerifyTestResult (url.GetPortValue () == 80);
-            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we dont
+            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
             VerifyTestResult (url.GetQueryString () == L"");
             VerifyTestResult (url.GetFragment () == L"");
             VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
@@ -214,7 +214,7 @@ namespace {
             VerifyTestResult (url.GetSchemeValue () == L"http");
             VerifyTestResult (url.GetHost () == L"www.cwi.nl");
             VerifyTestResult (url.GetPortValue () == 80);
-            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we dont
+            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
             VerifyTestResult (url.GetQueryString () == L"");
             VerifyTestResult (url.GetFragment () == L"");
             VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");

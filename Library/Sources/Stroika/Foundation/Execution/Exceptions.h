@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace is only meant for debugging. If true, then the
      *  overloads to Throw will also include a call to BackTrace, so its easier to track in TraceLogs where an exception 
-     *  is thrown from (helpful when you dont have a debugger).
+     *  is thrown from (helpful when you don't have a debugger).
      *
      *  This has no effect unless qStroika_Foundation_Exection_Exceptions_TraceThrowpoint is also true.
      */

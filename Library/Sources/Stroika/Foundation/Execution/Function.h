@@ -26,7 +26,7 @@
  *              mimics copy behavior of std::function?
  */
 
-/// NOT SURE WHAT's GOING ON. Seems like my bug, but I dont fully
+/// NOT SURE WHAT's GOING ON. Seems like my bug, but I don't fully
 /// understand
 /// doesn't seem needed with msvc, but is with gcc/clang++
 #ifndef qFoundation_Execution_Function_OperatorForwardNeedsRefBug

@@ -183,7 +183,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
             }
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default; // copy by value fine - no need to re-wait...
@@ -278,7 +278,7 @@ namespace {
         }
         void Read_proc_net_netstat_ (IOStatistics* accumSummary)
         {
-            AssertNotReached (); // dont use this for now
+            AssertNotReached (); // don't use this for now
             RequireNotNull (accumSummary);
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const String_Constant                           kProcFileName_{L"/proc/net/netstat"};

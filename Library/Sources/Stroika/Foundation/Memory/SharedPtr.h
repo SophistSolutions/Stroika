@@ -35,7 +35,7 @@
  *
  *      @todo   CLEAR DOCS!!! - once we have stuff stable...
  *          o       CAREFULLY writeup differences between this class and shared_ptr<>
- *                  +   I DONT BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
+ *                  +   I DON'T BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
  *                      applications. Maybe I'm missing something. Ask around a bit...
  *                      FOR THE MOST PART.
  *

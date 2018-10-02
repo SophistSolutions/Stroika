@@ -144,7 +144,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  @see Socket::Close () - plus optionally handles GetAutomaticTCPDisconnectOnClose
          *
-         *  \note - you dont have to use this Close () - using the base class close does the same thing,
+         *  \note - you don't have to use this Close () - using the base class close does the same thing,
          *          but these docs are here just to make that more clear - the extra close functionality.
          *
          *  @see GetAutomaticTCPDisconnectOnClose - if set - Close automatically calls Shutdown () for connection-oriented sockets.
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::IO::Network {
          *        It is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
          *        done simultaneously, from different threads.
          *
-         *  \note if intoStart == nullptr, then dont actually read, but return the number of bytes available.
+         *  \note if intoStart == nullptr, then don't actually read, but return the number of bytes available.
          */
         nonvirtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const;
 

@@ -1099,7 +1099,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
 			$i++;
 			$MALLOC_GUARD = ToBool_ ($ARGV[$i]);
-			### DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DONT WORK TOGETHER
+			### DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DON'T WORK TOGETHER
 			### -- LGP 2016-07-14
 			if ($MALLOC_GUARD == true) {
 				$ENABLE_LTO = 0;
@@ -1308,7 +1308,7 @@ sub PostProcessOptions_ ()
 
 	if ($ARCH eq "") {
 		if ($COMPILER_DRIVER_CPlusPlus eq "") {
-			###tmphack needed for windows where we dont find the compiler variable here (SHOULD FIX THAT) @todo - LGP 2017-12-17
+			###tmphack needed for windows where we don't find the compiler variable here (SHOULD FIX THAT) @todo - LGP 2017-12-17
 			if ($configurationName =~ /64$/) {
 				$ARCH = "x86_64";
 			}

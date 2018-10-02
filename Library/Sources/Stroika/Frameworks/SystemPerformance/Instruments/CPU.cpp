@@ -189,7 +189,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
             }
         }
         /*

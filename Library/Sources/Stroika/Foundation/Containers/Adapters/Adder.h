@@ -19,8 +19,8 @@
  *  \file
  *              ****VERY ROUGH DRAFT
  *
- *  DONT like how its done - with dependencies - but very helpful.
- *  Dont want to add to Iterable (though that would make some sense) - cuz:
+ *  DON'T like how its done - with dependencies - but very helpful.
+ *  Don't want to add to Iterable (though that would make some sense) - cuz:
  *       *STL stuff doesn't work with that
  *       *Up til now - Iterable has been all about readonly operations. Could have UpdatableIterable intermediate class...
  *

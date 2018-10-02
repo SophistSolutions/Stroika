@@ -68,7 +68,7 @@ public:
                 fCurTask_                       = nullptr;
             });
             try {
-                // Use lock to access fCurTask_, but dont hold the lock during run, so others can call getcurrenttask
+                // Use lock to access fCurTask_, but don't hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType task2Run;
                 {
                     [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
@@ -372,7 +372,7 @@ void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) con
 
 void ThreadPool::Abort_ () noexcept
 {
-    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... don't be half-way aborted
     Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // Valgrind warns updated with no lock, but my design (see below) - and since using std::atomic, will be published to other threads
     fAborted_ = true;                                             // No race, because fAborted never 'unset'

@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
      *      'PUTMODULENAMEHERE' only needs to be unique in the given namespace, as these functions can be placed
      *  in namespaces (@see Characters::MakeModuleDependency_String () for example).
      *
-     *  Then, in modules that depend on PUTMODULERNAMEHERE (but dont #include that module from their header), just
+     *  Then, in modules that depend on PUTMODULERNAMEHERE (but don't #include that module from their header), just
      *  add
      *                      Execution::ModuleDependency fPUTMODULERNAMEHEREDependency;
      *  to the 'module data' object in its ModuleInitializer<>. For example:

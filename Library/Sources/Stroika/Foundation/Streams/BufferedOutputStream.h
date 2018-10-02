@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  Throws away all data about to be written (buffered). Once this is called,
          *  the effect of future Flush () calls is undefined. This can be used when the stream
-         *  wraps an underlying object like a socket, and you dont want to waste effort
+         *  wraps an underlying object like a socket, and you don't want to waste effort
          *  talking to it, but its harmless todo so.
          *
          *  One a stream is aborted, its undefined what other operations will do (they wont crash

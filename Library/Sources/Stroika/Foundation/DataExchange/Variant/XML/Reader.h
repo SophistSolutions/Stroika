@@ -35,7 +35,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
 
         define common struct (shared modeule - in common.h of this I guess? - for serializeation package parmas
         like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
-        do or dont include xml processing instruction
+        do or don't include xml processing instruction
         */
     class Reader : public Variant::Reader {
     private:

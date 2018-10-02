@@ -24,7 +24,7 @@
  *                  static_cast<T> (n) is about the same as n.As<T> () - except that overload
  *                  semantics work better for static_cast<T> (n) - THINK ABOUT THIS - verus
  *                  .As<T> () is somewhat shorter, and more clear, and works with compilers that
- *                  dont have explicit operators.
+ *                  don't have explicit operators.
  *
  *              But I think its too easy to accidentally get conversions with the conversion/cast operator.
  *              That maybe due to bugs/incomplete implementation of explicit conversion operators? But we can always

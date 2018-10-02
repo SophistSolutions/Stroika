@@ -62,7 +62,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *
      *      If the caller gets GetResponseStream() - then calls to GetBLOB() will fail. Note - we COULD have
      *      kept the bytes around from the response stream as it came in, but that could in principle be large,
-     *      and your probably using the Stream API to avoid having the entire thing in emmroy so we dont want
+     *      and your probably using the Stream API to avoid having the entire thing in emmroy so we don't want
      *      to needlessly thwart that.
      *
      *      NOTE - as of 2014-10-08 - the only case thats implemented is the case of construction with a prefetched

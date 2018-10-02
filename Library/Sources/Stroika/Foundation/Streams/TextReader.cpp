@@ -410,7 +410,7 @@ protected:
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
         if (intoStart == nullptr) {
-            // Don't read (so dont update fOffset_) - just see how much available
+            // Don't read (so don't update fOffset_) - just see how much available
             Traversal::Iterator<Character> srcIt = fSrcIter_;
             size_t                         cnt{};
             if (fPutBack_) {

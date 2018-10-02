@@ -112,7 +112,7 @@ namespace {
                     };
                     if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
                         if (intoStart == nullptr) {
-                            // dont know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
+                            // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
                             // But MUST check if is EOF or real data available
                             char buf[1024];
 #if qPlatform_POSIX

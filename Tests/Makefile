@@ -145,7 +145,7 @@ else
 endif
 
 
-#### @todo make targets final EXE and dont need PHONY and can be even quicker running
+#### @todo make targets final EXE and don't need PHONY and can be even quicker running
 .PHONY: $(TESTS)
 $(TESTS):
 ifeq ($(CONFIGURATION),)

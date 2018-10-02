@@ -28,8 +28,8 @@ namespace Stroika::Foundation::Debug {
     /**
      *  Note: Some any paramaters may be null, if no suitable value is available.
      *
-     *  \note   AssertionHandlers shall NOT throw an exception (but I dont think we can declare typedef as noexcept)
-     *          The reason for this is so that assertions can be used safely in circumstances that dont expect
+     *  \note   AssertionHandlers shall NOT throw an exception (but I don't think we can declare typedef as noexcept)
+     *          The reason for this is so that assertions can be used safely in circumstances that don't expect
      *          exceptions.
      *
      *          Assertion handlers typically just print a debug message, and then exit the program. They are fatal, and must not return/throw.
@@ -39,8 +39,8 @@ namespace Stroika::Foundation::Debug {
     /**
      *  Note: Some any paramaters may be null, if no suitable value is available.
      *
-     *  \note   AssertionHandlers shall NOT throw an exception (but I dont think we can declare typedef as noexcept)
-     *          The reason for this is so that assertions can be used safely in circumstances that dont expect
+     *  \note   AssertionHandlers shall NOT throw an exception (but I don't think we can declare typedef as noexcept)
+     *          The reason for this is so that assertions can be used safely in circumstances that don't expect
      *          exceptions.
      *
      *          Weak assertion handlers typically just print a debug message. They are NOT fatal, and allow the program to continue.
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Debug {
 #define Require(c) (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
 /**
- *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but dont want to fail/crash the program just because it fails.
+ *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but don't want to fail/crash the program just because it fails.
  *
  *  \def WeakAssert(c)
  *

@@ -23,7 +23,7 @@
  *  TODO:
  *
  *      @todo   add demo project so shows how to use (cleaned up versions of the regtest code)
- *              Maybe something using bignums (dont exist yet) and the multithreaded threadpool
+ *              Maybe something using bignums (don't exist yet) and the multithreaded threadpool
  *              mapper (doesn't exist yet) - showing how to run multiple IsPrime's at a time in the
  *              context of this mapping stuff.
  *

@@ -61,7 +61,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
     //  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
     fFileDataStart_ = reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
     fFileDataEnd_   = fFileDataStart_ + fileLength;
-    ::close (fd); //http://linux.die.net/man/2/mmap says dont need to keep FD open while mmapped
+    ::close (fd); //http://linux.die.net/man/2/mmap says don't need to keep FD open while mmapped
 #elif qPlatform_Windows
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ

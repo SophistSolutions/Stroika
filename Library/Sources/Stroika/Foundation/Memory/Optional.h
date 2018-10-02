@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Memory {
         private:
             /*
                 *  Use union - so we can initialize CTOR for constexpr right part of union, and have no DTOR.
-                *  Use fEngaged bool instead of pointer - because C++ (at least g++/clang++) dont allow pointer to
+                *  Use fEngaged bool instead of pointer - because C++ (at least g++/clang++) don't allow pointer to
                 *  constexpr value, where fEngagedValue_ not clearly marked constexpr (maybe no matter what).
                 */
             union {
@@ -743,7 +743,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  Mimmic (except for now for particular exception thrown) value() api, and dont support non-const variation (for now).
+         *  Mimmic (except for now for particular exception thrown) value() api, and don't support non-const variation (for now).
          */
         nonvirtual T value () const;
 

@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename Set<T>::_IRep;
 
     protected:
-        // @todo - DONT UNDERTAND WHY these 2 using declarations needed? on visual studio.net?? retest!
+        // @todo - DON'T UNDERTAND WHY these 2 using declarations needed? on visual studio.net?? retest!
         using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
     };

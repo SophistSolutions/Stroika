@@ -17,8 +17,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
     /**
      *  Add list of found devices, paying attention to aging rules (max-age)
      *
-     *  Unclear how to integrate with search stuff (if we find with search, dont lose it, and if we have other reason to know
-     *  device still aroudn dont lose it - like open tcp connection to it).
+     *  Unclear how to integrate with search stuff (if we find with search, don't lose it, and if we have other reason to know
+     *  device still aroudn don't lose it - like open tcp connection to it).
      */
     class CachingListener : public Listener {
         //lambda onChange callback;

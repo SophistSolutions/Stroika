@@ -16,7 +16,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   This is NOT safe (annoying offsetof rules). MAYBE possible to do with ptr-to-member, but I dont think
+ *      @todo   This is NOT safe (annoying offsetof rules). MAYBE possible to do with ptr-to-member, but I don't think
  *              so.
  */
 

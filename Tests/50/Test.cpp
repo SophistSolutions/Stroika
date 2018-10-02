@@ -84,7 +84,7 @@ using std::byte;
 //#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
-// Dont print when they differ on other platforms.
+// Don't print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
 #if (!qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
 #define qPrintOutIfFailsToMeetPerformanceExpectations 1
@@ -92,7 +92,7 @@ using std::byte;
 #define qPrintOutIfFailsToMeetPerformanceExpectations 0
 #endif
 
-// Use this so when running #if qDebug case - we dont waste a ton of time with this test
+// Use this so when running #if qDebug case - we don't waste a ton of time with this test
 #define qDebugCaseRuncountRatio (.01)
 
 namespace {
@@ -431,7 +431,7 @@ namespace {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
             //
-            // I dont care about the (much rarer) write case where we really need to modify
+            // I don't care about the (much rarer) write case where we really need to modify
             lock_guard<mutex> critSec (Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex);
             doInsideLock (&Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int);
         }
@@ -441,7 +441,7 @@ namespace {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
             //
-            // I dont care about the (much rarer) write case where we really need to modify
+            // I don't care about the (much rarer) write case where we really need to modify
             shared_ptr<int> tmp = Test_MutexVersusSharedPtrCopy_sharedPtrCase;
             doInsideLock (tmp.get ());
         }
@@ -588,7 +588,7 @@ namespace {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
             //
-            // I dont care about the (much rarer) write case where we really need to modify
+            // I don't care about the (much rarer) write case where we really need to modify
             shared_ptr<int> tmp = s_SharedPtrCase;
             doInsideLock (tmp.get ());
         }
@@ -600,7 +600,7 @@ namespace {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
             //
-            // I dont care about the (much rarer) write case where we really need to modify
+            // I don't care about the (much rarer) write case where we really need to modify
             atomic<shared_ptr<int>> tmp = s_AtomicSharedPtrCase.load ();
             doInsideLock (tmp.load ().get ());
         }

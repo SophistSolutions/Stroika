@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Math::ReBin {
 
             Assert (curSrcBucketXWidth >= 0); // can ever be zero?
 
-            // Check special value of zero so we dont waste time spreading zeros around
+            // Check special value of zero so we don't waste time spreading zeros around
             if (thisSrcBucketValue != SRC_DATA_DESCRIPTOR::kNullValue and curSrcBucketXWidth != 0) {
                 /*
                     *  find range of target buckets to distribute value.

@@ -544,7 +544,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         using Characters::String_Constant;
         /*
-         *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
+         *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we don't have
          *  the data, and this is simple and efficient.
          *
          *  See MakeCommonSerializer_NamedEnumerations
@@ -677,10 +677,10 @@ namespace Stroika::Foundation::DataExchange {
         }
         {
             // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
-            // If you ever need to avoid it (I dont see how because this mapper doesn't work with circular data structures)
+            // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
             // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
             for (auto i : fields) {
-                // dont need to register the type mapper if its specified as a field
+                // don't need to register the type mapper if its specified as a field
                 if (not i.fOverrideTypeMapper.has_value ()) {
                     (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
                 }
@@ -711,7 +711,7 @@ namespace Stroika::Foundation::DataExchange {
          *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global
          *  --no-sanitize function command line flag (or --no-sanitize vptr on macos).
          *
-         *  -- now since those dont work no matter what and give a warning (unrecognized attribute) on gcc8, using "address"
+         *  -- now since those don't work no matter what and give a warning (unrecognized attribute) on gcc8, using "address"
          */
         FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ("address") -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -774,10 +774,10 @@ namespace Stroika::Foundation::DataExchange {
         }
         {
             // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
-            // If you ever need to avoid it (I dont see how because this mapper doesn't work with circular data structures)
+            // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
             // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
             for (auto i : fields) {
-                // dont need to register the type mapper if its specified as a field
+                // don't need to register the type mapper if its specified as a field
                 if (not i.fOverrideTypeMapper.has_value ()) {
                     (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
                 }

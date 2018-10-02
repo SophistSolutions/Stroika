@@ -11,7 +11,7 @@
 /**
  * TODO:
  *
- *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DONT DO until I have a STRING class
+ *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DON'T DO until I have a STRING class
  *              implementation based on UTF-8, to minimize the performance costs...
  *              https://stroika.atlassian.net/browse/STK-534
  *

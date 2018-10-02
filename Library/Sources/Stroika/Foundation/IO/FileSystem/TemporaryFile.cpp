@@ -121,7 +121,7 @@ AppTempFileManager::AppTempFileManager ()
         if (i != SDKString::npos) {
             exeFileName = exeFileName.erase (i);
         }
-        // no biggie, but avoid spaces in tmpfile path name (but dont try too hard, should be
+        // no biggie, but avoid spaces in tmpfile path name (but don't try too hard, should be
         // harmless)
         //  -- LGP 2009-08-16
         for (auto p = exeFileName.begin (); p != exeFileName.end (); ++p) {

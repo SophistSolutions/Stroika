@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Characters {
             if (c == '\r') {
                 // peek at next character - and if we have a CRLF sequence - then advance pointer
                 // (so we skip next NL) and pretend this was an NL..
-                // NB: we DONT map plain CR to NL - to get that to happen - use NormalizeTextToNL()
+                // NB: we DON'T map plain CR to NL - to get that to happen - use NormalizeTextToNL()
                 if (i < srcTextBytes and srcText[i] == '\n') {
                     c = '\n';
                     i++;
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Characters {
             if (c == '\r') {
                 // peek at next character - and if we have a CRLF sequence - then advance pointer
                 // (so we skip next NL) and pretend this was an NL..
-                // NB: we DONT map plain CR to NL - to get that to happen - use Led_NormalizeTextToNL()
+                // NB: we DON'T map plain CR to NL - to get that to happen - use Led_NormalizeTextToNL()
                 if (i < srcTextBytes and srcText[i] == '\n') {
                     c = '\n';
                     i++;

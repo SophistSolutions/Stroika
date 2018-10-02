@@ -26,7 +26,7 @@ using Characters::String_Constant;
 namespace {
     URL::SchemeType NormalizeScheme_ (const URL::SchemeType& s)
     {
-        // replace all uppercase with lowercase - dont validate here
+        // replace all uppercase with lowercase - don't validate here
         return s.ToLowerCase ();
     }
     void ValidateScheme_ (const URL::SchemeType& s)
@@ -202,7 +202,7 @@ URL URL::Parse (const String& w, ParseOptions po)
             size_t endOfHost = i;
             result.fHost_    = w.SubString (hostNameStart, endOfHost);
 
-            // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
+            // COULD check right here for port# if c == ':' - but don't bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
                 if (w[i] == ':') {
                     String num;
@@ -355,7 +355,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
             size_t endOfHost = i;
             url.fHost_       = w.SubString (hostNameStart, endOfHost);
 
-            // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
+            // COULD check right here for port# if c == ':' - but don't bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
                 if (w[i] == ':') {
                     String num;

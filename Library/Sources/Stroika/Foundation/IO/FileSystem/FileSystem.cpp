@@ -500,7 +500,7 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we dont care about order, and we do care that we
+                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we don't care about order, and we do care that we
                 // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
                 for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
                     if (Directory{i}.Exists ()) {
@@ -534,7 +534,7 @@ Again:
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we dont care about order, and we do care that we
+                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we don't care about order, and we do care that we
                 // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
                 for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
                     if (Directory{i}.Exists ()) {

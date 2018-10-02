@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::Execution;
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
 string Private_::GetBT_s ()
 {
-    // KISS, and dont use string if you dont want truncation
+    // KISS, and don't use string if you don't want truncation
     wstring tmp = GetBT_ws ();
     string  result;
     for (wchar_t c : tmp) {

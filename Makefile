@@ -112,15 +112,15 @@ endif
 clobber:
 ifeq ($(CONFIGURATION),)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clobber:"
-	ifeq ($(CONFIGURATION_TAGS),)
+ifeq ($(CONFIGURATION_TAGS),)
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	else
+else
 	@for i in `ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"` ; do\
 		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
-	endif
+endif
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clobber {$(CONFIGURATION)}:"

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename ELEMENT_ELEMENT_EQUALS_COMPARER>
     bool Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_ELEMENT_EQUALS_COMPARER& equalsComparer)
     {
-        // Check length, so we dont need to check both iterators for end/done
+        // Check length, so we don't need to check both iterators for end/done
         if (&lhs == &rhs) {
             return true;
         }

@@ -101,7 +101,7 @@
  *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
- *      @todo   Review names: I dont think we use the term reader and readerfactory totally uniformly, and
+ *      @todo   Review names: I don't think we use the term reader and readerfactory totally uniformly, and
  *              we also need to clearly document why/when we use one versus the other (type system stores factories
  *              because you encounter them in parsing, and need instances to pop on stack to read a particular element).
  *

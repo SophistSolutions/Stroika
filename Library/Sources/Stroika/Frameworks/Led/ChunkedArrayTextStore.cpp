@@ -986,7 +986,7 @@ void ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t length
 
     marker->fTextStoreHook = new ChunkedArrayMarkerHook ();
 
-    //DONT call - cuz asserts owner NON-NULL    Assert (marker->GetOwner () == NULL);
+    //DON'T call - cuz asserts owner NON-NULL    Assert (marker->GetOwner () == NULL);
     SetMarkerOwner_ (marker, owner);
 
     SetMarkerStart_ (marker, lhs);

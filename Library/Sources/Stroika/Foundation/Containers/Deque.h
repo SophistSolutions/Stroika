@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers {
      *
      * Notes:
      *
-     *  <<NOTE - FUTURE WORK - AND DONT DOCUMENT DEFAULTIMPL HERE>>> - SEE FACTORY CODE
+     *  <<NOTE - FUTURE WORK - AND DON'T DOCUMENT DEFAULTIMPL HERE>>> - SEE FACTORY CODE
      *      We currently default to the circular array implementation, as it is
      *  fastest under most circumstances. One drawback to it is that it has
      *  unpredictable costs for an Add operation. DoubleLinkList is usually

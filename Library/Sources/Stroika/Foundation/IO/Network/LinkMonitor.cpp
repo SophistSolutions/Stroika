@@ -169,7 +169,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         };
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
-        // Since this is used only to filter the list of addresses, if we get an error, dont throw but
+        // Since this is used only to filter the list of addresses, if we get an error, don't throw but
         // return 0
         if (r < 0) {
             DbgTrace ("ioctl on getFlags returned %d, errno=%d", r, errno);

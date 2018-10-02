@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Streams {
          *      WriteRaw (start, end) writes all the POD records from start to end to the binary stream.
          *
          *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
-         *            non-POD data, not hard, but we dont want to encourage it.
+         *            non-POD data, not hard, but we don't want to encourage it.
          *
          *  \req is_pod_v<POD_TYPE>
          *  \req ELEMENT_TYPE==byte
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Streams {
          *  a clean shutdown with exceptions being propagated during the cleanup.
          *
          *  \note Most calls on an OutputStream after it is closed are illegal, and result in Require () errors. It is up
-         *        to the caller/user of the shared output streams to assure they dont use them after being closed. Note - if that
+         *        to the caller/user of the shared output streams to assure they don't use them after being closed. Note - if that
          *        sounds hard its not: it naturally falls out of normal usage.
          *
          *        The rationale is just that I can think of no useful case where a caller might want to allow writing after close, and
@@ -311,8 +311,8 @@ namespace Stroika::Foundation::Streams {
          * EXPERIEMNTAL API
          * done as template so third parties can externally extend, and have overloading work right..
          * @todo need overloads for basic types, std::string, int, float, etc...
-         * But dont do except for string for now. Dont make same mistake as iostream - with formatting. Not clear how todo
-         * right so dont dig a hole and do it wrong (yet).
+         * But don't do except for string for now. Don't make same mistake as iostream - with formatting. Not clear how todo
+         * right so don't dig a hole and do it wrong (yet).
          *
          *  \req IsOpen ()
          */
@@ -385,7 +385,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  May (but typically not) called before destruction. If called, \req no other write or seek etc operations.
          *
-         *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Write, so subclassers dont need to
+         *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Write, so subclassers don't need to
          *          do that in implementing reps, but probably good docs/style todo in both places.'
          *
          *  \note -  CloseWrite must implicitly Flush ()

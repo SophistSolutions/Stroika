@@ -25,7 +25,7 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 }
 
 my $result = RunSystemWithVCVarsSetInEnvironment ($activeConfig, $cmd);
-# exit int ($result) doesn't work - for reasons I dont udnerstnad, but since abanodoming perl, no point in debugging - just workaround for now --LGP 2017-10-29
+# exit int ($result) doesn't work - for reasons I don't understand, but since abanodoming perl, no point in debugging - just workaround for now --LGP 2017-10-29
 if ($result == 0) {
 	exit 0;
 }

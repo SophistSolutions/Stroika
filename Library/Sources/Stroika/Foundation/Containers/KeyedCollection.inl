@@ -207,10 +207,10 @@ namespace Stroika::Foundation::Containers {
         inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
         {
             /*
-                *  Note - unlike other containers - we dont need to check for this != &s because if we
-                *  attempt to add items that already exist, it would do nothing to our iteration
-                *  and therefore not lead to an infinite loop.
-                */
+             *  Note - unlike other containers - we don't need to check for this != &s because if we
+             *  attempt to add items that already exist, it would do nothing to our iteration
+             *  and therefore not lead to an infinite loop.
+             */
             AddAll (std::begin (items), std::end (items));
         }
         template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Containers {
                 // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
                 return true;
             }
-            // Check length, so we dont need to check both iterators for end/done
+            // Check length, so we don't need to check both iterators for end/done
             if (lhs._ConstGetRep ().GetLength () != rhs.GetLength ()) {
                 return false;
             }

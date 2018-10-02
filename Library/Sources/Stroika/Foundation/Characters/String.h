@@ -208,7 +208,7 @@
  *
  *      @todo   Add a String_UTF8 backend - (maybe a number of variants). Key is that these can be more compact
  *              and for many operaitons, just fine, but for insert, and a[i] = quite sucky.
- *              [RETHINK - See String_AsciiOnlyOptimized - and probably dont do this]
+ *              [RETHINK - See String_AsciiOnlyOptimized - and probably don't do this]
  *
  *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Characters {
      *      But to do so - the way the code is currently structured, we would need to use enable_shared_from_this
      *      so we can recover a shared_ptr in ReadOnlyRep::_Rep::MakeIterator.
      *
-     *      enable_shared_from_this() would add costs (at least size) even when we dont use String iteration
+     *      enable_shared_from_this() would add costs (at least size) even when we don't use String iteration
      *      (which we didnt even impelement for a couple years, so may not be that critical).
      *
      *      For now - stick to simple impl - of just copy on start of iteration.
@@ -1317,7 +1317,7 @@ namespace Stroika::Foundation::Characters {
      *
      *  \note   Note sure how well this works being in a namespace!
      *
-     *  \note   Intentionally dont do operator>> because not so well defined for strings (could do as wtith STL I guess?)
+     *  \note   Intentionally don't do operator>> because not so well defined for strings (could do as wtith STL I guess?)
      *
      *  \note   tried to use templates to avoid the need to create a dependency of this module on iostream,
      *          but that failed (maybe doable but overloading was trickier).

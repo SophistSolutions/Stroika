@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  @see Finally<FUNCTION>
      *
-     *  Dont use this directly.
+     *  Don't use this directly.
      */
     template <typename FUNCTION>
     class FinallySentry {

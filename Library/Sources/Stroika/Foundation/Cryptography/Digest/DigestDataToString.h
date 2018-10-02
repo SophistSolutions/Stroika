@@ -17,7 +17,7 @@
  *
  *  TODO:
  *      @todo   Can we overload function templates? Diff # template parms? So RESULT_TYPE is second arg? We
- *              almost always want to infer the 'T' arg. But if you specify result type you dont want to
+ *              almost always want to infer the 'T' arg. But if you specify result type you don't want to
  *              lose ability to get that inference.
  *
  *      @todo   Change default return type for DigestDataToString<> to stroika string.

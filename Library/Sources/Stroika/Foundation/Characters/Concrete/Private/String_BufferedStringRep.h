@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
 
     /**
          *  This is a utility class to implement most of the basic String::_IRep functionality.
-         *  This implements functions that change the string, but dont GROW it,
+         *  This implements functions that change the string, but don't GROW it,
          *  since we don't know in general we can (thats left to subtypes).
          *
          *  \note   This class always assure nul-terminated, and so 'capacity' always at least one greater than length.

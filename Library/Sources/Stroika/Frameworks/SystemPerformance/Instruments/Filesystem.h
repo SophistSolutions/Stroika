@@ -108,7 +108,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     /**
      *  A volume is analagous to a Windows Volume (@see ) or a unix Filesystem (@see).
      *
-     *  In UNIX, a filesystem has only a single point point, where as in windows, it CAN have multiple (we dont
+     *  In UNIX, a filesystem has only a single point point, where as in windows, it CAN have multiple (we don't
      *  currently model that, but we could make mount point be a set).
      */
     struct MountedFilesystemInfoType {

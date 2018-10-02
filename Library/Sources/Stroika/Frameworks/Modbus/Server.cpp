@@ -163,7 +163,7 @@ namespace {
 
         SocketStream::Ptr       socketStream = SocketStream::New (connectionSocket);
         InputStream<byte>::Ptr  in           = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
-        OutputStream<byte>::Ptr out          = BufferedOutputStream<byte>::New (socketStream); // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
+        OutputStream<byte>::Ptr out          = BufferedOutputStream<byte>::New (socketStream); // critical so we don't write multiple packets - at least some apps assume whole thing comes in one packet
 
         auto checkedReadHelperPayload2Shorts = [](const Memory::BLOB& requestPayload, uint16_t minSecondValue, uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
             /*
@@ -187,7 +187,7 @@ namespace {
              *  on our first bad packet.
              */
             while (true) {
-                MBAPHeaderIsh_ requestHeader; // intentionally dont initialize since either all read, or we throw
+                MBAPHeaderIsh_ requestHeader; // intentionally don't initialize since either all read, or we throw
                 size_t         n = in.ReadAll (reinterpret_cast<byte*> (&requestHeader), reinterpret_cast<byte*> (&requestHeader + 1));
                 if (n != sizeof (requestHeader)) {
                     if (n == 0) {

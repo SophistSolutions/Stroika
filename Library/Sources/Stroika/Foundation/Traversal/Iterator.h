@@ -440,7 +440,7 @@ namespace Stroika::Foundation::Traversal {
         /*
          *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.
          *
-         *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
+         *  \note   don't use unsigned 'i' because that works less well with overloads and ambiguity.
          *  \note   similar to std::advance, but allows for simpler usage (i + n)
          */
         nonvirtual Iterator operator+ (int i) const;

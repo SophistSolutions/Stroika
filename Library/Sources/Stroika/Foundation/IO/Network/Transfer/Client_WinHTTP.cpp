@@ -188,7 +188,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 
     /*
      * Though we could create a DIFFERENT API - that managed a session object - like the WinHTTP session object, for now,
-     * just KISS. We DONT cache a single session, because this code could be used by multiple 'users' -
+     * just KISS. We DON'T cache a single session, because this code could be used by multiple 'users' -
      * when called within HealthFrameWorks - for example.
      *
      */
@@ -257,7 +257,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 RetryWithNoCERTCheck:
 
     //
-    // REALLY - dont want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesn't do rest of fetch...
+    // REALLY - don't want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesn't do rest of fetch...
     //      TODO!!!
     //
     // See https://stroika.atlassian.net/browse/STK-442
@@ -341,7 +341,7 @@ RetryWithAuth:
         data = BLOB (bytesArray.begin (), bytesArray.end ());
     }
 
-    // dont throw here - record the bad status in the response. The reason is we often wish to read the whole body of the response.
+    // don't throw here - record the bad status in the response. The reason is we often wish to read the whole body of the response.
     // It can contain an explanation of the error (such as soap fault) more detailed than the status line response
     {
         wstring statusStr  = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);

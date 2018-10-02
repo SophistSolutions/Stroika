@@ -281,7 +281,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
             }
         }
         CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default; // copy by value fine - no need to re-wait...
@@ -428,7 +428,7 @@ namespace {
             // Sometimes the /sys/block directory appears to have data for the each major/minor pair, and sometimes it appears
             // to only have it for the top level (minor=0) one without the digit after in the name.
             //
-            // I dont understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
+            // I don't understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
             //tmphack
             String tmp{L"/sys/block/" + deviceName + L"/"};
             if (IO::FileSystem::Default ().Access (tmp)) {

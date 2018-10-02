@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Execution {
      *      which argue that its a bad idea, and that it leads to bad programming (bugs).
      *
      *      To some extent I we may have addressed the reported concerns by having WaitForAny/WaitForAnyUntil
-     *      return the full set of events that were signaled (and the issue about races I dont think applies
+     *      return the full set of events that were signaled (and the issue about races I don't think applies
      *      to WaitForAll).
      *
      *      Note also that some recommend using the BlockingQueue<> pattern to avoid WaitForMultipleObjects (WaitForAny)
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Execution {
      *              http://stackoverflow.com/questions/788835/waitformultipleobjects-in-java
      *      Stroika supports this sort of BlockingQueue<>
      *
-     *      Note - WaitForAny() takes a templated SET because I dont want to create interdependency
+     *      Note - WaitForAny() takes a templated SET because I don't want to create interdependency
      *      with Containers and something this low level, and yet we want to make it easy for users of this
      *      to use Stroika Set<> objects.
      *
@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Wait the given period of time, and return true if event occured (Set called), and false on timeout.
-         *  This is mostly useful if we want a wait, for advisory purposes (say to avoid races), but dont
+         *  This is mostly useful if we want a wait, for advisory purposes (say to avoid races), but don't
          *  want an exception as its not an issue to handle specially.
          *
          *  Returns:    true (kWaitQuietlySetResult) if event signaled/occurred, and false (kWaitQuietlyTimeoutResult) if timeout

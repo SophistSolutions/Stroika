@@ -534,7 +534,7 @@ namespace Stroika::Foundation::Memory {
             // No need to move in this case and would be bad to try
             //  Optional<T> x;
             //  x = *x;
-            WeakAssert (false); // dont think we want to allow this - so we dont need to check
+            WeakAssert (false); // don't think we want to allow this - so we don't need to check
         }
         else {
             this->fStorage_ = forward<U> (rhs);

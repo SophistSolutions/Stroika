@@ -22,7 +22,7 @@
  *  \file
  *
  * TODO
- *      @todo   Probably no longer need siginterrupt () calls, since we DONT set SA_RESTART in our call to sigaction().
+ *      @todo   Probably no longer need siginterrupt () calls, since we DON'T set SA_RESTART in our call to sigaction().
  *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
  *
@@ -602,7 +602,7 @@ namespace Stroika::Foundation::Execution {
          *  Note that its legal to call Abort on a thread in any state - including if done (except == nullptr).
          *  Some may just have no effect.
          *
-         *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that dont
+         *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that don't
          *          check for thread interruption, those threads may not BE interruptible during that region of code.
          *          @see Thread::GetThrowInterruptExceptionInsideUserAPC()
          *

@@ -87,7 +87,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
 {
     String method{request->GetHTTPMethod ()};
     if (method == L"POST" or method == L"PUT") {
-        // Allow missing (content-size: 0) for args to method - and dont fail it as invalid json
+        // Allow missing (content-size: 0) for args to method - and don't fail it as invalid json
         // @also - @todo - check ContentType ebfore reading as JSON!!!
         Memory::BLOB inData = request->GetBody ();
         return inData.empty () ? VariantValue{} : Variant::JSON::Reader ().Read (inData);

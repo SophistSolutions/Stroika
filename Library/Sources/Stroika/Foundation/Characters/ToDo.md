@@ -10,5 +10,5 @@ o	Consider adding template class 'cstr'
 	Implementing this would be EASY, and using it EASY. But the main reason NOT to do this
 	is that it may not work as desired. When you have APIs that take a char*/wchar_t* - it would work great.
 	But I've found MOST of the time where I need to get a const wchar_t* rep from something is for
-	elipsis params (sprintf/Format/printf/Logger::Log (), etc). And since conversion operators dont
+	elipsis params (sprintf/Format/printf/Logger::Log (), etc). And since conversion operators don't
 	work with elipsis params, this could just be a boondogle.

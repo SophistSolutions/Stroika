@@ -475,7 +475,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 Assert (prev->fNext == i._fCurrent);
                 Link* iteratorCurLink = const_cast<Link*> (i._fCurrent);
                 prev->fNext           = new Link (newValue, prev, iteratorCurLink);
-                // Since fCurrent != nullptr from above, we update its prev, and dont have
+                // Since fCurrent != nullptr from above, we update its prev, and don't have
                 // to worry about _fTail.
                 iteratorCurLink->fPrev = prev->fNext;
                 Assert (i._fCurrent->fPrev->fPrev == prev); // old prev is two back now...

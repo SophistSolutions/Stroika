@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::STL {
     {
 #if 0
         //  @todo - COULD check type-traits and punt out early.... if random-access-iterator!
-        // Check length so we dont need to check both iterators for end/done
+        // Check length so we don't need to check both iterators for end/done
         if ((lhsEnd - lhsStart) != (rhsEnd - rhsStart)) {
             return false;
         }

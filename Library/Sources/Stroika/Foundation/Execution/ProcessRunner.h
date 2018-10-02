@@ -39,7 +39,7 @@
  *      @todo   Fix POSIX version to use pipe2 and close appropriate open file descriptors (and other 'clean invoke' stuff.
  *
  *      @todo   Redo DWORD   waitResult  =   ::WaitForMultipleObjects()... logic to wait on thread and each read/write socket
- *              with select() AND somehow maybe eventually wait on streams (so we dont have to pre-read it all)
+ *              with select() AND somehow maybe eventually wait on streams (so we don't have to pre-read it all)
  *
  *      @todo   logic for THREADs and for PROGRESS support are NOT thought through, and just a rough first stab
  *

@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          // same as Log, but dont emit this error if we've seen the message in the last 60 seconds
+         *          // same as Log, but don't emit this error if we've seen the message in the last 60 seconds
          *          Logger::Get ().LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
          *      \endcode
          */

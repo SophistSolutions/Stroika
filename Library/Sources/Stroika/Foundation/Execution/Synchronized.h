@@ -40,7 +40,7 @@
  *                  AssertNotImplemented ();
  *                  return WritableReference (&fProtectedValue_, &fLock_);
  *              }
- *              // But tricky because as of C++17, shared_mutex and shared_timed_mutex dont allow you to BOTH have a shared_lock and lock()
+ *              // But tricky because as of C++17, shared_mutex and shared_timed_mutex don't allow you to BOTH have a shared_lock and lock()
  *              // at the same time, with the same mutex.
  *              //
  *              // boost upgrade-lock?
@@ -459,7 +459,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
-         *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
+         *          But you don't need to use it, and this really does act as a smart pointer so it should most often just be
          *          more clear.
          */
         nonvirtual const T* operator-> () const;
@@ -506,7 +506,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
-         *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
+         *          But you don't need to use it, and this really does act as a smart pointer so it should most often just be
          *          more clear.
          */
         nonvirtual T*    operator-> ();
@@ -628,7 +628,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      * QuickSynchronized will always use a mutex which is quick, and not a cancelation point. It will typically be
-     * implemented using a std::mutex, or a SpinLock, whichever is faster. So - dont use this where you hold
+     * implemented using a std::mutex, or a SpinLock, whichever is faster. So - don't use this where you hold
      * onto the lock for extended periods ;-).
      */
     template <typename T>

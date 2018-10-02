@@ -149,7 +149,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
             }
         }
         CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default; // copy by value fine - no need to re-wait...
@@ -192,7 +192,7 @@ namespace {
             // Note - /procfs files always unseekable
             optional<uint64_t> memTotal;
             optional<uint64_t> slabReclaimable;
-            optional<uint64_t> slab; // older kernels dont have slabReclaimable
+            optional<uint64_t> slab; // older kernels don't have slabReclaimable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
@@ -266,7 +266,7 @@ namespace {
                         nFound += ReadVMStatLine_ (&pgfault, kpgfaultLabel_, line);
                         // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
                         // which makes no sense
-                        nFound += ReadVMStatLine_ (&pgpgout, kpgpgoutLabel_, line); // tried pgpgout but I dont know what it is but doesn't appear to be pages out - noneof this well documented
+                        nFound += ReadVMStatLine_ (&pgpgout, kpgpgoutLabel_, line); // tried pgpgout but I don't know what it is but doesn't appear to be pages out - noneof this well documented
                         nFound += ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, kpgmajfaultLabel_, line);
                         if (nFound >= 3) {
                             break; // avoid reading rest if all found
@@ -351,7 +351,7 @@ namespace {
             MEMORYSTATUSEX statex{};
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
-            updateResult->fPhysicalMemory.fFree             = statex.ullAvailPhys; // overridden later, but a good first estimate if we dont use WMI
+            updateResult->fPhysicalMemory.fFree             = statex.ullAvailPhys; // overridden later, but a good first estimate if we don't use WMI
             *totalRAM                                       = statex.ullTotalPhys;
             updateResult->fVirtualMemory.fPagefileTotalSize = statex.ullTotalPageFile;
 

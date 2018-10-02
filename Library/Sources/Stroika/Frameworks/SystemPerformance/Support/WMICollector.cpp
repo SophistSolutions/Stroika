@@ -169,7 +169,7 @@ WMICollector::WMICollector (const WMICollector& from)
 #endif
     /// @todo auto&& critSec = lock_guard{fCritSection_}; before copy elts!!!
 
-    // Note the above copy CTOR does a second collect, because we dont know how to clone collected data?
+    // Note the above copy CTOR does a second collect, because we don't know how to clone collected data?
 }
 
 WMICollector& WMICollector::operator= (const WMICollector& rhs)

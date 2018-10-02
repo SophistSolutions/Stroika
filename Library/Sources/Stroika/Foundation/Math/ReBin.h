@@ -24,7 +24,7 @@
  *                  they increase monotonically with bucket number).
  *
  *                  The only requirement is that the buckets form a partition of some domain (so in other words, they
- *                  dont overlap, but have no 'holes' in the middle. So they can be parition Range<XType> (some minx/maxx).
+ *                  don't overlap, but have no 'holes' in the middle. So they can be parition Range<XType> (some minx/maxx).
  *
  *      @todo   Consider adding an x-offset, so that we logically re-bin, plus shift along the x-axis by
  *              a (given) offset (in units of src-bin widths).

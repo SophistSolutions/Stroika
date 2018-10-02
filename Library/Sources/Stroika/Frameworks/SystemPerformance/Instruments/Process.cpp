@@ -400,7 +400,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
             }
             fStaticSuppressedAgain.clear (); // cuz we never returned these
         }
@@ -526,7 +526,7 @@ namespace {
                          *  Improve this logic below - checking for exact error code from readlink..as they say in that article.
                          */
                         processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
-                        // Note - many kernel processes have commandline, so dont filter here based on that
+                        // Note - many kernel processes have commandline, so don't filter here based on that
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
                             processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
                         }
@@ -582,7 +582,7 @@ namespace {
 
                         processDetails.fPrivateVirtualMemorySize = stats.vsize;
 
-                        // Dont know how to easily compute, but I'm sure not hard (add in shared memory of various sorts at worst) - or look at memory map, but
+                        // Don't know how to easily compute, but I'm sure not hard (add in shared memory of various sorts at worst) - or look at memory map, but
                         // very low priority (like smaps file below)
                         //processDetails.fTotalVirtualMemorySize = stats.vsize;
 
@@ -690,7 +690,7 @@ namespace {
             }
             return results;
         }
-        // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
+        // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
         optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
@@ -723,7 +723,7 @@ namespace {
             }
             return nullopt;
         }
-        // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
+        // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
         optional<String> OptionallyResolveShortcut_ (const String& shortcutPath)
         {
             if (IO::FileSystem::Default ().Access (shortcutPath)) {
@@ -1321,7 +1321,7 @@ namespace {
                 capture_ ();
             }
             catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Dont propagate in case just listing collectors
+                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
             }
         }
 #if qUseWMICollectionSupport_
@@ -1594,7 +1594,7 @@ namespace {
                          *      }
                          *
                          *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
-                         *  it started SOMETIME during this capture, but we dont know when (so we dont know the divisor).
+                         *  it started SOMETIME during this capture, but we don't know when (so we don't know the divisor).
                          */
                     }
                 }

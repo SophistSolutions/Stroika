@@ -32,7 +32,7 @@
  *      @todo   Do a better job handling default/reasonable timeout time for service to start/stop/restart.
  *              Hacked something mostly for UNIX.
  *
- *      @todo   Window service not fully working - see why when you start/stop we dont see
+ *      @todo   Window service not fully working - see why when you start/stop we don't see
  *              Logger::Get ().Log (Logger::Priority::eNotice, L"User-service code is shut down");
  *              message printed out. Basic startup/shutdown seems roughly OK though.
  *
@@ -618,7 +618,7 @@ namespace Stroika::Frameworks::Service {
     /**
      *  Wrap this around any IServiceIntegrationRep, to get Logging to work.
      *
-     *      \note - LoggerServiceWrapper doesn't work with WindowsService to get logging on _RunAsService cuz we dont get a hook
+     *      \note - LoggerServiceWrapper doesn't work with WindowsService to get logging on _RunAsService cuz we don't get a hook
      *              https://stroika.atlassian.net/browse/STK-476
      */
     class Main::LoggerServiceWrapper : public Main::IServiceIntegrationRep {
@@ -766,7 +766,7 @@ namespace Stroika::Frameworks::Service {
     /**
      *  Run as a windows service - integrating with the Windows Service Mgr
      *
-     *      \note - LoggerServiceWrapper doesn't work with WindowsService to get logging on _RunAsService cuz we dont get a hook
+     *      \note - LoggerServiceWrapper doesn't work with WindowsService to get logging on _RunAsService cuz we don't get a hook
      *              https://stroika.atlassian.net/browse/STK-476
      */
     class Main::WindowsService : public Main::IServiceIntegrationRep {

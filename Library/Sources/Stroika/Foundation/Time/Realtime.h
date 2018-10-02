@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Time {
     using chrono::time_point;
 
     /**
-     *  Use double instead of long double because we dont have time to test performance impact, and only some (gcc/unix)
+     *  Use double instead of long double because we don't have time to test performance impact, and only some (gcc/unix)
      *  systems make a difference anyhow (not on ppc).
      *
      *  <<<OBSOLETE COMMENT>>>>Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).

@@ -16,7 +16,7 @@ Could also do for strings:
 	(1..10).to_a»[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 	('bar'..'bat').to_a»["bar", "bas", "bat"]
 
-	(PROBABY DONT DO FOR STRINGS)
+	(PROBABY DON't DO FOR STRINGS)
 
 
 FROM RUBY DOCS:

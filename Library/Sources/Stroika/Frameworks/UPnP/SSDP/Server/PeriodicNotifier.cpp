@@ -74,7 +74,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
 #endif
                 try {
                     for (auto a : advertisements) {
-                        a.fAlive          = true; // periodic notifier must announce alive (we dont support 'going down' yet)
+                        a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
                         Memory::BLOB data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", SearchOrNotify::Notify, a);
                         s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
                     }

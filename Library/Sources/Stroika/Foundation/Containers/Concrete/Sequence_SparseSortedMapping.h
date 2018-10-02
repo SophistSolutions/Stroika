@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          *  The only non-obvious parameter is 'sparseValue'. This is the special value used internally to
-         *  make for the 'sparse' array. These particular values dont require storage.
+         *  make for the 'sparse' array. These particular values don't require storage.
          *
          *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
          *  performance.

@@ -139,14 +139,14 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  All constructors must agree about what extractor to use: either one from the traits
-         *  or one provided in all constructors (that dont get it indirectly from another place).
+         *  or one provided in all constructors (that don't get it indirectly from another place).
          */
         static constexpr bool kConstructorsHaveExtractorArgument = is_function_v<typename TraitsType::KeyExtractor>;
 
     public:
         /**
          *  All constructors must agree about what extractor to use: either one from the traits
-         *  or one provided in all constructors (that dont get it indirectly from another place).
+         *  or one provided in all constructors (that don't get it indirectly from another place).
          *
          *  @todo use kConstructorsHaveExtractorArgument in SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR but harder with MSVC2k13
          */

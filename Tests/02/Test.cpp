@@ -80,7 +80,7 @@ namespace {
     unsigned ipow (unsigned n, unsigned toPow)
     {
         // quick hack since pow didnt seem to do what I want - just blindly
-        // multiply and dont worry about overflow...
+        // multiply and don't worry about overflow...
         unsigned result = 1;
         while (toPow-- != 0) {
             result *= n;

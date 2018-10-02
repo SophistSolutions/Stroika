@@ -50,7 +50,7 @@
  *              default parameter?
  *
  *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
- *              GENERATOR (though dont)
+ *              GENERATOR (though don't)
  *
  *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
  */
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  EXPERIMENTAL AS OF v2.0a22x
      *
-     *  @todo - TEST. I dont think this is important one way or the other, but I think it may aid performance,
+     *  @todo - TEST. I don't think this is important one way or the other, but I think it may aid performance,
      *          especially if NOT using kIterableUsesStroikaSharedPtr, because of the single
      *          memory allocation (like make_shared<>?).
      */
@@ -1155,7 +1155,7 @@ namespace Stroika::Foundation::Traversal {
          *      It might have been better design to make the argument to Iterable<T>::Rep::MakeIterator ()
          *      be owner instead of suggestedOwner, and then require that it get tracked. But that would
          *      have imposed a memory (and copying) overhead on each iterator, and the current
-         *      use cases for iterators dont warrant that.
+         *      use cases for iterators don't warrant that.
          *
          *      I think its good enough that particular subtypes - where tracking an owner makes sense and
          *      is useful, we be done. And when not useful, it can be optimized away.

@@ -325,10 +325,10 @@ Again:
                     newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
                     break;
                 case IfOperStatusDown:
-                    newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus); // keep any existing status values, but dont leave unknown
+                    newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus); // keep any existing status values, but don't leave unknown
                     break;
                 default:
-                    // Dont know how to interpret the other status states
+                    // Don't know how to interpret the other status states
                     break;
             }
             for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {

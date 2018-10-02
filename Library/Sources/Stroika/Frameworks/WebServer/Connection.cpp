@@ -86,7 +86,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #endif
 
     /*
-     *  Preflight the request and make sure all the bytes of the header are available. Dont read more than needed.
+     *  Preflight the request and make sure all the bytes of the header are available. Don't read more than needed.
      */
     if (not fMsgHeaderInTextStream.AssureHeaderSectionAvailable ()) {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
@@ -106,7 +106,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
             logMsg (L"got EOF from src stream reading headers(incomplete)");
 #endif
-            return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we dont want the noise in the logs.
+            return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
         }
         static Set<Character> kTokenSeparatorSet_{' '};
         Sequence<String>      tokens{line.Tokenize (kTokenSeparatorSet_)};
@@ -225,7 +225,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             )) {
             case MyMessage_::eIncompleteDeadEnd: {
                 DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
-                return eClose; // dont keep-alive - so this closes connection
+                return eClose; // don't keep-alive - so this closes connection
             } break;
             case MyMessage_::eIncompleteButMoreMayBeAvailable: {
                 DbgTrace (L"ReadHeaders failed - incomplete header (most likely a DOS attack).");
