@@ -81,7 +81,7 @@ else
 	fi
 fi
 
-NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations | wc -w`
+NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
