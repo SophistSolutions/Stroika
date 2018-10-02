@@ -1,6 +1,6 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
 
-GetConfigurationParameter text
-GetConfigurations text
-GetConfigurationTags text
+GetConfigurationParameter text eol=lf
+GetConfigurations text eol=lf
+GetConfigurationTags text eol=lf
