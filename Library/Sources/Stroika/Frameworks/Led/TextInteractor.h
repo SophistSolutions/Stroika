@@ -904,9 +904,9 @@ namespace Stroika::Frameworks::Led {
         UpdateMode      fOldValue;
 
     private:
-        TemporarilySetUpdateMode (const TemporarilySetUpdateMode&); // DONT
-        void         operator= (const TemporarilySetUpdateMode&);   // DONT
-        static void* operator new (size_t);                         // DONT
+        TemporarilySetUpdateMode (const TemporarilySetUpdateMode&) = delete;
+        TemporarilySetUpdateMode& operator= (const TemporarilySetUpdateMode&) = delete;
+        static void*              operator new (size_t); // DONT
     };
 
     /*

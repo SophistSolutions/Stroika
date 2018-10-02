@@ -1432,7 +1432,7 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::GroupContext (ReaderContext
     , fDestinationContext () /// LGP 2001-08-22- ------ FOR NOW - BOGUS INITIAL VALUE- BUT SHOULD GET FROM readerContext::Destination::GetContext() rather than from parent group!!!
 {
     if (fParentGroup != nullptr) {
-        fDestinationContext = fParentGroup->fDestinationContext; // SEE ABOVE - DONT GET FROM PARENT GROUP BUT FROM CUR DESTINATION CONTEXT!!!
+        fDestinationContext = fParentGroup->fDestinationContext; // SEE ABOVE - DON'T GET FROM PARENT GROUP BUT FROM CUR DESTINATION CONTEXT!!!
         fCurrentCodePage    = fParentGroup->fCurrentCodePage;
         fCCHSCodePage       = fParentGroup->fCCHSCodePage;
     }

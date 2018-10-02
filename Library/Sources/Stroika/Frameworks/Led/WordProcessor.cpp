@@ -5530,7 +5530,7 @@ bool WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
                 }
                 else if (tables.size () == 1) {
                     Table* table = tables[0];
-                    // If table contains this point - then coalese - otherwise dont
+                    // If table contains this point - then coalese - otherwise don't
                     if (table->GetStart () == pm->GetEnd ()) {
                         return false;
                     }

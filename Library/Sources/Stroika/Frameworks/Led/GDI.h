@@ -25,7 +25,7 @@
 
 #include "Support.h"
 
-// WHY DONT WE NEED TO INCLUDE <Windows.h> here??? - LGP 991213
+// WHY DON'T WE NEED TO INCLUDE <Windows.h> here??? - LGP 991213
 
 #if qXWindows
 #include <X11/Xlib.h>

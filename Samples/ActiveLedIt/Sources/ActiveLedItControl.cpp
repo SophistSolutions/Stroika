@@ -740,7 +740,7 @@ DWORD ActiveLedItControl::GetControlFlags ()
         // between the active and inactivate state.
         dwFlags |= noFlickerActivate;
 
-//DISABLED CUZ WE DONT SUPPORT THIS IN OUR ONDRAW() method...
+//DISABLED CUZ WE DON'T SUPPORT THIS IN OUR ONDRAW() method...
         // The control can optimize its OnDraw method, by not restoring
         // the original GDI objects in the device context.
         dwFlags |= canOptimizeDraw;

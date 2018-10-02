@@ -788,7 +788,7 @@ size_t SimpleTextImager::GetEndOfRow (RowReference row) const
 {
     size_t markerEnd = GetRealEndOfRow (row);
     // Be careful about NL at end. If we end with an NL, then don't count that.
-    // And for the last PM - it contains a bogus empty character. Dont count
+    // And for the last PM - it contains a bogus empty character. Don't count
     // that either.
     Assert (markerEnd <= GetLength () + 1);
     if (markerEnd == GetLength () + 1) {

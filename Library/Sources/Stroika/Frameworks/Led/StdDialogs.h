@@ -332,7 +332,7 @@ namespace Stroika::Frameworks::Led {
         bool fDialogClosing;
 #elif qPlatform_Windows
         HINSTANCE           fHINSTANCE;
-        const Led_SDK_Char* fResID; // not a REAL string  - fake one for MAKEINTRESOURCE - which is why we dont copy with 'string' class
+        const Led_SDK_Char* fResID; // not a REAL string  - fake one for MAKEINTRESOURCE - which is why we don't copy with 'string' class
         HWND                fParentWnd;
 #elif qXWindows && qUseGTKForLedStandardDialogs
         GtkWindow* fParentWindow;

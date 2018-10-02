@@ -1208,7 +1208,7 @@ Led_SDK_String Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
     (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (NEltsOf (widgetText)));
     return widgetText;
 #elif qXWindows && qUseGTKForLedStandardDialogs
-    return (char*)gtk_entry_get_text (GTK_ENTRY (itemID)); // gtk returns internal pointer - DONT FREE
+    return (char*)gtk_entry_get_text (GTK_ENTRY (itemID)); // gtk returns internal pointer - DON'T FREE
 #endif
 }
 

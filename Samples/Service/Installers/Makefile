@@ -50,7 +50,7 @@ BASIC_NAME_LC=stroika-sampleservice
 BASIC_NAME=Stroika-SampleService
 
 #The 'deb' package creator requires the directory have particular permissions. on WSL (windows subsystem for linux)
-#using the /mnt filesystem, the permissions dont work. So use /tmp for these. But that means creating the directories
+#using the /mnt filesystem, the permissions don't work. So use /tmp for these. But that means creating the directories
 #in a temp location (already emppty) and deleting it at the end (bit of a PITA if you want to review the data, but hten just
 #comment out the delete line)
 #DEB_WORKDIR=$(ObjDir)DEB_TMP/

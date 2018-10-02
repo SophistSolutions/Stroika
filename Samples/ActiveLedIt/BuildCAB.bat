@@ -14,7 +14,7 @@ rem Revision 2.13  2003/03/26 22:15:48  lewis
 rem SPR#1378 - adjust args to BuildCAB so we pass along #version string for Sample .html files
 rem
 rem Revision 2.12  2002/09/04 02:01:19  lewis
-rem use new PATH variable addition instead of explicit path for signcode etc calls. Dont assume old locations for that code - instead use VC.NET dir.
+rem use new PATH variable addition instead of explicit path for signcode etc calls. Don't assume old locations for that code - instead use VC.NET dir.
 rem
 rem Revision 2.11  2002/05/06 21:34:17  lewis
 rem <=============================== Led 3.0.1 Released ==============================>

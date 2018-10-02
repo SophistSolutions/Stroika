@@ -1537,11 +1537,11 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 
                 SCRIPT_STATE scriptState;
                 memset (&scriptState, 0, sizeof (scriptState));
-                // Important to ALLOW ScriptStringAnalyse to REORDER (so dont set this true) cuz otherwise it won't get right measurements
+                // Important to ALLOW ScriptStringAnalyse to REORDER (so don't set this true) cuz otherwise it won't get right measurements
                 // for arabic font substition (shaping)---LGP 2003-01-02
 
                 // MAYBE THIS IS WRONG - AND COVERING UP ANOTHER BUG??? DUNNO? MUST BE CAREFUL ABOUT MIRRORING (SYMSWAP). If done HERE,
-                // then I must NOT inhibit symswap. I DONT THINK I CAN DO it here cuz the draw code gets done in RUNS... HMMM
+                // then I must NOT inhibit symswap. I DON'T THINK I CAN DO it here cuz the draw code gets done in RUNS... HMMM
                 // LGP 2003-01-02...
                 //  scriptState.fOverrideDirection  = true;     // I THINK This is how I say already in display order
                 scriptState.fInhibitSymSwap = true;

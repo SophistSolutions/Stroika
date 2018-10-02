@@ -368,7 +368,7 @@ bool SpellCheckEngine_Basic::OtherStringToIgnore_Number (const Led_tString& chec
 
 namespace {
     // do this to avoid MSFT annoying _SCL_INSECURE_DEPRECATE warning I cannot seem to suppress
-    // with #praga (and dont want to use #define cuz makes it hard to work as a library)
+    // with #praga (and don't want to use #define cuz makes it hard to work as a library)
     // --LGP 2014-03-23
     template <class BidirectionalIterator1, class BidirectionalIterator2>
     BidirectionalIterator2 My_copy_backward_ (BidirectionalIterator1 first, BidirectionalIterator1 last, BidirectionalIterator2 result)
@@ -896,7 +896,7 @@ vector<Led_tChar> SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () co
 
 namespace {
     // do this to avoid MSFT annoying _SCL_INSECURE_DEPRECATE warning I cannot seem to suppress
-    // with #praga (and dont want to use #define cuz makes it hard to work as a library)
+    // with #praga (and don't want to use #define cuz makes it hard to work as a library)
     // --LGP 2014-03-23
     template <class InputIterator, class OutputIterator>
     OutputIterator my_copy_ (InputIterator first, InputIterator last, OutputIterator result)

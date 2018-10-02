@@ -496,7 +496,7 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
                 eraser.bottom = eraser.top;
             }
 
-            // SEE IF WE CAN TIGHTEN THIS TEST A BIT MORE, SO WHEN NO PIXELS WILL BE DRAWN, WE DONT BOTHER
+            // SEE IF WE CAN TIGHTEN THIS TEST A BIT MORE, SO WHEN NO PIXELS WILL BE DRAWN, WE DON'T BOTHER
             // IN OTHER WORDS, CHANGE A COUPLE <= to < - LGP 970315
 
             // QUICKIE INTERSECT TEST
@@ -533,7 +533,7 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     catch (...) {
 #if qPlatform_MacOS
         // Probably this code (and below case as well) is buggy. Setting back color in offscreen port (which is current now).
-        // But the code has been in place for quite some time (dont think broken by my offscreen bitmap move to LedGDI) with no
+        // But the code has been in place for quite some time (don't think broken by my offscreen bitmap move to LedGDI) with no
         // noticable bugs/problems... Reconsider later...
         // LGP 2001-05-11
         Assert (*tablet == Led_GetCurrentGDIPort ());
@@ -737,7 +737,7 @@ size_t MultiRowTextImager::GetEndOfRow (RowReference row) const
     PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (cur);
     if (subRow == pmCacheInfo.GetLastRow ()) {
         // Be careful about NL at end. If we end with an NL, then don't count that.
-        // And for the last PM - it contains a bogus empty character. Dont count
+        // And for the last PM - it contains a bogus empty character. Don't count
         // that either.
         Assert (cur->GetEnd () > 0);
 
