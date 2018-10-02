@@ -1,13 +1,23 @@
 #!/bin/bash
+#
+# EXAMPLES:
+#		./ScriptsLib/GetConfigurations
+#		./ScriptsLib/GetConfigurations --config-tags "Windows"
+#		./ScriptsLib/GetConfigurations --config-tags "Windows 32"
+#
 MY_PATH="`dirname \"$0\"`"
 MY_PATH=`realpath $MY_PATH`
 
-CONFIG_TAG_RESTRICTION=
+CONFIG_TAG_RESTRICTION=""
 while (( "$#" )); do
   case "$1" in
-    --config-tag)
+    --config-tags)
       CONFIG_TAG_RESTRICTION=$2
       shift 2
+      ;;
+    --help)
+      echo "GetConfigurations returns all configurations; GetConfigurations --config-tags 'abc def' returns all configurations with BOTH the abc and def tags"
+      exit 0
       ;;
     --) # end argument parsing
       shift
@@ -32,15 +42,20 @@ fi
 if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
 	echo $RAW_CONFIGS
 else
-	echo xxxx
 	NEW_CONFIGS=""
 	for c in $RAW_CONFIGS ; do
-		echo aaaa
 		ITS_TAGS=`$MY_PATH/../ScriptsLib/GetConfigurationParameter $c ConfigTags`
-		echo ITS_TAGS=$ITS_TAGS
-
-		if [[ $ITS_TAGS = *"$CONFIG_TAG_RESTRICTION"* ]]; then
-		  NEW_CONFIGS .= $c
+		#echo c=$c, and itsTAGS = $ITS_TAGS
+		allMatch=1
+		for t in $CONFIG_TAG_RESTRICTION ; do
+			if [[ $ITS_TAGS = *"$t"* ]]; then
+				true;
+			else
+				allMatch=0
+			fi
+		done
+		if [ $allMatch -eq 1 ]; then
+			NEW_CONFIGS="$NEW_CONFIGS $c"
 		fi
 	done
 	echo $NEW_CONFIGS
