@@ -147,6 +147,7 @@ namespace {
     {
         // Note - /procfs files always unseekable
         static const String_Constant kUseFile2List_{L"/proc/mounts"};
+        // https://stroika.atlassian.net/browse/STK-665
         // kUseWatcher_ seems safe and much faster. But on gcc8, produces a mysterious error with address sanitizer, do disable
         // for now
         //  @todo fix address sanitizer issue? APPEARS not my bug --LGP 2018-09-28
