@@ -42,14 +42,14 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-        *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
-        */
+         *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+         */
         nonvirtual SortedMapping<KEY_TYPE, VALUE_TYPE> operator() () const;
 
     public:
         /**
-        *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
-        */
+         *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+         */
         static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&) = nullptr);
 
     private:
