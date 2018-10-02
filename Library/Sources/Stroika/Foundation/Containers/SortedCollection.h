@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Containers {
          * \brief Removes the argument item with the already associated GetInOrderComparer(), and returns true if the item is found.
          */
         using inherited::Remove;
-        nonvirtual bool Remove (ArgByValueType<T> item);
+        nonvirtual void Remove (ArgByValueType<T> item);
 
     protected:
         /**
