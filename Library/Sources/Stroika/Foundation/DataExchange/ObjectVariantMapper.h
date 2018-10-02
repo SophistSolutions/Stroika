@@ -536,6 +536,9 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \note   It is legal to call MakeCommonSerializer<> on a type where it only knows how to construct the base class type (struct derived : base {})
          *          in which case it produces a serializer that will still work with the given type T, but will only capture the data from base.
+         *
+         *          Note - the reason this works is because the object of type "T" is default-constructed outside the de-serializer, and then passed
+         *          by address to the de-serializer.
          */
         template <typename T, typename... ARGS>
         static TypeMappingDetails MakeCommonSerializer (ARGS&&... args);
