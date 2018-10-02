@@ -17,19 +17,14 @@ using namespace Stroika::Foundation::Debug;
  ****************** Debug::AssertExternallySynchronizedLock *********************
  ********************************************************************************
  */
-DISABLE_COMPILER_MSC_WARNING_START (4297)
+//DISABLE_COMPILER_MSC_WARNING_START (4297)
 // workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
 Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
     AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept
-#if __GNUC__ == 8
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
-#endif
-        try : fSharedLockThreads_ () {
+{
+    fSharedLockThreads_ = multiset<thread::id>{};
 }
-catch (...) {
-    AssertNotReached ();
-}
-DISABLE_COMPILER_MSC_WARNING_END (4297)
+//DISABLE_COMPILER_MSC_WARNING_END (4297)
 
 void AssertExternallySynchronizedLock::lock_ () const noexcept
 {
@@ -38,9 +33,9 @@ void AssertExternallySynchronizedLock::lock_ () const noexcept
             // If first time in, save thread-id
             fCurLockThread_ = this_thread::get_id ();
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            if (not fSharedLockThreads_.empty ()) {
+            if (not fSharedLockThreads_->empty ()) {
                 // If first already shared locks - OK - so long as same thread
-                Require (fSharedLockThreads_.count (fCurLockThread_) == fSharedLockThreads_.size ());
+                Require (fSharedLockThreads_->count (fCurLockThread_) == fSharedLockThreads_->size ());
             }
         }
         else {
@@ -71,7 +66,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") void AssertExternally
             Require (fCurLockThread_ == this_thread::get_id ());
         }
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        fSharedLockThreads_.insert (this_thread::get_id ());
+        fSharedLockThreads_->insert (this_thread::get_id ());
     }
     catch (...) {
         AssertNotReached ();
@@ -82,9 +77,9 @@ void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
 {
     try {
         lock_guard<mutex>              sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        multiset<thread::id>::iterator tti = fSharedLockThreads_.find (this_thread::get_id ());
-        Require (tti != fSharedLockThreads_.end ()); // else unbalanced
-        fSharedLockThreads_.erase (tti);
+        multiset<thread::id>::iterator tti = fSharedLockThreads_->find (this_thread::get_id ());
+        Require (tti != fSharedLockThreads_->end ()); // else unbalanced
+        fSharedLockThreads_->erase (tti);
     }
     catch (...) {
         AssertNotReached ();

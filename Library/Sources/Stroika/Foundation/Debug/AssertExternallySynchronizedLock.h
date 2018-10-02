@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <optional>
 #include <set>
 #include <shared_mutex>
 #include <thread>
@@ -166,13 +167,13 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void unlock_shared_ () const noexcept;
 
     private:
-        mutable atomic_uint_fast32_t fLocks_{0};
-        mutable thread::id           fCurLockThread_;
-        static mutex&                GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedLock but static probably performs better)
-        mutable multiset<thread::id> fSharedLockThreads_;           // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
+        mutable atomic_uint_fast32_t           fLocks_{0};
+        mutable thread::id                     fCurLockThread_;
+        static mutex&                          GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedLock but static probably performs better)
+        mutable optional<multiset<thread::id>> fSharedLockThreads_;           // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
+                                                                              // and once constructed always 'has_value' but use optional to allow CTOR to be noexcept()
 #endif
     };
-
 }
 
 /*

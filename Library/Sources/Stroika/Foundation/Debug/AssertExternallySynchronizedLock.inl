@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Debug {
 #if qDebug
         try {
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (src.fLocks_ == 0 and src.fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
+            Require (src.fLocks_ == 0 and src.fSharedLockThreads_->empty ()); // to move, the src can have no locks of any kind (since we change src)
         }
         catch (...) {
             AssertNotReached ();
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Debug {
         try {
             lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
             lock_guard<mutex>                                  sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (fLocks_ == 0 and fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
+            Require (fLocks_ == 0 and fSharedLockThreads_->empty ()); // We must not have any locks going to replace this
         }
         catch (...) {
             AssertNotReached ();
@@ -55,8 +55,8 @@ namespace Stroika::Foundation::Debug {
 #if qDebug
         try {
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-            Require (fLocks_ == 0 and fSharedLockThreads_.empty ());         // ditto for thing being assigned to
+            Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_->empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
+            Require (fLocks_ == 0 and fSharedLockThreads_->empty ());         // ditto for thing being assigned to
         }
         catch (...) {
             AssertNotReached ();
