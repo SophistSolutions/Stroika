@@ -148,7 +148,9 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AddCommonType ()
     {
-        Add (MakeCommonSerializer<T> ());
+        const auto&& serializer = MakeCommonSerializer<T> ();
+        Assert (serializer.fForType == typeid (T));
+        Add (serializer);
     }
     template <typename CLASS>
     inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)

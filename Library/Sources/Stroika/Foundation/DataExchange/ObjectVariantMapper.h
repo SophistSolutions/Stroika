@@ -336,7 +336,7 @@ namespace Stroika::Foundation::DataExchange {
          *  Note this this is not needed (because it's done by default), but is supported,
          *  for the builtin types.
          *
-         *  @see MakeCommonSerializer
+         *  @see MakeCommonSerializer for details, and restrictions.
          */
         template <typename T>
         nonvirtual void AddCommonType ();
