@@ -128,8 +128,10 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
 	ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
 	if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 		STAGE_STARTAT_INT=$(date +%s)
-		RASPBERRYPICONFIGS=`./ScriptsLib/GetConfigurations | grep -oh "raspberrypi-.*\w"`
-		RASPBERRYPIVALGRINDCONFIGS=`./ScriptsLib/GetConfigurations | grep -oh "raspberrypi-valgrind.*\w"`
+		#RASPBERRYPICONFIGS=`./ScriptsLib/GetConfigurations | grep -oh "raspberrypi-.*\w"`
+		RASPBERRYPICONFIGS=`make list-configurations TAGS="raspberrypi"`
+		#RASPBERRYPIVALGRINDCONFIGS=`./ScriptsLib/GetConfigurations | grep -oh "raspberrypi-valgrind.*\w"`
+		RASPBERRYPIVALGRINDCONFIGS=`make list-configurations TAGS="raspberrypi valgrind"`
 		for i in $RASPBERRYPICONFIGS; do 
 			echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
