@@ -539,6 +539,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 			if (trim (`uname -r`) eq "4.4.0-43-Microsoft" || trim (`uname -r`) eq "4.4.0-17134-Microsoft") {
 				#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
+				### NOTE - this is FIXED in 4.4.0-17763-Microsoft
 			}
 			elsif (!$sanitizerFlagsNoneSet) {
 				my %already = map { $_ => 1 } @sanitizerFlags;
@@ -551,9 +552,10 @@ sub	SetDefaultForCompilerDriver_
 				$sanitizerFlagsIsDefined = true;
 			}
 			# @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper) - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
-			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '4.0') {
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '6.0') {
 				my $test2Suppress = "function";
 				if ("$^O" eq "darwin") {
+					### verified still broken in XCode 10 (or cannot find other workaround without this)
 					$test2Suppress = "vptr";
 				}
 				if ($noSanitizerFlags eq "") {
