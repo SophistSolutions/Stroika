@@ -19,3 +19,5 @@ RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
 
 # Check out a copy of the sources, so you are ready to start building
 RUN mkdir Sandbox && cd Sandbox && git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev && cd Stroika-Dev && git checkout V2.1-Release
+
+CMD /bin/bash

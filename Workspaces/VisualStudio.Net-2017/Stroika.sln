@@ -3056,6 +3056,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win32", "Win32", "{D2183708
 		..\..\ThirdPartyComponents\Xerces\CURRENT\src\xercesc\util\Transcoders\Win32\Win32TransService.hpp = ..\..\ThirdPartyComponents\Xerces\CURRENT\src\xercesc\util\Transcoders\Win32\Win32TransService.hpp
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildContainers", "BuildContainers", "{4CA6CEC9-9BEB-4810-B815-00D81B06570D}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\BuildContainers\CreateImages = ..\..\BuildContainers\CreateImages
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-Small", "Ubuntu1804-Small", "{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\BuildContainers\Ubuntu1804-Small\Dockerfile = ..\..\BuildContainers\Ubuntu1804-Small\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-RegressionTests", "Ubuntu1804-RegressionTests", "{8C954ABB-96DF-4E69-86E5-0903F99C8052}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\BuildContainers\Ubuntu1804-RegressionTests\Dockerfile = ..\..\BuildContainers\Ubuntu1804-RegressionTests\Dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -3530,6 +3545,9 @@ Global
 		{D6D33F98-85F2-44D3-BB90-E7CE8DC1C46F} = {3440B5D2-015D-40AE-8368-728970A6C1A8}
 		{488E8AE0-4E8A-43CE-90AB-3E9F68823E75} = {3440B5D2-015D-40AE-8368-728970A6C1A8}
 		{D2183708-D1FA-4634-AFBE-E323E9555439} = {3440B5D2-015D-40AE-8368-728970A6C1A8}
+		{4CA6CEC9-9BEB-4810-B815-00D81B06570D} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
+		{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{8C954ABB-96DF-4E69-86E5-0903F99C8052} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}

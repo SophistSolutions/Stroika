@@ -8,13 +8,4 @@ RUN apt-get update && apt-get install -y \
 	libasan5 \
 	libc++-dev \
 	libubsan0 \
-	libubsan1 \
-	p7zip-full \
-	git \
-	pkg-config \
-	automake \
-	wget \
-	unzip \
-	locales \
-	cmake \
-	libtool-bin
+	libubsan1
