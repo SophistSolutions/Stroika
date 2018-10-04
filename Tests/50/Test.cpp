@@ -1464,7 +1464,7 @@ namespace {
             Test_UTF82WString_win32API, L"win32API",
             Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
             4900000,
-            1.7,
+            1.9,
             &failedTests);
 #endif
 #if qPlatform_Windows
