@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-# install basic compilers and tools needed to build most of the samples/regression tests
+# install basic compilers and tools needed to build and run basic tests ('make all run-tests')
 RUN apt-get update && apt-get install -y \
 	g++ \
 	libasan5 \
