@@ -123,6 +123,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CURRENT
+	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
