@@ -397,6 +397,7 @@ regression-test-configurations:
 		./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 		# --no-sanitize and --lto disable calls for clang7 just because of how I built it...\
 		./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined;\
+		./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a;\
 		./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver ~/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable --lto disable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
@@ -418,11 +419,11 @@ regression-test-configurations:
 		./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
-		./configure raspberrypi-g++-7 --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
+		#./configure raspberrypi-g++-7 --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
 		#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
 		#./configure raspberrypi-g++-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi-g++-7-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
-		./configure raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag raspberrypi --config-tag valgrind --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
+		#./configure raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag raspberrypi --config-tag valgrind --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 		#\
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
 		#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
