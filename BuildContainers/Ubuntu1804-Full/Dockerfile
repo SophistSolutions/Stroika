@@ -15,7 +15,9 @@ RUN apt-get update && apt-get install -y \
 	automake \
 	wget \
 	unzip \
+	locales \
 	cmake \
 	libtool-bin
 
+RUN locale-gen en_US en_US.UTF-8
 RUN mkdir Sandbox && cd Sandbox && git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev && cd Stroika-Dev && git checkout V2.1-Release
