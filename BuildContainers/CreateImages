@@ -1,0 +1,3 @@
+#!/bin/bash
+docker build Ubuntu1804-Full/ -t sophist-solutions-inc/stroika-buildvm-ubuntu1804-full
+docker build Ubuntu1804-Small/ -t sophist-solutions-inc/stroika-buildvm-ubuntu1804-small
