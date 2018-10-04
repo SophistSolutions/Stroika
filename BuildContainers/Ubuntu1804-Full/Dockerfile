@@ -1,7 +1,6 @@
 FROM sophist-solutions-inc/stroika-buildvm-ubuntu1804-small
 
 RUN apt-get update && apt-get install -y \
-	g++ \
 	g++-7 \
 	g++-8 \
 	clang++-6 \
@@ -19,5 +18,3 @@ RUN apt-get update && apt-get install -y \
 	locales \
 	cmake \
 	libtool-bin
-
-RUN mkdir Sandbox && cd Sandbox && git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev && cd Stroika-Dev && git checkout V2.1-Release
