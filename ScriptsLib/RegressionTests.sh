@@ -270,9 +270,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
 fi
 
-#VERY ROUGH GUESTIMATE - I think excludes 2 clang tests, and a few more?
 TOTALCONFIGS_=`./ScriptsLib/GetConfigurations | wc -w`
-#TOTAL_WARNINGS_EXPECTED=$(($TOTALCONFIGS_ - 2))
 TOTAL_WARNINGS_EXPECTED=0
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
