@@ -3227,7 +3227,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         return result;
     }
 
-    DISABLE_COMPILER_MSC_WARNING_START (4701) // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
+    DISABLE_COMPILER_MSC_WARNING_START (4701)                                                // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
     template <>
     ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
