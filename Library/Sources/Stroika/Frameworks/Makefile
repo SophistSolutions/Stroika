@@ -81,6 +81,7 @@ endif
 
 clobber::
 ifeq (Unix,$(ProjectPlatformSubdir))
+	@for i in $(SubDirs);\
 	do\
 	    $(MAKE) --directory $$i --no-print-directory -s clobber CONFIGURATION=$(CONFIGURATION);\
 	done
