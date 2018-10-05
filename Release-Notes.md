@@ -26,575 +26,112 @@ History
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d9...v2.1d10</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
 		<li>Builds
 			<ul>
 				<li>Created Dockerfiles and containers to build under docker (still debugging running valgrind/sanitizers, and no macos/windows)</li>
+				<li>**big new feature for builds - configuration tags** - https://stroika.atlassian.net/browse/STK-666
+					<ul>
+						<li>configure [--config-tag {TAG-NAME}]* </li>
+						<li>make list-configuration-tags</li>
+						<li>make list-configurations</li>
+						<li>make list-configurations TAGS=Windows; (NOTE CONFIGURATION_TAGS or TAGS same thing)</li>
+						<li>make list-configurations TAGS="Windows 32"; (just the 32-bit configs)</li>
+						<li>make all run-tests TAGS=Windows</li>
+						<li>make run-tests TAGS=valgrind VALGRIND=memcheck (run regression tests on all the tagged valgrind configs with memcheck)</li>
+						<li>This now makes it much easier to keep windows and UNIX builds in the same Stroika (or Stroika-based-project) - so you can make all the appropraite
+						ones from a single make call (or clean/clobber etc)</li>
+						<li>use config tags on top level makefile default configurations, and regression test configurations, and redo regtest script to use those tags</li>
+						<li>updated docs for build system changes (make TAG= etc)</li>
+					</ul>
+				</li>
 				<li>push rpmbuild warning into output file (not main output)</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>deprecated ScriptsLib/PrintConfigurationVariable.pl and replaced it with ScriptsLib/GetConfigurationParameter; and added more error checking; Simplify call to ScriptsLib/GetConfigurationParameter from makefiles</li>
+				<li>renamed ScriptsLib/GetConfigurations.sh to ScriptsLib/GetConfigurations</li>
+				<li>.gitattributes for ScriptsLib</li>
+				<li>change set of regression tests: added my-clang++-7-debug-libc++-c++2a  configuration; lost raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc  and raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc  (since ahve these configs for g++8 and good enough - dont need every combination - we test g++7 on arm)</li>
+				<li>Lose build with my-g++-8.2-debug-c++2a (regressiontest configs) cuz now that version is part of ubuntu</li>
+				<li>added ScriptsLib/CheckValidConfiguration.sh configuration makefile checks</li>
 			</ul>
 		</li>
-		<li>xxx</li>
-		<li>xxx</li>
-		<li>xxx</li>
+		<li>String
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-506: rewrote neatly (using new UTFConverter module) String::mk_ () overloads for char32_t and char16_t; 
+					use UTFConvert instead of wrong code for breaking up char32_t char16_t in AsUTF32/AsUTF16</li>
+				<li>Big changes to UTFConverter
+					<ul>
+						<li>Support wchar_t type overloads for all the appropriate methods, mapping
+							to utf16 or utf32 as appropriate (if constexpr).</li>
+						<li>Private_::DoThrowBadSourceString_ThrowSourceIllegal_() and Private_::DoThrowBadSourceString_ThrowSourceExhausted_ ()</li>
+						<li>define UTF8_ as UNSIGNED in implementation, since that's whats required
+						 to work properly, but keep the public API using UTF8=char, since that will work
+						better with things like basic_string, u8string, etc.</li>
+						<li>UTF8Converter is deprecated, so swtiched a few calls to it to use UTFConvert.</li>
+					</ul>
+				</li>
+				<li>cleanup the UTFConvert code. It's still based on unicode.org code (wish I could find good reference there). But now in a more C++ish form (templated API). And better documented and usable outside (public API) the CodePage module; refactored code that had used this internally
+					use [[likely]]/[[unlikely]] in new CodePage/UTFConversion code</li>
+				<li>Support UTFConvert::QuickComputeConversionOutputBufferSize<></li>
+				<li> UTFConvert::ConvertQuietly, and added UTFConvert::Convert which does throw on errors instead of returing bad result; and it does asserts input string large enough</li>
+				<li>minor cleanups to String::FromUTF8(); docs/comments; rewrote String::FromUTF8 () to use UTFConvert::Convert () instead of deprecated UTF8Converter</li>
+				<li>Added a few more UTF string conversion regression tests</li>
+				<li>String::AsUTF8 (string* into) uses UTFConvert::Convert now instead of WideStringToNarrow()</li>
+				<li>added CodePageConverter::CodePageNotSupportedException::GetCodePage ()</li>
+				<li>CodePageConverter::CodePageNotSupportedException now inherits from std::exception</li>
+				<li>fixed CodePageConverter::MapFromUNICODE to use new UTFConvert::Convert () - and fixed invalid (buggy) cast we had warning about for a while; and added docs to headers</li>
+			</ul>
+		</li>
+		<li>DateTime
+			<ul>
+				<li>Improve docs on DateTime::AsLocalTime/AsUTC(): make clear these always return
+					a DateTime with the given timezone (localetime/utc).</li>
+				<li>THEN - fixed AsLocalTime() so it DID always return in localtime **BUG FIX** - not backward compat;
+					It used to sometimes return *this</li>
+			</ul>
+		</li>
+		<li>Exceptions
+			<ul>
+				<li>**Slightly incompatible change**</li>
+				<li>SilenctException now inherits from std::exception (and produces what = "Silent Exception"</li>
+				<li>And Execution::Throw() overloads / templates all static_assert argument excpetion type inherits from std::exception</li>
+				<li>And documented the stroika deisgn that what() returns text in SDKString code page (current locale) and best to use StringException as a base if you may have characters not representable in that codepage.</li>
+				<li>And that Stroika will always do this (your code may - but need not - just has to to call Execution::Throw() - but even that doesnt really matter (you can template specialize and it does nothing but logging).</li>
+			</ul>
+		</li>
+		<li>Debug
+			<ul>
+				<li>Added extra trace messages to Trace module - on startup/shutdown - saying if address sanitizer and valgrind are running</li>
+				<li>Sanitizers and sanitizer configurations
+					<ul>
+						<li>Reviewed regression tests and which bug reports we had open to workaround issues with sanitizers. Some still broken/left open, but a few closed.</li>
+						<li>workaround https://stroika.atlassian.net/browse/STK-665 address sanitizer warning (probably spurrious): work around address sanitzer bug (or my bug - unclear) with 'watcher' (really probably with Syncrhonized) in ReadMountInfo_FromProcFSMounts_ () - gcc8</li>
+						<li>Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE (address) for workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY</li>
+						<li>marked https://stroika.atlassian.net/browse/STK-654 resolved - so re-enable asan running on g++8 (narrower workaround)</li>
+						<li>Debug/Sanitizer.h conditionally includes &lt;sanitizer/asan_interface.h&gt;etc</li>
+						<li>notes in configurae script about -asan stuff not working on WSL; and about https://stroika.atlassian.net/browse/STK-601 still broken on XCode 10</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>Several fixes to IO::Network::Interfaces::GetInterfaces ()
+			<ul>
+				<li>rollup interfaces returned multiple times (at least happens alot on macos)</li>
+				<li>Workaround 'misfeature' of MacOS impl of SIOCGIFCONF, so it works with variable offset between records; This was ESPECAILLY tricky cuz it produces non-aligned accesses whcih produce warnings from clang undefined behavior sanitizer (which I had to silence)</li>
+				<li>Only record addresses for bindings if they are internet addresses (on unix - already
+                    did for windows)</li>
+				<li>Better detection for wireless interfaces on linux.</li>
+				<li>Finally can use Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined") at least on xcode 10. Must test more...</li>
+			</ul>
+		</li>
+		<li>new Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE and qCompiler_noSanitizeAttributeForLamdas_Buggy; tweak qCompiler_noSanitizeAttributeForLamdas_Buggy</li>
+		<li>fixed DISABLE_COMPILER_MSC_WARNING_START (4701) suppression</li>
 		<li>more tweaks to samples</li>
-		<li>xxx</li>
-		<li>xxx</li>
-
-#if 0
-    
-
-    
-
-commit 7feba37af3c382f8e2d6a033948e832ef916daa5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 12:25:36 2018 -0400
-
-    Improve docs on DateTime::AsLocalTime/AsUTC(): make clear these always return
-    a DateTime with the given timezone (localetime/utc).
-    
-    THEN - fixed AsLocalTime() so it DID always return in localtime **BUG FIX** - not backward compat;
-    It used to sometimes return *this.
-
-commit d07d6889c64cba403c577a19654c5dfd37efe695
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 13:54:07 2018 -0400
-
-    cleanup the UTFConvert code. It's still based on unicode.org code (wish I could find good reference there). But now in a more C++ish form (templated API). And better documented and usable outside (public API) the CodePage module; refactored code that had used this internally
-
-    use [[likely]]/[[unlikely]] in new CodePage/UTFConversion code
-
-commit f925d52a04080398dbeb343bb21fff8a7fdbc08b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 15:16:05 2018 -0400
-
-    Support UTFConvert::QuickComputeConversionOutputBufferSize<>
-
-commit 1c19170e687765881250e72f0d59a075e87af0ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 15:40:13 2018 -0400
-
-    renamed UTFConvert::Convert to ConvertQuietly, and added UTFConvert::Convert which does throw on errors instead of returing bad result; and it does asserts input string large enough
-
-commit 00a010ed95bab83cb27a67620e20fa8f55ff0cee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 18:48:28 2018 -0400
-
-    sample cleanup
-
-commit 30697cc5a3a54eadb1bb93206d6c980246ba253d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 21:21:38 2018 -0400
-
-    Big changes to UTFConverter:
-            > Support wchar_t type overloads for all the appropriate methods, mapping
-              to utf16 or utf32 as appropriate (if constexpr).
-            > Private_::DoThrowBadSourceString_ThrowSourceIllegal_() and Private_::DoThrowBadSourceString_ThrowSourceExhausted_ ()
-            > define UTF8_ as UNSIGNED in implementation, since that's whats required
-              to work properly, but keep the public API using UTF8=char, since that will work
-              better with things like basic_string, u8string, etc.
-         > UTF8Converter is deprecated, so swtiched a few calls to it to use UTFConvert.
-
-commit 2caa017a18254c2aaacc262cd7a5d5dfe2aff246
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 21:53:04 2018 -0400
-
-    fixed CodePageConverter::MapFromUNICODE to use new UTFConvert::Convert () - and fixed invalid (buggy) cast we had warning about for a while; and added docs to headers
-
-commit 10cdaa4ca29be9754132d58dd505b0f2959b14cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 26 21:54:36 2018 -0400
-
-    minor cleanups to String::FromUTF8(); docs/comments; rewrote String::FromUTF8 () to use UTFConvert::Convert () instead of deprecated UTF8Converter
-
-
-commit 367bb53cd5c3d3f52b0720973dd8faeb3ebc2764
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 10:13:27 2018 -0400
-
-    fixed regression in CodePageConverter::MapFromUNICODE (const char32_t...
-
-commit 34b8e41963991fec3b1e3a032b16c951deaacadf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 10:26:51 2018 -0400
-
-    https://stroika.atlassian.net/browse/STK-506: rewrote neatly (using new UTFConverter module) String::mk_ () overloads for char32_t and char16_t
-
-commit ecef85d21f01f383b1c0cfda204140d1781d0f9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 10:49:44 2018 -0400
-
-    minor mostly cosmetic/warnigns cleanups
-
-commit 9bdc6677c9b525fe03693c6e2497b758b451e48c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 10:50:37 2018 -0400
-
-    last few https://stroika.atlassian.net/browse/STK-506 cleanups - use UTFConvert instead of wrong code for breaking up char32_t char16_t in AsUTF32/AsUTF16
-
-commit 66fb395734230705ca010048575bcb9668d7d0e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 11:37:01 2018 -0400
-
-    Added a few more UTF string conversion regression tests
-
-commit 7aaa82e88490046102035d1eb9f2f80e3f8cebbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 12:37:02 2018 -0400
-
-    String::AsUTF8 (string* into) uses UTFConvert::Convert now instead of WideStringToNarrow()
-
-commit 1c7038d3f2a0c7305c6e3804f6a4ad77f175f410
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 12:55:18 2018 -0400
-
-    minor tweaks to Strings code
-
-commit b5ddde5012ffddd4f358c68194484ddc986685d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 14:53:32 2018 -0400
-
-    Lose some unneeded includes of CodePage.h
-
-commit cd762c14664b0eb4234345b1c3a4720f99457234
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 16:49:42 2018 -0400
-
-    experiment with fix to Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE() at least for MacOS XCode 10
-
-commit 939996c4eea33d0c42912404389f5026edb2729b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 16:59:46 2018 -0400
-
-    cometic regtession test output cleanup
-
-commit 7748f0a3fbb06a15d17f84dbae6f01e056fe87b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 17:00:19 2018 -0400
-
-    Several fixes to IO::Network::Interfaces::GetInterfaces ()
-    
-            >       rollup interfaces returned multiple times (at least happens alot on macos)
-            >       Workaround 'misfeature' of MacOS impl of SIOCGIFCONF, so it works with
-                    variable offset between records.
-    
-                    This was ESPECAILLY tricky cuz it produces non-aligned accesses whcih produce warnings
-                    from clang undefined behavior sanitizer (which I had to silence)
-            >       Only record addresses for bindings if they are internet addresses (on unix - already
-                    did for windows)
-            >       Better detection for wireless interfaces on linux.
-            >       Finally can use
-                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
-                    at least on xcode 10. Must test more...
-
-commit f7ce1cc9fb8dec572445cb095dd76e526d4df7bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 17:22:29 2018 -0400
-
-    fixed DISABLE_COMPILER_MSC_WARNING_START (4701) suppression
-
-commit ffa587dfd2907625d5333d8fac10eabe2d0599de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 18:15:04 2018 -0400
-
-    new Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE and qCompiler_noSanitizeAttributeForLamdas_Buggy
-
-commit afb83639f9527906265b9cbba2ffc8ef67d1ea61
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 27 18:17:00 2018 -0400
-
-    tweak qCompiler_noSanitizeAttributeForLamdas_Buggy
-
-commit 999ab3be8c410055fa2321b853e2f817d9be8028
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 11:23:11 2018 -0400
-
-    CodePageConverter::CodePageNotSupportedException now inherits from std::exception
-
-commit be820dcd7443c74c8e6170a1377eccd529c26863
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 11:38:41 2018 -0400
-
-    **Slightly incompatible change**
-      SilenctException now inherits from std::exception (and produces what = "Silent Exception";
-      And Execution::Throw() overloads / templates all static_assert argument excpetion type
-      inherits from std::exception.
-    And documented the stroika deisgn that what() returns text in SDKString code page (current locale)
-    and best to use StringException as a base if you may have characters not representable in that codepage.
-    And that Stroika will always do this (your code may - but need not - just has to to call
-    Execution::Throw() - but even that doesnt really matter (you can template specialize and it does nothing but logging).
-
-commit 099bc17ad724782dc3ab029389659fa942c8d9bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 11:50:59 2018 -0400
-
-    work around address sanitzer bug (or my bug - unclear) with 'watcher' (really probably with Syncrhonized) in ReadMountInfo_FromProcFSMounts_ () - gcc8
-
-commit 2a758546dca9e9dcb0b0dea258a72ef6456bfd65
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 12:09:01 2018 -0400
-
-    fixed kBuiltWithAddressSanitizer definition for gcc
-
-commit 560bb76f5c78a8c7d357bd6d8378723e022d441b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 12:17:40 2018 -0400
-
-    Added extra trace messages to Trace module - on startup/shutdown - saying if address sanitizer and valgrind are running
-
-commit a1a48337032570101a89fe05cd5cd7998e9bc870
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 12:35:54 2018 -0400
-
-    workaround https://stroika.atlassian.net/browse/STK-665 address sanitizer warning (probably spurrious)
-
-commit 0a8c3ac0f035afa8651c80ee8c7b9e2da5ac528b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 12:55:21 2018 -0400
-
-    lose DbgTrace() from TraceModuleData_::~TraceModuleData_ () since causes assert error - and really unneeded. MAY want to add somethign like that but not need now
-
-commit 30698bce21176258706e31566d76ac465d23f616
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 12:57:40 2018 -0400
-
-    minor tweaks to debug trace output
-
-commit e2b6c3ad13efa2ccb1d17e4bf02501cf583991cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 14:18:40 2018 -0400
-
-    added CodePageConverter::CodePageNotSupportedException::GetCodePage ()
-
-commit cbfe2bd4fbca872e3a92193dc6c4b0a471b4356c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 14:19:05 2018 -0400
-
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE (address) for workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
-
-commit 1a9b0a3722d35bc64b78afecbc9242bd89a3d572
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 14:21:31 2018 -0400
-
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE (address) for workaround https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
-
-commit 9e38ca9e6257a14d946880e865b366fb16c9d60c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 16:37:07 2018 -0400
-
-    more tweaks to  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () in hopes of working around https://stroika.atlassian.net/browse/STK-665, https://stroika.atlassian.net/browse/STK-500 - ARM ONLY
-
-commit a7489bbad18e588dfd720ddb5b1abfe2db6a27ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 22:04:24 2018 -0400
-
-    marked https://stroika.atlassian.net/browse/STK-654 resolved - so re-enable asan running on g++8 (narrower workaround)
-
-commit 217da674b20d25afc87f6ffd0c68130bfabb3655
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 28 22:26:22 2018 -0400
-
-    tweak raspberrypi configs (try more use of sanitizers) - incomplete/testing
-
-commit fc748a8873fd5d4eb6a73b0dfa6d828c6120107d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 29 12:19:28 2018 -0400
-
-    removed Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE call which breaks on macosx/clang/xcode10 (dont think it helped anywhere else)
-
-commit a070b85206d0d8a4528c7aa2c59d8087ee874673
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 11:30:35 2018 -0400
-
-    Attempt to workaround sanitizer issue on raspberrypi
-
-commit 3888da041e98c42bde13accc7c62de5b3903a49e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 12:12:17 2018 -0400
-
-    Debug/Sanitizer.h conditionally includes <sanitizer/asan_interface.h> etc
-
-commit b77ff890503bf13510ebbe64a5758483a4b7e514
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 12:19:34 2018 -0400
-
-    several changes to configuraitons for sanitizers - experimenting still..
-
-commit cc6bfa0355cab9d70b09ce242ea9dd686431b5ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 15:17:18 2018 -0400
-
-    deprecated ScriptsLib/PrintConfigurationVariable.pl and replaced it with ScriptsLib/GetConfigurationParameter; and added more error checking
-
-commit 164327bc30a59bf13d9eae99333361feb1719216
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 16:31:07 2018 -0400
-
-    Simplify call to ScriptsLib/GetConfigurationParameter from makefiles
-
-commit 89e465ba4f7474e469981b8db053500121cabc78
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 17:09:46 2018 -0400
-
-    renamed ScriptsLib/GetConfigurations.sh to ScriptsLib/GetConfigurations
-
-commit 6b81b69fb202be1a11eaa7e4803f81c8cf143b0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 17:10:35 2018 -0400
-
-    renamed ScriptsLib/GetConfigurations.sh to ScriptsLib/GetConfigurations
-
-commit 8763dd421ffba5f8534c874b983a5ec35acc3e4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 18:46:09 2018 -0400
-
-    First draft support for config-tags with the configuraiton mechanism- new GetConfiguraitonTags script, and started to modify GetCOnfigurations to filter by configs, and genreate configs takes args to add config tags and Makefile has some prelim defaults for tag usage (in default configs)
-
-commit baa9e25501f507fd783de3ae4d12a1bcb1fe6f35
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Oct 1 18:48:34 2018 -0400
-
-    fixed file permissions
-
-commit 6c17f19b0ab392c2d126873bb12727bf605fde2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 1 21:35:24 2018 -0400
-
-    try to tweak AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept furhter to avoid    [Succeeded]  (6  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/g++-8-debug-c++17/Test43)
-
-commit b41e25c390045867ef0f124d90df459cb30bc22e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 08:15:32 2018 -0400
-
-    .gitattributes for ScriptsLib
-
-commit e36dc1eef82706108f729b13cc55af3c1e0472b3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Oct 2 09:37:16 2018 -0400
-
-    use := in makefile to avoid referencing CONFIGURATION var if not set
-
-commit 4d203c0a96599f7db9ff8f91d65d30c47d7bedbd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 09:40:01 2018 -0400
-
-    fixed check for count arguments in ScriptsLib/GetConfigurationParameter
-
-commit bdb127483698214fc39067295c059218e9e8dab7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 09:52:32 2018 -0400
-
-    fixed check for count arguments in ScriptsLib/GetConfigurationParameter
-
-commit 09cbcd666004966fd3628f05b8e5f205a8de1baf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 12:27:21 2018 -0400
-
-    use quotes around $(CONFIGURAITON) in makefiles (so appears to be a param - now that scripts like GetConfigurationParameter check # of params, and other small makefile cleanups
-
-commit fbb7acb99966b13465b91460357133860b7391ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 14:12:20 2018 -0400
-
-    make help cleanups; and new make list-configuraitons; make list-configuration-tags
-
-commit 83a83bfb7533564fb15407a0bfeb763cf8f1891f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 14:59:03 2018 -0400
-
-    tested with gcc 8.2
-
-commit bf95e5236b6108569aff2bcd85474adc42097e70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 14:59:17 2018 -0400
-
-    Support
-            ./ScriptsLib/GetConfigurations --config-tags "Windows"
-
-commit 187006300be6fae469bed4df0ebc4c31f8626df3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 15:35:29 2018 -0400
-
-    support CONFIGURATION_TAGS (and TAGS= shortcut) in top level makefile
-
-commit 168de52d30c65cf907864e76d59a42f7f3331674
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 15:38:49 2018 -0400
-
-    make clobber top level makefile support for CONFIGURATION_TAGS
-
-commit 802e4c9ff8acb62c12747fa59ad8defb8650f149
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 15:50:16 2018 -0400
-
-    tweak config tags on top level makefile default configurations
-
-commit dfeaafbe5b25b75c4b6bd1d54ac68ba969820eff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 16:07:43 2018 -0400
-
-    restructure AssertExternallySynchronizedLock::fSharedLockThreads_ (optional) to try and workaround sanitizer bug
-
-commit 4c51b4bc9c00be6c774a8c7974a7f72f11adf8dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 16:39:36 2018 -0400
-
-    more cleanups of +AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ()
-
-commit d141a7b9994f54538237ca65c2f604201e8fca27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 16:39:50 2018 -0400
-
-    fixed bug setting kBuiltWithAddressSanitizer for gcc
-
-
-commit 4ea4ab792609831294c27ce90fcfaa7abb716293
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 17:55:04 2018 -0400
-
-    SortedCollection<> provides overloads to call its builtin Contains/Remove methods
-
-commit 0076fb48448044804e28007d076d30bd3a524910
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 18:12:02 2018 -0400
-
-    Lose build with my-g++-8.2-debug-c++2a (regressiontest configs) cuz now that version is part of ubuntu
-
-commit 38af0c3ec71af481173f6a8bc8795d13a3783caa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 2 18:47:07 2018 -0400
-
-    updated docs for build system changes (make TAG= etc)
-
-commit 4dbf3f261185a54f39057a15a50b677f5a729656
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 3 15:35:46 2018 -0400
-
-    notes in configurae script about -asan stuff not working on WSL; and about https://stroika.atlassian.net/browse/STK-601 still broken on XCode 10
-
-commit d65ca2f740df72875f526f7ad38a30ad20cb1e22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 3 18:35:09 2018 -0400
-
-    fixup marking of raspberrypi valgrind regression test configurations to make the right tags, and then changed the regressiontest script to use make list-configurations TAGS=
-
-commit 1e93f36c5e49bcc44983ca1a2b5dce90d4961bba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 3 20:42:38 2018 -0400
-
-    change set of regression tests: added my-clang++-7-debug-libc++-c++2a  configuration; lost raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc  and raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc  (since ahve these configs for g++8 and good enough - dont need every combination - we test g++7 on arm)
-
-commit eab79522c786c29ca764885525110c188220d0a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 3 22:04:26 2018 -0400
-
-    fixed typo in Frameworks makefile target for clobber
-
-commit d5669f92c4c522273144f04cd19c1f468934ab45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 3 22:04:51 2018 -0400
-
-    make format-code
-
-commit 27598bf1bbe2c7dc8d2d6763a89960116cb0c140
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 09:05:37 2018 -0400
-
-    tweak timing regression test limit - too close to actual time so sometimes fails
-
-commit 59b0e8920b0a9fef3f537a1d591942cadffc7ab8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 09:36:35 2018 -0400
-
-    fixed quote char regression in Makefile
-
-commit 0052edf8e8802fb5f33e91df4d258642d71b5190
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 09:55:16 2018 -0400
-
-    added ScriptsLib/CheckValidConfiguration.sh configuration makefile checks
-
-commit 6c462b39688fe575af7407bc11413222b368e374
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 10:06:32 2018 -0400
-
-    another tweak to recent quotes on makefiles
-
-commit d6c70310ca94ed973bfae66e2e6791b975fcb9ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 12:31:44 2018 -0400
-
-    draft support for docker-based builds
-
-commit 37ed2551cb78d8fe3645eaeb9b871513b96afdd7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 13:57:56 2018 -0400
-
-    tweak timing of regtests to avoid failures
-
-commit 40dc973b23168124ec17b55be4340984f6b76e5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 15:05:38 2018 -0400
-
-    fixed bug with docker files
-
-commit ec425c2456388d01811e55a221e51b00807d3ad9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 15:30:03 2018 -0400
-
-    include locale support in checkin
-
-commit a37c9418032d0d609e4e73ac15943cc0470f78c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 15:55:43 2018 -0400
-
-    cleanup locale stuff and factor dockerfiles
-
-commit 39078d341ba767a83ef5b55c7bc9e1ac29ce7bec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 4 16:28:27 2018 -0400
-
-    simplfiy dockerfile config
-
-
-#endif
+		<li>restructure AssertExternallySynchronizedLock::fSharedLockThreads_ (optional) to try and workaround sanitizer bug</li>
+		<li>SortedCollection<> provides overloads to call its builtin Contains/Remove methods</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d10.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d10-OUT.txt</li>
-				<li>vc++2k17  (15.8.5)</li>
+				<li>vc++2k17  (15.8.6)</li>
 				<li>MacOS, XCode 10</li>
 				<li>gcc 7, gcc 8</li>
 				<li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
@@ -608,9 +145,6 @@ Date:   Thu Oct 4 16:28:27 2018 -0400
 	</ul>
 </td>
 </tr>
-
-
-
 
 
 
