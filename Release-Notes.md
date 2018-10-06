@@ -22,7 +22,7 @@ History
       
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d10">v2.1d10</a><br/>2018-10-03x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d10">v2.1d10</a><br/>2018-10-04x</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d9...v2.1d10</li>

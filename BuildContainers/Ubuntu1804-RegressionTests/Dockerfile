@@ -1,4 +1,4 @@
-FROM sophist-solutions-inc/stroika-buildvm-ubuntu1804-small
+FROM sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
 
 RUN apt-get update && apt-get install -y \
 	g++-7 \
