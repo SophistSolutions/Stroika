@@ -77,6 +77,8 @@ if [ $CONTINUE -ne 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
 else
 	rm -f $TEST_OUT_FILE
+	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
 fi
 
 
@@ -92,8 +94,6 @@ fi
 
 
 if [ $CONTINUE -eq 0 ] ; then
-	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
-	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
 	if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
 		make default-configurations >>$TEST_OUT_FILE 2>&1
 	else
