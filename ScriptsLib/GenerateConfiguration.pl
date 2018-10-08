@@ -245,6 +245,9 @@ sub     GetClangVersion_
 {
     my $x = trim(shift(@_));
 	my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
+	if (not defined($firstLine)) {
+		return 0;
+	}
 	no warnings 'numeric';
 	if (index($firstLine, "Apple LLVM") != -1) {
 		my $ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
