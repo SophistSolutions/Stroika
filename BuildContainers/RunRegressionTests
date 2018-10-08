@@ -6,3 +6,6 @@ docker run \
 	-d \
 	sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
 	sh -c "cd Sandbox/Stroika-Dev && git checkout V2.1-Dev && git pull && ./ScriptsLib/RegressionTests.sh"
+
+echo "note - to connect to this container and view it's status, use:"
+echo "   docker exec -it regression-tests /bin/bash"
