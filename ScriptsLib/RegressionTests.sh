@@ -19,7 +19,7 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${DO_ONLY_DEFAULT_CONFIGURATIONS:=0}
 : ${USE_TEST_BASENAME:=""}
 BUILD_EXTRA_COMPILERS_IF_MISSING=
-if [ $CONTINUE -ne 0 ]  && [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0  ]; then
+if [ $CONTINUE -eq 0 ]  && [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0  ]; then
 	BUILD_EXTRA_COMPILERS_IF_MISSING=1
 fi
 
@@ -62,12 +62,6 @@ PREFIX_OUT_LABEL=")))-"
 STARTAT_INT=$(date +%s)
 STARTAT=`date`;
 
-if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
-	 if ! [ -e ~/clang-7.0.0 ]; then 
-		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh
-	fi
-fi
-
 
 
 if [ $CONTINUE -ne 0 ] ; then
@@ -83,6 +77,20 @@ if [ $CONTINUE -ne 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
 else
 	rm -f $TEST_OUT_FILE
+fi
+
+
+if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
+	if ! [ -e ~/clang-7.0.0 ]; then
+		echo "Building CLANG7"
+		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh  >>$TEST_OUT_FILE 2>&1
+	fi
+fi
+
+
+
+
+if [ $CONTINUE -eq 0 ] ; then
 	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
 	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
 	if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
@@ -91,6 +99,7 @@ else
 		make regression-test-configurations >>$TEST_OUT_FILE 2>&1
 	fi
 fi
+
 
 NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
