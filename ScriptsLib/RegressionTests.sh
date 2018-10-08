@@ -18,6 +18,10 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${PARALELLMAKEFLAG:=-j10}
 : ${DO_ONLY_DEFAULT_CONFIGURATIONS:=0}
 : ${USE_TEST_BASENAME:=""}
+BUILD_EXTRA_COMPILERS_IF_MISSING=
+if [ $CONTINUE -ne 0 ]  && [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0  ]; then
+	BUILD_EXTRA_COMPILERS_IF_MISSING=1
+fi
 
 
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
@@ -56,9 +60,16 @@ fi
 PREFIX_OUT_LABEL=")))-"
 
 STARTAT_INT=$(date +%s)
-
-
 STARTAT=`date`;
+
+if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
+	 if ! [ -e ~/clang-7.0.0 ]; then 
+		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh
+	fi
+fi
+
+
+
 if [ $CONTINUE -ne 0 ] ; then
 	echo "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT"
 	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
