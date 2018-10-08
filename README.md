@@ -7,7 +7,7 @@ modern, reliable and threaded applications easier to write.
   *  Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
   *  An elaborate system of built-in assertions (including thread-safety assertions) helps document and enforce usage patterns (without performance cost in production builds).
   *  Each release is tested with Valgrind, google sanitizers, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
-  *  Sample applications help show common use cases (like building a web server into your app to deliver web-service content and APIs).
+  *  [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
   
 Stroika provides
   *  Container classes (Collection, Queue, Mapping, Sequence, Set, and much more with rich variety of backend implementations).
