@@ -115,7 +115,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\ExtractVersionInformation.sh = ..\..\ScriptsLib\ExtractVersionInformation.sh
 		..\..\ScriptsLib\FetchLinuxTestResults.sh = ..\..\ScriptsLib\FetchLinuxTestResults.sh
 		..\..\ScriptsLib\FormatCode.sh = ..\..\ScriptsLib\FormatCode.sh
-		..\..\ScriptsLib\GenerateConfiguration.pl = ..\..\ScriptsLib\GenerateConfiguration.pl
 		..\..\ScriptsLib\GetCompilerArch.sh = ..\..\ScriptsLib\GetCompilerArch.sh
 		..\..\ScriptsLib\GetConfigurationParameter = ..\..\ScriptsLib\GetConfigurationParameter
 		..\..\ScriptsLib\GetConfigurations = ..\..\ScriptsLib\GetConfigurations
@@ -3059,6 +3058,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildContainers", "BuildContainers", "{4CA6CEC9-9BEB-4810-B815-00D81B06570D}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\BuildContainers\CreateImages = ..\..\BuildContainers\CreateImages
+		..\..\BuildContainers\RunImage = ..\..\BuildContainers\RunImage
+		..\..\BuildContainers\RunRegressionTests = ..\..\BuildContainers\RunRegressionTests
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-Small", "Ubuntu1804-Small", "{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B}"
