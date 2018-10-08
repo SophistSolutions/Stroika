@@ -1,5 +1,6 @@
 #!/bin/bash
 
 IMAGE=${1:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-small}
+EXTRAARGS=${1:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-small}
 
-docker run --security-opt seccomp=unconfined -it $IMAGE
+docker run --security-opt seccomp=unconfined -d $IMAGE $EXTRAARGS
