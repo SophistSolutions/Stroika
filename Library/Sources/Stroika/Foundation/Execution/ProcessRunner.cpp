@@ -77,16 +77,42 @@ namespace {
 #if qPlatform_POSIX
 namespace {
     static const int kMaxFD_ = []() -> int {
-        struct rlimit fds {
-        };
-        if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
-            Assert (fds.rlim_cur > 5);               // sanity check - no real requirement
-            Assert (fds.rlim_cur < 1 * 1024 * 1024); // ""  (if too big, looping to close all costly)
-            return fds.rlim_cur;
+        int            result{};
+        constexpr bool kUseSysConf_ = true;
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500
+        constexpr bool kUseGetDTableSize_ = true;
+#else
+        constexpr bool kUseGetDTableSize_ = false;
+#endif
+        constexpr bool kUseGetRLimit_ = true;
+        if constexpr (kUseSysConf_) {
+            result = ::sysconf (_SC_OPEN_MAX);
+            Assert (result > 20); // from http://man7.org/linux/man-pages/man3/sysconf.3.html - Must not be less than _POSIX_OPEN_MAX (20).
         }
-        else {
-            return 1024; // wag
+        else if constexpr (kUseSysConf_) {
+            result = getdtablesize ();
         }
+        else if constexpr (kUseGetRLimit_) {
+            struct rlimit fds {
+            };
+            if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
+                return fds.rlim_cur;
+            }
+            else {
+                return 1024; // wag
+            }
+        }
+        /*
+         *  A little crazy, but in docker containers, this max# of files can get quite large (I've seen it over 1024*1024).
+         *  Probably at that point its smart to use some other technique to close all the extra file descriptors (like look at
+         *  lsof() or read /proc/sys/fs/file-nr? Something like that
+         *
+         *  -- LGP 2018-10-08
+         */
+        Assert (result > 5);               // sanity check - no real requirement
+        Assert (result < 4 * 1024 * 1024); // ""  (if too big, looping to close all costly)
+        DbgTrace ("::sysconf (_SC_OPEN_MAX) = %d", result);
+        return result;
     }();
 }
 #endif
@@ -1270,22 +1296,10 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
          */
 
         /*
-         * Possibly should close more descriptors?
          */
-#if 1
-#if _BSD_SOURCE || _XOPEN_SOURCE >= 500
-        int maxfd = getdtablesize ();
-#else
-        int maxfd = sysconf (_SC_OPEN_MAX);
-#endif
-        for (int i = 0; i < maxfd; i++) {
+        for (int i = 0; i < kMaxFD_; i++) {
             ::close (i);
         }
-#else
-        for (int i = 0; i < 3; ++i) {
-            ::close (i);
-        }
-#endif
         int id = ::open ("/dev/null", O_RDWR);
         (void)::dup2 (id, 0);
         (void)::dup2 (id, 1);
