@@ -1,3 +1,8 @@
 #!/bin/bash
 
-docker run --security-opt seccomp=unconfined -d sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests --name regression-tests "cd Sandbox/Stroika-Dev && ./ScriptsLib/RegressionTests.sh"
+docker run \
+	--security-opt seccomp=unconfined \
+	--name regression-tests \
+	-d \
+	sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
+	sh -c "cd Sandbox/Stroika-Dev && git checkout V2.1-Dev && git pull && ./ScriptsLib/RegressionTests.sh"
