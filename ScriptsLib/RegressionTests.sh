@@ -82,8 +82,9 @@ fi
 
 if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
 	if ! [ -e ~/clang-7.0.0 ]; then
-		echo "Building CLANG7"
+		echo -n "Building CLANG7..."
 		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh  >>$TEST_OUT_FILE 2>&1
+		echo -n "done"
 	fi
 fi
 
