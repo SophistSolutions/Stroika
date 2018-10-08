@@ -4,8 +4,12 @@ RUN apt-get update && apt-get install -y \
 	g++-7 \
 	g++-8 \
 	clang++-6 \
-	libasan4 \
-	libasan5 \
-	libc++-dev \
-	libubsan0 \
-	libubsan1
+	libc++-dev 
+
+#Only needed to run with valgrind
+RUN apt-get install -y valgrind
+
+#needed to run older clang/g++7?
+#RUN apt-get install -y libasan4 libubsan0
+
+# libubsan0 libubsan1
