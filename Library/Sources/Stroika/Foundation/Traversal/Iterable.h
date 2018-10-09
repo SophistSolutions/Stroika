@@ -266,14 +266,14 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Iterable are safely copyable (by value).
          */
-        Iterable (const Iterable<T>& from) noexcept;
+        Iterable (const Iterable& from) noexcept;
 
     public:
         /**
          *  Make a copy of the given argument, and treat it as an iterable.
          */
         template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>>* = nullptr>
-        explicit Iterable (const CONTAINER_OF_T& from);
+        explicit Iterable (CONTAINER_OF_T&& from);
 
     public:
         Iterable (const initializer_list<T>& from);
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  move CTOR - clears source
          */
-        explicit Iterable (Iterable<T>&& from) noexcept;
+        explicit Iterable (Iterable&& from) noexcept;
 
     protected:
         /**
@@ -306,8 +306,8 @@ namespace Stroika::Foundation::Traversal {
          *  But the 'move' assignment operator requires the rhs to not have any other threads accessing it
          *  at the time of move.
          */
-        nonvirtual Iterable<T>& operator= (const Iterable<T>& rhs);
-        nonvirtual Iterable<T>& operator= (Iterable<T>&& rhs) noexcept;
+        nonvirtual Iterable<T>& operator= (const Iterable& rhs);
+        nonvirtual Iterable<T>& operator= (Iterable&& rhs) noexcept;
 
     public:
         /**
@@ -1007,7 +1007,7 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         template <typename CONTAINER_OF_T>
-        static Iterable<T> mk_ (const CONTAINER_OF_T& from);
+        static Iterable<T> mk_ (CONTAINER_OF_T&& from);
 
     protected:
         /**

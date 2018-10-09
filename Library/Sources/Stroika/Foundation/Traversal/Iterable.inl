@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Traversal {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
-    inline Iterable<T>::Iterable (Iterable<T>&& from) noexcept
+    inline Iterable<T>::Iterable (Iterable&& from) noexcept
         : _fRep (move (from._fRep))
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
@@ -215,8 +215,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>>*>
-    Iterable<T>::Iterable (const CONTAINER_OF_T& from)
-        : _fRep (mk_ (from)._fRep)
+    Iterable<T>::Iterable (CONTAINER_OF_T&& from)
+        : _fRep (mk_ (forward<CONTAINER_OF_T> (from))._fRep)
     {
     }
     template <typename T>
@@ -225,14 +225,14 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T>
-    inline Iterable<T>& Iterable<T>::operator= (const Iterable<T>& rhs)
+    inline Iterable<T>& Iterable<T>::operator= (const Iterable& rhs)
     {
         RequireNotNull (rhs._fRep);
         _fRep = rhs._fRep;
         return *this;
     }
     template <typename T>
-    inline Iterable<T>& Iterable<T>::operator= (Iterable<T>&& rhs) noexcept
+    inline Iterable<T>& Iterable<T>::operator= (Iterable&& rhs) noexcept
     {
         RequireNotNull (rhs._fRep);
         _fRep = move (rhs._fRep);
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename CONTAINER_OF_T>
-    Iterable<T> Iterable<T>::mk_ (const CONTAINER_OF_T& from)
+    Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
         vector<T>                tmp (from.begin (), from.end ()); // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
     bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        auto tallyOf = [equalsComparer](const Iterable<T>& c, T item) -> size_t {
+        auto tallyOf = [equalsComparer](const Iterable& c, T item) -> size_t {
             size_t total = 0;
             for (auto ti : c) {
                 if (equalsComparer (ti, item)) {
