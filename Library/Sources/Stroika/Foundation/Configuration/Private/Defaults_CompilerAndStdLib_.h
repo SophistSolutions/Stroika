@@ -27,6 +27,11 @@
  */
 #define kStrokia_Foundation_Configuration_cplusplus_17 201703
 
+/**
+ *  WAG
+ */
+#define kStrokia_Foundation_Configuration_cplusplus_20 202000
+
 /*
  *******************************************************************
  *******************************************************************
