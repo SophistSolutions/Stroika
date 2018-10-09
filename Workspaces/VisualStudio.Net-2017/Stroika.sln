@@ -104,6 +104,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-SystemPe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{7398AECD-738D-4BD8-B2E4-7B8DB9382F72}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\ScriptsLib\.gitattributes = ..\..\ScriptsLib\.gitattributes
 		..\..\ScriptsLib\ApplyConfiguration.pl = ..\..\ScriptsLib\ApplyConfiguration.pl
 		..\..\ScriptsLib\BuildClang.sh = ..\..\ScriptsLib\BuildClang.sh
 		..\..\ScriptsLib\BuildGCC.sh = ..\..\ScriptsLib\BuildGCC.sh
@@ -135,6 +136,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl = ..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl
 		..\..\ScriptsLib\RunMKLinkViaUAC.bat = ..\..\ScriptsLib\RunMKLinkViaUAC.bat
 		..\..\ScriptsLib\RunPerformanceRegressionTests.sh = ..\..\ScriptsLib\RunPerformanceRegressionTests.sh
+		..\..\ScriptsLib\RunRegressionTestsInDocker = ..\..\ScriptsLib\RunRegressionTestsInDocker
 		..\..\ScriptsLib\RunRemoteRegressionTests.sh = ..\..\ScriptsLib\RunRemoteRegressionTests.sh
 		..\..\ScriptsLib\StringUtils.pl = ..\..\ScriptsLib\StringUtils.pl
 		..\..\ScriptsLib\SubstituteBackVariables.sh = ..\..\ScriptsLib\SubstituteBackVariables.sh
@@ -3059,7 +3061,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildContainers", "BuildCon
 	ProjectSection(SolutionItems) = preProject
 		..\..\BuildContainers\CreateImages = ..\..\BuildContainers\CreateImages
 		..\..\BuildContainers\RunImage = ..\..\BuildContainers\RunImage
-		..\..\BuildContainers\RunRegressionTests = ..\..\BuildContainers\RunRegressionTests
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-Small", "Ubuntu1804-Small", "{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B}"
