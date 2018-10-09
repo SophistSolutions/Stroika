@@ -270,8 +270,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Sequence<T>& operator= (const Sequence<T>& rhs) = default;
-        nonvirtual Sequence<T>& operator= (Sequence<T>&& rhs) = default;
+        nonvirtual Sequence& operator= (const Sequence& rhs) = default;
+        nonvirtual Sequence& operator= (Sequence&& rhs) = default;
 
     public:
         /**
