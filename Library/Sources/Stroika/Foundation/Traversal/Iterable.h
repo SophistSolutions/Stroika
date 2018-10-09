@@ -270,19 +270,22 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Make a copy of the given argument, and treat it as an iterable.
+         *  \brief  move CTOR - clears source
          */
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T>>* = nullptr>
+        explicit Iterable (Iterable&& from) noexcept;
+
+    public:
+        /**
+         *  Make a copy of the given argument, and treat it as an iterable.
+         *
+         *  \note Don't apply this constructor to non-containers (non-iterables), 
+         *        and don't allow it to apply to SUBCLASSES of Iterable (since then we want to select the Iterable (const Iterable& from) constructor)
+         */
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, remove_cvref_t<CONTAINER_OF_T>>>* = nullptr>
         explicit Iterable (CONTAINER_OF_T&& from);
 
     public:
         Iterable (const initializer_list<T>& from);
-
-    public:
-        /**
-         *  \brief  move CTOR - clears source
-         */
-        explicit Iterable (Iterable&& from) noexcept;
 
     protected:
         /**
