@@ -56,5 +56,7 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::SortedSet_stdset<T> (inorderComparer);
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedSet_Factory_inl_ */

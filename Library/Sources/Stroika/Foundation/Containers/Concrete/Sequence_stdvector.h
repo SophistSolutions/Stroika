@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);
+        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector& rhs);
 
     public:
         /**

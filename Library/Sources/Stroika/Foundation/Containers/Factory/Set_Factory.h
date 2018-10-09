@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>* = 0);
         static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...);
     };
+
 }
 
 /*

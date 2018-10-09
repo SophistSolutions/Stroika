@@ -17,10 +17,10 @@
 namespace Stroika::Foundation::Containers::Factory {
 
     /*
-        ********************************************************************************
-        ************************ Set_Factory<T, EQUALS_COMPARER> ***********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************ Set_Factory<T, EQUALS_COMPARER> ***********************
+     ********************************************************************************
+     */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     template <typename T, typename EQUALS_COMPARER>
     atomic<Set<T> (*) (const EQUALS_COMPARER&)> Set_Factory<T, EQUALS_COMPARER>::sFactory_ (nullptr);

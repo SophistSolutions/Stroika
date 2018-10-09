@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Sequence_stdvector<T>& Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& rhs)
+    inline Sequence_stdvector<T>& Sequence_stdvector<T>::operator= (const Sequence_stdvector& rhs)
     {
         AssertRepValidType_ ();
         inherited::operator= (rhs);

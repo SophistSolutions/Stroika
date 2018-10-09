@@ -51,5 +51,7 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::Sequence_Array<T>{};
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_Sequence_Factory_inl_ */
