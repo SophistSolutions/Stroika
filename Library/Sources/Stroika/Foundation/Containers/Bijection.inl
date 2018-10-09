@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers {
         for (auto i : values) {
             tmp.push_back (*InverseLookup (i));
         }
-        return Iterable<DOMAIN_TYPE> (tmp);
+        return Iterable<DOMAIN_TYPE> (move (tmp));
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool(pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
