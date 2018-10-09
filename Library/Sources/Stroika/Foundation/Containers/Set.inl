@@ -45,11 +45,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
-    inline Set<T>::Set (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Set<T>::Set (CONTAINER_OF_ADDABLE&& src)
         : Set ()
     {
-        AddAll (src);
+        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -154,8 +154,8 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    inline void Set<T>::AddAll (const CONTAINER_OF_ADDABLE& s)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    inline void Set<T>::AddAll (CONTAINER_OF_ADDABLE&& s)
     {
         // Note - unlike Collection<T, TRAITS> - we don't need to check for this != &s because if we
         // attempt to add items that already exist, it would do nothing, and not lead to

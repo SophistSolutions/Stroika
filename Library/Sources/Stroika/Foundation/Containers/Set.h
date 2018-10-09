@@ -149,7 +149,10 @@ namespace Stroika::Foundation::Containers {
          *        Set<int> s9  { 1, 2, 3 };
          *        Set<int> s10 { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c };
          *      \endcode
-         */
+         *
+         *  \note Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
+         *        and don't allow it to apply to SUBCLASSES of Set (since then we want to select the Set (const Set& from) constructor)
+        */
         Set ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit Set (EQUALS_COMPARER&& equalsComparer);
@@ -158,8 +161,8 @@ namespace Stroika::Foundation::Containers {
         Set (const initializer_list<T>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>* = nullptr>
-        Set (const CONTAINER_OF_ADDABLE& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Set (CONTAINER_OF_ADDABLE&& src);
         template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
@@ -241,8 +244,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& s);
 
     public:
         /**

@@ -139,13 +139,16 @@ namespace Stroika::Foundation::Containers {
          *        Collection<int> c7  { v.begin (), v.end () };
          *        Collection<int> c8  { move (c1) };
          *      \endcode
+         *
+         *  \note Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
+         *        and don't allow it to apply to SUBCLASSES of Collection (since then we want to select the Collection (const Collection& from) constructor)
          */
         Collection ();
         Collection (const Collection& src) noexcept = default;
         Collection (Collection&& src) noexcept      = default;
         Collection (const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Collection<T>*>>* = nullptr>
-        Collection (const CONTAINER_OF_ADDABLE& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Collection (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
@@ -181,8 +184,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& s);
 
     public:
         /**
@@ -319,7 +322,6 @@ namespace Stroika::Foundation::Containers {
     Collection<T> operator+ (const Collection<T>& lhs, const Iterable<T>& rhs);
     template <typename T>
     Collection<T> operator+ (const Collection<T>& lhs, const Collection<T>& rhs);
-
 }
 
 /*

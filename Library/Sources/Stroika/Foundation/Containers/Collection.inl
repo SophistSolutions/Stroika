@@ -56,11 +56,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Collection<T>*>>*>
-    inline Collection<T>::Collection (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
         : Collection ()
     {
-        AddAll (src);
+        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
 #if qDebug
@@ -94,8 +94,8 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    inline void Collection<T>::AddAll (const CONTAINER_OF_ADDABLE& c)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    inline void Collection<T>::AddAll (CONTAINER_OF_ADDABLE&& c)
     {
         /*
          * Because adding items to a Collection COULD result in those items appearing in a running iterator,
