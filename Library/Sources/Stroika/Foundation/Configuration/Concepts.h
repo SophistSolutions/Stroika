@@ -103,7 +103,6 @@ namespace Stroika::Foundation::Configuration {
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));
 
     /**
-     *  Would like to use constexpr function (as with c++14 concepts) - but cannot due to weakness in constexpr support (absence) for vs2k13
      */
     namespace Private_ {
         template <typename ITERABLE_OF_T, typename T>
