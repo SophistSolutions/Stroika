@@ -57,19 +57,19 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedCollection<T>*>>*>
-    inline SortedCollection<T>::SortedCollection (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline SortedCollection<T>::SortedCollection (CONTAINER_OF_ADDABLE&& src)
         : SortedCollection ()
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedCollection<T>*>>*>
-    inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_ADDABLE& src)
+    template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
         : SortedCollection (forward<INORDER_COMPARER> (inOrderComparer))
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>

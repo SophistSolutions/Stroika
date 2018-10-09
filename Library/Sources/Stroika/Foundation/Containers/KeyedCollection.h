@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (const initializer_list<T>& src);
         template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<not is_function_v<typename TraitsType::KeyExtractor>>>
         KeyedCollection (const initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and !is_convertible_v<const CONTAINER_OF_ADDABLE*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<KeyedCollection<KEY_TYPE, T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit KeyedCollection (const CONTAINER_OF_ADDABLE& src, KeyExtractorFunctionType keyExtractor);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorFunctionType keyExtractor);

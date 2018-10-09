@@ -72,19 +72,19 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>*>
-    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (CONTAINER_OF_ADDABLE&& src)
         : SortedMultiSet ()
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>*>
-    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src)
+    template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, CONTAINER_OF_ADDABLE&& src)
         : SortedMultiSet (forward<INORDER_COMPARER> (inorderComparer))
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>

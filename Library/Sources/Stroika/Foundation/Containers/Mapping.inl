@@ -75,11 +75,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (CONTAINER_OF_ADDABLE&& src)
         : Mapping ()
     {
-        AddAll (src);
+        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
-    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
+    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (CONTAINER_OF_KEYVALUE&& items)
     {
         /*
          *  Note - unlike other containers - we don't need to check for this != &s because if we
