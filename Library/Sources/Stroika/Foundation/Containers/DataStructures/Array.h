@@ -78,7 +78,7 @@
  *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
  *
- *      @todo   For each class (Array/Array_Patchikng, and all iteraotrs, add explicit
+ *      @todo   For each class (Array/Array_Patchikng, and all iterators, add explicit
  *              declares about COPY CTORs etc. NOT safe (generally) to use default (esp for patching iterators)
  *
  *      @todo   Alot of implementation uses 'last' paradim. Switch to modern C++ / STL begin/end style.

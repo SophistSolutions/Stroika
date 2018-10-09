@@ -22,7 +22,7 @@
  *              Mean()
  *              Mode()
  *              Median()
- *          If random-accessable iteraotrs, (array etc) � use
+ *          If random-accessable iterators, (array etc) � use
  *          http://en.cppreference.com/w/cpp/algorithm/nth_element
  *          else copy to vector<> and then use nth_element?
  *          Just need something quickie�

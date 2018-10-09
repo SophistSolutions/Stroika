@@ -24,7 +24,7 @@
  *
  * TODO:
  *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <byte> and
- *              only (or handle differently) random access iterators versus just plain forward iteraotrs.
+ *              only (or handle differently) random access iterators versus just plain forward iterators.
  *
  *      @todo   Consider the name Attach() and AttachApplicationLifetime (). This was meant to parallel
  *              what we do with Socket::Attach(). Would Adopt() be a better name (in all cases?).
