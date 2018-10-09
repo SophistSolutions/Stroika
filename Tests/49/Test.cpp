@@ -786,6 +786,22 @@ namespace {
 }
 
 namespace {
+    void Test18_IterableConstructors_ ()
+    {
+        Debug::TraceContextBumper ctx{L"{}::Test18_IterableConstructors_"};
+
+        {
+            vector<int>   a = {1, 3, 5};
+            Iterable<int> aa1{vector<int>{1, 3, 5}};
+            Iterable<int> aa2{a};
+            Iterable<int> aa3{move (a)};
+            Iterable<int> aa4{aa3};
+            Iterable<int> aa5{Iterable<int>{}};
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
@@ -806,6 +822,7 @@ namespace {
         Test15_Partition_ ();
         Test16_LinqLikeFunctions_ ();
         Test17_DurationRange_ ();
+        Test18_IterableConstructors_ ();
     }
 }
 

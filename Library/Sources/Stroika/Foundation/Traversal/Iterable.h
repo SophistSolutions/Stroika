@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Make a copy of the given argument, and treat it as an iterable.
          */
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>>* = nullptr>
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T>>* = nullptr>
         explicit Iterable (CONTAINER_OF_T&& from);
 
     public:
