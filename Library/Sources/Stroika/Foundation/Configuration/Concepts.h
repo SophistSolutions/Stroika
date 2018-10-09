@@ -32,18 +32,6 @@
  *
  */
 
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
-namespace std {
-    // handy to ahve this definition around, even if using pre-c++20
-    template <class T>
-    struct remove_cvref {
-        typedef std::remove_cv_t<std::remove_reference_t<T>> type;
-    };
-    template <class T>
-    using remove_cvref_t = typename remove_cvref<T>::type;
-}
-#endif
-
 namespace Stroika::Foundation::Configuration {
 
     /**
@@ -266,6 +254,21 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     using is_callable = conditional_t<is_class_v<T>, Private_::is_callable_impl_<T>, false_type>;
+
+    // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
+    // Put in our namespace, and when we switch to C++20, we can deprecate our local namespace copy
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
+    template <class T>
+    struct remove_cvref {
+        typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+    };
+    template <class T>
+    using remove_cvref_t = typename remove_cvref<T>::type;
+#else
+    using remove_cvref;
+    using remove_cvref_t;
+#endif
+
 }
 
 /*

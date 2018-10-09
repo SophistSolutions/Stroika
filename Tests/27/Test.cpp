@@ -117,20 +117,20 @@ namespace Test4_Equals {
 
 namespace {
 
-    template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
+    template <typename CONCRETE_STACK_TYPE, typename EQUALS_COMPARER>
     void Tests_All_For_Type_WhichDontRequireComparer_For_Type_ ()
     {
-        CONCRETE_SEQUENCE_TYPE s;
-        SimpleTest_1_<CONCRETE_SEQUENCE_TYPE> (s);
-        SimpleTest_2_<CONCRETE_SEQUENCE_TYPE> (s);
-        SimpleTest_3_Iteration_<CONCRETE_SEQUENCE_TYPE> (s);
+        CONCRETE_STACK_TYPE s;
+        SimpleTest_1_<CONCRETE_STACK_TYPE> (s);
+        SimpleTest_2_<CONCRETE_STACK_TYPE> (s);
+        SimpleTest_3_Iteration_<CONCRETE_STACK_TYPE> (s);
     }
 
-    template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
+    template <typename CONCRETE_STACK_TYPE, typename EQUALS_COMPARER>
     void Tests_All_For_Type_ ()
     {
-        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
-        Test4_Equals::DoAllTests_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<CONCRETE_STACK_TYPE, EQUALS_COMPARER> ();
+        Test4_Equals::DoAllTests_<CONCRETE_STACK_TYPE, EQUALS_COMPARER> ();
     }
 }
 

@@ -119,8 +119,8 @@ namespace Stroika::Foundation::Containers {
         Queue (const Queue& src) noexcept = default;
         Queue (Queue&& src) noexcept      = default;
         Queue (const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Queue<T>*>>* = nullptr>
-        Queue (const CONTAINER_OF_ADDABLE& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Queue (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
@@ -136,8 +136,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Queue<T>& operator= (const Queue<T>& rhs) = default;
-        nonvirtual Queue<T>& operator= (Queue<T>&& rhs) = default;
+        nonvirtual Queue& operator= (const Queue& rhs) = default;
+        nonvirtual Queue& operator= (Queue&& rhs) = default;
 
     public:
         /**
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers {
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          */
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual void AddAllToTail (const CONTAINER_OF_ADDABLE& s);
+        nonvirtual void AddAllToTail (CONTAINER_OF_ADDABLE&& s);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 

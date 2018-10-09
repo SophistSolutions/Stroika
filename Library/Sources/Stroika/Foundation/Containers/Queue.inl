@@ -30,12 +30,12 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Queue<T>*>>*>
-    inline Queue<T>::Queue (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Queue<T>::Queue (CONTAINER_OF_ADDABLE&& src)
         : Queue ()
     {
         AssertNotImplemented ();
-        AddAllToTail (src);
+        AddAllToTail (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    inline void Queue<T>::AddAllToTail (const CONTAINER_OF_ADDABLE& s)
+    inline void Queue<T>::AddAllToTail (CONTAINER_OF_ADDABLE&& s)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i : s) {

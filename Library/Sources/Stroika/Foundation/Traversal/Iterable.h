@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note Don't apply this constructor to non-containers (non-iterables), 
          *        and don't allow it to apply to SUBCLASSES of Iterable (since then we want to select the Iterable (const Iterable& from) constructor)
          */
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, remove_cvref_t<CONTAINER_OF_T>>>* = nullptr>
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, Configuration::remove_cvref_t<CONTAINER_OF_T>>>* = nullptr>
         explicit Iterable (CONTAINER_OF_T&& from);
 
     public:

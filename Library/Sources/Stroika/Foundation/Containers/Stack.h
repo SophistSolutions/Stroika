@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Common/Compare.h"
+#include "../Configuration/Concepts.h"
 #include "../Execution/Synchronized.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
@@ -96,12 +97,15 @@ namespace Stroika::Foundation::Containers {
         /**
          *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
          *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
+         *
+         *  \note Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
+         *        and don't allow it to apply to SUBCLASSES of Stack (since then we want to select the Stack (const Stack& from) constructor)
          */
         Stack ();
         Stack (const Stack& src) noexcept = default;
         Stack (Stack&& src) noexcept      = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Stack<T>*>>* = nullptr>
-        Stack (const CONTAINER_OF_ADDABLE& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Stack (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
@@ -112,8 +116,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Stack<T>& operator= (const Stack<T>& rhs) = default;
-        nonvirtual Stack<T>& operator= (Stack<T>&& rhs) = default;
+        nonvirtual Stack& operator= (const Stack& rhs) = default;
+        nonvirtual Stack& operator= (Stack&& rhs) = default;
 
     public:
         /**

@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const MultiSet<T, TRAITS>*>>*>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_ADDABLE& src)
         : MultiSet ()
     {
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const MultiSet<T, TRAITS>*>>*>
+    template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
         : MultiSet (forward<EQUALS_COMPARER> (equalsComparer))
     {
@@ -458,10 +458,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    void MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_ADDABLE& src)
+    void MultiSet<T, TRAITS>::AddAll (CONTAINER_OF_ADDABLE&& src)
     {
         // see https://stroika.atlassian.net/browse/STK-645
-        for (auto i : src) {
+        for (auto&& i : src) {
             Add (i);
         }
     }

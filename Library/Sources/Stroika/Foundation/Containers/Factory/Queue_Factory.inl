@@ -51,5 +51,7 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::Queue_DoublyLinkedList<T> ();
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_ */
