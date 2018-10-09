@@ -100,10 +100,12 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != rhs.fSharedImpl_.get ()) {
-            fCopier_ = rhs.fCopier_;
-            shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (rhs.fSharedImpl_));
-        }
+        if (fSharedImpl_.get () != rhs.fSharedImpl_.get ())
+            [[LIKELY_ATTR]]
+            {
+                fCopier_ = rhs.fCopier_;
+                shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (rhs.fSharedImpl_));
+            }
         return *this;
     }
     template <typename T, typename TRAITS>
@@ -111,12 +113,14 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != rhs.fSharedImpl_.get ()) {
-            fCopier_ = rhs.fCopier_;
-            // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
-            // if its a temporary, you cannot have mulitple peopel referring to me
-            shared_impl_copier_type::Store (&fSharedImpl_, rhs.fSharedImpl_);
-        }
+        if (fSharedImpl_.get () != rhs.fSharedImpl_.get ())
+            [[LIKELY_ATTR]]
+            {
+                fCopier_ = rhs.fCopier_;
+                // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
+                // if its a temporary, you cannot have mulitple peopel referring to me
+                shared_impl_copier_type::Store (&fSharedImpl_, rhs.fSharedImpl_);
+            }
         return *this;
     }
     template <typename T, typename TRAITS>
@@ -124,9 +128,11 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != from.get ()) {
-            shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (from));
-        }
+        if (fSharedImpl_.get () != from.get ())
+            [[LIKELY_ATTR]]
+            {
+                shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (from));
+            }
         return *this;
     }
     template <typename T, typename TRAITS>
@@ -134,11 +140,13 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != from.get ()) {
-            // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
-            // if its a temporary, you cannot have mulitple peopel referring to me
-            shared_impl_copier_type::Store (&fSharedImpl_, from);
-        }
+        if (fSharedImpl_.get () != from.get ())
+            [[LIKELY_ATTR]]
+            {
+                // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
+                // if its a temporary, you cannot have mulitple peopel referring to me
+                shared_impl_copier_type::Store (&fSharedImpl_, from);
+            }
         return *this;
     }
     template <typename T, typename TRAITS>
