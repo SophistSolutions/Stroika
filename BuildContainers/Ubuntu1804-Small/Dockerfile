@@ -5,7 +5,8 @@ FROM ubuntu:18.04
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-# cuz you need this alot, like if something else missing
+# cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
+# to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
 RUN apt-get install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
