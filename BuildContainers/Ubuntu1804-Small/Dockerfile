@@ -7,6 +7,7 @@ RUN apt-get update
 
 # cuz you need this alot, like if something else missing
 RUN apt-get install -y sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Used to unpack sources for lzma SDK
 RUN apt-get install -y p7zip-full
