@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_Array (const Sequence_Array& src) = default;
         Sequence_Array (const initializer_list<T>& src);
         Sequence_Array (const vector<T>& src);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Sequence_Array<T>*>>* = nullptr>
-        explicit Sequence_Array (const CONTAINER_OF_T& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_Array<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Sequence_Array (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         explicit Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

@@ -46,10 +46,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_LinkedList (const Set_LinkedList& src) = default;
         Set_LinkedList (const initializer_list<T>& src);
         Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
-        Set_LinkedList (const CONTAINER_OF_T& src);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
-        Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Set_LinkedList (CONTAINER_OF_ADDABLE&& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Set_LinkedList (const EqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
         template <typename COPY_FROM_ITERATOR_OF_T>

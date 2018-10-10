@@ -188,11 +188,11 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
-    inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (const CONTAINER_OF_ADDABLE& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (CONTAINER_OF_ADDABLE&& src)
         : Association_Array ()
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

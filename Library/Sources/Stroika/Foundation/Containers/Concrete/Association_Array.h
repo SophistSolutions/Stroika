@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Association_Array ();
         Association_Array (const Association_Array& src) = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-        Association_Array (const CONTAINER_OF_ADDABLE& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        Association_Array (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_KEY_T>
         Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 

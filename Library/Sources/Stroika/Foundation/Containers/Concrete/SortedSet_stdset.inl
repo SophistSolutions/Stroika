@@ -212,19 +212,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>*>
-    SortedSet_stdset<T>::SortedSet_stdset (const CONTAINER_OF_T& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    SortedSet_stdset<T>::SortedSet_stdset (CONTAINER_OF_ADDABLE&& src)
         : SortedSet_stdset ()
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>*>
-    SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
         : SortedSet_stdset (inOrderComparer)
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>

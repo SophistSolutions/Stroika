@@ -224,19 +224,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>*>
-    inline Set_LinkedList<T>::Set_LinkedList (const CONTAINER_OF_T& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Set_LinkedList<T>::Set_LinkedList (CONTAINER_OF_ADDABLE&& src)
         : Set_LinkedList ()
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>*>
-    inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src)
         : Set_LinkedList (equalsComparer)
     {
-        this->AddAll (src);
+        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>

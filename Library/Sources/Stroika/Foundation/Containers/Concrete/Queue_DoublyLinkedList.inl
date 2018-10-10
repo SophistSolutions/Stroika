@@ -169,8 +169,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Queue_DoublyLinkedList<T>*>>*>
-    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const CONTAINER_OF_T& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_DoublyLinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src)
         : Queue_DoublyLinkedList ()
     {
         AssertNotImplemented (); // @todo - use new EnqueueAll()

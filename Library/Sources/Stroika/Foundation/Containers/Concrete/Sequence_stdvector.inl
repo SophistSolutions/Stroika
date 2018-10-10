@@ -206,11 +206,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>>*>
-    inline Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_stdvector<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Sequence_stdvector<T>::Sequence_stdvector (CONTAINER_OF_ADDABLE&& src)
         : Sequence_stdvector ()
     {
-        this->AppendAll (src);
+        this->AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>

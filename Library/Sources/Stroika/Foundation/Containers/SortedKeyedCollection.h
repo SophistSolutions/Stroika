@@ -74,13 +74,13 @@ namespace Stroika::Foundation::Containers {
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
          */
         using ArchetypeContainerType = SortedKeyedCollection<KEY_TYPE, T, TRAITS>;
-        ,
-            public :
-            /**
+
+    public:
+        /**
          *  Just a short-hand for the 'TRAITS' part of SortedKeyedCollection<T,TRAITS>. This is often handy to use in
          *  building other templates.
          */
-            using TraitsType = TRAITS;
+        using TraitsType = TRAITS;
 
     public:
         /**
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers {
         SortedKeyedCollection (const SortedKeyedCollection& src)  = default;
         SortedKeyedCollection (const SortedKeyedCollection&& src) = default;
         SortedKeyedCollection (const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>::value and !is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedKeyedCollection<T>*>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>::value and not is_base_of_v<SortedKeyedCollection<KEY_TYPE, T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit SortedKeyedCollection (const CONTAINER_OF_ADDABLE& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         SortedKeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

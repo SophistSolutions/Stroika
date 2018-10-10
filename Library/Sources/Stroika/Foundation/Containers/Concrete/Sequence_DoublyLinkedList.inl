@@ -231,18 +231,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const vector<T>& src)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_DoublyLinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src)
         : Sequence_DoublyLinkedList ()
     {
-        this->AppendAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Sequence_DoublyLinkedList<T>*>>*>
-    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& src)
-        : Sequence_DoublyLinkedList ()
-    {
-        this->AppendAll (src);
+        this->AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>

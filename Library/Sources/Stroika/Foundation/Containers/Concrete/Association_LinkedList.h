@@ -39,8 +39,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Association_LinkedList ();
         Association_LinkedList (const Association_LinkedList& src) = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-        explicit Association_LinkedList (const CONTAINER_OF_ADDABLE& src);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        explicit Association_LinkedList (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_KEY_T>
         explicit Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
