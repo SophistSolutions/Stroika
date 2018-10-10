@@ -2,13 +2,20 @@
 
 StroikaRoot=$1
 
+
 docker run \
+	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 	--security-opt seccomp=unconfined \
+	-it\
 	--name regression-tests \
+	-h regression-tests \
 	-d \
 	-v $StroikaRoot:/Sandbox-StroikaRoot \
+	-w /Sandbox-StroikaRoot \
 	sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
-	sh -c "cd /Sandbox-StroikaRoot && ./ScriptsLib/RegressionTests.sh"
+	bash
+
+#	sh -c "./ScriptsLib/RegressionTests.sh"
 
 echo "note - to connect to this container and view it's status, use:"
-echo "   docker exec -it regression-tests /bin/bash"
+echo "   docker exec -it regression-tests bash"
