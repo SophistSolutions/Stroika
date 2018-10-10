@@ -17,5 +17,6 @@ docker run \
 
 #	sh -c "./ScriptsLib/RegressionTests.sh"
 
+### NB: COLUMNS=/LINES= is poor workaround for lack of terminal size propagation from terminal to docker interactive session
 echo "note - to connect to this container and view it's status, use:"
-echo "   docker exec -it regression-tests bash"
+echo "   docker exec -it -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" regression-tests bash"
