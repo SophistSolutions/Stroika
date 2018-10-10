@@ -5,6 +5,9 @@ FROM ubuntu:18.04
 # Get latest packages system, so can do installs
 RUN apt-get update
 
+# cuz you need this alot, like if something else missing
+RUN apt-get install -y sudo
+
 # Used to unpack sources for lzma SDK
 RUN apt-get install -y p7zip-full
 
