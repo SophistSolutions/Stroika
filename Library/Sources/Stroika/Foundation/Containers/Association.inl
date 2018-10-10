@@ -28,15 +28,6 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-#if 0
-    //  https://stroika.atlassian.net/browse/STK-541
-    template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline  Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (Association<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) noexcept
-        : inherited (move (src))
-    {
-        _AssertRepValidType ();
-    }
-#endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Association ()
