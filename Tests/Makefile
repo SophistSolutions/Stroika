@@ -1,17 +1,17 @@
-ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+ProjectPlatformSubdir	=	$(shell ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 export StroikaRoot=$(realpath ../)/
 
 .PHONY:	tests all check clobber
 
 SHELL=/bin/bash
 
-TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
+TESTS=	        $(shell ScriptsLib/PrintTestsList.pl)
 
 ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO_BUILD_LINES?=0
 
-RUN_PREFIX	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RUN_PREFIX)
+RUN_PREFIX	=	$(shell ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RUN_PREFIX)
 ifneq (,$(RUN_PREFIX))
 RUN_PREFIX:=$(RUN_PREFIX) 
 endif
@@ -128,7 +128,7 @@ endif
 
 project-files:
 	@echo -n "Building VisualStudio.Net-2017 project files..."
-	@cd Projects/VisualStudio.Net-2017 && perl BuildProjectsFiles.pl
+	@cd Projects/VisualStudio.Net-2017 && ./BuildProjectsFiles.pl
 	@echo done
 
 
@@ -140,7 +140,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
-	@(cd Projects/$(ProjectPlatformSubdir) && perl ./BuildProjectsFiles.pl)
+	@(cd Projects/$(ProjectPlatformSubdir) && ./BuildProjectsFiles.pl)
 	@$(MAKE) --no-print-directory $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
@@ -155,7 +155,7 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 else
-	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
+	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
 endif
 
 run-tests:
@@ -167,11 +167,11 @@ else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Running Stroka Tests {$(CONFIGURATION)}:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
-    if [ "`perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
+    if [ "`../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
 		for i in $(TESTS); do\
-			TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
+			TESTNAME=`ScriptsLib/PrintTestName.pl $$i`;\
 			$(RUNTEST_REMOTECOPYSETUP);\
 			$(RUNTEST_REMOTECOPYSETUP2);\
 			TIMESTAMP=`date +%s`;\
