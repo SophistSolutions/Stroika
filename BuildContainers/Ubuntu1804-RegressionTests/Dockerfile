@@ -8,7 +8,7 @@ RUN apt-get update
 RUN apt-get install -y  g++-7  g++-8
 
 #install the latest (C++17 compat) clang compilers (and libs)
-RUN apt-get install -y  clang++-6  libc++-dev c++abi
+RUN apt-get install -y  clang++-6  libc++abi-dev
 
 #Only needed to run with valgrind regtests
 RUN apt-get install -y valgrind
