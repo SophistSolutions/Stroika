@@ -169,31 +169,31 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /*
-            *  \brief  Create a BLOB from the given data - without copying the data (dangerous).
-            *
-            *  Attach () causes 'move semantics' on the pointer - where
-            *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
-            *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
-            *
-            *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
-            *  \req (start <= end)
-            *
-            *  @see AttachApplicationLifetime
-            */
+         *  \brief  Create a BLOB from the given data - without copying the data (dangerous).
+         *
+         *  Attach () causes 'move semantics' on the pointer - where
+         *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
+         *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
+         *
+         *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
+         *  \req (start <= end)
+         *
+         *  @see AttachApplicationLifetime
+         */
         static BLOB Attach (const byte* start, const byte* end);
 
     public:
         /*
-            *  \brief  Create a BLOB from the given data - without copying the data (dangerous), and never deletes
-            *
-            *  AttachApplicationLifetime () may save and use pointer indefinitely, but will never modify what it
-            *  points to nor delete it. The caller \em must do likewise.
-            *
-            *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
-            *  \req (start <= end)
-            *
-            *  @see Attach
-            */
+         *  \brief  Create a BLOB from the given data - without copying the data (dangerous), and never deletes
+         *
+         *  AttachApplicationLifetime () may save and use pointer indefinitely, but will never modify what it
+         *  points to nor delete it. The caller \em must do likewise.
+         *
+         *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
+         *  \req (start <= end)
+         *
+         *  @see Attach
+         */
         static BLOB AttachApplicationLifetime (const byte* start, const byte* end);
         template <size_t SIZE>
         static BLOB AttachApplicationLifetime (const byte (&data)[SIZE]);
