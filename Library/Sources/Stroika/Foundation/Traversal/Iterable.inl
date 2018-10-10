@@ -206,12 +206,12 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     inline Iterable<T>::Iterable (Iterable&& from) noexcept
-        : _fRep (move (from._fRep))
+        : _fRep (from._fRep)
     {
+        /*
+         *  SEE DESIGN NOTE in class (and https://stroika.atlassian.net/browse/STK-541) - why we intentionally use copy of rep not MOVE
+         */
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-        if constexpr (!kIterableUsesStroikaSharedPtr) {
-            Require (from._fRep == nullptr); // after move
-        }
     }
     template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, Configuration::remove_cvref_t<CONTAINER_OF_T>>>*>

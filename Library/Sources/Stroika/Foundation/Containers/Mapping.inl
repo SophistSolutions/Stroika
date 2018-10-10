@@ -36,13 +36,14 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
 #if 0
-            //  https://stroika.atlassian.net/browse/STK-541
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            inline  Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
+        : inherited (move (src))
+    {
+        auto&& srcRepAccessor  = _SafeReadWriteRepAccessor<_IRep>{&src};
+        auto&& thisRepAccessor = _SafeReadRepAccessor<_IRep>{this};
+        srcRepAccessor._UpdateRep (thisRepAccessor._ConstGetRep ().CloneEmpty (&src));
+    }
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
@@ -565,7 +566,6 @@ namespace Stroika::Foundation::Containers {
     {
         return not lhs.Equals (rhs);
     }
-
 }
 
 #endif /* _Stroika_Foundation_Containers_Mapping_inl_ */

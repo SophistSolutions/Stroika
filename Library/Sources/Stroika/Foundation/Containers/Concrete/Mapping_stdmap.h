@@ -43,6 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
         explicit Mapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer);
         Mapping_stdmap (const Mapping_stdmap& src) = default;
+        Mapping_stdmap (Mapping_stdmap&& src)      = default;
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
         explicit Mapping_stdmap (const CONTAINER_OF_ADDABLE& src);
         template <typename COPY_FROM_ITERATOR_KEYVALUE>

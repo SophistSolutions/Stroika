@@ -138,6 +138,18 @@ namespace {
 }
 
 namespace {
+    namespace ClearBug_Test_8_ {
+        void DoAll ()
+        {
+            // https://stroika.atlassian.net/browse/STK-541
+            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            Mapping<int, int> mm{move (m)};
+            m.clear ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
@@ -193,6 +205,7 @@ namespace {
 
         Where_Test_6_::DoAll ();
         WithKeys_Test_7_::DoAll ();
+        ClearBug_Test_8_::DoAll ();
     }
 }
 

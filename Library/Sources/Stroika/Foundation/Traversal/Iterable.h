@@ -196,6 +196,18 @@ namespace Stroika::Foundation::Traversal {
      *      so ??? think through - what this implies- but probably something about not
      *      threading stuff and ???
      *
+     *  *Important Design Note*:
+     *      Move operations on an interable are mapped to the same as copy. We experimented with
+     *      true move (before Stroika v2.1d10), but since all operations have to still be somehow valid
+     *      after a move, that meants re-creating the rep in the moved-out iterable.
+     *
+     *      There is little value to move, since Iterable already uses copy-on-write (COW).
+     *
+     *      And when you take into account the cost of either checking for null in all operations (methods), or
+     *      creating a new empty object after each move, there is no point.
+     *
+     *      See https://stroika.atlassian.net/browse/STK-541 for history and alteratives (allowing real moves)
+     *
      *  \em Design Note
      *      Methods like Min/Max/Median/Sum make little senese on empty Iterables. There were several choices
      *      available to deal with this:
