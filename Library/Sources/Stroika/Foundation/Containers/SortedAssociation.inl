@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation ()
-        : inherited (move (Factory::SortedAssociation_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ()))
+        : inherited (Factory::SortedAssociation_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ())
     {
         _AssertRepValidType ();
     }

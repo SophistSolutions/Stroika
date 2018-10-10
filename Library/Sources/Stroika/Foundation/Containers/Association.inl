@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association ()
-        : inherited (move (Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, false_type> () ()))
+        : inherited (Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, false_type> () ())
     {
         _AssertRepValidType ();
     }

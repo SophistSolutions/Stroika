@@ -24,14 +24,14 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping ()
-        : inherited (move (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ()))
+        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ())
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer)
-        : inherited (move (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER> (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)) ()))
+        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER> (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)) ())
     {
         _AssertRepValidType ();
     }

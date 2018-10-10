@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Containers {
 #if 0
         template    <typename T, typename TRAITS>
         inline  SortedKeyedCollection<T, TRAITS>::SortedKeyedCollection ()
-            : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS> () ()))
+            : inherited (Concrete::SortedCollection_Factory<T, TRAITS> () ())
         {
             _AssertRepValidType ();
         }
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers {
         template    <typename T, typename TRAITS>
         template    <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
         inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_ADDABLE& src)
-            : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS>::New ()))
+            : inherited (Concrete::SortedCollection_Factory<T, TRAITS>::New ())
         {
             _AssertRepValidType ();
         }

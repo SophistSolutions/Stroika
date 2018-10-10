@@ -97,23 +97,23 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-        : fRep_{move ((std::begin (data) == std::end (data)) ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ())))}
+        : fRep_{(std::begin (data) == std::end (data)) ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))}
     {
     }
     inline BLOB::BLOB (const initializer_list<byte>& bytes)
-        : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
+        : fRep_ (bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ())))
     {
     }
     inline BLOB::BLOB (const initializer_list<uint8_t>& bytes)
-        : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
+        : fRep_ (bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ())))
     {
     }
     inline BLOB::BLOB (const byte* start, const byte* end)
-        : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
+        : fRep_ (start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end)))
     {
     }
     inline BLOB::BLOB (const uint8_t* start, const uint8_t* end)
-        : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
+        : fRep_ (start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end)))
     {
     }
     inline BLOB::BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)

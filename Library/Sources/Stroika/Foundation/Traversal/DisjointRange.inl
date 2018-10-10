@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
         }
-        return move (DisjointRange{disjointRanges});
+        return DisjointRange{disjointRanges};
     }
     template <typename T, typename RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::Union (const DisjointRange& rhs) const -> DisjointRange
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Traversal {
                 disjointRanges.Append (sp);
             }
         }
-        return move (DisjointRange{disjointRanges});
+        return DisjointRange{disjointRanges};
     }
     template <typename T, typename RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::UnionBounds (const DisjointRange& rhs) const -> RangeType

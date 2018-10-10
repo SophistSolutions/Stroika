@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Sequence<T>::Sequence ()
-        : inherited (move (Factory::Sequence_Factory<T> () ()))
+        : inherited (Factory::Sequence_Factory<T> () ())
     {
         _AssertRepValidType ();
     }

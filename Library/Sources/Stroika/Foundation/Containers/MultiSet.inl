@@ -278,7 +278,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer)
-        : inherited (move (Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ()))
+        : inherited (Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ())
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();

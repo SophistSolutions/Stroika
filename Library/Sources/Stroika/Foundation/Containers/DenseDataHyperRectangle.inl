@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename... INDEXES>
     DenseDataHyperRectangle<T, INDEXES...>::DenseDataHyperRectangle (INDEXES... dimensions)
-        : inherited (move (Factory::DenseDataHyperRectangle_Factory<T, INDEXES...> () (forward<INDEXES> (dimensions)...)))
+        : inherited (Factory::DenseDataHyperRectangle_Factory<T, INDEXES...> () (forward<INDEXES> (dimensions)...))
     {
     }
     template <typename T, typename... INDEXES>

@@ -39,10 +39,6 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Stack_LinkedList ();
         Stack_LinkedList (const Stack_LinkedList& src) = default;
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>>* = nullptr>
-        explicit Stack_LinkedList (const CONTAINER_OF_T& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
     public:
         nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs) = default;

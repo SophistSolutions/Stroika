@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Queue<T>::Queue ()
-        : inherited (move (Factory::Queue_Factory<T> () ()))
+        : inherited (Factory::Queue_Factory<T> () ())
     {
         _AssertRepValidType ();
     }
