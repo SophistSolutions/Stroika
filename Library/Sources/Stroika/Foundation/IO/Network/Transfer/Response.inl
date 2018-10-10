@@ -25,19 +25,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         , fServerEndpointSSLInfo_ (sslInfo)
     {
     }
-    inline Response::Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers)
-        : fData_ (move (data))
-        , fHeaders_ (move (headers))
-        , fStatus_ (status)
-    {
-    }
-    inline Response::Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers, const optional<SSLResultInfo>&& sslInfo)
-        : fData_ (move (data))
-        , fHeaders_ (move (headers))
-        , fStatus_ (status)
-        , fServerEndpointSSLInfo_ (move (sslInfo))
-    {
-    }
     inline BLOB Response::GetData () const
     {
         return fData_;

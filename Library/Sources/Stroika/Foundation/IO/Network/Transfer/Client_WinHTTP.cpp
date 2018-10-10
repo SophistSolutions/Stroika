@@ -470,7 +470,7 @@ RetryWithAuth:
             i = endOfRegion + 1;
         }
     }
-    return Response (move (data), status, move (headers), move (serverEndpointSSLInfo));
+    return Response (data, status, headers, serverEndpointSSLInfo);
 }
 
 void Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
