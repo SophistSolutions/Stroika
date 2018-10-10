@@ -1,22 +1,25 @@
 #!/bin/bash
 
-StroikaRoot=$1
+StroikaRoot=~/Sandbox/Stroika-Dev
+CONTAINER_NAME="${CONTAINER_NAME:-regression-tests}"
+EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
 
+### Can set CMD2RUN=./ScriptsLib/RegressionTests.sh
+CMD2RUN="${CMD2RUN:-bash}"
+
+docker stop ${CONTAINER_NAME} || true
+docker rm ${CONTAINER_NAME} || true
 
 docker run \
 	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+	--dns ${EXTRA_DNS} \
+	--dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
 	-it\
-	--name regression-tests \
-	-h regression-tests \
-	-d \
+	 -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" \
+	--name ${CONTAINER_NAME} \
+	-h ${CONTAINER_NAME} \
 	-v $StroikaRoot:/Sandbox-StroikaRoot \
 	-w /Sandbox-StroikaRoot \
 	sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
-	bash
-
-#	sh -c "./ScriptsLib/RegressionTests.sh"
-
-### NB: COLUMNS=/LINES= is poor workaround for lack of terminal size propagation from terminal to docker interactive session
-echo "note - to connect to this container and view it's status, use:"
-echo "   docker exec -it -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" regression-tests bash"
+	${CMD2RUN}
