@@ -3,8 +3,8 @@
 #GCC_VERSION=5.4.0
 #GCC_VERSION=6.4.0
 #GCC_VERSION=7.2.0
-GCC_VERSION=${GCC_VERSION-7.2.0}
-INSTALL_DIR=$HOME/gcc-$GCC_VERSION
+GCC_VERSION="${GCC_VERSION:=7.2.0}"
+INSTALL_DIR="${INSTALL_DIR:=/private-compiler-builds/gcc-$GCC_VERSION}"
 
 #unset this to take longer, but be safer about build
 DISABLE_BOOTSTRAP_FLAG=--disable-bootstrap

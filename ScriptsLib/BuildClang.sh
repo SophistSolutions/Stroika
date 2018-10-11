@@ -7,6 +7,7 @@
 #VERSION=5.0.0
 VERSION=${VERSION-4.0.1}
 BUILDDIR=BUILDDIR-LLVM-$VERSION
+INSTALL_DIR="${INSTALL_DIR:=/private-compiler-builds/clang-$VERSION}"
 
 PARALELLMAKEARG=-j4
 
@@ -35,6 +36,6 @@ ln -s `realpath cfe-$VERSION.src` llvm/tools/clang
 mkdir build-llvm
 cd build-llvm
 
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/clang-$VERSION -DLLVM_OPTIMIZED_TABLEGEN=true ../llvm
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=INSTALL_DIR -DLLVM_OPTIMIZED_TABLEGEN=true ../llvm
 make $PARALELLMAKEARG
 make install
