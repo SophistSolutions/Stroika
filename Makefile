@@ -16,7 +16,7 @@ ECHO_BUILD_LINES?=0
 CONFIGURATION_TAGS?=$(TAGS)
 
 
-APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --config-tags $(CONFIGURATION_TAGS)))
+APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
 
 
 help:
