@@ -9,9 +9,13 @@ MY_PATH="`dirname \"$0\"`"
 MY_PATH=`realpath $MY_PATH`
 
 CONFIG_TAG_RESTRICTION=""
-while (( "$#" )); do
+while [[ $# -gt 0 ]]; do
   case "$1" in
     --config-tags)
+	  if [[ $# -eq 1 ]]; then
+		echo Expected another argument
+		exit 1;
+	  fi
       CONFIG_TAG_RESTRICTION=$2
       shift 2
       ;;
