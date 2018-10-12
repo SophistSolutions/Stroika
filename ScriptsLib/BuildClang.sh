@@ -36,6 +36,6 @@ ln -s `realpath cfe-$VERSION.src` llvm/tools/clang
 mkdir build-llvm
 cd build-llvm
 
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=INSTALL_DIR -DLLVM_OPTIMIZED_TABLEGEN=true ../llvm
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DLLVM_OPTIMIZED_TABLEGEN=true ../llvm
 make $PARALELLMAKEARG
 make install
