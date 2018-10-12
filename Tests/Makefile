@@ -24,6 +24,10 @@ BASEEXEPATTERN=Test$$i.exe
 EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i/Test$$i.exe
 endif
 
+
+SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+
+
 ### @todo - rewrite the below mess so valgrind etc CONSTRUCT a RUN_PREFIX, and then unify the code a bit.
 ### and change place where RUN_PREFIX set (RegressionTests.sh) and use the RUN_PREFIX mechanism (configuration)
 
@@ -47,13 +51,13 @@ endif
 RUNTEST_REMOTECOPYSETUP=true
 RUNTEST_REMOTECOPYSETUP2=true
 ifneq (,$(REMOTE))
-RUNTEST_REMOTECOPYSETUP=scp -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
+RUNTEST_REMOTECOPYSETUP=scp $(SSH_REMOTE_WARNINGS_OFF) -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
 VALEXTRARUN_=
 ifneq (,$(VALGRIND))
 VALEXTRARUN_= cd /tmp && valgrind $(VALGRIND_OPTIONS)
-RUNTEST_REMOTECOPYSETUP2=  scp -q *.supp $(REMOTE):/tmp/
+RUNTEST_REMOTECOPYSETUP2=  scp $(SSH_REMOTE_WARNINGS_OFF) -q *.supp $(REMOTE):/tmp/
 endif
-RUNTEST_EXE_RUN=ssh $(REMOTE) $(RUN_PREFIX) "$(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)"
+RUNTEST_EXE_RUN=ssh $(SSH_REMOTE_WARNINGS_OFF) $(REMOTE) $(RUN_PREFIX) "$(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)"
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) $(RUN_PREFIX) $(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)
 else ifeq (memcheck,$(VALGRIND))
 RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
