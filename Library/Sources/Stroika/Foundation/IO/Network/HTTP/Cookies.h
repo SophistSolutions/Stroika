@@ -10,6 +10,7 @@
 #include "../../../Characters/ToString.h"
 #include "../../../Common/KeyValuePair.h"
 #include "../../../Containers/Mapping.h"
+#include "../../../Streams/InputStream.h"
 #include "../../../Time/DateTime.h"
 
 /*
@@ -19,6 +20,7 @@
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
+    using Characters::Character;
     using Characters::String;
     using Common::KeyValuePair;
     using Containers::Mapping;
@@ -30,37 +32,53 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.1
          */
+        static constexpr wchar_t kExpiresAttributeLabel[] = L"Expires";
         optional<Time::DateTime> fExpires;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.2
          */
-        optional<int> fMaxAge;
+        static constexpr wchar_t kMaxAgeAttributeLabel[] = L"Max-Age";
+        optional<int>            fMaxAge;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.3
          */
-        optional<String> fDomain;
+        static constexpr wchar_t kDomainAttributeLabel[] = L"Domain";
+        optional<String>         fDomain;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.4
          */
-        optional<String> fPath;
+        static constexpr wchar_t kPathAttributeLabel[] = L"Path";
+        optional<String>         fPath;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.5
          */
-        optional<bool> fSecure;
+        static constexpr wchar_t kSecureAttributeLabel[] = L"Secure";
+        optional<bool>           fSecure;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.6
          */
-        optional<bool> fHttpOnly;
+        static constexpr wchar_t kHttpOnlyAttributeLabel[] = L"HttpOnly";
+        optional<bool>           fHttpOnly;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.1
          */
         optional<Mapping<String, String>> fOtherAttributes;
+
+        /**
+         *  Return a combined mapping of the other attributes with the expicit (known name) attributes)
+         */
+        nonvirtual Mapping<String, String> GetAttributes () const;
+
+        /**
+         */
+        nonvirtual void AddAttribute (const String& aEqualsBAttributePair);
+        nonvirtual void AddAttribute (const String& key, const String& value);
 
         /**
          *  \brief render as a string suitable for a cookie header
@@ -72,6 +90,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Decode an http cookie into an object.
          *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
          */
+        static Cookie Decode (const Streams::InputStream<Character>::Ptr& src);
         static Cookie Decode (const String& src);
 
         /**
