@@ -713,12 +713,12 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *      const String kTest_ { L"a=b" };
-         *      const String kLbl2LookFor_ { L"a=" };
-         *      if (kTest_.Find (kLbl2LookFor_)) {
-         *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
-         *      }
-         *      Assert (tmp == L"b");
+         *          const String kTest_ { L"a=b" };
+         *          const String kLbl2LookFor_ { L"a=" };
+         *          if (kTest_.Find (kLbl2LookFor_)) {
+         *              String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
+         *          }
+         *          Assert (tmp == L"b");
          *      \endcode
          *
          *  @see FindEach ()
