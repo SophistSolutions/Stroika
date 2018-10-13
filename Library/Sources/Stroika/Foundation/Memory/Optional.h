@@ -83,21 +83,21 @@ namespace Stroika::Foundation::Memory {
         static constexpr bool kIncludeDebugExternalSync = qDebug and not is_literal_type<T>::value;
 
         /*
-            *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
-            *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
-            *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class (or member classes)
-            *  and selecting whole base (or member) clases. Thats what this StorageType_<HAS_DESTRUCTOR> does.
-            */
+         *  To make Optional<> work with constexpr construction (by value) - we may need eliminate the Optional
+         *  destructor (to satisfy the rules for LiteralType in C++14). But there doesnt appear to be a direct
+         *  SFINAE way to conditionally provide a destructor, besides providing alternates for the base class (or member classes)
+         *  and selecting whole base (or member) clases. Thats what this StorageType_<HAS_DESTRUCTOR> does.
+         */
         template <typename TT, bool HAS_DESTRUCTOR>
         struct StorageType_;
         template <typename TT>
         struct StorageType_<TT, false> {
         private:
             /*
-                *  Use union - so we can initialize CTOR for constexpr right part of union, and have no DTOR.
-                *  Use fEngaged bool instead of pointer - because C++ (at least g++/clang++) don't allow pointer to
-                *  constexpr value, where fEngagedValue_ not clearly marked constexpr (maybe no matter what).
-                */
+             *  Use union - so we can initialize CTOR for constexpr right part of union, and have no DTOR.
+             *  Use fEngaged bool instead of pointer - because C++ (at least g++/clang++) don't allow pointer to
+             *  constexpr value, where fEngagedValue_ not clearly marked constexpr (maybe no matter what).
+             */
             union {
                 Configuration::Empty fEmpty_;
                 T                    fEngagedValue_;
@@ -360,21 +360,21 @@ namespace Stroika::Foundation::Memory {
         constexpr Optional (const Optional& from);
         constexpr Optional (Optional&& from);
         /*
-            *  Note - in C++17, std::optional checks
-            *      is_convertible_v<const T2&, T>
-            *      (or std::is_convertible_v < T2 &&, T > in the rvalue-ref overload)
-            *  to see if we make this constructor explicit.
-            *
-            *  In stroika - instead - we use
-            *      is_same_v<typename std::decay<T>::type, typename std::common_type<T, T2>::type>
-            *
-            *  We may want to revisit this question, but the key is:
-            *      Optional<double> d;
-            *      Optional<uint64_t> t1   =   d ;                     // should generate warning or fail to compile (no explit match)
-            *      Optional<uint64_t> t2   =   Optional<uint64_t> (d); // should not generate warning
-            *
-            *  using is_same/common_type does this a little better (at least for VS2k17RC1)
-            */
+         *  Note - in C++17, std::optional checks
+         *      is_convertible_v<const T2&, T>
+         *      (or std::is_convertible_v < T2 &&, T > in the rvalue-ref overload)
+         *  to see if we make this constructor explicit.
+         *
+         *  In stroika - instead - we use
+         *      is_same_v<typename std::decay<T>::type, typename std::common_type<T, T2>::type>
+         *
+         *  We may want to revisit this question, but the key is:
+         *      Optional<double> d;
+         *      Optional<uint64_t> t1   =   d ;                     // should generate warning or fail to compile (no explit match)
+         *      Optional<uint64_t> t2   =   Optional<uint64_t> (d); // should not generate warning
+         *
+         *  using is_same/common_type does this a little better (at least for VS2k17RC1)
+         */
         template <
             typename T2,
             typename TRAITS2,
@@ -704,8 +704,8 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-             *  @see Characters::ToString()
-             */
+         *  @see Characters::ToString()
+         */
         template <typename STRING_TYPE = Characters::String>
         nonvirtual STRING_TYPE ToString () const;
 
