@@ -25,7 +25,8 @@ EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i/Test$$i.exe
 endif
 
 
-SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+#SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 
 ### @todo - rewrite the below mess so valgrind etc CONSTRUCT a RUN_PREFIX, and then unify the code a bit.
