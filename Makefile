@@ -440,7 +440,6 @@ regression-test-configurations:
 
 list-configurations:
 	@echo $(APPLY_CONFIGS)
-		@for i in $(APPLY_CONFIGS) ; do\
 
 list-configuration-tags:
 	@ScriptsLib/GetConfigurationTags
