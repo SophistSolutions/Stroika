@@ -79,7 +79,7 @@ void Cookie::AddAttribute (const String& key, const String& value)
         fDomain = value;
     }
     else if (key == kExpiresAttributeLabel) {
-        fExpires = DateTime::Parse (value, DateTime::ParseFormat::eISO8601); // wag - read spec!!!
+        fExpires = DateTime::Parse (value, DateTime::ParseFormat::eRFC1123);
     }
     else if (key == kMaxAgeAttributeLabel) {
         fMaxAge = String2Int<int> (value);
