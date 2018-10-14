@@ -29,6 +29,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  \brief object representing an HTTP cookie - from https://tools.ietf.org/html/rfc6265
      */
     struct Cookie : KeyValuePair<String, String> {
+        /**
+         */
+        Cookie () = default;
+        Cookie (const String& name, const String& value);
+        Cookie (const String& name, const String& value, const Mapping<String, String>& attributes);
+
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.1
          */
@@ -89,8 +95,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Decode an http cookie into an object.
          *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
+         *
+         *  \req src.IsSeekable () for InputStream overload
          */
-        static Cookie Decode (const Streams::InputStream<Character>::Ptr& src);
+        static Cookie Decode (Streams::InputStream<Character>::Ptr src);
         static Cookie Decode (const String& src);
 
         /**

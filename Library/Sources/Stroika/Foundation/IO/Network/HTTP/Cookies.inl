@@ -16,6 +16,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ************************************ HTTP::Cookie ******************************
      ********************************************************************************
      */
+    inline Cookie::Cookie (const String& name, const String& value)
+        : KeyValuePair<String, String>{name, value}
+    {
+    }
     inline String HTTP::Cookie::ToString () const
     {
         return Encode ();

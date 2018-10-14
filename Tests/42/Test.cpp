@@ -23,17 +23,22 @@ namespace {
     namespace Cookies_Test01_ {
         void RunAll ()
         {
-            if (false) {
-                // Examples from https://tools.ietf.org/html/rfc6265#section-3.1
-                {
-                    Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42");
-                    VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
-                }
-                {
-                    Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
-                    VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
-                    VerifyTestResult (c.fPath == L"/");
-                }
+            // Examples from https://tools.ietf.org/html/rfc6265#section-3.1
+            {
+                Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42");
+                VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
+                VerifyTestResult (c.GetAttributes ().empty ());
+            }
+            {
+                Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
+                VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
+                VerifyTestResult (c.fPath == L"/");
+                VerifyTestResult (c.fSecure == true);
+                VerifyTestResult (c.fHttpOnly == true);
+                c.fPath.reset ();
+                c.fSecure.reset ();
+                c.fHttpOnly.reset ();
+                VerifyTestResult (c.GetAttributes ().empty ());
             }
         }
     }

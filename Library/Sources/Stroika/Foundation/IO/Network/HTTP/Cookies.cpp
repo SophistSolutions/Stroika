@@ -20,9 +20,17 @@ using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- ************************************ HTTP::Cookie ******************************
+ ********************************* HTTP::Cookie *********************************
  ********************************************************************************
  */
+Cookie::Cookie (const String& name, const String& value, const Mapping<String, String>& attributes)
+    : Cookie (name, value)
+{
+    for (auto&& i : attributes) {
+        AddAttribute (i.fKey, i.fValue);
+    }
+}
+
 Mapping<String, String> Cookie::GetAttributes () const
 {
     Mapping<String, String> result;
@@ -111,10 +119,68 @@ String Cookie::Encode () const
     return String ();
 }
 
-Cookie Cookie::Decode (const Streams::InputStream<Character>::Ptr& src)
+Cookie Cookie::Decode (Streams::InputStream<Character>::Ptr src)
 {
-    AssertNotImplemented ();
-    return Cookie ();
+    Require (src.IsSeekable ());
+    auto skipWS = [&]() {
+        while (optional<Character> c = src.Read ()) {
+            if (not c->IsWhitespace ()) {
+                src.Seek (Streams::Whence::eFromCurrent, -1);
+                return;
+            }
+        }
+    };
+    // scan up to target char; leave stream after that character, but return string just before it
+    auto skipUpTo = [&](wchar_t targetChar, String* s) {
+        StringBuilder sb;
+        while (optional<Character> c = src.Read ()) {
+            if (c->As<wchar_t> () == targetChar) {
+                break;
+            }
+            else {
+                sb.Append (*c);
+            }
+        }
+        *s = sb.str ();
+    };
+    // same as skipUpTo, but with 2 possible characters
+    auto skipUpTo2 = [&](wchar_t targetChar, wchar_t targetChar2, String* s) {
+        StringBuilder sb;
+        while (optional<Character> c = src.Read ()) {
+            if (c->As<wchar_t> () == targetChar or c->As<wchar_t> () == targetChar2) {
+                break;
+            }
+            else {
+                sb.Append (*c);
+            }
+        }
+        *s = sb.str ();
+    };
+    auto prevChar = [&]() {
+        src.Seek (Streams::Whence::eFromCurrent, -1);
+        auto c = src.Read ();
+        Assert (c.has_value ());
+        return *c;
+    };
+    skipWS ();
+    String key;
+    skipUpTo ('=', &key);
+    String value;
+    skipUpTo (';', &value);
+    Mapping<String, String> attributes;
+    while (not src.IsAtEOF ()) {
+        skipWS ();
+        String k2;
+        String val2;
+        skipUpTo2 ('=', ';', &k2);
+        if (prevChar () == '=') {
+            skipUpTo (';', &val2);
+        }
+        if (not key.empty ()) {
+            attributes.Add (k2, val2);
+        }
+    }
+    return Cookie (key, value, attributes);
 }
 
 Cookie Cookie::Decode (const String& src)
