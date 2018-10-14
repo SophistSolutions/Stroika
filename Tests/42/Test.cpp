@@ -40,6 +40,15 @@ namespace {
                 c.fHttpOnly = false;
                 VerifyTestResult (c.GetAttributes ().empty ());
             }
+            {
+                Cookie c = Cookie::Decode (L"lang=en-US; Path=/; Domain=example.com");
+                VerifyTestResult (c.fKey == L"lang" and c.fValue == L"en-US");
+                VerifyTestResult (c.fPath == L"/");
+                VerifyTestResult (c.fDomain == L"example.com");
+                c.fPath.reset ();
+                c.fDomain.reset ();
+                VerifyTestResult (c.GetAttributes ().empty ());
+            }
         }
     }
 }
