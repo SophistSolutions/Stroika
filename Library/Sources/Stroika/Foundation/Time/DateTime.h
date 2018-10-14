@@ -168,13 +168,21 @@ namespace Stroika::Foundation::Time {
          *  eCurrentLocale
          *      Note this is the current C++ locale, which may not be the same as the platform default locale.
          *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+         *
+         *
+         *  eRFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
+         *  current HTTP specification (e.g. for cookies).
+         *  The spec is originally documented in 
+         *      https://tools.ietf.org/html/rfc1123#5.2.14
+         *      https://tools.ietf.org/html/rfc822#section-5
          */
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
             eXML,
+            eRFC1123,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eXML)
+            Stroika_Define_Enum_Bounds (eCurrentLocale, eRFC1123)
         };
 
     public:

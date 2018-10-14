@@ -128,4 +128,22 @@ namespace Stroika::Foundation::Time {
 
 }
 
+namespace Stroika::Foundation::Configuration {
+    template <>
+    struct DefaultNames<Stroika::Foundation::Time::DateTime::ParseFormat> : EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> {
+        static constexpr EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> k{
+            EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat>::BasicArrayInitializer{
+                {
+                    {Stroika::Foundation::Time::DateTime::ParseFormat::eCurrentLocale, L"Current-Locale"},
+                    {Stroika::Foundation::Time::DateTime::ParseFormat::eISO8601, L"ISO-8601"},
+                    {Stroika::Foundation::Time::DateTime::ParseFormat::eXML, L"XML"},
+                    {Stroika::Foundation::Time::DateTime::ParseFormat::eRFC1123, L"RFC-1123"},
+                }}};
+        DefaultNames ()
+            : EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> (k)
+        {
+        }
+    };
+}
+
 #endif /*_Stroika_Foundation_Time_DateTime_inl_*/

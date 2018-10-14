@@ -313,6 +313,111 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             //}
             return t.empty () ? d : DateTime (d, t, tz);
         } break;
+        case ParseFormat::eRFC1123: {
+            /*
+             *  From https://tools.ietf.org/html/rfc822#section-5
+             *    5.1.  SYNTAX
+             *
+             *       date-time   =  [ day "," ] date time        ; dd mm yy
+             *                                                   ;  hh:mm:ss zzz
+             *     
+             *       day         =  "Mon"  / "Tue" /  "Wed"  / "Thu"
+             *                   /  "Fri"  / "Sat" /  "Sun"
+             * 
+             *       date        =  1*2DIGIT month 2DIGIT        ; day month year
+             *                                                   ;  e.g. 20 Jun 82
+             * 
+             *       month       =  "Jan"  /  "Feb" /  "Mar"  /  "Apr"
+             *                   /  "May"  /  "Jun" /  "Jul"  /  "Aug"
+             *                   /  "Sep"  /  "Oct" /  "Nov"  /  "Dec"
+             *
+             *       time        =  hour zone                    ; ANSI and Military
+             * 
+             *       hour        =  2DIGIT ":" 2DIGIT [":" 2DIGIT]
+             *                                                   ; 00:00:00 - 23:59:59
+             *
+             *       zone        =  "UT"  / "GMT"                ; Universal Time
+             *                                                   ; North American : UT
+             *                   /  "EST" / "EDT"                ;  Eastern:  - 5/ - 4
+             *                   /  "CST" / "CDT"                ;  Central:  - 6/ - 5
+             *                   /  "MST" / "MDT"                ;  Mountain: - 7/ - 6
+             *                   /  "PST" / "PDT"                ;  Pacific:  - 8/ - 7
+             *                   /  1ALPHA                       ; Military: Z = UT;
+             *                                                   ;  A:-1; (J not used)
+             *                                                   ;  M:-12; N:+1; Y:+12
+             *                   / ( ("+" / "-") 4DIGIT )        ; Local differential
+             *                                                   ;  hours+min. (HHMM)
+             *            
+             *  So we can ignore the day (string) since optional and redundant.
+             */
+            String tmp = rep;
+            if (auto i = tmp.Find (',')) {
+                tmp = tmp.SubString (*i + 1).LTrim ();
+            }
+            int     year   = 0;
+            int     month  = 0;
+            int     day    = 0;
+            int     hour   = 0;
+            int     minute = 0;
+            int     second = 0;
+            wchar_t monthStr[4]{};
+            wchar_t tzStr[101]{};
+            DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+            int nItems = ::swscanf (tmp.c_str (), L"%d %3s %d %d:%d:%d %100s", &day, &monthStr, &year, &hour, &minute, &second, tzStr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
+            for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
+                if (wcscmp (monthStr, kMonths_[i]) == 0) {
+                    month = i + 1; // one-based numbering
+                    break;
+                }
+            }
+            Date      d;
+            TimeOfDay t;
+            if (nItems >= 3) {
+                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            }
+            if (nItems >= 5) {
+                t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
+            }
+            optional<Timezone>                              tz;
+            static constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
+                {L"Z", Timezone::UTC ()},
+                {L"UT", Timezone::UTC ()},
+                {L"GMT", Timezone::UTC ()},
+                {L"EST", Timezone (-5 * 60)},
+                {L"EDT", Timezone (-4 * 60)},
+                {L"CST", Timezone (-6 * 60)},
+                {L"CDT", Timezone (-5 * 60)},
+                {L"MST", Timezone (-7 * 60)},
+                {L"MDT", Timezone (-6 * 60)},
+                {L"PST", Timezone (-8 * 60)},
+                {L"PDT", Timezone (-7 * 60)},
+            };
+            for (size_t i = 0; i < NEltsOf (kNamedTimezones_); ++i) {
+                if (wcscmp (tzStr, kNamedTimezones_[i].first) == 0) {
+                    tz = kNamedTimezones_[i].second;
+                    break;
+                }
+            }
+            if (not tz.has_value ()) {
+                wchar_t        plusMinusChar{};
+                int            tzHr    = 0;
+                int            tzMn    = 0;
+                const wchar_t* tStrPtr = tzStr;
+                bool           isNeg   = (*tStrPtr == '-');
+                if (*tStrPtr == '+' or *tStrPtr == '-') {
+                    tStrPtr++;
+                }
+                int nTZItems = ::swscanf (tStrPtr, L"%2d%2d", &tzHr, &tzMn);
+                if (nTZItems == 2) {
+                    tz = Timezone (static_cast<int16_t> (tzHr * 60 + tzMn));
+                }
+            }
+
+            return t.empty () ? d : DateTime (d, t, tz);
+
+        } break;
         default: {
             AssertNotReached ();
             return DateTime ();
