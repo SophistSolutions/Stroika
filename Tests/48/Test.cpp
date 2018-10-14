@@ -384,6 +384,14 @@ namespace {
             }
         }
         {
+            // Parse eRFC1123
+            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()}));
+            // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+        }
+        {
             // difference
             {
                 const Date kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
@@ -771,10 +779,9 @@ namespace {
 }
 
 namespace {
-
     void DoRegressionTests_ ()
     {
-        TraceContextBumper ctx ("DoRegressionTests_");
+        TraceContextBumper ctx{"DoRegressionTests_"};
         Test_0_Test_VarDateFromStrOnFirstTry_ ();
         Test_1_TestTickCountGrowsMonotonically_ ();
         Test_2_TestTimeOfDay_ ();
