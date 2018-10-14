@@ -380,8 +380,8 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems >= 5) {
                 t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
             }
-            optional<Timezone>                              tz;
-            static constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
+            optional<Timezone>                       tz;
+            constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
                 {L"Z", Timezone::UTC ()},
                 {L"UT", Timezone::UTC ()},
                 {L"GMT", Timezone::UTC ()},
@@ -401,7 +401,6 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 }
             }
             if (not tz.has_value ()) {
-                wchar_t        plusMinusChar{};
                 int            tzHr    = 0;
                 int            tzMn    = 0;
                 const wchar_t* tStrPtr = tzStr;
@@ -409,9 +408,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 if (*tStrPtr == '+' or *tStrPtr == '-') {
                     tStrPtr++;
                 }
+                DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
                 int nTZItems = ::swscanf (tStrPtr, L"%2d%2d", &tzHr, &tzMn);
+                DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (nTZItems == 2) {
-                    tz = Timezone (static_cast<int16_t> (tzHr * 60 + tzMn));
+                    tz = Timezone ((isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn));
                 }
             }
 
