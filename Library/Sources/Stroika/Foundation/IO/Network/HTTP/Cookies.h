@@ -61,15 +61,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.5
+         *
+         *  valueless attribute- just presence/absense of this attribute counts
          */
         static constexpr wchar_t kSecureAttributeLabel[] = L"Secure";
-        optional<bool>           fSecure;
+        bool                     fSecure{false};
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.6
+         *
+         *  valueless attribute- just presence/absense of this attribute counts
          */
         static constexpr wchar_t kHttpOnlyAttributeLabel[] = L"HttpOnly";
-        optional<bool>           fHttpOnly;
+        bool                     fHttpOnly{false};
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.1
@@ -106,7 +110,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual Characters::String ToString () const;
     };
-
 }
 
 /*

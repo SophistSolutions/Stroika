@@ -33,11 +33,11 @@ namespace {
                 Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
                 VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
                 VerifyTestResult (c.fPath == L"/");
-                VerifyTestResult (c.fSecure == true);
-                VerifyTestResult (c.fHttpOnly == true);
+                VerifyTestResult (c.fSecure);
+                VerifyTestResult (c.fHttpOnly);
                 c.fPath.reset ();
-                c.fSecure.reset ();
-                c.fHttpOnly.reset ();
+                c.fSecure   = false;
+                c.fHttpOnly = false;
                 VerifyTestResult (c.GetAttributes ().empty ());
             }
         }
