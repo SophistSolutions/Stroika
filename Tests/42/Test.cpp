@@ -49,6 +49,19 @@ namespace {
                 c.fDomain.reset ();
                 VerifyTestResult (c.GetAttributes ().empty ());
             }
+            {
+                Cookie c = Cookie::Decode (L"lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
+                VerifyTestResult (c.fKey == L"lang" and c.fValue == L"en-US");
+                using Time::Date;
+                using Time::DateTime;
+                using Time::DayOfMonth;
+                using Time::MonthOfYear;
+                using Time::TimeOfDay;
+                //@todo re-enable this test once we fix Cookie date parsing
+                //VerifyTestResult (c.fExpires == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}}));
+                c.fExpires.reset ();
+                VerifyTestResult (c.GetAttributes ().empty ());
+            }
         }
     }
 }
