@@ -91,10 +91,6 @@ namespace Stroika::Foundation::Time {
     {
         return fTimezone_;
     }
-    inline String DateTime::ToString () const
-    {
-        return Format ();
-    }
 
     /*
      ********************************************************************************

@@ -12,6 +12,7 @@
 #if qPlatform_Windows
 #include "../Characters/Platform/Windows/SmartBSTR.h"
 #endif
+#include "../Characters/ToString.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Exceptions.h"
 #if qPlatform_Windows
@@ -633,6 +634,16 @@ String DateTime::Format (LCID lcid) const
     }
 }
 #endif
+
+String DateTime::ToString () const
+{
+    // @todo - reconsider how we format this cuz unclear if Format() already incldues timezone!
+    String tmp = Format ();
+    if (auto&& tz = GetTimezone ()) {
+        tmp += L" " + Characters::ToString (tz);
+    }
+    return tmp;
+}
 
 Date::JulianRepType DateTime::DaysSince () const
 {
