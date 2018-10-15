@@ -110,6 +110,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual Characters::String ToString () const;
     };
+
 }
 
 /*
