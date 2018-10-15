@@ -196,7 +196,7 @@ String Context::TraceLeader_ () const
 
 /*
  ********************************************************************************
- ************ Registry::IConsumerDelegateToContext ******************
+ ********************* Registry::IConsumerDelegateToContext *********************
  ********************************************************************************
  */
 void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
