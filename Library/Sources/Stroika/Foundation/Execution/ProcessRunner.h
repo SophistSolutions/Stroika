@@ -83,7 +83,7 @@
  *          easy to hook together TextStreams (wrappers) - for format conversion/piping.
  *
  *
- *  Design Overview:
+ *  \em Design Overview
  *      o
  *
  */

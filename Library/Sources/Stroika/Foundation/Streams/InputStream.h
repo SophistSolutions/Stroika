@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Streams {
     using std::byte;
 
     /**
-     * Design Overview:
+     *  \em Design Overview
      *
      *      o   @See Stream<T>::Ptr
      *

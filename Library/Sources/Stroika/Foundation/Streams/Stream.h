@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Streams {
     };
 
     /**
-     * Design Overview:
+     *  \em Design Overview
      *     o   A Streams is a sequence of data elements made available over time. These elements
      *         are typically 'Bytes' - or 'Characters' - but can be any copyable type.
      *
