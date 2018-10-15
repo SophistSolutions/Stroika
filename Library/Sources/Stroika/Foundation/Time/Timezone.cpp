@@ -11,6 +11,7 @@
 #include <time.h>
 #endif
 
+#include "../Characters/Format.h"
 #include "../Characters/String.h"
 #include "../Characters/String_Constant.h"
 #include "../Configuration/Common.h"
@@ -108,6 +109,29 @@ optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const optional
     }
     else {
         return {};
+    }
+}
+
+Characters::String Timezone::ToString () const
+{
+    // This format is just comsetic and for information (debugging) purposes, and follows no standards
+    static const String_Constant kUTC_{L"UTC"};
+    static const String_Constant kLocaltime_{L"localtime"};
+    switch (fTZ_) {
+        case TZ_::eUTC:
+            return kUTC_;
+        case TZ_::eFixedOffsetBias: {
+            Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
+            bool         isNeg      = fBiasInMinutesFromUTC_ < 0;
+            unsigned int nMinOffset = abs (fBiasInMinutesFromUTC_);
+            return Characters::Format (L"%s%02d:%02d", nMinOffset / 60, nMinOffset % 60, isNeg ? L"-" : L"+");
+        } break;
+        case TZ_::eLocalTime: {
+            return kLocaltime_;
+        } break;
+        default:
+            AssertNotReached ();
+            return String{};
     }
 }
 

@@ -18,7 +18,6 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-636
  *              Enhance Timezone class to support real timezones (e.g. American/NewYork) and handle all the cases
  *              of mapping offsets (applying all teh rules for differnt dates)
@@ -218,6 +217,12 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
+
+    public:
+        /**
          */
         nonvirtual constexpr bool operator== (const Timezone& rhs) const;
 
@@ -236,6 +241,7 @@ namespace Stroika::Foundation::Time {
         };
     }
     static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_), "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
+
 }
 
 /*
