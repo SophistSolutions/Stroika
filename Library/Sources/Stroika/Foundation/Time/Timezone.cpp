@@ -124,7 +124,7 @@ Characters::String Timezone::ToString () const
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
             bool         isNeg      = fBiasInMinutesFromUTC_ < 0;
             unsigned int nMinOffset = abs (fBiasInMinutesFromUTC_);
-            return Characters::Format (L"%s%02d:%02d", nMinOffset / 60, nMinOffset % 60, isNeg ? L"-" : L"+");
+            return Characters::Format (L"%s%02d:%02d", isNeg ? L"-" : L"+", nMinOffset / 60, nMinOffset % 60);
         } break;
         case TZ_::eLocalTime: {
             return kLocaltime_;
