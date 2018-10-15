@@ -113,6 +113,34 @@
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-408 - cleanup template specializations
  *
+ *
+ *  \em Design Overview
+ *      This module provides a set of classes to support reading objects from a SAX (event oriented) data source
+ *      (https://en.wikipedia.org/wiki/Simple_API_for_XML)
+ *
+ *      With SAX parsing, you get a nested series of OPEN TAG and matching CLOSE TAG events, mimicing the structure of
+ *      the XML structured document.
+ *
+ *      Typically, you will have data structures which roughly map (structurally similarly) to the structure in the XML document
+ *      (if not, this module will probably not help you).
+ *
+ *      These classes allow you to easily define readers for particular C++ types that correspond to sections of XML (so serioes
+ *      of open/close tag and data in between events).
+ *
+ *      Think of each @IElementConsumer subclass (reader) as an object that knows how to read a section of XML (series of open/close
+ *      tag events). Predefined classes like @ClassReader<> and @ListOfObjectsReader<> already know how to read certain kinds of XML
+ *      and populate likely container objects. You may need to write your own reader class occasionally, but often you can reuse these.
+ *
+ *      Then you must be are of how readers are managed. They are created and destroyed as smart_ptr<> objects. And since you often
+ *      need to be able to create new ones based on context, they are managed through factories (which create them as the
+ *      sax parse encounters particular open/close events).
+ *
+ *      You register (in a @Registry) the mapping between a particular type, and its reader factory.
+ *
+ *      Because this mapping is sometimes context sensative, Registries can be copied, and are read from a context object.
+ *      So in a particular read context, you can replace a particular reader factory for a particular type. Or - within the
+ *      ClassReader object, you can provide an optional replacement reader factory for that partiular data member.
+ *      
  */
 
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader {
@@ -449,6 +477,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 #endif
 
     public:
+        /**
+         */
         Context (const Registry& registry);
         Context (const Registry& registry, const shared_ptr<IElementConsumer>& initialTop);
         Context (const Context&) = delete;

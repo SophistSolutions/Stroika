@@ -214,10 +214,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     };
 
     /*
-        ********************************************************************************
-        ********************************** IElementConsumer ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** IElementConsumer ****************************
+     ********************************************************************************
+     */
     template <typename TARGET_TYPE, typename READER, typename... ARGS>
     ReaderFromVoidStarFactory IElementConsumer::AsFactory (ARGS&&... args)
     {
@@ -225,10 +225,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ******************************** Registry::Context ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** Registry::Context ****************************
+     ********************************************************************************
+     */
     inline Context::Context (const Registry& registry)
         : fObjectReaderRegistry_ (registry)
     {
@@ -280,10 +280,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ************* ObjectReaderRegistry::IConsumerDelegateToContext *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************* ObjectReaderRegistry::IConsumerDelegateToContext *****************
+     ********************************************************************************
+     */
     inline IConsumerDelegateToContext::IConsumerDelegateToContext (Context&& r)
         : fContext (move (r))
     {
@@ -298,10 +298,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ************** ObjectReaderRegistry::StructFieldInfo ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** ObjectReaderRegistry::StructFieldInfo ***************************
+     ********************************************************************************
+     */
     inline StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<ReaderFromVoidStarFactory>& typeMapper)
         : fSerializedFieldName (serializedFieldName)
         , fFieldMetaInfo (fieldMetaInfo)
@@ -310,10 +310,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ************************************ ClassReader *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************************ ClassReader *******************************
+     ********************************************************************************
+     */
     template <typename T>
     ClassReader<T>::ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp)
         : fFieldDescriptions_ (fieldDescriptions)
@@ -410,10 +410,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ********************* ObjectReaderRegistry::ListOfObjectsReader ****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* ObjectReaderRegistry::ListOfObjectsReader ****************
+     ********************************************************************************
+     */
     template <typename CONTAINER_OF_T>
     inline ListOfObjectsReader<CONTAINER_OF_T>::ListOfObjectsReader (CONTAINER_OF_T* v)
         : fValuePtr_ (v)
@@ -465,10 +465,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ********************* ObjectReaderRegistry::MixinReader ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* ObjectReaderRegistry::MixinReader ************************
+     ********************************************************************************
+     */
     template <typename T>
     const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [](T* b) { return reinterpret_cast<std::byte*> (b); };
     template <typename T>
@@ -567,10 +567,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ********************* ObjectReaderRegistry::RangeReader ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* ObjectReaderRegistry::RangeReader ************************
+     ********************************************************************************
+     */
     template <typename T>
     const pair<Name, Name> RangeReader<T>::kDefaultBoundsNames{Name{Characters::String_Constant{L"LowerBound"}, Name::eAttribute}, Name{Characters::String_Constant{L"UpperBound"}, Name::eAttribute}};
     template <typename T>
@@ -618,20 +618,20 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ****************** ObjectReaderRegistry::IgnoreNodeReader **********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************** ObjectReaderRegistry::IgnoreNodeReader **********************
+     ********************************************************************************
+     */
     inline ReaderFromVoidStarFactory IgnoreNodeReader::AsFactory ()
     {
         return [](void*) -> shared_ptr<IElementConsumer> { return make_shared<IgnoreNodeReader> (); };
     }
 
     /*
-        ********************************************************************************
-        ****************** ObjectReaderRegistry::ReadDownToReader **********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************** ObjectReaderRegistry::ReadDownToReader **********************
+     ********************************************************************************
+     */
     inline ReaderFromVoidStarFactory ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader)
     {
         return [theUseReader](void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p)); };
@@ -642,10 +642,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ************** ObjectReaderRegistry::RepeatedElementReader *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** ObjectReaderRegistry::RepeatedElementReader *********************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v)
         : fValuePtr_ (v)
@@ -730,10 +730,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
 
     /*
-        ********************************************************************************
-        ***************************** ObjectReaderRegistry *****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** ObjectReaderRegistry *****************************
+     ********************************************************************************
+     */
     inline void Registry::Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory)
     {
         fFactories_.Add (forType, readerFactory);
