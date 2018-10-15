@@ -361,7 +361,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             wchar_t monthStr[4]{};
             wchar_t tzStr[101]{};
             DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-            int nItems = ::swscanf (tmp.c_str (), L"%d %c%c%c %d %d:%d:%d %100s", &day, &monthStr[0], &monthStr[1], &monthStr[2], &year, &hour, &minute, &second, tzStr);
+            int nItems = ::swscanf (tmp.c_str (), L"%d %3ls %d %d:%d:%d %100ls", &day, &monthStr, &year, &hour, &minute, &second, &tzStr);
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
             for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
