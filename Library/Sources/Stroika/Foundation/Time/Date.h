@@ -181,6 +181,8 @@ namespace Stroika::Foundation::Time {
 
         Stroika_Define_Enum_Bounds (eFirstYear, eLastfYear)
     };
+    int  operator- (Year y1, Year y2);
+    Year operator+ (Year y1, int offset);
 
     /**
      * Description:
