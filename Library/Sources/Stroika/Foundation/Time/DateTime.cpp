@@ -115,7 +115,7 @@ namespace {
 
 namespace {
     // @todo add error checking - so returns -1 outside UNIX EPOCH TIME
-    static time_t mkgmtime_ (const struct tm* ptm)
+    static time_t mkgmtime_ (const tm* ptm)
     {
         // On GLIBC systems, could use _mkgmtime64  - https://github.com/leelwh/clib/blob/master/c/mktime64.c
         // Based on https://stackoverflow.com/questions/12353011/how-to-convert-a-utc-date-time-to-a-time-t-in-c
@@ -145,7 +145,7 @@ namespace {
         secs += ptm->tm_min * kSecondsPerMinute_;
         secs += ptm->tm_sec;
 #if qCompilerAndStdLib_Supported_mkgmtime64
-        Assert (_mkgmtime64 (const_cast<struct tm*> (ptm)) == secs);
+        Assert (_mkgmtime64 (const_cast<tm*> (ptm)) == secs);
 #endif
         return secs;
     }
@@ -169,8 +169,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
     , fDate_ ()
     , fTimeOfDay_ ()
 {
-    struct tm tmTime {
-    };
+    tm tmTime{};
 #if qPlatform_Windows
     (void)::_gmtime64_s (&tmTime, &unixEpochTime);
 #else
@@ -193,9 +192,8 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     , fDate_ ()
     , fTimeOfDay_ ()
 {
-    time_t    unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
-    struct tm tmTimeData {
-    };
+    time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
+    tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
     fDate_      = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
@@ -206,9 +204,8 @@ DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexce
     , fDate_ ()
     , fTimeOfDay_ ()
 {
-    time_t    unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
-    struct tm tmTimeData {
-    };
+    time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
+    tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
     fDate_      = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
@@ -610,7 +607,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 {
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
-    tm                       when  = As<struct tm> ();
+    tm                       when  = As<tm> ();
     wostringstream           oss;
     // Read docs - not sure how to use this to get the local-appropriate format
     // %X MAYBE just what we want  - locale DEPENDENT!!!
@@ -661,8 +658,7 @@ time_t DateTime::As () const
             Execution::Throw (kRangeErrror_);
         }
 
-    struct tm tm {
-    };
+    tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
@@ -686,8 +682,7 @@ tm DateTime::As () const
             static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
             Execution::Throw (kRangeErrror_);
         }
-    struct tm tm {
-    };
+    tm tm{};
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
