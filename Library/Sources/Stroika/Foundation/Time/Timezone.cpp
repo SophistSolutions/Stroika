@@ -106,7 +106,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996)
         if (nTZItems == 2) {
-            auto n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
+            int16_t n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
             if (kBiasInMinutesFromUTCTypeValidRange.Contains (n)) {
                 return Timezone (n);
             }
@@ -136,7 +136,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996)
         if (nTZItems == 2) {
-            auto n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
+            int16_t n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
             if (kBiasInMinutesFromUTCTypeValidRange.Contains (n)) {
                 return Timezone (n);
             }
