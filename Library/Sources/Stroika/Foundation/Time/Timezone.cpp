@@ -82,6 +82,71 @@ constexpr Timezone           Timezone::kUTC;
 constexpr optional<Timezone> Timezone::kUnknown;
 #endif
 
+optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
+{
+    RequireNotNull (tzStr);
+    if (*tzStr == '\0') {
+        return {};
+    }
+    else {
+        int         tzHr    = 0;
+        int         tzMn    = 0;
+        const char* tStrPtr = tzStr;
+        bool        isNeg   = (*tStrPtr == '-');
+        if (*tStrPtr == '+' or *tStrPtr == '-') {
+            tStrPtr++;
+        }
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING sscanf_s
+        int nTZItems = ::sscanf (tStrPtr, "%2d%2d", &tzHr, &tzMn);
+        if (nTZItems == 1) {
+            nTZItems = ::sscanf (tStrPtr, "%2d:%2d", &tzHr, &tzMn);
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        if (nTZItems == 2) {
+            auto n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
+            if (kBiasInMinutesFromUTCTypeValidRange.Contains (n)) {
+                return Timezone (n);
+            }
+        }
+        Execution::Throw (Execution::StringException (L"invalid timezone offset"));
+    }
+}
+
+optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
+{
+    RequireNotNull (tzStr);
+    if (*tzStr == '\0') {
+        return {};
+    }
+    else {
+        int            tzHr    = 0;
+        int            tzMn    = 0;
+        const wchar_t* tStrPtr = tzStr;
+        bool           isNeg   = (*tStrPtr == '-');
+        if (*tStrPtr == '+' or *tStrPtr == '-') {
+            tStrPtr++;
+        }
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+        int nTZItems = ::swscanf (tStrPtr, L"%2d%2d", &tzHr, &tzMn);
+        if (nTZItems == 1) {
+            nTZItems = ::swscanf (tStrPtr, L"%2d:%2d", &tzHr, &tzMn);
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        if (nTZItems == 2) {
+            auto n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
+            if (kBiasInMinutesFromUTCTypeValidRange.Contains (n)) {
+                return Timezone (n);
+            }
+        }
+        Execution::Throw (Execution::StringException (L"invalid timezone offset"));
+    }
+}
+
+optional<Timezone> Timezone::ParseTimezoneOffsetString (const Characters::String& tzStr)
+{
+    return ParseTimezoneOffsetString (tzStr.c_str ());
+}
+
 Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTC (const Date& date, const TimeOfDay& tod) const
 {
     switch (fTZ_) {

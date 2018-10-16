@@ -55,9 +55,9 @@ namespace Stroika::Foundation::Time {
      */
     struct TimeZoneInformationType {
         struct Details {
-            optional<String> fName;
-            optional<String> fAbbreviation;
-            optional<int>    fBiasInMinutesFromUTC; // UTC + bias => local time, so for example, EDT this is -300 (aka -5 hrs)
+            optional<Characters::String> fName;
+            optional<Characters::String> fAbbreviation;
+            optional<int>                fBiasInMinutesFromUTC; // UTC + bias => local time, so for example, EDT this is -300 (aka -5 hrs)
         };
         Details fStandardTime;
         Details fDaylightSavingsTime;
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Time {
          *
          *  It is OFTEN not available (on older OSes).
          */
-        optional<String> fID;
+        optional<Characters::String> fID;
     };
 
     /**
@@ -178,6 +178,18 @@ namespace Stroika::Foundation::Time {
          *        worked!
          */
         static const optional<Timezone> kUnknown;
+
+    public:
+        /**
+         *  Parse string of the form:
+         *      [+-]?HHMM, or [+-]?HH:MM, so for example -0500 is Timezone (-5*60), or -04:00 would be Timezone (-4*60).
+         *
+         *  On empty string, return {}, but on ill-formed timezone offset string (including out of range), 
+         *  throw (even if the string is EST, or some such - this requires numeric offset).
+         */
+        static optional<Timezone> ParseTimezoneOffsetString (const char* tzStr);
+        static optional<Timezone> ParseTimezoneOffsetString (const wchar_t* tzStr);
+        static optional<Timezone> ParseTimezoneOffsetString (const Characters::String& tzStr);
 
     public:
         /**
