@@ -50,7 +50,7 @@ check:
 	@$(ECHO) "[SUCCEEDED]";
 
 
-$(TARGETEXE):	 $(ObjDir) $(Objs)
+$(TARGETEXE):	 $(ObjDir) $(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)";\

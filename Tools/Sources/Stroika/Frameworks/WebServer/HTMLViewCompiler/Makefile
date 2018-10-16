@@ -32,7 +32,7 @@ endif
 all:	$(ObjDir) $(TARGETEXE)
 
 
-$(TARGETEXE):	$(Objs)
+$(TARGETEXE):	$(Objs) $(StroikaLibs)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
