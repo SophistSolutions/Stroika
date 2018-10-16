@@ -309,7 +309,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
@@ -319,12 +319,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
@@ -339,7 +339,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
@@ -349,12 +349,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
@@ -369,7 +369,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
@@ -379,12 +379,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\Service\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">

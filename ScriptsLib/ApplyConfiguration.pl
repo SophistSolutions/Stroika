@@ -503,7 +503,12 @@ sub WriteStroikaConfigMakeHeader
 
 
 
-
+	if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+		print (OUT "LIBSUFFIX=.a\n");
+	}
+	elsif ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+		print (OUT "LIBSUFFIX=.lib\n");
+	}
 
 	
 	print (OUT "\n");

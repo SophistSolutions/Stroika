@@ -38,10 +38,23 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 
 ifndef StroikaFoundationLib
-	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation.a
+	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation$(LIBSUFFIX)
 endif
 ifndef StroikaFrameworksLib
-	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks.a
+ifeq ($(LIBSUFFIX),.a)
+	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIBSUFFIX)
+endif
+ifeq ($(LIBSUFFIX),.lib)
+#TMPHACK til I can figure out how to merge .lib files (and script it) - or rename to FrameworksLibs and do similar for UNIX
+	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks-Led.lib \
+									$(StroikaLibDir)Stroika-Frameworks-Modbus.lib \
+									$(StroikaLibDir)Stroika-Frameworks-NetworkMonitor.lib \
+									$(StroikaLibDir)Stroika-Frameworks-Service.lib \
+									$(StroikaLibDir)Stroika-Frameworks-SystemPerformance.lib \
+									$(StroikaLibDir)Stroika-Frameworks-UPnP.lib \
+									$(StroikaLibDir)Stroika-Frameworks-WebServer.lib \
+									$(StroikaLibDir)Stroika-Frameworks-WebService.lib
+endif
 endif
 
 
