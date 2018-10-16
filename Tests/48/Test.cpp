@@ -89,6 +89,7 @@ namespace {
     void Test_0_Test_VarDateFromStrOnFirstTry_ ()
     {
         TraceContextBumper ctx ("Test_0_Test_VarDateFromStrOnFirstTry_");
+
 // TEST MUST BE FIRST - OR VERY NEAR START OF APP!
 //
 // Before any calls to VarDateFromStr ()...
@@ -96,7 +97,7 @@ namespace {
 // CHECK FOR qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
 //
 #if defined(_MSC_VER)
-        VerifyTestResult (not DateTime::Parse (L"7/26/1972 12:00:00 AM", Time::DateTime::ParseFormat::eCurrentLocale).empty ());
+        VerifyTestResult (not DateTime::Parse (L"7/26/1972 12:00:00 AM", LOCALE_USER_DEFAULT).empty ());
 #endif
     }
 }
