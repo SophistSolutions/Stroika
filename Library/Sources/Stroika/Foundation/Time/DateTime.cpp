@@ -596,16 +596,29 @@ String DateTime::Format (PrintFormat pf) const
         } break;
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
-             *  Not sure what todo here - becaue I'm not sure its locale neutral to put the date first, but thats
-             *  what we do in Format (locale) anyhow - with the format string was pass in.
+             *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
              *
-             *  Good enuf for now...
-             *      -- LGP 2013-03-02
+             *  Test regexp with test string "Sun Jun 04, 2017 Sun Jun 004 2001 00 10/17/18 13:15:39    04/03/2222 Jun 03, 2004 is 1/1/03   04/04/03 4/4/04" and https://regex101.com/
              */
             String                         mungedData = Format (locale{});
-            static const RegularExpression kZero2StripPattern_{L" 0[^ ]"};
-            while (optional<pair<size_t, size_t>> i = mungedData.Find (kZero2StripPattern_)) {
-                mungedData = mungedData.RemoveAt (i->first + 1);
+            static const RegularExpression kZero2StripPattern_{L"\\b0+"};
+            constexpr bool                 kKeepZeroOnLastOfYear_ = true; // (MM / DD / 03 should keep the 0 in 03)
+            if constexpr (kKeepZeroOnLastOfYear_) {
+                size_t startAt = 0;
+                while (auto o = mungedData.Find (kZero2StripPattern_, startAt)) {
+                    // Look for preceding / and all digits to end of string
+                    if (o->first != 0 and mungedData[o->first - 1] == '/' and mungedData.SubString (o->second).All ([](Character c) { return c.IsDigit (); })) {
+                        // skip this case
+                        startAt = o->second; // but don't encounter it again
+                    }
+                    else {
+                        Assert (o->first >= startAt);
+                        mungedData = mungedData.RemoveAt (*o);
+                    }
+                }
+            }
+            else {
+                mungedData = mungedData.ReplaceAll (kZero2StripPattern_, String{});
             }
             return mungedData;
         }
@@ -617,7 +630,8 @@ String DateTime::Format (PrintFormat pf) const
                 r += Characters::String_Constant (L"T") + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::UTC ()) {
-                        r += String_Constant (L"Z");
+                        static const String_Constant kZ_{L"Z"};
+                        r += kZ_;
                     }
                     else {
                         auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_);
