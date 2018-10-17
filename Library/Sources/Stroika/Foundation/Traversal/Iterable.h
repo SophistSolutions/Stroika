@@ -811,6 +811,22 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief  return true iff argument predciate returns true for each element of the iterable
+         *
+         *  \par Example Usage
+         *      \code
+         *          Iterable<int> c { 3, 5, 9, 3, 5 };
+         *          VerifyTestResult (c.All ([](int i){ return i % 2 == 1;}));
+         *      \endcode
+         *
+         *  \note
+         *      BASED ON Microsoft .net Linq. (Last)
+         *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.all?view=netframework-4.7.2
+         */
+        nonvirtual bool All (const function<bool(ArgByValueType<T>)>& testEachElt) const;
+
+    public:
+        /**
          *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *

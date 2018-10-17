@@ -760,6 +760,11 @@ namespace {
             VerifyTestResult (*c.Last () == 5);
             VerifyTestResult (*c.Last ([](int i) { return i % 2 == 0; }) == 38);
         }
+        {
+            // From Iterable::All docs
+            Iterable<int> c{3, 5, 9, 3, 5};
+            VerifyTestResult (c.All ([](int i) { return i % 2 == 1; }));
+        }
     }
 }
 

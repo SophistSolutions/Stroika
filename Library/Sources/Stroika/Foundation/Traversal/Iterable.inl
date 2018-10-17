@@ -622,6 +622,17 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
+    bool Iterable<T>::All (const function<bool(ArgByValueType<T>)>& testEachElt) const
+    {
+        RequireNotNull (testEachElt);
+        for (auto i : *this) {
+            if (not testEachElt (i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename T>
     template <typename RESULT_TYPE>
     optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
     {
