@@ -512,14 +512,23 @@ namespace Stroika::Foundation::Characters {
          *
          * It is an error if this implies removing characters off the end of the string.
          *
+         *  \par Example Usage
+         *      \code
+         *          String mungedData = L"04 July 2014;
+         *          if (optional<pair<size_t, size_t>> i = mungedData.Find (RegularExpression {L"0[^\b]"})) {
+         *              mungedData = mungedData.RemoveAt (*i);
+         *          }
+         *      \endcode
+         *
          *  \req (charAt < GetLength ())
          *  \req (from <= to)
          *  \req (to <= GetLength ())
          *
-         *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+         *  \em Note that this is quite inefficent: consider using StringBuilder
          */
         nonvirtual String RemoveAt (size_t charAt) const;
         nonvirtual String RemoveAt (size_t from, size_t to) const;
+        nonvirtual String RemoveAt (pair<size_t, size_t> fromTo) const;
 
     public:
         /**
@@ -791,6 +800,13 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual optional<size_t> RFind (Character c) const;
         nonvirtual optional<size_t> RFind (const String& subString) const;
+
+    public:
+        /**
+         *  Replace the range of this string with the given replacement. Const method: just creates new string as described.
+         */
+        nonvirtual String Replace (size_t from, size_t to, const String& replacement) const;
+        nonvirtual String Replace (pair<size_t, size_t> fromTo, const String& replacement) const;
 
     public:
         /**

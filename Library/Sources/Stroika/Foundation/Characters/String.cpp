@@ -715,6 +715,12 @@ optional<size_t> String::RFind (const String& subString) const
     return {};
 }
 
+String String::Replace (size_t from, size_t to, const String& replacement) const
+{
+    // @todo rewrite using StriingBuilder (performance)
+    return SubString (0, from) + replacement + SubString (to);
+}
+
 bool String::StartsWith (const Character& c, CompareOptions co) const
 {
     _SafeReadRepAccessor accessor{this};

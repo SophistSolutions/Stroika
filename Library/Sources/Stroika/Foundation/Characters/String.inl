@@ -290,6 +290,10 @@ namespace Stroika::Foundation::Characters {
     {
         return RemoveAt (charAt, charAt + 1);
     }
+    inline String String::RemoveAt (pair<size_t, size_t> fromTo) const
+    {
+        return RemoveAt (fromTo.first, fromTo.second);
+    }
     inline bool String::empty () const
     {
         _SafeReadRepAccessor accessor{this};
@@ -314,6 +318,10 @@ namespace Stroika::Foundation::Characters {
     inline bool String::Contains (const String& subString, CompareOptions co) const
     {
         return static_cast<bool> (Find (subString, co));
+    }
+    inline String String::Replace (pair<size_t, size_t> fromTo, const String& replacement) const
+    {
+        return Replace (fromTo.first, fromTo.second, replacement);
     }
     inline String String::InsertAt (Character c, size_t at) const
     {
