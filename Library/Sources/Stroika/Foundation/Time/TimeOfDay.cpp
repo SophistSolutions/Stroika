@@ -219,7 +219,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
     }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
-            return Parse (rep, locale ());
+            return Parse (rep, locale{});
         }
         case ParseFormat::eISO8601:
         case ParseFormat::eXML: {
@@ -364,10 +364,10 @@ String TimeOfDay::Format (PrintFormat pf) const
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
-            return Format (locale ());
+            return Format (locale{});
         }
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
-            String tmp = Format (locale ());
+            String tmp = Format (locale{});
             /*
              * This logic probably needs to be locale-specific, but this is good enuf for now...
              *
@@ -422,7 +422,7 @@ String TimeOfDay::Format (const locale& l) const
 
 String TimeOfDay::Format (const String& formatPattern) const
 {
-    return Format (locale (), formatPattern);
+    return Format (locale{}, formatPattern);
 }
 
 String TimeOfDay::Format (const locale& l, const String& formatPattern) const

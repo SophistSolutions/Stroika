@@ -65,7 +65,7 @@
  *              looks terrible - military format - full zero precision - even if not needed?).
  *              MAYBE try %EX is the locale's alternative time representation.
  *
- *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) �
+ *      @todo   (minor) Consider if DateTime stuff should cache locale{} in some methods (static) �
  *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
  *              locking to bump refcount?
  *

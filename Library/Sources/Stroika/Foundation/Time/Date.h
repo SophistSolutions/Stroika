@@ -79,7 +79,7 @@
  *                  store cached second-offset (mutable) for quick compares
  *              o   Note in docs for future versions the min/max date COULD be expanded
  *
- *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
+ *      @todo   (minor) Consider if DateTime stuff should cache locale{} in some methods (static) –
  *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
  *              locking to bump refcount?
  */

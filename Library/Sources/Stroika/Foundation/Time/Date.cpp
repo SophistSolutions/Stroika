@@ -158,7 +158,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
              */
             return Parse (rep, LOCALE_USER_DEFAULT);
 #else
-            return Parse (rep, locale ());
+            return Parse (rep, locale{});
 #endif
         } break;
         case ParseFormat::eISO8601:
@@ -269,7 +269,7 @@ String Date::Format (PrintFormat pf) const
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
-            return Format (locale ());
+            return Format (locale{});
         } break;
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale{});
@@ -348,7 +348,7 @@ String Date::Format (const locale& l) const
 
 String Date::Format (const String& formatPattern) const
 {
-    return Format (locale (), formatPattern);
+    return Format (locale{}, formatPattern);
 }
 
 String Date::Format (const locale& l, const String& formatPattern) const

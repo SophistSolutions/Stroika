@@ -424,19 +424,19 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \par Example Usage
          *      \code
-         *      struct BaseObj_ {
-         *          int  fVV1{};
-         *      };
-         *      struct Derived_ : BaseObj_ {
-         *          int  fVV2{};
-         *      };
-         *      ObjectVariantMapper mapper;
-         *      mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-         *          {L"fVV1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (BaseObj_, fVV1)},
-         *      });
-         *      mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-         *          {L"fVV2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Derived_, fVV2)},
-         *      });
+         *          struct BaseObj_ {
+         *              int  fVV1{};
+         *          };
+         *          struct Derived_ : BaseObj_ {
+         *              int  fVV2{};
+         *          };
+         *          ObjectVariantMapper mapper;
+         *          mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+         *              {L"fVV1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (BaseObj_, fVV1)},
+         *          });
+         *          mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+         *              {L"fVV2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Derived_, fVV2)},
+         *          });
          *      \endcode
          */
         template <typename CLASS, typename BASE_CLASS>
