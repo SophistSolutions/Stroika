@@ -13,6 +13,7 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Configuration/Empty.h"
 #include "../Containers/Common.h"
+#include "../Containers/Set.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/StringException.h"
 #include "../Math/Common.h"
@@ -433,10 +434,8 @@ String String::Concatenate (const String& rhs) const
         {
             return *this;
         }
-    return String (
-        mk_ (
-            reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-            reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)));
+    return String (mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                        reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)));
 }
 
 String String::Concatenate (const wchar_t* appendageCStr) const
@@ -450,10 +449,8 @@ String String::Concatenate (const wchar_t* appendageCStr) const
         {
             return String (appendageCStr);
         }
-    return String (
-        mk_ (
-            reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-            appendageCStr, appendageCStr + ::wcslen (appendageCStr)));
+    return String (mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                        appendageCStr, appendageCStr + ::wcslen (appendageCStr)));
 }
 
 void String::SetCharAt (Character c, size_t i)
@@ -799,6 +796,35 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
         *i += with.length ();
     }
     return result;
+}
+
+String String::ReplaceAll (const function<bool(Character)>& replaceCharP, const String& with) const
+{
+    StringBuilder sb;
+    for (const Character&& i : *this) {
+        if (replaceCharP (i)) {
+            sb += with;
+        }
+        else {
+            sb += i;
+        }
+    }
+    return sb.str ();
+}
+
+String String::ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const
+{
+    StringBuilder sb;
+    for (const Character&& i : *this) {
+        // @todo Slow impl - generate set from 'badCharacters'
+        if (charSet.Contains (i)) {
+            sb += with;
+        }
+        else {
+            sb += i;
+        }
+    }
+    return sb.str ();
 }
 
 String String::FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement) const

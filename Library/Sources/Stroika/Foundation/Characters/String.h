@@ -214,6 +214,10 @@
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
  *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  */
+namespace Stroika::Foundation::Containers {
+    template <typename T>
+    class Set;
+}
 
 namespace Stroika::Foundation::Characters {
 
@@ -823,15 +827,18 @@ namespace Stroika::Foundation::Characters {
          *          mungedData = mungedData.ReplaceAll (RegularExpression{ L"\\b0+" }, L"");    // strip all leading zeros
          *      \endcode
          *
-         *
          *  Note - it IS legal to have with contain the original search for string, or even
          *  to have it 'created' as part of where it gets
          *  inserted. The implementation will only replace those that pre-existed.
          *
          *  \note To perform a regular expression replace-all, which is case insensitive, create the regular expression with CompareOptions::eCaseInsensitive
+         *
+         *  \note ReplaceAll could have been called 'SafeString' or 'FilteredString' (was at one point - replaces that functionality)
          */
         nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with) const;
         nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual String ReplaceAll (const function<bool(Character)>& replaceCharP, const String& with) const;
+        nonvirtual String ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const;
 
     public:
         /**
@@ -842,9 +849,9 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note FilteredString could have been called 'SafeString'
          */
-        nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-        nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-        nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
+        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
+        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
+        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
 
     public:
         /**
