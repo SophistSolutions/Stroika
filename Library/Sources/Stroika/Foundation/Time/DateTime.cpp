@@ -466,24 +466,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const String& form
         ios::iostate                 es = ios::goodbit;
         tm                           tzWhen{};
         (void)tmget.get (itbegin2, itend2, iss2, es, &tzWhen, kTZOffsetPattern_, kTZOffsetPattern_ + wcslen (kTZOffsetPattern_));
-        DbgTrace (L"XXX");
-#if 0
-
-
-                wostringstream               oss;
-                tmput.put (oss, oss, ' ', &when, kTZOffsetPattern_.c_str (), kTZOffsetPattern_.c_str () + kTZOffsetPattern_.length ());
-                String tmp = String (oss.str ());
-
-        if (auto&& thisDataTZ = this->GetTimezone ()) {
-            // Then see if the locale has a known timezone, and if both known, adjust when
-            if (auto&& localeTZ = getTzOffset_ (l, when)) {
-                if (thisDataTZ != localeTZ) {
-                    DbgTrace ("Updating tz on time from %s to %s", Characters::ToString (thisDataTZ).c_str (), Characters::ToString (localeTZ).c_str ());
-                    when = this->AsTimezone (*localeTZ).As<tm> ();
-                }
-            }
-        }
-#endif
+        AssertNotImplemented ();
     }
 
     return DateTime (when, tz);
