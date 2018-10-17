@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "../Characters/Format.h"
+#include "../Characters/RegularExpression.h"
 #include "../Characters/String_Constant.h"
 #if qPlatform_Windows
 #include "../Characters/Platform/Windows/SmartBSTR.h"
@@ -31,6 +32,9 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
     constexpr int kSecondsPerMinute_ = 60;
@@ -233,6 +237,9 @@ DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noex
 }
 #endif
 
+const String DateTime::kDefaultFormatPattern     = String_Constant{L"%c"};
+const String DateTime::kShortLocaleFormatPattern = String_Constant{L"%x %X"};
+
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
@@ -240,17 +247,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
     }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
-#if qPlatform_Windows
-            /*
-             * Windows Parser does better job than POSIX one - for reasons which elude me.
-             * Automated test has some test cases to help close the gap...
-             *      -- LGP 2011-10-08
-             */
-            return Parse (rep, LOCALE_USER_DEFAULT);
-#else
-            return Parse (rep, locale ());
-#endif
-            return DateTime ();
+            return Parse (rep, locale{});
         } break;
         case ParseFormat::eISO8601:
         case ParseFormat::eXML: {
@@ -399,19 +396,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 }
             }
             if (not tz.has_value ()) {
-                int            tzHr    = 0;
-                int            tzMn    = 0;
-                const wchar_t* tStrPtr = tzStr;
-                bool           isNeg   = (*tStrPtr == '-');
-                if (*tStrPtr == '+' or *tStrPtr == '-') {
-                    tStrPtr++;
-                }
-                DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-                int nTZItems = ::swscanf (tStrPtr, L"%2d%2d", &tzHr, &tzMn);
-                DISABLE_COMPILER_MSC_WARNING_END (4996)
-                if (nTZItems == 2) {
-                    tz = Timezone ((isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn));
-                }
+                tz = Timezone::ParseTimezoneOffsetString (tzStr);
             }
 
             return t.empty () ? d : DateTime (d, t, tz);
@@ -426,17 +411,82 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 
 DateTime DateTime::Parse (const String& rep, const locale& l)
 {
+    return Parse (rep, l, kDefaultFormatPattern);
+}
+
+DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
+{
     if (rep.empty ()) {
-        return DateTime ();
+        return DateTime{};
     }
-    const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-    ios::iostate                 state = ios::goodbit;
-    wistringstream               iss (rep.As<wstring> ());
+    wistringstream iss (rep.As<wstring> ());
+
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+    if constexpr (kRequireImbueToUseFacet_) {
+        iss.imbue (l);
+    }
+    const time_get<wchar_t>&     tmget    = use_facet<time_get<wchar_t>> (l);
+    ios::iostate                 errState = ios::goodbit;
+    tm                           when{};
     istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
     istreambuf_iterator<wchar_t> itend;         // end-of-stream
-    tm                           when{};
-    tmget.get_date (itbegin, itend, iss, state, &when);
-    return DateTime (when);
+
+#if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
+    if (l == locale::classic () and formatPattern == kDefaultFormatPattern) {
+        static const String_Constant kAltPattern_{L"%a %b %e %T %Y"};
+        return Parse (rep, l, kAltPattern_);
+    }
+#endif
+
+    (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+
+#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+    if (formatPattern == L"%x %X") {
+        if ((errState & ios::badbit) or (errState & ios::failbit)) {
+            Execution::Throw (Date::FormatException::kThe);
+        }
+        wistringstream               iss2 (rep.As<wstring> ());
+        istreambuf_iterator<wchar_t> itbegin2 (iss2);
+        istreambuf_iterator<wchar_t> itend2;
+        errState = ios::goodbit;
+        tmget.get_date (itbegin2, itend2, iss, errState, &when);
+    }
+#endif
+
+    if ((errState & ios::badbit) or (errState & ios::failbit)) {
+        Execution::Throw (Date::FormatException::kThe);
+    }
+
+    optional<Timezone> tz; // unknown
+    if constexpr (kTreatLocaleAsIfItHasATimzoneWherePossible) {
+        wistringstream               iss2 (rep.As<wstring> ());
+        istreambuf_iterator<wchar_t> itbegin2 (iss2);
+        istreambuf_iterator<wchar_t> itend2;
+        static constexpr wchar_t     kTZOffsetPattern_[]{L"%z"};
+        ios::iostate                 es = ios::goodbit;
+        tm                           tzWhen{};
+        (void)tmget.get (itbegin2, itend2, iss2, es, &tzWhen, kTZOffsetPattern_, kTZOffsetPattern_ + wcslen (kTZOffsetPattern_));
+        DbgTrace (L"XXX");
+#if 0
+
+
+                wostringstream               oss;
+                tmput.put (oss, oss, ' ', &when, kTZOffsetPattern_.c_str (), kTZOffsetPattern_.c_str () + kTZOffsetPattern_.length ());
+                String tmp = String (oss.str ());
+
+        if (auto&& thisDataTZ = this->GetTimezone ()) {
+            // Then see if the locale has a known timezone, and if both known, adjust when
+            if (auto&& localeTZ = getTzOffset_ (l, when)) {
+                if (thisDataTZ != localeTZ) {
+                    DbgTrace ("Updating tz on time from %s to %s", Characters::ToString (thisDataTZ).c_str (), Characters::ToString (localeTZ).c_str ());
+                    when = this->AsTimezone (*localeTZ).As<tm> ();
+                }
+            }
+        }
+#endif
+    }
+
+    return DateTime (when, tz);
 }
 
 #if qPlatform_Windows
@@ -481,12 +531,27 @@ DateTime DateTime::AsLocalTime () const
 
 DateTime DateTime::AsUTC () const
 {
-    if (GetTimezone () == Timezone::UTC ()) {
+    auto oldCode = [&]() {
+        if (GetTimezone () == Timezone::UTC ()) {
+            return *this;
+        }
+        else {
+            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_)) : *this;
+            return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
+        }
+    };
+    Ensure (AsTimezone (Timezone::UTC ()) == oldCode ());
+    return AsTimezone (Timezone::UTC ());
+}
+
+DateTime DateTime::AsTimezone (Timezone tz) const
+{
+    if (GetTimezone () == tz) {
         return *this;
     }
     else {
         DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_)) : *this;
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), tz);
     }
 }
 
@@ -544,7 +609,7 @@ String DateTime::Format (PrintFormat pf) const
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
-            return Format (locale ());
+            return Format (locale{});
         } break;
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
@@ -554,8 +619,12 @@ String DateTime::Format (PrintFormat pf) const
              *  Good enuf for now...
              *      -- LGP 2013-03-02
              */
-            String dateStr{fDate_.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped)};
-            return fTimeOfDay_.empty () ? dateStr : (dateStr + L" " + fTimeOfDay_.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped));
+            String                         mungedData = Format (locale{});
+            static const RegularExpression kZero2StripPattern_{L" 0[^ ]"};
+            while (optional<pair<size_t, size_t>> i = mungedData.Find (kZero2StripPattern_)) {
+                mungedData = mungedData.RemoveAt (i->first + 1);
+            }
+            return mungedData;
         }
         case PrintFormat::eISO8601:
         case PrintFormat::eXML: {
@@ -586,12 +655,10 @@ String DateTime::Format (PrintFormat pf) const
 String DateTime::Format (const locale& l) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     if (GetTimeOfDay ().has_value ()) {
-        // Read docs - not sure how to use this to get the local-appropriate format
-        // %X MAYBE just what we want  - locale DEPENDENT!!!
-        return Format (l, String_Constant{L"%x %X"});
+        return Format (l, kDefaultFormatPattern);
     }
     else {
         // otherwise we get a 'datetime' of 'XXX ' - with a space at the end
@@ -601,20 +668,65 @@ String DateTime::Format (const locale& l) const
 
 String DateTime::Format (const String& formatPattern) const
 {
-    return Format (locale (), formatPattern);
+    return Format (locale{}, formatPattern);
 }
 
 String DateTime::Format (const locale& l, const String& formatPattern) const
 {
-    // http://new.cplusplus.com/reference/std/locale/time_put/put/
+    // https://en.cppreference.com/w/cpp/locale/time_put/put
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
-    tm                       when  = As<tm> ();
     wostringstream           oss;
-    // Read docs - not sure how to use this to get the local-appropriate format
-    // %X MAYBE just what we want  - locale DEPENDENT!!!
-    constexpr wchar_t kPattern_[] = L"%x %X";
+
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+    if constexpr (kRequireImbueToUseFacet_) {
+        oss.imbue (l);
+    }
+
+    tm when = As<tm> ();
+    if constexpr (kTreatLocaleAsIfItHasATimzoneWherePossible) {
+        if (auto&& thisDataTZ = this->GetTimezone ()) {
+            auto getTzOffset_ = [](const locale& l, const tm& when) -> optional<Timezone> {
+                // cache - locale classic known not to have a timezone (???)
+                //if (l != locale::classic ()) {
+                const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+                wostringstream           oss;
+                static constexpr wchar_t kTZOffsetPattern_[]{L"%z"};
+                tmput.put (oss, oss, ' ', &when, kTZOffsetPattern_, kTZOffsetPattern_ + wcslen (kTZOffsetPattern_));
+                String tmp = String (oss.str ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"getTzOffset_(locale=%s) : tmp=%s", String::FromNarrowSDKString (l.name ()).c_str (), tmp.c_str ());
+#endif
+                if (not tmp.empty ()) {
+                    // docs (https://en.cppreference.com/w/cpp/locale/time_put/put) say empty just means unknown
+                    return Timezone::ParseTimezoneOffsetString (tmp);
+                }
+                // }
+                return {};
+            };
+            // Then see if the locale has a known timezone, and if both known, adjust when
+            if (auto&& localeTZ = getTzOffset_ (l, when)) {
+                if (thisDataTZ != localeTZ) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("Updating tz on time from %s to %s", Characters::ToString (thisDataTZ).c_str (), Characters::ToString (localeTZ).c_str ());
+#endif
+                    when = this->AsTimezone (*localeTZ).As<tm> ();
+                }
+            }
+        }
+    }
+
+#if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
+    if (l == locale::classic () and formatPattern == kDefaultFormatPattern) {
+        static const String_Constant kAltPattern_{L"%a %b %e %T %Y"};
+        tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
+        return String (oss.str ());
+    }
+#endif
+
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-    return oss.str ();
+    // docs aren't clear about expectations, but glibc (gcc8) produces trailing whitespace which
+    // is not good. Unsure if thats glibc bug or my correction here makes sense -- LGP 2018-10-16
+    return String (oss.str ()).RTrim ();
 }
 
 #if qPlatform_Windows
@@ -637,10 +749,10 @@ String DateTime::Format (LCID lcid) const
 
 String DateTime::ToString () const
 {
-    // @todo - reconsider how we format this cuz unclear if Format() already incldues timezone!
+    // @todo - reconsider how we format this cuz unclear if Format() already incldues timezone -- LGP 2018-10-16
     String tmp = Format ();
     if (auto&& tz = GetTimezone ()) {
-        tmp += L" " + Characters::ToString (tz);
+        tmp += L" " + Characters::ToString (*tz);
     }
     return tmp;
 }
@@ -662,12 +774,12 @@ time_t DateTime::As () const
     DateTime useDT = this->AsUTC (); // time_t defined in UTC
     Date     d     = useDT.GetDate ();
 
-    if (useDT.GetDate ().GetYear () < Year (1970))
-        [[UNLIKELY_ATTR]]
-        {
-            static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
-            Execution::Throw (kRangeErrror_);
-        }
+    // clang-format off
+    if (useDT.GetDate ().GetYear () < Year (1970)) [[UNLIKELY_ATTR]] {
+        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
+        Execution::Throw (kRangeErrror_);
+    }
+    // clang-format on
 
     tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;

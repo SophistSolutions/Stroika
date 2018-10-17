@@ -1136,6 +1136,55 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 /*
+ *  DateTime::Format (const locale& l, const String& formatPattern) const
+ *     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+ *     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+ *  with formatPattern = "%c" - produces a numeric format date with C locale, compared to UNIX which produces 
+ *  %a %b %e %T %Y - as is suggestged by code docs and https://en.cppreference.com/w/cpp/locale/time_put/put (example - not clear cuz not for all locales)
+   ...
+ */
+#ifndef qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#else
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
+#endif
+
+#endif
+
+/*
+ *  In DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
+ *
+ *   (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+ *
+ *#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+ *    if (formatPattern == L"%x %X") {
+ *        if ((errState & ios::badbit) or (errState & ios::failbit)) {
+ *            Execution::Throw (Date::FormatException::kThe);
+ *        }
+ *        wistringstream               iss2 (rep.As<wstring> ());
+ *        istreambuf_iterator<wchar_t> itbegin2 (iss2);
+ *        istreambuf_iterator<wchar_t> itend2;
+ *        errState = ios::goodbit;
+ *        tmget.get_date (itbegin2, itend2, iss, errState, &when);
+ *    }
+ *#endif
+ *
+ */
+#ifndef qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#else
+#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
+#endif
+
+#endif
+
+/*
  * https://developercommunity.visualstudio.com/content/problem/330322/stdlocale-l2-en-usutf-8-broken-crashes-now.html
  *      Take the example code from 
             https://en.cppreference.com/w/cpp/locale/locale/locale

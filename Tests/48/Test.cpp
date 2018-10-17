@@ -343,7 +343,15 @@ namespace {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             Date                           d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             DateTime                       dt (d, TimeOfDay (101));
-            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM" or dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/05/1903 12:01:41 AM");
+
+            {
+                String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
+#if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
+                VerifyTestResult (tmp == L"4/5/1903 12:01:41 AM" or tmp == L"04/05/1903 12:01:41 AM");
+#else
+                VerifyTestResult (tmp == L"Sun 05 Apr 1903 12:01:41 AM");
+#endif
+            }
             DateTime dt2 (d, TimeOfDay (60));
 //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
 #endif
@@ -353,21 +361,36 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
             DateTime dt (d, TimeOfDay (101));
             TestRoundTripFormatThenParseNoChange_ (dt);
-            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/06/03 00:01:41");
+            String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
+            VerifyTestResult (tmp == L"Sun Apr  6 00:01:41 1903");
             DateTime dt2 (d, TimeOfDay (60));
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
             //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
+        VerifyTestResult (DateTime::Parse (L"2010-01-01", DateTime::ParseFormat::eISO8601).GetDate ().GetYear () == Time::Year (2010));
         {
-            //VerifyTestResult(DateTime::Parse(L"2010-01-01", DateTime::ParseFormat::eCurrentLocale).GetDate().GetYear() == Time::Year(2010));
             DateTime now = DateTime::Now ();
             TestRoundTripFormatThenParseNoChange_ (now);
-#if qPlatform_Windows
-            // Should be portable, but buggy on UNIX
-            // https://stroika.atlassian.net/browse/STK-107
-            VerifyTestResult (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
-#endif
+
+            constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong)
+            if (kLocaleDateTimeFormatMaybeLossy_) {
+                String   nowShortLocaleForm = now.Format (locale{}, DateTime::kShortLocaleFormatPattern);
+                DateTime dt                 = DateTime::Parse (nowShortLocaleForm, locale{}, DateTime::kShortLocaleFormatPattern);
+                // This roundtrip can be lossy, becaue the date 2016 could be represented as '16' and then when mapped the other way as
+                // 1916 (locale::classic ()). So fixup the year before comparing
+                Time::Year nYear = now.GetDate ().GetYear ();
+                Date       d     = dt.GetDate ();
+                if (d.GetYear () != nYear) {
+                    VerifyTestResult (((nYear - d.GetYear ()) % 100) == 0);
+                    d  = Date (nYear, d.GetMonth (), d.GetDayOfMonth ());
+                    dt = DateTime (dt, d);
+                }
+                VerifyTestResult (now == dt);
+            }
+            else {
+                VerifyTestResult (now == DateTime::Parse (now.Format (locale{}, DateTime::kShortLocaleFormatPattern), locale{}, DateTime::kShortLocaleFormatPattern));
+            }
         }
         {
             using Time::DurationSecondsType;

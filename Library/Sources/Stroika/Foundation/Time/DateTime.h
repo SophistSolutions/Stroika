@@ -88,6 +88,14 @@ namespace Stroika::Foundation::Time {
 
     class Duration; // forward declare for Differnce ()
 
+    /**
+     * @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
+     *
+     *  I'm NOT sure if this makes sense or not (probably yes). But since (see stackoverflow question) its so foggy if
+     *  locales have timezones, its best to leave off for now.
+     */
+    constexpr bool kTreatLocaleAsIfItHasATimzoneWherePossible = false;
+
     /*
      *  Description:
      *
@@ -166,7 +174,7 @@ namespace Stroika::Foundation::Time {
          *  \brief  ParseFormat is a representation which a datetime can be transformed out of
          *
          *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+         *      Note this is the current C++ locale (i.e. locale ()), which may not be the same as the platform default locale.
          *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
          *
          *
@@ -187,12 +195,33 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  Format patterns defined in:
+         *      https://en.cppreference.com/w/cpp/locale/time_get/get
+         *      https://en.cppreference.com/w/cpp/locale/time_put/put
+         *
+         *  The default is locale-dependent DATE format followed by space and locale-dependent TIME.
+         *
+         *  Note - there were two good choices here (all locale dependent):
+         *      o   %c                  - writes standard date and time string
+         *      o   %x %X               - writes localized date representation / writes localized time representation
+         */
+        static const String kShortLocaleFormatPattern; // "%x %X"
+        static const String kDefaultFormatPattern;     // "%c"
+
+    public:
+        /**
          *  Parse will throw if the argument cannot be parsed as a valid DateTime.
          *
          *  \note If the timezone cannot be identified in the source string, it will be returned as 'unknown'.
+         *
+         *  For formatPattern, see https://en.cppreference.com/w/cpp/locale/time_get/get, and defaults to kDefaultFormatPattern
+         *
+         *  \note if kTreatLocaleAsIfItHasATimzoneWherePossible, and timezone for locale known, the date string
+         *        produced will be translated to the timezone of the argument locale (if one of those overloads used).
          */
         static DateTime Parse (const String& rep, ParseFormat pf);
         static DateTime Parse (const String& rep, const locale& l);
+        static DateTime Parse (const String& rep, const locale& l, const String& formatPattern);
 #if qPlatform_Windows
         static DateTime Parse (const String& rep, LCID lcid);
 #endif
@@ -284,8 +313,21 @@ namespace Stroika::Foundation::Time {
          *  Either way, this will always produce a result in the timezone UTC.
          *
          *  \ens result.GetTimezone () == Timezone::UTC ()
+         *
+         *  @see AsTimezone ()
          */
         nonvirtual DateTime AsUTC () const;
+
+    public:
+        /**
+         *  Return this DateTime converted to the given timezone. If the current timezone is unknown, this just
+         *  sets the timezone. But if it is known, the time value is adjusted to correspond for the given timezone.
+         *
+         *  Either way, this will always produce a result in the timezone tz.
+         *
+         *  \ens result.GetTimezone () == Timezone::UTC ()
+         */
+        nonvirtual DateTime AsTimezone (Timezone tz) const;
 
     public:
         /**
@@ -348,8 +390,11 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
+         *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put and defaults to kDefaultFormatPattern
          *  If only formatPattern specified, and no locale, use default (global) locale.
+         *
+         *  \note if kTreatLocaleAsIfItHasATimzoneWherePossible, and Timezone for date known, and timezone for locale known, the date string
+         *        produced will be translated to the timezone of the argument locale (if one of those overloads used).
          */
         nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
         nonvirtual String Format (const locale& l) const;
