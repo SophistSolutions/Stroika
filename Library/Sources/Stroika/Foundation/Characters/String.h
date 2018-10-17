@@ -817,7 +817,12 @@ namespace Stroika::Foundation::Characters {
          * See regex_replace () for definition of the regEx language
          *
          *   Require (not string2SearchFor.empty ());
-         *       TODO: GIVE EXAMPLES
+         *
+         *  \par Example Usage
+         *      \code
+         *          mungedData = mungedData.ReplaceAll (RegularExpression{ L"\\b0+" }, L"");    // strip all leading zeros
+         *      \endcode
+         *
          *
          *  Note - it IS legal to have with contain the original search for string, or even
          *  to have it 'created' as part of where it gets

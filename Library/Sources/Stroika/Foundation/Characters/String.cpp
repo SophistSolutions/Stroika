@@ -584,16 +584,17 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
     return {};
 }
 
-optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, [[maybe_unused]] size_t startAt) const
+optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, size_t startAt) const
 {
     const String threadSafeCopy{*this};
     Require (startAt <= threadSafeCopy.GetLength ());
-    Assert (startAt == 0); // else NYI
     wstring tmp = threadSafeCopy.As<wstring> ();
+    Require (startAt < tmp.size ());
+    tmp = tmp.substr (startAt);
     wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     if (res.size () >= 1) {
-        return pair<size_t, size_t> (res.position (), res.position () + res.length ());
+        return pair<size_t, size_t> (startAt + res.position (), startAt + res.position () + res.length ());
     }
     return {};
 }
@@ -815,13 +816,11 @@ String String::FilteredString (const Iterable<Character>& badCharacters, optiona
         }
     }
     return sb.str ();
-    ;
 }
 
-String String::FilteredString ([[maybe_unused]] const RegularExpression& badCharacters, [[maybe_unused]] optional<Character> replacement) const
+String String::FilteredString (const RegularExpression& badCharacters, optional<Character> replacement) const
 {
-    AssertNotImplemented ();
-    return String{};
+    return ReplaceAll (badCharacters, replacement.has_value () ? String (*replacement) : L"");
 }
 
 String String::FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement) const
