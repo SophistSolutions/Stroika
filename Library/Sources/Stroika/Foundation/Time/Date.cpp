@@ -272,7 +272,7 @@ String Date::Format (PrintFormat pf) const
             return Format (locale ());
         } break;
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
-            String tmp = Format (locale ());
+            String tmp = Format (locale{});
             /*
              *  This logic probably needs to be locale-specific, but this is good enuf for now...
              *  Map things like:
