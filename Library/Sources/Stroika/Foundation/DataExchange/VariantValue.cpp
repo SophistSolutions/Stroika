@@ -78,12 +78,9 @@ namespace {
 
 template <typename T>
 struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAllocationIfAppropriate<TIRep_<T>> {
-    inline TIRep_ (const T& v)
-        : fVal (v)
-    {
-    }
-    inline TIRep_ (T&& v)
-        : fVal (move (v))
+    template <typename FWD>
+    inline TIRep_ (FWD&& v)
+        : fVal (forward<FWD> (v))
     {
     }
     virtual Type GetType () const override
@@ -230,7 +227,7 @@ VariantValue::VariantValue (const Sequence<VariantValue>& val)
 }
 
 VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val)}
+    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (Sequence<VariantValue> (val))}
 {
 }
 
