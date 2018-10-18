@@ -123,12 +123,21 @@ namespace {
     }
 }
 
+namespace Test4_VariantValue_ {
+    void RunTests ()
+    {
+        Containers::Collection<VariantValue> vc;
+        VariantValue                         vv{vc};
+    }
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
         Test1_Atom_ ();
         Test2_OptionsFile_ ();
         Test3_ModuleGetterSetter_ ();
+        Test4_VariantValue_::RunTests ();
     }
 }
 
