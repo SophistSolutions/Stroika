@@ -816,7 +816,6 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
 {
     StringBuilder sb;
     for (const Character&& i : *this) {
-        // @todo Slow impl - generate set from 'badCharacters'
         if (charSet.Contains (i)) {
             sb += with;
         }
@@ -831,7 +830,6 @@ String String::FilteredString (const Iterable<Character>& badCharacters, optiona
 {
     StringBuilder sb;
     for (const Character&& i : *this) {
-        // @todo Slow impl - generate set from 'badCharacters'
         if (badCharacters.Contains (i)) {
             if (replacement) {
                 sb += *replacement;
