@@ -93,6 +93,9 @@ namespace Stroika::Foundation::Time {
      *
      *  I'm NOT sure if this makes sense or not (probably yes). But since (see stackoverflow question) its so foggy if
      *  locales have timezones, its best to leave off for now.
+     *
+     *  \note - incomplete implementation and probably worthless since I don't think this is a supported concept. But leave around
+     *          the code/reference for a little while before expunging... --LGP 2018-10-17
      */
     constexpr bool kTreatLocaleAsIfItHasATimzoneWherePossible = false;
 
