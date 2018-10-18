@@ -86,7 +86,7 @@ if (! (-e toCygPath_ ($VSDIR))) {
 @VSDIRs = bsd_glob (toCygPath_ ("$VSDIR\\*"));
 $VSDIR = fromCygPath_ (@VSDIRs[0]);
 if (! (-e toCygPath_ ($VSDIR))) {
-	die ("directory $VSDIR doesn't exist");
+	die ("directory '$VSDIR' doesn't exist");
 } 
 
 
