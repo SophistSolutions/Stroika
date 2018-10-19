@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Cache {
 
     namespace MemoizerSupport {
         template <typename T1, typename T2>
-        using DEFAULT_CACHE = LRUCache<T1, T2>;
+        using DEFAULT_CACHE [[deprecated ("no longer needed because fixed in C++17 - deduce extra template param args- Since Stroika v2.1d11")]] = LRUCache<T1, T2>;
     }
 
     /**
@@ -49,14 +49,14 @@ namespace Stroika::Foundation::Cache {
      *
      *      o   @todo   maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
      */
-    template <typename RESULT, template <typename, typename> class CACHE = MemoizerSupport::DEFAULT_CACHE, typename... ARGS>
+    template <typename RESULT, template <typename, typename> class CACHE = LRUCache, typename... ARGS>
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
     public:
         /**
          *  \par Example Usage
          *      \code
-         *          unsigned int                                            totalCallsCount{};
-         *          Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+         *          unsigned int                      totalCallsCount{};
+         *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
          *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
          *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
          *      \endcode
