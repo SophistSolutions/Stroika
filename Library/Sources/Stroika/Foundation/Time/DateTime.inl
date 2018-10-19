@@ -140,6 +140,21 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+    template <>
+    struct DefaultNames<Stroika::Foundation::Time::DateTime::PrintFormat> : EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> {
+        static constexpr EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> k{
+            EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat>::BasicArrayInitializer{
+                {
+                    {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale, L"Current-Locale"},
+                    {Stroika::Foundation::Time::DateTime::PrintFormat::eISO8601, L"ISO-8601"},
+                    {Stroika::Foundation::Time::DateTime::PrintFormat::eXML, L"XML"},
+                    {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+                }}};
+        DefaultNames ()
+            : EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> (k)
+        {
+        }
+    };
 }
 
 #endif /*_Stroika_Foundation_Time_DateTime_inl_*/
