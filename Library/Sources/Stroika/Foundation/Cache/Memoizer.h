@@ -22,9 +22,6 @@
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   See why DEFAULT_CACHE<> template is needed. Issue is LRUCache takes three params. No way to convert to
- *              a two arg template without introducing new template?
- *
  *      @todo   maybe allow passing in Cache object as CTOR parameter as a way to specify the hash function etc (for LRUCache with hash)
  *
  *      @todo   Investigate if better arg order for template or instantiation guide might reduce number of explicit 
