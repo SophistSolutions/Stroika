@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Containers {
         Stack (const Stack& src) noexcept = default;
         Stack (Stack&& src) noexcept      = default;
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Stack (CONTAINER_OF_ADDABLE&& src);
+        explicit Stack (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 

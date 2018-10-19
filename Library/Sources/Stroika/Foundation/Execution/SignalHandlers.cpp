@@ -219,7 +219,7 @@ public:
 public:
     Set<SignalID> GetHandledSignals () const
     {
-        return fHandlers_.cget ()->Keys ();
+        return Set<SignalID>{fHandlers_.cget ()->Keys ()};
     }
 
 public:
@@ -329,7 +329,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 
 Set<SignalID> SignalHandlerRegistry::GetHandledSignals () const
 {
-    Set<SignalID> result = fDirectHandlers_.cget ()->Keys ();
+    Set<SignalID> result{fDirectHandlers_.cget ()->Keys ()};
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
         result += tmp->GetHandledSignals ();
     }

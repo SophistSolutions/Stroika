@@ -499,8 +499,8 @@ namespace {
             void TestBasics_ ()
             {
                 static constexpr size_t kIOverallRepeatCount_{(qDebug or qStroika_FeatureSupported_Valgrind) ? 50 : 1000}; // tweak count cuz too slow
-                Sequence<int>           tmp = Traversal::DiscreteRange<int>{1, 1000};
-                Thread::Ptr             t1  = Thread::New (
+                Sequence<int>           tmp{Traversal::DiscreteRange<int>{1, 1000}};
+                Thread::Ptr             t1 = Thread::New (
                     [&tmp]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {

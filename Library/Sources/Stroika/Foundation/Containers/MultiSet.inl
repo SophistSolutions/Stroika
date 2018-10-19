@@ -285,10 +285,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
-    inline MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_ADDABLE& src)
+    inline MultiSet<T, TRAITS>::MultiSet (CONTAINER_OF_ADDABLE&& src)
         : MultiSet ()
     {
-        AddAll (src);
+        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>

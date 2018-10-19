@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers {
         SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         SortedAssociation (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<(Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> or Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>)and not is_base_of_v<SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        SortedAssociation (const CONTAINER_OF_ADDABLE& src);
+        explicit SortedAssociation (const CONTAINER_OF_ADDABLE& src);
         template <typename COPY_FROM_ITERATOR_KEY_T>
         SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 

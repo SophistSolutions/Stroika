@@ -90,7 +90,7 @@ namespace {
             for (auto i : from) {
                 to1.Add (i);
             }
-            Mapping<int, B> to2 = from;
+            Mapping<int, B> to2{from};
         }
     }
 }

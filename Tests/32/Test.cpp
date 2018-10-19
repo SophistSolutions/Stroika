@@ -144,9 +144,9 @@ namespace {
     namespace SAX_ObjectReader_EXAMPLE_1_ {
         const wstring kNSTest = L"Test-NAMESPACE";
         struct Person_ {
-            String                   firstName;
-            String                   lastName;
-            Memory::Optional<String> middleName;
+            String           firstName;
+            String           lastName;
+            optional<String> middleName;
         };
         struct Appointment_ {
             Time::DateTime when;
@@ -184,7 +184,7 @@ namespace {
 
             registry.AddCommonType<Time::DateTime> ();
             registry.AddCommonType<String> ();
-            registry.AddCommonType<Memory::Optional<String>> ();
+            registry.AddCommonType<optional<String>> ();
 
             // not sure if this is clearer or macro version
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
@@ -369,7 +369,6 @@ namespace {
 
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
 
-            using Memory::Optional;
             mapper.AddCommonType<String> ();
 
             mapper.AddClass<ManagedObjectReference> (initializer_list<ObjectReader::StructFieldInfo>{
@@ -448,9 +447,9 @@ namespace {
             Stroika_Define_Enum_Bounds (Male, Female)
         };
         struct Person_ {
-            String                        firstName;
-            String                        lastName;
-            Memory::Optional<GenderType_> gender;
+            String                firstName;
+            String                lastName;
+            optional<GenderType_> gender;
         };
         struct Address_ {
             String city;
@@ -500,7 +499,7 @@ namespace {
                 pair<GenderType_, String>{GenderType_::Male, L"Male"},
                 pair<GenderType_, String>{GenderType_::Female, L"Female"},
             }));
-            registry.AddCommonType<Memory::Optional<GenderType_>> ();
+            registry.AddCommonType<optional<GenderType_>> ();
             registry.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
                 {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
@@ -558,15 +557,15 @@ namespace {
             Mapping<TunerNumberType_, CurrentType_> TunerTECCurrent;
         };
         struct SensorDataType_ {
-            Memory::Optional<TunerNumberType_>              ActiveLaser;
-            Memory::Optional<WaveNumberType_>               ActiveLaserWaveNumber;
-            Memory::Optional<TemperatureType_>              DetectorTemperature;
-            Memory::Optional<TemperatureType_>              OpticsTemperature;
-            Memory::Optional<TemperatureType_>              ExternalTemperature1;
-            Mapping<TunerNumberType_, TemperatureType_>     LaserTemperatures;
-            Mapping<TunerNumberType_, CurrentType_>         LaserCurrents;
-            Mapping<TunerNumberType_, TemperatureType_>     MirrorTemperatures;
-            Memory::Optional<TECPowerConsumptionStatsType_> TECPowerConsumptionStats;
+            optional<TunerNumberType_>                  ActiveLaser;
+            optional<WaveNumberType_>                   ActiveLaserWaveNumber;
+            optional<TemperatureType_>                  DetectorTemperature;
+            optional<TemperatureType_>                  OpticsTemperature;
+            optional<TemperatureType_>                  ExternalTemperature1;
+            Mapping<TunerNumberType_, TemperatureType_> LaserTemperatures;
+            Mapping<TunerNumberType_, CurrentType_>     LaserCurrents;
+            Mapping<TunerNumberType_, TemperatureType_> MirrorTemperatures;
+            optional<TECPowerConsumptionStatsType_>     TECPowerConsumptionStats;
         };
         Memory::BLOB mkdata_ ()
         {
@@ -648,16 +647,16 @@ namespace {
                 pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
             }));
-            registry.AddCommonType<Memory::Optional<TunerNumberType_>> ();
+            registry.AddCommonType<optional<TunerNumberType_>> ();
             registry.AddCommonType<WaveNumberType_> ();
-            registry.AddCommonType<Memory::Optional<WaveNumberType_>> ();
+            registry.AddCommonType<optional<WaveNumberType_>> ();
             registry.AddCommonType<TemperatureType_> ();
-            registry.AddCommonType<Memory::Optional<TemperatureType_>> ();
+            registry.AddCommonType<optional<TemperatureType_>> ();
             registry.AddCommonType<CurrentType_> ();
             registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (TunerMappingReader_<TemperatureType_>::AsFactory ());
             registry.Add<Mapping<TunerNumberType_, CurrentType_>> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
-            registry.AddCommonType<Memory::Optional<TECPowerConsumptionStatsType_>> ();
+            registry.AddCommonType<optional<TECPowerConsumptionStatsType_>> ();
             registry.AddClass<SensorDataType_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"ActiveLaser"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser)},
                 {Name{L"DetectorTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, DetectorTemperature)},
@@ -786,12 +785,12 @@ namespace {
         using SpectrumType_               = SortedMapping<double, double>;
         using PersistenceScanAuxDataType_ = Mapping<String, String>;
         struct PersistentScanDetailsType_ {
-            ScanIDType_                     ScanID{};
-            DateTime                        ScanStart;
-            DateTime                        ScanEnd;
-            Memory::Optional<String>        ScanLabel;
-            Memory::Optional<SpectrumType_> RawSpectrum;
-            PersistenceScanAuxDataType_     AuxData;
+            ScanIDType_                 ScanID{};
+            DateTime                    ScanStart;
+            DateTime                    ScanEnd;
+            optional<String>            ScanLabel;
+            optional<SpectrumType_>     RawSpectrum;
+            PersistenceScanAuxDataType_ AuxData;
         };
         Memory::BLOB mkdata_ ()
         {
@@ -892,9 +891,9 @@ namespace {
             registry.AddCommonType<IntensityType_> ();
             registry.AddCommonType<DateTime> ();
             registry.AddCommonType<String> ();
-            registry.AddCommonType<Memory::Optional<String>> ();
+            registry.AddCommonType<optional<String>> ();
             registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
-            registry.AddCommonType<Memory::Optional<SpectrumType_>> ();
+            registry.AddCommonType<optional<SpectrumType_>> ();
             registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory ());
             registry.AddClass<PersistentScanDetailsType_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"ScanID"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID)},

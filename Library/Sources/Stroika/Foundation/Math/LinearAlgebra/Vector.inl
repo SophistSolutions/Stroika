@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T>::Vector (const CONTAINER_OF_T& c)
         : fRep_ (make_shared<IRep_> ())
     {
-        fRep_->fData = c;
+        fRep_->fData = Containers::Sequence<T>{c};
     }
 #if 0
     template <typename T>

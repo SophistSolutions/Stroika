@@ -83,7 +83,7 @@ void WaitForIOReady::RemoveAll ([[maybe_unused]] const Traversal::Iterable<pair<
 
 void WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
 {
-    fPollData_.store (fds);
+    fPollData_.store (Collection<pair<FileDescriptorType, TypeOfMonitorSet>>{fds});
 }
 
 auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType>

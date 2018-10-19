@@ -1089,7 +1089,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& t
         constexpr Time::DurationSecondsType kTimeBetweenDbgTraceWarnings_{5.0};
         Time::DurationSecondsType           timeOfLastWarning = Time::GetTickCount ();
         Time::DurationSecondsType           timeOfLastAborts  = timeOfLastWarning;
-        Set<Thread::Ptr>                    threads2WaitOn    = threads;
+        Set<Thread::Ptr>                    threads2WaitOn{threads};
         while (not threads2WaitOn.empty ()) {
             for (Traversal::Iterator<Thread::Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end (); ++i) {
                 constexpr Time::DurationSecondsType kMinWaitThreshold_ = min (kTimeBetweenDbgTraceWarnings_, kAbortAndWaitForDoneUntil_TimeBetweenAborts_);

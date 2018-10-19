@@ -60,28 +60,28 @@ namespace Stroika::Foundation::Containers {
     Boolean operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs);
 
     /*
-        *  PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item.
-        *  This priority is given either at the time when the item is Enqueueed to the PriorityQueue, or
-        *  by a function. The default function always assigns the lowest possible priority to an item.
-        *  Priority start at zero and work upwards, so a zero priority item will be the last item
-        *  removed from the PriorityQueue.
-        *
-        *  PriorityQueues support two kinds of iteration: over type T, or over ProirityQueueEntrys of
-        *  type T. A PriorityQueueEntry is a simple structure that couples together the item and its
-        *  priority.
-        *
-        *
-        *  PriorityQueues always iterate from highest to lowest priority.
-        *
-        *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-        *
-        *  \note Note About Iterators
-        *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-        *
-        *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-        *          the iterators are automatically updated internally to behave sensibly.
-        *
-        */
+     *  PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item.
+     *  This priority is given either at the time when the item is Enqueueed to the PriorityQueue, or
+     *  by a function. The default function always assigns the lowest possible priority to an item.
+     *  Priority start at zero and work upwards, so a zero priority item will be the last item
+     *  removed from the PriorityQueue.
+     * 
+     *  PriorityQueues support two kinds of iteration: over type T, or over ProirityQueueEntrys of
+     *  type T. A PriorityQueueEntry is a simple structure that couples together the item and its
+     *  priority.
+     *
+     *
+     *  PriorityQueues always iterate from highest to lowest priority.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     *  \note Note About Iterators
+     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+     *
+     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
+     *          the iterators are automatically updated internally to behave sensibly.
+     *
+     */
     template <typename T>
     class PriorityQueue : public Iterable<pair<T, Priority>> {
     protected:

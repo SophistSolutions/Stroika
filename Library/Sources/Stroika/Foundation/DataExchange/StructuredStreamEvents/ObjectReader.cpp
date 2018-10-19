@@ -234,7 +234,7 @@ void IConsumerDelegateToContext::TextInsideElement (const String& text)
 
 /*
  ********************************************************************************
- ****************** Registry::ReadDownToReader **********************
+ ****************************** Registry::ReadDownToReader **********************
  ********************************************************************************
  */
 ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader)
