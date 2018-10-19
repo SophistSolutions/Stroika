@@ -150,16 +150,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
     }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
-#if qPlatform_Windows
-            /*
-             * Windows Parser does better job than POSIX one - for reasons which elude me.
-             * Automated test has some test cases to help close the gap...
-             *      -- LGP 2011-10-08
-             */
-            return Parse (rep, LOCALE_USER_DEFAULT);
-#else
             return Parse (rep, locale{});
-#endif
         } break;
         case ParseFormat::eISO8601:
         case ParseFormat::eXML: {
@@ -190,10 +181,6 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             if (nItems == 3) {
                 result = Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
             }
-#if qPlatform_Windows
-            const LCID kUS_ENGLISH_LOCALE = MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-            Ensure (result == Parse (rep, kUS_ENGLISH_LOCALE));
-#endif
             return result;
         } break;
     }

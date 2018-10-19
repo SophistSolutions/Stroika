@@ -44,9 +44,6 @@
  *              CONS:   we use this clear/empty notion alot, so may involve many changes, and we have
  *                      a sensible fittable sentinal value handy.
  *
- *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
- *              de-supporting.
- *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
  *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
@@ -149,7 +146,7 @@ namespace Stroika::Foundation::Time {
         static TimeOfDay Parse (const String& rep, ParseFormat pf);
         static TimeOfDay Parse (const String& rep, const locale& l);
 #if qPlatform_Windows
-        static TimeOfDay Parse (const String& rep, LCID lcid);
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static TimeOfDay Parse (const String& rep, LCID lcid);
 #endif
 
     public:
@@ -275,7 +272,7 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
 #if qPlatform_Windows
-        nonvirtual String Format (LCID lcid) const;
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid) const;
 #endif
 
     public:

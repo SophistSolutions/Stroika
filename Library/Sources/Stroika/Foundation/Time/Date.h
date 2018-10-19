@@ -35,9 +35,6 @@
  *      @todo   eCurrentLocale_WithZerosStripped must be fixed to handle locales properly! This is a bit
  *              of a kludge, and assumes US locale, really.
  *
- *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
- *              de-supporting.
- *
  *      @todo   Consider using strptime/strftime (or more likely the existing locale-based APIs) -
  *              and possibly use that to replace windows formatting APIs? The problem with this is
  *              that the Windows ones seem to currntly produce BETTER answers (more closely follow
@@ -283,7 +280,7 @@ namespace Stroika::Foundation::Time {
         static Date Parse (const String& rep, const locale& l);
         static Date Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
 #if qPlatform_Windows
-        static Date Parse (const String& rep, LCID lcid);
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static Date Parse (const String& rep, LCID lcid);
 #endif
 
     public:
@@ -393,15 +390,15 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
 #if qPlatform_Windows
-        nonvirtual String Format (LCID lcid) const;
-        nonvirtual String Format (LCID lcid, const String& format) const; // See GetDateFormat () format args
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid) const;
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid, const String& format) const; // See GetDateFormat () format args
 #endif
 
 #if qPlatform_Windows
     public:
         /**
          */
-        nonvirtual String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
 #endif
 
     public:

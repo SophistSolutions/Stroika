@@ -37,9 +37,6 @@
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
- *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
- *              de-supporting.
- *
  *      @todo   We sometimes store datetime internally as localetime, and sometimes as UTC. Maybe we
  *              should alway use UTC? If we use localtime and the timezone changes while we are running
  *              (timezone or DST) - we could get funky results.
@@ -224,7 +221,7 @@ namespace Stroika::Foundation::Time {
         static DateTime Parse (const String& rep, const locale& l);
         static DateTime Parse (const String& rep, const locale& l, const String& formatPattern);
 #if qPlatform_Windows
-        static DateTime Parse (const String& rep, LCID lcid);
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static DateTime Parse (const String& rep, LCID lcid);
 #endif
 
     public:
@@ -402,7 +399,7 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
 #if qPlatform_Windows
-        nonvirtual String Format (LCID lcid) const;
+        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid) const;
 #endif
 
     public:
