@@ -32,9 +32,6 @@
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
- *      @todo   eCurrentLocale_WithZerosStripped must be fixed to handle locales properly! This is a bit
- *              of a kludge, and assumes US locale, really.
- *
  *      @todo   Consider using strptime/strftime (or more likely the existing locale-based APIs) -
  *              and possibly use that to replace windows formatting APIs? The problem with this is
  *              that the Windows ones seem to currntly produce BETTER answers (more closely follow
@@ -42,19 +39,19 @@
  *              locale stuff or maybe I'm not using it properly. Not super high priority to
  *              unravalel - but would be nice to lose (most of) the Windoze-specific code.
  *
+ *                  (medium) Consider using strftime and strptime with %FT%T%z.
+ *                  Same format
+ *                  That doesn’t use std::locale()
+ *                  En.cppreference.com/w/cpp/io/manip/get_time
+ *                  istringstream xxx (“2011-feb…”)
+ *                  ss.imbue(std::locale() (“de-DE”));
+ *                  ss >> std::get_time(&t, “%FT%T%z”)
+
  *      @todo   Some places I've found on the net claim one date for start of gregorgian calendar
  *              and others claim other date(s). Really all I care about
  *              is for what range of dates is my currnet date logic valid, and thats what I'll use.
  *              But this needs some digging.
  *
- *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
- *              Same format
- *              That doesn’t use std::locale()
- *              En.cppreference.com/w/cpp/io/manip/get_time
- *              istringstream xxx (“2011-feb…”)
- *              ss.imbue(std::locale() (“de-DE”));
- *              ss >> std::get_time(&t, “%FT%T%z”)
-
  *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we
  *              should support BOTH here?
  *              Maybe where they differ doesn't matter for this class?
@@ -75,10 +72,6 @@
  *              o   And maybe store cached string reps for common cases as optimization and
  *                  store cached second-offset (mutable) for quick compares
  *              o   Note in docs for future versions the min/max date COULD be expanded
- *
- *      @todo   (minor) Consider if DateTime stuff should cache locale{} in some methods (static) –
- *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
- *              locking to bump refcount?
  */
 
 namespace Stroika::Foundation::Time {

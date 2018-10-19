@@ -31,27 +31,23 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Maybe use wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
+ *                 (medium) Consider using strftime and strptime with %FT%T%z.
+ *
+ *                  Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
+ *
+ *                  Same format
+ *                  That doesn’t use std::locale()
+ *                  En.cppreference.com/w/cpp/io/manip/get_time
+ *                  istringstream xxx (“2011-feb…”)
+ *                  ss.imbue(std::locale() (“de-DE”));
+ *                  ss >> std::get_time(&t, “%FT%T%z”)
+ *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
  *              Be careful about overflow in underlying types like Date and TimeOfDay() however.
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
- *
- *      @todo   We sometimes store datetime internally as localetime, and sometimes as UTC. Maybe we
- *              should alway use UTC? If we use localtime and the timezone changes while we are running
- *              (timezone or DST) - we could get funky results.
- *
- *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
- *              Same format
- *              That doesn’t use std::locale()
- *              En.cppreference.com/w/cpp/io/manip/get_time
- *              istringstream xxx (“2011-feb…”)
- *              ss.imbue(std::locale() (“de-DE”));
- *              ss >> std::get_time(&t, “%FT%T%z”)
- *
- *      @todo   Maybe use wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
- *
- *      @todo   Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
@@ -68,10 +64,6 @@
  *          o   Note for timeofday it COULD be enhanced in the future to store TOD as
  *              fractional number of seconds. COULD use LINUX style struct with number of seconds and fixed
  *              point like number of nanoseconds (or some such)
- *
- *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
- *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
- *              locking to bump refcount?
  *
  *      @todo   fTimeOfDay_ should be OPTIONAL (instead of using its .empty ()) property, once we can
  *              do that without a performance cost.
@@ -118,6 +110,10 @@ namespace Stroika::Foundation::Time {
      *          instead of creating invalid values.
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *
+     *  \note   DateTime values are (optionally) associated with a particular timezone. If the value of the timezone is localetime and
+     *          localtime changes, the DateTime then is relative to that new localetime. If the associated timezone is localtime, the
+     *          interpretation of that timezone happens at the time a request requires it.
      *
      */
     class DateTime {
