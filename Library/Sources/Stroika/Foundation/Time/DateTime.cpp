@@ -729,6 +729,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 #if qPlatform_Windows
 String DateTime::Format (LCID lcid) const
 {
+    DISABLE_COMPILER_MSC_WARNING_START (4996); // this whole procedure deprecated so no need to warn its impl is as well
     if (empty ()) {
         return String{};
     }
@@ -741,6 +742,7 @@ String DateTime::Format (LCID lcid) const
         }
         return r;
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 }
 #endif
 
