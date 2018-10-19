@@ -915,6 +915,25 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #endif
 
 /*
+ * NOW ALLOWED IN C++17
+Test.cpp:173:31: error: template template argument has different template parameters than its corresponding template template parameter
+                Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+                              ^
+/Users/lewis/Sandbox/Stroika-Remote-Build-Dir/Library/Sources/Stroika/Foundation/Cache/LRUCache.h:86:5: note: too many template parameters in template template argument
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+
+**/
+#ifndef qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#else
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
+#endif
+
+#endif
+
+/*
 /*
 @CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 

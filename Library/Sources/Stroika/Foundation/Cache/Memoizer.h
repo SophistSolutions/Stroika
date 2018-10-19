@@ -35,7 +35,11 @@ namespace Stroika::Foundation::Cache {
 
     namespace MemoizerSupport {
         template <typename T1, typename T2>
-        using DEFAULT_CACHE [[deprecated ("no longer needed because fixed in C++17 - deduce extra template param args- Since Stroika v2.1d11")]] = LRUCache<T1, T2>;
+        using DEFAULT_CACHE
+#if !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+            [[deprecated ("no longer needed because fixed in C++17 - deduce extra template param args- Since Stroika v2.1d11")]]
+#endif
+            = LRUCache<T1, T2>;
     }
 
     /**
@@ -76,7 +80,6 @@ namespace Stroika::Foundation::Cache {
         function<RESULT (ARGS...)>    fFunction_;
         CACHE<tuple<ARGS...>, RESULT> fCache_;
     };
-
 }
 
 /*
