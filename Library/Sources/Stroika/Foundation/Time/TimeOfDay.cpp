@@ -249,7 +249,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
     if (rep.empty ()) {
-        return TimeOfDay ();
+        return TimeOfDay {};
     }
 
     ios::iostate state = ios::goodbit;
