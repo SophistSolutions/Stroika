@@ -19,7 +19,7 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${DO_ONLY_DEFAULT_CONFIGURATIONS:=0}
 : ${USE_TEST_BASENAME:=""}
 BUILD_EXTRA_COMPILERS_IF_MISSING=
-if [ $CONTINUE -eq 0 ]  && [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 && "$(uname -s)" == "Linux" ]; then
+if [ $CONTINUE -eq 0 ]  && [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] && [ "$(uname -s)" == "Linux" ]; then
 	BUILD_EXTRA_COMPILERS_IF_MISSING=1
 else
 	BUILD_EXTRA_COMPILERS_IF_MISSING=0
