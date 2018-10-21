@@ -18,7 +18,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *
  *      @todo   Create better subtype exception for locale not found (with fields for what not found).
  *
  *      @todo   I think GetPlatformDefaultLocale() can be optimized to use a static copy of locale("") since
