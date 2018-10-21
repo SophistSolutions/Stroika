@@ -14,7 +14,10 @@
 #if qPlatform_Windows
 #include "../Characters/Platform/Windows/SmartBSTR.h"
 #endif
+#include "../Characters/ToString.h"
+#include "../Containers/Sequence.h"
 #include "../Debug/Assertions.h"
+#include "../Debug/Trace.h"
 #include "../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
@@ -32,8 +35,12 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
 using Characters::String_Constant;
+using Containers::Sequence;
 
 using namespace Time;
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if qPlatform_Windows
 namespace {
@@ -212,10 +219,36 @@ const TimeOfDay TimeOfDay::kMin = TimeOfDay::min ();
 const TimeOfDay TimeOfDay::kMax = TimeOfDay::max ();
 #endif
 
+//%t        Any white space.
+//%T        The time as %H : %M : %S.
+//%r        is the time as %I:%M:%S %p
+//%M        The minute [00,59]; leading zeros are permitted but not required.
+//%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
+//%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
+//%S        The seconds [00,60]; leading zeros are permitted but not required.
+const Traversal::Iterable<String> TimeOfDay::kDefaultTimeParseFormats{
+    String_Constant{L"%X"},
+    String_Constant{L"%EX"},
+    String_Constant{L"%T"},
+    String_Constant{L"%r"},
+    String_Constant{L"%H:%M:%S"},
+    String_Constant{L"%H:%M"},
+    String_Constant{L"%I%p"},
+    String_Constant{L"%I%P"},
+    String_Constant{L"%I%t%p"},
+    String_Constant{L"%I%t%P"},
+    String_Constant{L"%I:%M%t%p"},
+    String_Constant{L"%I:%M%t%P"},
+    String_Constant{L"%I:%M:%S%t%p"},
+    String_Constant{L"%I:%M:%S%t%P"},
+    String_Constant{L"%I:%M"},
+    String_Constant{L"%I:%M:%S"},
+};
+
 TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
-        return TimeOfDay ();
+        return TimeOfDay{};
     }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
@@ -248,82 +281,175 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
-    if (rep.empty ()) {
-        return TimeOfDay {};
-    }
-
-    ios::iostate state = ios::goodbit;
-    tm           when{};
-
-    {
-        //DbgTrace (L"X=%s", rep.c_str ());
-        wistringstream               iss (rep.As<wstring> ());
-        istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-        istreambuf_iterator<wchar_t> itend;         // end-of-stream    (The default-constructed std::istreambuf_iterator is known as the end-of-stream iterator)
-                                                    // as of C++ 11 tmget.get_time just does HMS, and get_time (%X) is more locale dependent - I think
-#if qCompilerAndStdLib_std_get_time_pctx_Buggy
-        //iss.imbue (l);  not needed because that is for stuff like 'std::cout << 3.14159' - for that operation - but there we are sayign the locale to use with use_facet
-        const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-        tmget.get_time (itbegin, itend, iss, state, &when);
-#else
-        // example from http://en.cppreference.com/w/cpp/io/manip/get_time
-        iss.imbue (l);
-        iss >> std::get_time (&when, L"%X");
-        state = iss.rdstate ();
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s, l=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
 #endif
+    if (rep.empty ()) {
+        return TimeOfDay{};
     }
+
+#if qDebug
+    auto oldCode = [&]() {
+        ios::iostate state = ios::goodbit;
+        tm           when{};
+
+        {
+            wistringstream               iss (rep.As<wstring> ());
+            istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
+            istreambuf_iterator<wchar_t> itend;         // end-of-stream    (The default-constructed std::istreambuf_iterator is known as the end-of-stream iterator)
+                                                        // as of C++ 11 tmget.get_time just does HMS, and get_time (%X) is more locale dependent - I think
+#if qCompilerAndStdLib_std_get_time_pctx_Buggy
+            const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+            tmget.get_time (itbegin, itend, iss, state, &when);
+#else
+            // example from http://en.cppreference.com/w/cpp/io/manip/get_time
+            iss.imbue (l);
+            iss >> std::get_time (&when, L"%X");
+            state = iss.rdstate ();
+#endif
+        }
 
 #if qPlatform_POSIX
-    //%t        Any white space.
-    //%T        The time as %H : %M : %S.
-    //%r        is the time as %I:%M:%S %p
-    //%M        The minute [00,59]; leading zeros are permitted but not required.
-    //%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
-    //%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
-    //%S        The seconds [00,60]; leading zeros are permitted but not required.
-    static const char* kFmtStrs2Try[] = {
-        "%X",
-        "%EX",
-        "%T",
-        "%r",
-        "%H:%M:%S",
-        "%H:%M",
-        "%I%p",
-        "%I%P",
-        "%I%t%p",
-        "%I%t%P",
-        "%I:%M%t%p",
-        "%I:%M%t%P",
-        "%I:%M:%S%t%p",
-        "%I:%M:%S%t%P",
-        "%I:%M",
-        "%I:%M:%S",
-    };
-    if (state & ios::failbit) {
-        string tmp = WideStringToNarrowSDKString (rep.As<wstring> ());
-        for (auto i = std::begin (kFmtStrs2Try); (state & ios::failbit) and (i != std::end (kFmtStrs2Try)); ++i) {
-            (void)::memset (&when, 0, sizeof (when));
-            state = (::strptime (tmp.c_str (), *i, &when) == nullptr) ? ios::failbit : ios::goodbit;
+        //%t        Any white space.
+        //%T        The time as %H : %M : %S.
+        //%r        is the time as %I:%M:%S %p
+        //%M        The minute [00,59]; leading zeros are permitted but not required.
+        //%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
+        //%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
+        //%S        The seconds [00,60]; leading zeros are permitted but not required.
+        static const char* kFmtStrs2Try[] = {
+            "%X",
+            "%EX",
+            "%T",
+            "%r",
+            "%H:%M:%S",
+            "%H:%M",
+            "%I%p",
+            "%I%P",
+            "%I%t%p",
+            "%I%t%P",
+            "%I:%M%t%p",
+            "%I:%M%t%P",
+            "%I:%M:%S%t%p",
+            "%I:%M:%S%t%P",
+            "%I:%M",
+            "%I:%M:%S",
+        };
+        if (state & ios::failbit) {
+            string tmp = WideStringToNarrowSDKString (rep.As<wstring> ());
+            for (auto i = std::begin (kFmtStrs2Try); (state & ios::failbit) and (i != std::end (kFmtStrs2Try)); ++i) {
+                (void)::memset (&when, 0, sizeof (when));
+                state = (::strptime (tmp.c_str (), *i, &when) == nullptr) ? ios::failbit : ios::goodbit;
+            }
         }
-    }
 #endif
 
 #if qPlatform_Windows
-    if (state & ios::failbit) {
-        //string    ln  =   l.name();   // This doesn't seem to produce anything useful - or easily mapepd to an LCID?
-        return Parse (rep, LOCALE_USER_DEFAULT);
-    }
+        if (state & ios::failbit) {
+            DISABLE_COMPILER_MSC_WARNING_START (4996);
+            return Parse (rep, LOCALE_USER_DEFAULT);
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
+        }
 #endif
 
-    if (state & ios::failbit)
-        [[UNLIKELY_ATTR]]
-        {
+        if (state & ios::failbit) {
             Execution::Throw (FormatException::kThe);
         }
+        Assert (0 <= when.tm_hour and when.tm_hour <= 23);
+        Assert (0 <= when.tm_min and when.tm_min <= 59);
+        Assert (0 <= when.tm_sec and when.tm_sec <= 59);
+        return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
+    };
+#endif
+    auto result = Parse (rep, l, kDefaultTimeParseFormats);
+    Ensure (result == oldCode ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
+#endif
+    return result;
+}
+
+TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& formatPattern)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s, l=%s, formatPattern=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), formatPattern.c_str ())};
+#endif
+    auto result = Parse (rep, l, Traversal::Iterable<String>{formatPattern});
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
+#endif
+    return result;
+}
+
+TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s, l=%s, formatPatterns=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), Characters::ToString (formatPatterns).c_str ())};
+#endif
+    if (rep.empty ()) {
+        return TimeOfDay{};
+    }
+    wstring wRep = rep.As<wstring> ();
+
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+
+    const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
+    ios::iostate             errState = ios::goodbit;
+    tm                       when{};
+
+    for (auto&& formatPattern : formatPatterns) {
+        errState = ios::goodbit;
+        wistringstream iss (wRep);
+        if constexpr (kRequireImbueToUseFacet_) {
+            iss.imbue (l);
+        }
+        istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
+        istreambuf_iterator<wchar_t> itend;         // end-of-stream
+
+#if qCompilerAndStdLib_std_get_time_pctx_Buggy
+        if (formatPattern == L"%X") {
+            tmget.get_time (itbegin, itend, iss, errState, &when);
+        }
+        else {
+            // Best I can see to do to workaround this bug
+            DISABLE_COMPILER_MSC_WARNING_START (4996);
+            return Parse (rep, LOCALE_USER_DEFAULT);
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
+        }
+#else
+        (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+#endif
+        if ((errState & ios::badbit) or (errState & ios::failbit))
+            [[UNLIKELY_ATTR]]
+            {
+#if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
+                {
+                    errState = (::strptime (rep.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
+                    if (errState == ios::goodbit) {
+                        break;
+                    }
+                }
+#endif
+                continue;
+            }
+        else {
+            break;
+        }
+    }
+    // clang-format off
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe);
+    }
+    // clang-format on
+
     Assert (0 <= when.tm_hour and when.tm_hour <= 23);
     Assert (0 <= when.tm_min and when.tm_min <= 59);
     Assert (0 <= when.tm_sec and when.tm_sec <= 59);
-    return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
+    auto result = TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
+#endif
+    return result;
 }
 
 #if qPlatform_Windows
