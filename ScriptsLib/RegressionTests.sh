@@ -59,7 +59,7 @@ make list-configurations TAGS="valgrind"  > /tmp/allvalgrindconfigs.txt
 #fi
 if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
 	LOCALVALGRINDCONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
-	if [ `wc $LOCALVALGRINDCONFIGS` -eq 0 ] ; then
+	if [ `echo $LOCALVALGRINDCONFIGS | wc -w` -eq 0 ] ; then
 		INCLUDE_VALGRIND_MEMCHECK_TESTS=0
 		INCLUDE_VALGRIND_HELGRIND_TESTS=0
 	fi
