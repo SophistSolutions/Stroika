@@ -7,7 +7,7 @@
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
 : ${BUILD_DIR:=Sandbox/Stroika-Remote-Build-Dir}
 : ${BRANCH:=V2.1-Dev}
-: ${DO_ONLY_DEFAULT_CONFIGURATIONS:=1}
+: ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 
 echo ssh $SSH_TARGET rm -rf $BUILD_DIR
 ssh $SSH_TARGET rm -rf $BUILD_DIR
@@ -29,7 +29,7 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_B
 echo "Invoking remote RegressionTests.sh"
 CMD2Exec=''
 CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
-CMD2Exec+="export DO_ONLY_DEFAULT_CONFIGURATIONS=$DO_ONLY_DEFAULT_CONFIGURATIONS;"
+CMD2Exec+="export BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET;"
 CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
 CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
 echo ssh $SSH_TARGET $CMD2Exec
@@ -37,9 +37,9 @@ ssh $SSH_TARGET "$CMD2Exec"
 
 CMD2Exec=''
 CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
-if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
-	CMD2Exec+="export EXE=Builds/Release/Test50;"
-fi
+#if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
+#	CMD2Exec+="export EXE=Builds/Release/Test50;"
+#fi
 CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
 echo ssh $SSH_TARGET $CMD2Exec
 ssh $SSH_TARGET "$CMD2Exec"
