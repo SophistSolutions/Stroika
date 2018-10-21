@@ -51,13 +51,13 @@ namespace Stroika::Foundation::Time {
         Ensure ((empty () ? 0 : fTime_) < kMaxSecondsPerDay);
         return empty () ? 0 : fTime_;
     }
-    inline uint8_t TimeOfDay::GetHours () const
+    constexpr uint8_t TimeOfDay::GetHours () const
     {
         uint32_t n = GetAsSecondsCount () / (60 * 60);
         Ensure (0 <= n and n <= 23);
         return static_cast<uint8_t> (n);
     }
-    inline uint8_t TimeOfDay::GetMinutes () const
+    constexpr uint8_t TimeOfDay::GetMinutes () const
     {
         uint32_t n = GetAsSecondsCount ();
         n -= GetHours () * 60 * 60;
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Time {
         Ensure (0 <= n and n <= 59);
         return static_cast<uint8_t> (n);
     }
-    inline uint8_t TimeOfDay::GetSeconds () const
+    constexpr uint8_t TimeOfDay::GetSeconds () const
     {
         uint32_t n = GetAsSecondsCount ();
         n -= GetHours () * 60 * 60;

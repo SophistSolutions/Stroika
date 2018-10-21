@@ -241,19 +241,19 @@ namespace Stroika::Foundation::Time {
         /**
          * returns 0..23
          */
-        nonvirtual uint8_t GetHours () const;
+        nonvirtual constexpr uint8_t GetHours () const;
 
     public:
         /**
          *  returns 0..59
          */
-        nonvirtual uint8_t GetMinutes () const;
+        nonvirtual constexpr uint8_t GetMinutes () const;
 
     public:
         /**
          *  returns 0..59
          */
-        nonvirtual uint8_t GetSeconds () const;
+        nonvirtual constexpr uint8_t GetSeconds () const;
 
     public:
         /**
