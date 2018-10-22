@@ -33,6 +33,22 @@ else
 	EXTRATERMARGS="-it"
 fi
 
+echo docker run \
+	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+	-v $HOME/.ssh:$HOME/.ssh:ro \
+	-v /private-compiler-builds:/private-compiler-builds \
+	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
+	--security-opt seccomp=unconfined \
+	$EXTRATERMARGS \
+	--name ${CONTAINER_NAME} \
+	-h ${CONTAINER_NAME} \
+	-v $StroikaRoot:/Sandbox-StroikaRoot \
+	-w /Sandbox-StroikaRoot \
+	${EXTRA_DOCKER_ARGS} \
+	${CONTAINER_IMAGE} \
+	${CMD2RUN}
+
+
 docker run \
 	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 	-v $HOME/.ssh:$HOME/.ssh:ro \
