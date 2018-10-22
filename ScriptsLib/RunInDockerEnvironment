@@ -27,7 +27,7 @@ docker rm ${CONTAINER_NAME} >& /dev/null || true
 
 echo "TERM=$TERM"
 EXTRATERMARGS=""
-if [ "$TERM" != "" ]; then
+if [ "$TERM" != "" ] && [ "$TERM" != "dumb" ]; then
 	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\""
 fi
 
