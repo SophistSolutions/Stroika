@@ -25,6 +25,7 @@ docker rm ${CONTAINER_NAME} >& /dev/null || true
 # -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" doesn't work perfectly, but better than completely shitty display of # of lines 
 #  which appears to be the docker default
 
+echo "TERM=$TERM"
 EXTRATERMARGS=""
 if [ "$TERM" != "" ]; then
 	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\""
