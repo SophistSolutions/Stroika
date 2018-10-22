@@ -3,6 +3,7 @@
 #
 ### @todo - make MACHINE a required parameter - no good default!!!
 : ${LOGIN:=lewis}
+: ${RUN_IN_DOCKER:=0}
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
 : ${BUILD_DIR:=Sandbox/Stroika-Build-Dir-$USE_TEST_BASENAME}
 : ${BRANCH:=V2.1-Dev}
@@ -32,12 +33,18 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_B
 
 echo "Invoking remote RegressionTests.sh"
 CMD2Exec=''
-CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
-CMD2Exec+="export BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET;"
-CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
-CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
-echo ssh $SSH_TARGET $CMD2Exec
-ssh $SSH_TARGET "$CMD2Exec"
+if [ $RUN_IN_DOCKER -eq 1 ]; then
+	CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
+	CMD2Exec+="export BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET;"
+	CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
+	CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
+else
+	CMD2Exec+="cd $BUILD_DIR && CONTAINER_NAME=\"$USE_TEST_BASENAME-regtest\" EXTRA_DOCKER_ARGS=\"-e USE_TEST_BASENAME=$USE_TEST_BASENAME -e BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET\" CMD2RUN=ScriptsLib/RegressionTests.sh ScriptsLib/RunInDockerEnvironment"
+fi
+EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
+
+echo ssh $SSH_TARGET -t $CMD2Exec
+ssh $SSH_TARGET -t "$CMD2Exec"
 
 CMD2Exec=''
 CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
