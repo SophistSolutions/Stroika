@@ -33,7 +33,7 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_B
 
 echo "Invoking remote RegressionTests.sh"
 CMD2Exec=''
-if [ $RUN_IN_DOCKER -eq 1 ]; then
+if [ $RUN_IN_DOCKER -eq 0 ]; then
 	CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
 	CMD2Exec+="export BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET;"
 	CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
