@@ -25,6 +25,10 @@ docker rm ${CONTAINER_NAME} >& /dev/null || true
 # -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" doesn't work perfectly, but better than completely shitty display of # of lines 
 #  which appears to be the docker default
 
+EXTRATERMARGS=""
+if [ "$TERM" != "" ]; then
+	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\""
+fi
 
 docker run \
 	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
@@ -33,7 +37,7 @@ docker run \
 	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
 	-it\
-	-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" \
+	$EXTRATERMARGS \
 	--name ${CONTAINER_NAME} \
 	-h ${CONTAINER_NAME} \
 	-v $StroikaRoot:/Sandbox-StroikaRoot \
