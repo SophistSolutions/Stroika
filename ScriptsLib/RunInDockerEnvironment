@@ -30,6 +30,7 @@ EXTRATERMARGS=""
 if [ "$TERM" != "" ] && [ "$TERM" != "dumb" ]; then
 	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\""
 fi
+#	-it
 
 docker run \
 	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
@@ -37,7 +38,7 @@ docker run \
 	-v /private-compiler-builds:/private-compiler-builds \
 	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
-	-it\
+	-i\
 	$EXTRATERMARGS \
 	--name ${CONTAINER_NAME} \
 	-h ${CONTAINER_NAME} \
