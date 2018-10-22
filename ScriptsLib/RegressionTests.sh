@@ -145,6 +145,7 @@ else
 	echo "Skipping Clobber"
 	echo "Skipping Clobber" >>$TEST_OUT_FILE 2>&1
 fi
+
 STAGE_STARTAT_INT=$(date +%s)
 echo -n "Make all ($PARALELLMAKEFLAG)..."
 echo "$PREFIX_OUT_LABEL" "Make all ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
@@ -153,9 +154,10 @@ STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 
-echo -n "Run-Tests ALL..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests ALL..." >>$TEST_OUT_FILE 2>&1
+
 STAGE_STARTAT_INT=$(date +%s)
+echo -n "Run-Tests ALL-Local..."
+echo "$PREFIX_OUT_LABEL" "Run-Tests ALL..." >>$TEST_OUT_FILE 2>&1
 make run-tests >>$TEST_OUT_FILE 2>&1
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
