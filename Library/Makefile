@@ -1,5 +1,12 @@
 ProjectPlatformSubdir	:=	$(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
 
+ifneq ($(CONFIGURATION),)
+include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+####include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+endif
+
+
 SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -25,20 +32,8 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika Library {$(CONFIGURATION)}:      "
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Stroika-Foundation.a";
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Stroika-Frameworks.a";
-endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@## COULD also check PDB and IDB files but not needed
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Foundation.lib";
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-Led.lib";
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-Service.lib";
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-SystemPerformance.lib";
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-UPnP.lib";
-	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-WebServer.lib";
-endif
-	@$(ECHO) "[SUCCEEDED]";
+	@../ScriptsLib/CheckFileExists.sh $(StroikaFoundationLib) $(StroikaFrameworksLib)
+	@$(ECHO) "[SUCCEEDED]"
 endif
 
 
