@@ -14,7 +14,8 @@ export StroikaRoot=$(shell realpath ../..)/
 
 
 
-VERSION=3.2.1
+VERSION=3.2.2
+#VERSION=3.2.1
 #VERSION=3.2.0
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
