@@ -97,7 +97,9 @@ namespace {
 // CHECK FOR qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
 //
 #if defined(_MSC_VER)
+        DISABLE_COMPILER_MSC_WARNING_START (4996); // API DEPRECATED
         VerifyTestResult (not DateTime::Parse (L"7/26/1972 12:00:00 AM", LOCALE_USER_DEFAULT).empty ());
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
 #endif
     }
 }
@@ -188,7 +190,9 @@ namespace {
 #endif
             TimeOfDay threePM = TimeOfDay::Parse (L"3pm", locale::classic ());
 #if qPlatform_Windows
+            DISABLE_COMPILER_MSC_WARNING_START (4996); // API DEPRECATED
             VerifyTestResult (threePM.Format (kUS_ENGLISH_LOCALE) == L"3 PM");
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
 #endif
             //VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
             VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00"); // UGH!!!
@@ -245,6 +249,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
 #if qPlatform_Windows
+        DISABLE_COMPILER_MSC_WARNING_START (4996); // API DEPRECATED
         {
             wstring testCase = L"6/1/2005";
             VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
@@ -265,6 +270,7 @@ namespace {
             //      Fails - debug soon -- LGP 2011-10-08
             //VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
         }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
 #endif
         {
             VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
