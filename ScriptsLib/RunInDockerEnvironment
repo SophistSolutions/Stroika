@@ -4,6 +4,7 @@ StroikaRoot="${StroikaRoot:=`pwd`}"
 CONTAINER_NAME="${CONTAINER_NAME:-regression-tests}"
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}"
 EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
+EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 
 ### Can set CMD2RUN=./ScriptsLib/RegressionTests.sh
 CMD2RUN="${CMD2RUN:-bash}"
@@ -25,12 +26,12 @@ docker rm ${CONTAINER_NAME} >& /dev/null || true
 # -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" doesn't work perfectly, but better than completely shitty display of # of lines 
 #  which appears to be the docker default
 
-echo "TERM=$TERM"
 EXTRATERMARGS=""
 if [ "$TERM" != "" ] && [ "$TERM" != "dumb" ]; then
-	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\""
+	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" -i"
+else
+	EXTRATERMARGS="-it"
 fi
-#	-it
 
 docker run \
 	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
@@ -38,11 +39,11 @@ docker run \
 	-v /private-compiler-builds:/private-compiler-builds \
 	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
-	-i\
 	$EXTRATERMARGS \
 	--name ${CONTAINER_NAME} \
 	-h ${CONTAINER_NAME} \
 	-v $StroikaRoot:/Sandbox-StroikaRoot \
 	-w /Sandbox-StroikaRoot \
+	${EXTRA_DOCKER_ARGS} \
 	${CONTAINER_IMAGE} \
 	${CMD2RUN}
