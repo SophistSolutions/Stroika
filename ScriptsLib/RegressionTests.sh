@@ -44,11 +44,11 @@ fi
 
 RASPBERRYPI_REMOTE_MACHINE=raspberrypi
 RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
-ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
-if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
-	ARMTESTMACHINEAVAIL=1
+ARM_TEST_MACHINE_AVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
+if [ $ARM_TEST_MACHINE_AVAIL -eq 0 ]; then
+	ARM_TEST_MACHINE_AVAIL=1
 else
-	ARMTESTMACHINEAVAIL=0
+	ARM_TEST_MACHINE_AVAIL=0
 fi
 
 if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
@@ -58,24 +58,24 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_B
 RASPBERRYPICONFIGS=`make list-configurations TAGS="raspberrypi"`
 RASPBERRYPIVALGRINDCONFIGS=`make list-configurations TAGS="raspberrypi valgrind"`
 
-echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
-make list-configurations TAGS="valgrind"  > /tmp/allvalgrindconfigs.txt
 
 #if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
 #	INCLUDE_VALGRIND_MEMCHECK_TESTS=0
 #	INCLUDE_VALGRIND_HELGRIND_TESTS=0
 #	INCLUDE_PERFORMANCE_TESTS=0
 #fi
+echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
+make list-configurations TAGS="valgrind"  > /tmp/allvalgrindconfigs.txt
 if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
-	LOCALVALGRINDCONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
-	if [ `echo $LOCALVALGRINDCONFIGS | wc -w` -eq 0 ] ; then
+	LOCAL_VALGRIND_CONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
+	if [ `echo $LOCAL_VALGRIND_CONFIGS | wc -w` -eq 0 ] ; then
 		INCLUDE_VALGRIND_MEMCHECK_TESTS=0
 		INCLUDE_VALGRIND_HELGRIND_TESTS=0
 	fi
 else
-	LOCALVALGRINDCONFIGS=""
+	LOCAL_VALGRIND_CONFIGS=""
 fi
-
+rm -f /tmp/raspvalconfigs.txt /tmp/allvalgrindconfigs.txt
 
 
 PREFIX_OUT_LABEL=")))-"
@@ -112,7 +112,10 @@ echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_PERFORMANCE_TESTS=$INCLUDE_PERFORMANCE_TESTS" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    ARMTESTMACHINEAVAIL=$ARMTESTMACHINEAVAIL" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
+if [ "$LOCAL_VALGRIND_CONFIGS" != ""]; then
+	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
+fi
 echo >>$TEST_OUT_FILE 2>&1
 
 
@@ -129,7 +132,7 @@ fi
 
 
 
-
+### Create the actual configuration files that drive what is built
 if [ $CONTINUE -eq 0 ] ; then
 	rm -rf ConfigurationFiles
 	make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET >>$TEST_OUT_FILE 2>&1
@@ -139,6 +142,15 @@ fi
 NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
+
+
+
+echo "$PREFIX_OUT_LABEL" "REGRESSION TEST CONFIGURATION VARIABLES(UPDATES):" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    NUM_REGTESTS=$NUM_REGTESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    NUM_CONFIGURATIONS=$NUM_CONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+
+
 
 echo "Building configurations ($NUM_CONFIGURATIONS):"
 echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
@@ -155,6 +167,10 @@ else
 	echo "Skipping Clobber"
 	echo "Skipping Clobber" >>$TEST_OUT_FILE 2>&1
 fi
+
+
+
+
 
 STAGE_STARTAT_INT=$(date +%s)
 echo -n "Make all ($PARALELLMAKEFLAG)..."
@@ -179,7 +195,7 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
 echo -n "Run-Tests raspberrypi remote..."
 echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
-if [ $ARMTESTMACHINEAVAIL ]; then
+if [ $ARM_TEST_MACHINE_AVAIL ]; then
 	STAGE_STARTAT_INT=$(date +%s)
 	for i in $RASPBERRYPICONFIGS; do 
 		echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
