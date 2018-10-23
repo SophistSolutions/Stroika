@@ -113,6 +113,10 @@ CXX:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" Compi
 AR:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
 RANLIB:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
+#@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
+# some way we can ADD these params to CFLAGS without REPLACING
+# -- without this hack - we get link error building Xerces
+CFLAGS+= -pthread
 endif
 
 
