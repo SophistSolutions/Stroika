@@ -1207,8 +1207,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #ifndef qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
 
-#if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 8)
 #else
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy 0
 #endif
