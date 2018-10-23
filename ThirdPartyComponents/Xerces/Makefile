@@ -113,10 +113,14 @@ CXX:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" Compi
 AR:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
 RANLIB:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
+#clang (not clang++) barfs if given --std=c++17 argument
+CFLAGS:=$(filter-out --std%, $(CFLAGS))
+CXXFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces
 CFLAGS+= -pthread
+CXXFLAGS+= -pthread
 endif
 
 
@@ -265,8 +269,8 @@ doBuilds_:
 	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
 	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)"` "... "
-	@echo 'export CC=$(CC); export CXX=$(CXX); export CFLAGS=$(CFLAGS); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
-	@export CC="$(CC)"; export CXX="$(CXX)"; export CFLAGS="$(CFLAGS)"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
+	@echo 'export CC=$(CC); export CXX=$(CXX); export CFLAGS=$(CFLAGS); export CXXFLAGS=$(CXXFLAGS); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
+	@export CC="$(CC)"; export CXX="$(CXX)"; export CFLAGS="$(CFLAGS)"; export CXXFLAGS="$(CXXFLAGS)"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@###I could find no param to set going into cmake to use the static link version of the C++ runtime, but this does it (I hope not too aggressively)
 	@echo "sed -i CMakeCache.txt -e 's/MD/MT/g'" >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
