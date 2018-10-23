@@ -14,8 +14,8 @@ export StroikaRoot=$(shell realpath ../..)/
 
 
 ### link error with clang++ on ubuntu - 3.2.2 - still must debug
-#VERSION=3.2.2
-VERSION=3.2.1
+VERSION=3.2.2
+#VERSION=3.2.1
 #VERSION=3.2.0
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
