@@ -114,6 +114,7 @@ AR:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
 RANLIB:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
 #clang (not clang++) barfs if given --std=c++17 argument
+#And we later get linker errors from clang if we use -flto on object files stored here
 CFLAGS:=$(filter-out --std%, $(CFLAGS))
 CFLAGS:=$(filter-out -std%, $(CFLAGS))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
