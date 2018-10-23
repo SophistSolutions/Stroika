@@ -45,7 +45,11 @@ fi
 RASPBERRYPI_REMOTE_MACHINE=raspberrypi
 RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
 ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
-
+if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
+	ARMTESTMACHINEAVAIL=1
+else
+	ARMTESTMACHINEAVAIL=0
+fi
 
 if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
@@ -175,7 +179,7 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
 echo -n "Run-Tests raspberrypi remote..."
 echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
-if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
+if [ $ARMTESTMACHINEAVAIL ]; then
 	STAGE_STARTAT_INT=$(date +%s)
 	for i in $RASPBERRYPICONFIGS; do 
 		echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
