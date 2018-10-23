@@ -332,6 +332,7 @@ XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
 
 if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
+	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS">>$TEST_OUT_FILE 2>&1
 fi
 
 TOTALCONFIGS_=`./ScriptsLib/GetConfigurations | wc -w`
