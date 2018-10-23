@@ -42,6 +42,11 @@ if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
 fi
 
 
+RASPBERRYPI_REMOTE_MACHINE=raspberrypi
+RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
+ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
+
+
 if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
@@ -103,6 +108,7 @@ echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_PERFORMANCE_TESTS=$INCLUDE_PERFORMANCE_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    ARMTESTMACHINEAVAIL=$ARMTESTMACHINEAVAIL" >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 
 
@@ -167,11 +173,8 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 ### @todo - cleanup so have better logical test
 # cuz arm tests done explicitly below (maybe should automatically substract 'cross-compiled tests')
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
-RASPBERRYPI_REMOTE_MACHINE=raspberrypi
-RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
 echo -n "Run-Tests raspberrypi remote..."
 echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
-ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
 if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 	STAGE_STARTAT_INT=$(date +%s)
 	for i in $RASPBERRYPICONFIGS; do 
