@@ -116,7 +116,9 @@ CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXT
 #clang (not clang++) barfs if given --std=c++17 argument
 CFLAGS:=$(filter-out --std%, $(CFLAGS))
 CFLAGS:=$(filter-out -std%, $(CFLAGS))
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces
