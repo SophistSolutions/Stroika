@@ -90,7 +90,9 @@ fi
 rm -f /tmp/raspvalconfigs.txt /tmp/allvalgrindconfigs.txt
 
 if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
-	if [ "$RASPBERRYPICONFIGS" != "" ]; then
+	if [ "$RASPBERRYPICONFIGS" == "" ]; then
+		INCLUDE_RASPBERRYPI_TESTS=0
+	else
 		INCLUDE_RASPBERRYPI_TESTS=$ARM_TEST_MACHINE_AVAIL
 	fi
 fi
