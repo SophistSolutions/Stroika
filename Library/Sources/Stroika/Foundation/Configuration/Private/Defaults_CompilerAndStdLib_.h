@@ -113,6 +113,7 @@
 #define _MS_VS_2k17_15Pt8Pt0_ 191526726
 #define _MS_VS_2k17_15Pt8Pt4_ 191526729
 #define _MS_VS_2k17_15Pt8Pt5_ 191526730
+#define _MS_VS_2k17_15Pt8Pt8_ 191526732
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -124,7 +125,7 @@
 #endif
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt8_
 // check which pointer-version of MSVC2k17 (15.8.x)
-#if _MSC_FULL_VER > _MS_VS_2k17_15Pt8Pt5_
+#if _MSC_FULL_VER > _MS_VS_2k17_15Pt8Pt8_
 // @todo figure out how to add arg to message
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 15.8.x - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -860,6 +861,7 @@ WORKAROUND:
 // first broken in _MSC_VER_2k17_15Pt8_  (_MS_VS_2k17_15Pt8Pt0_)
 // still broken in _MS_VS_2k17_15Pt8Pt4_
 // assume still broken in _MS_VS_2k17_15Pt8Pt5_
+// assume still broken in _MS_VS_2k17_15Pt8Pt8_
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
