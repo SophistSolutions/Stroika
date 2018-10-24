@@ -164,6 +164,13 @@
 #include <ciso646>
 #endif
 
+// For pre C++20, to get _GLIBCXX_RELEASE define
+#if !__has_include(<version>)
+#if __has_include(<bits/c++config.h>)
+#include <bits/c++config.h>
+#endif
+#endif
+
 /*
  *******************************************************************
  *******************************************************************
