@@ -56,6 +56,73 @@ if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
 
+
+
+
+PREFIX_OUT_LABEL=")))-"
+
+STARTAT_INT=$(date +%s)
+STARTAT=`date`;
+
+
+
+if [ $CONTINUE -ne 0 ] ; then
+	echo "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+else
+	rm -f $TEST_OUT_FILE
+	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
+fi
+
+
+
+echo "$PREFIX_OUT_LABEL" "REGRESSION TEST CONFIGURATION VARIABLES:" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    USE_TEST_BASENAME=$USE_TEST_BASENAME" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    PARALELLMAKEFLAG=$PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    CONTINUE=$CONTINUE" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_PERFORMANCE_TESTS=$INCLUDE_PERFORMANCE_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
+
+
+if [ "$LOCAL_VALGRIND_CONFIGS" != "" ]; then
+	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
+fi
+echo >>$TEST_OUT_FILE 2>&1
+
+
+
+
+if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
+	if ! [ -e /private-compiler-builds/clang-7.0.0 ]; then
+		echo -n "Building /private-compiler-builds/clang-7.0.0..."
+		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh  >>$TEST_OUT_FILE 2>&1
+		rm -rf BUILDDIR-LLVM-7.0.0
+		echo "done"
+	fi
+fi
+
+
+
+### Create the actual configuration files that drive what is built
+if [ $CONTINUE -eq 0 ] ; then
+	rm -rf ConfigurationFiles
+	make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET >>$TEST_OUT_FILE 2>&1
+fi
+
+
+
 RASPBERRYPICONFIGS=`make list-configurations TAGS="raspberrypi"`
 RASPBERRYPIVALGRINDCONFIGS=`make list-configurations TAGS="raspberrypi valgrind"`
 
@@ -97,87 +164,27 @@ if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
 	fi
 fi
 
-
-PREFIX_OUT_LABEL=")))-"
-
-STARTAT_INT=$(date +%s)
-STARTAT=`date`;
-
-
-
-if [ $CONTINUE -ne 0 ] ; then
-	echo "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT"
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
-else
-	rm -f $TEST_OUT_FILE
-	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
-	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
-fi
-
-
-
-echo "$PREFIX_OUT_LABEL" "REGRESSION TEST CONFIGURATION VARIABLES:" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    USE_TEST_BASENAME=$USE_TEST_BASENAME" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    PARALELLMAKEFLAG=$PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    CONTINUE=$CONTINUE" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    INCLUDE_PERFORMANCE_TESTS=$INCLUDE_PERFORMANCE_TESTS" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    INCLUDE_LOCAL_TESTS=$INCLUDE_LOCAL_TESTS" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    INCLUDE_RASPBERRYPI_TESTS=$INCLUDE_RASPBERRYPI_TESTS" >>$TEST_OUT_FILE 2>&1
-
-
-if [ "$LOCAL_VALGRIND_CONFIGS" != "" ]; then
-	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
-fi
-echo >>$TEST_OUT_FILE 2>&1
-
-
-
-
-if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
-	if ! [ -e /private-compiler-builds/clang-7.0.0 ]; then
-		echo -n "Building /private-compiler-builds/clang-7.0.0..."
-		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh  >>$TEST_OUT_FILE 2>&1
-		rm -rf BUILDDIR-LLVM-7.0.0
-		echo "done"
-	fi
-fi
-
-
-
-### Create the actual configuration files that drive what is built
-if [ $CONTINUE -eq 0 ] ; then
-	rm -rf ConfigurationFiles
-	make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET >>$TEST_OUT_FILE 2>&1
-fi
-
-
 NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
 
 
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "REGRESSION TEST CONFIGURATION VARIABLES(UPDATES):" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    NUM_REGTESTS=$NUM_REGTESTS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    NUM_CONFIGURATIONS=$NUM_CONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_LOCAL_TESTS=$INCLUDE_LOCAL_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_RASPBERRYPI_TESTS=$INCLUDE_RASPBERRYPI_TESTS" >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 
 
 
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 echo "Building configurations ($NUM_CONFIGURATIONS):"
 echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
 for i in `ScriptsLib/GetConfigurations`; do
