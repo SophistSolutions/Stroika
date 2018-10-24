@@ -6,7 +6,7 @@ CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu18
 EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
 EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 ECHO_DOCKER_COMMANDS="${ECHO_DOCKER_COMMANDS:-0}"
-
+PRIVATE_COMPILER_BUILDS_DIR="${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}"
 
 ### Can set CMD2RUN=./ScriptsLib/RegressionTests.sh
 CMD2RUN="${CMD2RUN:-bash}"
@@ -40,7 +40,7 @@ if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
 	echo docker run \
 		-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 		-v $HOME/.ssh:$HOME/.ssh:ro \
-		-v /private-compiler-builds:/private-compiler-builds \
+		-v /private-compiler-builds:${PRIVATE_COMPILER_BUILDS_DIR} \
 		--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 		--security-opt seccomp=unconfined \
 		$EXTRATERMARGS \
