@@ -14,12 +14,13 @@ fi
 if [ -z ${INCLUDE_VALGRIND_MEMCHECK_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_MEMCHECK_TESTS=1; else  INCLUDE_VALGRIND_MEMCHECK_TESTS=0; fi; fi
 if [ -z ${INCLUDE_VALGRIND_HELGRIND_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_HELGRIND_TESTS=1; else  INCLUDE_VALGRIND_HELGRIND_TESTS=0; fi; fi
 : ${INCLUDE_PERFORMANCE_TESTS:=1}
+: ${INCLUDE_LOCAL_TESTS:=1}
 if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
 : ${PARALELLMAKEFLAG:=-j10}
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${USE_TEST_BASENAME:=""}
 BUILD_EXTRA_COMPILERS_IF_MISSING=
-if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" == "default-configurations" ] && [ "$(uname -s)" == "Linux" ]; then
+if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$(uname -s)" == "Linux" ]; then
 	BUILD_EXTRA_COMPILERS_IF_MISSING=1
 else
 	BUILD_EXTRA_COMPILERS_IF_MISSING=0
@@ -88,6 +89,12 @@ else
 fi
 rm -f /tmp/raspvalconfigs.txt /tmp/allvalgrindconfigs.txt
 
+if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
+	if [ "$RASPBERRYPICONFIGS" != "" ]; then
+		INCLUDE_RASPBERRYPI_TESTS=$ARM_TEST_MACHINE_AVAIL
+	fi
+fi
+
 
 PREFIX_OUT_LABEL=")))-"
 
@@ -123,9 +130,12 @@ echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_PERFORMANCE_TESTS=$INCLUDE_PERFORMANCE_TESTS" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_LOCAL_TESTS=$INCLUDE_LOCAL_TESTS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    INCLUDE_RASPBERRYPI_TESTS=$INCLUDE_RASPBERRYPI_TESTS" >>$TEST_OUT_FILE 2>&1
+
+
 if [ "$LOCAL_VALGRIND_CONFIGS" != "" ]; then
 	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
 fi
@@ -195,20 +205,24 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 
 
 STAGE_STARTAT_INT=$(date +%s)
-echo -n "Run-Tests ALL-Local..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests ALL-Local..." >>$TEST_OUT_FILE 2>&1
-make run-tests >>$TEST_OUT_FILE 2>&1
-STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
+	echo -n "Run-Tests ALL-Local..."
+	echo "$PREFIX_OUT_LABEL" "Run-Tests ALL-Local..." >>$TEST_OUT_FILE 2>&1
+	make run-tests >>$TEST_OUT_FILE 2>&1
+	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+else
+	echo  "Run-Tests ALL-Local...SKIPPED"
+	echo "$PREFIX_OUT_LABEL" "Run-Tests ALL-Local...SKIPPED" >>$TEST_OUT_FILE 2>&1
+fi
 
 
 ### @todo - cleanup so have better logical test
 # cuz arm tests done explicitly below (maybe should automatically substract 'cross-compiled tests')
-NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
-echo -n "Run-Tests raspberrypi remote..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
-if [ $ARM_TEST_MACHINE_AVAIL ]; then
+if [ $INCLUDE_RASPBERRYPI_TESTS -eq 1 ]; then
+	echo -n "Run-Tests raspberrypi remote..."
+	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
 	for i in $RASPBERRYPICONFIGS; do 
 		echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
@@ -226,10 +240,9 @@ if [ $ARM_TEST_MACHINE_AVAIL ]; then
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 else
-	echo "...skipped raspberrypi tests cuz machine not available"
-	echo "...skipped raspberrypi tests cuz machine not available">>$TEST_OUT_FILE 2>&1
+	echo  "Run-Tests raspberrypi remote...SKIPPED"
+	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote...SKIPPED" >>$TEST_OUT_FILE 2>&1
 fi
-
 
 
 ############## VALGRIND TESTS ################
