@@ -192,6 +192,8 @@ for i in `ScriptsLib/GetConfigurations`; do
 	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
 done
 
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 if [ $CLOBBER_FIRST -ne 0 ] ; then
   	echo "Make clobber"
   	echo "Make clobber" >>$TEST_OUT_FILE 2>&1
@@ -205,6 +207,8 @@ fi
 
 
 
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
 echo -n "Make all ($PARALELLMAKEFLAG)..."
 echo "$PREFIX_OUT_LABEL" "Make all ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
@@ -214,6 +218,8 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 
 
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
 if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo -n "Run-Tests ALL-Local..."
@@ -230,6 +236,8 @@ fi
 
 ### @todo - cleanup so have better logical test
 # cuz arm tests done explicitly below (maybe should automatically substract 'cross-compiled tests')
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 if [ $INCLUDE_RASPBERRYPI_TESTS -eq 1 ]; then
 	echo -n "Run-Tests raspberrypi remote..."
 	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
@@ -256,6 +264,8 @@ fi
 
 
 ############## VALGRIND TESTS ################
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 #MEMCHECK: release, no block allocation
 if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo -n "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc  VALGRIND=memcheck run-tests ..."
@@ -350,10 +360,14 @@ fi
 
 
 if [ $INCLUDE_PERFORMANCE_TESTS -ne 0 ] ; then
+	echo >>$TEST_OUT_FILE 2>&1
+	echo >>$TEST_OUT_FILE 2>&1
 	ScriptsLib/RunPerformanceRegressionTests.sh
 fi
 
 
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
 echo "Regression Tests Summary:"
 echo "$PREFIX_OUT_LABEL" "Regression Tests Summary:" >>$TEST_OUT_FILE 2>&1
 
