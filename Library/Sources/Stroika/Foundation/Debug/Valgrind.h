@@ -44,8 +44,13 @@
 #if qStroika_FeatureSupported_Valgrind
 /*
  *  See https://gcc.gnu.org/onlinedocs/libstdc++/manual/debug.html
+ *
+ *  undef because some systems pre-include and define this (by default empty), and we want to force to map to 
+ *  helgrind etc versions - as in above docs -- LGP 2018-10-24
  */
+#undef _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE
 #define _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(A) ANNOTATE_HAPPENS_BEFORE (A)
+#undef _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER
 #define _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(A) ANNOTATE_HAPPENS_AFTER (A)
 #endif
 
