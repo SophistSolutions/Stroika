@@ -33,6 +33,20 @@ USE_TEST_BASENAME=Windows_VS2k17 \
 
 ~~~
 
+
+
+   * Draft REMOTE IN DOCKER RUN
+
+    RUN_IN_DOCKER=1 \
+    USE_TEST_BASENAME=Ubuntu1804 \
+    BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+    PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-1804-x64 \
+    MACHINE=Hercules \
+    ./ScriptsLib/RunRemoteRegressionTests.sh
+
+
+
+
    * Checkin results:
 
 ~~~
