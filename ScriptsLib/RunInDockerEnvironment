@@ -11,6 +11,11 @@ PRIVATE_COMPILER_BUILDS_DIR="${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-bu
 ### Can set CMD2RUN=./ScriptsLib/RegressionTests.sh
 CMD2RUN="${CMD2RUN:-bash}"
 
+
+echo "***ECHO_DOCKER_COMMANDS = $ECHO_DOCKER_COMMANDS"
+echo "***CMD2RUN = $CMD2RUN"
+echo "***PRIVATE_COMPILER_BUILDS_DIR = $PRIVATE_COMPILER_BUILDS_DIR"
+
 # Silently remove the previous version of the container if it was there before
 docker stop ${CONTAINER_NAME} >& /dev/null || true
 docker rm ${CONTAINER_NAME} >& /dev/null || true
