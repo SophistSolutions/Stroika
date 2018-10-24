@@ -48,7 +48,7 @@ if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
 	echo docker run \
 		-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 		-v $HOME/.ssh:$HOME/.ssh:ro \
-		-v /private-compiler-builds:${PRIVATE_COMPILER_BUILDS_DIR} \
+		-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
 		--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 		--security-opt seccomp=unconfined \
 		$EXTRATERMARGS \
@@ -64,7 +64,7 @@ fi
 docker run \
 	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 	-v $HOME/.ssh:$HOME/.ssh:ro \
-	-v /private-compiler-builds:${PRIVATE_COMPILER_BUILDS_DIR} \
+	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
 	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
 	$EXTRATERMARGS \
