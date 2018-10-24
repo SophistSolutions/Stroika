@@ -12,9 +12,12 @@ PRIVATE_COMPILER_BUILDS_DIR="${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-bu
 CMD2RUN="${CMD2RUN:-bash}"
 
 
-echo "***ECHO_DOCKER_COMMANDS = $ECHO_DOCKER_COMMANDS"
-echo "***CMD2RUN = $CMD2RUN"
-echo "***PRIVATE_COMPILER_BUILDS_DIR = $PRIVATE_COMPILER_BUILDS_DIR"
+if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
+	echo "***ECHO_DOCKER_COMMANDS = $ECHO_DOCKER_COMMANDS"
+	echo "***CMD2RUN = $CMD2RUN"
+	echo "***CONTAINER_IMAGE = $CONTAINER_IMAGE"
+	echo "***PRIVATE_COMPILER_BUILDS_DIR = $PRIVATE_COMPILER_BUILDS_DIR"
+fi
 
 # Silently remove the previous version of the container if it was there before
 docker stop ${CONTAINER_NAME} >& /dev/null || true
