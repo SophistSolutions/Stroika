@@ -270,22 +270,23 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo >>$TEST_OUT_FILE 2>&1
 	#MEMCHECK: release, no block allocation
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
-        function RunLocalValgrind_ {
-            CONFIG2USE=$1
-            BEFORE_CMD=$2
-			if [[ $CONFIG2USE == *"$LOCAL_VALGRIND_CONFIGS"* ]]; then
-				echo -n "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE  VALGRIND=memcheck run-tests ..."
-				echo "$PREFIX_OUT_LABEL" "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
-				STAGE_STARTAT_INT=$(date +%s)
-				${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
-				STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-				NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
-			else
-				echo "skipping running valgrind cuz $CONFIG2USE not in used configurations"
-			fi
-        } 
+
+RunLocalValgrind_() {
+CONFIG2USE=$1
+BEFORE_CMD=$2
+if [[ "$LOCAL_VALGRIND_CONFIGS" =~ "$CONFIG2USE" ]]; then
+	echo -n "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE  VALGRIND=memcheck run-tests ..."
+	echo "$PREFIX_OUT_LABEL" "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
+	STAGE_STARTAT_INT=$(date +%s)
+	${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
+	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+else
+	echo "skipping running valgrind cuz $CONFIG2USE not in used configurations"
+fi
+} 
 
 		RunLocalValgrind_ g++-valgrind-release-SSLPurify-NoBlockAlloc ""
 
