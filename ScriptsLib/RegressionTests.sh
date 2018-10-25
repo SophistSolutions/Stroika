@@ -270,34 +270,55 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo >>$TEST_OUT_FILE 2>&1
 	#MEMCHECK: release, no block allocation
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
-		echo -n "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc  VALGRIND=memcheck run-tests ..."
-		echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
-		STAGE_STARTAT_INT=$(date +%s)
-		make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
-		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+        function RunLocalValgrind_ {
+            CONFIG2USE=$1
+            BEFORE_CMD=$2
+			if [[ $CONFIG2USE == *"$LOCAL_VALGRIND_CONFIGS"* ]]; then
+				echo -n "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE  VALGRIND=memcheck run-tests ..."
+				echo "$PREFIX_OUT_LABEL" "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
+				STAGE_STARTAT_INT=$(date +%s)
+				${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
+				STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+				NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+			else
+				echo "skipping running valgrind cuz $CONFIG2USE not in used configurations"
+			fi
+        } 
+
+		RunLocalValgrind_ g++-valgrind-release-SSLPurify-NoBlockAlloc ""
+
+		#echo -n "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc  VALGRIND=memcheck run-tests ..."
+		#echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
+		#STAGE_STARTAT_INT=$(date +%s)
+		#make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
+		#STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+		#NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 		#MEMCHECK: debug (with block alloc)
-		echo -n 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests ...'
-		echo "$PREFIX_OUT_LABEL" 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests ...' >>$TEST_OUT_FILE 2>&1
-		STAGE_STARTAT_INT=$(date +%s)
-		VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
-		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+		RunLocalValgrind_ g++-valgrind-debug-SSLPurify 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp"'
+		#echo -n 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests ...'
+		#echo "$PREFIX_OUT_LABEL" 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests ...' >>$TEST_OUT_FILE 2>&1
+		#STAGE_STARTAT_INT=$(date +%s)
+		#VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
+		#STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+		#NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 		#MEMCHECK: debug (without block alloc)
-		echo -n "make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..."
-		echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
-		STAGE_STARTAT_INT=$(date +%s)
-		make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
-		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+		RunLocalValgrind_ g++-valgrind-debug-SSLPurify-NoBlockAlloc ""
+		#echo -n "make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..."
+		#echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
+		#STAGE_STARTAT_INT=$(date +%s)
+		#make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
+		#STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+		#NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 	else
 		echo "Skipping valgrind MemCheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
 		echo "$PREFIX_OUT_LABEL" "Skipping valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
