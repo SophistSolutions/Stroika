@@ -457,19 +457,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const String& form
         Execution::Throw (Date::FormatException::kThe);
     }
 
-    optional<Timezone> tz; // unknown
-    if constexpr (kTreatLocaleAsIfItHasATimzoneWherePossible) {
-        wistringstream               iss2 (rep.As<wstring> ());
-        istreambuf_iterator<wchar_t> itbegin2 (iss2);
-        istreambuf_iterator<wchar_t> itend2;
-        static constexpr wchar_t     kTZOffsetPattern_[]{L"%z"};
-        ios::iostate                 es = ios::goodbit;
-        tm                           tzWhen{};
-        (void)tmget.get (itbegin2, itend2, iss2, es, &tzWhen, kTZOffsetPattern_, kTZOffsetPattern_ + wcslen (kTZOffsetPattern_));
-        AssertNotImplemented ();
-    }
-
-    return DateTime (when, tz);
+    return DateTime (when, Timezone::Unknown ());
 }
 
 #if qPlatform_Windows
@@ -680,37 +668,6 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     }
 
     tm when = As<tm> ();
-    if constexpr (kTreatLocaleAsIfItHasATimzoneWherePossible) {
-        if (auto&& thisDataTZ = this->GetTimezone ()) {
-            auto getTzOffset_ = [](const locale& l, const tm& when) -> optional<Timezone> {
-                // cache - locale classic known not to have a timezone (???)
-                //if (l != locale::classic ()) {
-                const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
-                wostringstream           oss;
-                static constexpr wchar_t kTZOffsetPattern_[]{L"%z"};
-                tmput.put (oss, oss, ' ', &when, kTZOffsetPattern_, kTZOffsetPattern_ + wcslen (kTZOffsetPattern_));
-                String tmp = String (oss.str ());
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"getTzOffset_(locale=%s) : tmp=%s", String::FromNarrowSDKString (l.name ()).c_str (), tmp.c_str ());
-#endif
-                if (not tmp.empty ()) {
-                    // docs (https://en.cppreference.com/w/cpp/locale/time_put/put) say empty just means unknown
-                    return Timezone::ParseTimezoneOffsetString (tmp);
-                }
-                // }
-                return {};
-            };
-            // Then see if the locale has a known timezone, and if both known, adjust when
-            if (auto&& localeTZ = getTzOffset_ (l, when)) {
-                if (thisDataTZ != localeTZ) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("Updating tz on time from %s to %s", Characters::ToString (thisDataTZ).c_str (), Characters::ToString (localeTZ).c_str ());
-#endif
-                    when = this->AsTimezone (*localeTZ).As<tm> ();
-                }
-            }
-        }
-    }
 
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
     if (l == locale::classic () and formatPattern == kDefaultFormatPattern) {

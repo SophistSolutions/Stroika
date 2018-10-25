@@ -75,17 +75,6 @@ namespace Stroika::Foundation::Time {
 
     class Duration; // forward declare for Differnce ()
 
-    /**
-     * @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
-     *
-     *  I'm NOT sure if this makes sense or not (probably yes). But since (see stackoverflow question) its so foggy if
-     *  locales have timezones, its best to leave off for now.
-     *
-     *  \note - incomplete implementation and probably worthless since I don't think this is a supported concept. But leave around
-     *          the code/reference for a little while before expunging... --LGP 2018-10-17
-     */
-    constexpr bool kTreatLocaleAsIfItHasATimzoneWherePossible = false;
-
     /*
      *  Description:
      *
@@ -210,8 +199,8 @@ namespace Stroika::Foundation::Time {
          *
          *  For formatPattern, see https://en.cppreference.com/w/cpp/locale/time_get/get, and defaults to kDefaultFormatPattern
          *
-         *  \note if kTreatLocaleAsIfItHasATimzoneWherePossible, and timezone for locale known, the date string
-         *        produced will be translated to the timezone of the argument locale (if one of those overloads used).
+         *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
+         *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
          */
         static DateTime Parse (const String& rep, ParseFormat pf);
         static DateTime Parse (const String& rep, const locale& l);
@@ -387,8 +376,8 @@ namespace Stroika::Foundation::Time {
          *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put and defaults to kDefaultFormatPattern
          *  If only formatPattern specified, and no locale, use default (global) locale.
          *
-         *  \note if kTreatLocaleAsIfItHasATimzoneWherePossible, and Timezone for date known, and timezone for locale known, the date string
-         *        produced will be translated to the timezone of the argument locale (if one of those overloads used).
+         *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
+         *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
          */
         nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
         nonvirtual String Format (const locale& l) const;
