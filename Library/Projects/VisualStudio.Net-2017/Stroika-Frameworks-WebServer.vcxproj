@@ -331,7 +331,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
@@ -346,12 +346,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
@@ -361,7 +361,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
@@ -376,12 +376,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
@@ -391,7 +391,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
@@ -406,12 +406,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Library\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Library\Frameworks\WebServer\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
