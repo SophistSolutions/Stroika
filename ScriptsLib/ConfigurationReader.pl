@@ -291,6 +291,9 @@ sub	GetConfigurationParameter {
 			if ($paramName eq "AR") {
 				return `$script "$configName" AR`;
 			}
+			if ($paramName eq "AS") {
+				return `$script "$configName" AS`;
+			}
 		}
 	}
 

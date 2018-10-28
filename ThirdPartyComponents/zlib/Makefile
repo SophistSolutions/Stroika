@@ -33,10 +33,11 @@ FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?down
 
 CC	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 AR	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
+AS	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AS)
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC	=	$(shell cygpath -w "$(CC)")
 WIN_AR	=	$(shell cygpath -w "$(AR)")
-WIN_AS	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS)")
+WIN_AS	=	$(shell cygpath -w "$(AS)")
 endif
 
 BUILDS_ROOT=../../Builds/
