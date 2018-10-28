@@ -232,11 +232,6 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
 	@cp -r CURRENT/* $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
 	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
-ifeq ($(qFeatureFlag_OpenSSL), use)
-ifeq ($(shell uname),AIX)
-	@patch --quiet -p0 $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/configure.ac < Patches/AIX-Lose-SSLv2_client_method_check.patch
-endif
-endif
 	@$(ECHO) done
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building configure tools (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/BUILD-CONF-TOOLS.OUT ) ... "`
 	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR);./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
