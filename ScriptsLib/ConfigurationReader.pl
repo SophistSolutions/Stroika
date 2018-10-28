@@ -277,10 +277,25 @@ sub	GetConfigurationParameter {
 	if ($paramName eq "ExtraMakeDefines") {
 		return @useExtraMakeDefines;
 	}
+	
+	my $result = $configuration{$paramName};
+	if ($result eq "") {
+		if (index ($configuration{"ProjectPlatformSubdir"}, "VisualStudio") != -1) {
+			my $script = GetThisScriptDir() . "/PrintEnvVarFromCommonBuildVars.pl";
+			if ($paramName eq "CompilerDriver-C") {
+				return `$script "$configName" CC`;
+			}
+			if ($paramName eq "CompilerDriver-CXX") {
+				return `$script "$configName" CC`;
+			}
+			if ($paramName eq "AR") {
+				return `$script "$configName" AR`;
+			}
+		}
+	}
 
 	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");
-	
-	return $configuration{$paramName};
+	return $result;
 }
 
 1

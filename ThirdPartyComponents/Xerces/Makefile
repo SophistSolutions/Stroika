@@ -23,7 +23,6 @@ TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
 
-
 ifneq ($(CONFIGURATION),)
 ARCH							=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
 ProjectPlatformSubdir			=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
@@ -31,7 +30,6 @@ IncludeDebugSymbolsInLibraries	=	$(shell ../../ScriptsLib/GetConfigurationParame
 ENABLE_ASSERTIONS				=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
 OptimizerFlag					=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
 endif
-
 
 
 

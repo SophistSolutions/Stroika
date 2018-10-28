@@ -36,18 +36,17 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-CC		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" CC)
-AR		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" AR)
 PATH	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
 INCLUDE	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC						=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 ENABLE_GLIBCXX_DEBUG	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_GLIBCXX_DEBUG)
+endif
+
+CC						=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 AR						=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
 RANLIB					=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
-endif
 
 
 BUILDS_ROOT=../../Builds/

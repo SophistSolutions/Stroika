@@ -37,9 +37,10 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 
+CC		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
+AR		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
+
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_CC		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" CC)
-WIN_AR		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" AR)
 WIN_LD		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LD)
 INCLUDE		=	=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
 WIN_LIB_DIR	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LIB)
@@ -47,7 +48,6 @@ TOOLPATH	=	=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(C
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 LIBS	=	-lstdc++ -lc
 endif
 
@@ -145,14 +145,14 @@ ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC)" \
-		CPlusPlus="$(WIN_CC)" \
+		CC="$(CC)" \
+		CPlusPlus="$(CC)" \
 		CFLAGS="-nologo -W3 -MTd -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(WIN_LIB_DIR)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
-		AR="$(WIN_AR)" \
+		AR="$(AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -165,14 +165,14 @@ endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC)" \
-		CPlusPlus="$(WIN_CC)" \
+		CC="$(CC)" \
+		CPlusPlus="$(CC)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(WIN_LIB_DIR)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
-		AR="$(WIN_AR)" \
+		AR="$(AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -190,15 +190,15 @@ ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC)" \
-		CPlusPlus="$(WIN_CC)" \
+		CC="$(CC)" \
+		CPlusPlus="$(CC)" \
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(WIN_LIB_DIR)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
-		AR="$(WIN_AR)" \
+		AR="$(AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -211,15 +211,15 @@ endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC)" \
-		CPlusPlus="$(WIN_CC)" \
+		CC="$(CC)" \
+		CPlusPlus="$(CC)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(WIN_LIB_DIR)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
-		AR="$(WIN_AR)" \
+		AR="$(AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
