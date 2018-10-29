@@ -134,6 +134,7 @@ RASPBERRYPIVALGRINDCONFIGS=`make list-configurations TAGS="raspberrypi valgrind"
 echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
 make list-configurations TAGS="valgrind"  > /tmp/allvalgrindconfigs.txt
 if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
+	LOCAL_CONFIGS=`comm -23 <(ScriptsLib/GetConfigurations) <(sort /tmp/allvalgrindconfigs.txt)`
 	LOCAL_VALGRIND_CONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
 	#provide better defaults for these flags
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" == "" ]; then
@@ -214,6 +215,7 @@ echo "$PREFIX_OUT_LABEL" "    INCLUDE_LOCAL_TESTS=$INCLUDE_LOCAL_TESTS" >>$TEST_
 echo "$PREFIX_OUT_LABEL" "    INCLUDE_RASPBERRYPI_TESTS=$INCLUDE_RASPBERRYPI_TESTS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPICONFIGS=$RASPBERRYPICONFIGS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPIVALGRINDCONFIGS=$RASPBERRYPIVALGRINDCONFIGS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    LOCAL_CONFIGS=$LOCAL_CONFIGS" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 
