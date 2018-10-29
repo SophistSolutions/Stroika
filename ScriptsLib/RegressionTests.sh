@@ -134,7 +134,7 @@ RASPBERRYPIVALGRINDCONFIGS=`make list-configurations TAGS="raspberrypi valgrind"
 echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
 make list-configurations TAGS="valgrind"  > /tmp/allvalgrindconfigs.txt
 if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
-	LOCAL_CONFIGS=`comm -23 <(ScriptsLib/GetConfigurations) <(sort /tmp/allvalgrindconfigs.txt)`
+	LOCAL_CONFIGS=`comm -23 <(ScriptsLib/GetConfigurations) <(echo $RASPBERRYPICONFIGS)`
 	LOCAL_VALGRIND_CONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
 	#provide better defaults for these flags
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" == "" ]; then
