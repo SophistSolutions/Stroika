@@ -157,13 +157,13 @@ namespace {
                 case 't': {
                     if (i + 1 != kFormatStr.end () and *(i + 1) == 't') {
                         /*
-                             *  From the WinSDK docs...
-                             *
-                             *  LOCALE_S1159
-                             *      String for the AM designator. The maximum number of characters allowed for this string is nine.
-                             *  LOCALE_S2359
-                             *      String for the PM designator. The maximum number of characters allowed for this string is nine.
-                             */
+                         *  From the WinSDK docs...
+                         *
+                         *  LOCALE_S1159
+                         *      String for the AM designator. The maximum number of characters allowed for this string is nine.
+                         *  LOCALE_S2359
+                         *      String for the PM designator. The maximum number of characters allowed for this string is nine.
+                         */
                         static const String kAMSTR = GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S1159);
                         static const String kPMSTR = GetLocaleInfo_ (LOCALE_USER_DEFAULT, LOCALE_S2359);
                         ++i;
