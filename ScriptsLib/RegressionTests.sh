@@ -14,7 +14,6 @@ fi
 if [ -z ${INCLUDE_VALGRIND_MEMCHECK_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_MEMCHECK_TESTS=1; else  INCLUDE_VALGRIND_MEMCHECK_TESTS=0; fi; fi
 if [ -z ${INCLUDE_VALGRIND_HELGRIND_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_HELGRIND_TESTS=1; else  INCLUDE_VALGRIND_HELGRIND_TESTS=0; fi; fi
 : ${INCLUDE_PERFORMANCE_TESTS:=1}
-: ${INCLUDE_LOCAL_TESTS:=1}
 if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
 : ${PARALELLMAKEFLAG:=-j10}
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
@@ -165,9 +164,17 @@ if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
 fi
 
 NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations | wc -w`
+NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
+if [ "$INCLUDE_LOCAL_TESTS" == "" ]; then
+	if [ $NUM_CONFIGURATIONS -eq $NUM_REMOTE_CONFIGURATIONS ]; then
+		INCLUDE_LOCAL_TESTS=0
+	else
+		INCLUDE_LOCAL_TESTS=1
+	fi
+fi
 
 
 echo >>$TEST_OUT_FILE 2>&1
@@ -409,7 +416,6 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS">>$TEST_OUT_FILE 2>&1
 fi
 
-TOTALCONFIGS_=`./ScriptsLib/GetConfigurations | wc -w`
 TOTAL_WARNINGS_EXPECTED=0
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
