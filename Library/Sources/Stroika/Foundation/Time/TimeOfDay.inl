@@ -21,18 +21,36 @@ namespace Stroika::Foundation::Time {
     inline constexpr TimeOfDay::TimeOfDay ()
         : fTime_{static_cast<unsigned int> (-1)}
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Assert (empty () or fTime_ < kMaxSecondsPerDay);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr TimeOfDay::TimeOfDay (uint32_t t)
         : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
     {
         Require (t < kMaxSecondsPerDay); // required added v2.0a227 - so still leave in check for a short while
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Assert (empty () or fTime_ < kMaxSecondsPerDay);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds)
         : TimeOfDay (static_cast<uint32_t> (((hour * 60) + minute) * 60 + seconds))
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Assert (empty () or fTime_ < kMaxSecondsPerDay);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr TimeOfDay TimeOfDay::min ()
     {
@@ -48,8 +66,14 @@ namespace Stroika::Foundation::Time {
     }
     inline constexpr unsigned int TimeOfDay::GetAsSecondsCount () const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Ensure ((empty () ? 0 : fTime_) < kMaxSecondsPerDay);
         return empty () ? 0 : fTime_;
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     constexpr uint8_t TimeOfDay::GetHours () const
     {
@@ -79,11 +103,26 @@ namespace Stroika::Foundation::Time {
     }
     inline int TimeOfDay::Compare (const TimeOfDay& rhs) const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         if (empty ()) {
             return rhs.empty () ? 0 : -1;
         }
         else {
             return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    }
+    inline int TimeOfDay::Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs)
+    {
+        if (lhs.has_value ()) {
+            return rhs.has_value () ? (lhs->GetAsSecondsCount () - rhs->GetAsSecondsCount ()) : 1;
+        }
+        else {
+            return rhs.has_value () ? -1 : 0;
         }
     }
 
@@ -96,25 +135,49 @@ namespace Stroika::Foundation::Time {
     {
         return lhs.Compare (rhs) < 0;
     }
+    inline bool operator< (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
+    {
+        return TimeOfDay::Compare (lhs, rhs) < 0;
+    }
     inline bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) <= 0;
+    }
+    inline bool operator<= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
+    {
+        return TimeOfDay::Compare (lhs, rhs) <= 0;
     }
     inline bool operator== (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) == 0;
     }
+    inline bool operator== (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
+    {
+        return TimeOfDay::Compare (lhs, rhs) == 0;
+    }
     inline bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) != 0;
+    }
+    inline bool operator!= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
+    {
+        return TimeOfDay::Compare (lhs, rhs) != 0;
     }
     inline bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) >= 0;
     }
+    inline bool operator>= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
+    {
+        return TimeOfDay::Compare (lhs, rhs) >= 0;
+    }
     inline bool operator> (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) > 0;
+    }
+    inline bool operator> (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
+    {
+        return TimeOfDay::Compare (lhs, rhs) > 0;
     }
 
 }

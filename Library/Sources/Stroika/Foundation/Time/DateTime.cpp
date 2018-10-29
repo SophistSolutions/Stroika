@@ -72,23 +72,25 @@ namespace {
 #if qPlatform_Windows
     SYSTEMTIME toSysTime_ (TimeOfDay tod)
     {
-        SYSTEMTIME t{};
-        if (not tod.empty ()) {
-            unsigned int seconds = tod.GetAsSecondsCount ();
-            unsigned int minutes = seconds / 60;
-            unsigned int hours   = minutes / 60;
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        Require (not tod.empty ());
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
 
-            hours   = min (hours, 23U);
-            t.wHour = static_cast<WORD> (hours);
+        SYSTEMTIME   t{};
+        unsigned int seconds = tod.GetAsSecondsCount ();
+        unsigned int minutes = seconds / 60;
+        unsigned int hours   = minutes / 60;
 
-            minutes -= hours * 60;
-            minutes   = min (minutes, 59U);
-            t.wMinute = static_cast<WORD> (minutes);
+        hours   = min (hours, 23U);
+        t.wHour = static_cast<WORD> (hours);
 
-            seconds -= (60 * 60 * hours + 60 * minutes);
-            seconds   = min (seconds, 59U);
-            t.wSecond = static_cast<WORD> (seconds);
-        }
+        minutes -= hours * 60;
+        minutes   = min (minutes, 59U);
+        t.wMinute = static_cast<WORD> (minutes);
+
+        seconds -= (60 * 60 * hours + 60 * minutes);
+        seconds   = min (seconds, 59U);
+        t.wSecond = static_cast<WORD> (seconds);
         return t;
     }
 #endif
@@ -276,8 +278,8 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 }
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
-            Date      d;
-            TimeOfDay t;
+            Date                d;
+            optional<TimeOfDay> t;
             if (nItems >= 3) {
                 d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
             }
@@ -298,7 +300,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             //else {
             //    tz = Timezone::LocalTime ();
             //}
-            return t.empty () ? d : DateTime (d, t, tz);
+            return t.has_value () ? DateTime (d, *t, tz) : d;
         } break;
         case ParseFormat::eRFC1123: {
             /*
@@ -353,14 +355,14 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             int nItems = ::swscanf (tmp.c_str (), L"%d %3ls %d %d:%d:%d %100ls", &day, &monthStr, &year, &hour, &minute, &second, &tzStr);
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-            for (int i = 0; i < NEltsOf (kMonths_); ++i) {
+            for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
                 if (wcscmp (monthStr, kMonths_[i]) == 0) {
-                    month = i + 1; // one-based numbering
+                    month = static_cast<int> (i + 1); // one-based numbering
                     break;
                 }
             }
-            Date      d;
-            TimeOfDay t;
+            Date                d;
+            optional<TimeOfDay> t;
             if (nItems >= 3) {
                 d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
             }
@@ -390,9 +392,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (not tz.has_value ()) {
                 tz = Timezone::ParseTimezoneOffsetString (tzStr);
             }
-
-            return t.empty () ? d : DateTime (d, t, tz);
-
+            return t.has_value () ? DateTime (d, *t, tz) : d;
         } break;
         default: {
             AssertNotReached ();
@@ -477,7 +477,7 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::UTC ()) {
-        DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_)));
+        DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0})));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::LocalTime ());
     }
     else if (GetTimezone () == Timezone::LocalTime ()) {
@@ -499,7 +499,7 @@ DateTime DateTime::AsUTC () const
             return *this;
         }
         else {
-            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_))) : *this;
+            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
             return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
         }
     };
@@ -513,7 +513,7 @@ DateTime DateTime::AsTimezone (Timezone tz) const
         return *this;
     }
     else {
-        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_))) : *this;
+        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), tz);
     }
 }
@@ -614,7 +614,7 @@ String DateTime::Format (PrintFormat pf) const
                         r += kZ_;
                     }
                     else {
-                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_));
+                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;
@@ -791,7 +791,7 @@ SYSTEMTIME DateTime::As () const
 {
     // CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
     SYSTEMTIME d    = toSYSTEM_ (fDate_);
-    SYSTEMTIME t    = toSysTime_ (Memory::ValueOrDefault (fTimeOfDay_));
+    SYSTEMTIME t    = toSysTime_ (Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
     SYSTEMTIME r    = d;
     r.wHour         = t.wHour;
     r.wMinute       = t.wMinute;

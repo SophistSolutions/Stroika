@@ -364,6 +364,15 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
     return *i;
 }
 
+template <>
+Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const
+{
+    // Generally best to serialize/deserialize with optional<TimeOfDay> - else you cannot tell if you actually found one (defaults to zero time of day)
+    Time::TimeOfDay tmp{0};
+    ToObject (toObjectMapper, v, &tmp);
+    return tmp;
+}
+
 String ObjectVariantMapper::ToString () const
 {
     Characters::StringBuilder sb;

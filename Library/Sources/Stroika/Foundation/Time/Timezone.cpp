@@ -437,7 +437,7 @@ namespace {
     {
         struct tm asTM = d.As<struct tm> ();
         if (d.GetTimezone () == Timezone::kLocalTime) {
-            return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ().has_value () ? *d.GetTimeOfDay () : TimeOfDay{});
+            return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ().has_value () ? *d.GetTimeOfDay () : TimeOfDay{0});
         }
         else {
             AssertNotImplemented (); // maybe OK to just assume false given CURRENT (as of 2018-01-15) design of Timezone, but hope to expand soon!

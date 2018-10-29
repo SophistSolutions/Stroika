@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Time {
          *  \req minute < 60
          *  \req seconds < 60
          */
-        constexpr TimeOfDay ();
+        [[deprecated ("Use optional<TimeOfDay> instead of TimeOfDay no-arg constructor - as of v2.1d11")]] constexpr TimeOfDay ();
         constexpr TimeOfDay (const TimeOfDay&) = default;
         constexpr TimeOfDay (TimeOfDay&& src)  = default;
         constexpr explicit TimeOfDay (uint32_t t);
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual constexpr bool empty () const;
+        [[deprecated ("Use optional<TimeOfDay> instead of TimeOfDay no-arg constructor - as of v2.1d11")]] nonvirtual constexpr bool empty () const;
 
     public:
         /**
@@ -306,6 +306,7 @@ namespace Stroika::Foundation::Time {
          *  this comparison function - see the notes about 'empty' in the class description.
          */
         nonvirtual int Compare (const TimeOfDay& rhs) const;
+        static int     Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
 
     private:
         uint32_t fTime_;
@@ -325,32 +326,37 @@ namespace Stroika::Foundation::Time {
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator< (TimeOfDay lhs, TimeOfDay rhs);
+    bool operator< (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
+    bool operator<= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator== (TimeOfDay lhs, TimeOfDay rhs);
+    bool operator== (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator!= (TimeOfDay lhs, TimeOfDay rhs);
+    bool operator!= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator>= (TimeOfDay lhs, TimeOfDay rhs);
+    bool operator>= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator> (TimeOfDay lhs, TimeOfDay rhs);
-
+    bool operator> (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 }
 
 /*

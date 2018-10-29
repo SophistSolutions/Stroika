@@ -39,21 +39,39 @@ namespace Stroika::Foundation::Time {
         , fDate_ (dt.GetDate ())
         , fTimeOfDay_ (updateTOD)
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Require (not updateTOD.empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr DateTime::DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz) noexcept
         : fTimezone_{tz}
         , fDate_{date}
         , fTimeOfDay_{timeOfDay.has_value () ? optional<TimeOfDay>{*timeOfDay} : nullopt}
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Require (not timeOfDay.has_value () or not timeOfDay->empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz) noexcept
         : fTimezone_{tz}
         , fDate_{date}
         , fTimeOfDay_{timeOfDay}
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         Require (not timeOfDay.empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr DateTime DateTime::min ()
     {

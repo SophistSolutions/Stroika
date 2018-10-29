@@ -384,16 +384,13 @@ namespace {
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            Duration  fDuration1;
-            DateTime  fDateTime1;
-            DateTime  fDate1;
-            TimeOfDay fTimeOfDay1;
+            Duration            fDuration1;
+            DateTime            fDateTime1;
+            DateTime            fDate1;
+            optional<TimeOfDay> fTimeOfDay1;
 
             SharedContactsConfig_ ()
                 : fDuration1 (chrono::milliseconds (200))
-                , fDateTime1 ()
-                , fDate1 ()
-                , fTimeOfDay1 ()
             {
             }
 
@@ -405,6 +402,7 @@ namespace {
 
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddCommonType<optional<TimeOfDay>> ();
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"fDuration1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDuration1)},
             {L"fDateTime1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDateTime1)},
@@ -416,8 +414,9 @@ namespace {
         SharedContactsConfig_ tmp;
         tmp.fDate1      = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
         tmp.fDateTime1  = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
-        tmp.fTimeOfDay1 = *tmp.fDateTime1.GetTimeOfDay ();
-        tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1.GetAsSecondsCount () + 60);
+        tmp.fTimeOfDay1 = tmp.fDateTime1.GetTimeOfDay ();
+        Assert (tmp.fTimeOfDay1.has_value ());
+        tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1->GetAsSecondsCount () + 60);
         VariantValue v  = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.

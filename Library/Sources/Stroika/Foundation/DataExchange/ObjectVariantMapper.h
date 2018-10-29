@@ -677,6 +677,10 @@ namespace Stroika::Foundation::DataExchange {
         TypesRegistry fTypeMappingRegistry_;
     };
 
+    // ToObject specializations - to handle lack of default constructors
+    template <>
+    Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const;
+
     /**
      *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a
      *  user-defined type (CLASS).
