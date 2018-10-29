@@ -31,7 +31,7 @@ namespace {
             Set<int> s;
             s.Add (3);
             s += 3;
-            for (int i : s) {
+            for ([[maybe_unused]] int i : s) {
                 Assert (i == 3);
             }
             Assert (s.size () == 1);
