@@ -171,8 +171,6 @@ const DateTime DateTime::kMax;
 
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_ (Timezone::UTC ())
-    , fDate_ ()
-    , fTimeOfDay_ ()
 {
     tm tmTime{};
 #if qPlatform_Windows
@@ -194,8 +192,6 @@ DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
 #if qPlatform_POSIX
 DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
-    , fDate_ ()
-    , fTimeOfDay_ ()
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
@@ -206,8 +202,6 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
 
 DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
-    , fDate_ ()
-    , fTimeOfDay_ ()
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
@@ -226,8 +220,6 @@ DateTime::DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz) noe
 
 DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
-    , fDate_ ()
-    , fTimeOfDay_ ()
 {
     SYSTEMTIME sysTime{};
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
@@ -361,7 +353,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             int nItems = ::swscanf (tmp.c_str (), L"%d %3ls %d %d:%d:%d %100ls", &day, &monthStr, &year, &hour, &minute, &second, &tzStr);
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-            for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
+            for (int i = 0; i < NEltsOf (kMonths_); ++i) {
                 if (wcscmp (monthStr, kMonths_[i]) == 0) {
                     month = i + 1; // one-based numbering
                     break;
@@ -485,7 +477,7 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::UTC ()) {
-        DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_));
+        DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_)));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::LocalTime ());
     }
     else if (GetTimezone () == Timezone::LocalTime ()) {
@@ -507,7 +499,7 @@ DateTime DateTime::AsUTC () const
             return *this;
         }
         else {
-            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_)) : *this;
+            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_))) : *this;
             return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
         }
     };
@@ -521,7 +513,7 @@ DateTime DateTime::AsTimezone (Timezone tz) const
         return *this;
     }
     else {
-        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_)) : *this;
+        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_))) : *this;
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), tz);
     }
 }
@@ -613,8 +605,8 @@ String DateTime::Format (PrintFormat pf) const
         case PrintFormat::eISO8601:
         case PrintFormat::eXML: {
             String r = fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
-            if (not fTimeOfDay_.empty ()) {
-                String timeStr = fTimeOfDay_.Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
+            if (fTimeOfDay_.has_value ()) {
+                String timeStr = fTimeOfDay_->Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
                 r += Characters::String_Constant (L"T") + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::UTC ()) {
@@ -622,7 +614,7 @@ String DateTime::Format (PrintFormat pf) const
                         r += kZ_;
                     }
                     else {
-                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, fTimeOfDay_);
+                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_));
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;
@@ -693,9 +685,11 @@ String DateTime::Format (LCID lcid) const
     else {
         String r = fDate_.Format (lcid);
         Assert (not r.empty ());
-        String tod = fTimeOfDay_.Format (lcid);
-        if (not tod.empty ()) {
-            r += String_Constant{L" "} + tod;
+        if (fTimeOfDay_.has_value ()) {
+            String tod = fTimeOfDay_->Format (lcid);
+            if (not tod.empty ()) {
+                r += String_Constant{L" "} + tod;
+            }
         }
         return r;
     }
@@ -765,7 +759,7 @@ tm DateTime::As () const
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
-    unsigned int totalSecondsRemaining = fTimeOfDay_.GetAsSecondsCount ();
+    unsigned int totalSecondsRemaining = fTimeOfDay_.has_value () ? fTimeOfDay_->GetAsSecondsCount () : 0;
     tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
     Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60 * 60); // cuz would have gone into hours
@@ -797,7 +791,7 @@ SYSTEMTIME DateTime::As () const
 {
     // CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
     SYSTEMTIME d    = toSYSTEM_ (fDate_);
-    SYSTEMTIME t    = toSysTime_ (fTimeOfDay_);
+    SYSTEMTIME t    = toSysTime_ (Memory::ValueOrDefault (fTimeOfDay_));
     SYSTEMTIME r    = d;
     r.wHour         = t.wHour;
     r.wMinute       = t.wMinute;

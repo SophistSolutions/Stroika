@@ -21,20 +21,17 @@ namespace Stroika::Foundation::Time {
      */
     inline constexpr DateTime::DateTime () noexcept
         : fTimezone_{Timezone::Unknown ()}
-        , fDate_ ()
-        , fTimeOfDay_ ()
     {
     }
     inline constexpr DateTime::DateTime (const Date& d) noexcept
         : fTimezone_{Timezone::Unknown ()}
-        , fDate_ (d)
-        , fTimeOfDay_ ()
+        , fDate_{d}
     {
     }
     inline constexpr DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
         : fTimezone_ (dt.GetTimezone ())
         , fDate_ (updateDate)
-        , fTimeOfDay_ (dt.GetTimeOfDay ().has_value () ? *dt.GetTimeOfDay () : TimeOfDay{})
+        , fTimeOfDay_ (dt.GetTimeOfDay ().has_value () ? optional<TimeOfDay> (*dt.GetTimeOfDay ()) : nullopt)
     {
     }
     inline constexpr DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
@@ -47,7 +44,7 @@ namespace Stroika::Foundation::Time {
     inline constexpr DateTime::DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz) noexcept
         : fTimezone_{tz}
         , fDate_{date}
-        , fTimeOfDay_{timeOfDay.has_value () ? *timeOfDay : TimeOfDay{}}
+        , fTimeOfDay_{timeOfDay.has_value () ? optional<TimeOfDay>{*timeOfDay} : nullopt}
     {
         Require (not timeOfDay.has_value () or not timeOfDay->empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
     }
@@ -76,7 +73,7 @@ namespace Stroika::Foundation::Time {
     }
     inline constexpr optional<TimeOfDay> DateTime::GetTimeOfDay () const noexcept
     {
-        return fTimeOfDay_.empty () ? optional<TimeOfDay>{} : fTimeOfDay_;
+        return fTimeOfDay_;
     }
     template <>
     inline Date DateTime::As () const

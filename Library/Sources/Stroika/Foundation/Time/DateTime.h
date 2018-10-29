@@ -64,9 +64,6 @@
  *          o   Note for timeofday it COULD be enhanced in the future to store TOD as
  *              fractional number of seconds. COULD use LINUX style struct with number of seconds and fixed
  *              point like number of nanoseconds (or some such)
- *
- *      @todo   fTimeOfDay_ should be OPTIONAL (instead of using its .empty ()) property, once we can
- *              do that without a performance cost.
  */
 
 namespace Stroika::Foundation::Time {
@@ -501,9 +498,9 @@ namespace Stroika::Foundation::Time {
         nonvirtual int Compare (const DateTime& rhs) const;
 
     private:
-        optional<Timezone> fTimezone_;
-        Date               fDate_;
-        TimeOfDay          fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
+        optional<Timezone>  fTimezone_;
+        Date                fDate_;
+        optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
     };
     template <>
     time_t DateTime::As () const;

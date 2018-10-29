@@ -25,6 +25,16 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
+ *               use optional<>
+ *
+ *              PROS:   probably more logical and typesafe; empty is kindof a 'sentinal' value used
+ *                      typically used to represent not present
+ *              CONS:   we use this clear/empty notion alot, so may involve many changes, and we have
+ *                      a sensible fittable sentinal value handy.
+ *
+ *          NOTE - GOT RID OF empty () use in DateTime, so should be relatively easy to get rid of /0 CTOR.
+ *
  *      @todo   Need DefaultNames<> for enums in TimeOfDay module
  *
  *      @todo   Consider having some way to support double as TimeOfDay (or maybe float). Don't want the
@@ -35,14 +45,6 @@
  *
  *      @todo   Review how we use 'empty()'. Efficient, but might be cleaner design to use optional
  *              and in places that use TimeOfDay::empty () and lose the concept of empty here?
- *
- *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
- *               use optional<>
- *
- *              PROS:   probably more logical and typesafe; empty is kindof a 'sentinal' value used
- *                      typically used to represent not present
- *              CONS:   we use this clear/empty notion alot, so may involve many changes, and we have
- *                      a sensible fittable sentinal value handy.
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
