@@ -52,7 +52,7 @@ USE_TEST_BASENAME=Windows_VS2k17 \
 	 USE_TEST_BASENAME=Ubuntu1804-Cross-Compile2RaspberryPi \
 	 BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
 	 PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-1804-x64 \
-	 MACHINE=Hercules \	
+	 MACHINE=Hercules \
 	 ./ScriptsLib/RunRemoteRegressionTests.sh
 
 ~~~
