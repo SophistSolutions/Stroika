@@ -33,7 +33,7 @@ namespace {
         Collection<int> c;
         c.Add (3);
         c += 13;
-        for ([[maybe_unused]]int i : c) {
+        for ([[maybe_unused]] int i : c) {
             Assert (i == 3 or i == 13);
         }
         Assert (c.size () == 2);
