@@ -437,6 +437,9 @@ namespace Stroika::Foundation::Time {
          *  is no timeofday associated with this DateTime object.
          *
          *  \ens (not result.has_value () or not result->empty ())
+         *
+         *  \note Operations on a DateTime which require a 'TimeOfDay' will implicity create a '0' time of day. So for example,
+         *        if you AddSeconds (1) to a DateTime with a missing TimeOfDay it creates a TimeOfDay with value 12:00:01.
          */
         nonvirtual constexpr optional<TimeOfDay> GetTimeOfDay () const noexcept;
 
@@ -470,6 +473,9 @@ namespace Stroika::Foundation::Time {
          *  AddSeconds doesn't modify this.
          *
          *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
+         *
+         *  \note Operations on a DateTime which require a 'TimeOfDay' will implicity create a '0' time of day. So for example,
+         *        if you AddSeconds (1) to a DateTime with a missing TimeOfDay it creates a TimeOfDay with value 12:00:01.
          */
         nonvirtual DateTime AddSeconds (int64_t seconds) const;
 

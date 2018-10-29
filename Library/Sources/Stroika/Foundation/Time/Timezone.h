@@ -134,6 +134,9 @@ namespace Stroika::Foundation::Time {
          *  Returns Timezone object in localtime timezone.
          *
          *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         *
+         *  \note - LocalTime is a STICKY property. This does NOT return the FIXED OFFSET for the current local-time, but rather a special
+         *          Timezone which always references that global current timezone.
          */
         static constexpr Timezone LocalTime ();
 
