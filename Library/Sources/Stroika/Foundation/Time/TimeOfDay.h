@@ -25,15 +25,7 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
- *               use optional<>
- *
- *              PROS:   probably more logical and typesafe; empty is kindof a 'sentinal' value used
- *                      typically used to represent not present
- *              CONS:   we use this clear/empty notion alot, so may involve many changes, and we have
- *                      a sensible fittable sentinal value handy.
- *
- *          NOTE - GOT RID OF empty () use in DateTime, so should be relatively easy to get rid of /0 CTOR.
+ *      @todo   Complete removeal of deprecated empty and no-arg constructor
  *
  *      @todo   Need DefaultNames<> for enums in TimeOfDay module
  *
@@ -42,9 +34,6 @@
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
- *
- *      @todo   Review how we use 'empty()'. Efficient, but might be cleaner design to use optional
- *              and in places that use TimeOfDay::empty () and lose the concept of empty here?
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
@@ -80,18 +69,7 @@ namespace Stroika::Foundation::Time {
      *
      *      NB: this implies NO NOTION of timezone. Its a time relative to midnight of a given day.
      *
-     *      TimeOfDay can also be (it is by default) the special sentinal value 'empty'.
-     *  This is useful - with a DateTime object for example, to represent the idea that a
-     *  time has not been specified.
-     *
-     *  \note   'empty' concept:
-     *          Treat it as DISTINCT from any other time. However, when converting it to a
-     *          number of seconds, treat empty as TimeOfDay::kMin. For format routine,
-     *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN
-     *          TimeOfDay::kMin. This is a bit like the floating point concept of negative infinity.
-     *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      */
     class TimeOfDay {
     public:
@@ -152,7 +130,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  Always produces a valid legal TimeOfDay, or throws an exception.
          *
-         *  \note an empty string produces an empty TimeOfDay object (TimeOfDay {}).
+         *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty TimeOfDay object (TimeOfDay {}).
          *
          *  \note the 2 argument locale overload uses each of kDefaultTimeParseFormats formats to try to 
          *        parse the time string, but the default is locale specific standard time format.
@@ -223,8 +201,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         * In special case of empty - this also returns 0
-         *
          *  \ensure {return} < kMaxSecondsPerDay
          */
         nonvirtual constexpr uint32_t GetAsSecondsCount () const; // seconds since StartOfDay (midnight)
@@ -302,8 +278,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-         *  this comparison function - see the notes about 'empty' in the class description.
+         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
         nonvirtual int Compare (const TimeOfDay& rhs) const;
         static int     Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
