@@ -26,6 +26,8 @@
  *
  *              But good news - I think I have API right now. Just construct a Timezone object with enum or data read from file
  *              and can be used as is throughtout rest of DateTime code (well, TimeZoneInformationType probably needs changes).
+ *
+ *              REVIEW C++20 support here - I think they added support for named timezone map to offsets.
  */
 
 namespace Stroika::Foundation::Time {

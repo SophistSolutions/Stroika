@@ -26,6 +26,9 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-668 - Date class should support the full Julian Date Range -
+ *              not just Gregorian calendar
+ *
  *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
