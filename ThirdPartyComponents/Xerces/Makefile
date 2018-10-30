@@ -37,7 +37,7 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
-PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)
 
 
 #
@@ -92,7 +92,7 @@ endif
 
 CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
 CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces
-CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
 ifeq ($(UNAME),Cygwin)
 CMAKE_PER_TARGET_BUILD_DIR:=$(shell cygpath -a -w $(CMAKE_PER_TARGET_BUILD_DIR) | sed s/\\\\/\\\\\\\\/g)
 CMAKE_CURRENT_SOURCE_DIR:=$(shell cygpath -a -w $(CMAKE_CURRENT_SOURCE_DIR) | sed s/\\\\/\\\\\\\\/g)
@@ -147,7 +147,7 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds_
 
 
@@ -195,7 +195,7 @@ $(ZIPPEDFILE):
 
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)

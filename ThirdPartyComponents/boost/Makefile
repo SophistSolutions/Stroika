@@ -14,7 +14,7 @@ SHELL=/bin/bash
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
-PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 
 
 
@@ -112,7 +112,7 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 	
 
-ORIGs CURRENT $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
@@ -146,7 +146,7 @@ clean:
 ifeq ($(CONFIGURATION),)
 	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/boost/
 else
-	@rm -rf $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
 endif
 
 
@@ -176,7 +176,7 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
 	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) bootstrapIfNeeded_
 	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) configureAndBuild_
 
@@ -184,10 +184,10 @@ endif
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 B2=b2.exe
-B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/b2.exe
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/b2.exe
 else
 B2=b2
-B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/b2
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/b2
 endif
 
 bootstrapIfNeeded_:	$(B2FullPath)
@@ -196,14 +196,14 @@ $(B2FullPath):
 	$(MAKE) --no-print-directory bootstrap_ MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 bootstrap_:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building Bootstap (b2) in $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR); log2=BOOTSTRAP.OUT"` "... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building Bootstap (b2) in $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR); log2=BOOTSTRAP.OUT"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
 endif
 	@echo done
 
@@ -285,29 +285,29 @@ endif
 
 
 configureAndBuild_:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT"` "... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build log2=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT"` "... "
 	@
 	@#https://stroika.atlassian.net/browse/STK-633
 ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
+	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && cp project-config.jam project-config.jam.ORIG
+	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && cp project-config.jam project-config.jam.ORIG
 ifeq ($(shell uname -s),Darwin)
-	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
+	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
 else
-	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam
+	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam
 endif
 endif
 	@#
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
 	@#
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
-	@rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
 		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
-		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
+		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && \
 		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
 		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
 		(sh -c "$(B2) $$CFA install >> ConfigureAndBuild.OUT")
