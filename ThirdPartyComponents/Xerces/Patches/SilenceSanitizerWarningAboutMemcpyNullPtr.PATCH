@@ -1,0 +1,22 @@
+diff -rc ORIGs/src/xercesc/internal/ElemStack.cpp CURRENT/src/xercesc/internal/ElemStack.cpp
+*** ORIGs/src/xercesc/internal/ElemStack.cpp	Wed Feb 14 20:22:36 2018
+--- CURRENT/src/xercesc/internal/ElemStack.cpp	Tue Oct 30 09:01:47 2018
+***************
+*** 493,499 ****
+      //  since this is a by value map and the current map index controls what
+      //  is relevant.
+      //
+!     memcpy(newMap, toExpand->fMap, oldCap * sizeof(PrefMapElem));
+  
+      // Delete the old map and store the new stuff
+      fMemoryManager->deallocate(toExpand->fMap);//delete [] toExpand->fMap;
+--- 493,501 ----
+      //  since this is a by value map and the current map index controls what
+      //  is relevant.
+      //
+!     if (oldCap != 0) {
+!         memcpy (newMap, toExpand->fMap, oldCap * sizeof (PrefMapElem));
+!     }
+  
+      // Delete the old map and store the new stuff
+      fMemoryManager->deallocate(toExpand->fMap);//delete [] toExpand->fMap;
