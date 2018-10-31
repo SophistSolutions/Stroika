@@ -47,7 +47,23 @@ int main (int argc, char** argv)
             dirName = backTick ("pwd") + "/" + dirName;
         }
         dirName += "/";
-        printf ("%s\n", (dirName + basename).c_str ());
+        string result = (dirName + basename);
+        // replace A/B/../ with A
+        {
+            for (size_t i = 0; (i = result.find ("/../")) != string::npos;) {
+                if (i == 0) {
+                    fprintf (stderr, ".. in path not found\n");
+                    ::exit (1);
+                }
+                size_t startOfDirToEliminate = result.rfind ('/', i - 1);
+                if (startOfDirToEliminate == string::npos) {
+                    fprintf (stderr, ".. in path not found\n");
+                    ::exit (1);
+                }
+                result = result.substr (0, startOfDirToEliminate) + result.substr (i + 3);
+            }
+        }
+        printf ("%s\n", result.c_str ());
         return 0;
     }
     else if (realpath (path, result)) {
