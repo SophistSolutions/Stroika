@@ -75,7 +75,7 @@ RunCMD_ docker run -u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group
 	sleep inf
 
 # Run this to completion
-RunCMD_ docker exec ${CONTAINER_IMAGE} ${CMD2RUN} 
+RunCMD_ docker exec ${CONTAINER_NAME} ${CMD2RUN} 
 	
 # Then automatically stop the container - simulating if we had done a run of the actual CMD2RUN (except that now)
 # you can restart the container without re-running the command
