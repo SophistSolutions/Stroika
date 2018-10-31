@@ -63,3 +63,13 @@
    Memcheck:Addr8
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem.so
 }
+{
+   https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation4Time8DateTime10AddSecondsEx
+}
+{
+   https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation4Time8DateTime2AsIlEET_v
+}
