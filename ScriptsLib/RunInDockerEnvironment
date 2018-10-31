@@ -44,26 +44,16 @@ else
 fi
 
 
-if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
-	echo docker run \
-		-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
-		-v /etc/localtime:/etc/localtime:ro \
-		-v $HOME/.ssh:$HOME/.ssh \
-		-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
-		--dns ${EXTRA_DNS} --dns 8.8.8.8 \
-		--security-opt seccomp=unconfined \
-		$EXTRATERMARGS \
-		--name ${CONTAINER_NAME} \
-		-h ${CONTAINER_NAME} \
-		-v $StroikaRoot:/Sandbox-StroikaRoot \
-		-w /Sandbox-StroikaRoot \
-		${EXTRA_DOCKER_ARGS} \
-		${CONTAINER_IMAGE} \
-		${CMD2RUN}
-fi
+RunCMD_()
+{
+	CMD=$*
+	if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
+		echo  ${CMD}
+	fi
+	eval "${CMD}"
+}
 
-docker run \
-	-u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+RunCMD_ docker run -u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 	-v /etc/localtime:/etc/localtime:ro \
 	-v $HOME/.ssh:$HOME/.ssh \
 	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
