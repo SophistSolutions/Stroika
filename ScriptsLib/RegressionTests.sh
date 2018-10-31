@@ -126,11 +126,6 @@ RASPBERRYPICONFIGS=`make list-configurations TAGS="raspberrypi"`
 RASPBERRYPIVALGRINDCONFIGS=`make list-configurations TAGS="raspberrypi valgrind"`
 
 
-#if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
-#	INCLUDE_VALGRIND_MEMCHECK_TESTS=0
-#	INCLUDE_VALGRIND_HELGRIND_TESTS=0
-#	INCLUDE_PERFORMANCE_TESTS=0
-#fi
 echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
 make list-configurations TAGS="valgrind"  > /tmp/allvalgrindconfigs.txt
 if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
@@ -285,14 +280,12 @@ if [ $INCLUDE_RASPBERRYPI_TESTS -eq 1 ]; then
 	for i in $RASPBERRYPICONFIGS; do 
 		echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 		make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		##NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 	done; 
 	for i in $RASPBERRYPIVALGRINDCONFIGS; do 
 		echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=memcheck" >>$TEST_OUT_FILE 2>&1
 		make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=memcheck >>$TEST_OUT_FILE 2>&1
 		echo "$PREFIX_OUT_LABEL" "make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=helgrind" >>$TEST_OUT_FILE 2>&1
 		make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN VALGRIND=helgrind >>$TEST_OUT_FILE 2>&1
-		##NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 2))
 	done; 
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
@@ -308,24 +301,24 @@ fi
 if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo >>$TEST_OUT_FILE 2>&1
 	echo >>$TEST_OUT_FILE 2>&1
-	#MEMCHECK:
 RunLocalValgrind_() {
 VALGRINDCMD2USE=$1
 CONFIG2USE=$2
 BEFORE_CMD=$3
 if [[ "$LOCAL_VALGRIND_CONFIGS" =~ "$CONFIG2USE" ]]; then
 	echo -n "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE  VALGRIND=$VALGRINDCMD2USE run-tests ..."
-	echo "$PREFIX_OUT_LABEL" "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests ..." >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "eval ${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests >>$TEST_OUT_FILE 2>&1 
+	eval "${BEFORE_CMD}" && make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests >>$TEST_OUT_FILE 2>&1 
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-	##NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 else
 	echo "skipping running valgrind cuz $CONFIG2USE not in used configurations"
 fi
 } 
+
+	#MEMCHECK:
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 		#MEMCHECK: release, no block allocation
 		RunLocalValgrind_ memcheck g++-valgrind-release-SSLPurify-NoBlockAlloc ""
@@ -345,25 +338,9 @@ fi
 	if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
 		#HELGRIND: release, no block allocation
 		RunLocalValgrind_ helgrind g++-valgrind-release-SSLPurify-NoBlockAlloc ""
-#		echo -n "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc  VALGRIND=helgrind run-tests ..."
-#		echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=helgrind run-tests ..." >>$TEST_OUT_FILE 2>&1
-#		STAGE_STARTAT_INT=$(date +%s)
-#		make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc  VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
-#		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-#		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-#		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-#		#NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 		#HELGRIND: debug (without block alloc)
 		RunLocalValgrind_ helgrind g++-valgrind-debug-SSLPurify-NoBlockAlloc ""
-#		echo -n "make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=helgrind run-tests ..."
-#		echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=helgrind run-tests ..." >>$TEST_OUT_FILE 2>&1
-#		STAGE_STARTAT_INT=$(date +%s)
-#		make CONFIGURATION=g++-valgrind-debug-SSLPurify-NoBlockAlloc VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
-#		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-#		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-#		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-		#NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 	else
 		echo "Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
 		echo "$PREFIX_OUT_LABEL" "Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
