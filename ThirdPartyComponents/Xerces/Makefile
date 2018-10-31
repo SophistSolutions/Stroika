@@ -209,7 +209,8 @@ else
 endif
 	@echo done
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Patching ... "
-	@patch -p0 $@/src/xercesc/internal/ElemStack.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr.PATCH >> $@/PATCHING.OUT
+	@#NOTE - the realpath call needed only for darwin/macos
+	@patch -p0 $(realpath $@/src/xercesc/internal/ElemStack.cpp) Patches/SilenceSanitizerWarningAboutMemcpyNullPtr.PATCH >> $@/PATCHING.OUT
 	@$(ECHO) "done"
 
 
