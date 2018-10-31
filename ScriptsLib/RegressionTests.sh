@@ -306,10 +306,10 @@ VALGRINDCMD2USE=$1
 CONFIG2USE=$2
 BEFORE_CMD=$3
 if [[ "$LOCAL_VALGRIND_CONFIGS" =~ "$CONFIG2USE" ]]; then
-	echo -n "${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE  VALGRIND=$VALGRINDCMD2USE run-tests ..."
-	echo "$PREFIX_OUT_LABEL" "eval ${BEFORE_CMD}make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests ..." >>$TEST_OUT_FILE 2>&1
+	echo -n "eval ${BEFORE_CMD} && make CONFIGURATION=$CONFIG2USE  VALGRIND=$VALGRINDCMD2USE run-tests ..."
+	echo "$PREFIX_OUT_LABEL" "eval ${BEFORE_CMD} && make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	eval "${BEFORE_CMD}" && make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests >>$TEST_OUT_FILE 2>&1 
+	(eval "${BEFORE_CMD}" && make CONFIGURATION=$CONFIG2USE VALGRIND=$VALGRINDCMD2USE run-tests) >>$TEST_OUT_FILE 2>&1 
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
@@ -324,7 +324,7 @@ fi
 		RunLocalValgrind_ memcheck g++-valgrind-release-SSLPurify-NoBlockAlloc ""
 
 		#MEMCHECK: debug (with block alloc)
-		RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" '
+		RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify 'export VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp"'
 
 		#MEMCHECK: debug (without block alloc)
 		RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify-NoBlockAlloc ""
