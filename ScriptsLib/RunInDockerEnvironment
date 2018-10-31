@@ -79,4 +79,4 @@ RunCMD_ docker exec ${CONTAINER_NAME} ${CMD2RUN}
 	
 # Then automatically stop the container - simulating if we had done a run of the actual CMD2RUN (except that now)
 # you can restart the container without re-running the command
-RunCMD_ docker stop ${CONTAINER_IMAGE}
+RunCMD_ docker stop ${CONTAINER_NAME}
