@@ -32,6 +32,7 @@ namespace {
         s.Append (3);
         s += 4;
         for ([[maybe_unused]] int i : s) {
+            Lambda_Arg_Unused_BWA (i); // warning C4189: 'i': local variable is initialized but not referenced
             Assert (i == 3 or i == 4);
         }
         Assert (s.size () == 2);
