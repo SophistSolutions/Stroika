@@ -24,11 +24,11 @@ EXTRACTED_DIRNAME=$(BASENAME)
 
 
 ifneq ($(CONFIGURATION),)
-ARCH							=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
-ProjectPlatformSubdir			=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
-OptimizerFlag					=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
+ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
+ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
+OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
 endif
 
 
@@ -90,6 +90,8 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 endif
 endif
 
+
+ifneq ($(CONFIGURATION),)
 CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
 CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces
 CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
@@ -102,15 +104,17 @@ CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_
 CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURRENT_SOURCE_DIR) )
 CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR))
 endif
+endif
 
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
 CC:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 CXX:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
 AR:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
 RANLIB:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
+
+ifeq (Unix,$(ProjectPlatformSubdir))
 #clang (not clang++) barfs if given --std=c++17 argument
 #And we later get linker errors from clang if we use -flto on object files stored here
 CFLAGS:=$(filter-out --std%, $(CFLAGS))
@@ -241,24 +245,32 @@ CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 endif
 
 ifeq (0,$(ENABLE_ASSERTIONS))
-CMAKE_CONFIGURATION=Release
+CMAKE_CONFIGURATION:=Release
 else
-CMAKE_CONFIGURATION=Debug
+CMAKE_CONFIGURATION:=Debug
 endif
 
-#Default Xerces build generates depednency on DLL version of runtime
-#TRIED To ADD (or replace /MDd with /MTd) from cmdline for cmake but could find no way.
-#So used sed script to post-process CMakeCache.txt
-#ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-#ifeq (Release,$(CMAKE_CONFIGURATION))
-#CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="/MT"
-#else
-#CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="/MTd"
-#endif
-#endif
+
+#Default Xerces build generates dependency on DLL version of runtime
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+#DEFAULT values from CMakeCache.txt
+#NB: We must REPLACE the values (copy defaults and munge) cuz otherwise need to edit CMakeCache.txt
+#or one of the other config files (maybe patch or script). This seems the lesser evil...
+#	--LGP 2018-10-31
+ifeq (Release,$(CMAKE_CONFIGURATION))
+#		CMAKE_CXX_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /DNDEBUG
+#		CMAKE_C_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /DNDEBUG
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="/MT /O2 /Ob2 /DNDEBUG"
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /DNDEBUG"
+else
+#		CMAKE_CXX_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /Od /RTC1
+#		CMAKE_C_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /Od /RTC1
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="/MTd /Zi /Ob0 /Od /RTC1"
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="/MTd /Zi /Ob0 /Od /RTC1"
+endif
+endif
 
 
-#@todo fix config mechanism to have var saying 32 or 64 bits?? Or -arch?
 CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(ARCH), x86)
@@ -283,14 +295,6 @@ doBuilds_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)"` "... "
 	@echo 'cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@###I could find no param to set going into cmake to use the static link version of the C++ runtime, but this does it (I hope not too aggressively)
-	@echo "sed -i CMakeCache.txt -e 's/MD/MT/g'" >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && sed -i CMakeCache.txt -e 's/MD/MT/g'
-	@###Then though not documented, you have to re-run cmake SRCDIR to get it to pay attention to the changes
-	@echo 'cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake $(CMAKE_CURRENT_SOURCE_DIR)' >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
-endif	
 	@echo done
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT)"` "... "
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ECHO) "$(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)" > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
