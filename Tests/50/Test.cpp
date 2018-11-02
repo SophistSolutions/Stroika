@@ -197,6 +197,7 @@ namespace {
                  double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s", testName.c_str ())};
 #if qDebug
         runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
@@ -1118,11 +1119,16 @@ namespace {
         }
         void DoRunPerfTest ()
         {
-            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"***just-to-see-why-so-long-helgrind-docker-Test_JSONReadWriteFile_")};
+            ScanDetails_              sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            DbgTrace (L"**1");
             VerifyTestResult (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             VerifyTestResult (sd.fScanID == 5856);
+            DbgTrace (L"**2");
             Memory::BLOB b   = doWrite_ (sd);
+            DbgTrace (L"**3");
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (b), end (b)));
+            DbgTrace (L"**4");
             VerifyTestResult (sd2.fScanID == sd.fScanID);
             VerifyTestResult (sd2.fAuxData == sd.fAuxData);
             VerifyTestResult (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
