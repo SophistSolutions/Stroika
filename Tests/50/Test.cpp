@@ -197,7 +197,7 @@ namespace {
                  double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s", testName.c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s, runCount=%d", testName.c_str (), runCount)};
 #if qDebug
         runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
@@ -223,7 +223,7 @@ namespace {
                  double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s", testName.c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s, runCount=d%", testName.c_str (), runCount)};
 #if qDebug
         runCount = Math::AtLeast<unsigned int> (static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio), 1);
 #endif
