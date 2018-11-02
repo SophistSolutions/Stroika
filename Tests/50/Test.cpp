@@ -1457,7 +1457,7 @@ namespace {
         Tester (
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
-            64,
+            Debug::IsRunningUnderValgrind () ? 6: 64,
             0.25,
             &failedTests);
         Tester (
