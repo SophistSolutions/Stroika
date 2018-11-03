@@ -29,7 +29,7 @@ MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
 {on windows bash shell run)
 ~~~
 USE_TEST_BASENAME=Windows_VS2k17 \
-    ./ScriptsLib/RegressionTests.sh && ./ScriptsLib/RunPerformanceRegressionTests.sh
+    ./ScriptsLib/RegressionTests.sh
 
 ~~~
 
