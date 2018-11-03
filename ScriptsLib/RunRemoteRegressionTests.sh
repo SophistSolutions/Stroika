@@ -50,14 +50,14 @@ EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 echo ssh $SSH_TARGET -t $CMD2Exec
 ssh $SSH_TARGET -t "$CMD2Exec"
 
-CMD2Exec=''
-CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
+#CMD2Exec=''
+#CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
 #if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
 #	CMD2Exec+="export EXE=Builds/Release/Test50;"
 #fi
-CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
-echo ssh $SSH_TARGET $CMD2Exec
-ssh $SSH_TARGET "$CMD2Exec"
+#CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
+#echo ssh $SSH_TARGET $CMD2Exec
+#ssh $SSH_TARGET "$CMD2Exec"
 
 
 echo "Fetching results:"
