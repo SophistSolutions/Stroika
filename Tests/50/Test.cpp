@@ -1119,16 +1119,11 @@ namespace {
         }
         void DoRunPerfTest ()
         {
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"***just-to-see-why-so-long-helgrind-docker-Test_JSONReadWriteFile_")};
             ScanDetails_              sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
-            DbgTrace (L"**1");
             VerifyTestResult (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             VerifyTestResult (sd.fScanID == 5856);
-            DbgTrace (L"**2");
             Memory::BLOB b   = doWrite_ (sd);
-            DbgTrace (L"**3");
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (b), end (b)));
-            DbgTrace (L"**4");
             VerifyTestResult (sd2.fScanID == sd.fScanID);
             VerifyTestResult (sd2.fAuxData == sd.fAuxData);
             VerifyTestResult (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
@@ -1457,7 +1452,7 @@ namespace {
         Tester (
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
-            Debug::IsRunningUnderValgrind () ? 6: 64,
+            Debug::IsRunningUnderValgrind () ? 2: 64,
             0.25,
             &failedTests);
         Tester (
