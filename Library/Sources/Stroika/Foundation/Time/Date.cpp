@@ -255,7 +255,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
-    // clang-format on
+        // clang-format on
 
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
@@ -287,7 +287,7 @@ Date Date::Parse (const String& rep, LCID lcid)
 String Date::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+        return String{};
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
@@ -376,7 +376,7 @@ String Date::Format (const String& formatPattern) const
 String Date::Format (const locale& l, const String& formatPattern) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
@@ -394,7 +394,7 @@ String Date::Format (const locale& l, const String& formatPattern) const
 String Date::Format (LCID lcid) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     SYSTEMTIME st      = toSYSTEM_ (*this);
     int        nTChars = ::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, nullptr, 0);
@@ -411,7 +411,7 @@ String Date::Format (LCID lcid) const
 String Date::Format (LCID lcid, const String& format) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     SYSTEMTIME st      = toSYSTEM_ (*this);
     int        nTChars = ::GetDateFormatW (lcid, 0, &st, format.c_str (), nullptr, 0);
@@ -430,7 +430,7 @@ String Date::Format (LCID lcid, const String& format) const
 String Date::LongFormat (LCID lcid) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     SYSTEMTIME st     = toSYSTEM_ (*this);
     int        nChars = ::GetDateFormatW (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
