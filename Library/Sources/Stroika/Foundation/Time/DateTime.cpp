@@ -248,11 +248,11 @@ const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
     String_Constant{L"%Ec"},
     String_Constant{L"%x %X"},
     String_Constant{L"%Ex %EX"},
-    String_Constant{L"%Y-%b-%d %H:%M:%S"},  // no obvious reference for this so maybe not a good idea
-    String_Constant{L"%D%t%T"},             // no obvious reference for this so maybe not a good idea
-    String_Constant{L"%D%t%r"},             // no obvious reference for this so maybe not a good idea
-    String_Constant{L"%D%t%R"},             // no obvious reference for this so maybe not a good idea
-    String_Constant{L"%a %b %e %T %Y"},     // no obvious reference for this so maybe not a good idea
+    String_Constant{L"%Y-%b-%d %H:%M:%S"}, // no obvious reference for this so maybe not a good idea
+    String_Constant{L"%D%t%T"},            // no obvious reference for this so maybe not a good idea
+    String_Constant{L"%D%t%r"},            // no obvious reference for this so maybe not a good idea
+    String_Constant{L"%D%t%R"},            // no obvious reference for this so maybe not a good idea
+    String_Constant{L"%a %b %e %T %Y"},    // no obvious reference for this so maybe not a good idea
 };
 
 const String DateTime::kDefaultFormatPattern     = String_Constant{L"%c"};
@@ -753,9 +753,9 @@ time_t DateTime::As () const
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
         Execution::Throw (kRangeErrror_);
     }
-        // clang-format on
+    // clang-format on
 
-        tm tm{};
+    tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
@@ -774,10 +774,12 @@ template <>
 tm DateTime::As () const
 {
     if (GetDate ().GetYear () < Year (1900))
-        [[UNLIKELY_ATTR]] {
+        [[UNLIKELY_ATTR]]
+        {
             static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
             Execution::Throw (kRangeErrror_);
-        } tm tm{};
+        }
+    tm tm{};
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
