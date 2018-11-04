@@ -372,18 +372,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
     return result;
 }
 
-TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& formatPattern)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s, l=%s, formatPattern=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), formatPattern.c_str ())};
-#endif
-    auto result = Parse (rep, l, Traversal::Iterable<String>{formatPattern});
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
-#endif
-    return result;
-}
-
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -137,10 +137,12 @@ namespace Stroika::Foundation::Time {
          *
          *  The overload which takes a locale but no explicit format strings, defaults to trying
          *  each of kDefaultParseFormats strings in order, and returns the first match.
+         *
+         *  The overload taking an iterable of formats, tries each, and returns the timeofday for the first that succeeds, or throws
+         *  FormatException if none succeed.
          */
         static TimeOfDay Parse (const String& rep, ParseFormat pf);
         static TimeOfDay Parse (const String& rep, const locale& l);
-        static TimeOfDay Parse (const String& rep, const locale& l, const String& formatPattern);
         static TimeOfDay Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
 #if qPlatform_Windows
         [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static TimeOfDay Parse (const String& rep, LCID lcid);
