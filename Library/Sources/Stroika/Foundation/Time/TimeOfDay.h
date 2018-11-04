@@ -135,6 +135,8 @@ namespace Stroika::Foundation::Time {
          *  \note the 2 argument locale overload uses each of kDefaultParseFormats formats to try to 
          *        parse the time string, but the default is locale specific standard time format.
          *
+         *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
+         *
          *  The overload which takes a locale but no explicit format strings, defaults to trying
          *  each of kDefaultParseFormats strings in order, and returns the first match.
          *

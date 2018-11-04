@@ -379,7 +379,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-                                                  //        return TimeOfDay{};
     }
     wstring wRep = rep.As<wstring> ();
 
