@@ -1119,7 +1119,7 @@ namespace {
         }
         void DoRunPerfTest ()
         {
-            ScanDetails_              sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
             VerifyTestResult (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             VerifyTestResult (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
@@ -1452,7 +1452,7 @@ namespace {
         Tester (
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
-            Debug::IsRunningUnderValgrind () ? 2: 64,
+            Debug::IsRunningUnderValgrind () ? 2 : 64,
             0.25,
             &failedTests);
         Tester (
