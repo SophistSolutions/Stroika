@@ -278,7 +278,7 @@ namespace Stroika::Foundation::Time {
          * Note that for the consumedCharsInStringUpTo overload, the consumedCharsInStringUpTo is filled in with the position after the last
          * character read (so before the next character to be read).
          *
-         *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty TimeOfDay object (TimeOfDay {}).
+         *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty Date object (Date {}).
          *
          *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
          */
