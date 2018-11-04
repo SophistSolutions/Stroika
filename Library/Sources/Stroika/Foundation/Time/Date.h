@@ -268,15 +268,31 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  Default formats used by Date::Parse () to parse time strings. The first of these - %X, is
+         *  the locale-specific time format.
+         */
+        static const Traversal::Iterable<String> kDefaultParseFormats;
+
+    public:
+        /**
          * Note that for the consumedCharsInStringUpTo overload, the consumedCharsInStringUpTo is filled in with the position after the last
          * character read (so before the next character to be read).
+         *
+         *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty TimeOfDay object (TimeOfDay {}).
+         *
+         *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
          */
         static Date Parse (const String& rep, ParseFormat pf);
         static Date Parse (const String& rep, const locale& l);
+        static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
+        static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
         static Date Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
 #if qPlatform_Windows
         [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static Date Parse (const String& rep, LCID lcid);
 #endif
+
+    private:
+        static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
 
     public:
         /**

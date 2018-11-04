@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
 #include "../StroikaPreComp.h"
@@ -52,8 +52,7 @@ namespace {
 namespace {
     tm Date2TM_ (const Date& d)
     {
-        struct tm tm {
-        };
+        tm tm{};
         tm.tm_year = static_cast<int> (d.GetYear ()) - 1900;
         tm.tm_mon  = static_cast<int> (d.GetMonth ()) - 1;
         tm.tm_mday = static_cast<int> (d.GetDayOfMonth ());
@@ -129,7 +128,7 @@ namespace {
 const Date::FormatException Date::FormatException::kThe;
 
 Date::FormatException::FormatException ()
-    : StringException (String_Constant (L"Invalid Date Format"))
+    : StringException (String_Constant{L"Invalid Date Format"})
 {
 }
 
@@ -142,6 +141,14 @@ Date::FormatException::FormatException ()
 const Date Date::kMin{Date::min ()};
 const Date Date::kMax{Date::max ()};
 #endif
+
+//x parses the locale's standard date representation
+// all Ex parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP localeconst Traversal::Iterable<String> Date::kDefaultParseFormats{
+const Traversal::Iterable<String> Date::kDefaultParseFormats{
+    String_Constant{L"%x"},
+    String_Constant{L"%Ex"},
+    String_Constant{L"%D"},
+};
 
 Date Date::Parse (const String& rep, ParseFormat pf)
 {
@@ -188,40 +195,68 @@ Date Date::Parse (const String& rep, ParseFormat pf)
     return Date{};
 }
 
-Date Date::Parse (const String& rep, const locale& l)
+Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
-    size_t consumedCharsInStringUpTo = 0;
-    return Date::Parse (rep, l, &consumedCharsInStringUpTo);
-}
-
-namespace {
-    size_t ComputeIdx_ (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c)
-    {
+    auto ComputeIdx_ = [](const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
         size_t result = 0;
         for (auto i = s; i != c; ++i, ++result)
             ;
         return result;
-    }
-}
-Date Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo)
-{
-    RequireNotNull (consumedCharsInStringUpTo);
+    };
     if (rep.empty ()) {
-        return Date{};
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
     }
-    const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-    ios::iostate                 state = ios::goodbit;
-    wistringstream               iss (rep.As<wstring> ());
-    istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-    istreambuf_iterator<wchar_t> itend;         // end-of-stream
-    tm                           when{};
-    istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
-    if (state & ios::failbit)
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (FormatException::kThe);
+    wstring wRep = rep.As<wstring> ();
+
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+
+    const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
+    ios::iostate             errState = ios::goodbit;
+    tm                       when{};
+
+    for (auto&& formatPattern : formatPatterns) {
+        errState = ios::goodbit;
+        wistringstream iss (wRep);
+        if constexpr (kRequireImbueToUseFacet_) {
+            iss.imbue (l);
         }
-    *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
+        istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
+        istreambuf_iterator<wchar_t> itend;         // end-of-stream
+
+        istreambuf_iterator<wchar_t> i;
+        i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+#if qCompilerAndStdLib_std_get_time_pctx_Buggy
+        if ((errState & ios::badbit) or (errState & ios::failbit)) {
+            if (formatPattern == L"%x") {
+                errState = ios::goodbit;
+                iss      = wistringstream (wRep);
+                itbegin  = istreambuf_iterator<wchar_t> (iss);
+                itend    = istreambuf_iterator<wchar_t> ();
+                if constexpr (kRequireImbueToUseFacet_) {
+                    iss.imbue (l);
+                }
+                i = tmget.get_date (itbegin, itend, iss, errState, &when);
+            }
+        }
+#endif
+        if ((errState & ios::badbit) or (errState & ios::failbit))
+            [[UNLIKELY_ATTR]]
+            {
+                continue;
+            }
+        else {
+            if (consumedCharsInStringUpTo != nullptr) {
+                *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
+            }
+            break;
+        }
+    }
+    // clang-format off
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe);
+    }
+    // clang-format on
+
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif

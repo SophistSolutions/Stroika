@@ -116,6 +116,24 @@ namespace Stroika::Foundation::Time {
             return l < r ? -1 : 1;
         }
     }
+    inline Date Date::Parse (const String& rep, const locale& l)
+    {
+        return Date::Parse_ (rep, l, kDefaultParseFormats, nullptr);
+    }
+    inline Date Date::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
+    {
+        return Date::Parse_ (rep, l, formatPatterns, nullptr);
+    }
+    inline Date Date::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
+    {
+        RequireNotNull (consumedCharsInStringUpTo);
+        return Date::Parse_ (rep, l, formatPatterns, consumedCharsInStringUpTo);
+    }
+    inline Date Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo)
+    {
+        RequireNotNull (consumedCharsInStringUpTo);
+        return Date::Parse_ (rep, l, kDefaultParseFormats, consumedCharsInStringUpTo);
+    }
     inline String Date::ToString () const
     {
         return Format ();
