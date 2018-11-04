@@ -17,12 +17,20 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${PARALELLMAKEFLAG:=-j10}
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${USE_TEST_BASENAME:=""}
-BUILD_EXTRA_COMPILERS_IF_MISSING=
-if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$(uname -s)" == "Linux" ]; then
-	BUILD_EXTRA_COMPILERS_IF_MISSING=1
-else
+
+
+if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
+	if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$(uname -s)" == "Linux" ]; then
+		if [ -w /private-compiler-builds/ ]; then
+			BUILD_EXTRA_COMPILERS_IF_MISSING=1
+		fi
+	fi
+fi
+if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
 	BUILD_EXTRA_COMPILERS_IF_MISSING=0
 fi
+
+
 : ${RASPBERRYPI_REMOTE_MACHINE:=raspberrypi}
 : ${RASPBERRYPI_REMOTE_WITH_LOGIN:=lewis@$RASPBERRYPI_REMOTE_MACHINE}
 
