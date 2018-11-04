@@ -289,6 +289,12 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  Make a copy of the given argument, and treat it as an iterable.
+
+         *
+         *  \par Example Usage
+         *      \code
+         *          Iterable<int> aa6{3, 4, 6};
+         *      \endcode
          *
          *  \note Don't apply this constructor to non-containers (non-iterables), 
          *        and don't allow it to apply to SUBCLASSES of Iterable (since then we want to select the Iterable (const Iterable& from) constructor)

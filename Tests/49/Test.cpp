@@ -802,6 +802,7 @@ namespace {
             Iterable<int> aa3{move (a)};
             Iterable<int> aa4{aa3};
             Iterable<int> aa5{Iterable<int>{}};
+            Iterable<int> aa6{3, 4, 6};
         }
     }
 }
