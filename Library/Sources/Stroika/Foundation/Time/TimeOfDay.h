@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Time {
          *  Default formats used by TimeOfDay::Parse () to parse time strings. The first of these - %X, is
          *  the locale-specific time format.
          */
-        static const Traversal::Iterable<String> kDefaultTimeParseFormats;
+        static const Traversal::Iterable<String> kDefaultParseFormats;
 
     public:
         /**
@@ -132,11 +132,11 @@ namespace Stroika::Foundation::Time {
          *
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty TimeOfDay object (TimeOfDay {}).
          *
-         *  \note the 2 argument locale overload uses each of kDefaultTimeParseFormats formats to try to 
+         *  \note the 2 argument locale overload uses each of kDefaultParseFormats formats to try to 
          *        parse the time string, but the default is locale specific standard time format.
          *
          *  The overload which takes a locale but no explicit format strings, defaults to trying
-         *  each of kDefaultTimeParseFormats strings in order, and returns the first match.
+         *  each of kDefaultParseFormats strings in order, and returns the first match.
          */
         static TimeOfDay Parse (const String& rep, ParseFormat pf);
         static TimeOfDay Parse (const String& rep, const locale& l);

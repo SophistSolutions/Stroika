@@ -226,7 +226,7 @@ const TimeOfDay TimeOfDay::kMax = TimeOfDay::max ();
 //%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
 //%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
 //%S        The seconds [00,60]; leading zeros are permitted but not required.
-const Traversal::Iterable<String> TimeOfDay::kDefaultTimeParseFormats{
+const Traversal::Iterable<String> TimeOfDay::kDefaultParseFormats{
     String_Constant{L"%X"},
     String_Constant{L"%EX"},
     String_Constant{L"%T"},
@@ -364,7 +364,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
         return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
     };
 #endif
-    auto result = Parse (rep, l, kDefaultTimeParseFormats);
+    auto result = Parse (rep, l, kDefaultParseFormats);
     Ensure (result == oldCode ());
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
