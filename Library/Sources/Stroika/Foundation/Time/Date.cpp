@@ -267,7 +267,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
 Date Date::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
-        return Date{};
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
     }
     DATE d{};
     try {
@@ -287,7 +287,7 @@ Date Date::Parse (const String& rep, LCID lcid)
 String Date::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return String{};
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
