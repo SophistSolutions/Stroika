@@ -190,6 +190,20 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  Format patterns defined in:
+         *      https://en.cppreference.com/w/cpp/locale/time_get/get
+         *      https://en.cppreference.com/w/cpp/locale/time_put/put
+         *
+         *  Default formats used by Date::Parse () to parse DateTime strings. The first of these - %c and %x %X, are
+         *  locale-specific time formats.
+         */
+        static const Traversal::Iterable<String> kDefaultParseFormats;
+
+    public:
+        class FormatException;
+
+    public:
+        /**
          *  Parse will throw if the argument cannot be parsed as a valid DateTime.
          *
          *  \note If the timezone cannot be identified in the source string, it will be returned as 'unknown'.
@@ -502,6 +516,17 @@ namespace Stroika::Foundation::Time {
         Date                fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
     };
+
+    class DateTime::FormatException : public Execution::StringException {
+    public:
+        FormatException ();
+
+    public:
+        /**
+         */
+        static const FormatException kThe;
+    };
+
     template <>
     time_t DateTime::As () const;
     template <>
