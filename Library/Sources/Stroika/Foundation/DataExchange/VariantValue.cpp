@@ -254,7 +254,7 @@ bool VariantValue::empty () const
         case Type::eFloat: {
             auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
-            return isnan (v->fVal) != 0;
+            return isnan (v->fVal);
         }
         case Type::eDate: {
             auto v = dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
