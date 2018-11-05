@@ -268,6 +268,28 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
+         *        so equivilent to %Y-%m-%d
+         */
+        static constexpr wchar_t kISO8601FormatArray[] = L"%Y-%m-%d";
+        static const String      kISO8601Format;
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
+         */
+        static constexpr wchar_t kLocaleStandardFormatArray[] = L"%x";
+        static const String      kLocaleStandardFormat;
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
+         */
+        static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ex";
+        static const String      kLocaleStandardAlternateFormat;
+
+    public:
+        /**
          *  Default formats used by Date::Parse () to parse time strings. The first of these - %X, is
          *  the locale-specific time format.
          */
