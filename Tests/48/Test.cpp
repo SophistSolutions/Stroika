@@ -385,7 +385,7 @@ namespace {
             constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong)
             if (kLocaleDateTimeFormatMaybeLossy_) {
                 String   nowShortLocaleForm = now.Format (locale{}, DateTime::kShortLocaleFormatPattern);
-                DateTime dt                 = DateTime::Parse (nowShortLocaleForm, locale{}, DateTime::kShortLocaleFormatPattern);
+                DateTime dt                 = DateTime::Parse (nowShortLocaleForm, locale{}, {DateTime::kShortLocaleFormatPattern});
                 // This roundtrip can be lossy, becaue the date 2016 could be represented as '16' and then when mapped the other way as
                 // 1916 (locale::classic ()). So fixup the year before comparing
                 Time::Year nYear = now.GetDate ().GetYear ();
@@ -398,7 +398,7 @@ namespace {
                 VerifyTestResult (now == dt);
             }
             else {
-                VerifyTestResult (now == DateTime::Parse (now.Format (locale{}, DateTime::kShortLocaleFormatPattern), locale{}, DateTime::kShortLocaleFormatPattern));
+                VerifyTestResult (now == DateTime::Parse (now.Format (locale{}, DateTime::kShortLocaleFormatPattern), locale{}, {DateTime::kShortLocaleFormatPattern}));
             }
         }
         {

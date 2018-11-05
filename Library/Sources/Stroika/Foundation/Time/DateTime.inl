@@ -93,6 +93,10 @@ namespace Stroika::Foundation::Time {
     {
         return fTimeOfDay_;
     }
+    inline DateTime DateTime::Parse (const String& rep, const locale& l)
+    {
+        return Parse (rep, l, kDefaultParseFormats);
+    }
     template <>
     inline Date DateTime::As () const
     {

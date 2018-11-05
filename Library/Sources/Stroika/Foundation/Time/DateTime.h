@@ -212,10 +212,12 @@ namespace Stroika::Foundation::Time {
          *
          *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
+         *
+         *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty DateTime object (DateTime {}).
          */
         static DateTime Parse (const String& rep, ParseFormat pf);
         static DateTime Parse (const String& rep, const locale& l);
-        static DateTime Parse (const String& rep, const locale& l, const String& formatPattern);
+        static DateTime Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
 #if qPlatform_Windows
         [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static DateTime Parse (const String& rep, LCID lcid);
 #endif

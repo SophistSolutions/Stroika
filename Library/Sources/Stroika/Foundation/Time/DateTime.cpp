@@ -260,9 +260,11 @@ const String DateTime::kShortLocaleFormatPattern = String_Constant{L"%x %X"};
 
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-    }
+    if (rep.empty ())
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+        }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
@@ -420,58 +422,64 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
         } break;
         default: {
             AssertNotReached ();
-            return DateTime ();
+            Execution::Throw (FormatException::kThe);
         } break;
     }
 }
 
-DateTime DateTime::Parse (const String& rep, const locale& l)
+DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
-    return Parse (rep, l, kDefaultFormatPattern);
-}
+    if (rep.empty ())
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+        }
 
-DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
-{
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-    }
-    wistringstream iss (rep.As<wstring> ());
+    wstring wRep = rep.As<wstring> ();
 
     constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
-    if constexpr (kRequireImbueToUseFacet_) {
-        iss.imbue (l);
-    }
-    const time_get<wchar_t>&     tmget    = use_facet<time_get<wchar_t>> (l);
-    ios::iostate                 errState = ios::goodbit;
-    tm                           when{};
-    istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-    istreambuf_iterator<wchar_t> itend;         // end-of-stream
 
-#if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-    if (l == locale::classic () and formatPattern == kDefaultFormatPattern) {
-        static const String_Constant kAltPattern_{L"%a %b %e %T %Y"};
-        return Parse (rep, l, kAltPattern_);
-    }
-#endif
+    const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
+    ios::iostate             errState = ios::goodbit;
+    tm                       when{};
 
-    (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-
-#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-    if (formatPattern == L"%x %X") {
-        if ((errState & ios::badbit) or (errState & ios::failbit)) {
-            Execution::Throw (Date::FormatException::kThe);
-        }
-        wistringstream               iss2 (rep.As<wstring> ());
-        istreambuf_iterator<wchar_t> itbegin2 (iss2);
-        istreambuf_iterator<wchar_t> itend2;
+    for (auto&& formatPattern : formatPatterns) {
         errState = ios::goodbit;
-        tmget.get_date (itbegin2, itend2, iss, errState, &when);
-    }
-#endif
+        wistringstream iss (wRep);
+        if constexpr (kRequireImbueToUseFacet_) {
+            iss.imbue (l);
+        }
+        istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
+        istreambuf_iterator<wchar_t> itend;         // end-of-stream
 
-    if ((errState & ios::badbit) or (errState & ios::failbit)) {
-        Execution::Throw (Date::FormatException::kThe);
+        istreambuf_iterator<wchar_t> i;
+        i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+        if (formatPattern == L"%x %X") {
+            if ((errState & ios::badbit) or (errState & ios::failbit)) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+            wistringstream               iss2 (rep.As<wstring> ());
+            istreambuf_iterator<wchar_t> itbegin2 (iss2);
+            istreambuf_iterator<wchar_t> itend2;
+            errState = ios::goodbit;
+            tmget.get_date (itbegin2, itend2, iss, errState, &when);
+        }
+#endif
+        // clang-format off
+        if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+            continue;
+        } 
+        else {
+            break;
+        }
+        // clang-format on
     }
+    // clang-format off
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe);
+    }
+    // clang-format on
 
     return DateTime (when, Timezone::Unknown ());
 }
@@ -479,9 +487,12 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const String& form
 #if qPlatform_Windows
 DateTime DateTime::Parse (const String& rep, LCID lcid)
 {
-    if (rep.empty ()) {
-        return DateTime{};
+    // clang-format off
+    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
+    // clang-format on
+
     DATE d{};
     try {
         using namespace Execution::Platform::Windows;
