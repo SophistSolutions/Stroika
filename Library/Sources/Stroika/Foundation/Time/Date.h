@@ -26,6 +26,8 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Lose empty () and no-arg CTOR (like we did for TimeOfDay). Instead require users to use optional<Date>
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-668 - Date class should support the full Julian Date Range -
  *              not just Gregorian calendar
  *
@@ -33,35 +35,6 @@
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
- *
- *      @todo   Consider using strptime/strftime (or more likely the existing locale-based APIs) -
- *              and possibly use that to replace windows formatting APIs? The problem with this is
- *              that the Windows ones seem to currntly produce BETTER answers (more closely follow
- *              changes to the control panel regional settings). MAYBE its a bug with the VisStudio
- *              locale stuff or maybe I'm not using it properly. Not super high priority to
- *              unravalel - but would be nice to lose (most of) the Windoze-specific code.
- *
- *                  (medium) Consider using strftime and strptime with %FT%T%z.
- *                  Same format
- *                  That doesn’t use std::locale()
- *                  En.cppreference.com/w/cpp/io/manip/get_time
- *                  istringstream xxx (“2011-feb…”)
- *                  ss.imbue(std::locale() (“de-DE”));
- *                  ss >> std::get_time(&t, “%FT%T%z”)
-
- *      @todo   Some places I've found on the net claim one date for start of gregorgian calendar
- *              and others claim other date(s). Really all I care about
- *              is for what range of dates is my currnet date logic valid, and thats what I'll use.
- *              But this needs some digging.
- *
- *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we
- *              should support BOTH here?
- *              Maybe where they differ doesn't matter for this class?
- *              o   Replace (research first) use of name XML here with iso8601.
- *                  + maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
- *                      XML really is its own - nearly identical to iso8601, but see deviations...
- *                      Maybe have iso8601, and XML support (and for our primitive purposes maybe the
- *                      com eto the same thing?)
  *
  *      @todo   It would be highly desirable to allow this date code to represent lareger/smaller dates
  *              (without the julian calendar restriction).
@@ -178,38 +151,36 @@ namespace Stroika::Foundation::Time {
 
     /**
      * Description:
-     * Based on Stroika code from 1992 (Date.hh/Date.cpp). From that - we have the comment:
+     *      The Date class is based on SmallTalk-80, The Language & Its Implementation,
+     *      page 108 (apx) - but changed to use gregorian instead of Julian calendar - even though rep date is
      *
-     * The Date class is based on SmallTalk-80, The Language & Its Implementation,
-     * page 108 (apx) - but changed to use gregorian instead of Julian calendar - evne thogh rep date is
-    <<< EXPLAIN ISSUE BETTER - WHEN IN UNDDETAND --....
-    -- LGP 2011-10-05
-        *
-        *      o   Date represents a specific data since the start of the Gregorian (1752-09-14).
-        *  Class Date knows about some obvious information:
-        *      ->  there are seven days in a week, each day having a symbolic name and
-        *          an index 1..7
-        *      ->  there are twelve months in a year, each having a symbolic name and
-        *          an index 1..12.
-        *      ->  months have 28..31 days and
-        *      ->  a particular year might be a leap year."
-        *
-        *          NB: Date implies NO NOTION of timezone.
-        *
-        *      'empty' concept:
-        *          Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds
-        *          or days (JulienRep), treat empty as Date::kMin. For format routine, return empty string.
-        *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
-        *          point concept of negative infinity.
-        *
-        *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
-        *          instead of creating invalid values.
-        *
-        *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-        *
-        *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
-        *          thats difficult beacuse its sometimes uses as a constexpr
-        */
+     *  @todo CLEANUP / REWRITE THESE DOCS - ROUGH DRAFT BASED ON OLD STROIKA DOCS
+     *
+     *      o   Date represents a specific data since the start of the Gregorian (1752-09-14).
+     *  Class Date knows about some obvious information:
+     *      ->  there are seven days in a week, each day having a symbolic name and
+     *          an index 1..7
+     *      ->  there are twelve months in a year, each having a symbolic name and
+     *          an index 1..12.
+     *      ->  months have 28..31 days and
+     *      ->  a particular year might be a leap year."
+     *
+     *          NB: Date implies NO NOTION of timezone.
+     *
+     *      'empty' concept:
+     *          Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds
+     *          or days (JulienRep), treat empty as Date::kMin. For format routine, return empty string.
+     *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
+     *          point concept of negative infinity.
+     *
+     *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
+     *          instead of creating invalid values.
+     *
+     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *
+     *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
+     *          thats difficult beacuse its sometimes uses as a constexpr
+     */
     class Date {
     public:
         using JulianRepType = unsigned int;
@@ -255,12 +226,15 @@ namespace Stroika::Foundation::Time {
          *      Note this is the current C++ locale, which may not be the same as the platform default locale.
          *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
          *
+         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
+         *        timezones (which we don't support in this class because it wouldn't make sense).
+         *
          *  \note   Configuration::DefaultNames<> supported
          */
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML,
+            eXML [[deprecated ("use eISO8601")]],
             eJavascript,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
@@ -399,12 +373,15 @@ namespace Stroika::Foundation::Time {
          *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
          *      year.
          *
+         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
+         *        timezones (which we don't support in this class because it wouldn't make sense).
+         *
          *  \note   Configuration::DefaultNames<> supported
          */
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML,
+            eXML [[deprecated ("use eISO8601")]],
             eJavascript,
             eCurrentLocale_WithZerosStripped,
 
