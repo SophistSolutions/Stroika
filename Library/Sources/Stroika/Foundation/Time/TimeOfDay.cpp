@@ -219,19 +219,22 @@ const TimeOfDay TimeOfDay::kMin = TimeOfDay::min ();
 const TimeOfDay TimeOfDay::kMax = TimeOfDay::max ();
 #endif
 
+const String TimeOfDay::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
+const String TimeOfDay::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
+const String TimeOfDay::kISO8601Format                 = String_Constant{kISO8601FormatArray}; // equivilent to String_Constant{L"%H:%M:%S"}
+
 //%t        Any white space.
-//%T        The time as %H : %M : %S.
+//%T        The time as %H : %M : %S. (iso8601 format)
 //%r        is the time as %I:%M:%S %p
 //%M        The minute [00,59]; leading zeros are permitted but not required.
 //%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
 //%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
 //%S        The seconds [00,60]; leading zeros are permitted but not required.
 const Traversal::Iterable<String> TimeOfDay::kDefaultParseFormats{
-    String_Constant{L"%X"},
-    String_Constant{L"%EX"},
-    String_Constant{L"%T"},
+    kLocaleStandardFormat,
+    kLocaleStandardAlternateFormat,
+    kISO8601Format,
     String_Constant{L"%r"},
-    String_Constant{L"%H:%M:%S"},
     String_Constant{L"%H:%M"},
     String_Constant{L"%I%p"},
     String_Constant{L"%I%P"},
@@ -241,22 +244,22 @@ const Traversal::Iterable<String> TimeOfDay::kDefaultParseFormats{
     String_Constant{L"%I:%M%t%P"},
     String_Constant{L"%I:%M:%S%t%p"},
     String_Constant{L"%I:%M:%S%t%P"},
-    String_Constant{L"%I:%M"},
     String_Constant{L"%I:%M:%S"},
+    String_Constant{L"%I:%M"},
 };
 
 TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-        //return TimeOfDay{};
-    }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         }
-        case ParseFormat::eISO8601:
-        case ParseFormat::eXML: {
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case ParseFormat::eXML:
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case ParseFormat::eISO8601: {
             int hour   = 0;
             int minute = 0;
             int secs   = 0;
@@ -271,14 +274,12 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
                 return TimeOfDay ((hour * 60 + minute) * 60 + secs);
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-            //return TimeOfDay ();
         }
         default: {
             AssertNotReached ();
-            return TimeOfDay{0};
         }
     }
+    Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
 }
 
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
@@ -288,7 +289,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-        //return TimeOfDay{};
     }
 
 #if qDebug
@@ -522,8 +522,12 @@ String TimeOfDay::Format (PrintFormat pf) const
             }
             return tmp;
         }
-        case PrintFormat::eISO8601:
-        case PrintFormat::eXML: {
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case PrintFormat::eXML:
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case PrintFormat::eISO8601: {
             uint32_t hour    = fTime_ / (60 * 60);
             uint32_t minutes = (fTime_ - hour * 60 * 60) / 60;
             uint32_t secs    = fTime_ - hour * 60 * 60 - minutes * 60;

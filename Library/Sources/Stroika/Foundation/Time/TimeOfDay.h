@@ -113,11 +113,33 @@ namespace Stroika::Foundation::Time {
          */
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
+            eXML [[deprecated ("since Stroika v2.1d11- use eISO8601")]],
             eISO8601,
-            eXML,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eXML)
+            Stroika_Define_Enum_Bounds (eCurrentLocale, eISO8601)
         };
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
+         *        equivalent to "%H:%M:%S"
+         */
+        static constexpr wchar_t kISO8601FormatArray[] = L"%T";
+        static const String      kISO8601Format;
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
+         */
+        static constexpr wchar_t kLocaleStandardFormatArray[] = L"%X";
+        static const String      kLocaleStandardFormat;
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
+         */
+        static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%EX";
+        static const String      kLocaleStandardAlternateFormat;
 
     public:
         /**
@@ -151,32 +173,17 @@ namespace Stroika::Foundation::Time {
 #endif
 
     public:
-        /**
-         *  TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
-         *
-         *  @see constexpr TimeOfDay::min ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const TimeOfDay kMin;
+        [[deprecated ("use TimeOfDay::min - deprecated in Stroika v2.1d11")]] static const TimeOfDay kMin;
 #else
-        static constexpr TimeOfDay kMin{0};
+        [[deprecated ("use TimeOfDay::min - deprecated in Stroika v2.1d11")]] static constexpr TimeOfDay kMin{0};
 #endif
 
     public:
-        /**
-         *  TimeOfDay::kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
-         *  not like 'end' - one past the last legal value.
-         *
-         *  @see constexpr TimeOfDay::max ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const TimeOfDay kMax;
+        [[deprecated ("use TimeOfDay::max - deprecated in Stroika v2.1d11")]] static const TimeOfDay kMax;
 #else
-        static constexpr TimeOfDay kMax{kMaxSecondsPerDay - 1};
+        [[deprecated ("use TimeOfDay::max - deprecated in Stroika v2.1d11")]] static constexpr TimeOfDay kMax{kMaxSecondsPerDay - 1};
 #endif
 
     public:
@@ -253,7 +260,7 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML,
+            eXML [[deprecated ("since Stroika v2.1d11- use eISO8601")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,

@@ -243,9 +243,14 @@ DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noex
 }
 #endif
 
+const String DateTime::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
+const String DateTime::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
+
+const String DateTime::kShortLocaleFormatPattern = String_Constant{L"%x %X"};
+
 const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
-    String_Constant{L"%c"},
-    String_Constant{L"%Ec"},
+    kLocaleStandardFormat,
+    kLocaleStandardAlternateFormat,
     String_Constant{L"%x %X"},
     String_Constant{L"%Ex %EX"},
     String_Constant{L"%Y-%b-%d %H:%M:%S"}, // no obvious reference for this so maybe not a good idea
@@ -254,9 +259,6 @@ const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
     String_Constant{L"%D%t%R"},            // no obvious reference for this so maybe not a good idea
     String_Constant{L"%a %b %e %T %Y"},    // no obvious reference for this so maybe not a good idea
 };
-
-const String DateTime::kDefaultFormatPattern     = String_Constant{L"%c"};
-const String DateTime::kShortLocaleFormatPattern = String_Constant{L"%x %X"};
 
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
@@ -269,8 +271,12 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-        case ParseFormat::eISO8601:
-        case ParseFormat::eXML: {
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case ParseFormat::eXML:
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case ParseFormat::eISO8601: {
             int year   = 0;
             int month  = 0;
             int day    = 0;
@@ -637,11 +643,15 @@ String DateTime::Format (PrintFormat pf) const
             }
             return mungedData;
         }
-        case PrintFormat::eISO8601:
-        case PrintFormat::eXML: {
-            String r = fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case PrintFormat::eXML:
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case PrintFormat::eISO8601: {
+            String r = fDate_.Format (Date::PrintFormat::eISO8601);
             if (fTimeOfDay_.has_value ()) {
-                String timeStr = fTimeOfDay_->Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
+                String timeStr = fTimeOfDay_->Format (TimeOfDay::PrintFormat::eISO8601);
                 r += Characters::String_Constant (L"T") + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::UTC ()) {
@@ -670,7 +680,7 @@ String DateTime::Format (const locale& l) const
         return String{};
     }
     if (GetTimeOfDay ().has_value ()) {
-        return Format (l, kDefaultFormatPattern);
+        return Format (l, kLocaleStandardFormat);
     }
     else {
         // otherwise we get a 'datetime' of 'XXX ' - with a space at the end
@@ -697,7 +707,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     tm when = As<tm> ();
 
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-    if (l == locale::classic () and formatPattern == kDefaultFormatPattern) {
+    if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
         static const String_Constant kAltPattern_{L"%a %b %e %T %Y"};
         tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
         return String (oss.str ());

@@ -31,6 +31,8 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   LOSE empty () and no-arg CTOR (forcing use of optional<DateTime>)
+ *
  *      @todo   Maybe use wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
  *                 (medium) Consider using strftime and strptime with %FT%T%z.
  *
@@ -50,9 +52,6 @@
  *              to use separate format print arg or???
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
- *
- *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should
- *              support BOTH here? Maybe where they differ doesn't matter for this class?
  *
  *      @todo   Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on
  *              bad conversions I think - moistly an issue for the locale-based stuff. Now it maybe just
@@ -167,11 +166,25 @@ namespace Stroika::Foundation::Time {
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML,
+            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eRFC1123,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eRFC1123)
         };
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
+         */
+        static constexpr wchar_t kLocaleStandardFormatArray[] = L"%c";
+        static const String      kLocaleStandardFormat;
+
+    public:
+        /**
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
+         */
+        static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ec";
+        static const String      kLocaleStandardAlternateFormat;
 
     public:
         /**
@@ -186,7 +199,6 @@ namespace Stroika::Foundation::Time {
          *      o   %x %X               - writes localized date representation / writes localized time representation
          */
         static const String kShortLocaleFormatPattern; // "%x %X"
-        static const String kDefaultFormatPattern;     // "%c"
 
     public:
         /**
@@ -208,7 +220,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note If the timezone cannot be identified in the source string, it will be returned as 'unknown'.
          *
-         *  For formatPattern, see https://en.cppreference.com/w/cpp/locale/time_get/get, and defaults to kDefaultFormatPattern
+         *  For formatPattern, see https://en.cppreference.com/w/cpp/locale/time_get/get, and defaults to kLocaleStandardFormat
          *
          *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
@@ -244,31 +256,17 @@ namespace Stroika::Foundation::Time {
         static Date GetToday () noexcept;
 
     public:
-        /**
-         * DateTime::kMin is the first date this DateTime class supports representing.
-         *
-         *  @see constexpr DateTime::min ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const DateTime kMin;
+        [[deprecated ("use DateTime::min - deprecated in Stroika v2.1d11")]] static const DateTime kMin;
 #else
-        static constexpr DateTime kMin{Date::min (), TimeOfDay::min (), Timezone::Unknown ()};
+        [[deprecated ("use DateTime::min - deprecated in Stroika v2.1d11")]] static constexpr DateTime kMin{Date::min (), TimeOfDay::min (), Timezone::Unknown ()};
 #endif
 
     public:
-        /**
-         * DateTime::kMax is the last date this DateTime class supports representing.
-         *
-         *  @see constexpr DateTime::max ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const DateTime kMax;
+        [[deprecated ("use DateTime::max - deprecated in Stroika v2.1d11")]] static const DateTime kMax;
 #else
-        static constexpr DateTime kMax{Date::max (), TimeOfDay::max (), Timezone::Unknown ()};
+        [[deprecated ("use DateTime::max - deprecated in Stroika v2.1d11")]] static constexpr DateTime kMax{Date::max (), TimeOfDay::max (), Timezone::Unknown ()};
 #endif
 
     public:
@@ -376,7 +374,7 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML,
+            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
@@ -386,7 +384,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put and defaults to kDefaultFormatPattern
+         *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put and defaults to kLocaleStandardFormat
          *  If only formatPattern specified, and no locale, use default (global) locale.
          *
          *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).

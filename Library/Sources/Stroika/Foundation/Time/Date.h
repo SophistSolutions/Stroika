@@ -69,8 +69,8 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-    *  \note   Configuration::DefaultNames<> supported
-    */
+     *  \note   Configuration::DefaultNames<> supported
+     */
     enum class MonthOfYear : uint8_t {
         eEmptyMonthOfYear = 0, // only zero if date empty
         eJanuary          = 1,
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Time {
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("use eISO8601")]],
+            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eJavascript,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
@@ -291,31 +291,17 @@ namespace Stroika::Foundation::Time {
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
 
     public:
-        /**
-         *  Date::kMin is the first date this Date class supports representing.
-         *
-         *  @see constexpr Date::min ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const Date kMin;
+        [[deprecated ("use Date::min - deprecated in Stroika v2.1d11")]] static const Date kMin;
 #else
-        static constexpr Date kMin{kMinJulianRep};
+        [[deprecated ("use Date::min - deprecated in Stroika v2.1d11")]] static constexpr Date kMin{kMinJulianRep};
 #endif
 
     public:
-        /**
-         * Date::kMax is the last date this Date class supports representing.
-         *
-         *  @see constexpr Date::max ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const Date kMax;
+        [[deprecated ("use Date::max - deprecated in Stroika v2.1d11")]] static const Date kMax;
 #else
-        static constexpr Date kMax{UINT_MAX - 1};
+        [[deprecated ("use Date::max - deprecated in Stroika v2.1d11")]] static constexpr Date kMax{UINT_MAX - 1};
 #endif
 
     public:
@@ -381,7 +367,7 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("use eISO8601")]],
+            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eJavascript,
             eCurrentLocale_WithZerosStripped,
 

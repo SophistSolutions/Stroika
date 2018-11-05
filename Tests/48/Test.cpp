@@ -207,7 +207,7 @@ namespace {
 namespace {
     void VERIFY_ROUNDTRIP_XML_ (const Date& d)
     {
-        VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eXML), Date::ParseFormat::eXML) == d);
+        VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eISO8601), Date::ParseFormat::eISO8601) == d);
     }
 
     void Test_3_TestDate_ ()
@@ -216,21 +216,21 @@ namespace {
         {
             Date d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             TestRoundTripFormatThenParseNoChange_ (d);
-            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
+            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
             d = d.AddDays (4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-08");
+            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1903-04-08");
             d = d.AddDays (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
+            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
             Date d = Date::Parse (L"09/14/1752", locale::classic ());
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d == Date::min ());
-            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         catch (...) {
@@ -248,7 +248,7 @@ namespace {
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
-            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
 #if qPlatform_Windows
@@ -317,7 +317,7 @@ namespace {
         TraceContextBumper ctx ("Test_4_TestDateTime_");
         {
             DateTime d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
-            VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1903-04-04");
+            VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -332,8 +332,8 @@ namespace {
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
-            d = DateTime (d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC);                       // so that compare works - cuz we don't know timezone we'll run test with...
-            VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            d = DateTime (d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC);                           // so that compare works - cuz we don't know timezone we'll run test with...
+            VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
 #if qPlatform_Windows
@@ -436,7 +436,7 @@ namespace {
         VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_.AddDays (1), kTOD_)).As<Time::DurationSecondsType> () == -24 * 60 * 60);
     }
     {
-        VerifyTestResult ((DateTime::Now () - DateTime::kMin) > Duration ("P200Y"));
+        VerifyTestResult ((DateTime::Now () - DateTime::min ()) > Duration ("P200Y"));
     }
 }
 {

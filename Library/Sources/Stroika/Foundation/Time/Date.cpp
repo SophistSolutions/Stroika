@@ -164,8 +164,12 @@ Date Date::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-        case ParseFormat::eISO8601:
-        case ParseFormat::eXML: {
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case ParseFormat::eXML:
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case ParseFormat::eISO8601: {
             /*
              * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
              */
@@ -177,7 +181,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             if (nItems == 3) {
                 Date result = Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
-                Assert (result == Parse (rep, locale::classic (), {kISO8601Format}));
+                Ensure (result == Parse (rep, locale::classic (), {String_Constant{kISO8601FormatArray}}));
                 return result;
             }
             else {
@@ -234,7 +238,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
 #if qCompilerAndStdLib_std_get_time_pctx_Buggy
         if ((errState & ios::badbit) or (errState & ios::failbit)) {
-            if (formatPattern == L"%x") {
+            if (formatPattern == kLocaleStandardFormat) {
                 errState = ios::goodbit;
                 iss      = wistringstream (wRep);
                 itbegin  = istreambuf_iterator<wchar_t> (iss);
@@ -247,15 +251,16 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         }
 #endif
         if ((errState & ios::badbit) or (errState & ios::failbit))
-            [[UNLIKELY_ATTR]] {
-                continue;
-            } else
+            [[UNLIKELY_ATTR]]
             {
-                if (consumedCharsInStringUpTo != nullptr) {
-                    *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
-                }
-                break;
+                continue;
             }
+        else {
+            if (consumedCharsInStringUpTo != nullptr) {
+                *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
+            }
+            break;
+        }
     }
     // clang-format off
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
@@ -264,7 +269,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         // clang-format on
 
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
-        TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
+    TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
     return AsDate_ (when);
 }
@@ -334,15 +339,19 @@ String Date::Format (PrintFormat pf) const
             }
             return tmp;
         }
-        case PrintFormat::eISO8601:
-        case PrintFormat::eXML: {
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case PrintFormat::eXML:
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        case PrintFormat::eISO8601: {
             wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
             MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
             DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
             Year        y = Year::eEmptyYear;
             mdy (&m, &d, &y);
             Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
-            Ensure (buf == Format (locale::classic (), kISO8601Format));    
+            Ensure (buf == Format (locale::classic (), String_Constant{kISO8601FormatArray}));
             return buf;
         } break;
         case PrintFormat::eJavascript: {
@@ -372,7 +381,8 @@ String Date::Format (PrintFormat pf) const
 
 String Date::Format (const locale& l) const
 {
-    return Format (l, String_Constant{L"%x"}); // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
+    static const String kLocaleStandardFormat_ = String_Constant{kLocaleStandardFormatArray}; // copied kLocaleStandardFormat_ cuz can be used before main ()
+    return Format (l, kLocaleStandardFormat_);
 }
 
 String Date::Format (const String& formatPattern) const
@@ -469,10 +479,12 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
     Date result = empty () ? Date::min () : *this;
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep)
-        [[UNLIKELY_ATTR]] {
+        [[UNLIKELY_ATTR]]
+        {
             static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
             Execution::Throw (kRangeErrror_);
-        } return result;
+        }
+    return result;
 }
 
 Date::JulianRepType Date::DaysSince () const
