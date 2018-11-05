@@ -135,49 +135,25 @@ namespace Stroika::Foundation::Time {
     {
         return lhs.Compare (rhs) < 0;
     }
-    inline bool operator< (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
-    {
-        return TimeOfDay::Compare (lhs, rhs) < 0;
-    }
     inline bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) <= 0;
-    }
-    inline bool operator<= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
-    {
-        return TimeOfDay::Compare (lhs, rhs) <= 0;
     }
     inline bool operator== (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) == 0;
     }
-    inline bool operator== (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
-    {
-        return TimeOfDay::Compare (lhs, rhs) == 0;
-    }
     inline bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) != 0;
-    }
-    inline bool operator!= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
-    {
-        return TimeOfDay::Compare (lhs, rhs) != 0;
     }
     inline bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) >= 0;
     }
-    inline bool operator>= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
-    {
-        return TimeOfDay::Compare (lhs, rhs) >= 0;
-    }
     inline bool operator> (TimeOfDay lhs, TimeOfDay rhs)
     {
         return lhs.Compare (rhs) > 0;
-    }
-    inline bool operator> (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs)
-    {
-        return TimeOfDay::Compare (lhs, rhs) > 0;
     }
 
 }

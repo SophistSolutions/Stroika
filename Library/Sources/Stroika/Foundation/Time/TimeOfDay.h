@@ -312,37 +312,32 @@ namespace Stroika::Foundation::Time {
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator< (TimeOfDay lhs, TimeOfDay rhs);
-    bool operator< (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
-    bool operator<= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator== (TimeOfDay lhs, TimeOfDay rhs);
-    bool operator== (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator!= (TimeOfDay lhs, TimeOfDay rhs);
-    bool operator!= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator>= (TimeOfDay lhs, TimeOfDay rhs);
-    bool operator>= (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
 
     /**
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator> (TimeOfDay lhs, TimeOfDay rhs);
-    bool operator> (optional<TimeOfDay> lhs, optional<TimeOfDay> rhs);
+
 }
 
 /*
