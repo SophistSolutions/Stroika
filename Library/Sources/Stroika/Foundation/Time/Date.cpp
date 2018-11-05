@@ -247,16 +247,15 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         }
 #endif
         if ((errState & ios::badbit) or (errState & ios::failbit))
-            [[UNLIKELY_ATTR]]
-            {
+            [[UNLIKELY_ATTR]] {
                 continue;
+            } else
+            {
+                if (consumedCharsInStringUpTo != nullptr) {
+                    *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
+                }
+                break;
             }
-        else {
-            if (consumedCharsInStringUpTo != nullptr) {
-                *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
-            }
-            break;
-        }
     }
     // clang-format off
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
@@ -265,7 +264,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         // clang-format on
 
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
-    TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
+        TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
     return AsDate_ (when);
 }
@@ -343,6 +342,7 @@ String Date::Format (PrintFormat pf) const
             Year        y = Year::eEmptyYear;
             mdy (&m, &d, &y);
             Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
+            Ensure (buf == Format (locale::classic (), kISO8601Format));    
             return buf;
         } break;
         case PrintFormat::eJavascript: {
@@ -469,12 +469,10 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
     Date result = empty () ? Date::min () : *this;
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep)
-        [[UNLIKELY_ATTR]]
-        {
+        [[UNLIKELY_ATTR]] {
             static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
             Execution::Throw (kRangeErrror_);
-        }
-    return result;
+        } return result;
 }
 
 Date::JulianRepType Date::DaysSince () const
