@@ -358,8 +358,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename T>
         class SimpleReader_;
         template <typename T>
-        class OptionalTypesReader_;
-        template <typename T>
         class OldOptionalTypesReader_;
 
     private:
@@ -394,6 +392,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     private:
         Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
     };
+
+    template <>
+    ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const optional<Time::DateTime>*);
 
     /**
      *  Subclasses of this abstract class are responsible for consuming data at a given level
@@ -671,6 +672,46 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     /**
      */
     template <typename T>
+    struct OptionalTypesReader_DefaultTraits {
+        static inline const T kDefaultValue = T{};
+    };
+
+    /**
+     *  \brief Reader for optional<X> types - typically just use AddCommonType<optional<T>> () - but use this if you need to parameterize
+     *
+     *  OptionalTypesReader supports reads of optional types. This will work - for any types for
+     *  which SimpleReader<T> is implemented.
+     *
+     *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
+     *  already occurred. The reason for Optional<> part is because the caller had an optional
+     *  element which might never have triggered the invocation of this class.
+     */
+    template <typename T, typename TRAITS = OptionalTypesReader_DefaultTraits<T>>
+    class OptionalTypesReader : public IElementConsumer {
+    public:
+        OptionalTypesReader (optional<T>* intoVal);
+
+    public:
+        virtual void                         Activated (Context& r) override;
+        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
+        virtual void                         HandleTextInside (const String& text) override;
+        virtual void                         Deactivating () override;
+
+    public:
+        /**
+         *  Helper to convert a reader to a factory (something that creates the reader).
+         */
+        static ReaderFromVoidStarFactory AsFactory ();
+
+    private:
+        optional<T>*                 fValue_{};
+        T                            fProxyValue_{TRAITS::kDefaultValue};
+        shared_ptr<IElementConsumer> fActualReader_{};
+    };
+
+    /**
+     */
+    template <typename T>
     class MixinReader : public IElementConsumer {
     public:
         struct MixinEltTraits {
@@ -872,6 +913,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     /**
      */
     [[noreturn]] void ThrowUnRecognizedStartElt (const Name& name);
+
 }
 
 /*

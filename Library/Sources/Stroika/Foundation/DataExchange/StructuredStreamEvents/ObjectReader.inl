@@ -98,65 +98,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     /**
      *  [private]
      *
-     *  OptionalTypesReader_ supports reads of optional types. This will work - for any types for
-     *  which SimpleReader<T> is implemented.
-     *
-     *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
-     *  already occurred. The reaosn for Optional<> part is because the caller had an optional
-     *  element which might never have triggered the invocation of this class.
-     */
-    template <typename T>
-    class Registry::OptionalTypesReader_ : public IElementConsumer {
-    public:
-        OptionalTypesReader_ (optional<T>* intoVal)
-            : fValue_ (intoVal)
-        {
-            RequireNotNull (intoVal);
-        }
-
-    public:
-        virtual void Activated (Context& r) override
-        {
-            Assert (fActualReader_ == nullptr);
-            fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
-            fActualReader_->Activated (r);
-        }
-        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
-        {
-            AssertNotNull (fActualReader_);
-            return fActualReader_->HandleChildStart (name);
-        }
-        virtual void HandleTextInside (const String& text) override
-        {
-            AssertNotNull (fActualReader_);
-            fActualReader_->HandleTextInside (text);
-        }
-        virtual void Deactivating () override
-        {
-            AssertNotNull (fActualReader_);
-            fActualReader_->Deactivating ();
-            fActualReader_.reset ();
-            *fValue_ = fProxyValue_;
-        }
-
-    public:
-        /**
-         *  Helper to convert a reader to a factory (something that creates the reader).
-         */
-        static ReaderFromVoidStarFactory AsFactory ()
-        {
-            return IElementConsumer::AsFactory<optional<T>, OptionalTypesReader_> ();
-        }
-
-    private:
-        optional<T>*                 fValue_{};
-        T                            fProxyValue_{};
-        shared_ptr<IElementConsumer> fActualReader_{};
-    };
-
-    /**
-     *  [private]
-     *
      *  OldOptionalTypesReader_ supports reads of optional types. This will work - for any types for
      *  which SimpleReader<T> is implemented.
      *
@@ -219,7 +160,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     template <typename TARGET_TYPE, typename READER, typename... ARGS>
-    ReaderFromVoidStarFactory IElementConsumer::AsFactory (ARGS&&... args)
+    inline ReaderFromVoidStarFactory IElementConsumer::AsFactory (ARGS&&... args)
     {
         return Registry::ConvertReaderToFactory<TARGET_TYPE, READER> (forward<ARGS> (args)...);
     }
@@ -462,6 +403,50 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     inline ReaderFromVoidStarFactory ListOfObjectsReader<CONTAINER_OF_T>::AsFactory (const Name& memberElementName)
     {
         return IElementConsumer::AsFactory<CONTAINER_OF_T, ListOfObjectsReader> (memberElementName);
+    }
+
+    /*
+      ********************************************************************************
+      *************** ObjectReaderRegistry::OptionalTypesReader **********************
+      ********************************************************************************
+      */
+    template <typename T, typename TRAITS>
+    OptionalTypesReader<T, TRAITS>::OptionalTypesReader (optional<T>* intoVal)
+        : fValue_ (intoVal)
+    {
+        RequireNotNull (intoVal);
+    }
+    template <typename T, typename TRAITS>
+    void OptionalTypesReader<T, TRAITS>::Activated (Context& r)
+    {
+        Assert (fActualReader_ == nullptr);
+        fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
+        fActualReader_->Activated (r);
+    }
+    template <typename T, typename TRAITS>
+    shared_ptr<IElementConsumer> OptionalTypesReader<T, TRAITS>::HandleChildStart (const Name& name)
+    {
+        AssertNotNull (fActualReader_);
+        return fActualReader_->HandleChildStart (name);
+    }
+    template <typename T, typename TRAITS>
+    void OptionalTypesReader<T, TRAITS>::HandleTextInside (const String& text)
+    {
+        AssertNotNull (fActualReader_);
+        fActualReader_->HandleTextInside (text);
+    }
+    template <typename T, typename TRAITS>
+    void OptionalTypesReader<T, TRAITS>::Deactivating ()
+    {
+        AssertNotNull (fActualReader_);
+        fActualReader_->Deactivating ();
+        fActualReader_.reset ();
+        *fValue_ = fProxyValue_;
+    }
+    template <typename T, typename TRAITS>
+    ReaderFromVoidStarFactory OptionalTypesReader<T, TRAITS>::AsFactory ()
+    {
+        return IElementConsumer::AsFactory<optional<T>, OptionalTypesReader> ();
     }
 
     /*
@@ -903,7 +888,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const optional<T>*)
     {
-        return OptionalTypesReader_<T>::AsFactory ();
+        return OptionalTypesReader<T>::AsFactory ();
     }
     template <typename T, typename TRAITS>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
@@ -929,6 +914,16 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Sequence<T>*, const Name& name)
     {
         return ListOfObjectsReader<Sequence<T>>::AsFactory (name);
+    }
+    namespace PRIVATE_ {
+        struct OptionalTypesReader_DateTime_DefaultTraits_ {
+            static inline const Time::DateTime kDefaultValue = Time::DateTime::min ();
+        };
+    }
+    template <>
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const optional<Time::DateTime>*)
+    {
+        return OptionalTypesReader<Time::DateTime, PRIVATE_::OptionalTypesReader_DateTime_DefaultTraits_>::AsFactory ();
     }
     template <typename T, typename... ARGS>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader (ARGS&&... args)
