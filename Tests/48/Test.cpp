@@ -228,7 +228,6 @@ namespace {
         }
         try {
             Date d = Date::Parse (L"09/14/1752", locale::classic ());
-            VerifyTestResult (not d.empty ());
             VerifyTestResult (d == Date::min ());
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
@@ -237,15 +236,13 @@ namespace {
             VerifyTestResult (false);
         }
         {
-            Date d;
-            VerifyTestResult (d.empty ());
+            optional<Date> d;
             VerifyTestResult (d < DateTime::GetToday ());
             VerifyTestResult (DateTime::GetToday () > d);
-            TestRoundTripFormatThenParseNoChange_ (d);
+            //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date d = Date::min ();
-            VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?

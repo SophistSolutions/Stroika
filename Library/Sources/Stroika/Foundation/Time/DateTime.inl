@@ -19,10 +19,16 @@ namespace Stroika::Foundation::Time {
      ********************************** DateTime ************************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     inline constexpr DateTime::DateTime () noexcept
         : fTimezone_{Timezone::Unknown ()}
     {
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     inline constexpr DateTime::DateTime (const Date& d) noexcept
         : fTimezone_{Timezone::Unknown ()}
         , fDate_{d}
@@ -83,7 +89,13 @@ namespace Stroika::Foundation::Time {
     }
     inline constexpr bool DateTime::empty () const noexcept
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         return fDate_.empty ();
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
     inline constexpr Date DateTime::GetDate () const noexcept
     {

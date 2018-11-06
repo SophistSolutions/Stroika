@@ -185,6 +185,7 @@ const DateTime DateTime::kMax;
 
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_ (Timezone::UTC ())
+    , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     tm tmTime{};
 #if qPlatform_Windows
@@ -206,6 +207,7 @@ DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
 #if qPlatform_POSIX
 DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
+    , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
@@ -216,6 +218,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
 
 DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
+    , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
@@ -234,6 +237,7 @@ DateTime::DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz) noe
 
 DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
+    , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     SYSTEMTIME sysTime{};
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
@@ -310,11 +314,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 }
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
-            Date                d;
-            optional<TimeOfDay> t;
-            if (nItems >= 3) {
-                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            if (nItems < 3) {
+                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
+            Date                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
             }
@@ -328,10 +332,6 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                     tz = Timezone (static_cast<int16_t> (tzHr * 60 + tzMn));
                 }
             }
-            // WRONG/BAD - did this up until Stroika 2.1d6 (and 2.0b6 on v2 branch)
-            //else {
-            //    tz = Timezone::LocalTime ();
-            //}
             return t.has_value () ? DateTime (d, *t, tz) : d;
         } break;
         case ParseFormat::eRFC1123: {
@@ -393,11 +393,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                     break;
                 }
             }
-            Date                d;
-            optional<TimeOfDay> t;
-            if (nItems >= 3) {
-                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            if (nItems < 3) {
+                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
+            Date                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
             }

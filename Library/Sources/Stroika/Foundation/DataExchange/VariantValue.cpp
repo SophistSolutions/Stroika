@@ -257,14 +257,10 @@ bool VariantValue::empty () const
             return isnan (v->fVal);
         }
         case Type::eDate: {
-            auto v = dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
-            AssertNotNull (v);
-            return v->fVal.empty ();
+            return false; // cannot be empty (a change since Stroika v2.1d11 - used to be v->fVal.empty ())
         }
         case Type::eDateTime: {
-            auto v = dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
-            AssertNotNull (v);
-            return v->fVal.empty ();
+            return false; // cannot be empty (a change since Stroika v2.1d11 - used to be v->fVal.empty ())
         }
         case Type::eString: {
             auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
@@ -452,7 +448,7 @@ template <>
 Date VariantValue::As () const
 {
     if (fVal_ == nullptr) {
-        return Date{};
+        Execution::Throw (Date::FormatException::kThe); // until Stroika v2.1d11 this returned Date{}, but no nonger support empty Date objects
     }
     switch (fVal_->GetType ()) {
         case Type::eDate: {

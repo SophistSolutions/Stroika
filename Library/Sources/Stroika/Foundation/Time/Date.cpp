@@ -195,11 +195,10 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
             int nItems = ::swscanf (rep.c_str (), L"%d/%d/%d", &month, &day, &year);
             DISABLE_COMPILER_MSC_WARNING_END (4996)
-            Date result;
             if (nItems == 3) {
-                result = Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
+                return Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
             }
-            return result;
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
         } break;
     }
     AssertNotReached ();
@@ -297,9 +296,15 @@ Date Date::Parse (const String& rep, LCID lcid)
 
 String Date::Format (PrintFormat pf) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
@@ -392,9 +397,15 @@ String Date::Format (const String& formatPattern) const
 
 String Date::Format (const locale& l, const String& formatPattern) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
@@ -410,9 +421,15 @@ String Date::Format (const locale& l, const String& formatPattern) const
 #if qPlatform_Windows
 String Date::Format (LCID lcid) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     SYSTEMTIME st      = toSYSTEM_ (*this);
     int        nTChars = ::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, nullptr, 0);
     if (nTChars == 0) {
@@ -427,9 +444,15 @@ String Date::Format (LCID lcid) const
 
 String Date::Format (LCID lcid, const String& format) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     SYSTEMTIME st      = toSYSTEM_ (*this);
     int        nTChars = ::GetDateFormatW (lcid, 0, &st, format.c_str (), nullptr, 0);
     if (nTChars == 0) {
@@ -446,9 +469,15 @@ String Date::Format (LCID lcid, const String& format) const
 #if qPlatform_Windows
 String Date::LongFormat (LCID lcid) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     SYSTEMTIME st     = toSYSTEM_ (*this);
     int        nChars = ::GetDateFormatW (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
     if (nChars == 0) {
@@ -476,7 +505,13 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
      *      WAS:
      *          Date result = empty () ? DateTime::GetToday () : *this;
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     Date result = empty () ? Date::min () : *this;
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep)
         [[UNLIKELY_ATTR]]
@@ -513,7 +548,13 @@ MonthOfYear Date::GetMonth () const
     DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
     Year        y = Year::eEmptyYear;
     mdy (&m, &d, &y);
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     Ensure (empty () or (1 <= static_cast<int> (m) and static_cast<int> (m) <= 12));
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     Ensure (0 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
     return m;
 }
@@ -524,7 +565,13 @@ DayOfMonth Date::GetDayOfMonth () const
     DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
     Year        y = Year::eEmptyYear;
     mdy (&m, &d, &y);
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     Ensure (empty () or (1 <= static_cast<int> (d) and static_cast<int> (d) <= 31));
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     Ensure (0 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
     return d;
 }
@@ -584,8 +631,15 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
  */
 Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     Require (not lhs.empty ());
     Require (not rhs.empty ()); // since unclear what diff would mean
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+
     Date::JulianRepType l = lhs.GetJulianRep ();
     Date::JulianRepType r = rhs.GetJulianRep ();
     if (l == r) {
@@ -621,8 +675,14 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
  */
 int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     Require (not lhs.empty ()); // since meaning of diff wouldn't make much sense
     Require (not rhs.empty ()); // ditto
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     MonthOfYear lm = MonthOfYear::eEmptyMonthOfYear;
     DayOfMonth  ld = DayOfMonth::eEmptyDayOfMonth;
@@ -644,8 +704,14 @@ int Time::YearDifference (const Date& lhs, const Date& rhs)
 
 float Time::YearDifferenceF (const Date& lhs, const Date& rhs)
 {
-    Require (not lhs.empty ());                // since meaning of diff wouldn't make much sense
-    Require (not rhs.empty ());                // ditto
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    Require (not lhs.empty ()); // since meaning of diff wouldn't make much sense
+    Require (not rhs.empty ()); // ditto
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     return DayDifference (lhs, rhs) / 365.25f; //tmphack
 }
 
@@ -654,8 +720,21 @@ float Time::YearDifferenceF (const Date& lhs, const Date& rhs)
  ***************************** GetFormattedAge **********************************
  ********************************************************************************
  */
+String Time::GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate)
+{
+    if (birthDate.has_value ()) {
+        int yearDiff = deathDate.has_value () ? YearDifference (*deathDate, *birthDate) : YearDifference (DateTime::GetToday (), *birthDate);
+        return Format (L"%d", yearDiff);
+    }
+    else {
+        return String_Constant (L"?");
+    }
+}
 String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (birthDate.empty ()) {
         return String_Constant (L"?");
     }
@@ -663,6 +742,9 @@ String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
         int yearDiff = deathDate.empty () ? YearDifference (DateTime::GetToday (), birthDate) : YearDifference (deathDate, birthDate);
         return Format (L"%d", yearDiff);
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 }
 
 /*
@@ -670,8 +752,30 @@ String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
  ************************** GetFormattedAgeWithUnit *****************************
  ********************************************************************************
  */
+String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const optional<Date>& deathDate, bool abbrevUnit)
+{
+    if (birthDate.has_value ()) {
+        int yearDiff = deathDate.has_value () ? YearDifference (*deathDate, *birthDate) : YearDifference (DateTime::GetToday (), *birthDate);
+        if (yearDiff >= 0 and yearDiff < 2) {
+            float   yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
+            int     months    = int(yearDiffF * 12.0f + 0.4999f);
+            wstring unitBase  = abbrevUnit ? L"mo" : L"month";
+            return Format (L"%d %s", months, Linguistics::PluralizeNoun (unitBase, months).c_str ());
+        }
+        else {
+            wstring unitBase = abbrevUnit ? L"yr" : L"year";
+            return Format (L"%d %s", yearDiff, Linguistics::PluralizeNoun (unitBase, yearDiff).c_str ());
+        }
+    }
+    else {
+        return String_Constant (L"?");
+    }
+}
 String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool abbrevUnit)
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (birthDate.empty ()) {
         return String_Constant (L"?");
     }
@@ -688,4 +792,7 @@ String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDa
             return Format (L"%d %s", yearDiff, Linguistics::PluralizeNoun (unitBase, yearDiff).c_str ());
         }
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 }

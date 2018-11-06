@@ -26,12 +26,12 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Lose empty () and no-arg CTOR (like we did for TimeOfDay). Instead require users to use optional<Date>
+ *      @todo   Complete removeal of deprecated empty and no-arg constructor
+ *
+ *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-668 - Date class should support the full Julian Date Range -
  *              not just Gregorian calendar
- *
- *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
@@ -168,6 +168,7 @@ namespace Stroika::Foundation::Time {
      *          NB: Date implies NO NOTION of timezone.
      *
      *      'empty' concept:
+     *          *** DEPRECATED ***
      *          Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds
      *          or days (JulienRep), treat empty as Date::kMin. For format routine, return empty string.
      *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
@@ -206,7 +207,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
          */
-        constexpr Date ();
+        [[deprecated ("Use optional<Date> instead of Date no-arg constructor - as of v2.1d11;")]] constexpr Date ();
         constexpr Date (const Date& src) = default;
         constexpr Date (Date&& src)      = default;
         explicit constexpr Date (JulianRepType julianRep);
@@ -274,6 +275,8 @@ namespace Stroika::Foundation::Time {
          * Note that for the consumedCharsInStringUpTo overload, the consumedCharsInStringUpTo is filled in with the position after the last
          * character read (so before the next character to be read).
          *
+         *  \note Parse (... locale) with no formats specified, defaults to parsing with kDefaultParseFormats formats.
+         *
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty Date object (Date {}).
          *
          *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
@@ -322,9 +325,7 @@ namespace Stroika::Foundation::Time {
         static constexpr Date max ();
 
     public:
-        /**
-         */
-        nonvirtual constexpr bool empty () const;
+        [[deprecated ("Use optional<Date> instead of Date no-arg constructor - as of v2.1d11; once this goes away, it will be as if NEVER EMPTY")]] constexpr bool empty () const;
 
     public:
         /**
@@ -455,6 +456,7 @@ namespace Stroika::Foundation::Time {
         // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
         // this comparison function - see the notes about 'empty' in the class description.
         nonvirtual int Compare (const Date& rhs) const;
+        static int     Compare (const optional<Date>& lhs, const optional<Date>& rhs);
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
@@ -513,8 +515,10 @@ namespace Stroika::Foundation::Time {
     int                       YearDifference (const Date& lhs, const Date& rhs);
     float                     YearDifferenceF (const Date& lhs, const Date& rhs);
 
-    String GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());                                 // returns ? if not a good src date
-    String GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool abbrevUnit = true); // returns ? if not a good src date
+    String GetFormattedAge (const Date& birthDate, const Date& deathDate);                                                          // returns ? if not a good src date
+    String GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate = {});                                 // returns ? if not a good src date
+    String GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool abbrevUnit = true);                          // returns ? if not a good src date
+    String GetFormattedAgeWithUnit (const optional<Date>& birthDate, const optional<Date>& deathDate = {}, bool abbrevUnit = true); // returns ? if not a good src date
 
 }
 

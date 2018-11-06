@@ -372,6 +372,14 @@ Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Ti
     ToObject (toObjectMapper, v, &tmp);
     return tmp;
 }
+template <>
+Time::Date ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Date>& toObjectMapper, const VariantValue& v) const
+{
+    // Generally best to serialize/deserialize with optional<Date> - else you cannot tell if you actually found one (defaults to zero time of day)
+    Time::Date tmp{0};
+    ToObject (toObjectMapper, v, &tmp);
+    return tmp;
+}
 
 String ObjectVariantMapper::ToString () const
 {

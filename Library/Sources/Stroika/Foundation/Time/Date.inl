@@ -100,6 +100,9 @@ namespace Stroika::Foundation::Time {
     }
     inline int Date::Compare (const Date& rhs) const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         if (empty ()) {
             return rhs.empty () ? 0 : -1;
         }
@@ -114,6 +117,27 @@ namespace Stroika::Foundation::Time {
                 return 0;
             }
             return l < r ? -1 : 1;
+        }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+    }
+    inline int Date::Compare (const optional<Date>& lhs, const optional<Date>& rhs)
+    {
+        if (lhs.has_value ()) {
+            if (not rhs.has_value ()) {
+                return 1;
+            }
+            // careful of signed/unsigned converstions - esp because of kMax which is very large
+            JulianRepType l = lhs->GetJulianRep ();
+            JulianRepType r = rhs->GetJulianRep ();
+            if (l == r) {
+                return 0;
+            }
+            return l < r ? -1 : 1;
+        }
+        else {
+            return rhs.has_value () ? -1 : 0;
         }
     }
     inline Date Date::Parse (const String& rep, const locale& l)
