@@ -903,7 +903,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const optional<T>*)
     {
-        return cvtFactory_<optional<T>> ([](optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OptionalTypesReader_<T>> (o); });
+        return OptionalTypesReader_<T>::AsFactory ();
     }
     template <typename T, typename TRAITS>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
@@ -911,24 +911,24 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return cvtFactory_<Memory::Optional<T>> ([](Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OldOptionalTypesReader_<T>> (o); });
     }
     template <typename T>
-    ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const vector<T>*)
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const vector<T>*)
     {
-        return cvtFactory_<vector<T>> ([](vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader<vector<T>>> (o); });
+        return ListOfObjectsReader<vector<T>>::AsFactory ();
     }
     template <typename T>
-    ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const vector<T>*, const Name& name)
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const vector<T>*, const Name& name)
     {
-        return cvtFactory_<vector<T>> ([name](vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader<vector<T>>> (o, name); });
+        return ListOfObjectsReader<vector<T>>::AsFactory (name);
     }
     template <typename T>
-    ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Sequence<T>*)
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Sequence<T>*)
     {
-        return cvtFactory_<Sequence<T>> ([](Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader<Sequence<T>>> (o); });
+        return ListOfObjectsReader<Sequence<T>>::AsFactory ();
     }
     template <typename T>
-    ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Sequence<T>*, const Name& name)
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Sequence<T>*, const Name& name)
     {
-        return cvtFactory_<Sequence<T>> ([name](Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectsReader<Sequence<T>>> (o, name); });
+        return ListOfObjectsReader<Sequence<T>>::AsFactory (name);
     }
     template <typename T, typename... ARGS>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader (ARGS&&... args)
