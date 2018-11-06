@@ -730,22 +730,6 @@ String Time::GetFormattedAge (const optional<Date>& birthDate, const optional<Da
         return String_Constant (L"?");
     }
 }
-String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
-{
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (birthDate.empty ()) {
-        return String_Constant (L"?");
-    }
-    else {
-        int yearDiff = deathDate.empty () ? YearDifference (DateTime::GetToday (), birthDate) : YearDifference (deathDate, birthDate);
-        return Format (L"%d", yearDiff);
-    }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-}
 
 /*
  ********************************************************************************
@@ -770,29 +754,4 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
     else {
         return String_Constant (L"?");
     }
-}
-String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool abbrevUnit)
-{
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (birthDate.empty ()) {
-        return String_Constant (L"?");
-    }
-    else {
-        int yearDiff = deathDate.empty () ? YearDifference (DateTime::GetToday (), birthDate) : YearDifference (deathDate, birthDate);
-        if (yearDiff >= 0 and yearDiff < 2) {
-            float   yearDiffF = deathDate.empty () ? YearDifferenceF (DateTime::GetToday (), birthDate) : YearDifferenceF (deathDate, birthDate);
-            int     months    = int(yearDiffF * 12.0f + 0.4999f);
-            wstring unitBase  = abbrevUnit ? L"mo" : L"month";
-            return Format (L"%d %s", months, Linguistics::PluralizeNoun (unitBase, months).c_str ());
-        }
-        else {
-            wstring unitBase = abbrevUnit ? L"yr" : L"year";
-            return Format (L"%d %s", yearDiff, Linguistics::PluralizeNoun (unitBase, yearDiff).c_str ());
-        }
-    }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
 }

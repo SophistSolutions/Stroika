@@ -456,7 +456,6 @@ namespace Stroika::Foundation::Time {
         // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
         // this comparison function - see the notes about 'empty' in the class description.
         nonvirtual int Compare (const Date& rhs) const;
-        static int     Compare (const optional<Date>& lhs, const optional<Date>& rhs);
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
@@ -515,9 +514,7 @@ namespace Stroika::Foundation::Time {
     int                       YearDifference (const Date& lhs, const Date& rhs);
     float                     YearDifferenceF (const Date& lhs, const Date& rhs);
 
-    String GetFormattedAge (const Date& birthDate, const Date& deathDate);                                                          // returns ? if not a good src date
     String GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate = {});                                 // returns ? if not a good src date
-    String GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool abbrevUnit = true);                          // returns ? if not a good src date
     String GetFormattedAgeWithUnit (const optional<Date>& birthDate, const optional<Date>& deathDate = {}, bool abbrevUnit = true); // returns ? if not a good src date
 
 }

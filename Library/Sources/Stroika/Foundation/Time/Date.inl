@@ -122,24 +122,6 @@ namespace Stroika::Foundation::Time {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
-    inline int Date::Compare (const optional<Date>& lhs, const optional<Date>& rhs)
-    {
-        if (lhs.has_value ()) {
-            if (not rhs.has_value ()) {
-                return 1;
-            }
-            // careful of signed/unsigned converstions - esp because of kMax which is very large
-            JulianRepType l = lhs->GetJulianRep ();
-            JulianRepType r = rhs->GetJulianRep ();
-            if (l == r) {
-                return 0;
-            }
-            return l < r ? -1 : 1;
-        }
-        else {
-            return rhs.has_value () ? -1 : 0;
-        }
-    }
     inline Date Date::Parse (const String& rep, const locale& l)
     {
         return Date::Parse_ (rep, l, kDefaultParseFormats, nullptr);
