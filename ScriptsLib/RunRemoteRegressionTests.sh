@@ -39,7 +39,6 @@ if [ $RUN_IN_DOCKER -eq 0 ]; then
 	CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
 	CMD2Exec+="export BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET;"
 	CMD2Exec+="export PRIVATE_COMPILER_BUILDS_DIR=$PRIVATE_COMPILER_BUILDS_DIR;"
-	CMD2Exec+="export PRIVATE_COMPILER_BUILDS_DIR=$PRIVATE_COMPILER_BUILDS_DIR;"
 	CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
 	CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
 else
@@ -50,19 +49,10 @@ EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 echo ssh $SSH_TARGET -t $CMD2Exec
 ssh $SSH_TARGET -t "$CMD2Exec"
 
-#CMD2Exec=''
-#CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
-#if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
-#	CMD2Exec+="export EXE=Builds/Release/Test50;"
-#fi
-#CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
-#echo ssh $SSH_TARGET $CMD2Exec
-#ssh $SSH_TARGET "$CMD2Exec"
-
 
 echo "Fetching results:"
 echo scp $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
 scp $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
 
-echo scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
-scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
+echo scp -q $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
+scp -q $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
