@@ -824,7 +824,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     template <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
     struct RepeatedElementReader_DefaultTraits {
-        using ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
+        using ContainerAdapterAdder                  = CONTAINER_ADAPTER_ADDER;
+        using TValueType                             = typename CONTAINER_OF_T::value_type;
+        static inline const TValueType kDefaultValue = TValueType{};
     };
     template <typename T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
     class RepeatedElementReader : public IElementConsumer {
@@ -863,7 +865,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         ContainerType*                      fValuePtr_{};
         optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
         function<bool(Name)>                fReadThisName_{[]([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
-        ElementType                         fProxyValue_{};
+        ElementType                         fProxyValue_{TRAITS::kDefaultValue};
         shared_ptr<IElementConsumer>        fActiveSubReader_{};
     };
 
