@@ -479,7 +479,7 @@ template <>
 DateTime VariantValue::As () const
 {
     if (fVal_ == nullptr) {
-        Execution::Throw (Date::FormatException::kThe); // until Stroika v2.1d11 this returned DateTime{}, but no nonger support empty DateTime objects
+        Execution::Throw (DateTime::FormatException::kThe); // until Stroika v2.1d11 this returned DateTime{}, but no nonger support empty DateTime objects
     }
     switch (fVal_->GetType ()) {
         case Type::eDate: {

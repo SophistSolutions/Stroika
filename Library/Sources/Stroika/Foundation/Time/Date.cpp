@@ -60,6 +60,10 @@ namespace {
     }
 }
 
+namespace {
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+}
+
 // Just turn on while debuging this code
 // or testing new compilers
 #ifndef qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
@@ -217,8 +221,6 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
     }
     wstring wRep = rep.As<wstring> ();
-
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
 
     const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
     ios::iostate             errState = ios::goodbit;

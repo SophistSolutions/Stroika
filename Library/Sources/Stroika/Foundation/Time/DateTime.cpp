@@ -42,6 +42,10 @@ namespace {
     constexpr int kSecondsPerDay_    = 24 * kSecondsPerHour_;
 }
 
+namespace {
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+}
+
 /*
  *  Subtle implementation note:
  *    http://www.cplusplus.com/reference/ctime/tm/
@@ -445,8 +449,6 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
 
     wstring wRep = rep.As<wstring> ();
 
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
-
     const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
     ios::iostate             errState = ios::goodbit;
     tm                       when{};
@@ -713,7 +715,6 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
     wostringstream           oss;
 
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
     if constexpr (kRequireImbueToUseFacet_) {
         oss.imbue (l);
     }

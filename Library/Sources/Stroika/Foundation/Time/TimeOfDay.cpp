@@ -42,6 +42,10 @@ using namespace Time;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
+namespace {
+    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+}
+
 #if qPlatform_Windows
 namespace {
     String GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
@@ -381,8 +385,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
     }
     wstring wRep = rep.As<wstring> ();
-
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
 
     const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
     ios::iostate             errState = ios::goodbit;
