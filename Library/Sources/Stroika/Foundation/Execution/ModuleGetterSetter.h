@@ -29,8 +29,8 @@ namespace Stroika::Foundation ::Execution {
      *  \par Example Usage
      *      \code
      *          struct  MyData_ {
-     *              bool        fEnabled = false;
-     *              DateTime    fLastSynchronizedAt;
+     *              bool                fEnabled = false;
+     *              optional<DateTime>  fLastSynchronizedAt;
      *          };
      *          struct  ModuleGetterSetter_Implementation_MyData_ {
      *              ModuleGetterSetter_Implementation_MyData_ ()
@@ -78,7 +78,7 @@ namespace Stroika::Foundation ::Execution {
      *          }
      *          void TestUse3_ ()
      *          {
-     *              if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+     *              if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
      *                  sWaitableEvent.Set ();  // e.g. trigger someone to wakeup and used changes? - no global lock held here...
      *              }
      *          }

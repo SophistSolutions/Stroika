@@ -130,7 +130,7 @@ namespace Stroika::Foundation::DataExchange {
      *      \code
      *      struct  SharedContactsConfig_ {
      *          bool                    fEnabled = false;
-     *          DateTime                fLastSynchronizedAt;
+     *          optional<DateTime>      fLastSynchronizedAt;
      *          Mapping<String,String>  fThisPHRsIDToSharedContactID;
      *      };
      *
@@ -361,6 +361,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   TimeOfDay
          *      o   VariantValue
          *      o   DurationRange/DateRange/DateTimeRange
+         *      o   optional<EACH_OF_THE_ABOVE>
          *
          *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
          *
@@ -679,9 +680,11 @@ namespace Stroika::Foundation::DataExchange {
 
     // ToObject specializations - to handle lack of default constructors
     template <>
-    Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const;
-    template <>
     Time::Date ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Date>& toObjectMapper, const VariantValue& v) const;
+    template <>
+    Time::DateTime ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::DateTime>& toObjectMapper, const VariantValue& v) const;
+    template <>
+    Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const;
 
     /**
      *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a

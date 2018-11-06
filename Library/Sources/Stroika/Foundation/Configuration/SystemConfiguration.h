@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Configuration {
         /**
          */
         struct BootInformation {
-            Time::DateTime fBootedAt;
+            optional<Time::DateTime> fBootedAt;
 
             /**
              *  @see Characters::ToString ();

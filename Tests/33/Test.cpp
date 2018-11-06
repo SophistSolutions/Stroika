@@ -51,8 +51,8 @@ namespace {
     void Test2_OptionsFile_ ()
     {
         struct MyData_ {
-            bool     fEnabled = false;
-            DateTime fLastSynchronizedAt;
+            bool               fEnabled = false;
+            optional<DateTime> fLastSynchronizedAt;
         };
         OptionsFile of{
             L"MyModule",
@@ -75,8 +75,8 @@ namespace {
 
 namespace {
     struct MyData_ {
-        bool     fEnabled = false;
-        DateTime fLastSynchronizedAt;
+        bool               fEnabled = false;
+        optional<DateTime> fLastSynchronizedAt;
     };
     struct ModuleGetterSetter_Implementation_MyData_ {
         ModuleGetterSetter_Implementation_MyData_ ()

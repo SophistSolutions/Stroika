@@ -298,14 +298,9 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
     static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
-        mapper.AddCommonType<optional<String>> ();
         mapper.AddCommonType<optional<ProcessType::RunStatus>> ();
         mapper.AddCommonType<optional<pid_t>> ();
-        mapper.AddCommonType<optional<bool>> ();
-        mapper.AddCommonType<optional<double>> ();
-        mapper.AddCommonType<optional<unsigned int>> ();
         mapper.AddCommonType<optional<MemorySizeType>> ();
-        mapper.AddCommonType<optional<Time::DateTime>> ();
         mapper.AddCommonType<optional<DurationSecondsType>> ();
         mapper.AddCommonType<optional<Mapping<String, String>>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04

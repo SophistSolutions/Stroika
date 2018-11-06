@@ -54,8 +54,8 @@ namespace Stroika::Foundation::DataExchange {
      *  \par Example Usage
      *      \code
      *         struct  MyData_ {
-     *             bool        fEnabled = false;
-     *             DateTime    fLastSynchronizedAt;
+     *             bool                 fEnabled = false;
+     *             optional<DateTime>   fLastSynchronizedAt;
      *         };
      *         OptionsFile of {
      *             L"MyModule",

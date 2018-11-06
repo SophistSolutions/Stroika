@@ -318,15 +318,13 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            DateTime d;
-            VerifyTestResult (d.empty ());
+            optional<DateTime> d;
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
-            TestRoundTripFormatThenParseNoChange_ (d);
+            //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             DateTime d = DateTime::min ();
-            VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
             d = DateTime (d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC);                           // so that compare works - cuz we don't know timezone we'll run test with...

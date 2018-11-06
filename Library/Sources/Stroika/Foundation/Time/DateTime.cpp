@@ -266,11 +266,7 @@ const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
 
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
-    if (rep.empty ())
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-        }
+    // note - incoming rep.empty () now produces a throw, but handled in each case so no need here too
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
@@ -281,6 +277,12 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case ParseFormat::eISO8601: {
+            if (rep.empty ())
+                [[UNLIKELY_ATTR]]
+                {
+                    Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+                }
+
             int year   = 0;
             int month  = 0;
             int day    = 0;
@@ -435,11 +437,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
-    if (rep.empty ())
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-        }
+    // clang-format off
+    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+    }
+    // clang-format on
 
     wstring wRep = rep.As<wstring> ();
 
@@ -608,9 +610,15 @@ optional<bool> DateTime::IsDaylightSavingsTime () const
 
 String DateTime::Format (PrintFormat pf) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
@@ -676,9 +684,15 @@ String DateTime::Format (PrintFormat pf) const
 
 String DateTime::Format (const locale& l) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return String{};
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     if (GetTimeOfDay ().has_value ()) {
         return Format (l, kLocaleStandardFormat);
     }
@@ -911,6 +925,9 @@ Duration DateTime::Difference (const DateTime& rhs) const
 
 int DateTime::Compare (const DateTime& rhs) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     if (empty ()) {
         return rhs.empty () ? 0 : -1;
     }
@@ -943,6 +960,9 @@ int DateTime::Compare (const DateTime& rhs) const
     else {
         return AsUTC ().Compare (rhs.AsUTC ());
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 }
 
 DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)

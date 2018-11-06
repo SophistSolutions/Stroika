@@ -31,19 +31,7 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   LOSE empty () and no-arg CTOR (forcing use of optional<DateTime>)
- *
- *      @todo   Maybe use wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
- *                 (medium) Consider using strftime and strptime with %FT%T%z.
- *
- *                  Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
- *
- *                  Same format
- *                  That doesn’t use std::locale()
- *                  En.cppreference.com/w/cpp/io/manip/get_time
- *                  istringstream xxx (“2011-feb…”)
- *                  ss.imbue(std::locale() (“de-DE”));
- *                  ss >> std::get_time(&t, “%FT%T%z”)
+ *      @todo   Complete removeal of deprecated empty and no-arg constructor
  *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
  *              Be careful about overflow in underlying types like Date and TimeOfDay() however.
@@ -52,10 +40,6 @@
  *              to use separate format print arg or???
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
- *
- *      @todo   Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on
- *              bad conversions I think - moistly an issue for the locale-based stuff. Now it maybe just
- *              silently returns empty date/time/etc. Better to except!
  *
  *      @todo   Future directions consider representing as big struct
  *          o   And maybe store cached string reps for common cases as optimization and
@@ -79,17 +63,13 @@ namespace Stroika::Foundation::Time {
      *      Timezone may be "unknown" (missing), or a Timezone object (@see Timezone).
      *
      *      'empty' concept:
+     *          ****DEPRECATED***
      *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
      *          of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
      *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
      *          This is a bit like the floating point concept of negative infinity.
      *
      *          This concept is the same as the Date::empty () concept.
-     *
-     *  <<<CONSIDERING MAYBE REQUIRING>>>
-     *          Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
-     *          the value of timezone is undefined. That way, d.empty () iff d == DateTime ()
-     *  <<</CONSIDERING MAYBE REQUIRING>>>
      *
      *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
@@ -124,7 +104,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note TimeOfDay arguments *must* not be 'empty' - instead use optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
          */
-        constexpr DateTime () noexcept;
+        [[deprecated ("Use optional<DateTime> instead of DateTime no-arg constructor - as of v2.1d11")]] constexpr DateTime () noexcept;
         constexpr DateTime (const DateTime& src) = default;
         constexpr DateTime (DateTime&& src)      = default;
         constexpr DateTime (const Date& d) noexcept;
@@ -241,7 +221,7 @@ namespace Stroika::Foundation::Time {
          *  Timezone, and TimeOfDay are ignored for the purpose of 'empty' check (because empty tz means unknown, and empty tod
          *  just means all day or time part unspecified).
          */
-        nonvirtual constexpr bool empty () const noexcept;
+        [[deprecated ("Use optional<TimeOfDay> instead of TimeOfDay no-arg constructor - as of v2.1d11")]] constexpr bool empty () const noexcept;
 
     public:
         /**

@@ -440,8 +440,6 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
     static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        mapper.AddCommonType<optional<uint64_t>> ();
-        mapper.AddCommonType<optional<double>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{
             {L"Available", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), StructFieldInfo::eOmitNullFields},

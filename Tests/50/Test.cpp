@@ -1068,14 +1068,14 @@ namespace {
         using PersistenceScanAuxDataType = Mapping<String, String>;
         struct ScanDetails_ {
             ScanIDType                 fScanID{};
-            DateTime                   fScanStart;
-            DateTime                   fScanEnd;
+            optional<DateTime>         fScanStart;
+            optional<DateTime>         fScanEnd;
             ScanKindType               fScanKind{};
             String                     fScanLabel{};
             SpectrumType               fRawSpectrum{};
             PersistenceScanAuxDataType fAuxData{};
-            Optional<ScanIDType>       fUseBackground{};
-            Optional<ScanIDType>       fUseReference{};
+            optional<ScanIDType>       fUseBackground{};
+            optional<ScanIDType>       fUseReference{};
         };
 
         DataExchange::ObjectVariantMapper GetPersistenceDetailsMapper_ ()
@@ -1083,7 +1083,7 @@ namespace {
             using namespace DataExchange;
             ObjectVariantMapper mapper;
             mapper.AddCommonType<ScanIDType> ();
-            mapper.AddCommonType<Optional<ScanIDType>> ();
+            mapper.AddCommonType<optional<ScanIDType>> ();
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (ScanKindType_NAMES));
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();

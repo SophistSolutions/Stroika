@@ -290,7 +290,7 @@ namespace {
     {
         using TypesRegistry                   = ObjectVariantMapper::TypesRegistry;
         static const TypesRegistry sDefaults_ = {Set<TypeMappingDetails>{
-            ObjectVariantMapper::MakeCommonSerializer<void> (),
+            //ObjectVariantMapper::MakeCommonSerializer<void> (),       Comment out v2.1d11 - not sure why we ever had this? Omit or document
             ObjectVariantMapper::MakeCommonSerializer<bool> (),
             ObjectVariantMapper::MakeCommonSerializer<signed char> (),
             ObjectVariantMapper::MakeCommonSerializer<short int> (),
@@ -316,6 +316,33 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<Time::DurationRange> (),
             ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> (),
             ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> (),
+
+            ObjectVariantMapper::MakeCommonSerializer<optional<bool>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<signed char>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<short int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<long int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<long long int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<unsigned char>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<unsigned short>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<unsigned int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<unsigned long int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<unsigned long long int>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<float>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<double>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<long double>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Date>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<DateTime>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<String>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<VariantValue>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Time::Duration>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Time::TimeOfDay>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Mapping<String, String>>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Mapping<String, VariantValue>>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Time::DurationRange>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateRange>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateTimeRange>> (),
+
         }};
         return sDefaults_;
     }
@@ -365,18 +392,26 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
 }
 
 template <>
-Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const
+Time::Date ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Date>& toObjectMapper, const VariantValue& v) const
 {
-    // Generally best to serialize/deserialize with optional<TimeOfDay> - else you cannot tell if you actually found one (defaults to zero time of day)
-    Time::TimeOfDay tmp{0};
+    // Generally best to serialize/deserialize with optional<Date> - else you cannot tell if you actually found one (defaults to min Date)
+    Time::Date tmp{Time::Date::min ()};
     ToObject (toObjectMapper, v, &tmp);
     return tmp;
 }
 template <>
-Time::Date ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Date>& toObjectMapper, const VariantValue& v) const
+Time::DateTime ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::DateTime>& toObjectMapper, const VariantValue& v) const
 {
-    // Generally best to serialize/deserialize with optional<Date> - else you cannot tell if you actually found one (defaults to zero time of day)
-    Time::Date tmp{0};
+    // Generally best to serialize/deserialize with optional<DateTime> - else you cannot tell if you actually found one (defaults to DateTime::min)
+    Time::DateTime tmp{Time::DateTime::min ()};
+    ToObject (toObjectMapper, v, &tmp);
+    return tmp;
+}
+template <>
+Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::TimeOfDay>& toObjectMapper, const VariantValue& v) const
+{
+    // Generally best to serialize/deserialize with optional<TimeOfDay> - else you cannot tell if you actually found one (defaults to min TimeOfDay)
+    Time::TimeOfDay tmp{Time::TimeOfDay::min ()};
     ToObject (toObjectMapper, v, &tmp);
     return tmp;
 }

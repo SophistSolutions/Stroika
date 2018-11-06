@@ -145,8 +145,8 @@ namespace {
             using namespace Time;
             static const Duration kMinTime_ = 1s;
             struct MyData_ {
-                bool     fEnabled = false;
-                DateTime fLastSynchronizedAt;
+                bool               fEnabled = false;
+                optional<DateTime> fLastSynchronizedAt;
             };
             struct ModuleGetterSetter_Implementation_MyData_ {
                 ModuleGetterSetter_Implementation_MyData_ ()
@@ -193,11 +193,11 @@ namespace {
             }
             void TestUse2_ ()
             {
-                sModuleConfiguration_.Update ([](MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
+                sModuleConfiguration_.Update ([](MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt.has_value () and *result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
             }
             void TestUse3_ ()
             {
-                if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+                if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt.has_value () and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
                     // e.g. trigger someone to wakeup and used changes?
                 }
             }

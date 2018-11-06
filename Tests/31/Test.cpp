@@ -81,18 +81,12 @@ namespace {
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            bool                      fEnabled;
-            DateTime                  fLastSynchronizedAt;
+            bool                      fEnabled{false};
+            optional<DateTime>        fLastSynchronizedAt;
             Mapping<String, String>   fThisPHRsIDToSharedContactID;
             Bijection<String, String> fThisPHRsIDToSharedContactID2;
 
-            SharedContactsConfig_ ()
-                : fEnabled (false)
-                , fLastSynchronizedAt ()
-                , fThisPHRsIDToSharedContactID ()
-                , fThisPHRsIDToSharedContactID2 ()
-            {
-            }
+            SharedContactsConfig_ () = default;
 
             bool operator== (const SharedContactsConfig_& rhs) const
             {
@@ -385,8 +379,8 @@ namespace {
 
         struct SharedContactsConfig_ {
             Duration            fDuration1;
-            DateTime            fDateTime1;
-            DateTime            fDate1;
+            optional<DateTime>  fDateTime1;
+            optional<DateTime>  fDate1;
             optional<TimeOfDay> fTimeOfDay1;
 
             SharedContactsConfig_ ()
@@ -402,7 +396,6 @@ namespace {
 
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddCommonType<optional<TimeOfDay>> ();
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"fDuration1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDuration1)},
             {L"fDateTime1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDateTime1)},
@@ -414,7 +407,7 @@ namespace {
         SharedContactsConfig_ tmp;
         tmp.fDate1      = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
         tmp.fDateTime1  = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
-        tmp.fTimeOfDay1 = tmp.fDateTime1.GetTimeOfDay ();
+        tmp.fTimeOfDay1 = tmp.fDateTime1->GetTimeOfDay ();
         Assert (tmp.fTimeOfDay1.has_value ());
         tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1->GetAsSecondsCount () + 60);
         VariantValue v  = mapper.FromObject (tmp);

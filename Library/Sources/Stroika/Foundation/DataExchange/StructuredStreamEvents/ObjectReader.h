@@ -204,6 +204,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *
      *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
      *
+     *  \note UNLIKE ObjectVariantReader - the constructor of Registry contains no default readers.
+     *
      *  \par Example Usage
      *      \code
      *          struct  Person_ {
@@ -235,6 +237,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     class Registry {
     public:
+        /**
+         *  \note UNLIKE ObjectVariantReader - the constructor of Registry contains no default readers.
+         *
+         */
         Registry ()                = default;
         Registry (const Registry&) = default;
 
@@ -274,6 +280,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *      o   Sequence<T>
          *      o   vector<T>
          *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
+         *      o   optional<T> for any type T already in the registry.
          *
          *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
          *

@@ -540,9 +540,6 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
     static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        mapper.AddCommonType<optional<uint64_t>> ();
-        mapper.AddCommonType<optional<double>> ();
-        mapper.AddCommonType<optional<String>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> ());
         mapper.AddCommonType<optional<Interface::Type>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());

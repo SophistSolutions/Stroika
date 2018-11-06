@@ -85,7 +85,7 @@ namespace {
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
             bool                    fEnabled{false};
-            DateTime                fLastSynchronizedAt;
+            optional<DateTime>      fLastSynchronizedAt;
             Mapping<String, String> fThisPHRsIDToSharedContactID;
 
             // Not needed to use ObjectVariantMapper - just needed to 'test' if the data round-tripped properly
@@ -111,6 +111,9 @@ namespace {
 
         // Define an ObjectVariantMapper which knows how to map your types to/from VariantValue objects
         ObjectVariantMapper mapper;
+
+        // Some types pre-loaded (see @ObjectVariantMapper::ResetToDefaultTypeRegistry)
+        // The rest must be explicitly added to the registry before use.
 
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{

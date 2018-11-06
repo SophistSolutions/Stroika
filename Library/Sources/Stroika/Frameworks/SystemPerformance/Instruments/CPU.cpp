@@ -101,7 +101,6 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
         });
         mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
-        mapper.AddCommonType<optional<double>> ();
         mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},

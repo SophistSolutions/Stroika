@@ -786,8 +786,8 @@ namespace {
         using PersistenceScanAuxDataType_ = Mapping<String, String>;
         struct PersistentScanDetailsType_ {
             ScanIDType_                 ScanID{};
-            DateTime                    ScanStart;
-            DateTime                    ScanEnd;
+            optional<DateTime>          ScanStart;
+            optional<DateTime>          ScanEnd;
             optional<String>            ScanLabel;
             optional<SpectrumType_>     RawSpectrum;
             PersistenceScanAuxDataType_ AuxData;
@@ -890,6 +890,7 @@ namespace {
             registry.AddCommonType<WaveNumberType_> ();
             registry.AddCommonType<IntensityType_> ();
             registry.AddCommonType<DateTime> ();
+            registry.AddCommonType<optional<DateTime>> ();
             registry.AddCommonType<String> ();
             registry.AddCommonType<optional<String>> ();
             registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
