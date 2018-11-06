@@ -656,8 +656,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     public:
         /**
-        *  Helper to convert a reader to a factory (something that creates the reader).
-        */
+         *  Helper to convert a reader to a factory (something that creates the reader).
+         */
         static ReaderFromVoidStarFactory AsFactory ();
         static ReaderFromVoidStarFactory AsFactory (const Name& memberElementName);
 
