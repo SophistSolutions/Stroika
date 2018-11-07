@@ -198,6 +198,27 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  generate a string of the form:
+         *      [+-]?HHMM, or [+-]?HH:MM, so for example -0500 is Timezone (-5*60), or -04:00 would be Timezone (-4*60).
+         *
+         *  \note Date/Time required in case Timezone is 'localtime' to determinte DST
+         */
+        nonvirtual String AsHHMM (const Date& date, const TimeOfDay& tod, bool insertColon) const;
+
+    public:
+        /**
+         *  @see https://tools.ietf.org/html/rfc822#section-5
+         *
+         *  Can generate "GMT" or AsHMM(false) above.
+         *
+         *  \note Date/Time required in case Timezone is 'localtime' to determinte DST
+         *
+         *  \note alias - could have been called AsRFC822 ()
+         */
+        nonvirtual String AsRFC1123 (const Date& date, const TimeOfDay& tod) const;
+
+    public:
+        /**
          *  Depending on the form of the timezone, the offset from UTC could depned on the date (cuz of daylight savings time)
          *
          *  This offset (number of minutes) - is added to a UTC time to get the time in that local timezone.

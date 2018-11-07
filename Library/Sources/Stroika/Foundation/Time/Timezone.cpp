@@ -150,6 +150,24 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const Characters::String
     return ParseTimezoneOffsetString (tzStr.c_str ());
 }
 
+String Timezone::AsHHMM (const Date& date, const TimeOfDay& tod, bool insertColon) const
+{
+    int          minutes    = GetBiasInMinutesFromUTC (date, tod);
+    bool         isNeg      = minutes < 0;
+    unsigned int nMinOffset = abs (fBiasInMinutesFromUTC_);
+    return Characters::Format (insertColon ? L"%s%02d:%02d" : L"%s%02d%02d", isNeg ? L"-" : L"+", nMinOffset / 60, nMinOffset % 60);
+}
+
+String Timezone::AsRFC1123 (const Date& date, const TimeOfDay& tod) const
+{
+    int minutes = GetBiasInMinutesFromUTC (date, tod);
+    if (minutes == 0) {
+        static const String kUTC_{L"GMT"};      // UT or GMT for UTC in  https://tools.ietf.org/html/rfc822#section-5
+        return kUTC_;
+    }
+    return AsHHMM (date, tod, false);
+}
+
 Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTC (const Date& date, const TimeOfDay& tod) const
 {
     switch (fTZ_) {
