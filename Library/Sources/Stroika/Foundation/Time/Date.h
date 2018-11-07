@@ -152,8 +152,9 @@ namespace Stroika::Foundation::Time {
     Year operator+ (Year y1, int offset);
     template <typename T>
     T operator% (Year y1, T m);
-    
+
     bool IsLeapYear (Year y);
+    bool IsLeapYear (int y);
 
     /**
      * Description:

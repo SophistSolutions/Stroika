@@ -161,18 +161,16 @@ const Traversal::Iterable<String> Date::kDefaultParseFormats{
 
 Date Date::Parse (const String& rep, ParseFormat pf)
 {
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
-    }
+    // NB: if rep.empty() this will always throw, but handled in each case below
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case ParseFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case ParseFormat::eISO8601: {
             /*
              * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
@@ -188,9 +186,6 @@ Date Date::Parse (const String& rep, ParseFormat pf)
                 Ensure (result == Parse (rep, locale::classic (), {String_Constant{kISO8601FormatArray}}));
                 return result;
             }
-            else {
-                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
-            }
         } break;
         case ParseFormat::eJavascript: {
             int year  = 0;
@@ -202,7 +197,6 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             if (nItems == 3) {
                 return Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
             }
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
         } break;
     }
     AssertNotReached ();
@@ -251,23 +245,23 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
             }
         }
 #endif
-        if ((errState & ios::badbit) or (errState & ios::failbit))
-            [[UNLIKELY_ATTR]]
-            {
-                continue;
-            }
-        else {
+        // clang-format off
+        if ((errState & ios::badbit) or (errState & ios::failbit))   [[UNLIKELY_ATTR]] {
+            continue;
+        } 
+        else  {
             if (consumedCharsInStringUpTo != nullptr) {
                 *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
             }
             break;
         }
+        // clang-format on
     }
     // clang-format off
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
-        // clang-format on
+    // clang-format on
 
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
@@ -588,11 +582,12 @@ DayOfWeek Date::GetDayOfWeek () const
      *          R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)  
      *              - where {\displaystyle R(y,m)} R(y,m) is the remainder after division of y by m,[6] or y modulo m.
      */
-    unsigned int      y             = static_cast<unsigned int> (GetYear ());
-    auto R = [](unsigned int i, unsigned int r) { return i % r; };
+    unsigned int y             = static_cast<unsigned int> (GetYear ());
+    auto         R             = [](unsigned int i, unsigned int r) { return i % r; };
     unsigned int weekdayOfJan1 = R (1 + 5 * R (y - 1, 4) + 4 * R (y - 1, 100) + 6 * R (y - 1, 400), 7);
+    // this assumes Sunday is ZERO and the rest of the days follow it...
 
-    unsigned int month0 = static_cast < unsigned int> (GetMonth () - MonthOfYear::eJanuary);
+    unsigned int month0 = static_cast<unsigned int> (GetMonth () - MonthOfYear::eJanuary);
 
     static constexpr unsigned int kDayOfWeekOffsetPerMonth_[12] = {
         3,
@@ -615,11 +610,11 @@ DayOfWeek Date::GetDayOfWeek () const
     if (month0 > 1 and IsLeapYear (GetYear ())) {
         targetDayOfWeek += 1;
     }
-    
+
     // add which day of the month (offset from first)
     targetDayOfWeek += (GetDayOfMonth () - DayOfMonth::e1);
 
-    return static_cast<DayOfWeek> (R (targetDayOfWeek, 7));
+    return static_cast<DayOfWeek> (R (targetDayOfWeek, 7) + static_cast<unsigned int> (DayOfWeek::eSunday));
 }
 
 /*
