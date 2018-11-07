@@ -58,6 +58,7 @@ RunCMD_()
 ### so start with a boring task (sleep inf), and then run the CMD2RUN arg using exec, and then
 ### stop the container (it can then be safely restarted)
 
+##NB: redirect to /dev/null so container ID not shown - actual errors go to stderr
 RunCMD_ docker run -u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 	-v /etc/localtime:/etc/localtime:ro \
 	-v $HOME/.ssh:$HOME/.ssh \
@@ -72,7 +73,7 @@ RunCMD_ docker run -u`id -u`:`id -g` -v /etc/passwd:/etc/passwd:ro -v /etc/group
 	${EXTRA_DOCKER_ARGS} \
 	--detach \
 	${CONTAINER_IMAGE} \
-	sleep inf
+	sleep inf > /dev/null
 
 # Run this to completion
 RunCMD_ docker exec ${CONTAINER_NAME} ${CMD2RUN} 
