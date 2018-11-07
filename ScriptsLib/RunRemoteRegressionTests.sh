@@ -20,20 +20,17 @@ if [ "$MACHINE" == "" ] ; then
 	exit 1;
 fi
 
-echo ssh $SSH_TARGET rm -rf $BUILD_DIR
-ssh $SSH_TARGET rm -rf $BUILD_DIR
+echo ssh $SSH_TARGET "rm -rf $BUILD_DIR && mkdir -p $BUILD_DIR"
+ssh $SSH_TARGET "rm -rf $BUILD_DIR && mkdir -p $BUILD_DIR"
 
-echo ssh $SSH_TARGET "mkdir -p $BUILD_DIR"
-ssh $SSH_TARGET "mkdir -p $BUILD_DIR"
-
-echo ssh $SSH_TARGET "git clone git@github.com:SophistSolutions/Stroika.git $BUILD_DIR --branch $BRANCH"
-ssh $SSH_TARGET "git clone git@github.com:SophistSolutions/Stroika.git $BUILD_DIR --branch $BRANCH"
+echo ssh $SSH_TARGET "git clone git@github.com:SophistSolutions/Stroika.git $BUILD_DIR --branch $BRANCH --quiet"
+ssh $SSH_TARGET "git clone git@github.com:SophistSolutions/Stroika.git $BUILD_DIR --branch $BRANCH --quiet"
 
 VER=`ssh $SSH_TARGET cd $BUILD_DIR && ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 #see RegressionTests.sh for this name, and why we require $USE_TEST_BASENAME set
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
-echo "Invoking remote RegressionTests.sh"
+echo "Invoking remote RegressionTests.sh:"
 CMD2Exec=''
 if [ $RUN_IN_DOCKER -eq 0 ]; then
 	CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
@@ -45,14 +42,13 @@ else
 	CMD2Exec+="cd $BUILD_DIR && CONTAINER_NAME=\"$USE_TEST_BASENAME-regtest\" ECHO_DOCKER_COMMANDS=$ECHO_DOCKER_COMMANDS PRIVATE_COMPILER_BUILDS_DIR=\"$PRIVATE_COMPILER_BUILDS_DIR\" EXTRA_DOCKER_ARGS=\"-e USE_TEST_BASENAME=$USE_TEST_BASENAME -e BUILD_CONFIGURATIONS_MAKEFILE_TARGET=$BUILD_CONFIGURATIONS_MAKEFILE_TARGET\" CMD2RUN=ScriptsLib/RegressionTests.sh ScriptsLib/RunInDockerEnvironment"
 fi
 EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
-
 echo ssh $SSH_TARGET -t $CMD2Exec
 ssh $SSH_TARGET -t "$CMD2Exec"
 
 
 echo "Fetching results:"
-echo scp $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
-scp $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
+echo scp -q $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
+scp -q $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
 
 echo scp -q $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
 scp -q $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
