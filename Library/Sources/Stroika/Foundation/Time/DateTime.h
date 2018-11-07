@@ -114,9 +114,9 @@ namespace Stroika::Foundation::Time {
         constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
         explicit DateTime (time_t unixEpochTime) noexcept;
         explicit DateTime (const tm& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+        explicit DateTime (const timespec& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
 #if qPlatform_POSIX
         explicit DateTime (const timeval& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
-        explicit DateTime (const timespec& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
 #elif qPlatform_Windows
         explicit DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::LocalTime ()) noexcept;
         explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::UTC ()) noexcept;
@@ -511,10 +511,8 @@ namespace Stroika::Foundation::Time {
     time_t DateTime::As () const;
     template <>
     tm DateTime::As () const;
-#if qPlatform_POSIX
     template <>
     timespec DateTime::As () const;
-#endif
 #if qPlatform_Windows
     template <>
     SYSTEMTIME DateTime::As () const;
