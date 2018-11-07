@@ -132,24 +132,17 @@ namespace {
         // On GLIBC systems, could use _mkgmtime64  - https://github.com/leelwh/clib/blob/master/c/mktime64.c
         // Based on https://stackoverflow.com/questions/12353011/how-to-convert-a-utc-date-time-to-a-time-t-in-c
         constexpr int kDaysOfMonth_[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        auto          isLeapYear        = [](int year) -> bool {
-            if (year % 4 != 0)
-                return false;
-            if (year % 100 != 0)
-                return true;
-            return (year % 400) == 0;
-        };
 
         time_t secs = 0;
         // tm_year is years since 1900
         int year = ptm->tm_year + 1900;
         for (int y = 1970; y < year; ++y) {
-            secs += (isLeapYear (y) ? 366 : 365) * kSecondsPerDay_;
+            secs += (IsLeapYear (y) ? 366 : 365) * kSecondsPerDay_;
         }
         // tm_mon is month from 0..11
         for (int m = 0; m < ptm->tm_mon; ++m) {
             secs += kDaysOfMonth_[m] * kSecondsPerDay_;
-            if (m == 1 && isLeapYear (year))
+            if (m == 1 && IsLeapYear (year))
                 secs += kSecondsPerDay_;
         }
         secs += (ptm->tm_mday - 1) * kSecondsPerDay_;
