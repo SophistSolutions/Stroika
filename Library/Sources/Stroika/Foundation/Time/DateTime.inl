@@ -185,6 +185,7 @@ namespace Stroika::Foundation::Configuration {
                     {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale, L"Current-Locale"},
                     {Stroika::Foundation::Time::DateTime::PrintFormat::eISO8601, L"ISO-8601"},
                     {Stroika::Foundation::Time::DateTime::PrintFormat::eXML, L"XML"},
+                    {Stroika::Foundation::Time::DateTime::PrintFormat::eRFC1123, L"RFC-1123"},
                     {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
                 }}};
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")

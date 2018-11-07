@@ -412,12 +412,31 @@ namespace {
             }
         }
         {
+            auto roundTripD = [](DateTime dt) {
+                String   s   = dt.Format (DateTime::PrintFormat::eRFC1123);
+                DateTime dt2 = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
+                VerifyTestResult (dt == dt2);
+            };
+            auto roundTripS = [](String s) {
+                DateTime dt = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
+                VerifyTestResult (dt.Format (DateTime::PrintFormat::eRFC1123) == s);
+            };
+
             // Parse eRFC1123
             VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
             VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+
+            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+
+            roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()});
+
+            // Careful with these, because there are multiple valid string representations for a given date
+            roundTripS (L"Wed, 02 Oct 2002 13:00:00 GMT");
+            roundTripS (L"Wed, 02 Oct 2002 15:00:00 +0200");
+            roundTripS (L"Wed, 02 Oct 2002 15:00:00 -0900");
         }
         {
             // difference

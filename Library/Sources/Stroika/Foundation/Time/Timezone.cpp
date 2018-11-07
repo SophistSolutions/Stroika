@@ -162,7 +162,7 @@ String Timezone::AsRFC1123 (const Date& date, const TimeOfDay& tod) const
 {
     int minutes = GetBiasInMinutesFromUTC (date, tod);
     if (minutes == 0) {
-        static const String kUTC_{L"GMT"};      // UT or GMT for UTC in  https://tools.ietf.org/html/rfc822#section-5
+        static const String kUTC_{L"GMT"}; // UT or GMT for UTC in  https://tools.ietf.org/html/rfc822#section-5
         return kUTC_;
     }
     return AsHHMM (date, tod, false);

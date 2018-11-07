@@ -139,11 +139,14 @@ namespace Stroika::Foundation::Time {
          *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
          *
          *
-         *  eRFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
-         *  current HTTP specification (e.g. for cookies).
-         *  The spec is originally documented in 
-         *      https://tools.ietf.org/html/rfc1123#5.2.14
-         *      https://tools.ietf.org/html/rfc822#section-5
+         *  eRFC1123
+         *      eRFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
+         *      current HTTP specification (e.g. for cookies).
+         *      The spec is originally documented in 
+         *          https://tools.ietf.org/html/rfc1123#5.2.14
+         *          https://tools.ietf.org/html/rfc822#section-5
+         *      EXAMPLE:  
+         *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
          */
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
@@ -354,11 +357,16 @@ namespace Stroika::Foundation::Time {
          *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
          *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
          *      and 04:06:00 PM will become 4:06 PM.
+         *
+         *  eRFC1123
+         *      EXAMPLE:  Tue, 6 Nov 2018 06:25:51 -0800 (PST)
+         *      
          */
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
             eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
+            eRFC1123,
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,

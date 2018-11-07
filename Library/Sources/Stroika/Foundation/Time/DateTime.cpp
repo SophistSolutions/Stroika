@@ -684,6 +684,17 @@ String DateTime::Format (PrintFormat pf) const
             }
             return r;
         } break;
+        case PrintFormat::eRFC1123: {
+            optional<Timezone>  tz     = GetTimezone ();
+            static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S";
+            String              result = Format (locale::classic (), {kFMT_});
+            if (tz == Timezone::Unknown ()) {
+                return result;
+            }
+            else {
+                return result + L" " + tz->AsRFC1123 (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
+            }
+        } break;
     }
     AssertNotReached ();
     return String ();
