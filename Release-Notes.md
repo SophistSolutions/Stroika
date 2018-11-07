@@ -59,7 +59,7 @@ History
 				<li>updated regtest script to autobuild clang etc</li>
 				<li>cleanup regtest output</li>
 				<li>renamed ScriptsLib/GenerateConfiguration.pl -> configure</li>
-				<li>xxxx</li>
+				<li>CheckFileExits.sh script now supports multiple arguments</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
@@ -299,12 +299,6 @@ Date:   Sat Oct 13 23:23:10 2018 -0400
 
     added (partly disabled cuz still broken) Cookie expires data regression test
 
-commit 4eddc46491626f834d389353af348dcf60a7e5c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 14 10:51:42 2018 -0400
-
-    cosmetic
-
 commit 8df19743a8e22c0ed27943ccb2ca8f44a6c6daa0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Oct 14 10:52:53 2018 -0400
@@ -328,18 +322,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Oct 14 11:21:19 2018 -0400
 
     eRFC1123 DateTime parsing regression tests
-
-commit 5453eb95a67fe9ac5d5ec99d0e5019c4d289c165
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 11:13:42 2018 -0400
-
-    cosmetic
-
-commit 517c9a4252976b858e8ba49e79f17401a2f2b97f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 11:13:59 2018 -0400
-
-    Cosmetic
 
 commit b6a800c12b34903e35615637c2425a3bf2782ee2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -370,12 +352,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 15 13:22:17 2018 -0400
 
     Moved DateTime::ToString () to CPP file, and (temporarily - needs more thought/rewrite) changed to also display the timezone
-
-commit 09b6017fd76a0492152dc44a9dd8e9967a9fd0ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 13:22:54 2018 -0400
-
-    cosmetic
 
 commit f8e222ea7f81bdfdbdb907aebdd71777302882be
 Author: Lewis Pringle <lewis@sophists.com>
@@ -419,41 +395,12 @@ Date:   Tue Oct 16 12:57:50 2018 -0400
 
     new helper function Timezone::ParseTimezoneOffsetString ()
 
-commit 3a07c14d4413d23c2a9c98bb6bb2bf8512389d81
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 13:12:49 2018 -0400
-
-    USE_NOISY_TRACE_IN_THIS_MODULE_ comments
-
-commit 63ab3a2c0513573a895f5b0b1c1a037ddf30c3c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 13:14:59 2018 -0400
-
-    cosmetic
-
-commit 04d1e796a1c551be4ec2227167e361b216df0ec3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 14:45:46 2018 -0400
-
-    silence warning
 
 commit a41025b89dd3a90a8f470c9c4f5b8048ea987d37
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Oct 16 16:35:49 2018 -0400
 
     changed directory where .lib files emitted on windows builds (to mimic unix builds) - and fixed StroikaFrameworksLib and StroikaFoundationLib variables to point to right file(s) - files for windows for now as tmp workaround cuz never implemetned merge of libs
-
-commit f77911ee5833a3083ce9ff48b4b842784b0b9e6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 10:22:23 2018 -0400
-
-    cosmetic
-
-commit 2648d6c6d5b1d074ca1ae8ffeec8a25c62d472e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 10:31:21 2018 -0400
-
-    Cosmetic
 
 commit 5baff188892c0ba8786d7026670b7ed55bd04966
 Author: Lewis Pringle <lewis@sophists.com>
@@ -510,18 +457,6 @@ Date:   Wed Oct 17 13:48:57 2018 -0400
 
     new String::Replace () method, and ReplaceAt overload, and String docs
 
-commit 1152984e9d2e1a43a332c200988f08d9e3621856
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 13:49:57 2018 -0400
-
-    Cosmetic
-
-commit 98c0aadcb3377f84edd294053195ddf6bdc22ae6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 13:50:32 2018 -0400
-
-    cosmetic
-
 commit 5828bf77a22a5987535890b72637a9733a9de904
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Oct 17 15:11:38 2018 -0400
@@ -534,12 +469,6 @@ Date:   Wed Oct 17 15:12:57 2018 -0400
 
     String class: docs; and String::FilteredString (regexp) overload implemented, and String::Find (regesx) overload with startAt fixed/implemented
 
-commit 6917d2b02e0555a3595b24da42b8432b0fab183a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 15:13:34 2018 -0400
-
-    cleanups
-
 commit 8571ab9415e2eadb3323d914bd3d9bbba37b5773
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Oct 17 15:14:27 2018 -0400
@@ -551,24 +480,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Oct 17 16:13:11 2018 -0400
 
     mew overloads for String::ReplaceAll () and used to deprecate FilteredString()
-
-commit e67797d473e7e4a3901fc335cd0d3b9b1044c0f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 09:20:22 2018 -0400
-
-    Comments
-
-commit 3e184d3fe0b08dc1ecb6e0b75ae6ac789996aa0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 10:19:22 2018 -0400
-
-    minor script message tweak
-
-commit 6fb361379c75aef631cb2b170f3bcc03de8bd563
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 10:19:51 2018 -0400
-
-    Comments
 
 commit a5bdd9b6749cf222603dd746f9fb8763dc9ed79f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -624,23 +535,11 @@ Date:   Fri Oct 19 13:22:45 2018 -0400
 
     !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy define and workaround
 
-commit 9aeb174d6dd3a69e9030b4ea7cbd231ef494d64c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 19 14:11:30 2018 -0400
-
-    Comments
-
 commit 2bb5506ac117ec17bb07e3255fe5bb1e60526f82
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Oct 19 20:13:05 2018 -0400
 
     tweak RegressionTests.sh to not build BUILD_EXTRA_COMPILERS_IF_MISSING except on Linux
-
-commit 7e786ee3ed3dfae17f7ffd02f7c868050d5bd349
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 19 20:23:46 2018 -0400
-
-    fixed typo
 
 commit 6efadd223cfdec704ff326c47689a1fd9a42cfb3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -654,11 +553,6 @@ Date:   Sat Oct 20 11:27:28 2018 -0400
 
     tweak memoizer impl
 
-commit be218d2e08bb2fecd3d134f38d34de4820b9a694
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 20 13:45:59 2018 -0400
-
-    Cosmetic
 
 commit b54a1ae8cf1c8d36e5f0b2f69015a8f3fbd7562b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -723,17 +617,11 @@ Date:   Sun Oct 21 11:41:42 2018 -0400
 
     progress cleanup RunRemoteRegresisiontest script
 
-commit daaa82353c50817538633154264383897ca0d8ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 14:53:16 2018 -0400
-
-    cosmetic
-
 commit b34f71279eec96889ce76cc6e0b1f6e5a59084e0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Oct 21 21:57:12 2018 -0400
 
-    CheckFileExits.sh script now supports multiple arguments
+    
 
 commit 63e4890efe46a5b7de6ce61295e0753ab0fa242f
 Author: Lewis Pringle <lewis@sophists.com>
