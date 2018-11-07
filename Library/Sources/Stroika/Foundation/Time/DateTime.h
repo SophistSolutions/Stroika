@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \par Example Usage
          *      \code
-         *      Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
+         *          Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
          *      \endcode
          *
          *  @see FromTickCount
@@ -488,8 +488,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the 
-         *  purpose of this comparison function - see the notes about 'empty' in the class description.
+         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          *
          *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
          *  considered different. If either one is unknown, they will both be treated as the same timezone. 

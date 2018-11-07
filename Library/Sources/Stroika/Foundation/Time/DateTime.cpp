@@ -942,6 +942,9 @@ int DateTime::Compare (const DateTime& rhs) const
         }
     }
     Assert (not empty () and not rhs.empty ());
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
         int cmp = GetDate ().Compare (rhs.GetDate ());
         if (cmp == 0) {
@@ -965,9 +968,6 @@ int DateTime::Compare (const DateTime& rhs) const
     else {
         return AsUTC ().Compare (rhs.AsUTC ());
     }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
 }
 
 DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)
