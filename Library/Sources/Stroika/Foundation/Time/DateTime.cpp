@@ -15,6 +15,7 @@
 #endif
 #include "../Characters/ToString.h"
 #include "../Debug/Assertions.h"
+#include "../Execution/ErrNoException.h"
 #include "../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
@@ -216,8 +217,14 @@ DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexce
 #if qPlatform_POSIX
     tm  tmTimeDataBuf{};
     tm* tmTimeData = ::gmtime_r (&unixTime, &tmTimeDataBuf);
+#elif qPlatform_Windows
+    tm tmTimeDataBuf{};
+    if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
+        Execution::errno_ErrorException::Throw (e);
+    };
+    tm* tmTimeData = &tmTimeDataBuf;
 #else
-    tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe, but on windoze - no obvious alternative (and https://stackoverflow.com/questions/12044519/what-is-the-windows-equivalent-of-the-unix-function-gmtime-r says  its threadsafe on windows)
+    tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
     fDate_      = Date (Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData->tm_sec + (tmTimeData->tm_min * 60) + (tmTimeData->tm_hour * 60 * 60));
