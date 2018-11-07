@@ -217,7 +217,7 @@ DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexce
     tm  tmTimeDataBuf{};
     tm* tmTimeData = ::gmtime_r (&unixTime, &tmTimeDataBuf);
 #else
-    tm* tmTimeData = ::gmtime (&unixTime);  // not threadsafe, but on windoze - no obvious alternative (and https://stackoverflow.com/questions/12044519/what-is-the-windows-equivalent-of-the-unix-function-gmtime-r says  its threadsafe on windows)
+    tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe, but on windoze - no obvious alternative (and https://stackoverflow.com/questions/12044519/what-is-the-windows-equivalent-of-the-unix-function-gmtime-r says  its threadsafe on windows)
 #endif
     fDate_      = Date (Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData->tm_sec + (tmTimeData->tm_min * 60) + (tmTimeData->tm_hour * 60 * 60));
@@ -287,11 +287,12 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case ParseFormat::eISO8601: {
             if (rep.empty ())
-                [[UNLIKELY_ATTR]] {
+                [[UNLIKELY_ATTR]]
+                {
                     Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
                 }
 
-                int year = 0;
+            int year   = 0;
             int month  = 0;
             int day    = 0;
             int hour   = 0;
@@ -449,9 +450,9 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     if (rep.empty ()) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
-        // clang-format on
+    // clang-format on
 
-        wstring wRep = rep.As<wstring> ();
+    wstring wRep = rep.As<wstring> ();
 
     const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
     ios::iostate             errState = ios::goodbit;
@@ -493,9 +494,9 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
-        // clang-format on
+    // clang-format on
 
-        return DateTime (when, Timezone::Unknown ());
+    return DateTime (when, Timezone::Unknown ());
 }
 
 #if qPlatform_Windows
@@ -505,9 +506,9 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
     if (rep.empty ()) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
-        // clang-format on
+    // clang-format on
 
-        DATE d{};
+    DATE d{};
     try {
         using namespace Execution::Platform::Windows;
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, 0, &d));
@@ -793,9 +794,9 @@ time_t DateTime::As () const
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
         Execution::Throw (kRangeErrror_);
     }
-        // clang-format on
+    // clang-format on
 
-        tm tm{};
+    tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
@@ -814,10 +815,12 @@ template <>
 tm DateTime::As () const
 {
     if (GetDate ().GetYear () < Year (1900))
-        [[UNLIKELY_ATTR]] {
+        [[UNLIKELY_ATTR]]
+        {
             static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
             Execution::Throw (kRangeErrror_);
-        } tm tm{};
+        }
+    tm tm{};
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
