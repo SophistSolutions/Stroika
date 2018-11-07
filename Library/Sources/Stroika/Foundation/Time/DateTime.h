@@ -33,6 +33,8 @@
  * TODO:
  *      @todo   Complete removeal of deprecated empty and no-arg constructor
  *
+ *      @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
+ *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
  *              Be careful about overflow in underlying types like Date and TimeOfDay() however.
  *
@@ -206,6 +208,8 @@ namespace Stroika::Foundation::Time {
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
          *
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty DateTime object (DateTime {}).
+         *
+         *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
         static DateTime Parse (const String& rep, ParseFormat pf);
         static DateTime Parse (const String& rep, const locale& l);
@@ -369,6 +373,8 @@ namespace Stroika::Foundation::Time {
          *
          *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
+         *
+         *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
         nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
         nonvirtual String Format (const locale& l) const;
