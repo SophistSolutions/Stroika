@@ -9,14 +9,34 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/Exceptions.h"
-#include "../Execution/ModuleInit.h"
+//#include "../Execution/Exceptions.h"
+//#include "../Execution/ModuleInit.h"
 
 namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     *************************************** Year ***********************************
+     ***************************** MonthOfYear **************************************
+     ********************************************************************************
+     */
+    inline int operator- (MonthOfYear m1, MonthOfYear m2)
+    {
+        return static_cast<int> (m1) - static_cast<int> (m2);
+    }
+
+    /*
+     ********************************************************************************
+     ***************************** DayOfMonth **************************************
+     ********************************************************************************
+     */
+    inline int operator- (DayOfMonth d1, DayOfMonth d2)
+    {
+        return static_cast<int> (d1) - static_cast<int> (d2);
+    }
+
+    /*
+     ********************************************************************************
+     ************************************ Year **************************************
      ********************************************************************************
      */
     inline int operator- (Year y1, Year y2)
@@ -26,6 +46,29 @@ namespace Stroika::Foundation::Time {
     inline Year operator+ (Year y1, int offset)
     {
         return static_cast<Year> (static_cast<int> (y1) + offset);
+    }
+    template <typename T>
+    inline T operator% (Year y1, T m)
+    {
+        return static_cast<T> (y1) % m;
+    }
+
+    /*
+     ********************************************************************************
+     ********************************* IsLeapYear ***********************************
+     ********************************************************************************
+     */
+    inline bool IsLeapYear (Year y)
+    {
+        if (y % 4 == 0) {
+            if (y % 100 == 0) {
+                return y % 400 == 0;
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
@@ -209,7 +252,6 @@ namespace Stroika::Foundation::Time {
     {
         return lhs.Compare (rhs) > 0;
     }
-
 }
 
 namespace Stroika::Foundation::Configuration {
@@ -218,13 +260,13 @@ namespace Stroika::Foundation::Configuration {
         static constexpr EnumNames<Stroika::Foundation::Time::DayOfWeek> k{
             EnumNames<Stroika::Foundation::Time::DayOfWeek>::BasicArrayInitializer{
                 {
+                    {Stroika::Foundation::Time::DayOfWeek::eSunday, L"Sunday"},
                     {Stroika::Foundation::Time::DayOfWeek::eMonday, L"Monday"},
                     {Stroika::Foundation::Time::DayOfWeek::eTuesday, L"Tuesday"},
                     {Stroika::Foundation::Time::DayOfWeek::eWednesday, L"Wednesday"},
                     {Stroika::Foundation::Time::DayOfWeek::eThursday, L"Thursday"},
                     {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
                     {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eSunday, L"Sunday"},
                 }}};
         DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::DayOfWeek> (k)

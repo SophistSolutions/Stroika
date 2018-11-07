@@ -57,15 +57,15 @@ namespace Stroika::Foundation::Time {
      *  \note   Configuration::DefaultNames<> supported
      */
     enum class DayOfWeek : uint8_t {
+        eSunday    = 0,
         eMonday    = 1,
         eTuesday   = 2,
         eWednesday = 3,
         eThursday  = 4,
         eFriday    = 5,
         eSaturday  = 6,
-        eSunday    = 7,
 
-        Stroika_Define_Enum_Bounds (eMonday, eSunday)
+        Stroika_Define_Enum_Bounds (eSunday, eSaturday)
     };
 
     /**
@@ -88,6 +88,7 @@ namespace Stroika::Foundation::Time {
 
         Stroika_Define_Enum_Bounds (eJanuary, eDecember)
     };
+    int operator- (MonthOfYear m1, MonthOfYear m2);
 
     /**
      */
@@ -127,6 +128,7 @@ namespace Stroika::Foundation::Time {
 
         Stroika_Define_Enum_Bounds (e1, e31)
     };
+    int operator- (DayOfMonth d1, DayOfMonth d2);
 
     /**
      */
@@ -148,6 +150,10 @@ namespace Stroika::Foundation::Time {
     };
     int  operator- (Year y1, Year y2);
     Year operator+ (Year y1, int offset);
+    template <typename T>
+    T operator% (Year y1, T m);
+    
+    bool IsLeapYear (Year y);
 
     /**
      * Description:
@@ -341,6 +347,11 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual DayOfMonth GetDayOfMonth () const;
+
+    public:
+        /**
+         */
+        nonvirtual DayOfWeek GetDayOfWeek () const;
 
     public:
         /**

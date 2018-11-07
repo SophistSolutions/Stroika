@@ -578,6 +578,50 @@ DayOfMonth Date::GetDayOfMonth () const
     return d;
 }
 
+DayOfWeek Date::GetDayOfWeek () const
+{
+    /*
+     * From https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
+     *     Gauss's algorithm:
+     *     ...
+     *     The weekday of 1 January in year number A is
+     *          R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)  
+     *              - where {\displaystyle R(y,m)} R(y,m) is the remainder after division of y by m,[6] or y modulo m.
+     */
+    unsigned int      y             = static_cast<unsigned int> (GetYear ());
+    auto R = [](unsigned int i, unsigned int r) { return i % r; };
+    unsigned int weekdayOfJan1 = R (1 + 5 * R (y - 1, 4) + 4 * R (y - 1, 100) + 6 * R (y - 1, 400), 7);
+
+    unsigned int month0 = static_cast < unsigned int> (GetMonth () - MonthOfYear::eJanuary);
+
+    static constexpr unsigned int kDayOfWeekOffsetPerMonth_[12] = {
+        3,
+        0, // february special - add one for leap year
+        3,
+        2,
+        3,
+        2,
+        3,
+        3,
+        2,
+        3,
+        2,
+        3,
+    };
+    unsigned int targetDayOfWeek = weekdayOfJan1;
+    for (unsigned int i = 0; i < month0; ++i) {
+        targetDayOfWeek += kDayOfWeekOffsetPerMonth_[i];
+    }
+    if (month0 > 1 and IsLeapYear (GetYear ())) {
+        targetDayOfWeek += 1;
+    }
+    
+    // add which day of the month (offset from first)
+    targetDayOfWeek += (GetDayOfMonth () - DayOfMonth::e1);
+
+    return static_cast<DayOfWeek> (R (targetDayOfWeek, 7));
+}
+
 /*
  * Convert a Julian day number to its corresponding Gregorian calendar
  * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
@@ -601,6 +645,10 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     JulianRepType d;
     JulianRepType y;
 
+    // A reference for this formula (not original I used) - can be found at:
+    //      http://aa.usno.navy.mil/faq/docs/JD_Formula.php
+    // at least close, and I could probably swithc to that...
+    //
     JulianRepType j = fJulianDateRep_ - 1721119;
     y               = (((j << 2) - 1) / 146097);
     j               = (j << 2) - 1 - 146097 * y;

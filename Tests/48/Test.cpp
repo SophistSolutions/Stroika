@@ -366,7 +366,7 @@ namespace {
             DateTime dt (d, TimeOfDay (101));
             TestRoundTripFormatThenParseNoChange_ (dt);
             String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
-            VerifyTestResult (tmp == L"Sun Apr  6 00:01:41 1903");
+            VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
             DateTime dt2 (d, TimeOfDay (60));
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
