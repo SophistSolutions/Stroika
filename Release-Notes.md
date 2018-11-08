@@ -24,1646 +24,193 @@ History
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d10...v2.1d11</li>
-		<li>xxxxx
+		<li>Characters::String
 			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>new String::Replace () method, and ReplaceAt overload, and String docs</li>
+				<li>String::FilteredString (regexp) overload implemented, and String::Find (regesx) overload with startAt fixed/implemented</li>
+				<li>new overloads for String::ReplaceAll () and used to deprecate FilteredString()</li>
 			</ul>
 		</li>
-		<li>xxxxx
+		<li>Compiler Support
 			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>support msvc 2k17 15.8.9</li>
 			</ul>
 		</li>
-		<li>xxxxx
+		<li>ThirdPartyComponents
 			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>use SQLLite 3.25.2</li>
+				<li>use Xerces 3.2.2</li>
+				<li>Added Xerces patch for ...src/xercesc/internal/ElemStack.cpp:496:11: runtime error: null pointer passed as argument 2, which is declared to never be null</li>
+				<li>use libcurl 7.62.0</li>
+			</ul>
+		</li>
+		<li>Docker/RegressionTests/BuildScripts/Valgrind
+			<ul>
+				<li>Big changes/improvements to running (UBUNTU) build process under Docker (transition completed for Ubuntu)</li>
+				<li>BuildContainers support for ubuntu1804 basic and regression test images</li>
+				<li>ScriptsLib/RunInDockerEnvironment now works well (lots of changes/fixes)</li>
+				<li>cleanup regtest output</li>
+				<li>renamed ScriptsLib/GenerateConfiguration.pl -> configure</li>
+				<li>CheckFileExits.sh script now supports multiple arguments</li>
+				<li>small test makefile cleanups - use direct execute of commnand instead of explicit perl call</li>
+				<li>big simplification (and bugfix for tags support with apply-configurations) - using variable APPLY_CONFIGS=$(or for top level makefile</li>
+				<li>Big changes to  RegressionTest: refactoring, printing config variables in output - clarifies beheavior and now those variables applied more uniformly in behavior;
+				BUILD_EXTRA_COMPILERS_IF_MISSING and other commandline options to RegressionTest.sh script (autobuild clang)</li>
+				<li>Xerces Makefile build cleanups</li>
+				<li>regression tests for local linux and remote/raspberrypi broken into separate lists in RegressionTest.sh process</li>
+				<li>changed directory where .lib files emitted on windows builds (to mimic unix builds): fixed visual studio project files;
+				and fixed StroikaFrameworksLib and StroikaFoundationLib variables to point to right file(s) - 
+				files for windows for now as tmp workaround cuz never implemetned merge of framework libs</li>
+				<li>fixed unix makefile dependencies so Tests, Tools, and Samples executables all depend on $(StroikaLibs) (so they relink automatically when changes to stroika libs)</li>
+				<li>make check library makefile uses $(StroikaFoundationLib) $(StroikaFrameworksLib)</li>
+				<li>refactor GetConfigurationParameter to support CompilerDriver-C, CXX, and AR, AS and RANLIB for Windows/VisualStudio in various thirdpartylibs makefiles</li>
+				<li>fixed macos realpath implementation to support eliminating /../ in canonicalize-missing mode; then undo (errant) worakround attempt on xerces patch call</li>
+				<li>https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY valgrind memcheck workaround (I think not my bug)</li>
+				<li>fixed issue with make clobber on library for particular configuraiton when that config not built</li>
+			</ul>
+		</li>
+		<li>Time::Date,DateTime etc
+			<ul>
+				<li>***Deprecated empty () and no-arg constructors*** - mostly done backward compatibly, but not 100% (applies to Date/DateTime/TimeOfDay - and already
+				was true for Timezone);
+				use optional<Date/DateTime/TimeOfDay> to capture concept of empty</li>
+				<li>Big change to Parse/Format code in Date/TimeOfDay/DateTime etc - using formatString specifiers (like strptime, time_get). LOTS of library workarounds, but better scheme.</li>
+				<li>support new datetime parse format DateTime::ParseFormat::eRFC1123 - used in ancient sendmail, and still used in HTTP (at least for cookies)</li>
+				<li>cleanups to timezone support in RFC-822 date-time</li>
+				<li>Timezone::ToString () const support</li>
+				<li>DateTime::ToString () changed to also display the timezone</li>
+				<li>a few more TimeOfDay/Date/etc constexpr methods</li>
+				<li>new helper function Timezone::ParseTimezoneOffsetString ()</li>
+				<li>DateTime etc Format (PrintFormat::eCurrentLocale_WithZerosStripped - fixed regexp code better to delete just the right zeros</li>
+				<li>mark all LCID based Date/Time APIs deprecated, since MSFT appears to be abandoing them (as near as I can tell from their docs) - cited in https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata - Microsoft is migrating toward the use of locale names instead of locale identifiers</li>
+				<li>(not backward compat change) Date/TimeOfDay/DateTime::Parse () throws if arg is empty string (or otherwise fails to parse) - never returns empty date</li>
+				<li>Support Datetime::Format(RFC1123) and added regrssion tests to check. Not 100% perfrect, but 98% - and I think 100% legal/compliant</li>
+				<li>lose TimeOfDay operator overloads for optional - stdc++ already provides these just fine (as part of optional) with teh same / desired sematncis empty < any value</li>
+				<li>timespec is now portable in C++ since c++17 (so supported in windows) - so remove the #if qPlatform_POSIX around references to it in time code</li>
+				<li>Added helpers Timezone::AsHHMM and AsRFC1123</li>
+				<li>fixed setting tm_wday on DateTime::As () const</li>
+				<li>Added Date::GetDayOfWeek () method, and use that to fix a regression test
+					and fixed tm DateTime::As () const to fill in tm_wday;</li>
+				<li>Added IsLeapYear (), and a few more arithmetic operators on DayOfMonth, etc.
+					DayOfWeek I redid to start with sunday/zero.
+				</li>
+				<li>use optional<DateTime> instead of DateTime in a couple regression tests (to silence warnings and prepare to lose DateTime default CTOR</li>
+				<li>tons of progress on https://stroika.atlassian.net/browse/STK-107 - datetime related locale parsing, but cannot close cuz still alot broken</li>
+				<li>***NOT FULLY BACKWARD COMPATIBLE***: New DateTime::kShortLocaleFormatPattern, DateTime::kDefaultFormatPattern; 
+				(and default locale 'Format' code now uses kDefaultFormatPattern) - which is a materially different
+				 format. To get the old behavior
+			 Replace DateTime {}.Format (DateTime::PrintFormat::eCurrentLocale) with
+                    DateTime {}.Format (locale {}, DateTime::kShortLocaleFormatPattern)
+				</li>
+				<li>DateTime::ToString () for DateTime now uses this as well, and automatically appends a timezone indicator if tied to the DateTime</li>
+				<li>new DateTime::AsTimezone () helper function</li>
+				<li>On Windows, repalced DateTime::Parse () calll for (eCurrentLocale) - used to call non-portable
+					windows parser. NOW portably calls Parse (rep, locale {});</li>
+				<li>DateTime code now uses portable/factored Timezone::ParseTimezoneOffsetString ();</li>
+				<li>define constexpr bool kRequireImbueToUseFacet_ = false and use that to document if we need to
+					use imbue (I think not).</li>
+				<li> New DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
+					with significant refactoring from older DateTime::Parse (locale) overload (and lots of bug
+					workarounds).</li>
+				<li>DateTime:AsUTC () refacotred to use new DateTIme::AsTimezone();</li>
+				<li>DateTime::Format (PrintFormat::eCurrentLocale_WithZerosStripped)
+					rewriten to use base class Print (with regular currnet locale) and then do zero stripping. Produces
+					better results</li>
+				<li>String DateTime::Format (const locale& l, const String& formatPattern) const
+					 had MUCH rewriting and clean and documentation and bug workaround</li>
+				<li>DateTime now uses optional<TimeOfDay> internally, and no longer calls TimeOfDay empty CTOR or timeofday::empty ()</li>
+				<li>TimeOfDay/0 CTOR deprecated, along with TimeOfDay::empty (): use optional<TimeOfDay> instead; And overload operators (<=, ==, etc) for TimeOfDay - so they work with optional<TimeOfDay> or TimeOfDay</li>
+				<li>added a few more named format strings to Date eg. Date::kLocaleStandardFormat, Date::kISO8601Format</li>
+				<li>Time::Date cleanups: Mark eXML (in date class) as deprecated - use eISO8601;
+				Documentation;Added assert/test that Parse(eISO861) works like parse(classic_local,kISO8601Format)</li>
+				<li>deprecate kMin/kMax (just use min()/max() all that will work in C++ for years).</li>
+				<li>deprecate eXML (in datetime, etc, parseformat, and printformat)</li>
+				<li>added static constants for TimeOfDay kISO8601Format, kLocaleStandardFormat, kLocaleStandardAlternateFormat etc</li>
+				<li>added static constants for DateTime kISO8601Format, kLocaleStandardFormat, kLocaleStandardAlternateFormat etc</li>
+				<li>Date GetFormattedAge/GetFormattedAgeWithUnit now mostly done with optional</li>
+			</ul>
+		</li>
+		<li>C++20
+			<ul>
+				<li>define WAG at kStrokia_Foundation_Configuration_cplusplus_20, and #if  __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20 define remove_cvref_t</li>
+				<li>For pre C++20, to get _GLIBCXX_RELEASE define conditionally include &lt;bits/c++config.h&gt;</li>
+			</ul>
+		</li>
+		<li>Traversal::Iterable/Iterator/Containers
+			<ul>
+				<li>Minor cosmetic cleanups to Iterable</li>
+				<li>simplify Iterable (templated CONTAAINER) CTOR - and added Test18_IterableConstructors_ () to make sure all working ok. Not sure change OK (must test more) - but seems oK</li>
+				<li>Iterable/Iterator, Containers, Sequence, and Set use perfect forwarding for appropriated template CTOR, and Add methods (not really helpful).</li>
+				<li>More cleanups to Containers - using is_base_of_v/remove_cvref_t: Stack etc</li>
+				<li>https://stroika.atlassian.net/browse/STK-541 - Iterable (Iterable&&) now does COPY, and documented rationale in headers for Iterable, and added regtrest to make sure move(m) for mapping now works properly;
+				because of change/fix - lose a bunch of mvoe calls with IO::Network::Transfer::Response ctors</li>
+				<li>new bool Iterable&lt;T&gt;::All (const function&lt;bool(ArgByValueType&lt;T&gt;)&gt;&amp; testEachElt) const Linq-like function</li>
+				<li>*not 100% backward compatible: use explicit on forward (any-container-type) CTOR for base Container ArchTypes,
+				and a few other related cleanups/fixes; and used optional instead of Memory::Optional in one place in regression test</li>
+			</ul>
+		</li>
+		<li>ObjectReader
+			<ul>
+				<li>ObjectReader MakeCommonReader_ code uses READER::AsFactory() instead of explicit creating factory</li>
+				<li>Added kDefaultValue to RepeatedElementReader TRAITS - so we can specify it externally and deal with types with no default constructor</li>
+				<li>Moved private OptionalTypesReader_ to public OptionalTypesReader&lt;&gt;
+					Add TRAITS mechanism to it, so it has kDefaultTraits and can handle types with no default constructor.
+					Registry::MakeCommonReader_() template specialization for DateTime to use new TRAITS
+					so works without default CTOR</li>
+			</ul>
+		</li>
+		<li>VariantValue
+			<ul>
+				<li>VariantValue::empty () for case of Date/DateTime now always returns false and doesnt call date/time empty</li>
+				<li>VariantValue:  ***not backward compat*** - As<DateTime> () now throws format exception when called
+                    with empty string/value (instead of returning empty datetime)</li>
+			</ul>
+		</li>
+		<li>Compile bug workarounds
+			<ul>
+				<li>qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy define and workaround</li>
+				<li>qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy  broken for clang6 too</li>
+				<li>qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy is broken for clang7 as well</li>
+				<li>redefined qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy to depend on _GLIBCXX_RELEASE since its a stdc++ lib issue - not a compiler issue, and shared by clang when compiled with libstdc++</li>
+				<li>new bug define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy</li>
+				<li>new bug define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy</li>
+				<li>fixed qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy define</li>
+				<li>added qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy bug define</li>
+			</ul>
+		</li>
+		<li>Foundation::Execution
+			<ul>
+				<li>cleanup code for calculating kMaxFD_ (In ProcessRunner) and change max# where we assert out from 1Meg, to 4Meg,
+				since under docker it often gets up to 1meg (maybe should be more or better - find a better way to do closes)</li>
 			</ul>
 		</li>
 		<li>IO::Networking::HTTP
 			<ul>
 				<li>Draft HTTP Cookie support</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>Docker/RegressionTests/BuildScripts
-			<ul>
-				<li>BuildContainers support for ubuntu1804 basic and regression test images</li>
-				<li>BUILD_EXTRA_COMPILERS_IF_MISSING and other commandline options to RegressionTest.sh script</li>
-				<li>updated regtest script to autobuild clang etc</li>
-				<li>cleanup regtest output</li>
-				<li>renamed ScriptsLib/GenerateConfiguration.pl -> configure</li>
-				<li>CheckFileExits.sh script now supports multiple arguments</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
 			</ul>
 		</li>
 		<li>Documentation
 			<ul>
 				<li>readmes</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>More progress on inline API documentation</li>
 			</ul>
 		</li>
-		<li>xxxx</li>
-		<li>xxxx</li>
-		<li>xxxx</li>
-		<li>xxxx</li>
-		<li>xxxx</li>
-		<li>xxxx</li>
-#if 0
-
-
-commit 01dab22cb58d91824d0eb12967f4bb7b804b7fcc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 8 14:47:16 2018 -0400
-
-    cleanup code for calculating kMaxFD_ (In ProcessRunner) and change max# where we assert out from 1Meg, to 4Meg, since under docker it often gets up to 1meg (maybe should be more or better - find a better way to do closes)
-
-commit c60bf9830cbb5527e628d28b96455a05bf7ab225
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 8 14:50:48 2018 -0400
-
-    Added misising component for builds to dockler file and new BuildContainers/RunRegressionTests script/test
-
-commit 33f25ea596506de811c32156c5d46083a714c60c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 8 15:41:22 2018 -0400
-
-    
-
-
-commit 11d7c2aa45f05a2f085e75d53a5e417a43a21e2b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 10:48:49 2018 -0400
-
-    Minor cosmetic cleanups to Iterable, plus use perfect forwarding in a couple places
-
-commit b414d6185976b016ce6e14d0d7b4d6e2ff7e2998
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 12:09:46 2018 -0400
-
-    simplify Iterable (templated CONTAAINER) CTOR - and added Test18_IterableConstructors_ () to make sure all working ok. Not sure change OK (must test more) - but seems oK
-
-commit 379812a93c35f5e02a99956db2870fef7b3cd5fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 14:03:19 2018 -0400
-
-    define WAG at kStrokia_Foundation_Configuration_cplusplus_20, and #if  __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20 define remove_cvref_t
-
-commit 128228fed849fd85aa4161423f5c579e8acfea33
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 14:04:04 2018 -0400
-
-    fixed  perfect forwardning CTOR for Iterable to use not is_base_of_v<Iterable<T>, remove_cvref_t<CONTAINER_OF_T> and documented
-
-commit 089172eb4a5ed4b97be02a3f113055071cead689
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 14:34:06 2018 -0400
-
-    Containers, Sequence, and Set use perfect forwarding for appropriated template CTOR, and Add methods (not really helpful).
-
-commit 37b92551e15cef35ab8a26220489b30c291031ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 17:14:21 2018 -0400
-
-    More cleanups to Containers - using is_base_of_v/remove_cvref_t: Stack etc
-
-commit aae50358ecc851605026647415c68eaded60c35a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 17:26:15 2018 -0400
-
-    switch to using external data volume for stroika build in scripts (docker)
-
-commit 8f2f39ff6f082c20186ea93038a7cd0a0059c995
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 19:34:48 2018 -0400
-
-    use forward<> on a few more CONTAINER&& ctors templates for container classes
-
-commit a8b1ca2e80ca8d745e5c1ac1363ea691d202368e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 20:56:51 2018 -0400
-
-    more cleanups to perfect forwarding container overload for container constructors
-
-commit b8fd33e910bf07546f0f649ab359c91a2d17257a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 21:01:00 2018 -0400
-
-    fixed BuildContainers/Ubuntu1804-RegressionTests/Dockerfile libc++abi-dev
-
-commit b2bb2c9fe1e01328e1e61a6748770248a918be7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 9 21:48:51 2018 -0400
-
-    lose some unneeded move() calls - as they were on funciton results so not needed
-
-commit bae8816d8008622427cbe153d4299aa576745d25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 10 12:01:10 2018 -0400
-
-    https://stroika.atlassian.net/browse/STK-541 - Iterable (Iterable&&) now does COPY, and documented rationale in headers for Iterable, and added regtrest to make sure move(m) for mapping now works properly
-
-commit 2bfd3da5b6f75e02c69436a059c02ab6c9bf72a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 10 12:18:29 2018 -0400
-
-    because of https://stroika.atlassian.net/browse/STK-541 change/fix - lose a bunch of mvoe calls with IO::Network::Transfer::Response ctors
-
-
-commit 90e8840e86277e7388f8942db91157192f2c6a3b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 10 14:14:03 2018 -0400
-
-    small test makefile cleanups - use direct execute of commnand instead of explicit perl call
-
-commit 29670edd53727abe41496cbfd64559b53454d56c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Oct 10 14:17:15 2018 -0400
-
-    progress on /ScriptsLib/RunRegressionTestsInDocker
-
-commit 42b857103eedde0a772300869650744e96b10177
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 10 15:03:40 2018 -0400
-
-    more small cleanups for docker regression tests
-
-commit 5e0749c07bd55e853ee292a82b57f8b658e35480
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Oct 10 15:33:19 2018 -0400
-
-    NOPASSWD on sudoers file since password stuff hard to get working inside a container (hidden password dir)
-
-
-commit 460c247aed0cffa8b42b9c92d7eea1f51adf060b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 11 12:00:35 2018 -0400
-
-    big simplification (and bugfix for tags support with apply-configurations) - using variable APPLY_CONFIGS=$(or for top level makefile
-
-commit f40f1135732e8b1b9729c00700731b3c8fa5412f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 11 14:23:25 2018 -0400
-
-    more comments/parameterizing ScriptsLib/RunInDockerEnvironment including mounting /private-compiler-builds; and changed buildgcc/clang and regression-test-configurations to refer to /private-compiler-builds instead of ~ for where compilers can be found
-
-commit ba1993629124893e52214c8e2cadf291b7a6c49a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 11 17:23:26 2018 -0400
-
-    fixed ScriptsLib/GetConfigurations to handle bad (no extra arg) parameters --config-tags - dont hang
-
-commit f8897bbfe9682dcf70b868341fd52d367168e482
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 11 17:31:45 2018 -0400
-
-    update RegresisionTest script to check /private-compiler-builds/clang-7.0.0
-
-commit 61ffa84a527df225c37de4a194e39cf65cd497ec
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Oct 11 20:38:17 2018 -0400
-
-    fixed default path for stroikaroot in ScriptsLib/RunInDockerEnvironment
-
-commit 653833929f1fc601e9471a3bc8e94905b62e616b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 12 09:49:22 2018 -0400
-
-    make run-tests uses SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no to silence some warnings testing on new systems (docker)
-
-commit 514eb3df1bac5e720f78c38707a7e44e7c746ea5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 12 09:51:47 2018 -0400
-
-    added .ssh dir to forwarded volumes in ScriptsLib/RunInDockerEnvironment
-
-commit 314b37637f7b3d07af19465fa52255b0eae5c852
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 12 09:55:37 2018 -0400
-
-    Simpler default for StroikaRoot in ScriptsLib/RunInDockerEnvironment
-
-
-commit 0f4c8c1e3fd8eb5059a217a26954cbf260fd3aab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 09:09:26 2018 -0400
-
-    try shorter SSH_REMOTE_WARNINGS_OFF to maybe get less noisy warnings on scp/ssh
-
-commit 2256cee1c084685f0f2883092150aca95aa044e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 09:17:46 2018 -0400
-
-    fixed regression in makefile for list-configurations target
-
-
-commit ad4ee1801dee65c0255d86ac10f41f3078a08940
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 12:03:40 2018 -0400
-
-    A little progress on HTTP cookie support (started regtests)
-
-commit f18bf6bc3c0b995905635bf1651ed11c8e69ce28
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 22:51:33 2018 -0400
-
-    working (but not great/not right datetime, etc) HTTP cookie class
-
-commit 1655c84f282c5046ebc0d70645b4132e679e830f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 22:59:33 2018 -0400
-
-    cleanup Cookie HTTP API
-
-commit a48021854388dd784b18dd1df8c2c05b8654534e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 23:07:58 2018 -0400
-
-    more Cookie regtests
-
-commit 24ebe75c73a367b85e1f7c4c374f74d3289a0650
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 13 23:23:10 2018 -0400
-
-    added (partly disabled cuz still broken) Cookie expires data regression test
-
-commit 8df19743a8e22c0ed27943ccb2ca8f44a6c6daa0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 14 10:52:53 2018 -0400
-
-    support new datetime parse format DateTime::ParseFormat::eRFC1123 - used in ancient sendmail, and still used in HTTP (at least for cookies)
-
-commit 7f79628486db594bef54493501113e63bf861650
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 14 10:53:41 2018 -0400
-
-    fixed regtests with DateTime::ParseFormat::eRFC1123 on cookies
-
-commit 8b14146cae4ca76ba7f06ab60d84293961a68345
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 14 11:02:45 2018 -0400
-
-    cleanups to timezone support in RFC-822 date-time
-
-commit f27eb7892fa5fc2bc3981e9b56592c98f6eefdc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 14 11:21:19 2018 -0400
-
-    eRFC1123 DateTime parsing regression tests
-
-commit b6a800c12b34903e35615637c2425a3bf2782ee2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 11:31:45 2018 -0400
-
-    Timezone::ToString () const support
-
-commit 46390ce2744a8b8b0b8d10bcef4ca72ebd03f1f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 11:39:23 2018 -0400
-
-    cosmetic code cleanup - lost prefixing 'struct' before tags in a few places in datetime code - not needed (e.g struct tm tm replaced with tm tm)
-
-commit 11e8c1271e7263340dc4dffbdd8446e7cc31578e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 11:46:18 2018 -0400
-
-    fixed call to swscanf in DateTime::Parse () for ParseFormat::eRFC1123 - glibc didnt like read of string there(not sure whose bug) but simple enuf to use 3 chars
-
-commit 1d9f951f675cd0796930c27f3fc205db568e484a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 13:20:48 2018 -0400
-
-    fixed serious bug/typo in new Timezone::ToString()
-
-commit f8c4129c755e59a40d46d974812588309642e461
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 13:22:17 2018 -0400
-
-    Moved DateTime::ToString () to CPP file, and (temporarily - needs more thought/rewrite) changed to also display the timezone
-
-commit f8e222ea7f81bdfdbdb907aebdd71777302882be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 13:23:27 2018 -0400
-
-    cosmetic cleanups and docs
-
-commit 448cf3b12d1eabc167c2dd0e0549d9455dbe0d4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 13:24:53 2018 -0400
-
-    fixed serious bug with swscanf() call (only noticed on gcc) - must use %ls for wide-char string scan!
-
-commit 324335757dc37fa85536ef18775fd5410a9776ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 15:18:40 2018 -0400
-
-    docs on GetPlatformDefaultLocale ()
-
-commit b159ef7cda10c6774f1fcea2ed3b88a65645ecad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 15 19:57:57 2018 -0400
-
-    some helper operators for Year type
-
-commit c269f02f3be344f14ee0571207e168592fcd9af3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 09:08:02 2018 -0400
-
-    in Test_0_Test_VarDateFromStrOnFirstTry_, directly call the windows overload of DateTime::Parse () - dont count on ParseFormat overload as that no longer calls that routine (so directly - it calls stdlib instead now)
-
-commit 28dbf73c97a744a9a9dc014bc24c0ada320ee0a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 11:17:15 2018 -0400
-
-    fixed unix makefile dependencies so Tests, Tools, and Samples executables all depend on $(StroikaLibs) (so they relink automatically when changes to stroika libs)
-
-commit b9a446eba6b3b60b4e3c5fdbbaff1e08146fe7bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 12:57:50 2018 -0400
-
-    new helper function Timezone::ParseTimezoneOffsetString ()
-
-
-commit a41025b89dd3a90a8f470c9c4f5b8048ea987d37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 16 16:35:49 2018 -0400
-
-    changed directory where .lib files emitted on windows builds (to mimic unix builds) - and fixed StroikaFrameworksLib and StroikaFoundationLib variables to point to right file(s) - files for windows for now as tmp workaround cuz never implemetned merge of libs
-
-commit 5baff188892c0ba8786d7026670b7ed55bd04966
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 10:42:04 2018 -0400
-
-    tons of progress on https://stroika.atlassian.net/browse/STK-107 - datetime related locale parsing.
-    
-    ***NOT FULLY BACKWARD COMPATIBLE***
-    
-       > new bug define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-       > new bug define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-    and workarounds.
-    
-            New DateTime::kShortLocaleFormatPattern;
-            New DateTime::kDefaultFormatPattern;;
-    
-    (and default locale 'Format' code now uses kDefaultFormatPattern) - which is a materially different
-    format. To get the old behavior
-            Replace DateTime {}.Format (DateTime::PrintFormat::eCurrentLocale) with
-                    DateTime {}.Format (locale {}, DateTime::kShortLocaleFormatPattern)
-    
-    DateTime::ToString () for DateTime now uses this as well, and automatically appends a timezone indicator if tied to the DateTime.
-    
-    new DateTime::AsTimezone () helper function.
-    
-    New experimental kTreatLocaleAsIfItHasATimzoneWherePossible control variable (off for now).
-    Still researching. But documented this choice as is.
-    
-    On Windows, repalced DateTime::Parse () calll for (eCurrentLocale) - used to call non-portable
-    windows parser. NOW portably calls Parse (rep, locale {});
-    
-    DateTime code now uses portable/factored Timezone::ParseTimezoneOffsetString ();
-    
-    define constexpr bool kRequireImbueToUseFacet_ = false and use that to document if we need to
-    use imbue (I think not).
-    
-    New
-            DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
-    with significant refactoring from older DateTime::Parse (locale) overload (and lots of bug
-    workarounds).
-    
-    DateTime:AsUTC () refacotred to use new DateTIme::AsTimezone();
-    
-    DateTime::Format (PrintFormat::eCurrentLocale_WithZerosStripped)
-    rewriten to use base class Print (with regular currnet locale) and then do zero stripping. Produces
-    better results.
-    
-    String DateTime::Format (const locale& l, const String& formatPattern) const
-    had MUCH rewriting and clean and documentation and bug workaround.
-
-commit bac68b08ec0b9ffbf8288cd4c3c027d74e6ba8cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 13:48:57 2018 -0400
-
-    new String::Replace () method, and ReplaceAt overload, and String docs
-
-commit 5828bf77a22a5987535890b72637a9733a9de904
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 15:11:38 2018 -0400
-
-    new bool Iterable<T>::All (const function<bool(ArgByValueType<T>)>& testEachElt) const Linq-like function
-
-commit 45a26ed60981952cddfc0929ba3b0de77953afaf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 15:12:57 2018 -0400
-
-    String class: docs; and String::FilteredString (regexp) overload implemented, and String::Find (regesx) overload with startAt fixed/implemented
-
-commit 8571ab9415e2eadb3323d914bd3d9bbba37b5773
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 15:14:27 2018 -0400
-
-    String::Format (PrintFormat::eCurrentLocale_WithZerosStripped - fixed regexp code better to delete just the right zeros
-
-commit edf9878ed886bba76ee81e40f2c093917ec03559
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 17 16:13:11 2018 -0400
-
-    mew overloads for String::ReplaceAll () and used to deprecate FilteredString()
-
-commit a5bdd9b6749cf222603dd746f9fb8763dc9ed79f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 15:13:12 2018 -0400
-
-    small change to DataExchange/VariantValue private TIRep_ (simplification/perfect forwarding); and change form of call to Sequence<VariantValue> CTOR call to not using {} since that confused (I think incorrectly but didnt dig into it - worekd on gcc) - into thinking its arg was an initializer_list instead of a regular CTOR call
-
-commit 36cc963cf8742c54ea630765ed8147f66ff1c259
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 15:14:00 2018 -0400
-
-    test case to address recent fix to VariantValue Sequence CTOR issue
-
-commit be128306006884b973187ca266b150ccd728d28e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 21:40:01 2018 -0400
-
-    *not 100% backward compatible: use explicit on forward (any-container-type) CTOR for base Container ArchTypes, and a few other related cleanups/fixes; and used optional instead of Memory::Optional in one place in regression test
-
-commit fd5b5b8d1f82c884c21e521fb9f6330218f75cef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 21:48:51 2018 -0400
-
-    completed use of DefaultNames<> in DateTime module
-
-commit 7150bdfcfb02b159c18415cf8aae6a7d5787fd47
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 22:00:57 2018 -0400
-
-    mark all LCID based Date/Time APIs deprecated, since MSFT appears to be abandoing them (as near as I can tell from their docs) - cited in https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata - Microsoft is migrating toward the use of locale names instead of locale identifiers
-
-commit 3b0813c02385e998ec6888d8ac9793f241b9496a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 22:11:54 2018 -0400
-
-    Silence bad warning from last checkin
-
-commit 89c306913bffff631afadbc20bad6ad9cbe962a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 22:22:48 2018 -0400
-
-    cleanup Time todo items
-
-commit ad2c42d3f949c5bd9781b1e03549a29c59233f1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 18 22:42:04 2018 -0400
-
-    DEFAULT_CACHE  in MemoizerSupport is now deprecated - since C++17 does better with type deducation iwth template template params
-
-commit c7934577650c1365e4d38bbdd2067ce3d05a3dda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 19 13:22:45 2018 -0400
-
-    !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy define and workaround
-
-commit 2bb5506ac117ec17bb07e3255fe5bb1e60526f82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 19 20:13:05 2018 -0400
-
-    tweak RegressionTests.sh to not build BUILD_EXTRA_COMPILERS_IF_MISSING except on Linux
-
-commit 6efadd223cfdec704ff326c47689a1fd9a42cfb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 20 11:11:29 2018 -0400
-
-    qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy  broken for clang6 too
-
-commit cd0287bb2bc46e849d97d28fbb12960f06fca767
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 20 11:27:28 2018 -0400
-
-    tweak memoizer impl
-
-
-commit b54a1ae8cf1c8d36e5f0b2f69015a8f3fbd7562b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 09:58:05 2018 -0400
-
-    fixed qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy define and
-    
-    added qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy bug define
-    
-    Added two overloads for TimeOfDay::Parse () - taking format patterns, and rewrote
-    the other variants of TimeOfDay::Parse() calling the new method. And related new static const
-    TimeOfDay::kDefaultTimeParseFormats;
-    
-    Code now more portable, but still not very portable because BOTH MSVC and GCC APPEAR to be
-    pretty buggy in halding of time parsing with locales (or maybe my misunderstandings).
-
-commit 9d4abc31b414f27db499ace56a42bb55dac3ece4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 10:28:18 2018 -0400
-
-    qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy is broken for clang7 as well
-
-commit c2c0f9ad327de2db530573dddeafbbac310c892a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 10:28:44 2018 -0400
-
-    a few more TimeOfDay constexpr methods
-
-commit 3c8a28f9406bf9feafdf8af398293a80e703aca8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 10:56:23 2018 -0400
-
-    cosmetic, and small auto&& fixes
-
-commit 95395868a491604a7ca24e0415793716e14bedaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 10:59:45 2018 -0400
-
-    break regressiontest configuraitons into basic-unix-test-configurations, raspberrypi-cross-compile-test-configurations
-
-commit 136609e98424ae0740477c8f007ee1dcc121d0db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 11:01:49 2018 -0400
-
-    cleanup noise in makefiles
-
-commit 7f56d7a929463b6c2e0817916e4a9ced3bf88032
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 11:31:01 2018 -0400
-
-    refactored REgressionTEst script to : use new BUILD_CONFIGURATIONS_MAKEFILE_TARGET arg instead of DO_ONLY_DEFAULT_CONFIGURATIONS; and more algorithmic test for whether to run valgrind
-
-commit 8a3d7a02d887a36fce53f4aefea6e0226b98b78e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 11:37:14 2018 -0400
-
-    another fix (regression) to regressiontest script
-
-commit 6ce7e1ae0c5c24756510c990f8151aad265663b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 11:41:42 2018 -0400
-
-    progress cleanup RunRemoteRegresisiontest script
-
-commit b34f71279eec96889ce76cc6e0b1f6e5a59084e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 21:57:12 2018 -0400
-
-    
-
-commit 63e4890efe46a5b7de6ce61295e0753ab0fa242f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 21:58:42 2018 -0400
-
-    make check library makefile uses $(StroikaFoundationLib) $(StroikaFrameworksLib)
-
-commit 016e283e5a15023b19a3f551b6096f1543235d41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 21:59:40 2018 -0400
-
-    use SQLLite 3.25.2, and use Xerces 3.2.2
-
-commit d09c28142563fde3987cb9216a8fa1d90e41fdab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 22:03:28 2018 -0400
-
-    Small changes to RunRemoteRegistrationTests: USE_TEST_BASENAME in default for BUILD_DIR
-
-commit 0b230392f8aad1f27ade14dbd23528700ee570d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 22:38:48 2018 -0400
-
-    changed RunInDockerEnvironment to only optionally emit terminal information
-
-commit 70f8957f5657952e1101f98a82dd85c8e1d9d749
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 22:43:06 2018 -0400
-
-    testing
-
-commit fbdb301e96a9ba02223c3fa7fd9d068642f25909
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 22:45:12 2018 -0400
-
-    tweak ScriptsLib/RunInDockerEnvironment handling of TERM
-
-commit 9c619bcc1f25f017a1c35573e58ae769436c9d95
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 22:49:18 2018 -0400
-
-    tweak ScriptsLib/RunInDockerEnvironment
-
-commit a3f0e64ac40f0146ffc67680d1a0987ba3721266
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 22:56:16 2018 -0400
-
-    EXTRA_DOCKER_ARGS optional arg to RunInDockerEnvironment script and other cleanups
-
-commit d3c329bea7ea7d6b174c9137a66153f5200ea530
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 23:03:29 2018 -0400
-
-    test changes to ScriptsLib/RunInDockerEnvironment
-
-commit a0b4493194dbf53f05b3b6a0f8569017f4381d3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 23:14:34 2018 -0400
-
-    new ECHO_DOCKER_COMMANDS option for RunInDockerEnvironment script
-
-commit 0905d0ae9f48b0f15c5c2ce28d52fad93667b566
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 23:17:20 2018 -0400
-
-    refactored ScriptsLib/RunRemoteRegressionTests.sh to support RUN_IN_DOCKER option - incomplete but testable
-
-commit 99493245045e2c7263ec7a0fe9e3a952d5552e39
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 21 23:45:13 2018 -0400
-
-    fixed typo in RunRemoteRegressionTests script
-
-commit b69230d6fbd3e2fe40e0b6ec63f746ce66e3f668
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 10:53:07 2018 -0400
-
-    print some config variables in RegressionTest output
-
-commit d0a15472dd85d7057fcd3f87c1f41872dc60b6ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 10:53:39 2018 -0400
-
-    DISABLE_COMPILER_MSC_WARNING_START (4996) in a few places (for changes in time code)
-
-commit 2e378878b37c19899b06b84116911671c409613b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 11:26:37 2018 -0400
-
-    Small tweaks to regression tests script output
-
-commit a7b59c76c527fa9f2508c5961edac02f24e04fe3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 12:03:13 2018 -0400
-
-    revert to 3.2.1 for xerces til we debug clang issue
-
-commit 35e6ac83e6d1b7a3bbe3ce164c90849d7d57161b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 12:03:50 2018 -0400
-
-    use CFLAGS in make configure for Xerces (experimental)
-
-commit a1eb9f2cd1204390fb879a6c0cff351678916549
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 21:10:51 2018 -0400
-
-    quote config variables like CFLAGS passed to configure script
-
-commit a1bf4bd473520d0a89780a07866dda65e6ff33f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 21:45:58 2018 -0400
-
-    maybe workaround build problem with xerces 3.2.2 (still using 3.2.1 but see if build changes still work):
-
-commit 53004e8edc8ac48b344438b7c99edb5a51115777
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 22:35:54 2018 -0400
-
-    fixed typo
-
-commit 7d07a05d663f89657260462aeb5e39532a050e29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 22:36:20 2018 -0400
-
-    tweak display output from regressiontest script
-
-commit dd976dffbef5c6eb09eaeb04a34668c6d0d421bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 22:47:59 2018 -0400
-
-    More Xerces makefile tweaks which I think fix problems with clang on Xerces 3.2.2 - so try that again
-
-commit 5aac8c9af659486fe4201bd831ec41d6cac1efd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 22:55:43 2018 -0400
-
-    slight re-org of RegressionTest.sh output - show whether doing remote reasberrypi test
-
-commit 9448806bf2deb64123767db3163e69b40c821e05
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 22 23:03:29 2018 -0400
-
-    fixed typo on test ARMTESTMACHINEAVAIL i regressiontest script
-
-commit 6d1b7aa7ac03aedbce064e126204af5f37486a9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 11:04:40 2018 -0400
-
-    more cleanups of regressiontest script (and output of variable results)
-
-commit eee0aae99dc3c59948e9816f6d27e76667487883
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 11:06:13 2018 -0400
-
-    regressiontest script fixed output
-
-commit 18210de576b25873104f92044b94f9c7222e2ace
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 11:34:28 2018 -0400
-
-    more aggressive --std filterout fix on CFLAGS for Xerces
-
-commit aa9644693fb2a255bc15766245b63bf123614f90
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 11:39:47 2018 -0400
-
-    tweak error-out time on one windows regtest since dont want it failing when docker host is loaded (randomizes times a bit)
-
-commit 48b142007c86ca3d09110d73f8dd57159931e153
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 11:51:40 2018 -0400
-
-    try Xerces 3.2.2 again (see if issue with clang corrected)
-
-commit 0cf11bd82a9b8694ec533fd83fa20f82ce1f30f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 12:56:15 2018 -0400
-
-    use which to get fullpath for AR/RANLIB and dont pass them to env vars in Xerces makefile
-
-commit c4f7e95acf87ddca99f3e963c3f5f797414dc5f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 13:08:27 2018 -0400
-
-    more cleanups to Xerces (cmake usage) Makefile
-
-commit 4f9ff229372c82b1b2dde90522439f4f3666f6a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 14:22:54 2018 -0400
-
-    must also filter out -flto from cflags passed objs going into library(at least for clang)
-
-commit 8be9671ced9bd49ad7ea4e49378fa13798b378a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 14:23:41 2018 -0400
-
-    Comment
-
-commit 73b5e22cc33de3b047d4b76a244ee93b2851f7f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 14:28:02 2018 -0400
-
-    Try using CMAKE_ARGS mechanism instead of env variable for CFLAGS and CXXFLAGS in Xerces makefile (cmake integration)
-
-commit b44dc6e83eb22f100b994d9e9b7bfada07a577ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 15:06:03 2018 -0400
-
-    redefined qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy to depend on _GLIBCXX_RELEASE since its a stdc++ lib issue - not a compiler issue, and shared by clang when compiled with libstdc++
-
-commit daa8804304575ef8a114d8cc776914e9059ce548
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 23 15:11:10 2018 -0400
-
-    maybe fixed issue with make clobber on library for particular configuraiton when that config not built
-
-commit 2950f7b8c279c3f4a84b2016a9f662f27fc9b4df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 10:56:12 2018 -0400
-
-    PRIVATE_COMPILER_BUILDS_DIR env var in RunRemoteRegressionTEsts and RunInDocker... scripts
-
-commit c35e42b60c39bf84584dc3b621638c29700fdd5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 11:34:59 2018 -0400
-
-    For pre C++20, to get _GLIBCXX_RELEASE define conditgionally include <bits/c++config.h>
-
-commit a0fd348eb8c362a058ceabb3fb2166b4d4104465
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 11:36:13 2018 -0400
-
-    more cleanups/fixes to regtression test script - bette defaults for INCLUDE_VALGRIND... tests
-
-commit 372a61b4a338de35435951c460af4b9c66ab47e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 11:55:48 2018 -0400
-
-    more cleanups to regressiontest script - mostly about what tests get run
-
-commit 837ff72df6654be8f29883cd25b6bc24f4ec1365
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 12:00:45 2018 -0400
-
-    tweak docs on Regression-Tests.md for docker based regtests
-
-commit 5b833c05ecb5370a16b5f3a3f3c51ce02825b690
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 12:05:45 2018 -0400
-
-    tweak docs
-
-commit 59c2b0322a1f7eadc9a7f57674d97da43c0fc195
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 12:10:32 2018 -0400
-
-    fixed setting INCLUDE_RASPBERRYPI_TESTS
-
-commit d167ab7304edc86c06e068a07ff24506e0597069
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 12:13:15 2018 -0400
-
-    include more config vars in regressiontest output
-
-commit 7408690c81586162ce23f558f6fa9d178ba7da1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:13:59 2018 -0400
-
-    fixed typo in ScriptsLib/RunInDockerEnvironment
-
-commit b02e876f121569515ebb0d7d48c5602543581661
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:18:51 2018 -0400
-
-    ECHO_DOCKER_COMMANDS support in ScriptsLib/RunRemoteRegressionTests.sh
-
-commit e2833b14da6f60daeb29f6e2883ee8c02befa468
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:22:42 2018 -0400
-
-    ECHO_DOCKER_COMMANDS support in ScriptsLib/RunRemoteRegressionTests.sh
-
-commit b8f92c364ef10fe8b05d79ab352eeb75b404ab73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:25:17 2018 -0400
-
-    ECHO_DOCKER_COMMANDS support in ScriptsLib/RunRemoteRegressionTests.sh
-
-commit a67b5993bfe04bdb723888158433ffaa54c6b133
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:29:57 2018 -0400
-
-    Debugging RunInDockerEnvironment remote calls
-
-commit d5ed450697f352679fe298046e967f0a9e7e48d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:32:44 2018 -0400
-
-    fixed typo in RunRemoteRegressionTests.sh
-
-commit 54c08223c4772d40a8a58ce7fa56e145988723aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:36:30 2018 -0400
-
-    more fixes to remote run docker and runindocker scripts
-
-commit 1c170749d486a35365de92905f857b038f787e38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 13:41:04 2018 -0400
-
-    fixed typo in ScriptsLib/RunInDockerEnvironment
-
-commit cbc04579d97516199a5d43172448d3fb17cf70b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 14:27:55 2018 -0400
-
-    reorg capture/display of control variables in RegressionTest script
-
-commit 7dd1d99a48972f2e0ec35ddde68e5d956ee5166d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 17:23:55 2018 -0400
-
-    _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE etc tweaks in macro defs for valgrind support (needed only on arm, but good to undef)
-
-commit 93077c4f0222a298fc77cdd4c9bbba7ee4beffe2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 17:32:53 2018 -0400
-
-    In runInDocker script - mount .ssh folder read-write so ssh can update the list of IPs and stop warning about it
-
-commit a5361508cd6647bd89d3d4c6a7d79dacf6ab6137
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 17:33:16 2018 -0400
-
-    spacing in regression test file output
-
-commit c8f2baf1fc3d89ca9cfe0d9ac93e89268b8bd564
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 17:34:03 2018 -0400
-
-    support msvc 2k17 15.8.8
-
-commit 6cb57ac75a62d10d23b1320b8fc63d9b83303a10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 17:59:02 2018 -0400
-
-    wrap local valgrind tests in if $INCLUDE_LOCAL_TESTS test in regressiontest code"
-
-commit 15fe8e3a2821b3dd723d7288402a2964224797c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 20:27:09 2018 -0400
-
-    generalize valgrind suppression rule for https://stroika.atlassian.net/browse/STK-626
-
-commit 27f67cb025d84217b8e0385faa760c5af6dc8a5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 24 22:37:13 2018 -0400
-
-    experiemmnt with function in regressiontest script to factor code (and added iftest to chck if config is present - all untested
-
-commit f54d6b6642747ca96c79e5f01b87d4b5ccf5ff2d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 25 12:16:24 2018 -0400
-
-    Lose support for kTreatLocaleAsIfItHasATimzoneWherePossible - got decent docs from stackoverflow (noted in comment) that there is no timezone in the locale
-
-commit d2ff57fe5250615174ec23d1fe3dbaba1b902fac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 25 12:18:50 2018 -0400
-
-    docs
-
-commit 99cfa2f546ddedd1e44e5098d53f8545cc8022a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 25 12:35:55 2018 -0400
-
-    rewrite (hopefully closer) +RunLocalValgrind_() - refactoring of RegressionTests.sh script
-
-commit e8b0f83d441915065101c284264c7a3651136d21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 25 21:37:53 2018 -0400
-
-    fixed regression in Xerces makefile for windows
-
-commit e021bb6ca96bdd3b8e372d888c47b9a71518b133
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 17:11:27 2018 -0400
-
-    refactor GetConfigurationParameter to support CompilerDriver-C, CXX, and AR and RANLIB for Windows/VisualStudio in various thirdpartylibs makefiles
-
-commit 67f2b19c21ef248177e6a6223c1f36af32f67105
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 17:32:17 2018 -0400
-
-    AS config variable supported by GetConfiruationParameter / refactoring
-
-commit af8e36914a35d498619d06876719a0236609faa1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 17:39:18 2018 -0400
-
-    path variable not used in sqlite makefile
-
-commit a8efcb1f594b471682a29852054b0f34f2a063bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 17:52:33 2018 -0400
-
-    lose CURL/OpenSSL patch for AIX (we no longer support AIX)
-
-commit 6bfb281c2f4a62154d53886e10efd349d1ca9912
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 18:17:48 2018 -0400
-
-    Revert "path variable not used in sqlite makefile"
-    
-    This reverts commit af8e36914a35d498619d06876719a0236609faa1.
-
-commit a3c43eb6970dd95b0db32d3acb1622a7f5650b66
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 18:45:38 2018 -0400
-
-    fixed 64 bit project files - to have new location for .lib files
-
-commit 44b2dcdd3235d0bbf0839b368249a6b7596923ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 21:50:05 2018 -0400
-
-    fixed docs typo
-
-commit 4bfdf9287ebfaae7b23081974fcbb67a14e6b096
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 22:13:10 2018 -0400
-
-    comments on DateTime / Timezone code
-
-commit af1f9dc90476f7d844fdd271485b4f777928e1d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 22:36:47 2018 -0400
-
-    DateTime now uses optional<TimeOfDay> internally, and no longer calls TimeOfDay empty CTOR or timeofday::empty ()
-
-commit cd35c49a2e05d0940dad55e695c05e93387dfc1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 22:54:28 2018 -0400
-
-    cosmetic
-
-commit 0ee3ffbe9446a455e20a391c4a04fcfe9f2d5328
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 23:21:03 2018 -0400
-
-    Cosmetic
-
-commit 2a97054d2deccd7bfe54a7d47a010569947cc3af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 23:40:22 2018 -0400
-
-    quiet warnings
-
-commit 2bce2b8fe5c0abc4c6957054662b893ae006d5e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 28 23:41:27 2018 -0400
-
-    cosmetic
-
-commit ed877dd2ae01adae4820d85c752bff10afdb86fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 12:33:31 2018 -0400
-
-    TimeOfDay/0 CTOR deprecated, along with TimeOfDay::empty (): use optional<TimeOfDay> instead; And overload operators (<=, ==, etc) for TimeOfDay - so they work with optional<TimeOfDay> or TimeOfDay
-
-commit 68654a9de3fc3090e2496b7be097ed06a6b9814c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 12:34:08 2018 -0400
-
-    Improved setting INCLUDE_LOCAL_TESTS variable default in RegressionTests script
-
-commit 7dffbbb11f609fa4e5ccfde76bb06d7139fb17de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:07:59 2018 -0400
-
-    Comments
-
-commit 10ca733baaa2852708d76bb850018e9080dd99f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:08:35 2018 -0400
-
-    try to better compute NUM_PASSES_OF_REGTESTS_RUN in regtests
-
-commit f504d22e331899bc89c402079d474d1bebc01416
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:15:37 2018 -0400
-
-    debug RegressionTest script
-
-commit 0e259e88b56ba3d30a31e990b0e500a98683d40c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:19:05 2018 -0400
-
-    hopefully fix regressiontests
-
-commit 47ed5311f712633f6242e50d1006f5479ae18303
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:23:07 2018 -0400
-
-    Added printout to regressionte of LOCAL_CONFIGS
-
-commit 70620a238bb76bb6eea4ce2657a6cb3eec9311a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:29:23 2018 -0400
-
-    Added printout to regressionte of LOCAL_CONFIGS
-
-commit 0d2f2f4c40ccdf479e43a0a9e89f8d0c6e9b9cb6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:42:21 2018 -0400
-
-    another fix to regressiontest script
-
-commit 4bf3be45d91a017261c44601fb5f67ba1caed522
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 29 16:45:24 2018 -0400
-
-    runindockerenvironent now takes args to use /etc/localtime
-
-commit 331b7a3bde3ad45453beae0d1c3a36ef91bac380
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 09:14:07 2018 -0400
-
-    Added Xerces patch for /Sandbox-StroikaRoot/IntermediateFiles/g++-7-debug-c++17/ThirdPartyComponents/Xerces/src/xercesc/internal/ElemStack.cpp:496:11: runtime error: null pointer passed as argument 2, which is declared to never be null
-
-commit 3588fd7976f38d8b915463824ab2acab3224bcd5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 09:16:30 2018 -0400
-
-    renamed PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR to clearer makefile variable PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR
-
-commit 2758d9d268319281d1f773ac9f524730aa80004b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 09:26:05 2018 -0400
-
-    update sln file
-
-commit a3d18ac3e07cd1eb992bd01522a20e59be365f23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 10:25:16 2018 -0400
-
-    refactor running valgrind in RegressionTest script (progress)
-
-commit 19a403453190221a1b28fc2027505e240d72fd64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 10:32:31 2018 -0400
-
-    forgot to duplicate extra localtime line in docker run cmd
-
-commit e9805977eeffac6b3a6c2bbf8de1229e8a3705a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 10:33:15 2018 -0400
-
-    dbgtrace context in performance regtest so I can tell which tests are very slow under helgrind
-
-commit 8db0b6e648b004f13313300608d5de0734fa83f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 10:48:50 2018 -0400
-
-    Comments
-
-commit 518a1ea956175b655611857dbe3b285d4b5e409d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 14:13:53 2018 -0400
-
-    fixed typo in recent xerces patch
-
-commit 0df5aed7433d3d6433ba4ba25f34d342d1df8ad1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 20:32:21 2018 -0400
-
-    patch on Darwin fails due to some misguided security concern - realpath works around this
-
-commit ac17e580ff0667109bdf01f63cb38f8dc5d10ce7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 21:20:58 2018 -0400
-
-    regression test script cleanups: lose obsolete stuff and added eval on run of valgrind params subroutine - not fully tested but hopefully fixes problem
-
-commit 501f4e963bdcc7bfbfa6732cc99283349f7c9179
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 30 22:54:40 2018 -0400
-
-    fixed macos realpath implementation to support eliminating /../ in canonicalize-missing mode; then undo (errant) worakround attempt on xerces patch call
-
-commit 1eaaa34a3c4143138c3bb7a40116d754cdce7904
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 31 10:05:55 2018 -0400
-
-    Another (hopefully final) fix to RegressionTest subroutine to run valgrinds (export and subshell to prevent bleed of value)
-
-commit 7c556e12d6e249460eaed5b9d69e6a0b192d2794
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 31 14:06:14 2018 -0400
-
-    https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY valgrind memcheck workaround (I think not my bug)
-
-commit cf4ca9b88fcaa403cf2a5cb8a26bd896153bce96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 31 14:17:50 2018 -0400
-
-    Factor code in ScriptsLib/RunInDockerEnvironment (subroutine)
-
-commit 6240d65b8e44f9b94d37062e6bdfea2891507395
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 31 14:31:46 2018 -0400
-
-    ScriptsLib/RunInDockerEnvironment
-            If you run docker with the argument script, when the script finishes, the container stops
-            restarting the container restarts the script (not what we want here).
-            so start with a boring task (sleep inf), and then run the CMD2RUN arg using exec, and then
-            stop the container (it can then be safely restarted)
-
-commit 54ef12f4f8f6a2ce44dfe44a4a2b7a0cabec107a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 31 14:35:14 2018 -0400
-
-    fixed typo
-
-commit b0b041e394c9251f2110216d8c13a10d28f91ec2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 31 19:21:03 2018 -0400
-
-    fixed typo in ScriptsLib/RunInDockerEnvironment
-
-commit 2a595bc6ec01cb6e96188e311603b15238d9eefe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 1 11:28:23 2018 -0400
-
-    cleanup Xerces (for windows) makefile - so no extra pass needed nor sed on CMakeCache.txt - instead just pass in right args to -D params (not great but better)
-
-commit 7711a9b859e759b336eb0642e3e3c629ac6ba9ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 1 11:29:05 2018 -0400
-
-    Lambda_Arg_Unused_BWA () to workaround warning bug with msvc compiler
-
-commit 9a0cbfba7e1b917cf76cdeda4d15c990d08e07c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 2 10:11:48 2018 -0400
-
-    dbgtrace calls - mostly to debug why one test takes so long under helgrind
-
-commit ddd23536f6ecd4fd5b019457dab38b55f489acee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 2 10:15:17 2018 -0400
-
-    tweak count for Test_JSONReadWriteFile for valgrind
-
-commit fa440a53495dfd88a9b07e15cc2ad9a0e924126d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 2 10:17:10 2018 -0400
-
-    tweak messages in performance regressiontest (logged)
-
-commit 6c5dcb761e8a22ff49513e4b8264d9fcda0e68f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 2 10:28:06 2018 -0400
-
-    use libcurl 7.62.0
-
-commit 713b7e78cccfd2a5f805ad1cda28fc1ee8453948
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 11:19:32 2018 -0400
-
-    typo fixed in Debug::TraceContextBumper call
-
-commit 96d51d26843d16089a0c9b242fc25020204da465
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 11:35:13 2018 -0400
-
-    lose duplicate call to RunPerforamcneTests from RunRemoteRegressionTests script and set INCLUDE_PERFORMANCE_TESTS to default to INCLUDE_LOCAL_TESTS (since we dont yet support running remote perf tests for raspberrypi)
-
-commit 25efb538a69fee13593aba3b77f1c389a1e7f2a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 12:31:28 2018 -0400
-
-    further lower number of tests under valgrind cuz helgrind very slow for this test (and lose tmp dbgtraces I added to debug)
-
-commit f974cb0fa2f8731a3efdd7d1b9b67a2c6835b7b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 12:35:05 2018 -0400
-
-    lose docs for explicit run of RunPerformanceRegressionTests.sh on windows cuz now builtin to RunRegressionTests
-
-commit 46440b8cef610b2df568845c3fe733522d6a143b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 20:21:20 2018 -0400
-
-    default BUILD_EXTRA_COMPILERS_IF_MISSING depending on presence of writable //private-compiler-builds/
-
-commit cb3d06ae1e9fc6879442aa2c83c60c4580397dc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 20:34:45 2018 -0400
-
-    renamed TimeOfDay::kDefaultTimeParseFormats -> kDefaultParseFormats;
-
-commit 9138084e88215c7f017ce873de34124e867c6706
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 20:56:31 2018 -0400
-
-    cosmetic
-
-commit 9c71c7249e52cb0ce040212a9d7d3d76a97769ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 20:56:56 2018 -0400
-
-    Cosmetic
-
-commit 35ab441b1cc9344694bc5a962ba9db2b2d68c87c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 21:42:18 2018 -0400
-
-    document and test Iterable::CTOR example
-
-commit e322b9f94d1a5885c225462f7e581f19ad24a71c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 21:43:17 2018 -0400
-
-    Lose TimeOfDay::Parse() overload taking a single string format - use Iterable<String>{s}:
-
-commit 665c0921c56aadb5cd721c310e4c60a933118c68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 23:16:50 2018 -0400
-
-    docs/cleanups
-
-commit c2cfc2631049bd0a4f37793cf7bed8411a08d37c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 23:20:33 2018 -0400
-
-    Added Date::kDefaultParseFormats, and Date::Parse () overloads taking iterable<String> formatPattern, just
-    like we did for TimeOfDay.
-
-commit 9d1f29695dc374d5467284d8ee2c8b83890d3617
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 23:49:44 2018 -0400
-
-    (not backward compat change) Date::Parse () throws if arg is empty string (or otherwise fails to parse) - never returns empty date
-
-commit 91d42b15fa579a9a38fc0c108528b41ccd78d1df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 3 23:58:41 2018 -0400
-
-    cosmetic
-
-commit 2323a5174df0fc3cc756dd42ab1cfff0dd77057a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 4 00:01:29 2018 -0400
-
-    (not backward compat change) Date::Parse () throws if arg is empty string (or otherwise fails to parse) - never returns empty date
-
-commit 80faee2b49ce8523babdd0fde7b4c5fd581e5560
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 4 08:45:38 2018 -0500
-
-    Cosmetic
-
-commit e00b495760d81a52428ae7096a7853380ead4a5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 4 08:58:15 2018 -0500
-
-    cosmetic
-
-commit a289d5ae43f7bef32a65946187f0491a81be975d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 4 09:24:40 2018 -0500
-
-    started adapting DateTime code for same cahnge to Parse - so far just did draft of list of formats2use, and new DateTime::FormatException and throw that on empty string passed to DateTime::Format()
-
-commit 1a03918e0e09c4860d57ec207411dfd00df33286
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 4 09:28:26 2018 -0500
-
-    formatting
-
-commit 5be4b3a0f7a6264e4a00964dee0c9438191b4003
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 4 22:38:07 2018 -0500
-
-    DateTime::Parse () now supports Iterable<String> - multiple format strings; and DateTime code now throws on empty
-    string for Parse (like other time classes) - NOT BACKWARDS COMAPT (change).
-
-commit 72e845e40ba50d199900fdf19f768635b2ff3b8b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 11:48:26 2018 -0500
-
-    added a few more named format strings to Date eg. Date::kLocaleStandardFormat, Date::kISO8601Format;
-
-commit 5ae399329085917c897c0283b92b83e1f7a46f53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 13:15:41 2018 -0500
-
-    Time::Date cleanups:
-            o       Mark eXML (in date class) as deprecated - use eISO8601.
-            o       Documentation
-            o       Todo comments
-            o       Added assert/test that Parse(eISO861) works like parse(classic_local,kISO8601Format)
-
-commit 488609a37d381b7a8f5e4a447a704ef2f93c2b86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 13:19:57 2018 -0500
-
-    Ensure (buf == Format (locale::classic (), kISO8601Format)); in Date::Format() code
-
-commit 18b6cb042d674daf43f1930e596484d43b44df46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 16:06:18 2018 -0500
-
-    Date/TimeOfDay/DateTime changes:
-            >       deprecate kMin/kMax (just use min()/max() all that will work in C++ for years).
-            >       deprecate eXML (in datetime, etc, parseformat, and printformat)
-            >       added static constants for TimeOfDay kISO8601Format, kLocaleStandardFormat, kLocaleStandardAlternateFormat etc
-            >       added static constants for DateTime kISO8601Format, kLocaleStandardFormat, kLocaleStandardAlternateFormat etc
-            >       Lose DateTime::kDefaultFormatPattern (ok just added - renamed)
-
-commit bc718214863110b7aa1e61ea497889bbc9b553fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 17:14:02 2018 -0500
-
-    fixed typo in VariantValue::empty() check for nan
-
-commit fe847ee00e776a73ef7b5b1cc0ae7c945f7137fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 17:15:18 2018 -0500
-
-    lose TimeOfDay operator overloads for optional - stdc++ already provides these just fine (as part of optional) with teh same / desired sematncis empty < any value
-
-commit 6e8e8454067c075640d694d1d041b614d1d881e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 20:17:55 2018 -0500
-
-    Time::Date deprecates ***empty*** and ***Date/0 - default CTOR***
-            >       use optional<Date> to capture concept of empty
-            >       Date::Parse situations that might have produced empty now produce a thrown exception (BadFormat)
-            >       Date GetFormattedAge/GetFormattedAgeWithUnit now mostly done with optional
-    
-    VariantValue::empty () for case of Date/DateTime now always returns false and doesnt call date/time empty.
-
-commit dac1b8b593058a102397cd2cecc9276f69bbe1a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 5 20:54:47 2018 -0500
-
-    cosmetic cleanup of last checkin
-
-commit f732f3f34186f07564c1e4e1a823361d59f632f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 11:53:59 2018 -0500
-
-    DateTime:
-            >       empty () and DateTime/0 CTOR now deprecated
-    
-            >       Changed samples/tests to reflect this change
-    
-            >       Cleanup todo list to reflect recent changes
-    
-    VariantValue:
-            >       ***not backward compat*** - As<DateTime> () now throws format exception when called
-                    with empty string/value (instead of returning empty datetime)
-    
-    ObjectVariantMapper::ResetToDefaultTypeRegistry
-            >       now REMOVES AddCommonType<void> () - until I can understnad why it was there
-            >       ADDS optional<T> for all the predefined types
-            >       Remove unneeded AddCommonType() calls (due to this change) from the tests and
-                    samples
-
-commit 2ad082f9c7d982cfac29b63e605b3ba358447629
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 12:06:41 2018 -0500
-
-    cosmetic
-
-commit 17b8d0a819c7e5424aeec70465e4830892e8d721
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 15:52:16 2018 -0500
-
-    cosmetic
-
-commit f48f27687f7b9d5f89b782f0d8f166df52865cb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 15:53:13 2018 -0500
-
-    ObjectReader MakeCommonReader_ code uses READER::AsFactory() instead of explicit creating factory
-
-commit 8e2b149a97e75d28c9f1f51735f8bde173c99e58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 15:55:01 2018 -0500
-
-    Added kDefaultValue to RepeatedElementReader TRAITS - so we can specify it externally and deal with types with no default constructor
-
-commit 6c16e0e0fd8924cda5413ec6e056d61b85832a6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 16:56:28 2018 -0500
-
-    StructuredStreamEvents/ObjectReader:
-            Moved private OptionalTypesReader_ to public OptionalTypesReader<>
-            Add TRAITS mechanism to it, so it has kDefaultTraits and can handle types with no default constructor.
-            Registry::MakeCommonReader_() template specialization for DateTime to use new TRAITS
-            so works without default CTOR.
-
-commit 96a328e28b9f3d978dff380e7f295ba9f1b90898
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 17:01:39 2018 -0500
-
-    use optional<DateTime> instead of DateTime in a couple regression tests (to silence warnings and prepare to lose DateTime default CTOR
-
-commit 8be6b18b6eb47cc05f8c371ba0e2cbd45e0da1c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 17:17:29 2018 -0500
-
-    Lose unneeded PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-1804-x64 for raspberrypi remote build
-
-commit 79ed01cbdba2504901e241fcaaa84137efc79cfe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 6 17:21:00 2018 -0500
-
-    more script cleanups for ScriptsLib/RunRemoteRegressionTests.sh
-
-commit acf7aa761feabd3929639da4be038eab7b33840a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 08:54:18 2018 -0500
-
-    silence noise from RunInDockerEnv script
-
-commit ff3ea7664df24661f2e61cad7927ff8458ace00f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 08:55:01 2018 -0500
-
-    some small cleanups to ScriptsLib/RunRemoteRegressionTests.sh - mostly comsetic/quiet
-
-commit 724b00792bd92bd34ae39b732cd46967728fd311
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 09:02:37 2018 -0500
-
-    echo to regressiontest log about when running remote performance regtest
-
-commit bab359420a44b163b881d54c97993640b3f9e644
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 09:03:15 2018 -0500
-
-    silence warning on copy back performance regtest script output for ScriptsLib/RunRemoteRegressionTests.sh cuz PITA to tell if should copy back and often we should not
-
-commit 2911e1857a336ab8a9bcb0dc6edef58f6edaeeb0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 09:27:55 2018 -0500
-
-    timespec is now portable in C++ since c++17 (so supported in windows) - so remove the #if qPlatform_POSIX around references to it in time code
-
-commit f9e24a105a86150b9b963139a6a76feb25f7b05a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 09:32:40 2018 -0500
-
-    timespec is now portable in C++ since c++17 (so supported in windows) - so remove the #if qPlatform_POSIX around references to it in time code
-
-commit c85cac125c5db5f734cee68aa71fb06db17f50ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 10:02:16 2018 -0500
-
-    docs todo notes
-
-commit 676e355f7fef07eeb7baada36b048cbe74b7f399
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 10:38:03 2018 -0500
-
-    use gmttime_s instead of gmtime on windows to avoid warning
-
-commit eafe47dbd5094fabbdcbde20ab58d35b991607e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 12:38:20 2018 -0500
-
-    Date class:
-            Added Date::GetDayOfWeek () method, and use that to fix a regression test
-            and fixed tm DateTime::As () const to fill in tm_wday
-    
-            Added IsLeapYear (), and a few more arithmetic operators on DayOfMonth, etc.
-            DayOfWeek I redid to start with sunday/zero.
-
-commit 51b93000f51c482c20d33c97fe89a27d2dea9719
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 13:02:14 2018 -0500
-
-    Modest cleanups to Date code
-
-commit e63afd84c05f1c44ed661d243dc985cb24f87bc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 13:04:33 2018 -0500
-
-    Comsetic
-
-commit 34f922dc350c20533d6f9f949aa6e03f1ec28dc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 13:05:11 2018 -0500
-
-    fixed setting tm_wday on DateTime::As () const
-
-commit c4340aaeabd8408fee51158280043190b1f045f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 13:06:56 2018 -0500
-
-    Cosmetic
-
-commit f1673d70d3f14273fbc5558321875a553e5378ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 13:50:54 2018 -0500
-
-    Added helpers Timezone::AsHHMM and AsRFC1123
-
-commit c6e41d6c80709d20702e856e1ff58638dffafea4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 13:51:43 2018 -0500
-
-    cosmetic
-
-commit 41b5e3f952acfa374af51ba35d8a6a1981ea6425
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 14:03:35 2018 -0500
-
-    Support Datetime::Format(RFC1123) and added regrssion tests to check. Not 100% perfrect, but 98% - and I think 100% legal/compliant
-
-commit 89b35283523e040c27a10e5b086b6e743c948a8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 14:16:38 2018 -0500
-
-    cleanup docs on running regtests
-
-commit c9ccac71c62e178ee50ae83483be347dd83377c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 7 15:09:40 2018 -0500
-
-    ScriptsLib/RunRemoteRegressionTests.sh cleanup
-#endif
-		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d10.txt</li>
+		<li>lose some unneeded move() calls - as they were on function results so not needed</li>
+		<li>DEFAULT_CACHE  in MemoizerSupport is now deprecated - since C++17 does better with type deducation iwth template template params</li>
+		<li>cosmetic, and small auto&& fixes</li>
+		<li>generalize valgrind suppression rule for https://stroika.atlassian.net/browse/STK-626</li>
+		<li>small change to DataExchange/VariantValue private TIRep_ (simplification/perfect forwarding); and change form of 
+			call to Sequence<VariantValue> CTOR call to not using {} since that confused (I think incorrectly but didnt dig into it - worekd on gcc) 
+			- into thinking its arg was an initializer_list instead of a regular CTOR call</li>
+		<li>ObjectVariantMapper::ResetToDefaultTypeRegistry  now REMOVES AddCommonType<void> () - until I can understnad why it was there;
+			ADDS optional<T> for all the predefined types;
+            Remove unneeded AddCommonType() calls (due to this change) from the tests and
+                    samples;</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d11.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
-				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d10-OUT.txt</li>
-				<li>vc++2k17  (15.8.6)</li>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d11-OUT.txt</li>
+				<li>vc++2k17 (15.8.9)</li>
 				<li>MacOS, XCode 10</li>
 				<li>gcc 7, gcc 8</li>
 				<li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
@@ -2004,7 +551,7 @@ Date:   Wed Nov 7 15:09:40 2018 -0500
 				<li>renamed the const overload of GetRep() on Iterator to ConstGetRep() - and fixed various calls to it. Rarely called except by implementers of Iterators so change should rarely cause problems (and be obvious - not compiling)</li>
 				<li>@see LRUCache declaration/traits changes below</li>
 				<li>***not backward compatible*** change to SharedByValue - changed COPIER template argument to be functor style () instead of method Copy()</li>
-				<li>commanets and major semantics change on Date::AddDays () - **not backward compatible** - empty now treated as kMin not GetToday() for purpsoe of AddDays (already treated that way everplace else)</li>
+				<li>comments and major semantics change on Date::AddDays () - **not backward compatible** - empty now treated as kMin not GetToday() for purpose of AddDays (already treated that way everplace else)</li>
 				<li>Replace use of using Byte = uint8_t to just using std::byte throughout Stroika. NOT PERFRECT switch. NOT going to be backward compatible. But probably a good idea. AND INCOMPLETE - but testable</li>
 				<li>***not backward compatible*** - new Streams::SeekableFlag replacing  SeekableFlag in FileStream - rarely used directly - use kSeekableFlag_DEFAULT intead of SeekableFlag::eDEFAULT</li>
 				<li>***INCOMPATIBLE CHANGES*** - SharedByValue<> template now takes T as first argument, and TRAITS as default. OK to change existing code to just have T as first arg; then added new CTOR for SharedByValue, defaulted TRAITS type, and added docs examples on usage, and regression test</li>
