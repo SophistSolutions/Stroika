@@ -30,7 +30,6 @@ VER=`ssh $SSH_TARGET cd $BUILD_DIR && ScriptsLib/ExtractVersionInformation.sh ST
 #see RegressionTests.sh for this name, and why we require $USE_TEST_BASENAME set
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
-echo "Invoking remote RegressionTests.sh:"
 CMD2Exec=''
 if [ $RUN_IN_DOCKER -eq 0 ]; then
 	CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
