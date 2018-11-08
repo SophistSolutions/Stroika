@@ -1,7 +1,7 @@
 ﻿About
 =====
 These release notes are incomplete. They are merely a summary of
-major user (developer)-impactful changes - especially those they need 
+major user (developer)-impactful changes - especially those they need
 to be aware of when upgrading.
 
 History
@@ -17,10 +17,10 @@ History
 
 
 
-        
+
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d11">v2.1d11x</a><br/>2018-11-08x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d11">v2.1d11</a><br/>2018-11-08x</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d10...v2.1d11</li>
@@ -397,7 +397,7 @@ History
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 				<li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
 				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
-				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
 			</ul>
 		</li>
@@ -411,7 +411,6 @@ History
 
 
 
-    
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d8">v2.1d8</a><br/>2018-09-21</td>
