@@ -495,7 +495,7 @@ void SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handle
 
 void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
-/*
+    /*
      *  Important example / stack backtrace to bear in mind:
      *          #0  __lll_lock_wait_private () at ../sysdeps/unix/sysv/linux/x86_64/lowlevellock.S:95
      *          #1  0x00007f4edcd924fc in __GI___libc_malloc (bytes=139975802748960) at malloc.c:2891
@@ -618,6 +618,9 @@ void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
          *  @todo see https://stroika.atlassian.net/browse/STK-465
          *
          *  Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
+         *
+         *  \note If you see a thread-sanitizer warning here - see 
+         *          https://stroika.atlassian.net/browse/STK-647
          */
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (SHR.fDirectSignalHandlersCache_)));
     Again:
