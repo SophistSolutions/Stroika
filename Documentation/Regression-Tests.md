@@ -1,11 +1,11 @@
 # ***Regression Tests***
 
-* File Output 
-  *  PerformanceDump-$TEST_TARGET-$VER.txt 
-  *  REGRESSION-TESTS-$TEST_TARGET-$VER-OUT.txt
+* File Output
+  * PerformanceDump-$TEST_TARGET-$VER.txt
+  * REGRESSION-TESTS-$TEST_TARGET-$VER-OUT.txt
 
 * Tests run for each release:
-     
+
   * $TEST_TARGET=MacOS_XCode10
 ~~~
         MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
@@ -20,8 +20,6 @@
             ./ScriptsLib/RegressionTests.sh
 ~~~
 
-
-
   * $TEST_TARGET=Ubuntu1804
 
     (remote execute on machine hercules using docker and copy back results)
@@ -33,7 +31,6 @@
             MACHINE=Hercules \
             ./ScriptsLib/RunRemoteRegressionTests.sh
 ~~~
-
 
   * $TEST_TARGET=Ubuntu1804-Cross-Compile2RaspberryPi
     
