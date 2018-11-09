@@ -6,9 +6,10 @@ This is the test script I use to test each release. It assumes appropriately set
 my local network.
 
 To simply run the regression tests on your system, use (on that sysmtem)
-    ~~~bash
-        ./ScriptsLib/RegressionTests.sh
-    ~~~
+
+~~~bash
+    ./ScriptsLib/RegressionTests.sh
+~~~
 
 ## File Output (for each $TEST_TARGET)
 
