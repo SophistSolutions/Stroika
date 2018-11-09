@@ -1,4 +1,6 @@
-ProjectPlatformSubdir	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+ifneq ($(CONFIGURATION),)
+ProjectPlatformSubdir	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+endif
 
 .PHONY:	all
 .DEFAULT_GOAL := all

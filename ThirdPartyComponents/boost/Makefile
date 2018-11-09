@@ -37,20 +37,17 @@ ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
 
 ifneq ($(CONFIGURATION),)
-ARCH							=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
-ProjectPlatformSubdir			=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
-ENABLE_GLIBCXX_DEBUG			=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
-OptimizerFlag					=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
-ifeq (Unix,$(ProjectPlatformSubdir))
-ARCH=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
-CC=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-CXX=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
-AR=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) AR)
-RANLIB=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RANLIB)
-CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
-endif
+ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
+ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
+ENABLE_GLIBCXX_DEBUG			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
+OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
+CC								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+CXX								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
+AR								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) AR)
+RANLIB							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RANLIB)
+CFLAGS							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
 endif
 
 

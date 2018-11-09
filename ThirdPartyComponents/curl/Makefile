@@ -1,5 +1,5 @@
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+ProjectPlatformSubdir	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
 endif
 
 SHELL=/bin/bash
