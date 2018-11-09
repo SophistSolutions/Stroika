@@ -18,7 +18,9 @@ To simply run the regression tests on your system, use (on that sysmtem)
 
 ## Tests run for each release (currently used $TEST_TARGET values)
 
-These can all be run at the same time.
+These can all be run at the same time (each in a separate bash shell window). Most of them
+do work remotely on other machines (MACHINE=ARG), and then copy back results to this machine where I can
+checkin from one spot.
 
 * $TEST_TARGET=MacOS_XCode10
 
