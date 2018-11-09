@@ -87,8 +87,8 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     if (errCode != 0) {
         Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
+    AssertNotNull (res);    // else would have thrown
 
-    AssertNotNull (res);
     // @todo proplerly support http://www.ietf.org/rfc/rfc3987.txt and UTF8 etc.
     // See http://linux.die.net/man/3/getaddrinfo for info on glibc support for AI_IDN etc..
     // and how todo on windows (or do myself portably?)
@@ -178,6 +178,7 @@ optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
             return {};
     }
 }
+
 Collection<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

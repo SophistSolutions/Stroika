@@ -127,28 +127,32 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *        Sequence<int> s;
-         *        std::vector<int> v;
+         *          Sequence<int> s;
+         *          std::vector<int> v;
          *
-         *        Collection<int> c1  = {1, 2, 3};
-         *        Collection<int> c2  = c1;
-         *        Collection<int> c3  { c1 };
-         *        Collection<int> c4  { c1.begin (), c1.end () };
-         *        Collection<int> c5  { s };
-         *        Collection<int> c6  { v };
-         *        Collection<int> c7  { v.begin (), v.end () };
-         *        Collection<int> c8  { move (c1) };
+         *          Collection<int> c1  = {1, 2, 3};
+         *          Collection<int> c2  = c1;
+         *          Collection<int> c3  { c1 };
+         *          Collection<int> c4  { c1.begin (), c1.end () };
+         *          Collection<int> c5  { s };
+         *          Collection<int> c6  { v };
+         *          Collection<int> c7  { v.begin (), v.end () };
+         *          Collection<int> c8  { move (c1) };
          *      \endcode
          *
-         *  \note Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
-         *        and don't allow it to apply to SUBCLASSES of Collection (since then we want to select the Collection (const Collection& from) constructor)
+         *  \note   Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
+         *          and don't allow it to apply to SUBCLASSES of Collection (since then we want to select the Collection (const Collection& from) constructor)
+         *
+         *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'CONTAINER_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
+         *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
+         *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
          */
         Collection ();
         Collection (const Collection& src) noexcept = default;
         Collection (Collection&& src) noexcept      = default;
         Collection (const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit Collection (CONTAINER_OF_ADDABLE&& src);
+        Collection (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
