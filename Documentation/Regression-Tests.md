@@ -22,24 +22,23 @@ These can all be run at the same time.
 
 * $TEST_TARGET=MacOS_XCode10
 
+    (takes about 1 HR)
     ~~~bash
     MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
         ./ScriptsLib/RunRemoteRegressionTests.sh
     ~~~
-    (takes about 1 HR)
 
 * $TEST_TARGET=Windows_VS2k17
 
-    (on windows bash shell run)
+    (on windows bash shell run; takes about 8 HRs)
     ~~~bash
     USE_TEST_BASENAME=Windows_VS2k17 \
         ./ScriptsLib/RegressionTests.sh
-        ~~~
-    (takes about 8 HRs)
+    ~~~
 
 * $TEST_TARGET=Ubuntu1804_x86_64
 
-    (remote execute on machine hercules using docker and copy back results)
+    (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1804_x86_64 \
@@ -48,11 +47,10 @@ These can all be run at the same time.
         MACHINE=Hercules \
         ./ScriptsLib/RunRemoteRegressionTests.sh
     ~~~
-    (takes about 10 HRs)
 
 * $TEST_TARGET=Ubuntu1804-Cross-Compile2RaspberryPi
 
-    (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results)
+    (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1804-Cross-Compile2RaspberryPi \
@@ -60,7 +58,6 @@ These can all be run at the same time.
         MACHINE=Hercules \
         ./ScriptsLib/RunRemoteRegressionTests.sh
     ~~~
-    (takes about 3 HRs)
 
 ## Checkin results
 
