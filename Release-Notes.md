@@ -7,9 +7,6 @@ to be aware of when upgrading.
 History
 =======
 
-<style type="text/css">
-li {white-space: normal}
-</style>
 <table style='table-layout: fixed; white-space: normal'>
 
   <thead>
