@@ -7,11 +7,11 @@ to be aware of when upgrading.
 History
 =======
 
-<table>
+<table style='table-layout: fixed'>
 
   <thead>
     <th style='width:1in; vertical-align: top'>Version<br/>Release Date</th>
-    <th style='vertical-align: top;width:90%'>Changes</th>
+    <th style='vertical-align: top%'>Changes</th>
   </thead>
 
 
