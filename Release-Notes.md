@@ -11,7 +11,7 @@ History
 
   <thead>
     <th style='width:1in; vertical-align: top'>Version<br/>Release Date</th>
-    <th style='vertical-align: top%'>Changes</th>
+    <th style='width:7in; vertical-align: top%'>Changes</th>
   </thead>
 
 
