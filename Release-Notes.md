@@ -19,6 +19,40 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d12">v2.1d12</a><br/>2018-11-10</td>
+<td>
+    <ul>
+        <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d11...v2.1d12</li>
+        <li>Containers::Collection<> CTOR (ADDABLE&) no longer explicit</li>
+        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d12.txt</li>
+        <li>Tested (passed regtests)
+            <ul>
+                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d12-OUT.txt</li>
+                <li>vc++2k17 (15.8.9)</li>
+                <li>MacOS, XCode 10</li>
+                <li>gcc 7, gcc 8</li>
+                <li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
+                <li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+                <li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+                <li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+                <li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+                    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+            </ul>
+        </li>
+    </ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d11">v2.1d11</a><br/>2018-11-09</td>
 <td>
