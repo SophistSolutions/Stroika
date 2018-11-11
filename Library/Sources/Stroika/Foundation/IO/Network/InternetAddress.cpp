@@ -307,7 +307,7 @@ optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family
         /*
          *   See  https://en.wikipedia.org/wiki/6to4
          */
-        array<uint8_t,4> octets = As<array<uint8_t,4>> ();
+        array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
         return InternetAddress{in6_addr{{{0x20, 0x02, octets[0], octets[1], octets[2], octets[3]}}}};
     }
     else if (GetAddressFamily () == AddressFamily::V6 and family == AddressFamily::V4) {
