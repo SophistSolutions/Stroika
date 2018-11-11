@@ -19,12 +19,12 @@ namespace Stroika::Foundation::IO::Network {
      *********************** IO::Network::InternetAddress ***************************
      ********************************************************************************
      */
-    inline constexpr InternetAddress::InternetAddress ()
+    constexpr InternetAddress::InternetAddress ()
         : fAddressFamily_ (AddressFamily::UNKNOWN)
         , fV4_{}
     {
     }
-    inline constexpr InternetAddress::InternetAddress (const in_addr_t& i)
+    constexpr InternetAddress::InternetAddress (const in_addr_t& i)
         : fAddressFamily_ (AddressFamily::V4)
         , fV4_
     {
@@ -76,44 +76,44 @@ namespace Stroika::Foundation::IO::Network {
             fV4_.s_addr = htonl (fV4_.s_addr); //NB no ':' cuz some systems use macro
         }
     }
-    inline
-#if __cpp_designators
-        constexpr
-#endif
-        InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
-        : fAddressFamily_ (AddressFamily::V4)
-#if qPlatform_POSIX
-        , fV4_
-    {
-        Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))
-    }
-#elif qPlatform_Windows && __cpp_designators
-        , fV4_ ({{.S_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))}})
-#endif
-    {
-        // @todo - only these cases supported, and cannot static_assert cuz too many compiler bugs.... Soon... --LGP 2015-08-26
-        // static_assert (Configuration::GetEndianness () == Configuration::Endian::eLittle or Configuration::GetEndianness () == Configuration::Endian::eBig, "NYI rare endian");
-
-        //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
-        // in left-to-right order. Network order is big-endian
-#if qPlatform_Windows && !__cpp_designators
-        fV4_.s_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24));
-#endif
-    }
-    inline
-#if __cpp_designators
-        constexpr
-#endif
-        InternetAddress::InternetAddress (IPv4AddressOctets octets)
-        : InternetAddress (get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets))
+    constexpr InternetAddress::InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4)
+        : InternetAddress (array<byte, 4>{octet1, octet2, octet3, octet4})
     {
     }
-    inline constexpr InternetAddress::InternetAddress (const in6_addr& i)
+    constexpr InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
+        : InternetAddress (array<uint8_t, 4>{octet1, octet2, octet3, octet4})
+    {
+    }
+    constexpr InternetAddress::InternetAddress (tuple<uint8_t, uint8_t, uint8_t, uint8_t> octets)
+        : InternetAddress (array<uint8_t, 4>{get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets)})
+    {
+    }
+    constexpr InternetAddress::InternetAddress (array<uint8_t, 4> octets, AddressFamily af)
+        : fAddressFamily_ (af)
+        , fArray_4_uint_ (octets)
+    {
+    }
+    constexpr InternetAddress::InternetAddress (array<byte, 4> octets, AddressFamily af)
+        : fAddressFamily_ (af)
+        , fArray_4_byte_ (octets)
+    {
+    }
+    constexpr InternetAddress::InternetAddress (const in6_addr& i)
         : fAddressFamily_ (AddressFamily::V6)
         , fV6_ (i)
     {
     }
-    inline constexpr bool InternetAddress::empty () const
+    constexpr InternetAddress::InternetAddress (array<uint8_t, 16> octets, AddressFamily af)
+        : fAddressFamily_ (af)
+        , fArray_16_uint_ (octets)
+    {
+    }
+    constexpr InternetAddress::InternetAddress (array<byte, 16> octets, AddressFamily af)
+        : fAddressFamily_ (af)
+        , fArray_16_byte_ (octets)
+    {
+    }
+    constexpr bool InternetAddress::empty () const
     {
         return fAddressFamily_ == AddressFamily::UNKNOWN;
     }
@@ -121,13 +121,13 @@ namespace Stroika::Foundation::IO::Network {
     {
         fAddressFamily_ = AddressFamily::UNKNOWN;
     }
-    inline constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const
+    constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const
     {
         return fAddressFamily_;
     }
-    inline optional<size_t> InternetAddress::GetAddressSize () const
+    constexpr optional<size_t> InternetAddress::GetAddressSize () const
     {
-        switch (this->GetAddressFamily ()) {
+        switch (GetAddressFamily ()) {
             case AddressFamily::V4:
                 return 4;
             case AddressFamily::V6:
@@ -147,13 +147,37 @@ namespace Stroika::Foundation::IO::Network {
     }
 #endif
     template <>
-    inline constexpr in_addr InternetAddress::As<in_addr> () const
+    constexpr in_addr InternetAddress::As<in_addr> () const
     {
         Require (fAddressFamily_ == AddressFamily::V4);
         return fV4_;
     }
     template <>
-    inline tuple<uint8_t, uint8_t, uint8_t, uint8_t> InternetAddress::As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> () const
+    constexpr array<uint8_t, 4> InternetAddress::As<array<uint8_t, 4>> () const
+    {
+        Require (GetAddressSize () == 4u);
+        return fArray_4_uint_;
+    }
+    template <>
+    constexpr array<byte, 4> InternetAddress::As<array<byte, 4>> () const
+    {
+        Require (GetAddressSize () == 4u);
+        return fArray_4_byte_;
+    }
+    template <>
+    constexpr array<uint8_t, 16> InternetAddress::As<array<uint8_t, 16>> () const
+    {
+        Require (GetAddressSize () == 16u);
+        return fArray_16_uint_;
+    }
+    template <>
+    constexpr array<byte, 16> InternetAddress::As<array<byte, 16>> () const
+    {
+        Require (GetAddressSize () == 16u);
+        return fArray_16_byte_;
+    }
+    template <>
+    [[deprecated ("array<byte,4> works better so this is deprecated since Stroika v2.1d13")]] inline tuple<uint8_t, uint8_t, uint8_t, uint8_t> InternetAddress::As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> () const
     {
         Require (fAddressFamily_ == AddressFamily::V4);
         switch (Configuration::GetEndianness ()) {
@@ -175,7 +199,7 @@ namespace Stroika::Foundation::IO::Network {
         }
     }
     template <>
-    inline constexpr in6_addr InternetAddress::As<in6_addr> () const
+    constexpr in6_addr InternetAddress::As<in6_addr> () const
     {
         Require (fAddressFamily_ == AddressFamily::V6);
         return fV6_;
@@ -224,17 +248,15 @@ namespace Stroika::Foundation::IO::Network {
         return lhs.Compare (rhs) > 0;
     }
 
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
     namespace V4 {
         constexpr InternetAddress kAddrAny{in_addr{}};
         constexpr InternetAddress kLocalhost{0x7f, 0x0, 0x0, 0x1};
     }
     namespace V6 {
         constexpr InternetAddress kAddrAny{in6_addr{}};
-        constexpr InternetAddress kLocalhost{in6_addr IN6ADDR_LOOPBACK_INIT};
+        constexpr InternetAddress kLocalhost{in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}}}};
         constexpr InternetAddress kV4MappedLocalhost{in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1}}}};
     }
-#endif
 
 }
 

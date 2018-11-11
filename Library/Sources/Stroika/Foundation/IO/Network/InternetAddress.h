@@ -55,6 +55,7 @@
 namespace Stroika::Foundation::IO::Network {
 
     using Characters::String;
+    using std::byte;
 
     /**
      *  v4 ip addr as a long.
@@ -114,48 +115,54 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  A handy way to access the octets of an IPv4 address without worry about endian stuff.
          *
-         *  get<0> is always the high-order (most significant) octet
+         *  IPv4AddressOctets[0] is always the high-order (most significant) octet.
+         *
+         *  \note prior to Stroika v2.1d13, this was tuple<uint8_t,uint8_t,uint8_t,uint8_t>;
          */
-        using IPv4AddressOctets = tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
+        using IPv4AddressOctets = array<byte, 4>;
 
     public:
-        constexpr InternetAddress ();
         /**
-         *  Construct an InternetAddress object from a string (with optionally specified address family).
-         *  If the address is unparsable according to the rules specified, an exception will be thrown.
+         *  InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
+         *  InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
+         *      Construct an InternetAddress object from a string (with optionally specified address family).
+         *      If the address is unparsable according to the rules specified, an exception will be thrown.
          *
-         *  Note - this does NOT lookup hostnames (like www.google.com or localhost). It must be a numeric
-         *  form of an internet address.
+         *      Note - this does NOT lookup hostnames (like www.google.com or localhost). It must be a numeric
+         *      form of an internet address.
+         *
+         *  constexpr InternetAddress (const in_addr_t& i);
+         *  InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
+         *      Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
+         *      Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
+         *
+         *  constexpr InternetAddress (const in_addr& i);
+         *  InternetAddress (const in_addr& i, ByteOrder byteOrder);
+         *      Construct an InternetAddress from in_addr - V4 address.
+         *      Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
+         *
+         *  constexpr  InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4);
+         *  constexpr InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
+         *      Construct an InternetAddress V4 address in A.B.C.D octet form.
+         *
+         *  constexpr InternetAddress (const in6_addr& i);
+         *      Construct an InternetAddress from in6_addr - V6 address.
          */
+        constexpr InternetAddress ();
         InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
         InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
-        /**
-         *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
-         *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
-         */
         constexpr InternetAddress (const in_addr_t& i);
         InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
-        /**
-         *  Construct an InternetAddress from in_addr - V4 address.
-         *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
-         */
         constexpr InternetAddress (const in_addr& i);
         InternetAddress (const in_addr& i, ByteOrder byteOrder);
-        /**
-         *  Construct an InternetAddress V4 address in A.B.C.D octet form.
-         */
-#if __cpp_designators
-        constexpr
-#endif
-            InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
-#if __cpp_designators
-        constexpr
-#endif
-            InternetAddress (IPv4AddressOctets octets);
-        /**
-         *  Construct an InternetAddress from in6_addr - V6 address.
-         */
+        constexpr InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4);
+        constexpr InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
+        [[deprecated ("array<byte,4> works better so this is deprecated since Stroika v2.1d13")]] constexpr InternetAddress (tuple<uint8_t, uint8_t, uint8_t, uint8_t> octets);
+        constexpr InternetAddress (array<uint8_t, 4> octets, AddressFamily af = AddressFamily::V4);
+        constexpr InternetAddress (array<byte, 4> octets, AddressFamily af = AddressFamily::V4);
         constexpr InternetAddress (const in6_addr& i);
+        constexpr InternetAddress (array<uint8_t, 16> octets, AddressFamily af = AddressFamily::V6);
+        constexpr InternetAddress (array<byte, 16> octets, AddressFamily af = AddressFamily::V6);
 
     public:
         /**
@@ -189,7 +196,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  The size in bytes of the raw address.
          */
-        nonvirtual optional<size_t> GetAddressSize () const;
+        constexpr optional<size_t> GetAddressSize () const;
 
     public:
         /**
@@ -197,17 +204,20 @@ namespace Stroika::Foundation::IO::Network {
          *      As<String> ();
          *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY
          *      As<in_addr> ();                                 // GetAddressFamily () == V4 only
-         *      As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ();  // GetAddressFamily () == V4 only
+         *      As<array<byte,4>> ();                           // GetAddressFamily () == V4 only
+         *      As<array<uint8_t,4>> ();                        // GetAddressFamily () == V4 only
          *      As<IPv4AddressOctets>                           // GetAddressFamily () == V4 only (alias)
          *      As<in6_addr> ();                                // GetAddressFamily () == V6 only
+         *      As<array<byte,16>> ();                          // GetAddressFamily () == V6 only
+         *      As<array<uint8_t,16>> ();                       // GetAddressFamily () == V6 only
          *
          *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
          *
          *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determined by the parameter.
          *
-         *  As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> () returns the high order (in this case 'network') byte
-         *  in the first part of the tuple, so
-         *      Assert (std::get<0> (InternetAddress { 1, 2, 3, 4 }.As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ()) == 1);
+         *  As<array<byte,4>> () returns the high order (in this case 'network') byte
+         *  in the first part of the array, so
+         *      Assert (InternetAddress { 1, 2, 3, 4 }.As<array<byte,4>> ()[0] == 1);
          *
          *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
          *          a textual shortcut, like "INADDR_ANY".
@@ -280,8 +290,12 @@ namespace Stroika::Foundation::IO::Network {
     private:
         AddressFamily fAddressFamily_;
         union {
-            in_addr  fV4_; // Stored in network byte order
-            in6_addr fV6_;
+            in_addr            fV4_; // Stored in network byte order
+            in6_addr           fV6_;
+            array<uint8_t, 4>  fArray_4_uint_;
+            array<byte, 4>     fArray_4_byte_;
+            array<uint8_t, 16> fArray_16_uint_;
+            array<byte, 16>    fArray_16_byte_;
         };
     };
 
@@ -315,32 +329,23 @@ namespace Stroika::Foundation::IO::Network {
      */
     bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
 
+#if 0
     namespace V4 {
-#if qCompilerAndStdLib_constexpr_union_variants_Buggy
-        extern const InternetAddress kAddrAny; // INADDR_ANY
-        extern const InternetAddress kLocalhost;
-#else
         /**
          *  Declared const, but defined constexpr
          */
         const InternetAddress kAddrAny;
         const InternetAddress kLocalhost;
-#endif
     }
     namespace V6 {
-#if qCompilerAndStdLib_constexpr_union_variants_Buggy
-        extern const InternetAddress kAddrAny; // in6addr_any
-        extern const InternetAddress kLocalhost;
-        extern const InternetAddress kV4MappedLocalhost;
-#else
         /**
          *  Declared const, but defined constexpr
          */
         const InternetAddress kAddrAny;
         const InternetAddress kLocalhost;
         const InternetAddress kV4MappedLocalhost;
-#endif
     }
+#endif
 
     /**
      *  Return kAddrAny - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.

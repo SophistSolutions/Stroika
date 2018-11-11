@@ -28,14 +28,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
-#if qCompilerAndStdLib_constexpr_union_variants_Buggy
-const InternetAddress V4::kAddrAny           = InternetAddress (in_addr{});
-const InternetAddress V6::kAddrAny           = InternetAddress (in6_addr{});
-const InternetAddress V4::kLocalhost         = InternetAddress{0x7f, 0x0, 0x0, 0x1};
-const InternetAddress V6::kLocalhost         = InternetAddress (in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}}});
-const InternetAddress V6::kV4MappedLocalhost = InternetAddress (in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1}}});
-#endif
-
 #if qPlatform_Windows
 // Not sure why this is necessary, but we get link errors sometimes without it... Maybe a windows makefile issue on regtest apps?
 // -- LGP 2014-11-06
@@ -184,8 +176,8 @@ bool InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
             // 127.0.0.x
-            IPv4AddressOctets octets = As<IPv4AddressOctets> ();
-            return get<0> (octets) == 0x7f and get<1> (octets) == 0x0 and get<2> (octets) == 0x0;
+            array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
+            return octets[0] == 0x7f and octets[1] == 0x0 and octets[2] == 0x0;
         } break;
         case AddressFamily::V6: {
             return fV6_.s6_addr[0] == 0 and
@@ -252,14 +244,14 @@ bool InternetAddress::IsPrivateAddress () const
              *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
              *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
              */
-            IPv4AddressOctets octets = As<IPv4AddressOctets> ();
-            if (get<0> (octets) == 10) {
+            array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
+            if (octets[0] == 10) {
                 return true;
             }
-            if (get<0> (octets) == 172 and (get<1> (octets) & 0xf0) == 16) {
+            if (octets[0] == 172 and (octets[1] & 0xf0) == 16) {
                 return true;
             }
-            if (get<0> (octets) == 192 and get<1> (octets) == 168) {
+            if (octets[0] == 192 and octets[1] == 168) {
                 return true;
             }
             return false;
@@ -289,8 +281,8 @@ bool InternetAddress::IsMulticastAddress () const
         case AddressFamily::V4: {
             // From http://en.wikipedia.org/wiki/Multicast_address :
             // The group includes the addresses from 224.0.0.0 to 239.255.255.255
-            IPv4AddressOctets octets = As<IPv4AddressOctets> ();
-            return 224 <= get<0> (octets) and get<0> (octets) <= 239;
+            array<uint8_t, 4> octets = As<array<uint8_t, 4>> ();
+            return 224 <= octets[0] and octets[0] <= 239;
         } break;
         case AddressFamily::V6: {
             return fV6_.s6_addr[0] == 0xff;
@@ -313,10 +305,10 @@ optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family
     }
     if (GetAddressFamily () == AddressFamily::V4 and family == AddressFamily::V6) {
         /*
-        *   See  https://en.wikipedia.org/wiki/6to4
-        */
-        IPv4AddressOctets octets = As<IPv4AddressOctets> ();
-        return InternetAddress{in6_addr{{{0x20, 0x02, get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets)}}}};
+         *   See  https://en.wikipedia.org/wiki/6to4
+         */
+        array<uint8_t,4> octets = As<array<uint8_t,4>> ();
+        return InternetAddress{in6_addr{{{0x20, 0x02, octets[0], octets[1], octets[2], octets[3]}}}};
     }
     else if (GetAddressFamily () == AddressFamily::V6 and family == AddressFamily::V4) {
         /*
