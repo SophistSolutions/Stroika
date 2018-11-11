@@ -196,7 +196,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  The size in bytes of the raw address.
          */
-        constexpr optional<size_t> GetAddressSize () const;
+        nonvirtual constexpr optional<size_t> GetAddressSize () const;
 
     public:
         /**
@@ -330,6 +330,7 @@ namespace Stroika::Foundation::IO::Network {
     bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
 
 #if 0
+    // @todo see if there is someway to include this in .h with constexpr impl in .inl
     namespace V4 {
         /**
          *  Declared const, but defined constexpr
