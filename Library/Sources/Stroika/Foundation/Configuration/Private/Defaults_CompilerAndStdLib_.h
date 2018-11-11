@@ -546,69 +546,6 @@ lose those deprecated interfaces.
 #endif
 
 /*
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
-1>  SocketAddress.cpp
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
-1>  Socket.cpp
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
-*
-GCC:
-error: redefinition of ‘constexpr const Stroika::Foundation::IO::Network::InternetAddress Stroika::Foundation::IO::Network::V4::kAddrAn
-
-
-Vusual studio:
-
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.inl(255): error C2370: 'Stroika::Foundation::IO::Network::V4::kAddrAny': redefinition; different storage class (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.h(328): note: see declaration of 'Stroika::Foundation::IO::Network::V4::kAddrAny' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.inl(256): error C2370: 'Stroika::Foundation::IO::Network::V4::kLocalhost': redefinition; different storage class (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.h(329): note: see declaration of 'Stroika::Foundation::IO::Network::V4::kLocalhost' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
-
-
-
-clang 5.0
-In file included from ./../../IO/Network/InternetAddress.h:392:
-./../../IO/Network/InternetAddress.inl:280:47: error: redefinition of 'kAddrAny'
-                    constexpr InternetAddress kAddrAny{in_addr{}};
-                                              ^
-./../../IO/Network/InternetAddress.h:352:43: note: previous definition is here
-                    const InternetAddress kAddrAny;
-
-
-*/
-#ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
-
-#if !defined(__clang__) && defined(__GNUC__)
-// still broken with gcc 6.2
-// still broken with gcc 7.1
-// still broken with gcc 8
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
-#elif defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
-#elif defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// still broken in _MS_VS_2k17_15Pt7Pt1_
-// assume broken in _MS_VS_2k17_15Pt7Pt2_
-// assume broken in _MS_VS_2k17_15Pt7Pt3_
-// assume broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6
-// verified still broken in _MSC_VER_2k17_15Pt8_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
-#else
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
-#endif
-
-#endif
-
-/*
  *
     Compiling {StroikaRoot}Library/Sources/Stroika/Frameworks/Modbus/Server.cpp ...
     Server.cpp:369:45: error: call to unavailable member function 'value': introduced in macOS 10.14

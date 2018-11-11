@@ -207,13 +207,8 @@ bool InternetAddress::IsLinkLocalAddress () const
     Require (not empty ());
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
-#if qCompilerAndStdLib_constexpr_union_variants_Buggy
-            static const InternetAddress kMinLinkLocal_{169, 254, 0, 1};
-            static const InternetAddress kMaxLinkLocal_{169, 254, 255, 254};
-#else
             static constexpr InternetAddress kMinLinkLocal_{169, 254, 0, 1};
             static constexpr InternetAddress kMaxLinkLocal_{169, 254, 255, 254};
-#endif
             Assert (kMinLinkLocal_ < kMaxLinkLocal_);
             return kMinLinkLocal_ <= *this and *this <= kMaxLinkLocal_;
         } break;
