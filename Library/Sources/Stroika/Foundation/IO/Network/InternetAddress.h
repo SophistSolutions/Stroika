@@ -121,7 +121,15 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note prior to Stroika v2.1d13, this was tuple<uint8_t,uint8_t,uint8_t,uint8_t>;
          */
-        using IPv4AddressOctets = array<byte, 4>;
+        using IPv4AddressOctets = array<uint8_t, 4>;
+
+    public:
+        /**
+         *  A handy way to access the octets of an IPv6 address without worry about endian stuff.
+         *
+         *  IPv6AddressOctets[0] is always the high-order (most significant) octet.
+         */
+        using IPv6AddressOctets = array<uint8_t, 16>;
 
     public:
         /**
@@ -218,6 +226,7 @@ namespace Stroika::Foundation::IO::Network {
          *      As<in6_addr> ();                                // GetAddressFamily () == V6 only
          *      As<array<byte,16>> ();                          // GetAddressFamily () == V6 only
          *      As<array<uint8_t,16>> ();                       // GetAddressFamily () == V6 only
+         *      As<IPv6AddressOctets>                           // GetAddressFamily () == V6 only (alias)
          *      As<vector<byte>> ();                            // AddressFamily must be V4 or V6
          *      As<vector<uint8_t>> ();                         // AddressFamily must be V4 or V6
          *
