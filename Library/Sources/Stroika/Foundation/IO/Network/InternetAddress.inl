@@ -113,6 +113,17 @@ namespace Stroika::Foundation::IO::Network {
         , fArray_16_byte_ (octets)
     {
     }
+    template <typename ITERABLE_OF_UINT8OrByte, enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>*>
+    inline InternetAddress::InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af)
+        : fAddressFamily_ (af)
+    {
+        Require (af != AddressFamily::V4 or octets.size () == 4);
+        Require (af != AddressFamily::V6 or octets.size () == 16);
+        size_t i = 0;
+        for (auto b : octets) {
+            fArray_16_uint_[i++] = static_cast<uint8_t> (b);
+        }
+    }
     constexpr bool InternetAddress::empty () const
     {
         return fAddressFamily_ == AddressFamily::UNKNOWN;
@@ -175,6 +186,18 @@ namespace Stroika::Foundation::IO::Network {
     {
         Require (GetAddressSize () == 16u);
         return fArray_16_byte_;
+    }
+    template <>
+    inline vector<byte> InternetAddress::As<vector<byte>> () const
+    {
+        Require (GetAddressSize ().has_value ());
+        return vector<byte>{fArray_16_byte_.begin (), fArray_16_byte_.begin () + *GetAddressSize ()};
+    }
+    template <>
+    inline vector<uint8_t> InternetAddress::As<vector<uint8_t>> () const
+    {
+        Require (GetAddressSize ().has_value ());
+        return vector<uint8_t>{fArray_16_uint_.begin (), fArray_16_uint_.begin () + *GetAddressSize ()};
     }
     template <>
     [[deprecated ("array<byte,4> works better so this is deprecated since Stroika v2.1d13")]] inline tuple<uint8_t, uint8_t, uint8_t, uint8_t> InternetAddress::As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> () const

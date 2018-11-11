@@ -20,6 +20,8 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
+#include "../../Traversal/Iterable.h"
+
 #include "InternetProtocol/IP.h"
 
 /**
@@ -147,6 +149,10 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  constexpr InternetAddress (const in6_addr& i);
          *      Construct an InternetAddress from in6_addr - V6 address.
+         *
+         *  InternetAddress (Traversal::Iterable<uint8_t> octets, AddressFamily af);
+         *  InternetAddress (Traversal::Iterable<byte> octets, AddressFamily af);
+         *      Construct an InternetAddress octets, either 4 or 16 in length, and which must agree with provided address-family
          */
         constexpr InternetAddress ();
         InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
@@ -163,6 +169,8 @@ namespace Stroika::Foundation::IO::Network {
         constexpr InternetAddress (const in6_addr& i);
         constexpr InternetAddress (array<uint8_t, 16> octets, AddressFamily af = AddressFamily::V6);
         constexpr InternetAddress (array<byte, 16> octets, AddressFamily af = AddressFamily::V6);
+        template <typename ITERABLE_OF_UINT8OrByte, enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>* = nullptr>
+        InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af);
 
     public:
         /**
@@ -210,6 +218,8 @@ namespace Stroika::Foundation::IO::Network {
          *      As<in6_addr> ();                                // GetAddressFamily () == V6 only
          *      As<array<byte,16>> ();                          // GetAddressFamily () == V6 only
          *      As<array<uint8_t,16>> ();                       // GetAddressFamily () == V6 only
+         *      As<vector<byte>> ();                            // AddressFamily must be V4 or V6
+         *      As<vector<uint8_t>> ();                         // AddressFamily must be V4 or V6
          *
          *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
          *
