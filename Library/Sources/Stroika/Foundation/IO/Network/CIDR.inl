@@ -17,11 +17,6 @@ namespace Stroika::Foundation::IO::Network {
      ******************************** Netowrk::CIDR *********************************
      ********************************************************************************
      */
-    inline CIDR::CIDR (const InternetAddress& internetAddress, unsigned int significantBits)
-        : fBaseAddress_ (internetAddress)
-        , fSignificantBits_ (significantBits)
-    {
-    }
     inline InternetAddress CIDR::GetInternetAddress () const
     {
         return fBaseAddress_;

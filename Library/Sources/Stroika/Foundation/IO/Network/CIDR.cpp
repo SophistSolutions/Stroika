@@ -30,6 +30,31 @@ CIDR::CIDR (const InternetAddress& internetAddress)
 }
 
 namespace {
+    InternetAddress MakeAddressBySignificantBits_ (const InternetAddress& internetAddress, unsigned int significantBits)
+    {
+        // Mask address by significant bits
+        vector<uint8_t> r;
+        unsigned int    sigBitsLeft = significantBits;
+        for (uint8_t b : internetAddress.As<vector<uint8_t>> ()) {
+            if (sigBitsLeft >= 8) {
+                r.push_back (b);
+                sigBitsLeft -= 8;
+            }
+            else {
+                r.push_back (BitSubstring<uint8_t> (b, 8 - sigBitsLeft, 8));
+                sigBitsLeft = 0;
+            }
+        }
+        return InternetAddress (r, internetAddress.GetAddressFamily ());
+    }
+}
+CIDR::CIDR (const InternetAddress& internetAddress, unsigned int significantBits)
+    : fBaseAddress_ (MakeAddressBySignificantBits_ (internetAddress, significantBits))
+    , fSignificantBits_ (significantBits)
+{
+}
+
+namespace {
     CIDR read_ (const String& cidrNotation, InternetAddress::AddressFamily addressFamily)
     {
         if (auto i = cidrNotation.RFind ('/')) {
