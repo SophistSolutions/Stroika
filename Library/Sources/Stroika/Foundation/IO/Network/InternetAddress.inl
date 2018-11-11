@@ -20,17 +20,20 @@ namespace Stroika::Foundation::IO::Network {
      ********************************************************************************
      */
     constexpr InternetAddress::InternetAddress ()
-        : fAddressFamily_ (AddressFamily::UNKNOWN)
+        : fAddressFamily_{AddressFamily::UNKNOWN}
         , fV4_{}
     {
     }
     constexpr InternetAddress::InternetAddress (const in_addr_t& i)
         : fAddressFamily_ (AddressFamily::V4)
+#if qPlatform_POSIX
         , fV4_
     {
-#if qPlatform_POSIX
         i
+    }
 #elif qPlatform_Windows
+        , fV4_
+    {
         in_addr
         {
             {
@@ -40,8 +43,8 @@ namespace Stroika::Foundation::IO::Network {
                     static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))
             }
         }
-#endif
     }
+#endif
     {
 #if qPlatform_Windows
         Assert (fV4_.s_addr == i);
@@ -49,12 +52,12 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
         : fAddressFamily_ (AddressFamily::V4)
+#if qPlatform_POSIX
         , fV4_
     {
-#if qPlatform_POSIX
         i
-#endif
     }
+#endif
     {
 #if qPlatform_Windows
         fV4_.s_addr = i;
@@ -64,13 +67,13 @@ namespace Stroika::Foundation::IO::Network {
         }
     }
     inline constexpr InternetAddress::InternetAddress (const in_addr& i)
-        : fAddressFamily_ (AddressFamily::V4)
-        , fV4_ (i)
+        : fAddressFamily_{AddressFamily::V4}
+        , fV4_{i}
     {
     }
     inline InternetAddress::InternetAddress (const in_addr& i, ByteOrder byteOrder)
-        : fAddressFamily_ (AddressFamily::V4)
-        , fV4_ (i)
+        : fAddressFamily_{AddressFamily::V4}
+        , fV4_{i}
     {
         if (byteOrder == ByteOrder::Host) {
             fV4_.s_addr = htonl (fV4_.s_addr); //NB no ':' cuz some systems use macro
@@ -89,33 +92,33 @@ namespace Stroika::Foundation::IO::Network {
     {
     }
     constexpr InternetAddress::InternetAddress (array<uint8_t, 4> octets, AddressFamily af)
-        : fAddressFamily_ (af)
-        , fArray_4_uint_ (octets)
+        : fAddressFamily_{af}
+        , fArray_4_uint_{octets}
     {
     }
     constexpr InternetAddress::InternetAddress (array<byte, 4> octets, AddressFamily af)
-        : fAddressFamily_ (af)
-        , fArray_4_byte_ (octets)
+        : fAddressFamily_{af}
+        , fArray_4_byte_{octets}
     {
     }
     constexpr InternetAddress::InternetAddress (const in6_addr& i)
         : fAddressFamily_ (AddressFamily::V6)
-        , fV6_ (i)
+        , fV6_{i}
     {
     }
     constexpr InternetAddress::InternetAddress (array<uint8_t, 16> octets, AddressFamily af)
-        : fAddressFamily_ (af)
-        , fArray_16_uint_ (octets)
+        : fAddressFamily_{af}
+        , fArray_16_uint_{octets}
     {
     }
     constexpr InternetAddress::InternetAddress (array<byte, 16> octets, AddressFamily af)
-        : fAddressFamily_ (af)
-        , fArray_16_byte_ (octets)
+        : fAddressFamily_{af}
+        , fArray_16_byte_{octets}
     {
     }
     template <typename ITERABLE_OF_UINT8OrByte, enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>*>
     inline InternetAddress::InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af)
-        : fAddressFamily_ (af)
+        : fAddressFamily_{af}
     {
         Require (af != AddressFamily::V4 or octets.size () == 4);
         Require (af != AddressFamily::V6 or octets.size () == 16);
@@ -273,11 +276,17 @@ namespace Stroika::Foundation::IO::Network {
 
     namespace V4 {
         constexpr InternetAddress kAddrAny{in_addr{}};
-        constexpr InternetAddress kLocalhost{0x7f, 0x0, 0x0, 0x1};
     }
     namespace V6 {
         constexpr InternetAddress kAddrAny{in6_addr{}};
+    }
+    namespace V4 {
+        constexpr InternetAddress kLocalhost{0x7f, 0x0, 0x0, 0x1};
+    }
+    namespace V6 {
         constexpr InternetAddress kLocalhost{in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}}}};
+    }
+    namespace V6 {
         constexpr InternetAddress kV4MappedLocalhost{in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1}}}};
     }
 

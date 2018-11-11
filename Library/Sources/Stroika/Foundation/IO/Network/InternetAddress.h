@@ -348,24 +348,36 @@ namespace Stroika::Foundation::IO::Network {
      */
     bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
 
-#if 0
-    // @todo see if there is someway to include this in .h with constexpr impl in .inl
-    namespace V4 {
-        /**
-         *  Declared const, but defined constexpr
-         */
-        const InternetAddress kAddrAny;
-        const InternetAddress kLocalhost;
-    }
-    namespace V6 {
-        /**
-         *  Declared const, but defined constexpr
-         */
-        const InternetAddress kAddrAny;
-        const InternetAddress kLocalhost;
-        const InternetAddress kV4MappedLocalhost;
-    }
-#endif
+    /**
+     *  IN_ADDR_ANY
+     *      This address is a wildcard, matching any address.
+     *
+     *  \note   Cannot declare here cuz then declaration and definition differ, and cannot define here because we have
+     *          the constexpr CTOR methods in the .inl file.
+     *
+     *      namespace V4 { constexpr InternetAddress kAddrAny{in_addr{}}; }
+     *      namespace V6 { constexpr InternetAddress kAddrAny{in6_addr{}}; }
+     */
+
+    /**
+     *  LOCALHOST address
+     *      this address is for the current machine on its loopback interface.
+     *
+     *  \note   Cannot declare here cuz then declaration and definition differ, and cannot define here because we have
+     *          the constexpr CTOR methods in the .inl file.
+     *
+     *      namespace V4 { constexpr InternetAddress kLocalhost{0x7f, 0x0, 0x0, 0x1}; }
+     *      namespace V6 { constexpr InternetAddress kLocalhost{in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}}}}; }
+     */
+
+    /**
+     *  v4 localhost address rendered as v6 (mapped).
+     *
+     *  \note   Cannot declare here cuz then declaration and definition differ, and cannot define here because we have
+     *          the constexpr CTOR methods in the .inl file.
+     *
+     *      namespace V6 { constexpr InternetAddress kV4MappedLocalhost{in6_addr{{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1}}}}; }
+     */
 
     /**
      *  Return kAddrAny - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
