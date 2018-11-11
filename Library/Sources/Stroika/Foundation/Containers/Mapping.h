@@ -144,17 +144,18 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *        Collection<pair<int,int>> c;
-         *        std::map<int,int> m;
+         *          Collection<pair<int,int>> c;
+         *          std::map<int,int> m;
          *
-         *        Mapping<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
-         *        Mapping<int,int> m2  = m1;
-         *        Mapping<int,int> m3  { m1 };
-         *        Mapping<int,int> m4  { m1.begin (), m1.end () };
-         *        Mapping<int,int> m5  { c };
-         *        Mapping<int,int> m6  { m };
-         *        Mapping<int,int> m7  { m.begin (), m.end () };
-         *        Mapping<int,int> m8  { move (m1) };
+         *          Mapping<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+         *          Mapping<int,int> m2  = m1;
+         *          Mapping<int,int> m3  { m1 };
+         *          Mapping<int,int> m4  { m1.begin (), m1.end () };
+         *          Mapping<int,int> m5  { c };
+         *          Mapping<int,int> m6  { m };
+         *          Mapping<int,int> m7  { m.begin (), m.end () };
+         *          Mapping<int,int> m8  { move (m1) };
+         *          Mapping<int,int> m9  {Common::DeclareEqualsComparer ([](int l, int r) { return l == r; })};
          *      \endcode
          */
         Mapping ();
