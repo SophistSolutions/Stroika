@@ -1276,8 +1276,8 @@ namespace {
         VerifyTestResult (ToString (3) == L"3");
         VerifyTestResult (ToString (3u) == L"0x3");
         VerifyTestResult (ToString (1.0).StartsWith (L"1"));
-        VerifyTestResult (ToString (L"abc") == L"abc");
-        VerifyTestResult (ToString (String (L"abc")) == L"abc");
+        VerifyTestResult (ToString (L"abc") == L"'abc'");
+        VerifyTestResult (ToString (String (L"abc")) == L"'abc'");
         VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == L"[ 3, 4, 5 ]");
         {
             constexpr byte kSample_[] = {byte{0x34}, byte{0x55}, byte{0x1f}};
