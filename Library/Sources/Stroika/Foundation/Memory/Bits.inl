@@ -40,8 +40,11 @@ namespace Stroika::Foundation::Memory {
     template <typename INT_TYPE>
     inline constexpr INT_TYPE BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
     {
-        Require (startOffset < endOffset);
-        Require (startOffset < (CHAR_BIT * sizeof (INT_TYPE)));
+        Require (startOffset <= endOffset);
+        Require (startOffset <= (CHAR_BIT * sizeof (INT_TYPE)));
+        if (startOffset == endOffset) {
+            return 0;
+        }
         Require (((endOffset - startOffset) - 1 + startOffset) < (CHAR_BIT * sizeof (INT_TYPE)));
         return (bitField >> startOffset) & ((1 << (endOffset - startOffset)) - 1);
     }
