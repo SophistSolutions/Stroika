@@ -117,9 +117,9 @@ String Interface::ToString () const
     Characters::StringBuilder sb;
     sb += L"{";
     sb += L"Internal-Interface-ID: " + Characters::ToString (fInternalInterfaceID) + L", ";
-    sb += L"Friendly-Name: '" + Characters::ToString (fFriendlyName) + L"', ";
+    sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
     if (fDescription) {
-        sb += L"Description: '" + Characters::ToString (*fDescription) + L"', ";
+        sb += L"Description: " + Characters::ToString (*fDescription) + L", ";
     }
     if (fType) {
         sb += L"Type: " + Characters::ToString (*fType) + L", ";
