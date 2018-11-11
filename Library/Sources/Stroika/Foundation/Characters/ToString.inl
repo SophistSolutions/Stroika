@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, String>>* = 0)
         {
-            return static_cast<String> (t);
+            return L"'" + static_cast<String> (t) + L"'";
         }
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, const exception&>>* = 0)
