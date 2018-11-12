@@ -124,7 +124,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         struct Binding {
-            InternetAddress fInternetAddress;
+            InternetAddress        fInternetAddress;
             optional<unsigned int> fOnLinkPrefixLength;
 
             /**
@@ -158,7 +158,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual String ToString () const;
     };
-
 
     /**
      *  Collect all the interfaces (and their status) from the operating system.
