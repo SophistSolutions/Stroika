@@ -804,6 +804,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2009,6 +2012,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h">
+      <Filter>Sources\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3269,6 +3275,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\GUID.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
