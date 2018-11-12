@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "../../Characters/String.h"
+#include "../../Common/GUID.h"
 #include "../../Configuration/Common.h"
 #include "../../Configuration/Enumeration.h"
 #include "../../Containers/Set.h"
@@ -82,6 +83,12 @@ namespace Stroika::Foundation::IO::Network {
         optional<String> fDescription;
 
         /**
+         *  Network GUID
+         *      @see https://docs.microsoft.com/en-us/windows/desktop/api/iptypes/ns-iptypes-_ip_adapter_addresses_lh "NetworkGuid"
+         */
+        optional<Common::GUID> fNetworkGUID;
+
+        /**
          *
          *  \note   Configuration::DefaultNames<> supported
          */
@@ -116,7 +123,19 @@ namespace Stroika::Foundation::IO::Network {
 
         /**
          */
-        Containers::Set<InternetAddress> fBindings; // can be IPv4 or IPv6
+        struct Binding {
+            InternetAddress fInternetAddress;
+            optional<unsigned int> fOnLinkPrefixLength;
+
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
+        };
+
+        /**
+         */
+        Containers::Collection<Binding> fBindings; // can be IPv4 or IPv6
 
         /**
          * @todo document these - 'eRunning' == LINUX RUNNING
@@ -139,6 +158,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual String ToString () const;
     };
+
 
     /**
      *  Collect all the interfaces (and their status) from the operating system.

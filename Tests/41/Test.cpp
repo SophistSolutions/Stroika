@@ -361,8 +361,8 @@ namespace {
             if (iFace.fType.has_value ()) {
                 DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>::k.GetName (*iFace.fType));
             }
-            for (InternetAddress ipAddr : iFace.fBindings) {
-                DbgTrace (L"binding-addr: %s", ipAddr.As<String> ().c_str ());
+            for (auto binding : iFace.fBindings) {
+                DbgTrace (L"binding-addr: %s", Characters::ToString (binding).c_str ());
             }
             if (iFace.fStatus.has_value ()) {
                 for (Interface::Status s : *iFace.fStatus) {
