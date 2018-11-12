@@ -12,6 +12,7 @@
 #include "../../Common/GUID.h"
 #include "../../Configuration/Common.h"
 #include "../../Configuration/Enumeration.h"
+#include "../../Containers/Collection.h"
 #include "../../Containers/Set.h"
 
 #include "InternetAddress.h"

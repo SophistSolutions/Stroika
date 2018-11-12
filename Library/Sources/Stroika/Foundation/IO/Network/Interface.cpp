@@ -384,7 +384,7 @@ Again:
             newInterface.fTransmitSpeedBaud = currAddresses->TransmitLinkSpeed;
             newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
 #endif
-#if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"newInterface=%s", Characters::ToString (newInterface).c_str ());
 #endif
             results.Add (newInterface.fInternalInterfaceID, newInterface);
