@@ -401,6 +401,8 @@ namespace Stroika::Foundation::Characters {
          *  Create a String object from ascii text. 
          *
          *  \req This function requires that its arguments all ascii (no high-bit set)
+         *
+         *  \note @see CheckedConverter<Characters::String, ASCII, string> for conversion which is safe if invalid ascii.
          */
         static String FromASCII (const char* from);
         static String FromASCII (const char* from, const char* to);
