@@ -309,7 +309,8 @@ namespace Stroika::Foundation::IO::Network {
     private:
         AddressFamily fAddressFamily_;
         union {
-            in_addr            fV4_; // Stored in network byte order
+            // EACH Stored in network byte order
+            in_addr            fV4_;
             in6_addr           fV6_;
             array<uint8_t, 4>  fArray_4_uint_;
             array<byte, 4>     fArray_4_byte_;
