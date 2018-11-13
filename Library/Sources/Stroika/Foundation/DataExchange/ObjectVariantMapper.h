@@ -279,6 +279,13 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \par Example Usage **Add custom object reader**
          *      \code
+         *          using IO::Network::CIDR;
+         *          ObjectVariantMapper mapper;
+         *          mapper.Add<CIDR> ([](const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
+         *                            [](const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; }
+         *                          );
+         *      \endcode
+         *      \code
          *           struct RGBColor {
          *               uint8_t red;
          *               uint8_t green;
