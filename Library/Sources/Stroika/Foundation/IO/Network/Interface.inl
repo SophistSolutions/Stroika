@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Configuration {
             EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer{
                 {
                     {IO::Network::Interface::Type::eLoopback, L"Loopback"},
-                    {IO::Network::Interface::Type::eWiredEthernet, L"WiredEthernet"},
+                    {IO::Network::Interface::Type::eWiredEthernet, L"Wired-Ethernet"},
                     {IO::Network::Interface::Type::eWIFI, L"WIFI"},
                     {IO::Network::Interface::Type::eTunnel, L"Tunnel"},
                     {IO::Network::Interface::Type::eOther, L"Other"},
