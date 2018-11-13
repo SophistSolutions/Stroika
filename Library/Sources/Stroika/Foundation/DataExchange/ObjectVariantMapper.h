@@ -11,6 +11,7 @@
 
 #include "../Characters/String.h"
 #include "../Characters/ToString.h"
+#include "../Common/GUID.h"
 #include "../Configuration/Enumeration.h"
 #include "../Containers/Bijection.h"
 #include "../Containers/Collection.h"
@@ -368,6 +369,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   TimeOfDay
          *      o   VariantValue
          *      o   DurationRange/DateRange/DateTimeRange
+         *      o   Common::GUID
          *      o   optional<EACH_OF_THE_ABOVE>
          *
          *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
@@ -525,6 +527,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   VariantValue
          *      o   IO::Network::URL
          *      o   Time::TimeOfDay
+         *      o   Common::GUID
          *
          *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
          *

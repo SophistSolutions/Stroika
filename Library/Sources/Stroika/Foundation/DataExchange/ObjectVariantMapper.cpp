@@ -282,7 +282,20 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     ToObjectMapperType<T> toObjectMapper = [parseOptions](const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = IO::Network::URL (d.As<String> (), parseOptions);
     };
-    return TypeMappingDetails{typeid (IO::Network::URL), fromObjectMapper, toObjectMapper};
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+}
+
+template <>
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Common::GUID> ()
+{
+    using T                                  = Common::GUID;
+    FromObjectMapperType<T> fromObjectMapper = [](const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+        return fromObjOfTypeT->ToString ();
+    };
+    ToObjectMapperType<T> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = Common::GUID{d.As<String> ()};
+    };
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
 namespace {
@@ -316,6 +329,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<Time::DurationRange> (),
             ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> (),
             ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> (),
+            ObjectVariantMapper::MakeCommonSerializer<Common::GUID> (),
 
             ObjectVariantMapper::MakeCommonSerializer<optional<bool>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<signed char>> (),
@@ -342,7 +356,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<optional<Time::DurationRange>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateRange>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateTimeRange>> (),
-
+            ObjectVariantMapper::MakeCommonSerializer<optional<Common::GUID>> (),
         }};
         return sDefaults_;
     }
