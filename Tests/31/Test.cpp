@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -695,62 +696,90 @@ namespace {
 }
 
 namespace {
+
     void DoRegressionTests_CustomMapper_11_ ()
     {
-        using namespace Traversal;
+        {
+            ObjectVariantMapper mapper;
+            using IO::Network::CIDR;
+            mapper.Add<CIDR> ([](const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
+                              [](const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
+        }
+        {
+            struct RGBColor {
+                uint8_t red;
+                uint8_t green;
+                uint8_t blue;
+                bool    operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
+            };
 
-        struct RGBColor {
-            uint8_t red;
-            uint8_t green;
-            uint8_t blue;
-            bool    operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
-        };
+            ObjectVariantMapper mapper;
 
-        ObjectVariantMapper mapper;
-
-        mapper.Add<RGBColor> (
-            []([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-                Lambda_Arg_Unused_BWA (mapper);
-                return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
-            },
-            []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
-                Lambda_Arg_Unused_BWA (mapper);
-                String tmpInBuf = d.As<String> ();
-                if (tmpInBuf.length () != 7) {
-                    Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 7"));
-                }
-                if (tmpInBuf[0] != '#') {
-                    Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
-                }
-                auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
-                    wchar_t buf[1024];
-                    Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
-                    memcpy (buf, start, (end - start) * sizeof (wchar_t));
-                    buf[(end - start)] = '\0';
-                    wchar_t* e         = nullptr;
-                    auto     result    = std::wcstoul (buf, &e, 16);
-                    if (e != buf + 2) {
-                        Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
+            mapper.Add<RGBColor> (
+                []([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
+                    Lambda_Arg_Unused_BWA (mapper);
+                    return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
+                },
+                []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
+                    Lambda_Arg_Unused_BWA (mapper);
+                    String tmpInBuf = d.As<String> ();
+                    if (tmpInBuf.length () != 7) {
+                        Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 7"));
                     }
-                    Assert (result <= 255);
-                    return static_cast<uint8_t> (result);
-                };
-                intoObj->red   = readColorComponent (tmpInBuf.c_str () + 1, tmpInBuf.c_str () + 3);
-                intoObj->green = readColorComponent (tmpInBuf.c_str () + 3, tmpInBuf.c_str () + 5);
-                intoObj->blue  = readColorComponent (tmpInBuf.c_str () + 5, tmpInBuf.c_str () + 7);
-            });
+                    if (tmpInBuf[0] != '#') {
+                        Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
+                    }
+                    auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
+                        wchar_t buf[1024];
+                        Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
+                        memcpy (buf, start, (end - start) * sizeof (wchar_t));
+                        buf[(end - start)] = '\0';
+                        wchar_t* e         = nullptr;
+                        auto     result    = std::wcstoul (buf, &e, 16);
+                        if (e != buf + 2) {
+                            Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
+                        }
+                        Assert (result <= 255);
+                        return static_cast<uint8_t> (result);
+                    };
+                    intoObj->red   = readColorComponent (tmpInBuf.c_str () + 1, tmpInBuf.c_str () + 3);
+                    intoObj->green = readColorComponent (tmpInBuf.c_str () + 3, tmpInBuf.c_str () + 5);
+                    intoObj->blue  = readColorComponent (tmpInBuf.c_str () + 5, tmpInBuf.c_str () + 7);
+                });
 
-        RGBColor     tmp = RGBColor{255, 255, 255};
-        VariantValue v   = mapper.FromObject (tmp);
+            RGBColor     tmp = RGBColor{255, 255, 255};
+            VariantValue v   = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer ().Write (v, tmpStream);
+            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+            Variant::JSON::Writer ().Write (v, tmpStream);
 
-        // THEN deserialized, and mapped back to C++ object form
-        RGBColor tmp2 = mapper.ToObject<RGBColor> (Variant::JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+            // THEN deserialized, and mapped back to C++ object form
+            RGBColor tmp2 = mapper.ToObject<RGBColor> (Variant::JSON::Reader ().Read (tmpStream));
+            VerifyTestResult (tmp2 == tmp);
+        }
     }
 }
+
+#if !qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
+namespace {
+    namespace aaa {
+        struct dev {
+            static const ObjectVariantMapper kMapper_;
+        };
+    }
+    using namespace aaa;
+    DISABLE_COMPILER_MSC_WARNING_START (4573);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    const ObjectVariantMapper dev::kMapper_ = []() {
+        ObjectVariantMapper mapper;
+
+        using IO::Network::CIDR;
+        mapper.Add<CIDR> ([](const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
+                          [](const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
+        return mapper;
+    }();
+}
+#endif
 
 namespace {
     void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()

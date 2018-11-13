@@ -1164,6 +1164,38 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
+/**
+ WITHOUT the namespace aaa, this works fine.
+namespace {
+    namespace aaa {
+        struct dev {
+            static const ObjectVariantMapper kMapper_;
+        };
+    }
+    using namespace aaa;
+    DISABLE_COMPILER_MSC_WARNING_START (4573);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    const ObjectVariantMapper dev::kMapper_ = []() {
+        ObjectVariantMapper mapper;
+
+        using IO::Network::CIDR;
+        mapper.Add<CIDR> ([](const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
+                          [](const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
+        return mapper;
+    }();
+}
+*/
+#ifndef qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#else
+#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy 0
+#endif
+
+#endif
+
 /*
  * https://developercommunity.visualstudio.com/content/problem/330322/stdlocale-l2-en-usutf-8-broken-crashes-now.html
  *      Take the example code from 
