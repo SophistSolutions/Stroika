@@ -11,6 +11,7 @@
 #endif
 
 #include "../Characters/ToString.h"
+#include "../Configuration/Common.h"
 
 /**
  */
@@ -21,10 +22,15 @@ namespace Stroika::Foundation::Common {
      *  
      */
     struct GUID {
+        /**
+         *  \note - when converting from a string, GUID allows the leading/trailing {} to be optionally provided.
+         */
         GUID () = default;
 #if qPlatform_Windows
         constexpr GUID (const ::GUID& src);
 #endif
+        GUID (const string& src);
+        GUID (const Characters::String& src);
 
         uint32_t Data1{};
         uint16_t Data2{};
