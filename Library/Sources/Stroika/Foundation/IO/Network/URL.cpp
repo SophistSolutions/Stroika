@@ -477,46 +477,29 @@ bool URL::empty () const
 
 bool URL::Equals (const URL& rhs) const
 {
-#if qDebug
-    bool referenceEquals = (GetFullURL () == rhs.GetFullURL ());
-#endif
-
     // No need to compare this case-insensatively, because we tolower the schema on construction
     if (fScheme_ != rhs.fScheme_) {
-        Ensure (referenceEquals == false);
         return false;
     }
 
     //@todo - consider if we want to do CASE INSENSIVE COMAPRE - I THINK WE MUST!!!
     if (fHost_ != rhs.fHost_) {
-        Ensure (referenceEquals == false);
         return false;
     }
 
     if (fPort_ != rhs.fPort_) {
-        Ensure (referenceEquals == false);
         return false;
     }
     if (fRelPath_ != rhs.fRelPath_) {
-        Ensure (referenceEquals == false);
         return false;
     }
     if (fQuery_ != rhs.fQuery_) {
-        Ensure (referenceEquals == false);
         return false;
     }
     if (fFragment_ != rhs.fFragment_) {
-        Ensure (referenceEquals == false);
         return false;
     }
-    Ensure (referenceEquals == true);
     return true;
-#if 0
-    // A simpler way to compare - and probably better - is if they both produce the same URL string, they are the
-    // same URL (since GetFullURL () normalizes output)
-    //  -- LGP 2009-01-17
-    return GetFullURL () == rhs.GetFullURL ();
-#endif
 }
 
 int URL::Compare (const URL& rhs) const

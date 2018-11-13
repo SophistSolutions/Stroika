@@ -245,8 +245,11 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  this does not do a field by field compare. It returns true iff GetFullURL() on lhs / rhs would return the
-         *  same string
+         *  \brief Compare if two URLs are identical.
+         *
+         *  \note This is NOT the same as this->GetFullURL () == rhs.GetFullURL (), because default values may be
+         *        applied in generating the FullURL () - and those might be the source of differences in the field by
+         *        field comparison.
          *
          *  @todo   (modulo what should be compared canse instaitivive???) - hostname?
          *          PROTOCOL SB case INsensitiatve, and if there is a hostame, that should be comapred case insenswative. But rest is case sensative.
