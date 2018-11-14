@@ -263,6 +263,17 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
     return TypeMappingDetails{typeid (ACTUAL_ELEMENT_TYPE), fromObjectMapper, toObjectMapper};
 }
 
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::InternetAddress*)
+{
+    using T                                  = IO::Network::InternetAddress;
+    FromObjectMapperType<T> fromObjectMapper = [](const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+        return VariantValue (fromObjOfTypeT->ToString ());
+    };
+    ToObjectMapperType<T> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = T (d.As<String> ());
+    };
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+}
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions)
 {
     using T                                  = IO::Network::URL;
@@ -270,7 +281,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
         return VariantValue (fromObjOfTypeT->GetFullURL ());
     };
     ToObjectMapperType<T> toObjectMapper = [parseOptions](const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = IO::Network::URL (d.As<String> (), parseOptions);
+        *intoObjOfTypeT = T (d.As<String> (), parseOptions);
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }

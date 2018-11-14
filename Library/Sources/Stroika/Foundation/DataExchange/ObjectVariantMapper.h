@@ -23,6 +23,7 @@
 #include "../Containers/SortedMapping.h"
 #include "../Containers/SortedSet.h"
 #include "../Execution/Synchronized.h"
+#include "../IO/Network/InternetAddress.h"
 #include "../IO/Network/URL.h"
 #include "../Memory/Common.h"
 #include "../Memory/Optional.h"
@@ -362,6 +363,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Date
          *      o   DateTime
          *      o   Duration
+         *      o   IO::Network::InternetAddress
          *      o   IO::Network::URL
          *      o   String
          *      o   Mapping<String, String>
@@ -639,6 +641,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedSet<T>*);
         template <typename T, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
+        static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
