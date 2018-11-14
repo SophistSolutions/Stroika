@@ -33,7 +33,7 @@ namespace Stroika::Foundation::DataExchange {
      *      \endcode
      */
     template <typename TO, typename EXTRA_DATA, typename FROM>
-    TO CheckedConverter (FROM from, const EXTRA_DATA& extraData = EXTRA_DATA ());
+    TO CheckedConverter (FROM from, const EXTRA_DATA& extraData = EXTRA_DATA{});
 
     struct UTF8 {
     };
@@ -41,24 +41,16 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     template <>
-    Characters::String CheckedConverter<Characters::String, UTF8, const string&> (const string& from, const UTF8& extraData);
-    template <>
     Characters::String CheckedConverter<Characters::String, UTF8, string> (string from, const UTF8& extraData);
     template <>
     Characters::String CheckedConverter<Characters::String, UTF8, const char*> (const char* from, const UTF8& extraData);
     template <>
-    Characters::String CheckedConverter<Characters::String, UTF8, char*> (char* from, const UTF8& extraData);
-    template <>
-    Characters::String CheckedConverter<Characters::String, ASCII, const string&> (const string& from, const ASCII& extraData);
-    template <>
     Characters::String CheckedConverter<Characters::String, ASCII, string> (string from, const ASCII& extraData);
     template <>
     Characters::String CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData);
-    template <>
-    Characters::String CheckedConverter<Characters::String, ASCII, char*> (char* from, const ASCII& extraData);
 
     template <>
-    string CheckedConverter<string, ASCII, const Characters::String&> (const Characters::String& from, const ASCII& extraData);
+    string CheckedConverter<string, ASCII, Characters::String> (Characters::String from, const ASCII& extraData);
 
     /**
      *  CheckedConverter_Range takes a lower and upper bound, and creates a new RANGE_TYPE

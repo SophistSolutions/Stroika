@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \req This function requires that its arguments all ascii (no high-bit set)
          *
-         *  \note @see CheckedConverter<Characters::String, ASCII, string> for conversion which is safe if invalid ascii.
+         *  \note @see CheckedConverter<String, ASCII, string> for conversion which is safe if invalid ascii.
          */
         static String FromASCII (const char* from);
         static String FromASCII (const char* from, const char* to);
