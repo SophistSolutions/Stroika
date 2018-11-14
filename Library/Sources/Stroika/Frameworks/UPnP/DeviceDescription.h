@@ -49,12 +49,12 @@ namespace Stroika::Frameworks::UPnP {
         /**
          */
         struct Icon {
-            Icon ();
+            Icon () = default;
 
             InternetMediaType fMimeType;
-            uint16_t          fHorizontalPixels;
-            uint16_t          fVerticalPixels;
-            uint16_t          fColorDepth;
+            uint16_t          fHorizontalPixels{16};
+            uint16_t          fVerticalPixels{16};
+            uint16_t          fColorDepth{8};
             URL               fURL; // url to the icon image file
 
             /**
@@ -80,7 +80,7 @@ namespace Stroika::Frameworks::UPnP {
         };
         Collection<Service> fServices;
 
-        DeviceDescription ();
+        DeviceDescription () = default;
 
         /**
          *  @see Characters::ToString ();

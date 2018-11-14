@@ -23,20 +23,6 @@ using namespace Stroika::Frameworks::UPnP;
 
 /*
  ********************************************************************************
- *************************** DeviceDescription::Icon ****************************
- ********************************************************************************
- */
-DeviceDescription::Icon::Icon ()
-    : fMimeType ()
-    , fHorizontalPixels (16)
-    , fVerticalPixels (16)
-    , fColorDepth (8)
-    , fURL ()
-{
-}
-
-/*
- ********************************************************************************
  ************************* DeviceDescription::Icon ******************************
  ********************************************************************************
  */
@@ -44,11 +30,11 @@ String DeviceDescription::Icon::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"fMimeType : '" + Characters::ToString (fMimeType) + L"', ";
-    sb += L"fHorizontalPixels : '" + Characters::ToString (fHorizontalPixels) + L"', ";
-    sb += L"fVerticalPixels : '" + Characters::ToString (fVerticalPixels) + L"', ";
-    sb += L"fColorDepth : '" + Characters::ToString (fColorDepth) + L"', ";
-    sb += L"fURL : '" + Characters::ToString (fURL) + L"', ";
+    sb += L"MimeType: " + Characters::ToString (fMimeType) + L", ";
+    sb += L"HorizontalPixels: " + Characters::ToString (fHorizontalPixels) + L", ";
+    sb += L"VerticalPixels: " + Characters::ToString (fVerticalPixels) + L", ";
+    sb += L"ColorDepth : " + Characters::ToString (fColorDepth) + L", ";
+    sb += L"URL: " + Characters::ToString (fURL) + L", ";
     sb += L"}";
     return sb.str ();
 }
@@ -62,10 +48,10 @@ String DeviceDescription::Service::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"Service-ID : '" + Characters::ToString (fServiceID) + L"', ";
-    sb += L"SCPD-URL : '" + Characters::ToString (fSCPDURL) + L"', ";
-    sb += L"Control-URL : '" + Characters::ToString (fControlURL) + L"', ";
-    sb += L"Event-Sub-URL : '" + Characters::ToString (fEventSubURL) + L"', ";
+    sb += L"Service-ID: " + Characters::ToString (fServiceID) + L", ";
+    sb += L"SCPD-URL: " + Characters::ToString (fSCPDURL) + L", ";
+    sb += L"Control-URL: " + Characters::ToString (fControlURL) + L", ";
+    sb += L"Event-Sub-URL: " + Characters::ToString (fEventSubURL) + L", ";
     sb += L"}";
     return sb.str ();
 }
@@ -75,39 +61,22 @@ String DeviceDescription::Service::ToString () const
  ******************************* DeviceDescription ******************************
  ********************************************************************************
  */
-DeviceDescription::DeviceDescription ()
-    : fPresentationURL ()
-    , fDeviceType ()
-    , fManufactureName ()
-    , fFriendlyName ()
-    , fManufacturingURL ()
-    , fModelDescription ()
-    , fModelName ()
-    , fModelNumber ()
-    , fModelURL ()
-    , fSerialNumber ()
-    , fUPC ()
-    , fIcons ()
-    , fServices ()
-{
-}
-
 String DeviceDescription::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"Presentation-URL : '" + Characters::ToString (fPresentationURL) + L"', ";
-    sb += L"Device-Type : '" + Characters::ToString (fDeviceType) + L"', ";
-    sb += L"Manufacture-Name : '" + Characters::ToString (fManufactureName) + L"', ";
-    sb += L"Friendly-Name : '" + Characters::ToString (fFriendlyName) + L"', ";
-    sb += L"Manufacturing-URL : '" + Characters::ToString (fManufacturingURL) + L"', ";
-    sb += L"Model-Description : '" + Characters::ToString (fModelDescription) + L"', ";
-    sb += L"Model-Name : '" + Characters::ToString (fModelName) + L"', ";
-    sb += L"Model-Number : '" + Characters::ToString (fModelNumber) + L"', ";
-    sb += L"Serial-Number : '" + Characters::ToString (fSerialNumber) + L"', ";
-    sb += L"UPC : '" + Characters::ToString (fUPC) + L"', ";
-    sb += L"Icons : '" + Characters::ToString (fIcons) + L"', ";
-    sb += L"Services : '" + Characters::ToString (fServices) + L"', ";
+    sb += L"Presentation-URL: " + Characters::ToString (fPresentationURL) + L", ";
+    sb += L"Device-Type: " + Characters::ToString (fDeviceType) + L", ";
+    sb += L"Manufacture-Name: " + Characters::ToString (fManufactureName) + L", ";
+    sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
+    sb += L"Manufacturing-URL: " + Characters::ToString (fManufacturingURL) + L", ";
+    sb += L"Model-Description: " + Characters::ToString (fModelDescription) + L", ";
+    sb += L"Model-Name: " + Characters::ToString (fModelName) + L", ";
+    sb += L"Model-Number: " + Characters::ToString (fModelNumber) + L", ";
+    sb += L"Serial-Number: " + Characters::ToString (fSerialNumber) + L", ";
+    sb += L"UPC: " + Characters::ToString (fUPC) + L", ";
+    sb += L"Icons: " + Characters::ToString (fIcons) + L", ";
+    sb += L"Services: " + Characters::ToString (fServices) + L", ";
     sb += L"}";
     return sb.str ();
 }
