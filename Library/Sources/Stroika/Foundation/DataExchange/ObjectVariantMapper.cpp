@@ -87,16 +87,6 @@ namespace {
     }
 }
 
-TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const void*)
-{
-    FromObjectMapperType<void> fromObjectMapper = [](const ObjectVariantMapper&, const void*) -> VariantValue {
-        return VariantValue{};
-    };
-    ToObjectMapperType<void> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue&, void*) -> void {
-    };
-    return TypeMappingDetails{typeid (void), fromObjectMapper, toObjectMapper};
-}
-
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<bool> ()
 {

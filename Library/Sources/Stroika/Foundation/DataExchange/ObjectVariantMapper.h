@@ -520,7 +520,6 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  As well as
          *      o   all POD types (integer, floating point, bool)
-         *      o   void (yes - this is useful for templating)
          *      o   Time::Date
          *      o   Time::DateTime
          *      o   Characters::String
@@ -528,6 +527,15 @@ namespace Stroika::Foundation::DataExchange {
          *      o   IO::Network::URL
          *      o   Time::TimeOfDay
          *      o   Common::GUID
+         *
+         *
+         *  \note we USED to support type 'void' with the comment:
+         *        o   void (yes - this is useful for templating)
+         *        until Stroika v2.1d13
+         *        But the trouble with this is that it matched any unknown type, and was just a no-op. Not crazy bad, but 
+         *        could be CONFUSING for debugging - when you add a serializer for a type and it doesn't get serialized and you
+         *        have no idea why. MAYBE it would be OK if the serializer logged "TYPE IGNORED" or something. Anyhow
+         *        got rid of this feature until I can re-observe why its needed, and then maybe re-instate it more carefully.
          *
          *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
          *
@@ -605,7 +613,6 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String ToString () const;
 
     private:
-        static TypeMappingDetails MakeCommonSerializer_ (const void*);
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*);
         template <typename T>
