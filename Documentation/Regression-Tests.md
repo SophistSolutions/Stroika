@@ -75,6 +75,17 @@ checkin from one spot.
         ./ScriptsLib/RunRemoteRegressionTests.sh
     ~~~
 
+* $TEST_TARGET=Ubuntu1810-Cross-Compile2RaspberryPi
+
+    (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
+    ~~~bash
+    RUN_IN_DOCKER=1 \
+        USE_TEST_BASENAME=Ubuntu1810-Cross-Compile2RaspberryPi \
+        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
+        CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests \
+        MACHINE=Hercules \
+        ./ScriptsLib/RunRemoteRegressionTests.sh
+    ~~~
 
 ## Checkin results
 
