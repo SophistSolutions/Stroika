@@ -3,11 +3,11 @@ FROM sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-
 #install the latest (C++17 compat) g++ compilers
 RUN apt-get install -y g++-7  g++-8
 
 #install the latest (C++17 compat) clang compilers (and libs)
+#nb: do clang6/7 on separate lines due to python conflict
 RUN apt-get install -y clang++-6
 RUN apt-get install -y clang++-7 libc++abi-dev libc++-dev
 

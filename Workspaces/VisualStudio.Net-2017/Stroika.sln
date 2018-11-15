@@ -3073,6 +3073,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-RegressionTests"
 		..\..\BuildContainers\Ubuntu1804-RegressionTests\Dockerfile = ..\..\BuildContainers\Ubuntu1804-RegressionTests\Dockerfile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1810-Small", "Ubuntu1810-Small", "{7DE86DC3-B987-4E4B-AFDD-F71CE7637DCD}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\BuildContainers\Ubuntu1810-Small\Dockerfile = ..\..\BuildContainers\Ubuntu1810-Small\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1810-RegressionTests", "Ubuntu1810-RegressionTests", "{B437C347-5CB8-449D-85A4-58A7163FFDD2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\BuildContainers\Ubuntu1810-RegressionTests\Dockerfile = ..\..\BuildContainers\Ubuntu1810-RegressionTests\Dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -3550,6 +3560,8 @@ Global
 		{4CA6CEC9-9BEB-4810-B815-00D81B06570D} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
 		{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 		{8C954ABB-96DF-4E69-86E5-0903F99C8052} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{7DE86DC3-B987-4E4B-AFDD-F71CE7637DCD} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{B437C347-5CB8-449D-85A4-58A7163FFDD2} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}

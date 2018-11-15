@@ -61,6 +61,18 @@ checkin from one spot.
         ./ScriptsLib/RunRemoteRegressionTests.sh
     ~~~
 
+$TEST_TARGET=Ubuntu1810_x86_64
+
+    (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+    ~~~bash
+    RUN_IN_DOCKER=1 \
+        USE_TEST_BASENAME=Ubuntu1810_x86_64 \
+        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+        MACHINE=Hercules \
+        ./ScriptsLib/RunRemoteRegressionTests.sh
+    ~~~
+
+
 ## Checkin results
 
 ~~~bash
