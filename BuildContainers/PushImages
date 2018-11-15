@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#if you get errors doing this (permission denied) make sure you ran docker login
+
 docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
 docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 

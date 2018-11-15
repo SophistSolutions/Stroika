@@ -3060,6 +3060,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildContainers", "BuildContainers", "{4CA6CEC9-9BEB-4810-B815-00D81B06570D}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\BuildContainers\CreateImages = ..\..\BuildContainers\CreateImages
+		..\..\BuildContainers\PushImages = ..\..\BuildContainers\PushImages
 		..\..\BuildContainers\RunImage = ..\..\BuildContainers\RunImage
 	EndProjectSection
 EndProject
