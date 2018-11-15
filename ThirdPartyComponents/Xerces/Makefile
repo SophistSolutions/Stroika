@@ -165,7 +165,6 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
-
 endif
 
 
@@ -306,5 +305,10 @@ doBuilds_:
 	@MAKEFLAGS= && cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && ln -s libxerces-c-3.2.a libxerces-c.a
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@#We get warnings about a missing pdb file when linking otherwise...(not sure why since symbol info sb in the .lib)
+	@$(ECHO) "cp $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ 2>/dev/null || :" >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
+	@cp $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ 2>/dev/null || :
 endif
 	@$(ECHO) "done"
