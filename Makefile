@@ -389,6 +389,9 @@ basic-unix-test-configurations:
 	#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
 	./configure clang++-6-debug-libc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
 	./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
+	./configure clang++-7-debug-libc++ --config-tag Unix --compiler-driver clang++-7.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
+	./configure clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-7.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined --cppstd-version c++2a;\
+	./configure clang++-7-release-libstdc++ --config-tag Unix --compiler-driver clang++-7.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 	# --no-sanitize and --lto disable calls for clang7 just because of how I built it...\
 	./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined;\
 	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a;\
