@@ -1,5 +1,7 @@
 #!/bin/bash
 
 docker build Ubuntu1804-Small/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
+docker build Ubuntu1810-Small/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 
 docker build Ubuntu1804-RegressionTests/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+docker build Ubuntu1810-RegressionTests/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests

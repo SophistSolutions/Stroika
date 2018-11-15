@@ -1,5 +1,7 @@
 #!/bin/bash
 
 docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
+docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 
 docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests
