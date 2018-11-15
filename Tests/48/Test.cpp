@@ -390,7 +390,7 @@ namespace {
                     d  = Date (nYear, d.GetMonth (), d.GetDayOfMonth ());
                     dt = DateTime (dt, d);
                 }
-                VerifyTestResult (now == dt);
+                VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
             }
             else {
                 VerifyTestResult (now == DateTime::Parse (now.Format (locale{}, DateTime::kShortLocaleFormatPattern), locale{}, {DateTime::kShortLocaleFormatPattern}));
