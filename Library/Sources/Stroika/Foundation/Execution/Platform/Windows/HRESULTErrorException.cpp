@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
 
 /*
  ********************************************************************************
- ********** Platform::Windows::HRESULTErrorException ****************************
+ ************* Platform::Windows::HRESULTErrorException *************************
  ********************************************************************************
  */
 HRESULTErrorException::HRESULTErrorException (HRESULT hresult)
