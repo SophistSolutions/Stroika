@@ -304,7 +304,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\Library\Sources; ..\..\..\..\IntermediateFiles\$(Configuration); ..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -331,7 +330,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\Library\Sources; ..\..\..\..\IntermediateFiles\$(Configuration); ..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -357,7 +355,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\Library\Sources; ..\..\..\..\IntermediateFiles\$(Configuration); ..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
