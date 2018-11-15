@@ -773,8 +773,8 @@ namespace {
     const ObjectVariantMapper dev::kMapper_ = []() {
         ObjectVariantMapper mapper;
         using IO::Network::CIDR;
-        mapper.Add<CIDR> ([]([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                          []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
+        mapper.Add<CIDR> ([]([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
+                          []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
         return mapper;
     }();
 }
