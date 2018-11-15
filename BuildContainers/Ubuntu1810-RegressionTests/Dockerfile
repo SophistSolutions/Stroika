@@ -9,7 +9,7 @@ RUN apt-get install -y g++-7  g++-8
 #install the latest (C++17 compat) clang compilers (and libs)
 #nb: do clang6/7 on separate lines due to python conflict
 RUN apt-get install -y clang++-6
-RUN apt-get install -y clang++-7 libc++abi-dev libc++-dev
+RUN apt-get install -y clang++-7 libc++-7-dev libc++abi-dev libc++-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
 RUN  apt-get install zlib1g-dev
