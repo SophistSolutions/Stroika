@@ -1190,6 +1190,7 @@ namespace {
                 VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
             }
             catch (...) {
+                DbgTrace (L"error: %s", Characters::ToString (current_exception ()).c_str ());
                 VerifyTestResult (false); // I think docs say must throw std::runtime_error
             }
         };
