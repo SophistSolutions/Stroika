@@ -1244,8 +1244,8 @@ namespace {
 
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k17_15Pt8_
-// VERIFIED FIXED IN _MSC_VER_2k17_15Pt9_
-#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+// VERIFIED broken IN _MSC_VER_2k17_15Pt9_  (NOTE - this no longer gives the above assertion error but instead just fails in the UTF8 code conversion)
+#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
 #endif
