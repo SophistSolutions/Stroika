@@ -11,7 +11,9 @@ RUN apt-get install -y g++-7  g++-8
 
 #install the latest (C++17 compat) clang compilers (and libs)
 #nb: do clang6/7 on separate lines due to python conflict
-RUN apt-get install -y clang++-6 libc++-dev libc++abi-dev
+### INSTALLING THEM THIS WAY CAUSES part of clang6 to get uninstalled so building clang++-6-debug-libc++ fails.
+### NOT IMPORTANT - SO JUST LEAVE OUT CLANG6 for now from this build -- LGP 2018-11-16
+#RUN apt-get install -y clang++-6 libc++-dev libc++abi-dev
 RUN apt-get install -y clang++-7 libc++-7-dev libc++abi-7-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
