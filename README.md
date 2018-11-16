@@ -34,7 +34,7 @@ Compilers / Platforms tested
 For more details on individual release changes, see:
 	[Release-Notes.md](Release-Notes.md)
 
-Quick start building instructions can be found in:
+"Getting Started" build instructions can be found in:
 	[Documentation/Building Stroika.pdf](Documentation/Building%20Stroika.pdf)
 
 Looking through the samples is also a good way to start:
