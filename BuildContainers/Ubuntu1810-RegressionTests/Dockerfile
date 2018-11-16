@@ -4,7 +4,7 @@ FROM sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 RUN apt-get update
 
 # Just to echo information in regression test output
-RUN apt-get install -y lsb_release
+RUN apt-get install -y lsb-release
 
 #install the latest (C++17 compat) g++ compilers
 RUN apt-get install -y g++-7  g++-8
