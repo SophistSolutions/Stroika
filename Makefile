@@ -376,9 +376,6 @@ basic-unix-test-configurations:
 	./configure DEFAULT_CONFIG --config-tag Unix;\
 	./configure no-third-party-components --config-tag Unix --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no --boost no;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
-	##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
-	##./configure malloc-guard --config-tag Unix --malloc-guard true;\
-	#\
 	./configure g++-7-debug-c++17 --config-tag Unix --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 	./configure g++-7-release-c++17 --config-tag Unix --compiler-driver g++-7 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 	./configure g++-8-debug-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
@@ -408,8 +405,8 @@ basic-unix-test-configurations:
 	./configure g++-release-sanitize_thread_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined;\
 	./configure g++-optimized --config-tag Unix --apply-default-release-flags;\
 	#\
-	###Builds with a few specail flags to make valgrind work better\
-	#nb: using default installed C++ compiler cuz of mathcing installed libraries on host computer\
+	###Builds with a few special flags to make valgrind work better\
+	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer\
 	./configure g++-valgrind-debug-SSLPurify --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
 	./configure g++-valgrind-debug-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
 	./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;
