@@ -28,6 +28,36 @@ namespace Stroika::Foundation::Common {
         }
     }
 #endif
+    inline bool operator== (const GUID& lhs, const GUID& rhs)
+    {
+        static_assert (sizeof (GUID) == 16);    // else cannot use memcmp this way
+        return memcmp (&lhs, &rhs, sizeof (GUID)) == 0;
+    }
+    inline bool operator!= (const GUID& lhs, const GUID& rhs)
+    {
+        static_assert (sizeof (GUID) == 16);    // else cannot use memcmp this way
+        return memcmp (&lhs, &rhs, sizeof (GUID)) != 0;
+    }
+    inline bool operator< (const GUID& lhs, const GUID& rhs)
+    {
+        static_assert (sizeof (GUID) == 16);    // else cannot use memcmp this way
+        return memcmp (&lhs, &rhs, sizeof (GUID)) < 0;
+    }
+    inline bool operator<= (const GUID& lhs, const GUID& rhs)
+    {
+        static_assert (sizeof (GUID) == 16);    // else cannot use memcmp this way
+        return memcmp (&lhs, &rhs, sizeof (GUID)) <= 0;
+    }
+    inline bool operator>= (const GUID& lhs, const GUID& rhs)
+    {
+        static_assert (sizeof (GUID) == 16);    // else cannot use memcmp this way
+        return memcmp (&lhs, &rhs, sizeof (GUID)) >= 0;
+    }
+    inline bool operator> (const GUID& lhs, const GUID& rhs)
+    {
+        static_assert (sizeof (GUID) == 16);    // else cannot use memcmp this way
+        return memcmp (&lhs, &rhs, sizeof (GUID)) > 0;
+    }
 
 }
 

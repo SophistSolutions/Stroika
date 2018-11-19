@@ -44,6 +44,13 @@ namespace Stroika::Foundation::Common {
         nonvirtual Characters::String ToString () const;
     };
 
+    bool operator== (const GUID& lhs, const GUID& rhs);
+    bool operator!= (const GUID& lhs, const GUID& rhs);
+    bool operator< (const GUID& lhs, const GUID& rhs);
+    bool operator<= (const GUID& lhs, const GUID& rhs);
+    bool operator>= (const GUID& lhs, const GUID& rhs);
+    bool operator> (const GUID& lhs, const GUID& rhs);
+
 }
 
 /*

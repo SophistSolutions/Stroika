@@ -47,7 +47,7 @@ Common::GUID::GUID (const string& src)
                     &nchars);
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-    if (nfields != 11 || nchars != 36) {
+    if (nfields != 11 and nchars != 36) {
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 }
