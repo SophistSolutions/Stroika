@@ -400,17 +400,16 @@ basic-unix-test-configurations:
 	#32-bit not working now - asm bug - must debug...\
 	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 	#\
-	# (@todo - see if --lto disable still needed on release asan/tsan (was needed for gcc 7.2)\
 	./configure g++-debug-sanitize_leak --config-tag Unix --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
 	./configure g++-debug-sanitize_address --config-tag Unix --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
 	./configure g++-debug-sanitize_thread --config-tag Unix --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined;\
 	./configure g++-debug-sanitize_undefined --config-tag Unix --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	./configure g++-release-sanitize_address_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --lto disable --cppstd-version c++17 --sanitize none,address,undefined;\
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --lto disable --cppstd-version c++17 --sanitize none,thread,undefined;\
+	./configure g++-release-sanitize_address_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
+	./configure g++-release-sanitize_thread_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined;\
 	./configure g++-optimized --config-tag Unix --apply-default-release-flags;\
 	#\
 	###Builds with a few specail flags to make valgrind work better\
-	#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
+	#nb: using default installed C++ compiler cuz of mathcing installed libraries on host computer\
 	./configure g++-valgrind-debug-SSLPurify --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
 	./configure g++-valgrind-debug-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
 	./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;
