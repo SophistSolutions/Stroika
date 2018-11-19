@@ -25,6 +25,9 @@
 #elif qPlatform_Windows
 #include <WinSock2.h>
 
+#include <Windot11.h> // for DOT11_SSID struct
+#include <wlanapi.h>
+
 #include <Iphlpapi.h>
 #include <WS2tcpip.h>
 #include <netioapi.h>
@@ -33,6 +36,7 @@
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
 #include "../../Characters/StringBuilder.h"
+#include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Mapping.h"
@@ -43,6 +47,7 @@
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "../../Execution/Synchronized.h"
+#include "../../Memory/Optional.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "Socket.h"
@@ -52,6 +57,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
@@ -65,6 +71,8 @@ using namespace Stroika::Foundation::IO::Network;
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
 // easiser to see/modularize (and only pulled in if this module is referenced)
 #pragma comment(lib, "Iphlpapi.lib")
+
+#pragma comment(lib, "wlanapi.lib")
 #endif
 
 #if qPlatform_Linux
@@ -126,6 +134,21 @@ String Interface::Binding::ToString () const
 
 /*
  ********************************************************************************
+ ********************** Interface::WirelessInfo *********************************
+ ********************************************************************************
+ */
+String Interface::WirelessInfo::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    sb += L"SSID: " + Characters::ToString (fSSID) + L", ";
+    // todo add more
+    sb += L"}";
+    return sb.str ();
+}
+
+/*
+ ********************************************************************************
  *********************************** Interface **********************************
  ********************************************************************************
  */
@@ -152,6 +175,9 @@ String Interface::ToString () const
     }
     if (fReceiveLinkSpeedBaud) {
         sb += L"Receive-Link-Speed-Baud: " + Characters::ToString (*fReceiveLinkSpeedBaud) + L", ";
+    }
+    if (fWirelessInfo) {
+        sb += L"Wireless-Info: " + Characters::ToString (fWirelessInfo) + L", ";
     }
     sb += L"Bindings: " + Characters::ToString (fBindings) + L", ";
     if (fStatus) {
@@ -312,9 +338,209 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
+    struct WirelessInfoPlus_ : Interface::WirelessInfo {
+        // extra info so can be patched into Interface
+        optional<uint64_t> fTransmitSpeedBaud;
+        optional<uint64_t> fReceiveLinkSpeedBaud;
+    };
+    Mapping<Common::GUID, WirelessInfoPlus_> GetInterfaces_Windows_WirelessInfo_ ()
+    {
+        using WirelessInfo = Interface::WirelessInfo;
+        Mapping<Common::GUID, WirelessInfoPlus_> results;
+
+        HANDLE hClient = nullptr;
+        {
+            DWORD dwCurVersion = 0;
+            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::WlanOpenHandle (2, NULL, &dwCurVersion, &hClient));
+        }
+        [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&]() noexcept { if (hClient !=nullptr) {::WlanCloseHandle (hClient, nullptr);} });
+
+        PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
+        Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::WlanEnumInterfaces (hClient, nullptr, &pIfList));
+        [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&]() noexcept { if (pIfList !=nullptr) {::WlanFreeMemory (pIfList);} });
+
+        for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
+            PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
+            WirelessInfoPlus_    wInfo;
+            Common::GUID         interfaceGUID{pIfInfo->InterfaceGuid};
+
+            auto mapState = [](WLAN_INTERFACE_STATE s) -> WirelessInfo::State {
+                switch (s) {
+                    case wlan_interface_state_not_ready:
+                        return WirelessInfo::State::eNotReady;
+                    case wlan_interface_state_connected:
+                        return WirelessInfo::State::eConnected;
+                    case wlan_interface_state_ad_hoc_network_formed:
+                        return WirelessInfo::State::eAdHocNetworkFormed;
+                    case wlan_interface_state_disconnecting:
+                        return WirelessInfo::State::eDisconnecting;
+                    case wlan_interface_state_disconnected:
+                        return WirelessInfo::State::eDisconnected;
+                    case wlan_interface_state_associating:
+                        return WirelessInfo::State::eAssociating;
+                    case wlan_interface_state_discovering:
+                        return WirelessInfo::State::eDiscovering;
+                    case wlan_interface_state_authenticating:
+                        return WirelessInfo::State::eAuthenticating;
+                    default:
+                        DbgTrace (L"Unknown state %ld\n", s);
+                        return WirelessInfo::State::eUnknown;
+                }
+            };
+
+            wInfo.fState = mapState (pIfInfo->isState);
+
+            // If interface state is connected, call WlanQueryInterface
+            // to get current connection attributes
+            if (pIfInfo->isState == wlan_interface_state_connected) {
+                PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
+                {
+                    DWORD                  connectInfoSize = sizeof (WLAN_CONNECTION_ATTRIBUTES);
+                    WLAN_OPCODE_VALUE_TYPE opCode          = wlan_opcode_value_type_invalid;
+                    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (
+                        ::WlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
+                                              nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
+                }
+                [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&]() noexcept { if (pConnectInfo !=nullptr) {::WlanFreeMemory (pConnectInfo);} });
+
+                if (pConnectInfo->isState != pIfInfo->isState) {
+                    DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
+                }
+
+                auto mapConnectionMode = [](WLAN_CONNECTION_MODE s) -> WirelessInfo::ConnectionMode {
+                    switch (s) {
+                        case wlan_connection_mode_profile:
+                            return WirelessInfo::ConnectionMode::eProfile;
+                        case wlan_connection_mode_temporary_profile:
+                            return WirelessInfo::ConnectionMode::eTemporaryProfile;
+                        case wlan_connection_mode_discovery_secure:
+                            return WirelessInfo::ConnectionMode::eDiscoverSecrure;
+                        case wlan_connection_mode_discovery_unsecure:
+                            return WirelessInfo::ConnectionMode::eDiscoverInsecure;
+                        case wlan_connection_mode_auto:
+                            return WirelessInfo::ConnectionMode::eAuto;
+                        case wlan_connection_mode_invalid:
+                            return WirelessInfo::ConnectionMode::eInvalid;
+                        default:
+                            DbgTrace (L"Unknown connection mode %d\n", s);
+                            return WirelessInfo::ConnectionMode::eUnknown;
+                    }
+                };
+                wInfo.fConnectionMode = mapConnectionMode (pConnectInfo->wlanConnectionMode);
+                wInfo.fProfileName    = pConnectInfo->strProfileName;
+
+                //Association Attributes for this connection
+                if (pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength != 0) {
+                    wInfo.fSSID = String::FromNarrowSDKString (reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID + pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength));
+                }
+
+                auto mapBSSType = [](DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
+                    switch (s) {
+                        case dot11_BSS_type_infrastructure:
+                            return WirelessInfo::BSSType::eInfrastructure;
+                        case dot11_BSS_type_independent:
+                            return WirelessInfo::BSSType::eIndependent;
+                        case dot11_BSS_type_any:
+                            return WirelessInfo::BSSType::eAny;
+                        default:
+                            DbgTrace (L"Unknown connection mode %d\n", s);
+                            return WirelessInfo::BSSType::eUnknown;
+                    }
+                };
+                wInfo.fBSSType = mapBSSType (pConnectInfo->wlanAssociationAttributes.dot11BssType);
+
+                wInfo.fMACAddress = PrintMacAddr_ (std::begin (pConnectInfo->wlanAssociationAttributes.dot11Bssid), std::end (pConnectInfo->wlanAssociationAttributes.dot11Bssid));
+
+                auto mapPhysicalConnectionType = [](DOT11_PHY_TYPE s) -> WirelessInfo::PhysicalConnectionType {
+                    switch (s) {
+                        case dot11_phy_type_unknown:
+                            return WirelessInfo::PhysicalConnectionType::eUnknown;
+                        case dot11_phy_type_fhss:
+                            return WirelessInfo::PhysicalConnectionType::eFHSS;
+                        case dot11_phy_type_dsss:
+                            return WirelessInfo::PhysicalConnectionType::eDSSS;
+                        case dot11_phy_type_irbaseband:
+                            return WirelessInfo::PhysicalConnectionType::eIRBaseBand;
+                        case dot11_phy_type_ofdm:
+                            return WirelessInfo::PhysicalConnectionType::e80211a;
+                        case dot11_phy_type_hrdsss:
+                            return WirelessInfo::PhysicalConnectionType::e80211b;
+                        case dot11_phy_type_erp:
+                            return WirelessInfo::PhysicalConnectionType::e80211g;
+                        case dot11_phy_type_ht:
+                            return WirelessInfo::PhysicalConnectionType::e80211n;
+                        case dot11_phy_type_vht:
+                            return WirelessInfo::PhysicalConnectionType::e80211ac;
+                        case dot11_phy_type_dmg:
+                            return WirelessInfo::PhysicalConnectionType::e80211ad;
+                        case dot11_phy_type_he:
+                            return WirelessInfo::PhysicalConnectionType::e80211ax;
+                        default:
+                            DbgTrace (L"Unknown DOT11_PHY_TYPE %d\n", s);
+                            return WirelessInfo::PhysicalConnectionType::eUnknown;
+                    }
+                };
+                wInfo.fPhysicalConnectionType = mapPhysicalConnectionType (pConnectInfo->wlanAssociationAttributes.dot11PhyType);
+
+                wInfo.fSignalQuality = pConnectInfo->wlanAssociationAttributes.wlanSignalQuality;
+
+                wInfo.fTransmitSpeedBaud    = pConnectInfo->wlanAssociationAttributes.ulTxRate;
+                wInfo.fReceiveLinkSpeedBaud = pConnectInfo->wlanAssociationAttributes.ulRxRate;
+
+                wInfo.fSecurityEnabled = pConnectInfo->wlanSecurityAttributes.bSecurityEnabled;
+                wInfo.f8021XEnabled    = pConnectInfo->wlanSecurityAttributes.bOneXEnabled;
+                auto mapAuthAlgorithm  = [](DOT11_AUTH_ALGORITHM s) -> WirelessInfo::AuthAlgorithm {
+                    switch (s) {
+                        case DOT11_AUTH_ALGO_80211_OPEN:
+                            return WirelessInfo::AuthAlgorithm::eOpen;
+                        case DOT11_AUTH_ALGO_80211_SHARED_KEY:
+                            return WirelessInfo::AuthAlgorithm::ePresharedKey;
+                        case DOT11_AUTH_ALGO_WPA:
+                            return WirelessInfo::AuthAlgorithm::eWPA;
+                        case DOT11_AUTH_ALGO_WPA_PSK:
+                            return WirelessInfo::AuthAlgorithm::eWPA_PSK;
+                        case DOT11_AUTH_ALGO_WPA_NONE:
+                            return WirelessInfo::AuthAlgorithm::eWPA_NONE;
+                        case DOT11_AUTH_ALGO_RSNA:
+                            return WirelessInfo::AuthAlgorithm::eRSNA;
+                        case DOT11_AUTH_ALGO_RSNA_PSK:
+                            return WirelessInfo::AuthAlgorithm::eRSNA_PSK;
+                        default:
+                            DbgTrace (L"Unknown AuthAlgorithm %d\n", s);
+                            return WirelessInfo::AuthAlgorithm::eUnknown;
+                    }
+                };
+                wInfo.fAuthAlgorithm = mapAuthAlgorithm (pConnectInfo->wlanSecurityAttributes.dot11AuthAlgorithm);
+
+                auto mapCipher = [](DOT11_CIPHER_ALGORITHM s) -> String {
+                    switch (s) {
+                        case DOT11_CIPHER_ALGO_NONE:
+                            return String_Constant{L"None"};
+                        case DOT11_CIPHER_ALGO_WEP40:
+                            return String_Constant{L"WEP-40"};
+                        case DOT11_CIPHER_ALGO_TKIP:
+                            return String_Constant{L"TKIP"};
+                        case DOT11_CIPHER_ALGO_CCMP:
+                            return String_Constant{L"CCMP"};
+                        case DOT11_CIPHER_ALGO_WEP104:
+                            return String_Constant{L"WEP-104"};
+                        case DOT11_CIPHER_ALGO_WEP:
+                            return String_Constant{L"WEP"};
+                        default:
+                            return Characters::Format (L"%d", s);
+                    }
+                };
+                wInfo.fCipher = mapCipher (pConnectInfo->wlanSecurityAttributes.dot11CipherAlgorithm);
+                results.Add (interfaceGUID, wInfo);
+            }
+        }
+        return results;
+    }
+
     Traversal::Iterable<Interface> GetInterfaces_Windows_ ()
     {
-        using Binding = Interface::Binding;
+        Mapping<Common::GUID, WirelessInfoPlus_> wirelessInfo2Merge = GetInterfaces_Windows_WirelessInfo_ ();
+        using Binding                                               = Interface::Binding;
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
         Mapping<String, Interface>     results;
@@ -391,6 +617,24 @@ namespace {
                 newInterface.fTransmitSpeedBaud    = currAddresses->TransmitLinkSpeed;
                 newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
 #endif
+
+                if (newInterface.fType == Interface::Type::eWIFI) {
+                    if (auto owinfo = wirelessInfo2Merge.Lookup (newInterface.fInternalInterfaceID)) {
+                        newInterface.fWirelessInfo = *owinfo;
+                        WeakAssert (not newInterface.fTransmitSpeedBaud.has_value () or newInterface.fTransmitSpeedBaud == owinfo->fTransmitSpeedBaud);
+                        WeakAssert (not newInterface.fReceiveLinkSpeedBaud.has_value () or newInterface.fReceiveLinkSpeedBaud == owinfo->fReceiveLinkSpeedBaud);
+                        newInterface.fTransmitSpeedBaud    = Memory::OptionalValue (newInterface.fTransmitSpeedBaud, owinfo->fTransmitSpeedBaud);
+                        newInterface.fReceiveLinkSpeedBaud = Memory::OptionalValue (newInterface.fReceiveLinkSpeedBaud, owinfo->fReceiveLinkSpeedBaud);
+                    }
+                    else {
+                        // This happens for down/wifi-direct interfaces
+                        // no biggie.
+                        // DbgTrace (L"Oops - didn't find wireless interface we should have: %s, avail-keys=%s", Characters::ToString (newInterface.fInternalInterfaceID).c_str (), Characters::ToString (wirelessInfo2Merge.Keys ()).c_str ());
+                    }
+                }
+                else {
+                    WeakAssert (not wirelessInfo2Merge.ContainsKey (newInterface.fInternalInterfaceID));
+                }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"newInterface=%s", Characters::ToString (newInterface).c_str ());
 #endif
@@ -402,7 +646,7 @@ namespace {
             goto Again;
         }
         else if (dwRetVal == ERROR_NO_DATA) {
-            DbgTrace ("There are no network adapters with IPv4 enabled on the local system");
+            DbgTrace ("There are no network adapters enabled on the local system");
         }
         else {
             Execution::Platform::Windows::Exception::Throw (dwRetVal);

@@ -30,6 +30,100 @@ namespace Stroika::Foundation::IO::Network {
 }
 namespace Stroika::Foundation::Configuration {
     template <>
+    struct DefaultNames<IO::Network::Interface::WirelessInfo::State> : EnumNames<IO::Network::Interface::WirelessInfo::State> {
+        static constexpr EnumNames<IO::Network::Interface::WirelessInfo::State> k{
+            EnumNames<IO::Network::Interface::WirelessInfo::State>::BasicArrayInitializer{
+                {
+                    {IO::Network::Interface::WirelessInfo::State::eNotReady, L"Not-Ready"},
+                    {IO::Network::Interface::WirelessInfo::State::eConnected, L"Connected"},
+                    {IO::Network::Interface::WirelessInfo::State::eAdHocNetworkFormed, L"Ad-Hoc-Network-Formed"},
+                    {IO::Network::Interface::WirelessInfo::State::eDisconnecting, L"Disconnecting"},
+                    {IO::Network::Interface::WirelessInfo::State::eDisconnected, L"Disconnected"},
+                    {IO::Network::Interface::WirelessInfo::State::eAssociating, L"Associating"},
+                    {IO::Network::Interface::WirelessInfo::State::eDiscovering, L"Discovering"},
+                    {IO::Network::Interface::WirelessInfo::State::eAuthenticating, L"Authenticating"},
+                    {IO::Network::Interface::WirelessInfo::State::eUnknown, L"Unknown"},
+                }}};
+        DefaultNames ()
+            : EnumNames<IO::Network::Interface::WirelessInfo::State> (k)
+        {
+        }
+    };
+    template <>
+    struct DefaultNames<IO::Network::Interface::WirelessInfo::ConnectionMode> : EnumNames<IO::Network::Interface::WirelessInfo::ConnectionMode> {
+        static constexpr EnumNames<IO::Network::Interface::WirelessInfo::ConnectionMode> k{
+            EnumNames<IO::Network::Interface::WirelessInfo::ConnectionMode>::BasicArrayInitializer{
+                {
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eProfile, L"Profile"},
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eTemporaryProfile, L"Temporary-Profile"},
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eDiscoverSecrure, L"Discover-Secrure"},
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eDiscoverInsecure, L"Discover-Insecure"},
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eAuto, L"Auto"},
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eInvalid, L"Invalid"},
+                    {IO::Network::Interface::WirelessInfo::ConnectionMode::eUnknown, L"Unknown"},
+                }}};
+        DefaultNames ()
+            : EnumNames<IO::Network::Interface::WirelessInfo::ConnectionMode> (k)
+        {
+        }
+    };
+    template <>
+    struct DefaultNames<IO::Network::Interface::WirelessInfo::BSSType> : EnumNames<IO::Network::Interface::WirelessInfo::BSSType> {
+        static constexpr EnumNames<IO::Network::Interface::WirelessInfo::BSSType> k{
+            EnumNames<IO::Network::Interface::WirelessInfo::BSSType>::BasicArrayInitializer{
+                {
+                    {IO::Network::Interface::WirelessInfo::BSSType::eInfrastructure, L"Infrastructure"},
+                    {IO::Network::Interface::WirelessInfo::BSSType::eIndependent, L"Independent"},
+                    {IO::Network::Interface::WirelessInfo::BSSType::eAny, L"Any"},
+                    {IO::Network::Interface::WirelessInfo::BSSType::eUnknown, L"Unknown"},
+                }}};
+        DefaultNames ()
+            : EnumNames<IO::Network::Interface::WirelessInfo::BSSType> (k)
+        {
+        }
+    };
+    template <>
+    struct DefaultNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType> : EnumNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType> {
+        static constexpr EnumNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType> k{
+            EnumNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType>::BasicArrayInitializer{
+                {
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::eFHSS, L"FHSS"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::eDSSS, L"DSSS"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::eIRBaseBand, L"IRBaseBand"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211a, L"802.11a"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211b, L"802.11b"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211g, L"802.11g"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211n, L"802.11n"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211ac, L"802.11ac"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211ad, L"802.11ad"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211ax, L"802.11ax"},
+                    {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::eUnknown, L"Unknown"},
+                }}};
+        DefaultNames ()
+            : EnumNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType> (k)
+        {
+        }
+    };
+    template <>
+    struct DefaultNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm> : EnumNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm> {
+        static constexpr EnumNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm> k{
+            EnumNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm>::BasicArrayInitializer{
+                {
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eOpen, L"Open"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::ePresharedKey, L"Preshared-Key"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eWPA, L"WPA"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eWPA_PSK, L"WPA-PSK"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eWPA_NONE, L"WPA-NONE"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eRSNA, L"RSNA"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eRSNA_PSK, L"RSNA-PSK"},
+                    {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eUnknown, L"Unknown"},
+                }}};
+        DefaultNames ()
+            : EnumNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm> (k)
+        {
+        }
+    };
+    template <>
     struct DefaultNames<IO::Network::Interface::Status> : EnumNames<IO::Network::Interface::Status> {
         static constexpr EnumNames<IO::Network::Interface::Status> k{
             EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer{
