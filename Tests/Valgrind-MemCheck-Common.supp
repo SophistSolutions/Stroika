@@ -73,3 +73,9 @@
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation4Time8DateTime2AsIlEET_v
 }
+{
+   https://stroika.atlassian.net/browse/STK-672
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_149Float2String_OptimizedForCLocaleAndNoStreamFlags_IeEEN7Stroika10Foundation10Characters6StringET_ib
+   fun:_ZN12_GLOBAL__N_113Float2String_IeEEN7Stroika10Foundation10Characters6StringET_RKNS3_19Float2StringOptionsE
+}
