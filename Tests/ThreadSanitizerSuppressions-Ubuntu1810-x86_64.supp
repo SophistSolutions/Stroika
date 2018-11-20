@@ -1,0 +1,2 @@
+#workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
+race:__interceptor_pipe
