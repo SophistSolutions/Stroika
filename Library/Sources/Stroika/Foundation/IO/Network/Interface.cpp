@@ -539,7 +539,18 @@ namespace {
 
     Traversal::Iterable<Interface> GetInterfaces_Windows_ ()
     {
-        Mapping<Common::GUID, WirelessInfoPlus_> wirelessInfo2Merge = GetInterfaces_Windows_WirelessInfo_ ();
+        Mapping<Common::GUID, WirelessInfoPlus_> wirelessInfo2Merge;
+        
+        try {
+            wirelessInfo2Merge = GetInterfaces_Windows_WirelessInfo_ ();
+        }
+        catch (const Execution::Platform::Windows::Exception& e) {
+            if (e == ERROR_SERVICE_NOT_ACTIVE) {
+                // this just means no wireless services active, so return empty iterable
+                return Traversal::Iterable<Interface> {};
+            }
+            Execution::ReThrow ();
+        }
         using Binding                                               = Interface::Binding;
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
