@@ -242,6 +242,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests {top level}", "Tests 
 	ProjectSection(SolutionItems) = preProject
 		..\..\Tests\Makefile = ..\..\Tests\Makefile
 		..\..\Tests\Tests-Description.txt = ..\..\Tests\Tests-Description.txt
+		..\..\Tests\ThreadSanitizerSuppressions-Ubuntu1810-x86_64.supp = ..\..\Tests\ThreadSanitizerSuppressions-Ubuntu1810-x86_64.supp
 		..\..\Tests\TODO.txt = ..\..\Tests\TODO.txt
 		..\..\Tests\Valgrind-Helgrind-Common.supp = ..\..\Tests\Valgrind-Helgrind-Common.supp
 		..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp = ..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp
