@@ -42,6 +42,13 @@
    fun:main
 }
 {
+   Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled   - AGAIN
+   Helgrind:PthAPIerror
+   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZZN7Stroika10Foundation9Execution21SignalHandlerRegistry18SafeSignalsManager4Rep_C4EvENKUlvE_clEv
+   ...
+}
+{
    Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled   - Thread #2's call to sem_wait failed with error code 4 (EINTR: Interrupted system call)
    Helgrind:PthAPIerror
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
