@@ -96,11 +96,7 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-ifeq ($@,clobber)
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clobber:"
-else
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clean:"
-endif
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(shell echo $@):"
 ifeq ($(CONFIGURATION_TAGS),)
 ifeq ($@,clobber)
 	@rm -rf IntermediateFiles/*
@@ -114,7 +110,7 @@ else
 endif
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clobber {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(shell echo $@) {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Tools --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
