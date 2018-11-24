@@ -52,6 +52,7 @@ void SemWaitableEvent::Wait ()
     sem_t* pSem = &fSem_;
 #endif
     int s{};
+    // nb. see Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled warnings suppressed for helgrind - I believe this is handled correctly...
     while ((s = ::sem_wait (pSem)) == -1 && errno == EINTR) {
         continue; /* Restart if interrupted by handler */
     }
