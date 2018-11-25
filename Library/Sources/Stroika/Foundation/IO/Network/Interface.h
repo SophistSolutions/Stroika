@@ -190,7 +190,7 @@ namespace Stroika::Foundation::IO::Network {
                 e80211a,     // DOT11_PHY_TYPE::dot11_phy_type_ofdm = 4,                    // 11a
                 e80211b,     // DOT11_PHY_TYPE::dot11_phy_type_hrdsss = 5,                  // 11b
                 e80211g,     // DOT11_PHY_TYPE::dot11_phy_type_erp = 6,                     // 11g
-                e80211n,     // DOT11_PHY_TYPE:: dot11_phy_type_ht = 7,                      // 11n
+                e80211n,     // DOT11_PHY_TYPE:: dot11_phy_type_ht = 7,                     // 11n
                 e80211ac,    // DOT11_PHY_TYPE::dot11_phy_type_vht = 8,                     // 11ac
                 e80211ad,    // DOT11_PHY_TYPE::dot11_phy_type_dmg = 9,                     // 11ad
                 e80211ax,    // DOT11_PHY_TYPE::dot11_phy_type_he = 10,                     // 11ax
@@ -240,6 +240,16 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         Containers::Collection<Binding> fBindings; // can be IPv4 or IPv6
+
+        /**
+         *  Typically there will be zero or one, and if one, this is the default gateway
+         */
+        Containers::Sequence<InternetAddress> fGateways;
+
+        /**
+         *  The default set of (per adapter) dns servers
+         */
+        Containers::Sequence<InternetAddress> fDNSServers;
 
         /**
          * @todo document these - 'eRunning' == LINUX RUNNING

@@ -180,6 +180,8 @@ String Interface::ToString () const
         sb += L"Wireless-Info: " + Characters::ToString (fWirelessInfo) + L", ";
     }
     sb += L"Bindings: " + Characters::ToString (fBindings) + L", ";
+    sb += L"Gateways: " + Characters::ToString (fGateways) + L", ";
+    sb += L"DNS-Servers: " + Characters::ToString (fDNSServers) + L", ";
     if (fStatus) {
         sb += L"Status: " + Characters::ToString (*fStatus) + L", ";
     }
@@ -555,7 +557,7 @@ namespace {
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
         Mapping<String, Interface>     results;
-        ULONG                          flags  = GAA_FLAG_INCLUDE_PREFIX;
+        ULONG                          flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
         ULONG                          family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
         Memory::SmallStackBuffer<byte> buf;
     Again:
@@ -618,6 +620,18 @@ namespace {
                     SocketAddress sa{pm->Address};
                     if (sa.IsInternetAddress ()) {
                         newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
+                    }
+                }
+                for (PIP_ADAPTER_GATEWAY_ADDRESS_LH pa = currAddresses->FirstGatewayAddress; pa != nullptr; pa = pa->Next) {
+                    SocketAddress sa{pa->Address};
+                    if (sa.IsInternetAddress ()) {
+                        newInterface.fGateways.Append (sa.GetInternetAddress ());
+                    }
+                }
+                for (PIP_ADAPTER_DNS_SERVER_ADDRESS_XP pa = currAddresses->FirstDnsServerAddress; pa != nullptr; pa = pa->Next) {
+                    SocketAddress sa{pa->Address};
+                    if (sa.IsInternetAddress ()) {
+                        newInterface.fDNSServers.Append (sa.GetInternetAddress ());
                     }
                 }
                 if (currAddresses->PhysicalAddressLength == 6) {
