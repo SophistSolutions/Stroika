@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
          */
-        nonvirtual bool Equals (const MultiSet<T, TRAITS>& rhs) const;
+        nonvirtual bool Equals (const MultiSet& rhs) const;
 
     public:
         /**

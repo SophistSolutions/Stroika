@@ -416,7 +416,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetEqualsComparer ();
     }
     template <typename T, typename TRAITS>
-    inline bool MultiSet<T, TRAITS>::Equals (const MultiSet<T, TRAITS>& rhs) const
+    inline bool MultiSet<T, TRAITS>::Equals (const MultiSet& rhs) const
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
