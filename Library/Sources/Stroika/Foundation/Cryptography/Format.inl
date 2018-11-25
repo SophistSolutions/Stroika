@@ -11,7 +11,7 @@
 #include "../Common/GUID.h"
 #include "../Memory/BLOB.h"
 
-namespace Stroika::Foundation ::Cryptography {
+namespace Stroika::Foundation::Cryptography {
 
     using std::byte;
 
