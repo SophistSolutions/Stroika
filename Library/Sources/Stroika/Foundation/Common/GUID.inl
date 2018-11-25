@@ -28,6 +28,14 @@ namespace Stroika::Foundation::Common {
         }
     }
 #endif
+    inline Common::GUID::GUID (const array<uint8_t, 16>& src)
+    {
+        memcpy (this, src.data (), 16);
+    }
+    constexpr GUID GUID::Zero ()
+    {
+        return GUID ();
+    }
     inline bool operator== (const GUID& lhs, const GUID& rhs)
     {
         static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way

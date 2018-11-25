@@ -25,17 +25,23 @@ namespace Stroika::Foundation::Common {
         /**
          *  \note - when converting from a string, GUID allows the leading/trailing {} to be optionally provided.
          */
-        GUID () = default;
+        constexpr GUID () = default;
 #if qPlatform_Windows
         constexpr GUID (const ::GUID& src);
 #endif
         GUID (const string& src);
+        GUID (const array<uint8_t, 16>& src);
         GUID (const Characters::String& src);
 
         uint32_t Data1{};
         uint16_t Data2{};
         uint16_t Data3{};
         uint8_t  Data4[8]{};
+
+    public:
+        /**
+         */
+        static constexpr GUID Zero ();
 
     public:
         /**
