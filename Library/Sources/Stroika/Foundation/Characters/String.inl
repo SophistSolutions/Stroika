@@ -265,26 +265,32 @@ namespace Stroika::Foundation::Characters {
         Require (t <= myLength);
         return SubString_ (accessor, myLength, f, t);
     }
-    inline String String::SafeSubString (size_t from) const
+    template <typename SZ>
+    inline String String::SafeSubString (SZ from) const
     {
         _SafeReadRepAccessor accessor{this};
         size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-        from = min (from, myLength);
-        Assert (from <= myLength);
-        size_t useLength{myLength - from};
-        return SubString_ (accessor, myLength, from, from + useLength);
+        size_t               f = SubString_adjust_ (from, myLength);
+        size_t               t = SubString_adjust_ (to, myLength);
+        f                      = min (f, myLength);
+        Assert (f <= myLength);
+        size_t useLength{myLength - f};
+        return SubString_ (accessor, myLength, f, f + useLength);
     }
-    inline String String::SafeSubString (size_t from, size_t to) const
+    template <typename SZ1, typename SZ2>
+    inline String String::SafeSubString (SZ1 from, SZ2 to) const
     {
         _SafeReadRepAccessor accessor{this};
         size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
-        from = min (from, myLength);
-        to   = min (to, myLength);
-        to   = max (to, from);
-        Assert (from <= to);
-        Assert (to <= myLength);
-        size_t useLength = (to - from);
-        return SubString_ (accessor, myLength, from, from + useLength);
+        size_t               f = SubString_adjust_ (from, myLength);
+        size_t               t = SubString_adjust_ (to, myLength);
+        f                      = min (f, myLength);
+        t                      = min (t, myLength);
+        t                      = max (t, f);
+        Assert (f <= t);
+        Assert (t <= myLength);
+        size_t useLength = (t - f);
+        return SubString_ (accessor, myLength, f, f + useLength);
     }
     inline String String::RemoveAt (size_t charAt) const
     {

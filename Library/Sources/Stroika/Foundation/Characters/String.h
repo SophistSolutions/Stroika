@@ -626,13 +626,18 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
-         *  if the exceed those endpoints.
+         *  if the exceed those endpoints. And if arguments are <0, they are interpretted as end-relative.
+         *
+         *  \note \em Alias
+         *      This API - when called with negative indexes - used to be called SafeCircularSubString ().
          *
          *  @see substr
          *  @see SubString
          */
-        nonvirtual String SafeSubString (size_t from) const;
-        nonvirtual String SafeSubString (size_t from, size_t to) const;
+        template <typename SZ>
+        nonvirtual String SafeSubString (SZ from) const;
+        template <typename SZ1, typename SZ2>
+        nonvirtual String SafeSubString (SZ1 from, SZ2 to) const;
 
     private:
         static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
