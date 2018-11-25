@@ -8,6 +8,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Common/GUID.h"
 #include "../Memory/BLOB.h"
 
 namespace Stroika::Foundation ::Cryptography {
@@ -49,6 +50,23 @@ namespace Stroika::Foundation ::Cryptography {
         {
             return String::FromASCII (Format_ (arr, static_cast<const string*> (nullptr)));
         }
+
+        template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
+        inline Common::GUID Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const Common::GUID*)
+        {
+            string                  tmp = Format_ (arr, static_cast<const string*> (nullptr));
+            std::array<uint8_t, 16> data{};
+            size_t                  i = 0;
+            for (auto c : tmp) {
+                data[i] += (uint8_t)c;
+                i++;
+                if (i >= 16) {
+                    i = 0;
+                }
+            }
+            return Common::GUID (data);
+        }
+
     }
 
     template <typename AS_RESULT_TYPE, typename CRYTO_RESULT_TO_FORMAT_TYPE>

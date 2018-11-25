@@ -17,7 +17,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *      @todo   Consider  renaming this module FormatResult
+ *      @todo   Consider renaming this module FormatResult
  */
 
 namespace Stroika::Foundation::Cryptography {
@@ -31,6 +31,7 @@ namespace Stroika::Foundation::Cryptography {
      *      o   Memory::BLOB
      *
      *  AS_RESULT_TYPE can be:
+     *      o   Common::GUID
      *      o   Characters::String
      *      o   std::string
      */
