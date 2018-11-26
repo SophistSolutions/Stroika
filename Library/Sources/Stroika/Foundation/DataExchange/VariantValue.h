@@ -243,7 +243,7 @@ namespace Stroika::Foundation::DataExchange {
          *  There is no generic As<T> implementation.
          *
          *  If the caller attempts a conversion that isn't supported, or doesn't make sense
-         *  then DataExchange::BadFormatException will be thrown.
+         *  then DataExchange::BadFormatException will be thrown (not assertion error).
          *
          *      Only specifically specialized variants are supported. Supported (RETURNTYPE) types include:
          *          o   bool
