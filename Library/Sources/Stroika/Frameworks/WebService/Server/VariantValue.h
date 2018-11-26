@@ -67,6 +67,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     /**
      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
      *
+     *  @todo FIX to be smarter about if to check body/url, and how to combine. THIS WILL CHANGE TO BE SMATER - bUT NOT SURE HOW YET.
+     *
      *  If parameters given in both places, use the BODY -provided value.
      *
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
@@ -77,7 +79,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     /**
      */
-    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
+    [[deprecated ("since Stroika v2.1d13 - use PickoutParamValues or OrderParamValues")]] VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
 
     /**
      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).

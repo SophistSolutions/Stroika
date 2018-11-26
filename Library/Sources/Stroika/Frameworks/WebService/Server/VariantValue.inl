@@ -220,13 +220,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         Require (paramNames.size () == 1);
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-            Sequence<VariantValue>        vvs;
-            for (auto i : paramNames) {
-                vvs += allArgsMap.LookupValue (i);
-            }
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
+            Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
+            Assert (args.size () == paramNames.size ());
+            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (args[0]));
         };
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
@@ -236,13 +232,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         Require (paramNames.size () == 2);
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-            Sequence<VariantValue>        vvs;
-            for (auto i : paramNames) {
-                vvs += allArgsMap.LookupValue (i);
-            }
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]));
+            Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
+            Assert (args.size () == paramNames.size ());
+            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (args[0]), objVarMapper.ToObject<ARG_TYPE_1> (args[1]));
         };
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
@@ -252,13 +244,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         Require (paramNames.size () == 3);
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-            Sequence<VariantValue>        vvs;
-            for (auto i : paramNames) {
-                vvs += allArgsMap.LookupValue (i);
-            }
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]));
+            Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
+            Assert (args.size () == paramNames.size ());
+            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (args[0]), objVarMapper.ToObject<ARG_TYPE_1> (args[1]), objVarMapper.ToObject<ARG_TYPE_2> (args[2]));
         };
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
@@ -268,13 +256,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         Require (paramNames.size () == 4);
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-            Sequence<VariantValue>        vvs;
-            for (auto i : paramNames) {
-                vvs += allArgsMap.LookupValue (i);
-            }
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3]));
+            Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
+            Assert (args.size () == paramNames.size ());
+            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (args[0]), objVarMapper.ToObject<ARG_TYPE_1> (args[1]), objVarMapper.ToObject<ARG_TYPE_2> (args[2]), objVarMapper.ToObject<ARG_TYPE_3> (args[3]));
         };
     }
 

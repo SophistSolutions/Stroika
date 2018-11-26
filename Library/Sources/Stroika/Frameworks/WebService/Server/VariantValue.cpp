@@ -60,7 +60,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
-        return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
+        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
     }
     Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Unrecognized content-type")));
 }
@@ -72,6 +72,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  */
 DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage)
 {
+    /// DEPRECATED
     String method{request->GetHTTPMethod ()};
     if (method == L"POST" or method == L"PUT") {
         // Allow missing (content-size: 0) for args to method - and don't fail it as invalid json
