@@ -29,28 +29,19 @@ using WebServer::ClientErrorException;
  ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request, const optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request)
 {
     RequireNotNull (request);
-    return PickoutParamValuesFromURL (request->GetURL (), namedParameters);
+    return PickoutParamValuesFromURL (request->GetURL ());
 }
 
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url, const optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url)
 {
     Mapping<String, VariantValue> result;
     Mapping<String, String>       unconverted = url.GetQuery ().GetMap ();
-    if (namedParameters) {
-        namedParameters->Apply ([&](const String& paramName) {
-            if (auto o = unconverted.Lookup (paramName)) {
-                result.Add (paramName, VariantValue{*o});
-            }
-        });
-    }
-    else {
-        unconverted.Apply ([&](const KeyValuePair<String, String>& kvp) {
-            result.Add (kvp.fKey, VariantValue{kvp.fValue});
-        });
-    }
+    unconverted.Apply ([&](const KeyValuePair<String, String>& kvp) {
+        result.Add (kvp.fKey, VariantValue{kvp.fValue});
+    });
     return result;
 }
 
@@ -59,21 +50,17 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request, const optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request)
 {
     Memory::BLOB inData = request->GetBody ();
-    return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType (), namedParameters);
+    return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType ());
 }
 
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, const optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType)
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
-        Mapping<String, DataExchange::VariantValue> tmp = Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
-        if (namedParameters) {
-            tmp.RetainAll (*namedParameters);
-        }
-        return tmp;
+        return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
     }
     Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Unrecognized content-type")));
 }
@@ -112,11 +99,11 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
  ********** WebService::Server::VariantValue::PickoutParamValues ****************
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request* request, const optional<Iterable<String>>& namedURLParams, const optional<Iterable<String>>& namedBodyParams)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request* request)
 {
-    Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request, namedURLParams);
+    Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request);
     // body params take precedence, if they overlap
-    PickoutParamValuesFromBody (request, namedBodyParams).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
+    PickoutParamValuesFromBody (request).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
     return result;
 }
 
@@ -127,11 +114,21 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  */
 Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
 {
-    Sequence<DataExchange::VariantValue> vvs;
-    for (auto i : paramNames) {
-        vvs += paramValues.LookupValue (i);
-    }
-    return vvs;
+    Sequence<DataExchange::VariantValue> result;
+    paramNames.Apply ([&](const String& name) {
+        if (auto o = paramValues.Lookup (name)) {
+            result += DataExchange::VariantValue{*o};
+        }
+        else {
+            result += DataExchange::VariantValue{};
+        }
+    });
+    return result;
+}
+
+Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, Request* request)
+{
+    return OrderParamValues (paramNames, PickoutParamValues (request));
 }
 
 /*

@@ -45,11 +45,15 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     /**
      * Convert URL query arguments to a mapping of name to value pairs (so they can be mapped to objects)
      *
+     *  \par Example Usage
+     *      \code
+     *      \endcode
+     *
      *  @see PickoutParamValuesFromBody () to just pickout params from Body
      *  @see PickoutParamValues () to pickout params from both url arg and body
      */
-    Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const optional<Iterable<String>>& namedParameters = {});
-    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, const optional<Iterable<String>>& namedParameters = {});
+    Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request);
+    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url);
 
     /**
      * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
@@ -57,8 +61,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
      *  @see PickoutParamValues () to pickout params from both url arg and body
      */
-    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, const optional<Iterable<String>>& namedParameters);
-    Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, const optional<Iterable<String>>& namedParameters);
+    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request);
+    Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType);
 
     /**
      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
@@ -67,9 +71,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
      *  @see PickoutParamValuesFromBody () to just pickout params from Body
-     *  @see PickoutParamValues () to pickout params from both url arg and body
+     *  @see OrderParamValues () to produce a Sequence<VariantValue> {} from the mapping.
      */
-    Mapping<String, VariantValue> PickoutParamValues (Request* request, const optional<Iterable<String>>& namedURLParams = {}, const optional<Iterable<String>>& namedBodyParams = {});
+    Mapping<String, VariantValue> PickoutParamValues (Request* request);
 
     /**
      */
@@ -78,8 +82,17 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     /**
      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).
      *  This is useful if you know the order of named parameters, and just want to pass them as ordered parameters.
+     *
+     *  \par Example Usage
+     *      \code
+     *          Sequence<VariantValue> tmp = OrderParamValues ( Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URL (L"http://www.sophist.com?page=5", URL::eFlexiblyAsUI)));
+     *          Assert (tmp.size () == 2);
+     *          Assert (tmp[0] == 5);
+     *          Assert (tmp[1] == nullptr);
+     *      \endcode
      */
     Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
+    Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request* request);
 
     /**
      *  \brief Apply the arguments in Mapping<String,VariantValue> in the order specified by paramNames, to function f, using objVariantMapper to transform them, and return the result
@@ -154,7 +167,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
 
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<BLOB (WebServer::Message* m)>& f);
-
 }
 
 /*
