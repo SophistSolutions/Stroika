@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::WebServer {
     {
     }
     template <class _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Request*, Response*)>>>*>
-    RequestHandler::RequestHandler (_Fx _Func, [[maybe_unused]] int j)
+    RequestHandler::RequestHandler (_Fx _Func, void*)
         : RequestHandler ([_Func](Message* message) { RequireNotNull (message); _Func (message->PeekRequest (), message->PeekResponse ()); })
     {
     }

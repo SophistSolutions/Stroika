@@ -31,14 +31,15 @@ namespace Stroika::Frameworks::WebServer {
     class RequestHandler : public function<void(Message* message)> {
     public:
         /**
-         *  @todo - figure out how to get rid of crazy int j = 6 in overloads...
+         *  \note _Fx _Func, void* arg for one overload is just to differentiate the overload cases so
+         *        compiler doesn't complain its a redefinition.
          */
         RequestHandler (const function<void(Message* message)>& f);
         RequestHandler (const function<void(Request* request, Response* response)>& f);
         template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Message*)>>>* = nullptr>
         RequestHandler (_Fx _Func);
         template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Request*, Response*)>>>* = nullptr>
-        RequestHandler (_Fx _Func, int j = 6);
+        RequestHandler (_Fx _Func, void* = nullptr);
     };
 
 }
