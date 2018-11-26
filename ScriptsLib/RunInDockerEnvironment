@@ -1,18 +1,29 @@
 #!/bin/bash
 
+### EXAMPLE
+###
+###		cd Sandbox/Stroika-Dev && CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests ScriptsLib/RunInDockerEnvironment
+###
+
+
 StroikaRoot="${StroikaRoot:=`pwd`}"
 CONTAINER_NAME="${CONTAINER_NAME:-regression-tests}"
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}"
 EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
 EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 ECHO_DOCKER_COMMANDS="${ECHO_DOCKER_COMMANDS:-0}"
+STOP_AT_END="${STOP_AT_END:-1}"
 PRIVATE_COMPILER_BUILDS_DIR="${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}"
 
 ### Can set CMD2RUN=./ScriptsLib/RegressionTests.sh
 CMD2RUN="${CMD2RUN:-bash}"
 
+if [ "${USER_FLAGS}" == "" ] ; then
+	USER_FLAGS="-u`id -u` `for i in $( id -G ); do echo -n " --group-add $i "; done`"
+fi
 
 if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
+	echo "***USER_FLAGS = ${USER_FLAGS}"
 	echo "***ECHO_DOCKER_COMMANDS = $ECHO_DOCKER_COMMANDS"
 	echo "***CMD2RUN = $CMD2RUN"
 	echo "***CONTAINER_IMAGE = $CONTAINER_IMAGE"
@@ -59,7 +70,7 @@ RunCMD_()
 ### stop the container (it can then be safely restarted)
 
 ##NB: redirect to /dev/null so container ID not shown - actual errors go to stderr
-RunCMD_ docker run -u`id -u` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+RunCMD_ "docker run ${USER_FLAGS} -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
 	-v /etc/localtime:/etc/localtime:ro \
 	-v $HOME/.ssh:$HOME/.ssh \
 	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
@@ -73,11 +84,13 @@ RunCMD_ docker run -u`id -u` -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/gr
 	${EXTRA_DOCKER_ARGS} \
 	--detach \
 	${CONTAINER_IMAGE} \
-	sleep inf > /dev/null
+	sleep inf > /dev/null"
 
 # Run this to completion
 RunCMD_ docker exec ${CONTAINER_NAME} ${CMD2RUN} 
 	
 # Then automatically stop the container - simulating if we had done a run of the actual CMD2RUN (except that now)
 # you can restart the container without re-running the command
-RunCMD_ docker stop ${CONTAINER_NAME}
+if [ $STOP_AT_END -eq 1 ] ; then
+	RunCMD_ docker stop ${CONTAINER_NAME}
+fi
