@@ -195,7 +195,7 @@ URL URL::Parse (const String& w, ParseOptions po)
             i = hostNameStart;
             for (; i != w.length (); ++i) {
                 wchar_t c = w[i].As<wchar_t> ();
-                if (c == ':' or c == '/' or c == '\\') {
+                if (c == ':' or c == '/' or c == '\\' or c == '?') {
                     break;
                 }
             }
