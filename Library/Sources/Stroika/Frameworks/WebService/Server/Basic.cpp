@@ -48,7 +48,10 @@ void WebService::Server::ExpectedMethod (const Request& request, const Iterable<
 
 void WebService::Server::ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription)
 {
-    ExpectedMethod (request, wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
+    if (wsMethodDescription.fAllowedMethods) {
+        // @todo - dont see why cast to iterable<string> needed on windoze??? Seems a mistake
+        ExpectedMethod (request, (Iterable<String>)*wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
+    }
 }
 
 /*
