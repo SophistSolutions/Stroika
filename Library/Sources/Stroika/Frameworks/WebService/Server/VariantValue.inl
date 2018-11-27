@@ -275,7 +275,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
      ********************************************************************************
      */
-    inline Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request)
+    inline Mapping<String, VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType ());
@@ -286,7 +286,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
      ********************************************************************************
      */
-    inline Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request)
+    inline Mapping<String, VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromURL (request->GetURL ());
@@ -297,7 +297,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ************ WebService::Server::VariantValue::OrderParamValues ****************
      ********************************************************************************
      */
-    inline Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, Request* request)
+    inline Sequence<VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, Request* request)
     {
         return OrderParamValues (paramNames, PickoutParamValues (request));
     }
