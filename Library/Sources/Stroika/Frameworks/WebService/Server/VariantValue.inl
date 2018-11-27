@@ -275,7 +275,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
      ********************************************************************************
      */
-    inline Mapping<String, VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request)
+    inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType ());
@@ -286,7 +286,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
      ********************************************************************************
      */
-    inline Mapping<String, VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request)
+    inline Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromURL (request->GetURL ());
@@ -297,7 +297,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ************ WebService::Server::VariantValue::OrderParamValues ****************
      ********************************************************************************
      */
-    inline Sequence<VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, Request* request)
+    inline Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request* request)
     {
         return OrderParamValues (paramNames, PickoutParamValues (request));
     }
@@ -307,7 +307,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ***************** WebService::Server::VariantValue::WriteResponse **************
      ********************************************************************************
      */
-    inline void Server::VariantValue::WriteResponse ([[maybe_unused]] Response* response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
+    inline void WriteResponse ([[maybe_unused]] Response* response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
     {
         // nothing todo to write empty (void) response
     }
