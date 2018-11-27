@@ -139,13 +139,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     }
 #endif
     template <typename RETURN_TYPE>
-    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
+    inline VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
     {
-        Require (paramNames.size () == 0);
+        Require (variantValueArgs.size () == 0);
         return objVarMapper.FromObject (f ());
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0>
-    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
+    inline VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
     {
         Require (variantValueArgs.size () == 1);
         if constexpr (is_same_v<RETURN_TYPE, void>) {
@@ -278,22 +278,20 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
-        using namespace Containers;
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
             if constexpr (is_same_v<RETURN_TYPE, void>) {
                 f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ())));
-                WriteResponse (response, webServiceDescription);
+                WriteResponse (m->PeekResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (response, webServiceDescription, f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ()))));
+                WriteResponse (m->PeekResponse (), webServiceDescription, f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ()))));
             }
         };
     }
     template <typename RETURN_TYPE, typename... IN_ARGS>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
     {
-        using namespace Containers;
         Require (paramNames.size () == sizeof...(IN_ARGS));
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
