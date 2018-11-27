@@ -202,17 +202,16 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
     }
-    // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
         using namespace Containers;
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_COMBINED> (allArgsAsVariantValue));
+            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ())));
         };
     }
+    // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
     template <typename RETURN_TYPE, typename ARG_TYPE_0>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
     {
@@ -282,31 +281,38 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     }
 
     ////////////////DEPRECATED STUFF
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const optional<Iterable<String>>& namedParameters)
+    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
     {
         Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValuesFromURL (request);
     }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, const optional<Iterable<String>>& namedParameters)
+    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
     {
         Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValuesFromURL (url);
     }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, const optional<Iterable<String>>& namedParameters)
+    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
     {
         Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValuesFromBody (request);
     }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, const optional<Iterable<String>>& namedParameters)
+    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
     {
         Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValuesFromBody (body, bodyContentType);
     }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValues (Request* request, const optional<Iterable<String>>& namedURLParams, const optional<Iterable<String>>& namedBodyParams)
+    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValues (Request* request, [[maybe_unused]] const optional<Iterable<String>>& namedURLParams, [[maybe_unused]] const optional<Iterable<String>>& namedBodyParams)
     {
         Assert (not namedURLParams.has_value ());  // cuz never supported - you can manually call retainall if you want
         Assert (not namedBodyParams.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValues (request);
+    }
+
+    [[deprecated ("since Stroika v2.1d13 - use PickoutParamValues or OrderParamValues or CombineWebServiceArgsAsVariantValue")]] VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
+
+    [[deprecated ("since Stroika v2.1d13 - use mkRequestHandler withotu objVariantMapper argument")]] WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper&, const function<BLOB (WebServer::Message* m)>& f)
+    {
+        return mkRequestHandler (webServiceDescription, f);
     }
 
 }

@@ -78,8 +78,16 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     Mapping<String, VariantValue> PickoutParamValues (Request* request);
 
     /**
-     */
-    [[deprecated ("since Stroika v2.1d13 - use PickoutParamValues or OrderParamValues")]] VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
+      * Take the Body of the request, and if its missing, or an object, add in any query parameters (overriding body values) in the resulting object.
+      *
+      * \note this CAN return an array or simple object like string from the body, but if that is present, then the URL arguments will be ignored.
+      *
+      * \note older GetWebServiceArgsAsVariantValue () used to look at METHOD, and just grab BODY from PUT/POST and just grab url args from GET. Not sure
+      *       if that was better (changed in Stroika v2.1d13).
+      *
+      * \note could parameterize some of these choices? But pretty easy to just explicitly choose yourself in your own route handler.
+      */
+    VariantValue CombineWebServiceArgsAsVariantValue (Request* request);
 
     /**
      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).
@@ -123,6 +131,12 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
     /**
+     *  \brief mkRequestHandler () is a series of overloaded helpers that first call ExpectedMethod to validate and then the argument function 'f' and then use the objMapper to format/return the result.
+     *
+     *  All the overloads of mkRequestHandler () take as the first argument a WebServiceMethodDescription, used to validate.
+     *
+     *  All (except the 'const function<BLOB (WebServer::Message* m)>& f' overload) take an ObjectVariantMapper used to map the arguments (if any) and results.
+     *
      *  The variants of mkRequestHandler () which take paramNames will eventually be replaced with variadic templates. So the calls should remain
      *  unchanged, but the exact parameters passed to the template instantiation will.
      *
@@ -142,10 +156,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  The overload with f (void) as argument, takes no arguments (and so omits paramNames), and just returns the given result.
      *
-     *  The overload with no 'f' just takes a simple message handler (and wraps a bit of WebServiceMethodDescription checking around its call).
      *
-     *
-     *  @todo REWRITE USING PickoutParamValues, and ApplyArgs (allowing intermeidate varsions 
+     *  @todo REWRITE USING ApplyArgs (allowing intermeidate varsions /VARIADIC
      */
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
@@ -168,7 +180,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     template <typename RETURN_TYPE>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
 
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<BLOB (WebServer::Message* m)>& f);
+    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
+
 }
 
 /*

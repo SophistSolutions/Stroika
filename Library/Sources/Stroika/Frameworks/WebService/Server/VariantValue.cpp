@@ -97,6 +97,36 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
 
 /*
  ********************************************************************************
+ *** WebService::Server::VariantValue::CombineWebServiceArgsAsVariantValue ******
+ ********************************************************************************
+ */
+DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantValue (Request* request)
+{
+    RequireNotNull (request);
+    Mapping<String, DataExchange::VariantValue> result;
+
+    {
+        Memory::BLOB inData = request->GetBody ();
+        if (not inData.empty ()) {
+            DataExchange::VariantValue bodyObj = Variant::JSON::Reader ().Read (inData);
+            switch (bodyObj.GetType ()) {
+                case DataExchange::VariantValue::eMap:
+                    result = bodyObj.As<Mapping<String, DataExchange::VariantValue>> ();
+                    break;
+                case DataExchange::VariantValue::eNull:
+                    break;
+                default:
+                    // Other types cannot be merged with URL data, so just return what we had in the body
+                    return bodyObj;
+            }
+        }
+    }
+    result.AddAll (PickoutParamValuesFromURL (request));
+    return result.empty () ? DataExchange::VariantValue{} : DataExchange::VariantValue{result};
+}
+
+/*
+ ********************************************************************************
  ********** WebService::Server::VariantValue::PickoutParamValues ****************
  ********************************************************************************
  */
@@ -156,7 +186,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
  **************** WebService::Server::VariantValue::mkRequestHandler ************
  ********************************************************************************
  */
-WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, [[maybe_unused]] const DataExchange::ObjectVariantMapper& objVarMapper, const function<Memory::BLOB (WebServer::Message* m)>& f)
+WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<Memory::BLOB (WebServer::Message* m)>& f)
 {
     return [=](WebServer::Message* m) {
         ExpectedMethod (m->GetRequestReference (), webServiceDescription);
