@@ -30,16 +30,14 @@ namespace Stroika::Frameworks::WebService {
     using DataExchange::InternetMediaType;
 
     /**
-     *   ////// SUPER DUPER ROUGH DRAFT
      */
     struct WebServiceMethodDescription {
         String                      fOperation;
-        Set<String>                 fAllowedMethods; // e.g. GET
-        optional<InternetMediaType> fResponseType;   // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
-
-        optional<String>           fOneLineDocs;
-        optional<Sequence<String>> fCurlExample;
-        optional<Sequence<String>> fDetailedDocs;
+        optional<Set<String>>       fAllowedMethods; // e.g. GET
+        optional<InternetMediaType> fResponseType;
+        optional<String>            fOneLineDocs;
+        optional<Sequence<String>>  fCurlExample;
+        optional<Sequence<String>>  fDetailedDocs;
     };
 
 }
