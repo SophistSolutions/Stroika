@@ -119,7 +119,7 @@ clean:
 ifeq ($(CONFIGURATION),)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents:"
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents{$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents{$(CONFIGURATION)} ... "
 endif
 	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory boost --silent $@ CONFIGURATION=$(CONFIGURATION)
@@ -138,7 +138,7 @@ clobber:
 ifeq ($(CONFIGURATION),)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents ... "
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents {$(CONFIGURATION)} ... "
 endif
 	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory boost --silent $@ CONFIGURATION=$(CONFIGURATION)
