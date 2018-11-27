@@ -29,12 +29,6 @@ using WebServer::ClientErrorException;
  ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request)
-{
-    RequireNotNull (request);
-    return PickoutParamValuesFromURL (request->GetURL ());
-}
-
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url)
 {
     Mapping<String, VariantValue> result;
@@ -50,12 +44,6 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request)
-{
-    Memory::BLOB inData = request->GetBody ();
-    return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType ());
-}
-
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType)
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
@@ -157,21 +145,11 @@ Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (con
     return result;
 }
 
-Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, Request* request)
-{
-    return OrderParamValues (paramNames, PickoutParamValues (request));
-}
-
 /*
  ********************************************************************************
  ***************** WebService::Server::VariantValue::WriteResponse **************
  ********************************************************************************
  */
-void Server::VariantValue::WriteResponse ([[maybe_unused]] Response* response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
-{
-    // nothing todo to write empty (void) response
-}
-
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue)
 {
     if (webServiceDescription.fResponseType) {

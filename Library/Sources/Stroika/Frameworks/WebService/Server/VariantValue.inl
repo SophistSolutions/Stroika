@@ -33,10 +33,10 @@ namespace std {
 namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     /*
-    ********************************************************************************
-    ****************** WebService::Server::VariantValue::ApplyArgs *****************
-    ********************************************************************************
-    */
+     ********************************************************************************
+     ****************** WebService::Server::VariantValue::ApplyArgs *****************
+     ********************************************************************************
+     */
 #if 0
     // THIS CRAP IS AN EARLY ATTEMPT AT VARIADIC ApplyARgs...
     namespace {
@@ -272,6 +272,48 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     /*
      ********************************************************************************
+     ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
+     ********************************************************************************
+     */
+    inline Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request)
+    {
+        RequireNotNull (request);
+        return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType ());
+    }
+
+    /*
+     ********************************************************************************
+     ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
+     ********************************************************************************
+     */
+    inline Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request)
+    {
+        RequireNotNull (request);
+        return PickoutParamValuesFromURL (request->GetURL ());
+    }
+
+    /*
+     ********************************************************************************
+     ************ WebService::Server::VariantValue::OrderParamValues ****************
+     ********************************************************************************
+     */
+    inline Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, Request* request)
+    {
+        return OrderParamValues (paramNames, PickoutParamValues (request));
+    }
+
+    /*
+     ********************************************************************************
+     ***************** WebService::Server::VariantValue::WriteResponse **************
+     ********************************************************************************
+     */
+    inline void Server::VariantValue::WriteResponse ([[maybe_unused]] Response* response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
+    {
+        // nothing todo to write empty (void) response
+    }
+
+    /*
+     ********************************************************************************
      **************** WebService::Server::VariantValue::mkRequestHandler ************
      ********************************************************************************
      */
@@ -297,7 +339,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
             Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
             Assert (args.size () == paramNames.size ());
-            WriteResponse (m->PeekResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
+            if constexpr (is_same_v<RETURN_TYPE, void>) {
+                ApplyArgs (args, objVarMapper, f);
+                WriteResponse (m->PeekResponse (), webServiceDescription);
+            }
+            else {
+                WriteResponse (m->PeekResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
+            }
         };
     }
     template <typename RETURN_TYPE>
@@ -305,7 +353,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-
             if constexpr (is_same_v<RETURN_TYPE, void>) {
                 f ();
                 WriteResponse (m->PeekResponse (), webServiceDescription);
