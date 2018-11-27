@@ -310,7 +310,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     [[deprecated ("since Stroika v2.1d13 - use PickoutParamValues or OrderParamValues or CombineWebServiceArgsAsVariantValue")]] VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
 
-    [[deprecated ("since Stroika v2.1d13 - use mkRequestHandler withotu objVariantMapper argument")]] WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper&, const function<BLOB (WebServer::Message* m)>& f)
+    [[deprecated ("since Stroika v2.1d13 - use mkRequestHandler withotu objVariantMapper argument")]] inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper&, const function<BLOB (WebServer::Message* m)>& f)
     {
         return mkRequestHandler (webServiceDescription, f);
     }
