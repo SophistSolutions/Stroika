@@ -34,10 +34,11 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     /*
     ********************************************************************************
-    **************** WebService::Server::VariantValue::mkRequestHandler ************
+    ****************** WebService::Server::VariantValue::ApplyArgs *****************
     ********************************************************************************
     */
 #if 0
+    // THIS CRAP IS AN EARLY ATTEMPT AT VARIADIC ApplyARgs...
     namespace {
         template <typename T, typename... REST_IN_ARGS>
         auto ConvertVariantValuesToTypes_ (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, T, REST_IN_ARGS... args)
@@ -137,118 +138,168 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         };
     }
 #endif
-
     template <typename RETURN_TYPE>
-    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
-    {
-        return f ();
-    }
-    template <typename RETURN_TYPE, typename ARG_TYPE_0>
-    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
-    {
-        Require (variantValueArgs.size () == 1);
-        return f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]));
-    }
-    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
-    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f)
-    {
-        Require (variantValueArgs.size () == 2);
-        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1])));
-    }
-    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
-    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
-    {
-        Require (variantValueArgs.size () == 3);
-        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]), objVarMapper.ToObject<ARG_TYPE_2> (variantValueArgs[2])));
-    }
-    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
-    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
-    {
-        Require (variantValueArgs.size () == 4);
-        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]), objVarMapper.ToObject<ARG_TYPE_2> (variantValueArgs[2]), objVarMapper.ToObject<ARG_TYPE_3> (variantValueArgs[3])));
-    }
-    template <typename RETURN_TYPE>
-    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (void)>& f)
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
     {
         Require (paramNames.size () == 0);
-        return f ();
+        return objVarMapper.FromObject (f ());
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0>
-    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
+    {
+        Require (variantValueArgs.size () == 1);
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0])));
+        }
+    }
+    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f)
+    {
+        Require (variantValueArgs.size () == 2);
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1])));
+        }
+    }
+    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
+    {
+        Require (variantValueArgs.size () == 3);
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]), objVarMapper.ToObject<ARG_TYPE_2> (variantValueArgs[2]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]), objVarMapper.ToObject<ARG_TYPE_2> (variantValueArgs[2])));
+        }
+    }
+    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
+    {
+        Require (variantValueArgs.size () == 4);
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]), objVarMapper.ToObject<ARG_TYPE_2> (variantValueArgs[2]), objVarMapper.ToObject<ARG_TYPE_3> (variantValueArgs[3]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (variantValueArgs[0]), objVarMapper.ToObject<ARG_TYPE_1> (variantValueArgs[1]), objVarMapper.ToObject<ARG_TYPE_2> (variantValueArgs[2]), objVarMapper.ToObject<ARG_TYPE_3> (variantValueArgs[3])));
+        }
+    }
+    template <typename RETURN_TYPE>
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (void)>& f)
+    {
+        Require (paramNames.size () == 0);
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f ();
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f ());
+        }
+    }
+    template <typename RETURN_TYPE, typename ARG_TYPE_0>
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
     {
         Require (paramNames.size () == 1);
+
         Sequence<VariantValue> vvs;
         for (auto i : paramNames) {
             vvs += variantValueArgs.LookupValue (i);
         }
-        return f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0])));
+        }
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
-    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f)
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f)
     {
         Require (paramNames.size () == 2);
         Sequence<VariantValue> vvs;
         for (auto i : paramNames) {
             vvs += variantValueArgs.LookupValue (i);
         }
-        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1])));
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1])));
+        }
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
-    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
     {
         Require (paramNames.size () == 3);
         Sequence<VariantValue> vvs;
         for (auto i : paramNames) {
             vvs += variantValueArgs.LookupValue (i);
         }
-        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2])));
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2])));
+        }
     }
     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
-    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
     {
         Require (paramNames.size () == 4);
         Sequence<VariantValue> vvs;
         for (auto i : paramNames) {
             vvs += variantValueArgs.LookupValue (i);
         }
-        return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3])));
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3]));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3])));
+        }
     }
 
-    namespace PRIVATE_ {
-        template <typename RETURN_TYPE>
-        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<!is_same_v<RETURN_TYPE, void>>* = 0)
-        {
-            WriteResponse (response, webServiceDescription, objVarMapper.FromObject (forward<RETURN_TYPE> (f ())));
-        }
-        template <typename RETURN_TYPE>
-        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<is_same_v<RETURN_TYPE, void>>* = 0)
-        {
-            f ();
-            WriteResponse (response, webServiceDescription);
-        }
-    }
-    template <typename RETURN_TYPE, typename... IN_ARGS>
-    inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
-    {
-        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
-    }
+    /*
+     ********************************************************************************
+     **************** WebService::Server::VariantValue::mkRequestHandler ************
+     ********************************************************************************
+     */
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
+        using namespace Containers;
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ())));
+            if constexpr (is_same_v<RETURN_TYPE, void>) {
+                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ())));
+                WriteResponse (response, webServiceDescription);
+            }
+            else {
+                WriteResponse (response, webServiceDescription, f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ()))));
+            }
         };
     }
     template <typename RETURN_TYPE, typename... IN_ARGS>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
     {
+        using namespace Containers;
         Require (paramNames.size () == sizeof...(IN_ARGS));
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
             Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
             Assert (args.size () == paramNames.size ());
-            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (ApplyArgs (args, objVarMapper, f)));
+            WriteResponse (m->PeekResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
         };
     }
     template <typename RETURN_TYPE>
@@ -256,7 +307,14 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         return [=](WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f);
+
+            if constexpr (is_same_v<RETURN_TYPE, void>) {
+                f ();
+                WriteResponse (m->PeekResponse (), webServiceDescription);
+            }
+            else {
+                WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
+            }
         };
     }
 
@@ -293,6 +351,29 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     [[deprecated ("since Stroika v2.1d13 - use mkRequestHandler withotu objVariantMapper argument")]] inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper&, const function<BLOB (WebServer::Message* m)>& f)
     {
         return mkRequestHandler (webServiceDescription, f);
+    }
+
+    /**
+     */
+    // template <typename RETURN_TYPE, typename... IN_ARGS>
+    // void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs);
+    namespace PRIVATE_ {
+        template <typename RETURN_TYPE>
+        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<!is_same_v<RETURN_TYPE, void>>* = 0)
+        {
+            WriteResponse (response, webServiceDescription, objVarMapper.FromObject (forward<RETURN_TYPE> (f ())));
+        }
+        template <typename RETURN_TYPE>
+        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<is_same_v<RETURN_TYPE, void>>* = 0)
+        {
+            f ();
+            WriteResponse (response, webServiceDescription);
+        }
+    }
+    template <typename RETURN_TYPE, typename... IN_ARGS>
+    inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
+    {
+        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
     }
 
 }

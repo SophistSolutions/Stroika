@@ -172,12 +172,26 @@ void Server::VariantValue::WriteResponse ([[maybe_unused]] Response* response, [
     // nothing todo to write empty (void) response
 }
 
+void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue)
+{
+    if (webServiceDescription.fResponseType) {
+        response->write (responseValue);
+        response->SetContentType (*webServiceDescription.fResponseType);
+    }
+    else {
+        WeakAssert (responseValue.empty ()); // if you returned a value you probably meant to have it written!
+    }
+}
+
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON ()); // all we support for now
-    response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
+    Require (not webServiceDescription.fResponseType.has_value () or webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON ()); // all we support for now
     if (webServiceDescription.fResponseType) {
+        response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
         response->SetContentType (*webServiceDescription.fResponseType);
+    }
+    else {
+        WeakAssert (responseValue == nullptr); // if you returned a value you probably meant to have it written!
     }
 }
 
