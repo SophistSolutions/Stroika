@@ -98,16 +98,15 @@ clean clobber:
 ifeq ($(CONFIGURATION),)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(shell echo $@):"
 ifeq ($(CONFIGURATION_TAGS),)
-ifeq ($@,clobber)
-	@rm -rf IntermediateFiles/*
-	@rm -rf Builds/*
+	if [ "$@" == "clobber" ] ; then \
+		rm -rf IntermediateFiles/* Builds/*;\
+		#clobber in third party deletes stuff like 'CURRENT' folders\
+		$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+	fi
 endif
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-else
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
-endif
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(shell echo $@) {$(CONFIGURATION)}:"
