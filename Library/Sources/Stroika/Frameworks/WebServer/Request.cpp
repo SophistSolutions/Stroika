@@ -119,13 +119,18 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fBodyInputStream_ == nullptr) {
-        // if we have a content-length, read that many bytes. otherwise, read til EOF
+        /*
+         *  According to https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html:
+         *      The presence of a message-body in a request is signaled by the inclusion of
+         *      a Content-Length or Transfer-Encoding header field in the request's message-headers
+         */
+        // if we have a content-length, read that many bytes.
         if (optional<uint64_t> contentLength = GetContentLength ()) {
             fBodyInputStream_ = InputSubStream<byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*contentLength));
         }
         else {
             /*
-             *  @todo FIX - WRONG!!!! - MUST TO TRANSFER ENCODING IN THIS CASE OR NOTHING
+             *  @todo FIX - WRONG!!!! - MUST SUPPORT TRANSFER ENCODING IN THIS CASE OR NOTHING
              *
              *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
              *      The rules for when a message-body is allowed in a message differ for requests and responses.
@@ -133,7 +138,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
              *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
              *      or Transfer-Encoding header field in the request's message-headers/
              *
-             *  For now - EMPTY is a better failure mode than reading eveythign and hanging...
+             *  For now - EMPTY is a better failure mode than reading everything and hanging...
              */
             fBodyInputStream_ = MemoryStream<byte>::New ();
         }
