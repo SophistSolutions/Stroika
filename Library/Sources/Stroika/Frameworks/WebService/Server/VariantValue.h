@@ -21,10 +21,6 @@
 
 /*
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
- * TODO:
- *      @todo get mkRequestHandler () overloads that take ARG_TYPE_1...N working with variadic templates. Got a FAILED start at that
- *            going in the .inl file, but I still need to read more about how to use variadic templates.
  */
 
 namespace Stroika::Frameworks::WebService::Server::VariantValue {
@@ -100,6 +96,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *          Assert (tmp[0] == 5);
      *          Assert (tmp[1] == nullptr);
      *      \endcode
+     *
      */
     Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
     Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, Request* request);
@@ -108,7 +105,20 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \brief Apply the arguments in Mapping<String,VariantValue> in the order specified by paramNames, to function f, using objVariantMapper to transform them, and return the result
      *
      *  @todo - figure out how to rewrite this using variadic template
+     *
+     *  \note we only use teh overloads taking Sequence<VariantValue>, and MAY want to lose the Mapping<> overloads.
      */
+    template <typename RETURN_TYPE>
+    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
+    template <typename RETURN_TYPE, typename ARG_TYPE_0>
+    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f);
+    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
+    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f);
+    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
+    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f);
+    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
+    RETURN_TYPE ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f);
+    // MAYBE KEEP THESE TOO
     template <typename RETURN_TYPE>
     RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (void)>& f);
     template <typename RETURN_TYPE, typename ARG_TYPE_0>
@@ -137,11 +147,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  All (except the 'const function<BLOB (WebServer::Message* m)>& f' overload) take an ObjectVariantMapper used to map the arguments (if any) and results.
      *
-     *  The variants of mkRequestHandler () which take paramNames will eventually be replaced with variadic templates. So the calls should remain
-     *  unchanged, but the exact parameters passed to the template instantiation will.
-     *
-     *  Each named parameter (in paramNames) must correspond to the JSON param arg to the funtion and must correspond exactly in type and
-     *  order to the parameters of the function.
+     *  In the variadic overload with 'paramNames', each named parameter must correspond to the JSON param arg to the funtion and must correspond exactly in type and
+     *  order to the parameters of the function. They will be automatically extracted from the URL params or body (with @see OrderParamValues)
      *
      *  \par Example Usage
      *      \code
@@ -155,31 +162,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *      \endcode
      *
      *  The overload with f (void) as argument, takes no arguments (and so omits paramNames), and just returns the given result.
-     *
-     *
-     *  @todo REWRITE USING ApplyArgs (allowing intermeidate varsions /VARIADIC
      */
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
-    template <typename RETURN_TYPE, typename ARG_TYPE_0>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f);
-    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f);
-    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f);
-    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f);
-
-#if 0
-    // @todo eventually find a way to make this owrk with JSON or XML in/ out and in can be GET query args (depending on WebServiceMethodDescription properties)
-    template <typename RETURN_TYPE, typename... IN_ARGS>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f);
     template <typename RETURN_TYPE, typename... IN_ARGS>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
-#endif
     template <typename RETURN_TYPE>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
-
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
 
 }
