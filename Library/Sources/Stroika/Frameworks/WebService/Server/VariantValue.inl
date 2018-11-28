@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <tuple>
+
 #include "Basic.h"
 #if 0
 namespace std {
@@ -138,6 +140,43 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         };
     }
 #endif
+    namespace STROIKA_PRIVATE_ {
+        // try to use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
+        template <typename IGNORED_F_RETURN_TYPE>
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<IGNORED_F_RETURN_TYPE (void)>& f)
+        {
+            Require (variantValueArgs.size () == 0);
+            return make_tuple ();
+        }
+        template <typename IGNORED_F_RETURN_TYPE, typename SINGLE_ARG>
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<IGNORED_F_RETURN_TYPE (SINGLE_ARG)>& f)
+        {
+            Require (variantValueArgs.size () == 1);
+            return make_tuple (objVarMapper.ToObject<SINGLE_ARG> (variantValueArgs.Nth (0)));
+        }
+        template <typename IGNORED_F_RETURN_TYPE, typename ARG_FIRST, typename... REST_ARG_TYPES>
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<IGNORED_F_RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+        {
+            Require (variantValueArgs.size () == sizeof...(REST_ARG_TYPES) + 1);
+            return tuple_cat (
+                mkArgsTuple_ (variantValueArgs.Take (1), objVarMapper, function<IGNORED_F_RETURN_TYPE (ARG_FIRST)>{}),
+                mkArgsTuple_ (variantValueArgs.Skip (1), objVarMapper, function<IGNORED_F_RETURN_TYPE (REST_ARG_TYPES...)>{}));
+        }
+    }
+    //tmpack to test...
+    template <typename RETURN_TYPE, typename... ARG_TYPES>
+    inline VariantValue ApplyArgsVA (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPES...)>& f)
+    {
+        Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
+        if constexpr (is_same_v<RETURN_TYPE, void>) {
+            apply (f, STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f));
+            return VariantValue{};
+        }
+        else {
+            return objVarMapper.FromObject (apply (f, STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f)));
+        }
+    }
+
     template <typename RETURN_TYPE>
     inline VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
     {
