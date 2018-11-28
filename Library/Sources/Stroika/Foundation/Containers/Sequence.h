@@ -21,6 +21,9 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo       Provide Slice () overload to mask inherited one from Iterable, but more efficient, and return
+ *                  sequence. Mention aliaas 'SubSequence' from older todo.
+ *
  *      @todo       Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *                  concepts and that it USES that for the appropriate overloaded constructors.
  *
@@ -66,11 +69,6 @@
  *                  by using type_traits logic to figure out of legal to compare - and see length. Same for
  *                  Sequence<T> (ITER iFrom, ITER iTo) - do re-allocate size if appropriate - can do diff
  *                  iTo-iFrom.
- *
- *  Long-Term TODO:
- *
- *      @todo       Consider adding a SubSequence(i,j) method - like std::basic_string<>::substr(). Make it efficient
- *                  so lazy-copy except on update. Medium/low priority
  */
 
 namespace Stroika::Foundation::Containers {

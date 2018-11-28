@@ -712,6 +712,26 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  This returns an Iterable<T> based on the current iterable, with the subset from position from to to.
+         *  If some items don't exist, the resulting list is shortened (not an assertion error).
+         *  Item at from is included in the output, but item 'to' is not included.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+         *          VerifyTestResult (c.Slice (3, 5).SequnceEquals (Iterable<int> { 4, 5 }));
+         *      \endcode
+         *
+         *  \req from <= to
+         *
+         *  @see https://www.w3schools.com/jsref/jsref_slice_array.asp  (EXCEPT FOR NOW - we don't support negative indexes or optional args; maybe do that for SEQUENCE subclass?)
+         *  @see Take
+         *  @see Slice
+         */
+        nonvirtual Iterable<T> Slice (size_t from, size_t to) const;
+
+    public:
+        /**
          *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *

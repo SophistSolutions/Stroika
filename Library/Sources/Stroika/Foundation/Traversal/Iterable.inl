@@ -537,6 +537,26 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
+    Iterable<T> Iterable<T>::Slice (size_t from, size_t to) const
+    {
+        size_t                   nItemsToSkip                         = from;
+        size_t                   nItemsToTake                         = to - from;
+        Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
+        Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
+        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip, nItemsToTake]() mutable -> optional<T> {
+            while (tmpIt and nItemsToSkip > 0) {
+                nItemsToSkip--;
+                ++tmpIt;
+            }
+            if (nItemsToTake == 0) {
+                return nullopt;
+            }
+            nItemsToTake--;
+            return tmpIt ? *tmpIt++ : optional<T>{};
+        };
+        return CreateGenerator (getNext);
+    }
+    template <typename T>
     template <typename INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const
     {
