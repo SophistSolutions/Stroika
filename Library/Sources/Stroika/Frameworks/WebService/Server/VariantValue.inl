@@ -62,7 +62,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         for (auto i : paramNames) {
             vvs += variantValueArgs.LookupValue (i);
         }
-        ApplyArgs (vvs, objVarMapper, f);
+        return ApplyArgs (vvs, objVarMapper, f);
     }
 
     /*
