@@ -121,8 +121,8 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         /**
-             *  Internal format for storing unsigned int data in a VariantValue.
-             */
+         *  Internal format for storing unsigned int data in a VariantValue.
+         */
         using UnsignedIntegerType_ = unsigned long long int;
 
     public:

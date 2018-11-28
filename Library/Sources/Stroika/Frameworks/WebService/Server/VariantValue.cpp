@@ -163,10 +163,19 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (not webServiceDescription.fResponseType.has_value () or webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON ()); // all we support for now
+    Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON () or webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kText_PLAIN ())); // all we support for now
     if (webServiceDescription.fResponseType) {
-        response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
-        response->SetContentType (*webServiceDescription.fResponseType);
+        if (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON ()) {
+            response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
+            response->SetContentType (*webServiceDescription.fResponseType);
+        }
+        else if (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kText_PLAIN ()) {
+            response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
+            response->SetContentType (*webServiceDescription.fResponseType);
+        }
+        else {
+            RequireNotReached ();
+        }
     }
     else {
         WeakAssert (responseValue == nullptr); // if you returned a value you probably meant to have it written!

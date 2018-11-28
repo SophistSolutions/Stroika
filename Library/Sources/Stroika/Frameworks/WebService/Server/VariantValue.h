@@ -113,9 +113,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
 
     /**
      *  Send the argument value as a web-service response. If no argument (response value) response is empty. If resposne is a VariantValue,
-     *  its written as the format in the webServiceDescription.fResponseType (whcih for now MUST BE DataExchange::PredefinedInternetMediaType::JSON_CT () or missing)..
+     *  its written as the format in the webServiceDescription.fResponseType.
      *  IF fResponseType !has_value, then no respose is written.
      *
+     *  \note   Supported Response Types (For the VariantValue response type overload)
+     *          o  nullopt (no response written)
+     *          o  DataExchange::PredefinedInternetMediaType::JSON_CT ()
+     *          o  DataExchange::PredefinedInternetMediaType::kText_PLAIN ()
      */
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription);
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue);
@@ -130,6 +134,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  In the variadic overload with 'paramNames', each named parameter must correspond to the JSON param arg to the funtion and must correspond exactly in type and
      *  order to the parameters of the function. They will be automatically extracted from the URL params or body (with @see OrderParamValues)
+     *
+     *  @see WriteResponse () for supported webServiceDescription.fResponseType values.
      *
      *  \par Example Usage
      *      \code
