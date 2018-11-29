@@ -24,8 +24,13 @@ SubDirs=	\
 .PHONY:	$(SubDirs) all_objs_ all_objs_ all
 
 
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
+.PHONY:			$(SubDirs)
 
+$(SubDirs):
+	@$(MAKE) --directory $@ -s
+
+
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
 
 all-objs:
 	@echo $(ALL_OBJS)
@@ -39,7 +44,7 @@ $(ALL_OBJS): all_objs_
 
 all_objs_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs:";
-	@(for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CONFIGURATION=$(CONFIGURATION); done;);
+	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 $(StroikaFrameworksLib):	$(ALL_OBJS)

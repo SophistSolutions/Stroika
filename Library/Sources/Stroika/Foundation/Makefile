@@ -46,9 +46,15 @@ $(ObjDir)%.o : %.cpp
 	@#suppress normal rule so just all_objs_ fires
 
 
+.PHONY:			$(SubDirs)
+
+$(SubDirs):
+	@$(MAKE) --directory $@ -s
+
+
 all_objs_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Foundation Objs:";
-	@(for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CONFIGURATION=$(CONFIGURATION); done;);
+	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 $(StroikaFoundationLib):	$(ALL_OBJS)
