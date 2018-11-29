@@ -2,7 +2,7 @@
 
 ### EXAMPLE
 ###
-###		cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev ScriptsLib/RunInDockerEnvironment
+###		cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 ScriptsLib/RunInDockerEnvironment
 ###
 
 
@@ -13,6 +13,7 @@ EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 ECHO_DOCKER_COMMANDS="${ECHO_DOCKER_COMMANDS:-0}"
 STOP_AT_END="${STOP_AT_END:-1}"
 PRIVATE_COMPILER_BUILDS_DIR="${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}"
+INCLUDE_EXTRA_PERSONAL_MOUNT_FILES="${INCLUDE_EXTRA_PERSONAL_MOUNT_FILES:-0}"
 
 SANDBOX_FROM="${SANDBOX_FROM:=`pwd`}"
 SANDBOX_TO="${SANDBOX_TO:=${SANDBOX_FROM}}"
@@ -30,32 +31,43 @@ PASSWORD_FILE_MOUNTS="-v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro 
 
 if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
 	echo "***USER_FLAGS = ${USER_FLAGS}"
-	echo "***ECHO_DOCKER_COMMANDS = $ECHO_DOCKER_COMMANDS"
 	echo "***CMD2RUN = $CMD2RUN"
 	echo "***CONTAINER_IMAGE = $CONTAINER_IMAGE"
 	echo "***PRIVATE_COMPILER_BUILDS_DIR = $PRIVATE_COMPILER_BUILDS_DIR"
+	echo "***INCLUDE_EXTRA_PERSONAL_MOUNT_FILES = $INCLUDE_EXTRA_PERSONAL_MOUNT_FILES"
 fi
 
 # Silently remove the previous version of the container if it was there before
 docker stop ${CONTAINER_NAME} >& /dev/null || true
 docker rm ${CONTAINER_NAME} >& /dev/null || true
 
-# -v $HOME:$HOME so we can can re-use/and build to - the my- versions of compilers and cache/re-use those
 
-# -v $HOME/.ssh:$HOME/.ssh:ro so connect to raspberrypi can use ssh keys
 
 # --dns lines since the default for a container is to use global (google) dns server, which doesn't have local dns entries (like raspberrypi device)
 
 # -security-opt seccomp=unconfined  needed to run some google sanitizers (and probbaly to debug?/valgrind?)
 
+
 # -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" doesn't work perfectly, but better than completely shitty display of # of lines 
 #  which appears to be the docker default
-
 EXTRATERMARGS=""
 if [ "$TERM" != "" ] && [ "$TERM" != "dumb" ]; then
 	EXTRATERMARGS="-e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" -i"
 else
 	EXTRATERMARGS="-it"
+fi
+
+
+# -v $HOME/.ssh:$HOME/.ssh:ro so connect to raspberrypi can use ssh keys
+PERSONAL_FILE_MOUNTS="\
+	-v $HOME/.ssh:$HOME/.ssh \
+"
+if [ $INCLUDE_EXTRA_PERSONAL_MOUNT_FILES -eq 1 ]; then
+PERSONAL_FILE_MOUNTS="${PERSONAL_FILE_MOUNTS} \
+	-v $HOME/.bashrc:$HOME/.bashrc:ro \
+	-v $HOME/.bash_aliases:$HOME/.bash_aliases:ro \
+	-v $HOME/.gitconfig:$HOME/.gitconfig \
+	"
 fi
 
 
@@ -77,7 +89,7 @@ RunCMD_()
 RunCMD_ "docker run \
 	${USER_FLAGS} ${PASSWORD_FILE_MOUNTS} \
 	-v /etc/localtime:/etc/localtime:ro \
-	-v $HOME/.ssh:$HOME/.ssh \
+	${PERSONAL_FILE_MOUNTS} \
 	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
 	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
