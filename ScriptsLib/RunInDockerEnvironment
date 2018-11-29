@@ -85,7 +85,7 @@ RunCMD_ "docker run \
 	--name ${CONTAINER_NAME} \
 	-h ${CONTAINER_NAME} \
 	-v ${SANDBOX_FROM}:${SANDBOX_TO} \
-	--workdir $(SANDBOX_TO} \
+	--workdir ${SANDBOX_TO} \
 	${EXTRA_DOCKER_ARGS} \
 	--detach \
 	${CONTAINER_IMAGE} \
