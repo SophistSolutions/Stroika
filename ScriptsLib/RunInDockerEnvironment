@@ -2,7 +2,7 @@
 
 ### EXAMPLE
 ###
-###		cd Sandbox/Stroika-Dev && CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests ScriptsLib/RunInDockerEnvironment
+###		cd Sandbox/Stroika-Dev && CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev ScriptsLib/RunInDockerEnvironment
 ###
 
 
@@ -22,6 +22,9 @@ if [ "${USER_FLAGS}" == "" ] ; then
 	USER_FLAGS="-u`id -u` `for i in $( id -G ); do echo -n " --group-add $i "; done`"
 fi
 
+# so sudo works, and user name shows up right
+PASSWORD_FILE_MOUNTS=-v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v /etc/shadow:/etc/shadow:ro
+
 if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
 	echo "***USER_FLAGS = ${USER_FLAGS}"
 	echo "***ECHO_DOCKER_COMMANDS = $ECHO_DOCKER_COMMANDS"
@@ -33,8 +36,6 @@ fi
 # Silently remove the previous version of the container if it was there before
 docker stop ${CONTAINER_NAME} >& /dev/null || true
 docker rm ${CONTAINER_NAME} >& /dev/null || true
-
-# -u and -v /etc/password etc is so username passed through and shows up in ui (name not number)
 
 # -v $HOME:$HOME so we can can re-use/and build to - the my- versions of compilers and cache/re-use those
 
@@ -70,7 +71,8 @@ RunCMD_()
 ### stop the container (it can then be safely restarted)
 
 ##NB: redirect to /dev/null so container ID not shown - actual errors go to stderr
-RunCMD_ "docker run ${USER_FLAGS} -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+RunCMD_ "docker run \
+	${USER_FLAGS} ${PASSWORD_FILE_MOUNTS} \
 	-v /etc/localtime:/etc/localtime:ro \
 	-v $HOME/.ssh:$HOME/.ssh \
 	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
@@ -80,7 +82,7 @@ RunCMD_ "docker run ${USER_FLAGS} -v /etc/passwd:/etc/passwd:ro -v /etc/group:/e
 	--name ${CONTAINER_NAME} \
 	-h ${CONTAINER_NAME} \
 	-v $StroikaRoot:/Sandbox-StroikaRoot \
-	-w /Sandbox-StroikaRoot \
+	--workdir /Sandbox-StroikaRoot \
 	${EXTRA_DOCKER_ARGS} \
 	--detach \
 	${CONTAINER_IMAGE} \

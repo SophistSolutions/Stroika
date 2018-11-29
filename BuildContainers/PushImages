@@ -7,3 +7,6 @@ docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 
 docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests
+
+#no need to push this yet/now
+#docker push sophistsolutionsinc/stroika-dev

@@ -5,3 +5,5 @@ docker build Ubuntu1810-Small/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1810
 
 docker build Ubuntu1804-RegressionTests/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 docker build Ubuntu1810-RegressionTests/ -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests
+
+docker build Stroika-Dev/ -t sophistsolutionsinc/stroika-dev
