@@ -26,7 +26,7 @@ if [ "${USER_FLAGS}" == "" ] ; then
 fi
 
 # so sudo works, and user name shows up right
-PASSWORD_FILE_MOUNTS=-v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v /etc/shadow:/etc/shadow:ro
+PASSWORD_FILE_MOUNTS="-v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v /etc/shadow:/etc/shadow:ro"
 
 if [ $ECHO_DOCKER_COMMANDS -eq 1 ]; then
 	echo "***USER_FLAGS = ${USER_FLAGS}"
