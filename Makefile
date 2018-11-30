@@ -105,10 +105,11 @@ ifeq ($(CONFIGURATION_TAGS),)
 		rm -rf IntermediateFiles/* Builds/*;\
 		$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	fi
-endif
+else
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
+endif
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
