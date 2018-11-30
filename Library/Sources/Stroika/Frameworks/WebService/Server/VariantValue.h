@@ -82,6 +82,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
       *       if that was better (changed in Stroika v2.1d13).
       *
       * \note could parameterize some of these choices? But pretty easy to just explicitly choose yourself in your own route handler.
+      *
+      * \note THIS IS RARELY used - but just if you want to have a single mapper that all your arguments and converts them to a single object.
       */
     VariantValue CombineWebServiceArgsAsVariantValue (Request* request);
 
