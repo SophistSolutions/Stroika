@@ -1,3 +1,5 @@
+include ScriptsLib/Makefile-Common.mk
+
 .NOTPARALLEL:
 .PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_ check-prerequisite-tools apply-configurations
 
@@ -96,7 +98,7 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(shell echo $@):"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifeq ($(CONFIGURATION_TAGS),)
 	@#for clobber, quickly delete all interesting stuff (if no args so unrestricted) and in third party deletes stuff like 'CURRENT' folders
 	@if [ "$@" == "clobber" ] ; then \
@@ -109,7 +111,7 @@ endif
 	done
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(shell echo $@) {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Tools --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))

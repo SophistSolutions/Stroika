@@ -1,3 +1,4 @@
+include ../ScriptsLib/Makefile-Common.mk
 ifneq ($(CONFIGURATION),)
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
@@ -134,18 +135,18 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Build {$(CONFIGURATION)}:"
 ifeq ($(SubDirs),)
 	@../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "none"
 else
-	@$(MAKE) $(SubDirs)
+	@$(MAKE) --silent $(SubDirs)
 endif
 endif
 
 
 check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Checking-Prerequisite Tools:"
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
@@ -183,7 +184,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Check {$(CONFIGURATION)}:"
 ifeq ($(USE_boost), 1)
 	@$(MAKE) --directory boost --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -208,12 +209,11 @@ endif
 endif
 
 
-clean:
-	@#ok to call with NO CONFIG (does all)
+clean clobber:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL)  "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@):"
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents{$(CONFIGURATION)} ... "
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL)  "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 endif
 	@$(MAKE) --directory ActivePerl --silent $@
 	@$(MAKE) --directory boost --silent $@
@@ -224,23 +224,3 @@ endif
 	@$(MAKE) --directory sqlite --silent $@
 	@$(MAKE) --directory Xerces --silent $@
 	@$(MAKE) --directory zlib --silent $@
-	@$(ECHO) done
-
-
-clobber:
-	@#ok to call with NO CONFIG (does all)
-ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents ... "
-else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents {$(CONFIGURATION)} ... "
-endif
-	@$(MAKE) --directory ActivePerl --silent $@
-	@$(MAKE) --directory boost --silent $@
-	@$(MAKE) --directory cmake --silent $@
-	@$(MAKE) --directory curl --silent $@
-	@$(MAKE) --directory lzma --silent $@
-	@$(MAKE) --directory openssl --silent $@
-	@$(MAKE) --directory sqlite --silent $@
-	@$(MAKE) --directory Xerces --silent $@
-	@$(MAKE) --directory zlib --silent $@
-	@$(ECHO) "done"
