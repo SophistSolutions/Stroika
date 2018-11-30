@@ -220,7 +220,8 @@ endif
 
 
 
-
+###NOTE - because we set network:BOOL:OFF - Xerces doesn't depend on CURL (but we could make it so if we wanted, but then update dependencies
+### in ThirdPartyLibs/Makefile
 CMAKE_ARGS=
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
