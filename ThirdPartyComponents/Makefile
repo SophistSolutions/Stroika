@@ -135,7 +135,11 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
+ifeq ($(SubDirs),)
+	@../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "none"
+else
 	@$(MAKE) $(SubDirs)
+endif
 endif
 
 
