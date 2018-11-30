@@ -1,10 +1,5 @@
 #!/bin/bash
-THIS_SCRIPT_DIR="`dirname \"$0\"`"
-THIS_SCRIPT_DIR=`realpath $THIS_SCRIPT_DIR`
-THIS_SCRIPT_DIR="$THIS_SCRIPT_DIR/"
-
 TEXT="$1"
-
 
 if [ ! -z $StroikaRoot ] ; then
 	TEXT=`echo $TEXT | sed s%$StroikaRoot%\{StroikaRoot\}%g`
