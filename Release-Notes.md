@@ -20,6 +20,191 @@ History
 
 
   
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d13">v2.1d13</a><br/>2018-12-02x</td>
+<td>
+    <ul>
+        <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d12...v2.1d13</li>
+        <li>IO::Network::Interfaces
+            <ul>
+                <li>API now returns (so far just on windows) Network-GUID and subnet-mask (really CIRD equiv - nbits valid for network prefix)</li>
+                <li>renamed print-string for Network::Interface::Type::eWiredEthernet</li>
+                <li>slight refactoring of Network::GetInterfaces ()</li>
+                <li>Added (windows only support so far) WirelessInfo capture on NetworkInterface API</li>
+                <li>IO/Network/Interface.cpp GetInterfaces_Windows_ () - handle ERROR_SERVICE_NOT_ACTIVE better - just suppress error</li>
+                <li>return attached dns servers and gateways to results of GetInterfaces () (nework interfaces)</li>
+            </ul>
+        </li>
+        <li>InternetAddress
+            <ul>
+                <li>now can use uint8_t or byte</li>
+                <li>REPLACE (deprecated tuple) tuple access with array<uint8_t,4> (or array byte</li>
+                <li>more constexpr methods</li>
+                <li>kAddrAny; etc constexpr fields more cleanly portably (OBSOLETES qCompilerAndStdLib_constexpr_union_variants_Buggy)</li>
+                <li>use new As<array<> intead of As<tutple> for InternetAddress test</li>
+                <li>InternetAddress CTOR and As methods work wtih vector byte/vector/uint8_t</li>
+                <li>added IPv6AddressOctets to InternetAddress</li>
+            </ul>
+        </li>
+        <li>Frameworks/WebService
+            <ul>
+                <li>deprecated WebService/Server/VariantValue overloads with optional<Iterable<String>>& namedParams; and added OrderParamValues () overloads and documented that a bit more</li>
+                <li>Fixed VariantValue::PickoutParamValue () for case of empty body.</li>
+                <li>Deprecated GetWebServiceArgsAsVariantValue () </li>
+                <li>Server::VariantValue::CombineWebServiceArgsAsVariantValue () added (not sure good idea but replaces GetWebServiceArgsAsVariantValue</li>
+                <li>Cleanup docs/overloads of mkRequestHandler ()</li>
+                <li>redid mkRequestHandler () using variadic templates</li>
+                <li>WebServiceMethodDescription: fAllowedMethods now optional</li>
+                <li>deprecated CallFAndWriteConvertedResponse</li>
+                <li>Use if constexpr to handle return type void not writing anything</li>
+                <li>WriteResponse now handles missing return type or JSON (or asserts) except for overload with BLOB in which case any return type OK</li>
+                <li>variadic template supprt for ApplyArgs</li>
+                <li>support WebService::Server::VariantValue::WriteResponse () for content-type text/plain</li>
+            </ul>
+        </li>
+        <li>Common::GUID class
+            <ul>
+                <li>Added new  GUID support</li>
+                <li>support for PARSING GUIDs</li>
+                <li>added ObjectVariantMapper support for AddCommon <Common::GUID> () and made it also a builtin default for object mappers</li>
+                <li>added operator==/etc overloads to compare</li>
+                <li>GUID API for Zero and construct from array&lt;uint8_t,16&gt;</li>
+            </ul>
+        </li>
+        <li>Cryptography::Format() now supports returning Common::GUID</li>
+        <li>fixed small bug with parsing URLs with ? and no / after hostname</li>
+        <li>simplfiy template overload params (maybe not fully backward compat) for CheckedConverter (no more references)</li>
+        <li>URL::Equals () cleanup - doc differences between URL::Equals and URL::GetFullURL().Equals()</li>
+        <li>CIDR class automatically adjusts argument ip address to be at the start of the range (defined by mask argument)</li>
+        <li>BitSubstring() extended to support zero-bit selections (returns zero)</li>
+        <li>Iterable
+            <ul>
+				<li>Added Iterable<T>::Slice () and some small regresison test improvements (related)</li>
+            </ul>
+        </li>
+        <li>String/Characters
+            <ul>
+				<li>String::SafeSubstring() now also supports 'circular' part of API</li>
+		        <li>ToString() on STRING surrounds with quotes (looks better in debugging output)</li>
+            </ul>
+        </li>
+        <li>Compiler / Target SDK Version
+            <ul>
+                <li>updated projects from windowstargetplatformversion 10.0.17134.0 to latest: 10.0.17763.0</li>
+                <li>Support MSVC2k17 (15.9.3)</li>
+            </ul>
+        </li>
+        <li>Third-Party-Components
+            <ul>
+                <li>openssl 1.1.1a</li>
+			    <li>fixed xerces windows build issue with missing .pdb file (just caused lots of linker warnings)</li>
+            </ul>
+        </li>
+        <li>Build System
+            <ul>
+                <li>Tweak WebGet script to do oneline output instead of incremental starting ... done (for make -JN support)</li>
+				<li>Makefile
+					<ul>
+						<li>restructured ThirdPartyComponents makefile so differnt parts can run in parallel: now build time (time make CONFIGURATION=Debug third-party-components -j20) - realtime - dropped from 8:44  minutes to 4:20 minutes. Output looks uglier (can try to cleanup next). But appears to still work as  well (and keep the CPU warm).</li>
+						<li>Lose some extra parameters to submakefiles which are already taken care of by $(MAKE)</li>
+						<li> In Foundation/Framework top level makefiles, changed them to use same SUBDIRS trick (not foreach but make all the subdirs with .phony etc) - so we get faster makes with -j25 (time make CONFIGURATION=Debug libraries -j25 went from 3:35 to 1:50)</li>
+						<li>Visual studio.net 2k17 15.9: lose obsolete MinimalRebuild option from project files</li>
+						<li>added ScriptsLib/Makefile-Common.mk with helpful makefile macro function refactored/structured output of the thirdpartycomponents makefiles so it looks better with -jN - lots of lines running at once</li>
+					</ul>
+				</li>
+                <li>use get_script_dir () script I found on #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/ instead of thing i had before to find path to script</li>
+                <li>lose -lto from a few regression test configs (e.g. g++-valgrind-release-SSLPurify-NoBlockAlloc) : caused some noise/issues and not needed</li>
+                <li>tweak  makefile clean/clobber code (mostly merged/simplified)</li>
+				<li>valgrind/sanitizer suppressions/tweaks
+					<ul>
+		                <li>another instance of Helgrind_WARNS_EINTR_Error_With_SemWait issue</li>
+						<li>lose some unneeded warnign suppression for https://stroika.atlassian.net/browse/STK-627 but keep some still around</li>
+						<li>workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only (tsan)</li>
+						<li>workaround https://stroika.atlassian.net/browse/STK-672 valgrind suppression</li>
+						<li>Loosen  https://stroika.atlassian.net/browse/STK-626 valgrind check - so filters out a few more false positives</li>
+						<li>generalize match on valgrind suprpession for https://stroika.atlassian.net/browse/STK-672</li>
+						<li>Added TSAN_OPTIONS to config for g++-debug-sanitize_thread  - since the same (https://stroika.atlassian.net/browse/STK-673) issue happened there once too (again - still only on ubuntu 1810)</li>
+					</ul>
+				</li>
+				<li>RunInDockerEnvironment
+					<ul>
+						<li>docker by default passes along all groups for the specified user to dont override this with -u:</li>
+		                <li>new dockerfiles for Ubuntu1810, added support for it to regular regression tests (ubuntu cross compile and direct test)</li>
+						<li>pass along CONTAINER_IMAGE arg through remote regression test scripts to runindocker</li>
+						<li>generalize mount for sandbox in ScriptsLib/RunInDockerEnvironment so can setup better for dev docker env</li>
+					</ul>
+				</li>
+				<li>Stroika-Dev
+					<ul>
+						<li>new PERSONAL_FILE_MOUNTS/INCLUDE_EXTRA_PERSONAL_MOUNT_FILES config option sin RunInDockerEnvironment to make it easier to use Stroika-Dev system</li>
+						<li>a few improvements to RunInDockerEnvironment including docs example (in file) for Stroika-Dev, and USER_FLAGS env option and works by default to include all groups</li>
+						<li>new dockerfile for Stroika-Dev; add /etc/shadow to PASSWORD_FILE_MOUNTS (hope fixes sudo issue) in runindocker script (and refactor a bit);</li>
+						<li>BuildContainers/Stroika-Dev/Dockerfile - dev environment scripted - and cmdline to create in RunInDockerEnvironment</li>
+					</ul>
+				</li>
+				<li>Regression-tests
+					<ul>
+						<li>print UNAME in regressiontest output</li>
+						<li>print lsb_release -d output in Regresion test</li>
+					</ul>
+				</li>
+            </ul>
+        </li>
+        <li>ObjectVariantMapper
+            <ul>
+                <li>LOSE support for MakeCommonSerializer<void> - trouble is it matched OTHER types as well (the way I have it coded) - if they were unknown which produced confusing behavior </li>
+                <li>ObjectVariantMapper MakeCommonSerializer<> now supports Network::InternetAddress</li>
+            </ul>
+        </li>
+        <li>Compile bug defines
+            <ul>
+                <li>qCompilerAndStdLib_constexpr_union_variants_Buggy REMOVED - no longer needed</li>
+                <li>new bug define: qCompilerAndStdLib_lambda_expand_in_namespace_Buggy and regtests for it</li>
+                <li>qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy really still broken (just different symptom) on vs2k17 15.9</li>
+            </ul>
+        </li>
+        <li>Docs
+            <ul>
+                <li>docs on objectvariantmapper/webservices/webserver::request::getbody, more</li>
+                <li>docs on how to setup new raspberry pi to run remote regression tests</li>
+            </ul>
+        </li>
+        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d12.txt</li>
+        <li>Tested (passed regtests)
+            <ul>
+                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d12-OUT.txt</li>
+                <li>vc++2k17 (15.9.3)</li>
+                <li>MacOS, XCode 10</li>
+                <li>gcc 7, gcc 8</li>
+                <li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
+                <li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+                <li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+                <li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+            </ul>
+        </li>
+        <li>Known issues
+            <ul>
+                <li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+                    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>https://stroika.atlassian.net/browse/STK-675 failures/warnings testing on raspberrypi build on ununtu 1810</li>
+				<li>See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.</li>
+            </ul>
+        </li>
+    </ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+  
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d12">v2.1d12</a><br/>2018-11-10</td>
 <td>
