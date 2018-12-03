@@ -22,7 +22,7 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d13">v2.1d13</a><br/>2018-12-02x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d13">v2.1d13</a><br/>2018-12-03</td>
 <td>
     <ul>
         <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d12...v2.1d13</li>
@@ -104,14 +104,14 @@ History
         </li>
         <li>Build System
             <ul>
-                <li>Tweak WebGet script to do oneline output instead of incremental starting ... done (for make -JN support)</li>
 				<li>Makefile
 					<ul>
+						<li>Mostly faster, parallel make</li>
 						<li>restructured ThirdPartyComponents makefile so differnt parts can run in parallel: now build time (time make CONFIGURATION=Debug third-party-components -j20) - realtime - dropped from 8:44  minutes to 4:20 minutes. Output looks uglier (can try to cleanup next). But appears to still work as  well (and keep the CPU warm).</li>
+						<li>added ScriptsLib/Makefile-Common.mk with helpful makefile macro function refactored/structured output of the thirdpartycomponents makefiles so it looks better with -jN - lots of lines running at once</li>
 						<li>Lose some extra parameters to submakefiles which are already taken care of by $(MAKE)</li>
 						<li> In Foundation/Framework top level makefiles, changed them to use same SUBDIRS trick (not foreach but make all the subdirs with .phony etc) - so we get faster makes with -j25 (time make CONFIGURATION=Debug libraries -j25 went from 3:35 to 1:50)</li>
 						<li>Visual studio.net 2k17 15.9: lose obsolete MinimalRebuild option from project files</li>
-						<li>added ScriptsLib/Makefile-Common.mk with helpful makefile macro function refactored/structured output of the thirdpartycomponents makefiles so it looks better with -jN - lots of lines running at once</li>
 					</ul>
 				</li>
                 <li>use get_script_dir () script I found on #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/ instead of thing i had before to find path to script</li>
@@ -128,6 +128,7 @@ History
 						<li>Added TSAN_OPTIONS to config for g++-debug-sanitize_thread  - since the same (https://stroika.atlassian.net/browse/STK-673) issue happened there once too (again - still only on ubuntu 1810)</li>
 					</ul>
 				</li>
+                <li>Tweak WebGet script to do oneline output instead of incremental starting ... done (for make -JN support)</li>
 				<li>RunInDockerEnvironment
 					<ul>
 						<li>docker by default passes along all groups for the specified user to dont override this with -u:</li>
@@ -190,6 +191,7 @@ History
                 <li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
                     (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
 				<li>https://stroika.atlassian.net/browse/STK-675 failures/warnings testing on raspberrypi build on ununtu 1810</li>
+				<li>Ignore one-time failures on some curl tests from raspberrypi</li>
 				<li>See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.</li>
             </ul>
         </li>
