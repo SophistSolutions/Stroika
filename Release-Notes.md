@@ -28,12 +28,12 @@ History
         <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d12...v2.1d13</li>
         <li>IO::Network::Interfaces
             <ul>
-                <li>API now returns (so far just on windows) Network-GUID and subnet-mask (really CIRD equiv - nbits valid for network prefix)</li>
+                <li>API now returns (so far just on windows) Network-GUID and subnet-mask (really CIDR equiv - nbits valid for network prefix)</li>
                 <li>renamed print-string for Network::Interface::Type::eWiredEthernet</li>
                 <li>slight refactoring of Network::GetInterfaces ()</li>
                 <li>Added (windows only support so far) WirelessInfo capture on NetworkInterface API</li>
                 <li>IO/Network/Interface.cpp GetInterfaces_Windows_ () - handle ERROR_SERVICE_NOT_ACTIVE better - just suppress error</li>
-                <li>return attached dns servers and gateways to results of GetInterfaces () (nework interfaces)</li>
+                <li>return attached dns servers and gateways to results of GetInterfaces ()</li>
             </ul>
         </li>
         <li>InternetAddress
@@ -49,6 +49,7 @@ History
         </li>
         <li>Frameworks/WebService
             <ul>
+				<li>Big cleanups</li>
                 <li>deprecated WebService/Server/VariantValue overloads with optional<Iterable<String>>& namedParams; and added OrderParamValues () overloads and documented that a bit more</li>
                 <li>Fixed VariantValue::PickoutParamValue () for case of empty body.</li>
                 <li>Deprecated GetWebServiceArgsAsVariantValue () </li>
@@ -147,6 +148,7 @@ History
 					<ul>
 						<li>print UNAME in regressiontest output</li>
 						<li>print lsb_release -d output in Regresion test</li>
+						<li>Many more config variables printed out at start of each regression test output file</li>
 					</ul>
 				</li>
             </ul>
@@ -170,10 +172,10 @@ History
                 <li>docs on how to setup new raspberry pi to run remote regression tests</li>
             </ul>
         </li>
-        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d12.txt</li>
+        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d13.txt</li>
         <li>Tested (passed regtests)
             <ul>
-                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d12-OUT.txt</li>
+                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d13-OUT.txt</li>
                 <li>vc++2k17 (15.9.3)</li>
                 <li>MacOS, XCode 10</li>
                 <li>gcc 7, gcc 8</li>
