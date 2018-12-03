@@ -244,6 +244,32 @@ namespace {
         }
 #endif
 
+#if qPlatform_Linux || qPlatform_MacOS
+        auto getNetMaskAsPrefix = [](int sd, const char* name) -> optional<unsigned int> {
+            ifreq ifreq{};
+            Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
+            Assert (r == 0);
+            if (r == 0) {
+                SocketAddress sa{ifreq.ifr_netmask};
+                if (sa.IsInternetAddress ()) {
+                    InternetAddress ia = sa.GetInternetAddress ();
+                    size_t          prefixLen{};
+                    for (bool b : ia.As<vector<bool>> ()) {
+                        if (b) {
+                            prefixLen++;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    return prefixLen;
+                }
+            }
+            return nullopt;
+        };
+#endif
+
 #if qPlatform_Linux
         auto getDefaultGateway = [](const char* name) -> optional<InternetAddress> {
             try {
@@ -282,11 +308,9 @@ namespace {
 
 #if qPlatform_Linux
         auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
-            struct ifreq ifreq {
-            };
+            ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
-            struct ethtool_cmd edata {
-            };
+            ethtool_cmd edata{};
             ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
             edata.cmd      = ETHTOOL_GSET;
             int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
@@ -347,7 +371,11 @@ namespace {
         {
             SocketAddress sa{i->ifr_addr};
             if (sa.IsInternetAddress ()) {
+#if qPlatform_Linux || qPlatform_MacOS
+                newInterface.fBindings.Add (Binding{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
+#else
                 newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
+#endif
             }
         }
         return newInterface;
@@ -392,7 +420,7 @@ namespace {
 #if qPlatform_Linux
             size_t len = sizeof (*i);
 #else
-            size_t    len          = IFNAMSIZ + i->ifr_addr.sa_len;
+            size_t len = IFNAMSIZ + i->ifr_addr.sa_len;
 #endif
             i = reinterpret_cast<const ifreq*> (reinterpret_cast<const byte*> (i) + len);
         }
