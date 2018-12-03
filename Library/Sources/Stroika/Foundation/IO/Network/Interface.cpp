@@ -47,6 +47,7 @@
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "../../Execution/Synchronized.h"
+#include "../../IO/FileSystem/FileInputStream.h"
 #include "../../Memory/Optional.h"
 #include "../../Memory/SmallStackBuffer.h"
 
@@ -62,6 +63,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::IO::Network;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -205,7 +207,6 @@ namespace {
         auto getFlags                     = [](int sd, const char* name) {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
-
             int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
             Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
             return r == 0 ? ifreq.ifr_flags : 0;
@@ -242,48 +243,66 @@ namespace {
 #endif
 
 #if qPlatform_Linux
-        {
-            auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
-                struct ifreq ifreq {
-                };
-                Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
-                struct ethtool_cmd edata {
-                };
-                ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
-                edata.cmd      = ETHTOOL_GSET;
-                int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
-                if (r != 0) {
-                    DbgTrace ("No speed for interface %s, errno=%d", name, errno);
-                    return nullopt;
-                }
-                constexpr uint64_t kMegabit_ = 1000 * 1000;
-                DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
-                switch (ethtool_cmd_speed (&edata)) {
-                    case SPEED_10:
-                        return 10 * kMegabit_;
-                    case SPEED_100:
-                        return 100 * kMegabit_;
-                    case SPEED_1000:
-                        return 1000 * kMegabit_;
-                    case SPEED_2500:
-                        return 2500 * kMegabit_;
-                    case SPEED_10000:
-                        return 10000 * kMegabit_;
-                    default:
-                        return nullopt;
-                }
+        auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
+            struct ifreq ifreq {
             };
-            newInterface.fTransmitSpeedBaud    = getSpeed (sd, i->ifr_name);
-            newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
-        }
+            Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            struct ethtool_cmd edata {
+            };
+            ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
+            edata.cmd      = ETHTOOL_GSET;
+            int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
+            if (r != 0) {
+                DbgTrace ("No speed for interface %s, errno=%d", name, errno);
+                return nullopt;
+            }
+            constexpr uint64_t kMegabit_ = 1000 * 1000;
+            DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
+            switch (ethtool_cmd_speed (&edata)) {
+                case SPEED_10:
+                    return 10 * kMegabit_;
+                case SPEED_100:
+                    return 100 * kMegabit_;
+                case SPEED_1000:
+                    return 1000 * kMegabit_;
+                case SPEED_2500:
+                    return 2500 * kMegabit_;
+                case SPEED_10000:
+                    return 10000 * kMegabit_;
+                default:
+                    return nullopt;
+            }
+        };
+        newInterface.fTransmitSpeedBaud    = getSpeed (sd, i->ifr_name);
+        newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
 #endif
 
         {
             Containers::Set<Interface::Status> status = Memory::ValueOrDefault (newInterface.fStatus);
             if (flags & IFF_RUNNING) {
-                // not right!!! But a start...
+                // see https://stackoverflow.com/questions/11679514/what-is-the-difference-between-iff-up-and-iff-running for difference between IFF_UP and IFF_RUNNING
                 status.Add (Interface::Status::eConnected);
                 status.Add (Interface::Status::eRunning);
+            }
+            else {
+                // see if we can check if physical cable plugged in - https://stackoverflow.com/questions/808560/how-to-detect-the-physical-connected-state-of-a-network-cable-connector
+#if qPlatform_Linux
+                auto checkCarrierKnownSet = [](const char* id) -> bool {
+                    try {
+                        auto         fs = FileInputStream::New (String::FromNarrowSDKString (string{"/sys/class/net/"} + id), FileInputStream::eNotSeekable);
+                        Memory::BLOB b  = fs.ReadAll ();
+                        if (b.size () >= 1 and b[0] == static_cast<byte> ('1')) {
+                            return true;
+                        }
+                    }
+                    catch (...) {
+                    }
+                    return false; // unknown if this fails
+                };
+                if (checkCarrierKnownSet (i->ifr_name)) {
+                    status.Add (Interface::Status::eConnected);
+                }
+#endif
             }
             newInterface.fStatus = status;
         }
@@ -297,7 +316,6 @@ namespace {
     }
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined") Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {
-        using Binding = Interface::Binding;
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
         Mapping<String, Interface> results;
