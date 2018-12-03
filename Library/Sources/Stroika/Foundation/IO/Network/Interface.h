@@ -252,18 +252,33 @@ namespace Stroika::Foundation::IO::Network {
         Containers::Sequence<InternetAddress> fDNSServers;
 
         /**
-         * @todo document these - 'eRunning' == LINUX RUNNING
-         *
          *  \note   Configuration::DefaultNames<> supported
          */
         enum class Status {
+
+            /**
+             *  This tells if the low level network interface is powered on, and physically connected (e.g. cable plugged in).
+             *
+             *  This is always present if eRunning, but may also be present in the set of states if it can be determed that the interface is plugged in but disabled
+             *  for reasons of software state (e.g. disabled interface, or testing mode).
+             */
             eConnected,
+
+            /**
+             *  This tells if the network interface is ready to send and recieve packets.
+             *
+             *  \note see https://tools.ietf.org/html/rfc2020 and https://tools.ietf.org/html/rfc2863 - IfAdminStatus and IfOperStatus
+             *        Corresponds to IfOperStatus==IfOperStatusUp
+             */
             eRunning,
 
             Stroika_Define_Enum_Bounds (eConnected, eRunning)
         };
 
         /**
+         *  The state of the interface (@see Status) if known.
+         *
+         *  \note not has_value () if IfOperStatusUnknown
          */
         optional<Containers::Set<Status>> fStatus;
 

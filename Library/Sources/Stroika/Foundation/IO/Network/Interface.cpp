@@ -600,6 +600,11 @@ namespace {
                     case IfOperStatusDown:
                         newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus); // keep any existing status values, but don't leave unknown
                         break;
+                    case IfOperStatusDormant:
+                    case IfOperStatusLowerLayerDown:
+                        // Not sure about either of these - based on docs in https://msdn.microsoft.com/en-us/library/windows/hardware/ff553790(v=vs.85).aspx - not super clear
+                        newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected});
+                        break;
                     default:
                         // Don't know how to interpret the other status states
                         break;
