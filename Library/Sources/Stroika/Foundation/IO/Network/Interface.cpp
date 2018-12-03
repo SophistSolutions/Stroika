@@ -251,7 +251,11 @@ namespace {
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
             Assert (r == 0);
             if (r == 0) {
+#if qPlatform_Linux
                 SocketAddress sa{ifreq.ifr_netmask};
+#elif qPlatform_MacOS
+                SocketAddress sa{ifreq.ifr_addr};
+#endif
                 if (sa.IsInternetAddress ()) {
                     InternetAddress ia = sa.GetInternetAddress ();
                     size_t          prefixLen{};
