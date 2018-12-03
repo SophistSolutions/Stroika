@@ -153,8 +153,10 @@ namespace Stroika::Foundation::IO::Network {
         vector<bool> result;
         result.reserve (sz * 8);
         for (uint8_t b : As<vector<uint8_t>> ()) {
+            // We could logically have numbered bits either way, but since this returns high order byte first only makes
+            // sense to return high order bit first
             for (size_t i = 0; i < 8; ++i) {
-                result.push_back (BitSubstring (b, i, i + 1));
+                result.push_back (BitSubstring (b, 7 - i, 7 - i + 1));
             }
         }
         return result;

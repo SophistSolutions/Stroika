@@ -229,7 +229,7 @@ namespace Stroika::Foundation::IO::Network {
          *      As<IPv6AddressOctets>                           // GetAddressFamily () == V6 only (alias)
          *      As<vector<byte>> ();                            // AddressFamily must be V4 or V6
          *      As<vector<uint8_t>> ();                         // AddressFamily must be V4 or V6
-         *      As<vector<bool>> ();                            // AddressFamily must be V4 or V6  (returns 'bits' mapped into array indexes
+         *      As<vector<bool>> ();                            // AddressFamily must be V4 or V6  (returns 'bits' mapped into array indexes - high order bit of high order byte first)
          *
          *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
          *
