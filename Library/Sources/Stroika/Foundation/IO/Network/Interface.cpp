@@ -196,36 +196,114 @@ String Interface::ToString () const
  */
 #if qPlatform_POSIX
 namespace {
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined") Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+    Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i)
     {
         using Binding = Interface::Binding;
-        // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
-        //Collection<Interface> result;
-        Mapping<String, Interface> results;
-        auto                       getFlags = [](int sd, const char* name) {
-            struct ifreq ifreq {
-            };
+        Interface newInterface;
+        newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
+        newInterface.fFriendlyName        = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
+        auto getFlags                     = [](int sd, const char* name) {
+            ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
 
             int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
             Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
             return r == 0 ? ifreq.ifr_flags : 0;
         };
+        int flags = getFlags (sd, i->ifr_name);
 #if qPlatform_Linux
         auto getWirelessFlag = [](int sd, const char* name) {
-            struct iwreq pwrq {
-            };
+            iwreq pwrq{};
             Characters::CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
-
             int r = ::ioctl (sd, SIOCGIWNAME, (char*)&pwrq);
             return r == 0;
         };
 #endif
+        if (flags & IFF_LOOPBACK) {
+            newInterface.fType = Interface::Type::eLoopback;
+        }
+#if qPlatform_Linux
+        else if (getWirelessFlag (sd, i->ifr_name)) {
+            newInterface.fType = Interface::Type::eWIFI;
+        }
+#endif
+        else {
+            // NYI
+            newInterface.fType = Interface::Type::eWiredEthernet; // WAG - not the right way to tell!
+        }
 
-        struct ifreq  ifreqs[128]{};
-        struct ifconf ifconf {
-            sizeof (ifreqs), { reinterpret_cast<char*> (ifreqs) }
-        };
+#if qPlatform_Linux
+        {
+            ifreq tmp = *i;
+            if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
+                newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
+            }
+        }
+#endif
+
+#if qPlatform_Linux
+        {
+            auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
+                struct ifreq ifreq {
+                };
+                Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+                struct ethtool_cmd edata {
+                };
+                ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
+                edata.cmd      = ETHTOOL_GSET;
+                int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
+                if (r != 0) {
+                    DbgTrace ("No speed for interface %s, errno=%d", name, errno);
+                    return nullopt;
+                }
+                constexpr uint64_t kMegabit_ = 1000 * 1000;
+                DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
+                switch (ethtool_cmd_speed (&edata)) {
+                    case SPEED_10:
+                        return 10 * kMegabit_;
+                    case SPEED_100:
+                        return 100 * kMegabit_;
+                    case SPEED_1000:
+                        return 1000 * kMegabit_;
+                    case SPEED_2500:
+                        return 2500 * kMegabit_;
+                    case SPEED_10000:
+                        return 10000 * kMegabit_;
+                    default:
+                        return nullopt;
+                }
+            };
+            newInterface.fTransmitSpeedBaud    = getSpeed (sd, i->ifr_name);
+            newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
+        }
+#endif
+
+        {
+            Containers::Set<Interface::Status> status = Memory::ValueOrDefault (newInterface.fStatus);
+            if (flags & IFF_RUNNING) {
+                // not right!!! But a start...
+                status.Add (Interface::Status::eConnected);
+                status.Add (Interface::Status::eRunning);
+            }
+            newInterface.fStatus = status;
+        }
+        {
+            SocketAddress sa{i->ifr_addr};
+            if (sa.IsInternetAddress ()) {
+                newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
+            }
+        }
+        return newInterface;
+    }
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined") Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+    {
+        using Binding = Interface::Binding;
+        // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
+        //Collection<Interface> result;
+        Mapping<String, Interface> results;
+
+        ifreq  ifreqs[128]{};
+        ifconf ifconf{sizeof (ifreqs), {reinterpret_cast<char*> (ifreqs)}};
 
         int sd = ::socket (PF_INET, SOCK_STREAM, 0);
         Assert (sd >= 0);
@@ -238,86 +316,15 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", i->ifr_name, i->ifr_addr.sa_family);
 #endif
-            String    interfaceName{String::FromSDKString (i->ifr_name)};
-            Interface newInterface            = results.LookupValue (interfaceName);
-            newInterface.fInternalInterfaceID = interfaceName;
-            newInterface.fFriendlyName        = interfaceName; // not great - maybe find better name - but this will do for now...
-            int flags                         = getFlags (sd, i->ifr_name);
+            String interfaceName{String::FromSDKString (i->ifr_name)};
 
-            if (flags & IFF_LOOPBACK) {
-                newInterface.fType = Interface::Type::eLoopback;
-            }
-#if qPlatform_Linux
-            else if (getWirelessFlag (sd, i->ifr_name)) {
-                newInterface.fType = Interface::Type::eWIFI;
-            }
-#endif
-            else {
-                // NYI
-                newInterface.fType = Interface::Type::eWiredEthernet; // WAG - not the right way to tell!
-            }
-
-#if qPlatform_Linux
-            {
-                ifreq tmp = *i;
-                if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
-                    newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
-                }
-            }
+#if 0
+            Interface newInterface            = results.LookupValue (interfaceName);    // unclear if we ever want to merge - I think no?
+#else
+            Assert (not results.ContainsKey (interfaceName));
+            Interface newInterface = GetInterfaces_POSIX_mkInterface_ (sd, i);
 #endif
 
-#if qPlatform_Linux
-            {
-                auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
-                    struct ifreq ifreq {
-                    };
-                    Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
-                    struct ethtool_cmd edata {
-                    };
-                    ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
-                    edata.cmd      = ETHTOOL_GSET;
-                    int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
-                    if (r != 0) {
-                        DbgTrace ("No speed for interface %s, errno=%d", name, errno);
-                        return nullopt;
-                    }
-                    constexpr uint64_t kMegabit_ = 1000 * 1000;
-                    DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
-                    switch (ethtool_cmd_speed (&edata)) {
-                        case SPEED_10:
-                            return 10 * kMegabit_;
-                        case SPEED_100:
-                            return 100 * kMegabit_;
-                        case SPEED_1000:
-                            return 1000 * kMegabit_;
-                        case SPEED_2500:
-                            return 2500 * kMegabit_;
-                        case SPEED_10000:
-                            return 10000 * kMegabit_;
-                        default:
-                            return nullopt;
-                    }
-                };
-                newInterface.fTransmitSpeedBaud    = getSpeed (sd, i->ifr_name);
-                newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
-            }
-#endif
-
-            {
-                Containers::Set<Interface::Status> status = Memory::ValueOrDefault (newInterface.fStatus);
-                if (flags & IFF_RUNNING) {
-                    // not right!!! But a start...
-                    status.Add (Interface::Status::eConnected);
-                    status.Add (Interface::Status::eRunning);
-                }
-                newInterface.fStatus = status;
-            }
-            {
-                SocketAddress sa{i->ifr_addr};
-                if (sa.IsInternetAddress ()) {
-                    newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
-                }
-            }
             results.Add (newInterface.fInternalInterfaceID, newInterface);
 
             // On MacOS (at least) I needed to use IFNAMESIZ + addr.size - as suggested
@@ -329,7 +336,7 @@ namespace {
 #if qPlatform_Linux
             size_t len = sizeof (*i);
 #else
-            size_t len = IFNAMSIZ + i->ifr_addr.sa_len;
+            size_t    len          = IFNAMSIZ + i->ifr_addr.sa_len;
 #endif
             i = reinterpret_cast<const ifreq*> (reinterpret_cast<const byte*> (i) + len);
         }
