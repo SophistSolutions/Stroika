@@ -200,6 +200,12 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  \req i < size  ();
+         */
+        nonvirtual byte operator[] (const size_t i) const;
+
+    public:
+        /**
          *  Returns true iff the size of the BLOB is zero.
          */
         nonvirtual bool empty () const;
