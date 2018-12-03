@@ -40,6 +40,7 @@
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Mapping.h"
+#include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../Debug/Sanitizer.h"
 #include "../../Execution/ErrNoException.h"
 #include "../../Execution/Finally.h"
@@ -198,6 +199,7 @@ String Interface::ToString () const
  */
 #if qPlatform_POSIX
 namespace {
+
     Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i)
     {
         using Binding = Interface::Binding;
@@ -239,6 +241,40 @@ namespace {
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
                 newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
             }
+        }
+#endif
+
+#if qPlatform_Linux
+        auto getDefaultGateway = [](const char* name) -> optional<InternetAddress> {
+            try {
+                DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
+                const String_Constant                                  kFileName_{L"/proc/net/route"};
+                /*
+                 * EXAMPLE OUTPUT:
+                 *        cat /proc/net/route
+                 *        Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+                 *        eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
+                 *        eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
+                 */
+                // Note - /procfs files always unseekable
+                for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
+                    if (line.size () >= 3 and
+                        line[0] == String::FromNarrowSDKString (name) and
+                        line[1] == L"00000000") {
+                        //
+                        int tmp[4]{};
+                        swscanf (line[2].c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);
+                        return InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]), static_cast<byte> (tmp[3])};
+                    }
+                }
+            }
+            catch (...) {
+                // lot's of reasons this could fail, including running WSL on Windows (2018-12-03)
+            }
+            return nullopt;
+        };
+        if (auto gw = getDefaultGateway (i->ifr_name)) {
+            newInterface.fGateways += *gw;
         }
 #endif
 
