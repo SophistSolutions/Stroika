@@ -144,12 +144,27 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
 }
 
 namespace Stroika::Foundation::IO::Network {
+
+    template <>
+    vector<bool> InternetAddress::As<vector<bool>> () const
+    {
+        Require (GetAddressSize ().has_value ());
+        size_t       sz = *GetAddressSize ();
+        vector<bool> result;
+        result.reserve (sz * 8);
+        for (uint8_t b : As<vector<uint8_t>> ()) {
+            for (size_t i = 0; i < 8; ++i) {
+                result.push_back (BitSubstring (b, i, i + 1));
+            }
+        }
+        return result;
+    }
     template <>
     String InternetAddress::As<String> () const
     {
         switch (fAddressFamily_) {
             case AddressFamily::UNKNOWN: {
-                return String ();
+                return String{};
             } break;
             case AddressFamily::V4: {
                 char        buf[INET_ADDRSTRLEN + 1];

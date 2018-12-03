@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Memory {
         pair<const byte*, const byte*>                      result;
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         As<pair<const byte*, const byte*>> (&result);
-        Assert (i < result.second - result.first);
+        Assert (i < static_cast<size_t> (result.second - result.first));
         return result.first[i];
     }
     inline bool BLOB::empty () const
