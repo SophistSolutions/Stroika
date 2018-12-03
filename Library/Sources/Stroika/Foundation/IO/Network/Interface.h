@@ -235,21 +235,21 @@ namespace Stroika::Foundation::IO::Network {
             nonvirtual String ToString () const;
         };
 
-        optional<WirelessInfo> fWirelessInfo; // IFF type fType == eWIFI
+        optional<WirelessInfo> fWirelessInfo; // has_value () if-and-only-if type fType == eWIFI
 
         /**
          */
         Containers::Collection<Binding> fBindings; // can be IPv4 or IPv6
 
         /**
-         *  Typically there will be zero or one, and if one, this is the default gateway
+         *  Typically there will be zero or one, and if one, this is the default gateway. This maybe missing if it couldn't be retrieved from the operating system.
          */
-        Containers::Sequence<InternetAddress> fGateways;
+        optional<Containers::Sequence<InternetAddress>> fGateways;
 
         /**
-         *  The default set of (per adapter) dns servers
+         *  The default set of (per adapter) dns servers. This maybe missing if it couldn't be retrieved from the operating system.
          */
-        Containers::Sequence<InternetAddress> fDNSServers;
+        optional<Containers::Sequence<InternetAddress>> fDNSServers;
 
         /**
          *  \note   Configuration::DefaultNames<> supported

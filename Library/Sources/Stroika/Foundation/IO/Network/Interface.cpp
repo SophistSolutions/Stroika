@@ -274,7 +274,9 @@ namespace {
             return nullopt;
         };
         if (auto gw = getDefaultGateway (i->ifr_name)) {
-            newInterface.fGateways += *gw;
+            auto gws = newInterface.fGateways.value_or (Containers::Sequence<InternetAddress>{});
+            gws += *gw;
+            newInterface.fGateways = gws;
         }
 #endif
 
@@ -691,13 +693,17 @@ namespace {
                 for (PIP_ADAPTER_GATEWAY_ADDRESS_LH pa = currAddresses->FirstGatewayAddress; pa != nullptr; pa = pa->Next) {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fGateways.Append (sa.GetInternetAddress ());
+                        auto gws = newInterface.fGateways.value_or (Containers::Sequence<InternetAddress>{});
+                        gws += sa.GetInternetAddress ();
+                        newInterface.fGateways = gws;
                     }
                 }
                 for (PIP_ADAPTER_DNS_SERVER_ADDRESS_XP pa = currAddresses->FirstDnsServerAddress; pa != nullptr; pa = pa->Next) {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fDNSServers.Append (sa.GetInternetAddress ());
+                        auto ds = newInterface.fDNSServers.value_or (Containers::Sequence<InternetAddress>{});
+                        ds += sa.GetInternetAddress ();
+                        newInterface.fDNSServers = ds;
                     }
                 }
                 if (currAddresses->PhysicalAddressLength == 6) {
