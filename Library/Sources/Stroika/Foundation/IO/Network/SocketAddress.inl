@@ -58,7 +58,7 @@ namespace Stroika::Foundation::IO::Network {
                 as.sin_addr = iaddr.As<in_addr> ();
 #if qPlatform_MacOS
                 // @todo really BSD
-                fSocketAddress_.ss_len = sizeof (sockaddr_in);
+                fSocketAddress_.ss_len = GetRequiredSize ();
 #endif
             } break;
             case InternetAddress::AddressFamily::V6: {
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::IO::Network {
                 as.sin6_addr = iaddr.As<in6_addr> ();
 #if qPlatform_MacOS
                 // @todo really BSD
-                fSocketAddress_.ss_len = sizeof (sockaddr_in6);
+                fSocketAddress_.ss_len = GetRequiredSize ();
 #endif
             } break;
             default: {
@@ -93,6 +93,20 @@ namespace Stroika::Foundation::IO::Network {
     inline SocketAddress::FamilyType SocketAddress::GetAddressFamily () const
     {
         return static_cast<FamilyType> (fSocketAddress_.ss_family);
+    }
+    inline size_t SocketAddress::GetRequiredSize () const
+    {
+        switch (fSocketAddress_.ss_family) {
+            case AF_INET: {
+                return sizeof (sockaddr_in);
+            }
+            case AF_INET6: {
+                return sizeof (sockaddr_in6);
+            }
+            default: {
+                return sizeof (sockaddr_storage);
+            }
+        }
     }
     inline bool SocketAddress::IsInternetAddress () const
     {
@@ -170,6 +184,10 @@ namespace Stroika::Foundation::IO::Network {
         DISABLE_COMPILER_MSC_WARNING_START (6011) // no idea why MSFT reports this is dererencing a null pointer
         const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
         DISABLE_COMPILER_MSC_WARNING_END (6011)
+#if qPlatform_MacOS
+        // @todo really BSD
+        Assert (fSocketAddress_.ss_len == GetRequiredSize ());
+#endif
         return as;
     }
     template <>
@@ -180,6 +198,10 @@ namespace Stroika::Foundation::IO::Network {
         DISABLE_COMPILER_MSC_WARNING_START (6011) // no idea why MSFT reports this is dererencing a null pointer
         const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
         DISABLE_COMPILER_MSC_WARNING_END (6011)
+#if qPlatform_MacOS
+        // @todo really BSD
+        Assert (fSocketAddress_.ss_len == GetRequiredSize ());
+#endif
         return as;
     }
 

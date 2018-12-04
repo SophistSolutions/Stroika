@@ -77,6 +77,13 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  Return the size in bytes for this socket address' address family. This is well defined for
+         *  V4 and V6, sizeof (sockaddr_storage) otherwise.
+         */
+        nonvirtual size_t GetRequiredSize () const;
+
+    public:
+        /**
          *  SocketAddresses can refer to InternetAddresses, but they can also refer to local structures like
          *  named pipes, special files, etc. This is true if IPv4 or IPv6.
          */
