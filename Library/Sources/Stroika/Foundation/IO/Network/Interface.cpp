@@ -49,6 +49,7 @@
 #endif
 #include "../../Execution/Synchronized.h"
 #include "../../IO/FileSystem/FileInputStream.h"
+#include "../../IO/Network/DNS.h"
 #include "../../Memory/Optional.h"
 #include "../../Memory/SmallStackBuffer.h"
 
