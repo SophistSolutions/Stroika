@@ -351,9 +351,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace (L"got exception converting gateway to address (dns): %s", Characters::ToString (current_exception ()).c_str ());
-
-                        // should work...
+                        DbgTrace (L"got exception converting gateway to address (dns): %s", Characters::ToString (current_exception ()).c_str ()); // should work...
                     }
                 }
 #endif
@@ -365,8 +363,10 @@ namespace {
         };
         if (auto gw = getDefaultGateway (i->ifr_name)) {
             auto gws = newInterface.fGateways.value_or (Containers::Sequence<InternetAddress>{});
-            gws += *gw;
-            newInterface.fGateways = gws;
+            if (not gws.Contains (*gw)) {
+                gws += *gw;
+                newInterface.fGateways = gws;
+            }
         }
 #endif
 
@@ -789,16 +789,20 @@ namespace {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
                         auto gws = newInterface.fGateways.value_or (Containers::Sequence<InternetAddress>{});
-                        gws += sa.GetInternetAddress ();
-                        newInterface.fGateways = gws;
+                        if (not gws.Contains (*gw)) {
+                            gws += sa.GetInternetAddress ();
+                            newInterface.fGateways = gws;
+                        }
                     }
                 }
                 for (PIP_ADAPTER_DNS_SERVER_ADDRESS_XP pa = currAddresses->FirstDnsServerAddress; pa != nullptr; pa = pa->Next) {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
                         auto ds = newInterface.fDNSServers.value_or (Containers::Sequence<InternetAddress>{});
-                        ds += sa.GetInternetAddress ();
-                        newInterface.fDNSServers = ds;
+                        if (not ds.Contains (sa.GetInternetAddress ())) {
+                            ds += sa.GetInternetAddress ();
+                            newInterface.fDNSServers = ds;
+                        }
                     }
                 }
                 if (currAddresses->PhysicalAddressLength == 6) {
