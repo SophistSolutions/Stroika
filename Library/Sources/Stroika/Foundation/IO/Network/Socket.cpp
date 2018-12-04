@@ -118,25 +118,25 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
     try {
-        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()));
     }
     catch (const Execution::Platform::Windows::Exception& e) {
         if (e == WSAEACCES) {
-            Throw (StringException (Characters::Format (L"Cannot Bind to port %d: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", (int)sockAddr.GetPort ())));
+            Throw (StringException (Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
         }
     }
 #else
     // EACCESS reproted as FileAccessException - which is crazy confusing.
     // @todo - find a better way, but for now remap this...
     try {
-        ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&sfd, &useSockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
+        ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&sfd, &useSockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
     }
     catch (const IO::FileAccessException&) {
-        Throw (StringException (Characters::Format (L"Cannot Bind to port %d: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", (int)sockAddr.GetPort ())));
+        Throw (StringException (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
     }
 #endif
     catch (...) {
-        Throw (StringException (Characters::Format (L"Cannot Bind to port %d: %s", (int)sockAddr.GetPort (), Characters::ToString (current_exception ()).c_str ())));
+        Throw (StringException (Characters::Format (L"Cannot Bind to %s: %s", Characters::ToString (sockAddr).c_str (), Characters::ToString (current_exception ()).c_str ())));
     }
 }
 
