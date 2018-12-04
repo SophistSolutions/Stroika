@@ -16,19 +16,6 @@
 #define qHas_pid_t qPlatform_POSIX
 #endif
 
-/*
- */
-#ifndef qHas_pthread_setschedprio
-
-#if defined(__clang__) && defined(__APPLE__)
-// verified still doesn't exist as of XCode 10 --LGP 2018-12-03
-#define qHas_pthread_setschedprio 0
-#else
-#define qHas_pthread_setschedprio qPlatform_POSIX
-#endif
-
-#endif /*qHas_pthread_setschedprio*/
-
 #endif /*defined(__cplusplus)*/
 
 #endif /*_Stroika_Foundation_Configuration_Private_Defaults_Execution_Threads_h_*/

@@ -43,7 +43,7 @@ using Containers::Set;
 using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 // Leave this off by default since I'm not sure its safe, and at best it uses some time. But make it
 // easy to turn on it release builds...
@@ -403,6 +403,9 @@ void Thread::Rep_::ApplyThreadName2OSThreadObject ()
 
 void Thread::Rep_::ApplyPriority (Priority priority)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Rep_::ApplyPriority", L"threads=%s, priority=%s", Characters::ToString (*this).c_str (), Characters::ToString (priority).c_str ())};
+#endif
     NativeHandleType nh = GetNativeHandle ();
     if (nh != NativeHandleType{}) {
 #if qPlatform_Windows
@@ -426,69 +429,67 @@ void Thread::Rep_::ApplyPriority (Priority priority)
                 RequireNotReached ();
         }
 #elif qPlatform_POSIX
-        // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
-        static bool sValidPri_ = false;
-        static int  sPriorityMin_;
-        static int  sPriorityMax_;
+        /*
+         *  pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
+         *
+         *  Linux notes:
+         *      From http://man7.org/linux/man-pages/man7/sched.7.html
+         *
+         *          Since Linux 2.6.23, the default scheduler is CFS, the "Completely
+         *          Fair Scheduler".  The CFS scheduler replaced the earlier "O(1)"
+         *          scheduler.
+         *
+         *          ...
+         *
+         *          For threads scheduled under one of the normal scheduling policies
+         *         (SCHED_OTHER, SCHED_IDLE, SCHED_BATCH), sched_priority is not used in
+         *         scheduling decisions (it must be specified as 0).
+         *
+         *         So - bottom line - this is a complete waste of time.
+         */
+        int priorityMin;
+        int priorityMax;
+        int schedulingPolicy{}; // on Linux, this appears to always be 0 - SCHED_OTHER, so cannot set priorities
         {
-            if (not sValidPri_) {
-                int         sched_policy{};
-                sched_param param{};
-                Verify (::pthread_getschedparam (nh, &sched_policy, &param) == 0);
-                sPriorityMin_ = ::sched_get_priority_min (sched_policy);
-                sPriorityMax_ = ::sched_get_priority_max (sched_policy);
-                DbgTrace ("sPriorityMin_=%d, sPriorityMax_=%d", sPriorityMin_, sPriorityMax_);
-                sValidPri_ = true;
-            }
-        }
-#if qHas_pthread_setschedprio && 0
-        // used to use pthread_setschedprio but for some reason missing on macosx, and pthread_setschedparam seens to do sane thing
-        switch (priority) {
-            case Priority::eLowest:
-                Verify (::pthread_setschedprio (nh, sPriorityMin_) == 0 or errno == EPERM);
-                break;
-            case Priority::eBelowNormal:
-                Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_) == 0 or errno == EPERM);
-                break;
-            case Priority::eNormal:
-                Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_) == 0 or errno == EPERM);
-                break;
-            case Priority::eAboveNormal:
-                Verify (::pthread_setschedprio (nh, (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_) == 0 or errno == EPERM);
-                break;
-            case Priority::eHighest:
-                Verify (::pthread_setschedprio (nh, sPriorityMax_) == 0 or errno == EPERM);
-                break;
-            default:
-                RequireNotReached ();
-        }
-#else
-        sched_param sp{};
-        switch (priority) {
-            case Priority::eLowest:
-                sp.sched_priority = sPriorityMin_;
-                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
-                break;
-            case Priority::eBelowNormal:
-                sp.sched_priority = (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_;
-                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
-                break;
-            case Priority::eNormal:
-                sp.sched_priority = (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_;
-                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
-                break;
-            case Priority::eAboveNormal:
-                sp.sched_priority = (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_;
-                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
-                break;
-            case Priority::eHighest:
-                sp.sched_priority = sPriorityMax_;
-                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
-                break;
-            default:
-                RequireNotReached ();
-        }
+            sched_param param{};
+            Verify (::pthread_getschedparam (nh, &schedulingPolicy, &param) == 0);
+            priorityMin = ::sched_get_priority_min (schedulingPolicy);
+            priorityMax = ::sched_get_priority_max (schedulingPolicy);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("schedulingPolicy=%d, default-priority=%d, sPriorityMin_=%d, priorityMax=%d", schedulingPolicy, param.sched_priority, priorityMin, priorityMax);
 #endif
+        }
+        int newPThreadPriority{priorityMin};
+        switch (priority) {
+            case Priority::eLowest:
+                newPThreadPriority = priorityMin;
+                break;
+            case Priority::eBelowNormal:
+                newPThreadPriority = (priorityMax - priorityMin) * .25 + priorityMin;
+                break;
+            case Priority::eNormal:
+                newPThreadPriority = (priorityMax - priorityMin) * .5 + priorityMin;
+                break;
+            case Priority::eAboveNormal:
+                newPThreadPriority = (priorityMax - priorityMin) * .75 + priorityMin;
+                break;
+            case Priority::eHighest:
+                newPThreadPriority = priorityMax;
+                break;
+            default:
+                RequireNotReached ();
+                newPThreadPriority = (priorityMax - priorityMin) * .5 + priorityMin;
+        }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Setting os thread priority for thread %lld to %d", (long long int)(nh), newPThreadPriority);
+#endif
+        /*
+         *  \note Slightly simpler to use POSIX pthread_setschedprio - http://pubs.opengroup.org/onlinepubs/9699919799/functions/pthread_setschedprio.html
+         *        but alas MacOSX (XCode 10) doesn't support this, so keep more common code, and use about the same process - pthread_setschedparam
+         */
+        sched_param sp{};
+        sp.sched_priority = newPThreadPriority;
+        Verify (::pthread_setschedparam (nh, schedulingPolicy, &sp) == 0 or errno == EPERM);
 #else
         // Cannot find any way todo this
         WeakAssertNotImplemented ();

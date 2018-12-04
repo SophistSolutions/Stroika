@@ -372,6 +372,22 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+    template <>
+    struct DefaultNames<Execution::Thread::Priority> : EnumNames<Execution::Thread::Priority> {
+        static constexpr EnumNames<Execution::Thread::Priority> k{
+            EnumNames<Execution::Thread::Priority>::BasicArrayInitializer{
+                {
+                    {Execution::Thread::Priority::eLowest, L"Lowest"},
+                    {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
+                    {Execution::Thread::Priority::eNormal, L"Normal"},
+                    {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
+                    {Execution::Thread::Priority::eHighest, L"Highest"},
+                }}};
+        DefaultNames ()
+            : EnumNames<Execution::Thread::Priority> (k)
+        {
+        }
+    };
 }
 
 #endif /*_Stroika_Foundation_Execution_Thread_inl_*/
