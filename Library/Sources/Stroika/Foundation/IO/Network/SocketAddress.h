@@ -121,7 +121,12 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual String ToString () const;
 
     private:
-        sockaddr_storage fSocketAddress_;
+        union {
+            sockaddr_storage fSocketAddressStorage_;
+            sockaddr         fSocketAddress_;
+            sockaddr_in      fSocketAddress_V4_;
+            sockaddr_in6     fSocketAddress_V6_;
+        };
     };
 
     // Supported specializations
