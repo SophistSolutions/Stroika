@@ -145,7 +145,7 @@ namespace Stroika::Foundation::IO::Network {
             case AddressFamily::V4:
                 return 4;
             case AddressFamily::V6:
-                return 32;
+                return 16;
             default:
                 return nullopt;
         }
