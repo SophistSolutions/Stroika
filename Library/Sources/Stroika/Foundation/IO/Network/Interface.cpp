@@ -274,9 +274,10 @@ namespace {
         };
 #endif
 
-#if qPlatform_Linux
+#if qPlatform_Linux || qPlatform_MacOS
         auto getDefaultGateway = [](const char* name) -> optional<InternetAddress> {
             try {
+#if qPlatform_Linux
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
                 const String_Constant                                  kFileName_{L"/proc/net/route"};
                 /*
@@ -297,6 +298,52 @@ namespace {
                         return InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]), static_cast<byte> (tmp[3])};
                     }
                 }
+#elif qPlatform_MacOS
+                /*
+                 * EXAMPLE OUTPUT:
+                 *      >route get default
+                 *         route to: default
+                 *      destination: default
+                 *             mask: default
+                 *          gateway: router.asus.com
+                 *        interface: en0
+                 *            flags: <UP,GATEWAY,DONE,STATIC,PRCLONING>
+                 *       recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
+                 *             0         0         0         0         0         0      1500         0
+                 */
+                ProcessRunner                    pr (L"route get default");
+                Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':'}};
+                optional<String>                                       forInterface;
+                optional<String>                                       gateway;
+                for (Sequence<String> line : reader.ReadMatrix (useStdOut)) {
+                    if (line.size () == 2 and line[0] == L"interface") {
+                        forInterface = line[1];
+                    }
+                    else if (line.size () == 2 and line[0] == L"gateway") {
+                        gateway = line[1];
+                    }
+                }
+                if (forInterface == String::FromNarrowSDKString (name) and gateway) {
+                    try {
+                        return InternetAddress{*gateway};
+                    }
+                    catch (...) {
+                        // frequently fails - cuz its a dns name
+                    }
+                    try {
+                        auto s = IO::Network::DNS::Default ().GetHostAddresses (*gateway);
+                        if (not s.empty ()) {
+                            return InternetAddress{s.Nth (0)};
+                        }
+                    }
+                    catch (...) {
+                        // shoudl work...
+                    }
+                }
+#endif
             }
             catch (...) {
                 // lot's of reasons this could fail, including running WSL on Windows (2018-12-03)
