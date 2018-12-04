@@ -203,7 +203,13 @@ String Interface::ToString () const
 #if qPlatform_POSIX
 namespace {
 
-    Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i)
+    // NB: On macos, we get:
+    //   Interface.cpp:210:71: runtime error: member access within misaligned address 0x70000a774c74 for type 'const ifreq', which requires 8 byte alignment
+    //        0x70000a774c74: note: pointer points here
+#if qPlatform_MacOS
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
+#endif
+        Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i)
     {
         using Binding = Interface::Binding;
         Interface newInterface;
@@ -252,7 +258,8 @@ namespace {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
-            Assert (r == 0);
+            Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
+            ///@todo see if about fixes issue on moacos --LGP 2018-12-03
             if (r == 0) {
 #if qPlatform_Linux
                 SocketAddress sa{ifreq.ifr_netmask};
@@ -303,6 +310,8 @@ namespace {
                 }
 #elif qPlatform_MacOS
                 /*
+                 *  NOTE: Could ALSO use netstat -nr   - https://unh.edu/it/kb/article/how-to-route-print-mac-os-x.html
+                 *
                  * EXAMPLE OUTPUT:
                  *      >route get default
                  *         route to: default
@@ -343,7 +352,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        // shoudl work...
+                        DbgTrace (L"got exception converting gateway to address (dns): %s", Characters::ToString (current_exception ()).c_str ());  // should work...
                     }
                 }
 #endif
@@ -432,9 +441,12 @@ namespace {
 #endif
             }
         }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"GetInterfaces_POSIX_mkInterface_ returns %s", Characters::ToString (newInterface).c_str ());
+#endif
         return newInterface;
     }
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined") Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
@@ -459,7 +471,7 @@ namespace {
 #if 0
             Interface newInterface            = results.LookupValue (interfaceName);    // unclear if we ever want to merge - I think no?
 #else
-            Assert (not results.ContainsKey (interfaceName));
+            WeakAssert (not results.ContainsKey (interfaceName));
             Interface newInterface = GetInterfaces_POSIX_mkInterface_ (sd, i);
 #endif
 
