@@ -15,7 +15,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 
 namespace {
-    void _DefaultFatalErrorHandler_ (const SDKChar* msg)
+    void _DefaultFatalErrorHandler_ (const SDKChar* msg) noexcept
     {
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
         if (auto exc = current_exception ()) {
@@ -32,7 +32,7 @@ namespace {
         Debug::DropIntoDebuggerIfPresent ();
         abort ();
     }
-    void (*sFatalErrorHandler_) (const SDKChar* msg) = nullptr; // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
+    void (*sFatalErrorHandler_) (const SDKChar* msg) noexcept = nullptr; // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
 
     void TerminateHandler_ ()
     {
@@ -46,7 +46,7 @@ namespace {
 #endif
 }
 
-void Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const SDKChar* msg))
+void Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const SDKChar* msg) noexcept)
 {
     sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? _DefaultFatalErrorHandler_ : fatalErrorHandler;
     set_terminate (TerminateHandler_);

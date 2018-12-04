@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Debug {
      *  If called with no argument, it installs its OWN handler. To replace with your own, either call
      *  with an explicit handler here or call the underlying C++ APIs.
      */
-    void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) = nullptr);
+    void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) noexcept = nullptr);
 
 }
 

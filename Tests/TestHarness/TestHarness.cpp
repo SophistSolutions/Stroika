@@ -22,7 +22,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::TestHarness;
 
 namespace {
-    void _ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
+    void ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
     {
         if (assertCategory == nullptr) {
             assertCategory = "Unknown assertion";
@@ -40,7 +40,7 @@ namespace {
 
         _Exit (EXIT_FAILURE); // skip
     }
-    void _FatalErrorHandler_ (const Characters::SDKChar* msg)
+    void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept
     {
 #if qTargetPlatformSDKUseswchar_t
         cerr << "FAILED: " << Characters::WideStringToNarrowSDKString (msg) << endl;
@@ -50,7 +50,7 @@ namespace {
         Debug::DropIntoDebuggerIfPresent ();
         _Exit (EXIT_FAILURE); // skip
     }
-    void _FatalSignalHandler_ (Execution::SignalID signal)
+    void FatalSignalHandler_ (Execution::SignalID signal)
     {
         cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal).AsNarrowSDKString () << endl;
         DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
@@ -62,11 +62,11 @@ namespace {
 void TestHarness::Setup ()
 {
 #if qDebug
-    Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
+    Stroika::Foundation::Debug::SetAssertionHandler (ASSERT_HANDLER_);
 #endif
-    Debug::RegisterDefaultFatalErrorHandlers (_FatalErrorHandler_);
+    Debug::RegisterDefaultFatalErrorHandlers (FatalErrorHandler_);
     using namespace Execution;
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (_FatalSignalHandler_, SignalHandler::Type::eDirect));
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (FatalSignalHandler_, SignalHandler::Type::eDirect));
 }
 
 int TestHarness::PrintPassOrFail (void (*regressionTest) ())
@@ -90,6 +90,6 @@ int TestHarness::PrintPassOrFail (void (*regressionTest) ())
 void TestHarness::Test_ (bool failIfFalse, const char* regressionTestText, const char* fileName, int lineNum)
 {
     if (not failIfFalse) {
-        _ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
+        ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
     }
 }
