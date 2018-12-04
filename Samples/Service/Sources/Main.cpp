@@ -56,7 +56,7 @@ using Execution::Logger;
 #endif
 
 namespace {
-    void _FatalErorrHandler_ (const Characters::SDKChar* msg)
+    void FatalErorrHandler_ (const Characters::SDKChar* msg) noexcept
     {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
@@ -70,7 +70,7 @@ namespace {
 #endif
         std::_Exit (EXIT_FAILURE); // skip
     }
-    void _FatalSignalHandler_ (Execution::SignalID signal)
+    void FatalSignalHandler_ (Execution::SignalID signal) noexcept
     {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
@@ -134,7 +134,7 @@ int main (int argc, const char* argv[])
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::StructuredException::RegisterHandler ();
 #endif
-    Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_); // override the default handler to emit message via Logger
+    Debug::RegisterDefaultFatalErrorHandlers (FatalErorrHandler_); // override the default handler to emit message via Logger
 
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
