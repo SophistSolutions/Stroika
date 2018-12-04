@@ -121,13 +121,18 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
                 af = AddressFamily::V6;
             }
         }
+        // queer API betware - inet_pton returns 0 (not negative) on error
         switch (af) {
             case AddressFamily::V4: {
-                Execution::ThrowErrNoIfNegative (inet_pton (AF_INET, s.c_str (), &fV4_));
+                if (::inet_pton (AF_INET, s.c_str (), &fV4_) == 0) {
+                    Execution::Throw (Execution::StringException (String_Constant (L"unable to parse string as IPv4 internet address")));
+                }
                 fAddressFamily_ = af;
             } break;
             case AddressFamily::V6: {
-                Execution::ThrowErrNoIfNegative (inet_pton (AF_INET6, s.c_str (), &fV6_));
+                if (::inet_pton (AF_INET6, s.c_str (), &fV6_) == 0) {
+                    Execution::Throw (Execution::StringException (String_Constant (L"unable to parse string as IPv6 internet address")));
+                }
                 fAddressFamily_ = af;
             } break;
             default: {
