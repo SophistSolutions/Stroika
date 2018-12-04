@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "../../Characters/String.h"
-#include "../../Containers/Collection.h"
+#include "../../Containers/Sequence.h"
 
 #include "InternetAddress.h"
 
@@ -29,7 +29,7 @@
 namespace Stroika::Foundation::IO::Network {
 
     using Characters::String;
-    using Containers::Collection;
+    using Containers::Sequence;
 
     /**
      *  DNS (Domain Name Service) Resolver.
@@ -48,9 +48,9 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         struct HostEntry {
-            Collection<InternetAddress> fAddressList;
-            Collection<String>          fAliases;
-            String                      fCanonicalName; // aka hostname?
+            Sequence<InternetAddress> fAddressList;
+            Sequence<String>          fAliases;
+            String                    fCanonicalName; // aka hostname?
         };
 
     public:
@@ -75,9 +75,8 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual Collection<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
+        nonvirtual Sequence<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
     };
-
 }
 
 /*

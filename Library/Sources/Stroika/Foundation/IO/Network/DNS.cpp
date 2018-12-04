@@ -106,11 +106,11 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 
     for (addrinfo* i = res; i != nullptr; i = i->ai_next) {
         if (i != res and i->ai_canonname != nullptr and i->ai_canonname[0] != '\0') {
-            result.fAliases.Add (String::FromUTF8 (i->ai_canonname));
+            result.fAliases += String::FromUTF8 (i->ai_canonname);
         }
         SocketAddress sa{*i->ai_addr};
         if (sa.IsInternetAddress ()) {
-            result.fAddressList.Add (sa.GetInternetAddress ());
+            result.fAddressList += sa.GetInternetAddress ();
         }
     }
 
@@ -179,7 +179,7 @@ optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
     }
 }
 
-Collection<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
+Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s", Characters::ToString (address).c_str ())};
