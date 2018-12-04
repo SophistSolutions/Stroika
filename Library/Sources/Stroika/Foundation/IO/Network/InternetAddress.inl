@@ -194,12 +194,14 @@ namespace Stroika::Foundation::IO::Network {
     inline vector<byte> InternetAddress::As<vector<byte>> () const
     {
         Require (GetAddressSize ().has_value ());
+        Assert (*GetAddressSize () <= 16);
         return vector<byte>{fArray_16_byte_.begin (), fArray_16_byte_.begin () + *GetAddressSize ()};
     }
     template <>
     inline vector<uint8_t> InternetAddress::As<vector<uint8_t>> () const
     {
         Require (GetAddressSize ().has_value ());
+        Assert (*GetAddressSize () <= 16);
         return vector<uint8_t>{fArray_16_uint_.begin (), fArray_16_uint_.begin () + *GetAddressSize ()};
     }
     template <>
