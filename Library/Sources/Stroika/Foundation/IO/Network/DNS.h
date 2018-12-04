@@ -19,7 +19,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   add CTOR args for DNS resolve isntances with params like timeouts.
+ *      @todo   add CTOR args for DNS resolve instances with params like timeouts.
  *
  *      @todo   add ctor params for prefer IPV4, IPV6 or both
  *
@@ -33,6 +33,11 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      *  DNS (Domain Name Service) Resolver.
+     *
+     *  \note This code used to return Collection<String>/Collection<InternetAddress> but I noticed that
+     *        http://man7.org/linux/man-pages/man3/getaddrinfo.3.html says "the application should try using
+     *        the addresses in the order in which they are returned" so i switched to Sequence<> to preserve
+     *        the order.
      */
     class DNS {
     public:
@@ -77,6 +82,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual Sequence<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
     };
+
 }
 
 /*
