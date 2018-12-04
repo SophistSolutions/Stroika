@@ -47,11 +47,13 @@
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include "../../Execution/ProcessRunner.h"
 #include "../../Execution/Synchronized.h"
 #include "../../IO/FileSystem/FileInputStream.h"
 #include "../../IO/Network/DNS.h"
 #include "../../Memory/Optional.h"
 #include "../../Memory/SmallStackBuffer.h"
+#include "../../Streams/MemoryStream.h"
 
 #include "Socket.h"
 
