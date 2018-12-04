@@ -98,6 +98,11 @@ namespace Stroika::Foundation::Execution {
         static constexpr Type eSafe = Type::eSafe;
 
     public:
+        /**
+         *  Any overload can be used for safe exception handlers, but only the noexcept overload may be used
+         *  for 'direct' exception calls (as a documentation hint - no real need).
+         */
+        SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT);
         SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
         SignalHandler (const Function<void(SignalID)>& signalHandler, Type type = Type::eDEFAULT);
 

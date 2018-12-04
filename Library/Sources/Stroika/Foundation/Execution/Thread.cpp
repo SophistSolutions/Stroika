@@ -724,7 +724,7 @@ Thread::NativeHandleType Thread::Rep_::GetNativeHandle ()
 }
 
 #if qPlatform_POSIX
-void Thread::Rep_::InterruptionSignalHandler_ (SignalID signal)
+void Thread::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
 {
     //
     //#if USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
 #if qPlatform_POSIX
-        static void InterruptionSignalHandler_ (SignalID signal);
+        static void InterruptionSignalHandler_ (SignalID signal) noexcept;
 #elif qPlatform_Windows
         static void CALLBACK CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif

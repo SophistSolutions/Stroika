@@ -22,11 +22,18 @@ namespace Stroika::Foundation::Execution {
         : fType_ (type)
         , fCall_ (signalHandler)
     {
+        Require (signalHandler == SIG_IGN or type == Type::eSafe); // otherwise use the overload taking a noexcept function
+    }
+    inline SignalHandler::SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type)
+        : fType_ (type)
+        , fCall_ (signalHandler)
+    {
     }
     inline SignalHandler::SignalHandler (const Function<void(SignalID)>& signalHandler, Type type)
         : fType_ (type)
         , fCall_ (signalHandler)
     {
+        Require (type == Type::eSafe); // otherwise use the overload taking a noexcept function
     }
     inline SignalHandler::Type SignalHandler::GetType () const
     {
