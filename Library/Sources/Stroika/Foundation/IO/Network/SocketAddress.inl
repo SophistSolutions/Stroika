@@ -56,6 +56,10 @@ namespace Stroika::Foundation::IO::Network {
                 as.sin_port = htons (portNumber);                                                   //NB no '::' cuz some systems use macro
                 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
                 as.sin_addr = iaddr.As<in_addr> ();
+#if qPlatform_MacOS
+                // @todo really BSD
+                fSocketAddress_.ss_len = sizeof (sockaddr_in);
+#endif
             } break;
             case InternetAddress::AddressFamily::V6: {
                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
@@ -65,6 +69,10 @@ namespace Stroika::Foundation::IO::Network {
                 as.sin6_port = htons (portNumber);                                                  //NB no ':' cuz some systems use macro
                 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
                 as.sin6_addr = iaddr.As<in6_addr> ();
+#if qPlatform_MacOS
+                // @todo really BSD
+                fSocketAddress_.ss_len = sizeof (sockaddr_in6);
+#endif
             } break;
             default: {
                 // just leave blank - no assert?
