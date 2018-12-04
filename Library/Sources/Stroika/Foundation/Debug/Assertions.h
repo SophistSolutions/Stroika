@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Debug {
      *
      *          Assertion handlers typically just print a debug message, and then exit the program. They are fatal, and must not return/throw.
      */
-    using AssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
+    using AssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept;
 
     /**
      *  Note: Some any paramaters may be null, if no suitable value is available.
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Debug {
      *
      *          Weak assertion handlers typically just print a debug message. They are NOT fatal, and allow the program to continue.
      */
-    using WeakAssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
+    using WeakAssertionHandlerType = void (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept;
 
     /**
      *  Stroika makes very heavy use of assertions (to some extent inspired and
