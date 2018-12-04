@@ -789,7 +789,7 @@ namespace {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
                         auto gws = newInterface.fGateways.value_or (Containers::Sequence<InternetAddress>{});
-                        if (not gws.Contains (*gw)) {
+                        if (not gws.Contains (sa.GetInternetAddress ())) {
                             gws += sa.GetInternetAddress ();
                             newInterface.fGateways = gws;
                         }
