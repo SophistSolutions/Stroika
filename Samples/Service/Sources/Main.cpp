@@ -139,7 +139,7 @@ int main (int argc, const char* argv[])
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
      */
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{_FatalSignalHandler_, SignalHandler::Type::eDirect});
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
 
     /*
      *  Ignore SIGPIPE is common practice/helpful in POSIX, but not required by the service manager.
