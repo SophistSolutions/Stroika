@@ -129,7 +129,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     // EACCESS reproted as FileAccessException - which is crazy confusing.
     // @todo - find a better way, but for now remap this...
     try {
-        ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+        ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
     }
     catch (const IO::FileAccessException&) {
         Throw (StringException (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
