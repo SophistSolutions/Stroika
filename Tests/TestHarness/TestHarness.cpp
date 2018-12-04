@@ -50,7 +50,7 @@ namespace {
         Debug::DropIntoDebuggerIfPresent ();
         _Exit (EXIT_FAILURE); // skip
     }
-    void FatalSignalHandler_ (Execution::SignalID signal)
+    void FatalSignalHandler_ (Execution::SignalID signal) noexcept
     {
         cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal).AsNarrowSDKString () << endl;
         DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
