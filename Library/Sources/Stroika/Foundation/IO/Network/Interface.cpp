@@ -209,10 +209,10 @@ namespace {
 #if qPlatform_MacOS
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
 #endif
-        Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i)
+        Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i, optional<Interface> prevInterfaceObject2Update)
     {
-        using Binding = Interface::Binding;
-        Interface newInterface;
+        using Binding                     = Interface::Binding;
+        Interface newInterface            = prevInterfaceObject2Update.value_or (Interface{});
         newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
         newInterface.fFriendlyName        = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
         auto getFlags                     = [](int sd, const char* name) {
@@ -258,8 +258,7 @@ namespace {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
-            Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
-            ///@todo see if about fixes issue on moacos --LGP 2018-12-03
+            // On MacOS this often fails, but I've never seen it fail on Linux
             if (r == 0) {
 #if qPlatform_Linux
                 SocketAddress sa{ifreq.ifr_netmask};
@@ -352,7 +351,9 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace (L"got exception converting gateway to address (dns): %s", Characters::ToString (current_exception ()).c_str ());  // should work...
+                        DbgTrace (L"got exception converting gateway to address (dns): %s", Characters::ToString (current_exception ()).c_str ());
+
+                        // should work...
                     }
                 }
 #endif
@@ -446,7 +447,10 @@ namespace {
 #endif
         return newInterface;
     }
-    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+#if qPlatform_MacOS
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
+#endif
+        Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
@@ -468,12 +472,9 @@ namespace {
 #endif
             String interfaceName{String::FromSDKString (i->ifr_name)};
 
-#if 0
-            Interface newInterface            = results.LookupValue (interfaceName);    // unclear if we ever want to merge - I think no?
-#else
-            WeakAssert (not results.ContainsKey (interfaceName));
-            Interface newInterface = GetInterfaces_POSIX_mkInterface_ (sd, i);
-#endif
+            // @todo - On MacOS - we get multiple copies of the same interface (one for each address family on that interface). Redo this code
+            // to be smarter about merging these
+            Interface newInterface = GetInterfaces_POSIX_mkInterface_ (sd, i, results.Lookup (interfaceName));
 
             results.Add (newInterface.fInternalInterfaceID, newInterface);
 
@@ -878,6 +879,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
  */
 optional<Interface> Network::GetInterfaceById (const String& internalInterfaceID)
 {
+    // Made some progress but must refactor the above a little more to be able avoid iterating and just fetch the desired interface (esp on macos).
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Network::GetInterfaceById");
 #endif
