@@ -425,21 +425,24 @@ void Thread::Rep_::ApplyPriority (Priority priority)
             default:
                 RequireNotReached ();
         }
-#elif qPlatform_POSIX && qHas_pthread_setschedprio
+#elif qPlatform_POSIX
         // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
         static bool sValidPri_ = false;
         static int  sPriorityMin_;
         static int  sPriorityMax_;
         {
             if (not sValidPri_) {
-                int         sched_policy;
-                sched_param param;
-                Verify (::pthread_getschedparam (pthread_self (), &sched_policy, &param) == 0);
+                int         sched_policy{};
+                sched_param param{};
+                Verify (::pthread_getschedparam (nh, &sched_policy, &param) == 0);
                 sPriorityMin_ = ::sched_get_priority_min (sched_policy);
                 sPriorityMax_ = ::sched_get_priority_max (sched_policy);
-                sValidPri_    = true;
+                DbgTrace ("sPriorityMin_=%d, sPriorityMax_=%d", sPriorityMin_, sPriorityMax_);
+                sValidPri_ = true;
             }
         }
+#if qHas_pthread_setschedprio && 0
+        // used to use pthread_setschedprio but for some reason missing on macosx, and pthread_setschedparam seens to do sane thing
         switch (priority) {
             case Priority::eLowest:
                 Verify (::pthread_setschedprio (nh, sPriorityMin_) == 0 or errno == EPERM);
@@ -460,7 +463,34 @@ void Thread::Rep_::ApplyPriority (Priority priority)
                 RequireNotReached ();
         }
 #else
-        // Cannot find any way todo this on macos
+        sched_param sp{};
+        switch (priority) {
+            case Priority::eLowest:
+                sp.sched_priority = sPriorityMin_;
+                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
+                break;
+            case Priority::eBelowNormal:
+                sp.sched_priority = (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_;
+                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
+                break;
+            case Priority::eNormal:
+                sp.sched_priority = (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_;
+                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
+                break;
+            case Priority::eAboveNormal:
+                sp.sched_priority = (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_;
+                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
+                break;
+            case Priority::eHighest:
+                sp.sched_priority = sPriorityMax_;
+                Verify (::pthread_setschedparam (nh, SCHED_RR, &sp) == 0 or errno == EPERM);
+                break;
+            default:
+                RequireNotReached ();
+        }
+#endif
+#else
+        // Cannot find any way todo this
         WeakAssertNotImplemented ();
 #endif
     }
