@@ -460,7 +460,8 @@ void Thread::Rep_::ApplyPriority (Priority priority)
                 RequireNotReached ();
         }
 #else
-        AssertNotImplemented ();
+        // Cannot find any way todo this on macos
+        WeakAssertNotImplemented ();
 #endif
     }
 }
