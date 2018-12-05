@@ -1,6 +1,8 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+export StroikaRoot=$(shell realpath ../../../../..)/
 
-StroikaRoot=$(shell realpath ../../../../..)/
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+endif
 
 SrcDir						=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
 ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/

@@ -1,5 +1,9 @@
-ProjectPlatformSubdir	=	$(shell ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 export StroikaRoot=$(realpath ../)/
+
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ProjectPlatformSubdir	=	$(shell $(StroikaRoot)PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+endif
 
 .PHONY:	tests all check clobber
 

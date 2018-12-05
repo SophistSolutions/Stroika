@@ -1,11 +1,12 @@
+export StroikaRoot=$(shell realpath ../)/
+
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
-qFeatureFlag_ATLMFC		=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ATLMFC)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+	ProjectPlatformSubdir	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+	qFeatureFlag_ATLMFC		=	$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ATLMFC)
 endif
 
 SHELL=/bin/bash
-
-StroikaRoot=$(shell realpath ../)/
 
 .PHONY:	samples all check clobber skel
 

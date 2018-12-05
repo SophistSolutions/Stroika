@@ -1,10 +1,10 @@
-include ../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+export StroikaRoot=$(shell realpath ../../)/
 
 ifneq ($(CONFIGURATION),)
-	ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+	
+	ProjectPlatformSubdir	=	$(shell perl  $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
-
-StroikaRoot ?= ../../
 
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer/

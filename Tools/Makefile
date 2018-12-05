@@ -1,8 +1,13 @@
+export StroikaRoot=$(shell realpath ../)/
+
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+endif
+
 ifneq ($(CONFIGURATION),)
 	ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
-StroikaRoot=$(shell realpath ../)/
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
