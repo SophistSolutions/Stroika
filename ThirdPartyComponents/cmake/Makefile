@@ -26,8 +26,8 @@ FETCHURLS+=https://cmake.org/files/v$(MAJ_VERSION)/$(BASENAME).zip
 
 
 
-all:	
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) $(VERSION) {$(CONFIGURATION)}:"
+all:
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/cmake(windows/cygwin) Build $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 

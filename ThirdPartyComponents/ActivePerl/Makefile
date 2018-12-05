@@ -24,7 +24,7 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 all:	
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/ActivePerl $(VERSION) {$(CONFIGURATION)}:"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/ActivePerl Build $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 
