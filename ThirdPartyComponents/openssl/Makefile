@@ -49,8 +49,6 @@ OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../openssl/"
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-AR:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
-RANLIB:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 endif
 
 

@@ -112,8 +112,6 @@ endif
 
 CC:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 CXX:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
-AR:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
-RANLIB:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
 
 ifeq (Unix,$(ProjectPlatformSubdir))

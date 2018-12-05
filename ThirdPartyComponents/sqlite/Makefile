@@ -46,8 +46,6 @@ ENABLE_GLIBCXX_DEBUG	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CON
 endif
 
 CC						=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-AR						=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
-RANLIB					=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 
 
 BUILDS_ROOT=../../Builds/

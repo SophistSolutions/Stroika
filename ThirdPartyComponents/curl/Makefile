@@ -50,8 +50,6 @@ qFeatureFlag_OpenSSL	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CON
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 CXX		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
-AR		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
-RANLIB	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" RANLIB)
 endif
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
