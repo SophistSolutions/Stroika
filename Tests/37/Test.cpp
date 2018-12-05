@@ -27,7 +27,7 @@ namespace {
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
         {
             bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called]([[maybe_unused]] SignalID signal) -> void { Lambda_Arg_Unused_BWA (signal); called = true; }, SignalHandler::eDirect));
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called]([[maybe_unused]] SignalID signal) noexcept -> void { Lambda_Arg_Unused_BWA (signal); called = true; }, SignalHandler::eDirect));
             [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
             VerifyTestResult (called);
