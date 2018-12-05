@@ -1385,10 +1385,11 @@ sub PostProcessOptions_ ()
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 			}
 			if ($STATIC_LINK_GCCRUNTIME == 1) {
-				# This doesn't appear to work, but who knows, they may someday fix it
-				# https://stroika.atlassian.net/browse/STK-676 (-static and -static-libgcc dont work - former causes app crash later does nothing)
+				# https://stroika.atlassian.net/browse/STK-676 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
 				# https://stackoverflow.com/questions/26304531/compiling-with-static-libgcc-static-libstdc-still-results-in-dynamic-depende
+				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libstdc++";
 				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libgcc";
+				#$EXTRA_PREFIX_LINKER_ARGS .= " -static-libc";		# Wish this existed as option!
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
