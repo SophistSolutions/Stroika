@@ -1372,10 +1372,8 @@ sub PostProcessOptions_ ()
 			}
 			else {
 				push @LIB_DEPENDENCIES_ADD, " -lstdc++";
+				$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
 			}
-		}
-		if ($STATIC_LINK_GCCRUNTIME == 1 && $STDLIB eq "libstdc++") {
-			$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
