@@ -1373,7 +1373,7 @@ sub PostProcessOptions_ ()
 			}
 			else {
 				push @LIB_DEPENDENCIES_ADD, " -lstdc++";
-				$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
+				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libstdc++";
 			}
 		}
 
