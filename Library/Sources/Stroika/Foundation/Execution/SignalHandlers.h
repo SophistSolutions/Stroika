@@ -101,6 +101,10 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Any overload can be used for safe exception handlers, but only the noexcept overload may be used
          *  for 'direct' exception calls (as a documentation hint - no real need).
+         *
+         *  \note https://stackoverflow.com/questions/38760784/how-will-c17-exception-specifier-type-system-work
+         *        and the existing compiler vs2k17 15.9.3 - dont support this noexcept on function objects, so
+         *        try again later.
          */
         SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT);
         SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
