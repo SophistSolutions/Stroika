@@ -118,7 +118,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
     try {
-        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()));
+        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
     }
     catch (const Execution::Platform::Windows::Exception& e) {
         if (e == WSAEACCES) {
