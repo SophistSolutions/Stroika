@@ -1,8 +1,10 @@
 export StroikaRoot=$(realpath ../)/
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-ProjectPlatformSubdir	=	$(shell $(StroikaRoot)PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+	ProjectPlatformSubdir	=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+	RUN_PREFIX				=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RUN_PREFIX)
 endif
 
 .PHONY:	tests all check clobber
@@ -15,7 +17,6 @@ ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO_BUILD_LINES?=0
 
-RUN_PREFIX	=	$(shell ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RUN_PREFIX)
 ifneq (,$(RUN_PREFIX))
 RUN_PREFIX:=$(RUN_PREFIX) 
 endif
@@ -176,7 +177,7 @@ else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
-    if [ "`../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
+    if [ "`../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
 		for i in $(TESTS); do\
