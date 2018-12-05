@@ -1355,7 +1355,8 @@ sub PostProcessOptions_ ()
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
-			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 0;
+			# tried $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=0 in Ubuntu 1804, and g++-7, and failed (still left .so file in ldd)
+			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
 				my $lib2FindStatic = $STDLIB . ".a";
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
@@ -1387,7 +1388,7 @@ sub PostProcessOptions_ ()
 				# This doesn't appear to work, but who knows, they may someday fix it
 				# https://stroika.atlassian.net/browse/STK-676 (-static and -static-libgcc dont work - former causes app crash later does nothing)
 				# https://stackoverflow.com/questions/26304531/compiling-with-static-libgcc-static-libstdc-still-results-in-dynamic-depende
-				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libgcc";
+				$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libgcc";
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
