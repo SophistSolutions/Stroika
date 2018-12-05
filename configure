@@ -1280,13 +1280,13 @@ sub PostProcessOptions_ ()
 				if ($i eq "address") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libasan";
 				}
-				else if ($i eq "undefined") {
+				elsif ($i eq "undefined") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libubsan";
 				}
-				else if ($i eq "thread") {
+				elsif ($i eq "thread") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libtsan";
 				}
-				else if ($i eq "leak") {
+				elsif ($i eq "leak") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-liblsan";
 				}
 			}
