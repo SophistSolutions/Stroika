@@ -19,3 +19,4 @@ require "$thisScriptDir/ConfigurationReader.pl";
 my $configuratioName=$ARGV[0];
 my $envVarName=$ARGV[1];
 print GetConfigurationParameter($configuratioName, $envVarName);
+print STDERR "PrintConfigurationVariable.pl DEPRECATED\n";
