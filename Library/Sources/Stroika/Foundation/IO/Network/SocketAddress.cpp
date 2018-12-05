@@ -28,12 +28,12 @@ using namespace Stroika::Foundation::IO::Network;
 SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
     : fSocketAddress_ ()
 {
-    if (sockaddr.iSockaddrLength > sizeof (fSocketAddress_))
+    if (sockaddr.iSockaddrLength > sizeof (fSocketAddressStorage_))
         [[UNLIKELY_ATTR]]
         {
             Execution::Throw (Execution::StringException (L"bad socket address size"));
         }
-    (void)::memcpy (&fSocketAddress_, sockaddr.lpSockaddr, sockaddr.iSockaddrLength);
+    (void)::memcpy (&fSocketAddressStorage_, sockaddr.lpSockaddr, sockaddr.iSockaddrLength);
 }
 #endif
 
@@ -55,7 +55,7 @@ String SocketAddress::ToString () const
 Traversal::Iterable<SocketAddress> Network::SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, uint16_t portNumber)
 {
     Containers::Collection<SocketAddress> tmp;
-    for (auto i : internetAddresses) {
+    for (auto&& i : internetAddresses) {
         tmp += SocketAddress{i, portNumber};
     }
     return tmp;
