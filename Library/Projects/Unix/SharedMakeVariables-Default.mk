@@ -138,17 +138,17 @@ endif
 
 
 ####DEPRECATD####
-ifndef StroikaSupportLibs
+#ifndef StroikaSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaSupportLibs			=	$(StroikaFoundationSupportLibs)
-endif
+#	StroikaSupportLibs			=	$(StroikaFoundationSupportLibs)
+#endif
 ####DEPRECATD####
-ifndef StroikaLibsWithSupportLibs
+#ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 
 	#tmphack - added $(EXTRA_LINKER_ARGS) here as so stdlib etc come AFTER stroika libs so they get pulled in - need double listing of libs sometimes
-	StroikaLibsWithSupportLibs	=	$(LIBS_PATH_DIRECTIVES) $(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)
-endif
+#	StroikaLibsWithSupportLibs	=	$(LIBS_PATH_DIRECTIVES) $(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)
+#endif
 
 
 ####
@@ -185,14 +185,15 @@ StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
 
 
+##now fetch from config file directly in makefiles that needit
+#ifndef AR
+#	AR	= ar
+#endif
 
-ifndef AR
-	AR	= ar
-endif
-
-ifndef RANLIB
-	RANLIB	= ranlib
-endif
+##now fetch from config file directly in makefiles that needit
+#ifndef RANLIB
+#	RANLIB	= ranlib
+#endif
 
 ifndef HTMLViewCompiler
 	HTMLViewCompiler	=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
