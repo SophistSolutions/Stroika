@@ -1277,16 +1277,16 @@ sub PostProcessOptions_ ()
 
 		if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1) and ($STATIC_LINK_SANITIZERS != 0)) {
 			foreach my $i (0 .. $#sanitizerFlags) {
-				if ($i eq "address") {
+				if ($sanitizerFlags[$i] eq "address") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libasan";
 				}
-				elsif ($i eq "undefined") {
+				elsif ($sanitizerFlags[$i] eq "undefined") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libubsan";
 				}
-				elsif ($i eq "thread") {
+				elsif ($sanitizerFlags[$i] eq "thread") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libtsan";
 				}
-				elsif ($i eq "leak") {
+				elsif ($sanitizerFlags[$i] eq "leak") {
 					$EXTRA_PREFIX_LINKER_ARGS .= " -static-liblsan";
 				}
 			}
