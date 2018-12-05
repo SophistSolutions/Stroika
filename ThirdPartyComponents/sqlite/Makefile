@@ -1,8 +1,12 @@
+export StroikaRoot=$(shell realpath ../..)/
+
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
-OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
+OptimizerFlag					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
+CC								:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 endif
 
 SHELL=/bin/bash
@@ -45,7 +49,6 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 ENABLE_GLIBCXX_DEBUG	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_GLIBCXX_DEBUG)
 endif
 
-CC						=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 
 
 BUILDS_ROOT=../../Builds/

@@ -1,5 +1,8 @@
+export StroikaRoot=$(shell realpath ../..)/
+
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir		:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ProjectPlatformSubdir	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
 endif
 
 

@@ -8,18 +8,22 @@
 
 export StroikaRoot=$(shell realpath ../..)/
 
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ARCH							:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
+ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
+OptimizerFlag					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
+CrossCompiling					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CrossCompiling)
+CONFIGURED_EXTRA_ARGS			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
+endif
+
 SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
+ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
-ifneq ($(CONFIGURATION),)
-ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
-ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
-OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
-endif
 
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
@@ -36,9 +40,6 @@ VERSION=1.1.1a
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
 
-ProjectPlatformSubdir	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-CrossCompiling			:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CrossCompiling)
-CONFIGURED_EXTRA_ARGS	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)

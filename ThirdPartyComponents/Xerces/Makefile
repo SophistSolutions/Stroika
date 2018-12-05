@@ -1,7 +1,13 @@
-ifneq ($(CONFIGURATION),)
-	ProjectPlatformSubdir	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-endif
+export StroikaRoot=$(shell realpath ../..)/
 
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
+IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
+OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
+endif
 
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuilds_
@@ -9,8 +15,6 @@ endif
 SHELL=/bin/bash
 
 .NOTPARALLEL:
-
-export StroikaRoot=$(shell realpath ../..)/
 
 
 ### link error with clang++ on ubuntu - 3.2.2 - still must debug
@@ -22,14 +26,6 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
-
-ifneq ($(CONFIGURATION),)
-ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
-ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
-OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
-endif
 
 
 

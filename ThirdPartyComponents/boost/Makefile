@@ -5,6 +5,20 @@
 # and for docs on b2 and its options, b2 --help or http://www.boost.org/build/doc/html/bbv2/overview/invocation.html
 #
 
+export StroikaRoot=$(shell realpath ../..)/
+
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
+ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
+ENABLE_GLIBCXX_DEBUG			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
+OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
+CC								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+CXX								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
+CFLAGS							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
+endif
 
 SHELL=/bin/bash
 
@@ -19,10 +33,6 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-mi
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../boost/"
 
 
--include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-
-export StroikaRoot=$(shell realpath ../..)/
-
 VERSION=1_68_0
 #VERSION=1_67_0_rc2
 #VERSION=1_66_0
@@ -36,18 +46,6 @@ ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 # Needed for $(PRODUCED_OUTPUT_ARTIFACTS): rule (is there a simple way to disable parallel for just that one rule)?
 .NOTPARALLEL:
 
-
-ifneq ($(CONFIGURATION),)
-ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
-ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
-ENABLE_GLIBCXX_DEBUG			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
-OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
-CC								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-CXX								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
-CFLAGS							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
-endif
 
 
 ifneq (,$(findstring /cygdrive/,$(PATH)))

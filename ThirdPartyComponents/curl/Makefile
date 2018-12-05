@@ -1,5 +1,10 @@
+export StroikaRoot=$(shell realpath ../..)/
+
 ifneq ($(CONFIGURATION),)
-ProjectPlatformSubdir	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ProjectPlatformSubdir	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+CC		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
+CXX		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
 endif
 
 SHELL=/bin/bash
@@ -11,12 +16,9 @@ SHELL=/bin/bash
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
-export StroikaRoot=$(shell realpath ../..)/
 
 
 DoCreateSymLink=0
-
--include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 VERSION=7.62.0
 #VERSION=7.61.1
@@ -47,10 +49,6 @@ OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../curl/"
 qFeatureFlag_OpenSSL	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL)
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-CC		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-CXX		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
-endif
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 WIN_CC32	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_32)")
