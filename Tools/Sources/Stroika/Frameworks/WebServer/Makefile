@@ -1,7 +1,7 @@
 export StroikaRoot=$(shell realpath ../../../../..)/
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
 SrcDir						=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
