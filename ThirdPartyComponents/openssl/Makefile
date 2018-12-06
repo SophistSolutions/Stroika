@@ -9,14 +9,15 @@
 export StroikaRoot=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-ARCH							:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
-ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
-OptimizerFlag					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
-CrossCompiling					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CrossCompiling)
-CONFIGURED_EXTRA_ARGS			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+	ARCH							:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
+	ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+	IncludeDebugSymbolsInLibraries	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
+	ENABLE_ASSERTIONS				:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)
+	OptimizerFlag					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
+	CrossCompiling					:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CrossCompiling)
+	CONFIGURED_EXTRA_ARGS			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
 endif
 
 SHELL=/bin/bash
@@ -33,8 +34,6 @@ VERSION=1.1.1a
 #VERSION=1.1.1
 #VERSION=1.1.1-pre9
 #VERSION=1.1.0g
-#VERSION=1.1.0f
-#VERSION=1.1.0e
 
 
 BASENAME=openssl-$(VERSION)
@@ -316,9 +315,8 @@ ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
 else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 	@#extra sleep and realpath to relative path since fails on cygwin otherwise
-	@sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
-	@hack=`realpath --relative-to=$$PWD $@`
-	@sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
+	@#sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
+	@#sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
