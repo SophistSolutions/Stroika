@@ -5,7 +5,7 @@
 # and for docs on b2 and its options, b2 --help or http://www.boost.org/build/doc/html/bbv2/overview/invocation.html
 #
 
-export StroikaRoot=$(shell realpath ../..)/
+export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk

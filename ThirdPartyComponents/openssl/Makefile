@@ -2,7 +2,7 @@
 # ROUGH DRAFT - STARTING TO MOVE AWAY FROM OLD PERL STUFF
 #
 
-export StroikaRoot=$(shell realpath ../..)/
+export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk

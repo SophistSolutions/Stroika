@@ -3,7 +3,7 @@
 #	doesn't work with building for windows (at least not easily?), so keep a binary around.
 #
 #
-export StroikaRoot=$(shell realpath ../..)/
+export StroikaRoot?=$(shell realpath ../..)/
 
 MAJ_VERSION=3.9
 VERSION=$(MAJ_VERSION).4
