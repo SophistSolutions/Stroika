@@ -4,6 +4,7 @@ ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 .DEFAULT_GOAL := all
@@ -15,7 +16,6 @@ SHELL=/bin/bash
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 

@@ -33,7 +33,6 @@ ifndef StroikaLibDir
 endif
 
 
-ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 

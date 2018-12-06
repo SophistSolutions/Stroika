@@ -9,6 +9,8 @@
 #
 export StroikaRoot?=$(shell realpath ../..)/
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 VERSION=5.26.0
 VER=ActivePerl-$(VERSION)-MSWin32-x86
 
@@ -21,7 +23,6 @@ EXTRACT_FROM=/cygdrive/c/Perl/
 SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 all:	

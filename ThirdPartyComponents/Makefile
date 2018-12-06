@@ -12,7 +12,6 @@ SHELL=/bin/bash
 .PHONY:	all clean clobber check
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 

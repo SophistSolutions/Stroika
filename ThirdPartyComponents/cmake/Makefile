@@ -5,6 +5,8 @@
 #
 export StroikaRoot?=$(shell realpath ../..)/
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 MAJ_VERSION=3.9
 VERSION=$(MAJ_VERSION).4
 BASENAME=cmake-$(VERSION)-win32-x86
@@ -17,7 +19,6 @@ EXTRACT_FROM=/cygdrive/c/Perl/
 SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 

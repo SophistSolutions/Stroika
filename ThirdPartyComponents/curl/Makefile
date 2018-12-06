@@ -7,6 +7,8 @@ ifneq ($(CONFIGURATION),)
 	CXX		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 SHELL=/bin/bash
 
 .DEFAULT_GOAL := all
@@ -14,8 +16,6 @@ SHELL=/bin/bash
 .NOTPARALLEL:
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
-
 
 
 DoCreateSymLink=0

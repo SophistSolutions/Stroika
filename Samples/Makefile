@@ -6,12 +6,13 @@ ifneq ($(CONFIGURATION),)
 	qFeatureFlag_ATLMFC		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_ATLMFC)
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 SHELL=/bin/bash
 
 .PHONY:	samples all check clobber skel
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0
 
 

@@ -3,9 +3,10 @@ export StroikaRoot?=$(realpath ../)/
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-	ProjectPlatformSubdir	=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
 	RUN_PREFIX				=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RUN_PREFIX)
 endif
+
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 .PHONY:	tests all check clobber
 
@@ -13,7 +14,6 @@ SHELL=/bin/bash
 
 TESTS=	        $(shell ScriptsLib/PrintTestsList.pl)
 
-ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO_BUILD_LINES?=0
 

@@ -19,13 +19,15 @@ ifneq ($(CONFIGURATION),)
 	CFLAGS							=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
+
 SHELL=/bin/bash
 
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 

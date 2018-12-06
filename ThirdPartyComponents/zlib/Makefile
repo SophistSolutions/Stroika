@@ -8,6 +8,8 @@ ifneq ($(CONFIGURATION),)
 	AS	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AS)
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 
 .PHONY:	all
 .DEFAULT_GOAL := all
@@ -49,7 +51,6 @@ endif
 BUILDS_ROOT=../../Builds/
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))

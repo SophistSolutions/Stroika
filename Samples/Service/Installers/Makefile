@@ -2,9 +2,14 @@
 ### @todo https://stroika.atlassian.net/browse/STK-614 -  Add WIX support to Sample Service installers
 ###
 
--include ../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../)/
 
-StroikaRoot=$(shell realpath ../../..)/
+ifneq ($(CONFIGURATION),)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+endif
+
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
@@ -17,7 +22,6 @@ TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0
 
 

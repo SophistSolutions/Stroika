@@ -8,6 +8,9 @@ ifneq ($(CONFIGURATION),)
 	CC								=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
+
 SHELL=/bin/bash
 
 .DIRECTORY: CURRENT
@@ -34,7 +37,6 @@ FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))

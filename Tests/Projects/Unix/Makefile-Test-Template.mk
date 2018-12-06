@@ -1,5 +1,7 @@
 export StroikaRoot?=$(realpath ../../)/
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
@@ -12,7 +14,6 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0
 
 

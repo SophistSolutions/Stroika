@@ -14,6 +14,8 @@ ifneq ($(CONFIGURATION),)
 	CONFIGURED_EXTRA_ARGS			=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild_
 .NOTPARALLEL:
@@ -21,7 +23,6 @@ endif
 SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 #
