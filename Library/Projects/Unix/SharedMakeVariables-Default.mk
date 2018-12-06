@@ -9,7 +9,7 @@
 
 
 ifndef StroikaRoot
-	$error("StroikaRoot must be defined before this include file")
+	 $(error "StroikaRoot must be defined before this include file")
 endif
 export StroikaRoot
 

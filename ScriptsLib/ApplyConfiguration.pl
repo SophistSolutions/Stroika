@@ -405,7 +405,7 @@ sub WriteStroikaConfigMakeHeader
 	
 	###print (OUT "StroikaRoot=$stkRoot/\n");
 	print (OUT 'ifndef StroikaRoot' . "\n");
-	print (OUT '	$error("StroikaRoot must be defined and included before this file")' . "\n");
+	print (OUT '$error("StroikaRoot must be defined and included before this file")' . "\n");
 	print (OUT 'endif' . "\n");
 	print (OUT "\n");
 

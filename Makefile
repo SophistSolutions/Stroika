@@ -1,3 +1,5 @@
+export StroikaRoot?=$(shell realpath .)/
+
 include ScriptsLib/Makefile-Common.mk
 
 .NOTPARALLEL:

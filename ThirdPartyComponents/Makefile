@@ -26,8 +26,6 @@ APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --conf
 
 ifneq ($(CONFIGURATION),)
 
-ProjectPlatformSubdir	:=	$(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-
 ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_ActivePerl), use)
 	USE_ActivePerl=1
 endif

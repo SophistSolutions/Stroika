@@ -1,10 +1,11 @@
-ProjectPlatformSubdir	:=	$(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
+export StroikaRoot?=$(shell realpath ..)/
 
 ifneq ($(CONFIGURATION),)
-#no error if missing cuz could be doing make clobber
--include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
--include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
+
+include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 SHELL=/bin/bash
