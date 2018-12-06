@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Client.h"
@@ -73,6 +74,12 @@ namespace {
                         return;
                     }
 #endif
+                    //https://stroika.atlassian.net/browse/STK-679
+                    // MAYBE RELATED TO/SAME AS qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                    if (lce.GetCode () == CURLE_RECV_ERROR and Debug::IsRunningUnderValgrind ()) {
+                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see https://stroika.atlassian.net/browse/STK-679");
+                        return;
+                    }
                     Execution::ReThrow ();
                 }
 #endif
