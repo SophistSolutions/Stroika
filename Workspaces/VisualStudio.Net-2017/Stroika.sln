@@ -2341,17 +2341,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openssl", "openssl", "{6193
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{5D19F64D-27AE-4210-B0B6-EDAB3526E8D8}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\__DECC_INCLUDE_EPILOGUE.H = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\__DECC_INCLUDE_EPILOGUE.H
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\__DECC_INCLUDE_PROLOGUE.H = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\__DECC_INCLUDE_PROLOGUE.H
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\bio.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\bio.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\comp.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\comp.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\conf.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\conf.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\constant_time_locl.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\constant_time_locl.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\cryptlib.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\cryptlib.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dane.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dane.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dso.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dso.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dsoerr.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\dsoerr.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\err.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\err.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\nelem.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\nelem.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\numbers.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\numbers.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_dir.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_dir.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_str.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\o_str.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\refcount.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\refcount.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\sockets.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\sockets.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\sslconf.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\sslconf.h
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\thread_once.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\thread_once.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\tsan_assist.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\tsan_assist.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-NetworkMonitor", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Frameworks-NetworkMonitor.vcxproj", "{808123CA-811B-455B-A0B8-B93D289CB7B1}"
@@ -3117,6 +3126,35 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika-Dev", "Stroika-Dev"
 		..\..\BuildContainers\Stroika-Dev\Dockerfile = ..\..\BuildContainers\Stroika-Dev\Dockerfile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bio", "bio", "{C0E368AF-43D9-4DC7-A3B7-1CC61EEBE245}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_addr.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_addr.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_dump.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_dump.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_print.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_print.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_sock.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_sock.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_sock2.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\b_sock2.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_buff.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_buff.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_lbuf.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_lbuf.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_nbio.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_nbio.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_null.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bf_null.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_cb.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_cb.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_err.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_err.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_lcl.h = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_lcl.h
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_lib.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_lib.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_meth.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bio_meth.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_acpt.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_acpt.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_bio.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_bio.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_conn.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_conn.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_dgram.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_dgram.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_fd.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_fd.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_file.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_file.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_log.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_log.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_mem.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_mem.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_null.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_null.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_sock.c = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\bss_sock.c
+		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\build.info = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\build.info
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -3597,6 +3635,7 @@ Global
 		{7DE86DC3-B987-4E4B-AFDD-F71CE7637DCD} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 		{B437C347-5CB8-449D-85A4-58A7163FFDD2} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 		{0AA7353D-A80F-4A2B-AE11-2D5B17ED85F1} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{C0E368AF-43D9-4DC7-A3B7-1CC61EEBE245} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}
