@@ -135,4 +135,8 @@
    fun:ASN1_item_free
    fun:X509_OBJECT_free
 }
-
+{
+   https://stroika.atlassian.net/browse/STK-680 - raspberrypi helgrind issue - with set<signals> - APPEARS false positive
+   Helgrind:Race
+   fun:_ZN7Stroika10Foundation10Containers8Concrete10Set_stdsetIiE4Rep_ISt4lessIiEED0Ev
+}
