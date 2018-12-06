@@ -1,2 +1,6 @@
 #workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
 race:__interceptor_pipe
+#workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
+race:pipe
+#workaround https://stroika.atlassian.net/browse/STK-677 - sem_post() called from inside signal handler, and can spoil errno	- rare and only seen so far on Ubunt1804 but should affect anything
+signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
