@@ -44,7 +44,7 @@ my $LIBFEATUREFLAG_No = "no";
 
 
 ## FOR NOW ONLY USED ON Unix BUILDS (may not be true anymore - gradually changing so always used)
-my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_ASSERTIONS = 0;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
@@ -239,10 +239,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "//Defaults overrides:\n");
 
 	print (OUT "//--enable-assertions or --disable-assertions to force a particular value. --default-assertions to depend on NDEBUG\n");
-	if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
-		print (OUT "// UNSET so defaulting (to 0 iff NDEBUG set)\n");
-	}
-	else {
+	 {
 		print (OUT "// set\n");
 		if ($ENABLE_ASSERTIONS) {
 			print (OUT "#define	qDebug 1\n");
@@ -406,10 +403,25 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	
-	print (OUT "StroikaRoot=$stkRoot/\n");
+	###print (OUT "StroikaRoot=$stkRoot/\n");
+	print (OUT 'ifndef StroikaRoot' . "\n");
+	print (OUT '	$error("StroikaRoot must be defined and included before this file")' . "\n");
+	print (OUT 'endif' . "\n");
+	print (OUT "\n");
+
+
+	print (OUT '#CACHED VALUE OF: ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)' . "\n");
+	print (OUT "ProjectPlatformSubdir=$PROJECTPLATFORMSUBDIR\n");
+	print (OUT "\n");
+
+	print (OUT '#CACHED VALUE OF: ENABLE_ASSERTIONS			    :=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)' . "\n");
+	print (OUT "ENABLE_ASSERTIONS=$ENABLE_ASSERTIONS\n");
+	print (OUT "\n");
+
 	print (OUT "CONFIGURATION=$activeConfiguration\n");
 
 
+	print (OUT '# WARNING - qFeatureFlag_EnableAssertions is DEPRECATED as of Stroika v2.1d13' . "\n");
 	if ($ENABLE_ASSERTIONS) {
 		print (OUT "qFeatureFlag_EnableAssertions=1\n");
 	}	

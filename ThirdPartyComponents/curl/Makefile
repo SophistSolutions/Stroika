@@ -1,10 +1,10 @@
 export StroikaRoot=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-ProjectPlatformSubdir	:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-CC		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-CXX		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+	CC		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
+	CXX		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
 endif
 
 SHELL=/bin/bash
@@ -175,7 +175,7 @@ LIBCURL_CONFIGURE += --disable-imap
 LIBCURL_CONFIGURE += --disable-ares
 ## really want zlib but until we can do relative build/static link... leave out..
 LIBCURL_CONFIGURE += --without-zlib
-ifeq ($(qFeatureFlag_EnableAssertions), 1)
+ifeq ($(ENABLE_ASSERTIONS), 1)
 LIBCURL_CONFIGURE += --enable-debug
 LIBCURL_CONFIGURE += --disable-optimize
 LIBCURL_CONFIGURE += --enable-curldebug

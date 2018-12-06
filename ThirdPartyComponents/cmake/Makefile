@@ -3,6 +3,8 @@
 #	doesn't work with building for windows (at least not easily?), so keep a binary around.
 #
 #
+export StroikaRoot=$(shell realpath ../..)/
+
 MAJ_VERSION=3.9
 VERSION=$(MAJ_VERSION).4
 BASENAME=cmake-$(VERSION)-win32-x86
@@ -11,8 +13,6 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).zip
 TARGET_TAR=$(shell pwd)/../Origs-Cache/$(VER).tar
 TARGET_ZIP=$(TARGET_TAR).gz
 EXTRACT_FROM=/cygdrive/c/Perl/
-
-export StroikaRoot=$(shell realpath ../..)/
 
 SHELL=/bin/bash
 

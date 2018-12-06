@@ -8,16 +8,15 @@
 export StroikaRoot=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
-ProjectPlatformSubdir			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ProjectPlatformSubdir)
-IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
-ENABLE_ASSERTIONS				:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_ASSERTIONS)
-ENABLE_GLIBCXX_DEBUG			:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
-OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
-CC								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-CXX								:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
-CFLAGS							:=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+	ARCH							=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ARCH)
+	IncludeDebugSymbolsInLibraries	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
+	ENABLE_GLIBCXX_DEBUG			=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
+	OptimizerFlag					=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) OptimizerFlag)
+	CC								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+	CXX								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
+	CFLAGS							=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
 endif
 
 SHELL=/bin/bash

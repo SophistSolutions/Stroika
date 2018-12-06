@@ -23,5 +23,9 @@
 * sudo apt upgrade
 
 * sudo apt-get install gdb valgrind libubsan1 libasan5
+  
+  NB:  may not longer need libubsan1 libasan5 sine these sb staticly linked;
+  valgrind just needed to run (valgrind) regtests, and gdb not really needed at all, but if you are going to test
+  on a raspberrypi, you probably will end up wanting to run a debugger there
 
 

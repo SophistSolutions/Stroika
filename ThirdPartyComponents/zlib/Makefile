@@ -1,11 +1,11 @@
 export StroikaRoot=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
-CC	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-AR	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
-AS	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AS)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+	CC	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
+	AR	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
+	AS	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AS)
 endif
 
 

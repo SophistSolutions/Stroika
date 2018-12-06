@@ -9,7 +9,7 @@
 
 
 ifndef StroikaRoot
-	$error("StroikaRoot must be defined and included before this file (should be done automatically in Configuration.mk)")
+	$error("StroikaRoot must be defined before this include file")
 endif
 export StroikaRoot
 

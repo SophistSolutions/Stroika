@@ -1,6 +1,9 @@
-include ../ScriptsLib/Makefile-Common.mk
+export StroikaRoot=$(shell realpath ../)/
+
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
 ifneq ($(CONFIGURATION),)
--include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
 SHELL=/bin/bash

@@ -7,6 +7,8 @@
 #	Checkin the created .tar.gz in ../Origs-Cache
 #	Then you can uninstall perl
 #
+export StroikaRoot=$(shell realpath ../..)/
+
 VERSION=5.26.0
 VER=ActivePerl-$(VERSION)-MSWin32-x86
 
@@ -15,7 +17,6 @@ TARGET_TAR=../Origs-Cache/$(VER).tar
 TARGET_ZIP=$(TARGET_TAR).gz
 EXTRACT_FROM=/cygdrive/c/Perl/
 
-export StroikaRoot=$(shell realpath ../..)/
 
 SHELL=/bin/bash
 

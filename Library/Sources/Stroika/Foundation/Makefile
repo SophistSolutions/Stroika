@@ -1,4 +1,8 @@
-include ../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+export StroikaRoot=$(shell realpath ../../../../)/
+
+ifneq ($(CONFIGURATION),)
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+endif
 
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
 ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
@@ -6,7 +10,6 @@ ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
-ProjectPlatformSubdir			=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
 
 .PHONY: all_objs_ all
 
