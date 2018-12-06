@@ -1361,7 +1361,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{F464
 	ProjectSection(SolutionItems) = preProject
 		..\..\ThirdPartyComponents\openssl\CURRENT\.gitattributes = ..\..\ThirdPartyComponents\openssl\CURRENT\.gitattributes
 		..\..\ThirdPartyComponents\openssl\CURRENT\.gitignore = ..\..\ThirdPartyComponents\openssl\CURRENT\.gitignore
-		..\..\ThirdPartyComponents\openssl\CURRENT\.makefile.swp = ..\..\ThirdPartyComponents\openssl\CURRENT\.makefile.swp
 		..\..\ThirdPartyComponents\openssl\CURRENT\.travis-create-release.sh = ..\..\ThirdPartyComponents\openssl\CURRENT\.travis-create-release.sh
 		..\..\ThirdPartyComponents\openssl\CURRENT\.travis.yml = ..\..\ThirdPartyComponents\openssl\CURRENT\.travis.yml
 		..\..\ThirdPartyComponents\openssl\CURRENT\ACKNOWLEDGEMENTS = ..\..\ThirdPartyComponents\openssl\CURRENT\ACKNOWLEDGEMENTS
