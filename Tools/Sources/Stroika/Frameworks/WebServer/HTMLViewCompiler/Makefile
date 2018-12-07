@@ -2,7 +2,6 @@ export StroikaRoot=$(shell realpath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-	ProjectPlatformSubdir			=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)
 endif
 
 SrcDir						=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/
@@ -10,7 +9,6 @@ ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
-
 
 
 VPATH = $(SrcDir)

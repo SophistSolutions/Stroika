@@ -377,6 +377,13 @@ sub WriteStroikaConfigCHeader
 
 
 
+sub WriteStroikaConfigMakeHeader_CachedLineItem_
+{
+	local  $vn = $_[0];
+	local  $v = $_[1];
+	print (OUT '#CACHED VALUE OF: ' . $vn . '			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ' . $vn . ")\n");
+	print (OUT "$vn=$v\n");
+}
 
 
 sub WriteStroikaConfigMakeHeader
@@ -409,14 +416,18 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT 'endif' . "\n");
 	print (OUT "\n");
 
-
-	print (OUT '#CACHED VALUE OF: ProjectPlatformSubdir			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ProjectPlatformSubdir)' . "\n");
-	print (OUT "ProjectPlatformSubdir=$PROJECTPLATFORMSUBDIR\n");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ProjectPlatformSubdir", $PROJECTPLATFORMSUBDIR);
 	print (OUT "\n");
 
-	print (OUT '#CACHED VALUE OF: ENABLE_ASSERTIONS			    :=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_ASSERTIONS)' . "\n");
-	print (OUT "ENABLE_ASSERTIONS=$ENABLE_ASSERTIONS\n");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH", GetConfigurationParameter($activeConfiguration, "ARCH"));
 	print (OUT "\n");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("OptimizerFlag", $COPTIMIZE_FLAGS);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP", GetConfigurationParameter($activeConfiguration, "STRIP"));
+	print (OUT "\n");
+
+
 
 	print (OUT "CONFIGURATION=$activeConfiguration\n");
 

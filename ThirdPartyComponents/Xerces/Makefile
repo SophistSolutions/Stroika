@@ -3,9 +3,7 @@ export StroikaRoot?=$(shell realpath ../..)/
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-	ARCH							:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ARCH)
 	IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-	OptimizerFlag					:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" OptimizerFlag)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
