@@ -13,3 +13,4 @@ export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 export MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
+SHELL?=/bin/bash

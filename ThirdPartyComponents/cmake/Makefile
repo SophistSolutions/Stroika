@@ -16,10 +16,6 @@ TARGET_TAR=$(shell pwd)/../Origs-Cache/$(VER).tar
 TARGET_ZIP=$(TARGET_TAR).gz
 EXTRACT_FROM=/cygdrive/c/Perl/
 
-SHELL=/bin/bash
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-
 
 
 FETCHURLS=

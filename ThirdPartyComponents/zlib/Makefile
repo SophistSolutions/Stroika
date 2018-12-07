@@ -13,7 +13,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .PHONY:	all
 .DEFAULT_GOAL := all
 
-SHELL=/bin/bash
 
 DoCreateSymLink=0
 
@@ -49,7 +48,6 @@ endif
 
 BUILDS_ROOT=../../Builds/
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))

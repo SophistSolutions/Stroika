@@ -8,16 +8,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 .PHONY:	tests all check clobber
 
-SHELL=/bin/bash
 
 TESTS=	        $(shell ScriptsLib/PrintTestsList.pl)
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO_BUILD_LINES?=0
-
-ifneq (,$(RUN_PREFIX))
-RUN_PREFIX:=$(RUN_PREFIX) 
-endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 BASEEXEPATTERN=Test$$i

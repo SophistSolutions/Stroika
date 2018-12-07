@@ -10,7 +10,6 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-SHELL=/bin/bash
 
 .DIRECTORY: CURRENT
 
@@ -33,9 +32,6 @@ FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 
 .NOTPARALLEL:
-
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))

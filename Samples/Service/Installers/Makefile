@@ -16,14 +16,8 @@ ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
-SHELL=/bin/bash
 
 TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/
-
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO_BUILD_LINES?=0
-
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION

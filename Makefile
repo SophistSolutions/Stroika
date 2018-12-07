@@ -9,7 +9,6 @@ include ScriptsLib/Makefile-Common.mk
 SHELL=/bin/bash
 
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO_BUILD_LINES?=0
 
 

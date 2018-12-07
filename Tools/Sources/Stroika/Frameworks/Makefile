@@ -8,6 +8,7 @@ SrcDir						=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/
 ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/
 
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 

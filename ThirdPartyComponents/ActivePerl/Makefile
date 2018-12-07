@@ -20,11 +20,6 @@ TARGET_ZIP=$(TARGET_TAR).gz
 EXTRACT_FROM=/cygdrive/c/Perl/
 
 
-SHELL=/bin/bash
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-
-
 all:	
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/ActivePerl Build $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)

@@ -10,12 +10,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 
-SHELL=/bin/bash
 
 .NOTPARALLEL:
 
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 
 

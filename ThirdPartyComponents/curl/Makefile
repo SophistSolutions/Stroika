@@ -9,13 +9,11 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
-SHELL=/bin/bash
 
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 .NOTPARALLEL:
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 
 DoCreateSymLink=0

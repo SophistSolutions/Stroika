@@ -13,9 +13,6 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO_BUILD_LINES?=0
-
 Includes				+=	-I.
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/SimpleLedTest.exe

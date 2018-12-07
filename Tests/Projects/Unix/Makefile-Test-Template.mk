@@ -13,10 +13,6 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO_BUILD_LINES?=0
-
-
 ifndef TEST_NUM
 	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
 endif
@@ -24,7 +20,6 @@ endif
 
 Includes				+=	-I.
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)/Test$(TEST_NUM).exe

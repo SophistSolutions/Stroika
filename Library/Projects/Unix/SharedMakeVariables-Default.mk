@@ -33,9 +33,6 @@ ifndef StroikaLibDir
 endif
 
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-
-
 ifndef StroikaFoundationLib
 	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation$(LIBSUFFIX)
 endif

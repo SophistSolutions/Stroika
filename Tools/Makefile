@@ -4,8 +4,7 @@ ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 .PHONY:	samples all check clobber
 

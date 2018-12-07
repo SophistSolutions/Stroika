@@ -6,12 +6,8 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
-SHELL=/bin/bash
 
 .PHONY:	samples all check clobber skel
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO_BUILD_LINES?=0
 
 
 SUBPROJECTS=

@@ -11,7 +11,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuilds_
 
-SHELL=/bin/bash
 
 .NOTPARALLEL:
 
@@ -24,9 +23,6 @@ BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
-
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)

@@ -18,10 +18,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .PHONY:	all clean clobber check doBuild_
 .NOTPARALLEL:
 
-SHELL=/bin/bash
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-
 
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/

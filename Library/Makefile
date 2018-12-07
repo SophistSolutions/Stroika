@@ -5,13 +5,9 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
-
-SHELL=/bin/bash
-
-MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 all:
