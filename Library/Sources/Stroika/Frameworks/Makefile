@@ -32,7 +32,7 @@ $(SubDirs):
 	@$(MAKE) --directory $@ -s
 
 
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs))
 
 all-objs:
 	@echo $(ALL_OBJS)
@@ -81,7 +81,7 @@ clean::
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for i in $(SubDirs);\
 	do\
-	     $(MAKE) --directory $$i --no-print-directory -s clean CONFIGURATION=$(CONFIGURATION);\
+	     $(MAKE) --directory $$i --no-print-directory -s clean;\
 	done
 else
 endif
@@ -90,7 +90,7 @@ clobber::
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for i in $(SubDirs);\
 	do\
-	    $(MAKE) --directory $$i --no-print-directory -s clobber CONFIGURATION=$(CONFIGURATION);\
+	    $(MAKE) --directory $$i --no-print-directory -s clobber;\
 	done
 	@rm -f $(StroikaFrameworksLib)
 else

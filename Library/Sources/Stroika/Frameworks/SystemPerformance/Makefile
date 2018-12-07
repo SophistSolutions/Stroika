@@ -30,4 +30,4 @@ all:	$(ObjDir) $(Objs) $(SubDirs)
 
 
 Instruments:
-	@$(MAKE) --directory Instruments -s CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Instruments -s

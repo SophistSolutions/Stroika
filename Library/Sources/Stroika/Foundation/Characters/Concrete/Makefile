@@ -25,9 +25,9 @@ all:	$(ObjDir) $(Objs) $(SubDirs)
 list-objs::
 	@for sd in $(SubDirs);\
 	 do\
-		$(MAKE) --directory $$sd -s list-objs CONFIGURATION=$(CONFIGURATION);\
+		$(MAKE) --directory $$sd -s list-objs;\
 	 done
 
 
 Private:
-	@$(MAKE) --directory Private -s  CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Private -s

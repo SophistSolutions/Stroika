@@ -36,7 +36,7 @@ SubDirs=				\
 	Traversal			\
 
 
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs CONFIGURATION=$(CONFIGURATION)))
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs))
 
 
 all-objs:
@@ -93,7 +93,7 @@ clean::
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for i in $(SubDirs);\
 	do\
-	    $(MAKE) --directory $$i --no-print-directory -s clean CONFIGURATION=$(CONFIGURATION);\
+	    $(MAKE) --directory $$i --no-print-directory -s clean;\
 	done
 else
 	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Clean";
