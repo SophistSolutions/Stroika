@@ -12,7 +12,6 @@ sub	GetThisScriptDir {
 }
 my	$thisScriptDir	=	GetThisScriptDir ();
 
-require "$thisScriptDir/../../ScriptsLib/ConfigurationReader.pl";
 require "$thisScriptDir/TestsList.pl";
 my @allTests   = GetAllTests ();
 

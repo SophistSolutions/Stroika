@@ -14,7 +14,6 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 my $testNumber = $ARGV[0];
 
-require "$thisScriptDir/../../ScriptsLib/ConfigurationReader.pl";
 require "$thisScriptDir/TestsList.pl";
 
 my $testName = GetTestName ($testNumber);
