@@ -387,7 +387,7 @@ basic-unix-test-configurations:
 	#\
 	./configure g++-debug-sanitize_leak --config-tag Unix --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
 	./configure g++-debug-sanitize_address --config-tag Unix --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	./configure g++-debug-sanitize_thread --config-tag Unix --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions-Ubuntu1810-x86_64.supp';\
+	./configure g++-debug-sanitize_thread --config-tag Unix --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
 	./configure g++-debug-sanitize_undefined --config-tag Unix --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
 	./configure g++-release-sanitize_address_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
 	./configure g++-release-sanitize_thread_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
