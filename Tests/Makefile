@@ -2,8 +2,6 @@ export StroikaRoot?=$(realpath ../)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-
-	RUN_PREFIX				=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) RUN_PREFIX)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -100,7 +98,7 @@ all:		tests
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) || exit $$?;\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i | exit $$?;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
@@ -127,7 +125,7 @@ endif
 clobber:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
@@ -145,7 +143,7 @@ project-files:
 tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) || exit $$?;\
+		$(MAKE) --no-print-directory tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
@@ -171,13 +169,13 @@ endif
 run-tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
-    if [ "`../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
+    if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
 		for i in $(TESTS); do\

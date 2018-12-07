@@ -43,10 +43,6 @@ PATH	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIG
 INCLUDE	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-ENABLE_GLIBCXX_DEBUG	=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ENABLE_GLIBCXX_DEBUG)
-endif
-
 
 
 BUILDS_ROOT=../../Builds/
@@ -87,7 +83,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
@@ -112,14 +108,14 @@ $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CU
 	
 ifeq (Unix,$(ProjectPlatformSubdir))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libsqlite.a:
-	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)	$(OBJS)
+	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	$(AR) cr $@ $(OBJS)
 	$(RANLIB) $@
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:
-	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)	$(OBJS)
+	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG)  $(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	"$(AR)" /OUT:$@ /nologo $(OBJS)
 endif
@@ -169,7 +165,7 @@ endif
 
 check-prerequisite-tools:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite ... "
-	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
+	@$(MAKE) --no-print-directory --silent check_prerequisites_
 	@$(ECHO) "done";
 
 

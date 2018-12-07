@@ -40,7 +40,6 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 CC		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-AR		=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AR)
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_LD		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LD)

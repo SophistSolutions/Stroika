@@ -21,12 +21,12 @@ SubDirs=				\
 
 all check:	$(SubDirs)
 	@for SUBPROJ in $(SubDirs) ; do \
-		$(MAKE) --directory $$SUBPROJ --no-print-directory --silent $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+		$(MAKE) --directory $$SUBPROJ --no-print-directory --silent $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
     done	
 
 clean clobber::	$(SubDirs)
 	@for SUBPROJ in $(SubDirs) ; do \
-		$(MAKE) --directory $$SUBPROJ --no-print-directory --silent $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+		$(MAKE) --directory $$SUBPROJ --no-print-directory --silent $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
     done	
 
 

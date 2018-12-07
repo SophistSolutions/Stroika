@@ -10,3 +10,6 @@ endif
 FUNCTION_CAPITALIZE_WORD=$(shell echo $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell echo $1 | cut -c 2-99)
 
 export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
+
+export MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+

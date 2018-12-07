@@ -28,7 +28,7 @@ ifneq ($(CONFIGURATION),)
 ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_ActivePerl), use)
 	USE_ActivePerl=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_boost), use)
+ifeq ($(qFeatureFlag_boost), use)
 	USE_boost=1
 endif
 ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_PrivateOverrideOfCMake), use)

@@ -423,10 +423,21 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_GLIBCXX_DEBUG", $ENABLE_GLIBCXX_DEBUG);
+	##if $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
+	#if ($ENABLE_GLIBCXX_DEBUG == 1 || ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS && $ENABLE_ASSERTIONS == 1)) {
+	#	print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
+	#}
+
 	WriteStroikaConfigMakeHeader_CachedLineItem_("OptimizerFlag", $COPTIMIZE_FLAGS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP", GetConfigurationParameter($activeConfiguration, "STRIP"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("AR", GetConfigurationParameter($activeConfiguration, "AR"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RANLIB", GetConfigurationParameter($activeConfiguration, "RANLIB"));
 	print (OUT "\n");
 
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RUN_PREFIX", GetConfigurationParameter($activeConfiguration, "RUN_PREFIX"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CrossCompiling", GetConfigurationParameter($activeConfiguration, "CrossCompiling"));
+	print (OUT "\n");
 
 
 	print (OUT "CONFIGURATION=$activeConfiguration\n");
@@ -442,10 +453,6 @@ sub WriteStroikaConfigMakeHeader
 
 
 
-	#if $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
-	if ($ENABLE_GLIBCXX_DEBUG == 1 || ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS && $ENABLE_ASSERTIONS == 1)) {
-		print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
-	}
 
 	if (not ($CWARNING_FLAGS eq '')) {
 		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
@@ -458,6 +465,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
 	print (OUT "qFeatureFlag_ZLib='$FEATUREFLAG_ZLib'\n");
 	print (OUT "qFeatureFlag_sqlite='$FEATUREFLAG_sqlite'\n");
+	print (OUT "qFeatureFlag_boost='$FEATUREFLAG_boost'\n");
 	print (OUT "qFeatureFlag_LZMA='$FEATUREFLAG_LZMA'\n");
 
 
@@ -551,15 +559,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");
 	print (OUT "Linker=	\$(CPlusPlus)\n");
-
-	if (defined $AR) {
-		print (OUT "#\n");
-		print (OUT "AR=	$AR\n");
-	}
-	if (defined $RANLIB) {
-		print (OUT "#\n");
-		print (OUT "RANLIB=	$RANLIB\n");
-	}
 
 	print (OUT "#\n");
 	print (OUT "EXTRA_COMPILER_ARGS=	$EXTRA_COMPILER_ARGS\n");

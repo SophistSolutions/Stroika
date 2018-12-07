@@ -43,10 +43,10 @@ ifeq ($(CONFIGURATION),)
 	$(error Cannot make installers without a configuration argument)
 endif
 	@if [ -x "$$(command -v dpkg)" ] ; then \
-		$(MAKE) --no-print-directory installer-deb CONFIGURATION=$(CONFIGURATION);\
+		$(MAKE) --no-print-directory installer-deb;\
 	fi
 	@if [ -x "$$(command -v rpmbuild)" ] ; then \
-		$(MAKE) --no-print-directory installer-rpm CONFIGURATION=$(CONFIGURATION);\
+		$(MAKE) --no-print-directory installer-rpm;\
 	fi
 
 

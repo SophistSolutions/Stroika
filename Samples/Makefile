@@ -2,7 +2,6 @@ export StroikaRoot=$(shell realpath ../)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-	qFeatureFlag_ATLMFC		=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter $(CONFIGURATION) qFeatureFlag_ATLMFC)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -70,7 +69,7 @@ else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika Samples {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --no-print-directory check CONFIGURATION=$(CONFIGURATION) || exit $$?;\
+		$(MAKE) --directory $$SUBPROJ --no-print-directory check || exit $$?;\
     done
 endif
 
@@ -84,7 +83,7 @@ else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Samples {$(CONFIGURATION)} ... ";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
+		$(MAKE) --directory $$SUBPROJ --silent clean 2> /dev/null || true;\
     done
 	@$(ECHO) done
 endif
@@ -99,7 +98,7 @@ else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika Samples {$(CONFIGURATION)} ... ";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
+		$(MAKE) --directory $$SUBPROJ --silent clobber 2> /dev/null || true;\
     done
 	@$(ECHO) done
 endif
@@ -113,7 +112,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Samples {$(CONFIGURATION)}:"
-	@$(MAKE) --no-print-directory $(SUBPROJECTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
+	@$(MAKE) --no-print-directory $(SUBPROJECTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
 
@@ -122,7 +121,7 @@ $(SUBPROJECTS):
 ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
-	@$(MAKE) --directory $@ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --directory $@ --silent all
 
 
 skel-usage_:
