@@ -79,7 +79,7 @@ checkin from one spot.
 
     (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
     ~~~bash
-    sleep 12000 && RUN_IN_DOCKER=1 \
+    sleep 14000 && RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1810-Cross-Compile2RaspberryPi \
         BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests \
@@ -90,6 +90,6 @@ checkin from one spot.
 ## Checkin results
 
 ~~~bash
-VER=2.1d12 sh -c \
+VER=2.1d14 sh -c \
     'git add Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt'
 ~~~
