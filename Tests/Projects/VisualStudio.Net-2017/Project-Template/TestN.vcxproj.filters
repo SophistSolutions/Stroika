@@ -46,19 +46,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Queue.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Association.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Bijection.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">
-      <Filter>TestCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h">
-      <Filter>TestCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Queue.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_SortedIterators.h">

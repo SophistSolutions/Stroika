@@ -1,5 +1,6 @@
 #!/usr/bin/perl 
 use File::Copy;
+use File::Compare;
 
 require "../../ScriptsLib/TestsList.pl";
 
@@ -14,11 +15,22 @@ sub	CopyWithWithSubst {
 	my @data = <FILE>;
 	close(FILE);
 	
-	open FILE, ">", "$trgFile" or die $!;
+	my $trgFileTmp = $trgFile . ".tmp";
+	open FILE, ">", "$trgFileTmp" or die $!;
 	
 	foreach $line (@data) {
 		$line =~ s/NNN/$substValue/;
 		print FILE $line;
+	}
+	close(FILE);
+
+	if (compare($trgFileTmp, $trgFile) == 0) {
+		#print ("$trgFile unchanged\n");
+		unlink ($trgFileTmp);
+	}
+	else {
+		#print ("$trgFile updated\n");
+		rename ($trgFileTmp, $trgFile);
 	}
 }
 
@@ -30,7 +42,6 @@ sub	DoDirN {
 	copy("Project-Template/.gitignore","$tst/.gitignore") or die "Copy failed: $!";
 	CopyWithWithSubst ("Project-Template/TestN.vcxproj","$tst/Test$tst.vcxproj", $tst);
 	CopyWithWithSubst ("Project-Template/TestN.vcxproj.filters","$tst/Test$tst.vcxproj.filters", $tst);
-	
 }
 
 sub DoRun {
