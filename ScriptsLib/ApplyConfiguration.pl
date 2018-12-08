@@ -424,9 +424,9 @@ sub WriteStroikaConfigMakeHeader
 	#}
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH", GetConfigurationParameter($activeConfiguration, "ARCH"));
-	#WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C", GetConfigurationParameter($activeConfiguration, "CompilerDriver-C"));
-	#WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++", GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++"));
-	#WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS", GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C", GetConfigurationParameter($activeConfiguration, "CompilerDriver-C"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++", GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS", GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS"));
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_GLIBCXX_DEBUG", $ENABLE_GLIBCXX_DEBUG);
 	print (OUT "\n");
