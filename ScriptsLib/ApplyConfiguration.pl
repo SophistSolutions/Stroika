@@ -460,15 +460,15 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
 	}
 
-	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
-	print (OUT "qFeatureFlag_OpenSSL='$FEATUREFLAG_OpenSSL'\n");
-	print (OUT "qFeatureFlag_WinHTTP='$FEATUREFLAG_WinHTTP'\n");
-	print (OUT "qFeatureFlag_ATLMFC='$FEATUREFLAG_ATLMFC'\n");
-	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
-	print (OUT "qFeatureFlag_ZLib='$FEATUREFLAG_ZLib'\n");
-	print (OUT "qFeatureFlag_sqlite='$FEATUREFLAG_sqlite'\n");
-	print (OUT "qFeatureFlag_boost='$FEATUREFLAG_boost'\n");
-	print (OUT "qFeatureFlag_LZMA='$FEATUREFLAG_LZMA'\n");
+	print (OUT "qFeatureFlag_LibCurl=$FEATUREFLAG_LIBCURL\n");
+	print (OUT "qFeatureFlag_OpenSSL=$FEATUREFLAG_OpenSSL\n");
+	print (OUT "qFeatureFlag_WinHTTP=$FEATUREFLAG_WinHTTP\n");
+	print (OUT "qFeatureFlag_ATLMFC=$FEATUREFLAG_ATLMFC\n");
+	print (OUT "qFeatureFlag_Xerces=$FEATUREFLAG_XERCES\n");
+	print (OUT "qFeatureFlag_ZLib=$FEATUREFLAG_ZLib\n");
+	print (OUT "qFeatureFlag_sqlite=$FEATUREFLAG_sqlite\n");
+	print (OUT "qFeatureFlag_boost=$FEATUREFLAG_boost\n");
+	print (OUT "qFeatureFlag_LZMA=$FEATUREFLAG_LZMA\n");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl", GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ActivePerl"));
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_PrivateOverrideOfCMake", GetConfigurationParameter($activeConfiguration, "qFeatureFlag_PrivateOverrideOfCMake"));
 	
