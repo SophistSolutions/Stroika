@@ -41,7 +41,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clean;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Library {$(CONFIGURATION)} ... "
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Stroika/Library Clean {$(CONFIGURATION)} ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \; || true
 else
@@ -62,7 +62,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clobber;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Clobbering Stroika Library {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Library Clobber {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Foundation/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
 endif
