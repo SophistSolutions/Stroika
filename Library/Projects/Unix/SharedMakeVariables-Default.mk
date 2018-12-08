@@ -100,17 +100,17 @@ ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=
 
-	ifeq ($(qFeatureFlag_LibCurl), 'use')
+	ifeq ($(qFeatureFlag_LibCurl), use)
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs libcurl)
 	endif
-	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
+	ifeq ($(qFeatureFlag_LibCurl), use-system)
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs libcurl)
 	endif
 
-	ifeq ($(qFeatureFlag_OpenSSL), 'use')
+	ifeq ($(qFeatureFlag_OpenSSL), use)
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs openssl)
 	endif
-	ifeq ($(qFeatureFlag_OpenSSL), 'use-system')
+	ifeq ($(qFeatureFlag_OpenSSL), use-system)
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs openssl)
 	endif
 
