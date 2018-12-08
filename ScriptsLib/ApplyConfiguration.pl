@@ -380,9 +380,10 @@ sub WriteStroikaConfigCHeader
 sub WriteStroikaConfigMakeHeader_CachedLineItem_
 {
 	local  $vn = $_[0];
-	local  $v = $_[1];
+	local  $v = @_ >= 2? $_[1] : GetConfigurationParameter($activeConfiguration, $vn);
 	print (OUT '#CACHED VALUE OF: ' . $vn . '			:=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ' . $vn . ")\n");
 	print (OUT "$vn=$v\n");
+	print (OUT "\n");
 }
 
 sub WriteStroikaConfigMakeHeader
@@ -422,23 +423,23 @@ sub WriteStroikaConfigMakeHeader
 	#	print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
 	#}
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH", GetConfigurationParameter($activeConfiguration, "ARCH"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C", GetConfigurationParameter($activeConfiguration, "CompilerDriver-C"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++", GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("AS", GetConfigurationParameter($activeConfiguration, "AS"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS", GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_GLIBCXX_DEBUG", $ENABLE_GLIBCXX_DEBUG);
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("OptimizerFlag", $COPTIMIZE_FLAGS);
-	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP", GetConfigurationParameter($activeConfiguration, "STRIP"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("AR", GetConfigurationParameter($activeConfiguration, "AR"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("RANLIB", GetConfigurationParameter($activeConfiguration, "RANLIB"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("AR");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RANLIB");
 	print (OUT "\n");
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("RUN_PREFIX", GetConfigurationParameter($activeConfiguration, "RUN_PREFIX"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CrossCompiling", GetConfigurationParameter($activeConfiguration, "CrossCompiling"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RUN_PREFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CrossCompiling");
 	print (OUT "\n");
 
 
@@ -469,8 +470,8 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_sqlite=$FEATUREFLAG_sqlite\n");
 	print (OUT "qFeatureFlag_boost=$FEATUREFLAG_boost\n");
 	print (OUT "qFeatureFlag_LZMA=$FEATUREFLAG_LZMA\n");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl", GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ActivePerl"));
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_PrivateOverrideOfCMake", GetConfigurationParameter($activeConfiguration, "qFeatureFlag_PrivateOverrideOfCMake"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_PrivateOverrideOfCMake");
 	
 
 	print (OUT "\n\n");
