@@ -31,22 +31,22 @@ endif
 ifeq ($(qFeatureFlag_PrivateOverrideOfCMake), use)
 	USE_cmake=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_LibCurl), use)
+ifeq ($(qFeatureFlag_LibCurl), use)
 	USE_curl=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_LZMA), use)
+ifeq ($(qFeatureFlag_LZMA), use)
 	USE_lzma=1
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use)
 	USE_openssl=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_sqlite), use)
+ifeq ($(qFeatureFlag_sqlite), use)
 	USE_sqlite=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_Xerces), use)
+ifeq ($(qFeatureFlag_Xerces), use)
 	USE_Xerces=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_ZLib), use)
+ifeq ($(qFeatureFlag_ZLib), use)
 	USE_zlib=1
 endif
 
