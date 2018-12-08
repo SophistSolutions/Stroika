@@ -469,46 +469,49 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_sqlite='$FEATUREFLAG_sqlite'\n");
 	print (OUT "qFeatureFlag_boost='$FEATUREFLAG_boost'\n");
 	print (OUT "qFeatureFlag_LZMA='$FEATUREFLAG_LZMA'\n");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl", GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ActivePerl"));
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_PrivateOverrideOfCMake", GetConfigurationParameter($activeConfiguration, "qFeatureFlag_PrivateOverrideOfCMake"));
+	
 
+	
+	#print (OUT "#Third Party Product Libs to Build:\n");
 
-	print (OUT "#Third Party Product Libs to Build:\n");
-
-	if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_BuildOnly)) {
-            print (OUT "qBuildThirdPartyComponents_libcurl=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyComponents_libcurl=0\n");
-	}	
-	if (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyComponents_OpenSSL=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyComponents_OpenSSL=0\n");
-	}	
-	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyComponents_Xerces=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyComponents_Xerces=0\n");
-	}	
-	if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyComponents_ZLib=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyComponents_ZLib=0\n");
-	}	
-	if (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyComponents_sqlite=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyComponents_sqlite=0\n");
-	}	
-	if (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyComponents_LZMA=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyComponents_LZMA=0\n");
-	}	
+	#if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_BuildOnly)) {
+    #        print (OUT "qBuildThirdPartyComponents_libcurl=1\n");
+	#}	
+	#else {
+	#	print (OUT "qBuildThirdPartyComponents_libcurl=0\n");
+	#}	
+	#if (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_BuildOnly)) {
+	#	print (OUT "qBuildThirdPartyComponents_OpenSSL=1\n");
+	#}	
+	#else {
+	#	print (OUT "qBuildThirdPartyComponents_OpenSSL=0\n");
+	#}	
+	#if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_BuildOnly)) {
+	#	print (OUT "qBuildThirdPartyComponents_Xerces=1\n");
+	#}	
+	#else {
+	#	print (OUT "qBuildThirdPartyComponents_Xerces=0\n");
+	#}	
+	#if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_BuildOnly)) {
+	#	print (OUT "qBuildThirdPartyComponents_ZLib=1\n");
+	#}	
+	#else {
+	#	print (OUT "qBuildThirdPartyComponents_ZLib=0\n");
+	#}	
+	#if (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_BuildOnly)) {
+	#	print (OUT "qBuildThirdPartyComponents_sqlite=1\n");
+	#}	
+	#else {
+	#	print (OUT "qBuildThirdPartyComponents_sqlite=0\n");
+	#}	
+	#if (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_BuildOnly)) {
+	#	print (OUT "qBuildThirdPartyComponents_LZMA=1\n");
+	#}	
+	#else {
+	#	print (OUT "qBuildThirdPartyComponents_LZMA=0\n");
+	#}	
 
 
 	print (OUT "\n\n");

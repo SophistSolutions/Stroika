@@ -2,8 +2,6 @@ export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-
-	IncludeDebugSymbolsInLibraries	:=	$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -158,7 +156,7 @@ endif
 
 check-prerequisite-tools:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces ... "
-ifeq ($(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_PrivateOverrideOfCMake), no)
+ifeq ($(qFeatureFlag_PrivateOverrideOfCMake), no)
 	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
 endif
 	@$(ECHO) "done";

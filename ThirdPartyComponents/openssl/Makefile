@@ -7,8 +7,6 @@ export StroikaRoot?=$(shell realpath ../..)/
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-	IncludeDebugSymbolsInLibraries	=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" IncludeDebugSymbolsInLibraries)
-	CrossCompiling					=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CrossCompiling)
 	CONFIGURED_EXTRA_ARGS			=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
 endif
 

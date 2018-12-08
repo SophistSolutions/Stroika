@@ -10,7 +10,6 @@ export StroikaRoot?=$(shell realpath ../..)/
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-	IncludeDebugSymbolsInLibraries	=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
 	CC								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
 	CXX								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
 	CFLAGS							=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)

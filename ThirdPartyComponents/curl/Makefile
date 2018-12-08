@@ -132,7 +132,7 @@ endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGURE_ARGS=
-ifeq ($(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CrossCompiling),true)
+ifeq ($(CrossCompiling),true)
 CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
 endif
 endif

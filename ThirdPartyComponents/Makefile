@@ -22,13 +22,13 @@ APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --conf
 
 ifneq ($(CONFIGURATION),)
 
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_ActivePerl), use)
+ifeq ($(qFeatureFlag_ActivePerl), use)
 	USE_ActivePerl=1
 endif
 ifeq ($(qFeatureFlag_boost), use)
 	USE_boost=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_PrivateOverrideOfCMake), use)
+ifeq ($(qFeatureFlag_PrivateOverrideOfCMake), use)
 	USE_cmake=1
 endif
 ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_LibCurl), use)
@@ -37,7 +37,7 @@ endif
 ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_LZMA), use)
 	USE_lzma=1
 endif
-ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL), use)
+ifeq ($(qFeatureFlag_OpenSSL), use)
 	USE_openssl=1
 endif
 ifeq ($(shell ../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_sqlite), use)
