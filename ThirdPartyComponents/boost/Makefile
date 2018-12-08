@@ -10,9 +10,9 @@ export StroikaRoot?=$(shell realpath ../..)/
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-	CC								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-	CXX								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
-	CFLAGS							=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) EXTRA_COMPILER_ARGS)
+	##CC								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
+	##CXX								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
+	CFLAGS							=	$(EXTRA_COMPILER_ARGS)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -281,9 +281,9 @@ endif
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && cp project-config.jam project-config.jam.ORIG
 ifeq ($(shell uname -s),Darwin)
-	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
+	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CompilerDriver-C);' project-config.jam
 else
-	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam
+	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CompilerDriver-C);' project-config.jam
 endif
 endif
 	@#

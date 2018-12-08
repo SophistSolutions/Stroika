@@ -285,7 +285,7 @@ sub	GetConfigurationParameter {
 			if ($paramName eq "CompilerDriver-C") {
 				return `$script "$configName" CC`;
 			}
-			if ($paramName eq "CompilerDriver-CXX") {
+			if ($paramName eq "CompilerDriver-C++") {
 				return `$script "$configName" CC`;
 			}
 			if ($paramName eq "AR") {
@@ -294,6 +294,13 @@ sub	GetConfigurationParameter {
 			if ($paramName eq "AS") {
 				return `$script "$configName" AS`;
 			}
+		}
+	}
+
+	# aliases
+	if ($result eq "") {
+		if ($paramName eq "CompilerDriver-AS") {
+			return GetConfigurationParameter ($configName, $paramName);
 		}
 	}
 

@@ -2,9 +2,6 @@ export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-
-	CC	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-	AS	=	$(shell  $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" AS)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -41,9 +38,9 @@ FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?down
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_CC	=	$(shell cygpath -w "$(CC)")
+WIN_CC	=	$(shell cygpath -w "$(CompilerDriver-C)")
 WIN_AR	=	$(shell cygpath -w "$(AR)")
-WIN_AS	=	$(shell cygpath -w "$(AS)")
+WIN_AS	=	$(shell cygpath -w "$(CompilerDriver-AS)")
 endif
 
 BUILDS_ROOT=../../Builds/
@@ -110,8 +107,8 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see CURRENT/CONFIGURE.OUT) ..."
-	@echo "export CC=$(CC) cd CURRENT && ./configure" > CURRENT/CONFIGURE.OUT
-	@(export CC="$(CC)"; cd CURRENT && ./configure) >> CURRENT/CONFIGURE.OUT 2>&1
+	@echo "export CC=$(CompilerDriver-C) cd CURRENT && ./configure" > CURRENT/CONFIGURE.OUT
+	@(export CC="$(CompilerDriver-C)"; cd CURRENT && ./configure) >> CURRENT/CONFIGURE.OUT 2>&1
 endif
 
 
@@ -203,7 +200,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 endif
 endif
 else
-	@$(MAKE) --directory CURRENT --no-print-directory CC="$(CC)"
+	@$(MAKE) --directory CURRENT --no-print-directory CC="$(CompilerDriver-C)"
 endif
 
 
