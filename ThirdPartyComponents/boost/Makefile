@@ -9,10 +9,6 @@ export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
-
-	##CC								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C)
-	##CXX								=	$(shell ../../ScriptsLib/GetConfigurationParameter $(CONFIGURATION) CompilerDriver-C++)
-	CFLAGS							=	$(EXTRA_COMPILER_ARGS)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk

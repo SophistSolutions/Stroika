@@ -7,7 +7,7 @@ export StroikaRoot?=$(shell realpath ../..)/
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-	CONFIGURED_EXTRA_ARGS			=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" qFeatureFlag_OpenSSL_ExtraArgs)
+	CONFIGURED_EXTRA_ARGS			=	$(qFeatureFlag_OpenSSL_ExtraArgs)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -39,7 +39,7 @@ OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../openssl/"
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
+CC:=$(CompilerDriver-C)
 endif
 
 

@@ -96,9 +96,9 @@ endif
 
 
 
-CC:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C)
-CXX:=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" CompilerDriver-C++)
-CFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
+CC:=$(CompilerDriver-C)
+CXX:=$(CompilerDriver-C++)
+CFLAGS=$(EXTRA_COMPILER_ARGS)
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 #clang (not clang++) barfs if given --std=c++17 argument
@@ -106,7 +106,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 CFLAGS:=$(filter-out --std%, $(CFLAGS))
 CFLAGS:=$(filter-out -std%, $(CFLAGS))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
-CXXFLAGS=$(shell ../../ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" EXTRA_COMPILER_ARGS)
+CXXFLAGS=$(EXTRA_COMPILER_ARGS)
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
