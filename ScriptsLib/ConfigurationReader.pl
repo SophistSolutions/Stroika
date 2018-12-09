@@ -299,9 +299,9 @@ sub	GetConfigurationParameter {
 
 	# aliases
 	if ($result eq "") {
-		if ($paramName eq "CompilerDriver-AS") {
-			return GetConfigurationParameter ($configName, $paramName);
-		}
+		#if ($paramName eq "CompilerDriver-AS") {
+		#	return GetConfigurationParameter ($configName, $paramName);
+		#}
 	}
 
 	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");
