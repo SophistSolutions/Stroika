@@ -40,7 +40,7 @@ FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?down
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC	=	$(shell cygpath -w "$(CompilerDriver-C)")
 WIN_AR	=	$(shell cygpath -w "$(AR)")
-WIN_AS	=	$(shell cygpath -w "$(CompilerDriver-AS)")
+WIN_AS	=	$(shell cygpath -w "$(AS)")
 endif
 
 BUILDS_ROOT=../../Builds/
@@ -131,7 +131,7 @@ doBuilds:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Buid (see CURRENT/BUILD.OUT) ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see CURRENT/BUILD.OUT) ..."
 	@make doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
