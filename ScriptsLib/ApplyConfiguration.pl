@@ -449,7 +449,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "CONFIGURATION=$activeConfiguration\n");
 
 
-	print (OUT '# WARNING - qFeatureFlag_EnableAssertions is DEPRECATED as of Stroika v2.1d13' - use ENABLE_ASSERTIONS . "\n");
+	print (OUT '# WARNING - qFeatureFlag_EnableAssertions is DEPRECATED as of Stroika v2.1d13 - use ENABLE_ASSERTIONS . "\n");
 	if ($ENABLE_ASSERTIONS) {
 		print (OUT "qFeatureFlag_EnableAssertions=1\n");
 	}	
