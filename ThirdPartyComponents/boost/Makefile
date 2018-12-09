@@ -21,7 +21,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)/
 
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../boost/"
@@ -168,8 +168,9 @@ endif
 
 
 
+#unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)b2.exe
+B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
 else
 B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)b2
 endif
