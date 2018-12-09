@@ -22,7 +22,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)/
 
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../boost/"
 
@@ -62,8 +62,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/boost Build $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CURRENT
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 endif
 
@@ -170,11 +169,9 @@ endif
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-B2=b2.exe
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/b2.exe
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)b2.exe
 else
-B2=b2
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/b2
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)b2
 endif
 
 bootstrapIfNeeded_:	$(B2FullPath)
@@ -278,12 +275,16 @@ ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
+	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && cp project-config.jam project-config.jam.ORIG
 ifeq ($(shell uname -s),Darwin)
-	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CompilerDriver-C);' project-config.jam
+		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR);\
+		cp project-config.jam project-config.jam.ORIG;\
+		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CompilerDriver-C);' project-config.jam;
 else
-	@cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CompilerDriver-C);' project-config.jam
+		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR);\
+		cp project-config.jam project-config.jam.ORIG;\
+		sed -i 's;using gcc; using gcc : $(ARCH) : $(CompilerDriver-C);' project-config.jam;
 endif
 endif
 	@#
@@ -292,8 +293,6 @@ endif
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && \
-		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
-		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
-		(sh -c "$(B2) $$CFA install >> ConfigureAndBuild.OUT")
+		(echo $(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT) && \
+		(sh -c "$(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT")
