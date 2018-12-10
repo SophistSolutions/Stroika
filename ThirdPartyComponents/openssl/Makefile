@@ -38,11 +38,6 @@ PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../openssl/"
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-CC:=$(CompilerDriver-C)
-endif
-
-
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=

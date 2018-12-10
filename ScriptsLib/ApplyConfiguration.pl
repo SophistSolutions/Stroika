@@ -428,7 +428,9 @@ sub WriteStroikaConfigMakeHeader
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
@@ -522,7 +524,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "#C++-Compiler\n");
 	print (OUT "CC_C=	$COMPILER_DRIVER_C\n");
 	print (OUT "CC_CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
-	print (OUT "CC=	$COMPILER_DRIVER_CPlusPlus\n");
 	print (OUT "CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
 	print (OUT "\n");
 	print (OUT "\n");

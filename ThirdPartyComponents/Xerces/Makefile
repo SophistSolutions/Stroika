@@ -96,8 +96,6 @@ endif
 
 
 
-CC:=$(CompilerDriver-C)
-CXX:=$(CompilerDriver-C++)
 CFLAGS=$(EXTRA_COMPILER_ARGS)
 
 ifeq (Unix,$(ProjectPlatformSubdir))

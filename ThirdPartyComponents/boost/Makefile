@@ -277,11 +277,11 @@ ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 ifeq ($(shell uname -s),Darwin)
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR);\
 		cp project-config.jam project-config.jam.ORIG;\
-		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CompilerDriver-C);' project-config.jam;
+		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam;
 else
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR);\
 		cp project-config.jam project-config.jam.ORIG;\
-		sed -i 's;using gcc; using gcc : $(ARCH) : $(CompilerDriver-C);' project-config.jam;
+		sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam;
 endif
 endif
 	@#

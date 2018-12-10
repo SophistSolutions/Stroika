@@ -302,6 +302,12 @@ sub	GetConfigurationParameter {
 		#if ($paramName eq "CompilerDriver-AS") {
 		#	return GetConfigurationParameter ($configName, $paramName);
 		#}
+		if ($paramName eq "CC") {
+			return GetConfigurationParameter ($configName, "CompilerDriver-C");
+		}
+		if ($paramName eq "CXX") {
+			return GetConfigurationParameter ($configName, "CompilerDriver-C++");
+		}
 	}
 
 	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");
