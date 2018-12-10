@@ -63,40 +63,24 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika Samples {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Samples Check {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --no-print-directory check || exit $$?;\
     done
 endif
 
 
-clean:
+clean clobber:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Samples {$(CONFIGURATION)} ... ";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL)  "Stroika/Samples $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --silent clean 2> /dev/null || true;\
+		$(MAKE) --directory $$SUBPROJ --silent $@ 2> /dev/null || true;\
     done
-	@$(ECHO) done
-endif
-
-
-clobber:
-ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
-	done
-else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika Samples {$(CONFIGURATION)} ... ";
-	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --silent clobber 2> /dev/null || true;\
-    done
-	@$(ECHO) done
 endif
 
 
