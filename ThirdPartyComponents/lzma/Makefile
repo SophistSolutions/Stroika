@@ -37,10 +37,11 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_LD		=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LD)
-INCLUDE		=	=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
-WIN_LIB_DIR	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LIB)
-TOOLPATH	=	=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
+WIN_LD		=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LD)
+INCLUDE		=	=$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
+WIN_LIB_DIR	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LIB)
+# as of 2018-12-10 - we still get c1: fatal error C1356: unable to find mspdbcore.dll compiling 64 bit code without this
+TOOLPATH	=	=$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
