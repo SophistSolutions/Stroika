@@ -152,7 +152,7 @@ endif
 ####
 ####
 ####	Expected Link Line
-####		g++ $(StroikaLinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(StroikaLinkerSuffixArgs)
+####		$(LINKER) $(StroikaLinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(StroikaLinkerSuffixArgs)
 ####	
 ####	Stuff in StroikaLinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
 ####	
@@ -182,16 +182,6 @@ StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 #### clean dup / do another way...StroikaFoundationSupportLibs deprecated - so just add compute of pkg-config libs) @todo -LGP 2018-05-01, -LGP 2018-05-03
 StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
 
-
-##now fetch from config file directly in makefiles that needit
-#ifndef AR
-#	AR	= ar
-#endif
-
-##now fetch from config file directly in makefiles that needit
-#ifndef RANLIB
-#	RANLIB	= ranlib
-#endif
 
 ifndef HTMLViewCompiler
 	HTMLViewCompiler	=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
