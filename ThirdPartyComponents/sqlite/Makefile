@@ -32,8 +32,8 @@ FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-PATH	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
-INCLUDE	=	$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
+# without this - get CURRENT/sqlite3.c(1074): fatal error C1034: stdarg.h: no include path set
+INCLUDE	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
 endif
 
 
@@ -162,7 +162,6 @@ check-prerequisite-tools:
 	@$(ECHO) "done";
 
 
-
 check_prerequisites_:
 	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
 
@@ -180,7 +179,7 @@ check:
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf  $(BUILDS_ROOT)*/ThirdPartyComponents/include/sqlite $(BUILDS_ROOT)*/ThirdPartyComponents/lib/sqlite.*
+	@rm -rf  $(BUILDS_ROOT)*/ThirdPartyComponents/include/sqlite $(BUILDS_ROOT)*/ThirdPartyComponents/lib/*sqlite.*
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
