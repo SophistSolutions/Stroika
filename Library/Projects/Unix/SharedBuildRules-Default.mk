@@ -17,7 +17,7 @@ $(ObjDir):
 %.o : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath $<`) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CFLAGS) -c $< -o $@";\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CXXFLAGS) -c $< -o $@";\
 	fi
 	@mkdir -p `dirname $@`
 	@$(CXX) $(CFLAGS) -c $< -o $@
@@ -25,7 +25,7 @@ $(ObjDir):
 $(ObjDir)%.o : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath $<`) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CFLAGS) -c $< -o $@";\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CXXFLAGS) -c $< -o $@";\
 	fi
 	@mkdir -p `dirname $@`
 	@$(CXX) $(CFLAGS) -c $< -o $@
