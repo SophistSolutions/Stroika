@@ -1473,8 +1473,8 @@ sub	WriteConfigFile_
 	else {
 		print (OUT "    <ConfigTags></ConfigTags>\n");
 	}
-	print (OUT "    <CompilerDriver-C>$COMPILER_DRIVER_C</CompilerDriver-C>\n");
-	print (OUT "    <CompilerDriver-C++>$COMPILER_DRIVER_CPlusPlus</CompilerDriver-C++>\n");
+	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
+	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
 
 	print (OUT "    <ExtraMakeDefines>\n");
 		foreach my $var (@useExtraMakeDefines)

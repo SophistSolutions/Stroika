@@ -90,13 +90,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'OptimizerFlag'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CompilerDriver-C++>");
+		my $pps = ReadValue_($line, "<CXX>");
 		if (defined $pps) {
-			$configuration {'CompilerDriver-C++'} = $pps;
+			$configuration {'CXX'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CompilerDriver-C>");
+		my $pps = ReadValue_($line, "<CC>");
 		if (defined $pps) {
-			$configuration {'CompilerDriver-C'} = $pps;
+			$configuration {'CC'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_boost>");
 		if (defined $pps) {
@@ -278,10 +278,10 @@ sub	GetConfigurationParameter {
 	if ($result eq "") {
 		if (index ($configuration{"ProjectPlatformSubdir"}, "VisualStudio") != -1) {
 			my $script = GetThisScriptDir() . "/PrintEnvVarFromCommonBuildVars.pl";
-			if ($paramName eq "CompilerDriver-C") {
+			if ($paramName eq "CC") {
 				return `$script "$configName" CC`;
 			}
-			if ($paramName eq "CompilerDriver-C++") {
+			if ($paramName eq "CXX") {
 				return `$script "$configName" CC`;
 			}
 			if ($paramName eq "AR") {
@@ -295,14 +295,13 @@ sub	GetConfigurationParameter {
 
 	# aliases
 	if ($result eq "") {
-		#if ($paramName eq "CompilerDriver-AS") {
-		#	return GetConfigurationParameter ($configName, $paramName);
-		#}
-		if ($paramName eq "CC") {
-			return GetConfigurationParameter ($configName, "CompilerDriver-C");
+		if ($paramName eq "CompilerDriver-C") {
+			## ALIAS DEPRECATED
+			return GetConfigurationParameter ($configName, "CC");
 		}
-		if ($paramName eq "CXX") {
-			return GetConfigurationParameter ($configName, "CompilerDriver-C++");
+		if ($paramName eq "CompilerDriver-C++") {
+			## ALIAS DEPRECATED
+			return GetConfigurationParameter ($configName, "CXX");
 		}
 	}
 
