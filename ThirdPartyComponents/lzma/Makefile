@@ -15,11 +15,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 
-
-
-DoCreateSymLink=0
-
-
 #
 # CHECK FOR UPDATED VERSIONS http://www.7-zip.org/sdk.html
 #
