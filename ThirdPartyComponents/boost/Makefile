@@ -49,6 +49,15 @@ endif
 endif
 
 
+# Found true in 2018-12-10 - MacOS XCode 10 - GNU Make 3.81
+#   make CONFIGURATION=Debug /Users/lewis/Sandbox/StroikaDev/IntermediateFiles/Debug/ThirdPartyComponents/boost WORKS
+#   but  make CONFIGURATION=Debug /Users/lewis/Sandbox/StroikaDev/IntermediateFiles/Debug/ThirdPartyComponents/boost/ FAILS
+#	though the argument matches exactly the PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR
+ifeq ($(UNAME),Darwin)
+WEIRD_MACOS_MAKEFILE_DIR_BUG=1
+endif
+
+
 
 all:	
 ifeq ($(CONFIGURATION),)
@@ -154,7 +163,12 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
+ifeq ($(WEIRD_MACOS_MAKEFILE_DIR_BUG),1)
+	@$(MAKE) -- $(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
+
+else
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+endif
 	@$(MAKE) --silent bootstrapIfNeeded_
 	@$(MAKE) --silent configureAndBuild_
 
