@@ -427,9 +427,7 @@ sub WriteStroikaConfigMakeHeader
 	#}
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
@@ -519,16 +517,8 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "COPTIMIZE_FLAGS=	$COPTIMIZE_FLAGS\n");
 	print (OUT "\n");
 	print (OUT "\n");
-	#@todo simplify compiler driver stuff. Need distinction for gcc versus g++ for some cases - rare - but building third party products.
-	#gcc for all usually works fine
-	print (OUT "#C++-Compiler\n");
-	print (OUT "CC_C=	$COMPILER_DRIVER_C\n");
-	print (OUT "CC_CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
-	print (OUT "CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
-	print (OUT "\n");
-	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");
-	print (OUT "Linker=	\$(CPlusPlus)\n");
+	print (OUT "Linker=	\$(CXX)\n");
 
 	print (OUT "#\n");
 	print (OUT "EXTRA_COMPILER_ARGS=	$EXTRA_COMPILER_ARGS\n");
@@ -539,6 +529,23 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "IncludeDebugSymbolsInExecutables=	$IncludeDebugSymbolsInExecutables\n");
 	print (OUT "IncludeDebugSymbolsInLibraries=	$IncludeDebugSymbolsInLibraries\n");
+
+	##### DEPRECATED#####
+	print (OUT "\n");
+	print (OUT "##\n");
+	print (OUT "##\n");
+	print (OUT "###DEPRECATED SINCE Stroika 2.1d14\n");
+	print (OUT "##\n");
+	print (OUT "##\n");
+	print (OUT "\n");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++");
+	print (OUT "#C++-Compiler\n");
+	print (OUT "CC_C=	$COMPILER_DRIVER_C\n");
+	print (OUT "CC_CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
+	print (OUT "CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
+	print (OUT "\n");
+	print (OUT "\n");
 
 	print (OUT "\n");
 
