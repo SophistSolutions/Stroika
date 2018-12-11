@@ -292,7 +292,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-     print (OUT "//--Xerces {build-only|use|use-system|no}\n");
+    print (OUT "//--Xerces {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_Xerces	1\n");
 	}
@@ -302,7 +302,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-     print (OUT "//--ZLib {build-only|use|use-system|no}\n");
+	print (OUT "//--ZLib {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_ZLib	1\n");
 	}
@@ -434,6 +434,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_GLIBCXX_DEBUG", $ENABLE_GLIBCXX_DEBUG);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LIBS_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("INCLUDES_PATH");
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("OptimizerFlag", $COPTIMIZE_FLAGS);
@@ -488,7 +489,7 @@ sub WriteStroikaConfigMakeHeader
 	
 
 	print (OUT "INCLUDES_PATH_COMPILER_DIRECTIVES=");
-	for my $i (split / /, $INCLUDES_PATH) {
+	for my $i (split /:/, $INCLUDES_PATH) {
 		print (OUT "-I$i ");
 	}
 	print (OUT "\n");
@@ -539,30 +540,42 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "##\n");
 		print (OUT "## Windows format path versions of some of these variables\n");
 		print (OUT "##\n");
-		print (OUT "##WIN_$$var = cygpath --windows \"\$var\"                OR\n");
-		print (OUT "##WIN_$$var = cygpath --windows --path \"\$var\"         (as appropriate)\n");
+		print (OUT "##WIN_\$var = cygpath --windows \"\$var\"                OR\n");
+		print (OUT "##WIN_\$var = cygpath --windows --path \"\$var\"         (as appropriate)\n");
 		print (OUT "##\n");
 		print (OUT "##\n");
-		my $Linker = GetConfigurationParameter($activeConfiguration, "Linker");
-		my $WIN_LD		=	trim (`cygpath --windows "$Linker"`);
-		print (OUT "WIN_Linker=$WIN_LD\n");
 
+		{
+			my $Linker = GetConfigurationParameter($activeConfiguration, "Linker");
+			my $tmp		=	trim (`cygpath --windows "$Linker"`);
+			print (OUT "WIN_Linker=$tmp\n");
+		}
+		{
+			my $AR = GetConfigurationParameter($activeConfiguration, "AR");
+			my $WIN_AR		=	trim (`cygpath --windows "$AR"`);
+			print (OUT "WIN_AR=$WIN_AR\n");
+		}
+		{
+			my $CC = GetConfigurationParameter($activeConfiguration, "CC");
+			my $WIN_CC		=	trim (`cygpath --windows "$CC"`);
+			print (OUT "WIN_CC=$WIN_CC\n");
+		}
+		{
+			my $CXX = GetConfigurationParameter($activeConfiguration, "CXX");
+			my $WIN_CXX		=	trim (`cygpath --windows "$CXX"`);
+			print (OUT "WIN_CXX=$WIN_CXX\n");
+		}
+		{
+			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
+			my $tmp		=	trim (`cygpath --windows --path "$LIBS_PATH"`);
+			print (OUT "WIN_LIBS_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
+		}
+		{
+			my $INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
+			my $tmp		=	trim (`cygpath --windows --path "$INCLUDES_PATH"`);
+			print (OUT "WIN_INCLUDES_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
+		}
 
-		my $AR = GetConfigurationParameter($activeConfiguration, "AR");
-		my $WIN_AR		=	trim (`cygpath --windows "$AR"`);
-		print (OUT "WIN_AR=$WIN_AR\n");
-
-		my $CC = GetConfigurationParameter($activeConfiguration, "CC");
-		my $WIN_CC		=	trim (`cygpath --windows "$CC"`);
-		print (OUT "WIN_CC=$WIN_CC\n");
-
-		my $CXX = GetConfigurationParameter($activeConfiguration, "CXX");
-		my $WIN_CXX		=	trim (`cygpath --windows "$CXX"`);
-		print (OUT "WIN_CXX=$WIN_CXX\n");
-
-		my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
-		my $WIN_LIBS_PATH		=	`cygpath --windows --path "$LIBS_PATH"`;
-		print (OUT "WIN_LIBS_PATH=$WIN_LIBS_PATH\n");
 		print (OUT "\n");
 		print (OUT "\n");
 	}

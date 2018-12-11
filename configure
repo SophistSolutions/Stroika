@@ -181,7 +181,7 @@ sub	DoHelp_
         print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
         print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
-        print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (space separated) */\n");
+        print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */\n");
         print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
         print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */\n");
         print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
@@ -292,16 +292,6 @@ sub     FillDefaultIncludesPathIfNeeded_
 {
 	#IF we set include path  explicitly, then suppress adding include path automatically (based on features etc) - just explicitly added ones from the commandline
 	my $includeAutomaticDependencies = !defined ($INCLUDES_PATH);
-	if (!defined ($INCLUDES_PATH)) {
-		$INCLUDES_PATH = "";
-	}
-	my $var;
-	foreach $var (@INCLUDES_PATH_ADD) {
-		if (not ($INCLUDES_PATH eq "")) {
-			$INCLUDES_PATH .= " ";
-		}
-		$INCLUDES_PATH .= $var;
-	}
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -312,19 +302,26 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			if (not ($INCLUDES_PATH eq "")) {
-				$INCLUDES_PATH .= " ";
-			}
-			$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
+			push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
 		}
-
+		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
+		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
+	}
+	if (!defined ($INCLUDES_PATH)) {
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+			my $x = GetMSVCVarName_ ("INCLUDE");
+			$INCLUDES_PATH = trim (`cygpath --unix --path \"$x\"`);
+		}
+		else {
+			$INCLUDES_PATH = "";
+		}
+	}
+	my $var;
+	foreach $var (@INCLUDES_PATH_ADD) {
 		if (not ($INCLUDES_PATH eq "")) {
-			$INCLUDES_PATH .= " ";
+			$INCLUDES_PATH .= ":";
 		}
-		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
-
-		$INCLUDES_PATH .= " ";
-		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
+		$INCLUDES_PATH .= $var;
 	}
 }
 sub     FillDefaultLibsPathIfNeeded_

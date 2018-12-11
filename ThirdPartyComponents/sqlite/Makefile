@@ -34,8 +34,6 @@ FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 # PATH setting needed for win64 only, else we get c1: fatal error C1356: unable to find mspdbcore.dll
 PATH	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
-# without this - get CURRENT/sqlite3.c(1074): fatal error C1034: stdarg.h: no include path set
-INCLUDE	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
 endif
 
 
@@ -154,7 +152,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	INCLUDE="$(INCLUDE)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+	INCLUDE="$(WIN_INCLUDES_PATH)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
 endif
 
 

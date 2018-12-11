@@ -32,7 +32,6 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-INCLUDE		=	=$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
 # as of 2018-12-10 - we still get c1: fatal error C1356: unable to find mspdbcore.dll compiling 64 bit code without this
 TOOLPATH	=	=$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
 endif
@@ -138,7 +137,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		CC="$(CC)" \
 		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MTd -Z7" \
-		INCLUDE="$(INCLUDE)" \
+		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(Linker)" \
@@ -158,7 +157,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		CC="$(CC)" \
 		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
-		INCLUDE="$(INCLUDE)" \
+		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_Linker)" \
@@ -183,7 +182,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		CC="$(CC)" \
 		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
-		INCLUDE="$(INCLUDE)" \
+		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
@@ -204,7 +203,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		CC="$(CC)" \
 		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
-		INCLUDE="$(INCLUDE)" \
+		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
