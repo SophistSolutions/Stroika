@@ -183,7 +183,7 @@ sub	DoHelp_
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
         print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (space separated) */\n");
         print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
-        print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (space separated) */\n");
+        print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */\n");
         print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
         print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
         print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */\n");
@@ -330,16 +330,6 @@ sub     FillDefaultIncludesPathIfNeeded_
 sub     FillDefaultLibsPathIfNeeded_
 {
 	my $includeAutomaticDependencies = !defined ($LIBS_PATH);
-	if (!defined ($LIBS_PATH)) {
-		$LIBS_PATH = "";
-	}
-	my $var;
-	foreach $var (@LIBS_PATH_ADD) {
-		if (not ($LIBS_PATH eq "")) {
-			$LIBS_PATH .= " ";
-		}
-		$LIBS_PATH .= $var;
-	}
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -350,8 +340,24 @@ sub     FillDefaultLibsPathIfNeeded_
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			$LIBS_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
+			push @LIBS_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
 		}
+	}
+	if (!defined ($LIBS_PATH)) {
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+			my $x = GetMSVCVarName_ ("LIB");
+			$LIBS_PATH = trim (`cygpath --unix --path \"$x\"`);
+		}
+		else {
+			$LIBS_PATH = "";
+		}
+	}
+	my $var;
+	foreach $var (@LIBS_PATH_ADD) {
+		if (not ($LIBS_PATH eq "")) {
+			$LIBS_PATH .= ":";
+		}
+		$LIBS_PATH .= $var;
 	}
 }
 sub     FillDefaultLibDependencies_

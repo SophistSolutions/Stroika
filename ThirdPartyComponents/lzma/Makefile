@@ -32,9 +32,7 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_LD		=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LD)
 INCLUDE		=	=$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" INCLUDE)
-WIN_LIB_DIR	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" LIB)
 # as of 2018-12-10 - we still get c1: fatal error C1356: unable to find mspdbcore.dll compiling 64 bit code without this
 TOOLPATH	=	=$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
 endif
@@ -138,12 +136,12 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
-		CPlusPlus="$(CC)" \
+		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MTd -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(WIN_LIB_DIR)" \
+		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(WIN_LD)" \
+		LD="$(Linker)" \
 		AR="$(AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
@@ -158,13 +156,13 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
-		CPlusPlus="$(CC)" \
+		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(WIN_LIB_DIR)" \
+		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(WIN_LD)" \
-		AR="$(AR)" \
+		LD="$(WIN_Linker)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -183,14 +181,14 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
-		CPlusPlus="$(CC)" \
+		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(WIN_LIB_DIR)" \
+		LIB="$(WIN_LIBS_PATH)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
-		AR="$(AR)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -204,14 +202,14 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
-		CPlusPlus="$(CC)" \
+		CXX="$(CXX)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(WIN_LIB_DIR)" \
+		LIB="$(WIN_LIBS_PATH)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
-		AR="$(AR)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \

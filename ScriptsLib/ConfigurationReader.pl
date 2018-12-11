@@ -290,6 +290,10 @@ sub	GetConfigurationParameter {
 			if ($paramName eq "AS") {
 				return `$script "$configName" AS`;
 			}
+			if ($paramName eq "Linker") {
+				#see above where handled for unix
+				return `$script "$configName" LD`;
+			}
 		}
 	}
 
@@ -303,6 +307,13 @@ sub	GetConfigurationParameter {
 			## ALIAS DEPRECATED
 			return GetConfigurationParameter ($configName, "CXX");
 		}
+
+		#temporary - cleanup/todo
+		if ($paramName eq "Linker") {
+			#see above where handled for windows
+			return GetConfigurationParameter ($configName, "CXX");
+		}
+
 	}
 
 	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");

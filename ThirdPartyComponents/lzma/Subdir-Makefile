@@ -247,7 +247,7 @@ LINKTARGETPREFIX= -o
 
 
 %.$(OBJSUFFIX) : %.cpp
-	"$(CC)" $(CFLAGS) -c $<
+	"$(CXX)" $(CFLAGS) -c $<
 
 %.$(OBJSUFFIX) : %.c
 	"$(CC)" $(CFLAGS) -c $<
