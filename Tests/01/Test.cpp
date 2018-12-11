@@ -205,9 +205,9 @@ namespace {
 
                 void DoIt ()
                 {
-                    auto f1 = AccessFolder_ (L"folder1");
-                    auto f2 = AccessFolder_ (L"folder2");
-                    auto f1again = AccessFolder_ (L"folder1");  // if you trace through the debug code you'll see this is a cache hit
+                    auto f1      = AccessFolder_ (L"folder1");
+                    auto f2      = AccessFolder_ (L"folder2");
+                    auto f1again = AccessFolder_ (L"folder1"); // if you trace through the debug code you'll see this is a cache hit
                 }
             }
         }
