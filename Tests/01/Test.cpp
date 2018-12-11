@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
 #include "../TestHarness/SimpleClass.h"
@@ -134,29 +135,86 @@ namespace {
         // FROM Example Usage in TimedCache<>
         namespace Private_ {
             using Characters::String;
+            namespace Example1_ {
+                struct DiskSpaceUsageType {
+                    int size;
+                };
+                // do the actual lookup part which maybe slow
+                auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
 
-            struct DiskSpaceUsageType {
-                int size;
-            };
-            auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
+                Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
+                // explicitly caller maintaining the cache
+                optional<DiskSpaceUsageType> LookupDiskStats_Try1 (String diskName)
+                {
+                    optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
+                    if (not o.has_value ()) {
+                        o = LookupDiskStats_ (diskName);
+                        if (o) {
+                            sDiskUsageCache_.Add (diskName, *o);
+                        }
+                    }
+                    return o;
+                }
+                // more automatic maintainance of that update pattern
+                DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
+                {
+                    return sDiskUsageCache_.Lookup (diskName,
+                                                    [](String diskName) -> DiskSpaceUsageType {
+                                                        return LookupDiskStats_ (diskName);
+                                                    });
+                }
+                // or still simpler
+                DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
+                {
+                    return sDiskUsageCache_.Lookup (diskName, LookupDiskStats_);
+                }
+                void DoIt ()
+                {
+                    VerifyTestResult (Memory::ValueOrDefault (LookupDiskStats_Try1 (L"xx")).size == 33);
+                    VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
+                    VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
+                }
+            }
+            namespace Example2_ {
+                using Execution::Synchronized;
+                using Time::DurationSecondsType;
 
-            Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
-            optional<DiskSpaceUsageType>                  LookupDiskStats (String diskName)
-            {
-                optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
-                if (not o.has_value ()) {
-                    o = LookupDiskStats_ (diskName);
-                    if (o) {
-                        sDiskUsageCache_.Add (diskName, *o);
+                using ScanFolderKey_ = String;
+                static constexpr DurationSecondsType kAgeForScanPersistenceCache_{5 * 60.0};
+                struct FolderDetails_ {
+                    int size; // ...info to cache about a folder
+                };
+                Synchronized<Cache::TimedCache<
+                    ScanFolderKey_,
+                    shared_ptr<FolderDetails_>,
+                    TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>, true>>>
+                    sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
+
+                shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
+                {
+                    auto lockedCache = sCachedScanFoldersDetails_.rwget ();
+                    if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder)) {
+                        return *o;
+                    }
+                    else {
+                        shared_ptr<FolderDetails_> fd = make_shared<FolderDetails_> (); // and fill in default values looking at disk
+                        lockedCache->Add (folder, fd);
+                        return move (fd);
                     }
                 }
-                return o;
+
+                void DoIt ()
+                {
+                    auto f1 = AccessFolder_ (L"folder1");
+                    auto f2 = AccessFolder_ (L"folder2");
+                    auto f1again = AccessFolder_ (L"folder1");  // if you trace through the debug code you'll see this is a cache hit
+                }
             }
         }
         void DoIt ()
         {
-            VerifyTestResult (Memory::ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
-            VerifyTestResult (Memory::ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
+            Private_::Example1_::DoIt ();
+            Private_::Example2_::DoIt ();
         }
     }
 }

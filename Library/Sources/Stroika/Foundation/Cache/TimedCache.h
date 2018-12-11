@@ -99,37 +99,48 @@ namespace Stroika::Foundation::Cache {
      *      Assume 'LookupDiskStats_' returns DiskSpaceUsageType, but its expensive, and the results change only slowly...
      *
      *      \code
-     *      Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { 5.0 };
+     *          struct DiskSpaceUsageType {
+     *              int size;
+     *          };
+     *          // do the actual lookup part which maybe slow
+     *          auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
      *
-     *      DiskSpaceUsageType LookupDiskStats (String diskName)
-     *      {
-     *          optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
-     *          if (not o.has_value ()) {
-     *              o = LookupDiskStats_ ();
-     *              sDiskUsageCache_.Add (diskName, *o);
-     *          }
-     *          return o.Value ();
-     *      }
-     *      \endcode
+     *          Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
      *
-     *  or better yet:
-     *      \code
-     *      DiskSpaceUsageType LookupDiskStats2 (String diskName)
-     *      {
-     *          return sDiskUsageCache_.Lookup (diskName,
-     *              [] (String diskName) -> DiskSpaceUsageType {
-     *                  return LookupDiskStats_ (diskName);
+     *          // explicitly caller maintaining the cache
+     *          optional<DiskSpaceUsageType> LookupDiskStats_Try1 (String diskName)
+     *          {
+     *              optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
+     *              if (not o.has_value ()) {
+     *                  o = LookupDiskStats_ (diskName);
+     *                  if (o) {
+     *                      sDiskUsageCache_.Add (diskName, *o);
+     *                  }
      *              }
-     *          );
-     *      }
-     *      \endcode
+     *              return o;
+     *          }
      *
-     *  or still better (if no context needed for lookup function):
-     *      \code
-     *      DiskSpaceUsageType LookupDiskStats3 (String diskName)
-     *      {
-     *          return sDiskUsageCache_.Lookup (diskName, LookupDiskStats_);
-     *      }
+     *          // more automatic maintainance of that update pattern
+     *          DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
+     *          {
+     *              return sDiskUsageCache_.Lookup (diskName,
+     *                                              [](String diskName) -> DiskSpaceUsageType {
+     *                                                  return LookupDiskStats_ (diskName);
+     *                                              });
+     *          }
+     *
+     *          // or still simpler
+     *          DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
+     *          {
+     *              return sDiskUsageCache_.Lookup (diskName, LookupDiskStats_);
+     *          }
+     *          void DoIt ()
+     *          {
+     *              // example usage
+     *              VerifyTestResult (Memory::ValueOrDefault (LookupDiskStats_Try1 (L"xx")).size == 33);
+     *              VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
+     *              VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
+     *          }
      *      \endcode
      *
      *  \note   Only calls to @Add cause the time (used for throwing away old items) to be updated,
@@ -151,33 +162,39 @@ namespace Stroika::Foundation::Cache {
      *      but once analyzed, lots of calls come in at once to read (and maybe update) the set of files
      *      and once nobody has asked for a while, we throw that cache away, and rebuild it as needed.
      *
-     *      \code
-     *      using   ScanFolderKey_      =   String;
-     *      static  constexpr   DurationSecondsType kAgeForScanPersistenceCache_ { 5 * 60.0 };
-     *      struct FolderDetails_ {
-     *          int size;       // ...info to cache about a folder
-     *      };
-     *      Synchronized<Cache::TimedCache<
-     *          ScanFolderKey_,
-     *          shared_ptr<FolderDetails_>,
-     *          TimedCachedSupport::DefaultTraits<ScanFolderKey_,shared_ptr<FolderDetails_>,Common::ComparerWithWellOrder<ScanFolderKey_>,true>
-     *          >
-     *          >
-     *          sCachedScanFoldersDetails_ {kAgeForScanPersistenceCache_ }
-     *          ;
+     *      This example ALSO shows how to wrap a cache object in 'Syncrhonized' for thread safety.
      *
-     *      shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder) const
-     *      {
-     *           auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-     *           if (optional<FolderDetails_> o  = lockedCache->Lookup (folder)) {
+     *      \code
+     *          using ScanFolderKey_ = String;
+     *          static constexpr DurationSecondsType kAgeForScanPersistenceCache_{5 * 60.0};
+     *          struct FolderDetails_ {
+     *              int size; // ...info to cache about a folder
+     *          };
+     *          Synchronized<Cache::TimedCache<
+     *              ScanFolderKey_,
+     *              shared_ptr<FolderDetails_>,
+     *              TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>, true>>>
+     *              sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
+     *
+     *          shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
+     *          {
+     *              auto lockedCache = sCachedScanFoldersDetails_.rwget ();
+     *              if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder)) {
      *                  return *o;
-     *           }
-     *           else {
-     *              FolderDetails_  fd = make_shared<Folder_Details_> ();   // and fill in default values looking at disk
-     *              lockedCache->Add (folder, fd);
-     *              return move (fd);
+     *              }
+     *              else {
+     *                  shared_ptr<FolderDetails_> fd = make_shared<FolderDetails_> (); // and fill in default values looking at disk
+     *                  lockedCache->Add (folder, fd);
+     *                  return move (fd);
+     *              }
      *          }
-     *      }
+     *
+     *          void DoIt ()
+     *          {
+     *              auto f1 = AccessFolder_ (L"folder1");
+     *              auto f2 = AccessFolder_ (L"folder2");
+     *              auto f1again = AccessFolder_ (L"folder1");  // if you trace through the debug code you'll see this is a cache hit
+     *          }
      *      \endcode
      *
      *  @todo   ANOTHER EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
