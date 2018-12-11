@@ -23,6 +23,18 @@ if (!defined $MAKE_INDENT_LEVEL) {
 }
 
 
+sub	GetThisScriptDir {
+	use File::Basename;
+	use Cwd 'abs_path';
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
+	return $dirname;
+}
+my	$thisScriptDir	=	GetThisScriptDir ();
+
+
+
 
 
 ########### CONFIG_Variables ###############
@@ -103,6 +115,7 @@ my $STATIC_LINK_SANITIZERS = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
 my $COMPILER_DRIVER_C = "";				# @todo allow cmdline option to set _C or _CPlusPlus version
 my $COMPILER_DRIVER_CPlusPlus = "";
+my $AS = undef;
 my $AR = undef;
 my $RANLIB = undef;
 my $STRIP = undef;
@@ -157,6 +170,7 @@ sub	DoHelp_
         print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
         print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
+        print("	    --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */\n");
         print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
         print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
         print("	    --compiler-warning-args {ARG}                   /* Sets variable with compiler warnings flags */\n");
@@ -453,6 +467,7 @@ sub	SetInitialDefaults_
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
 		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
 		$AR = "ar";
+		$AS = "as";
 		$RANLIB = "ranlib";
 	}
 }
@@ -622,6 +637,9 @@ sub	SetDefaultForCompilerDriver_
 			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
 		}
 	}
+	if (!(defined $AS) and (!("$^O" eq "cygwin"))) {
+		$AS = "as";
+	}
 	if (!(defined $AR) and (!("$^O" eq "cygwin"))) {
 		$AR = "ar";
 	}
@@ -653,6 +671,27 @@ sub	SetDefaultForCompilerDriver_
 	}
 	if (!(defined $STRIP) and  $PROJECTPLATFORMSUBDIR eq 'Unix') {
 		$STRIP = "strip";
+	}
+
+
+	if (!(defined $AS) and ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017")) {
+		$AS = GetMSVCVarName_ ("AS");
+	}
+	if (($COMPILER_DRIVER_C eq "") and ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017")) {
+		$COMPILER_DRIVER_C = GetMSVCVarName_ ("CC");
+	}
+	if (($COMPILER_DRIVER_CPlusPlus eq "") and ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017")) {
+		$COMPILER_DRIVER_CPlusPlus = GetMSVCVarName_ ("CC");	# not cxx for msvc
+	}
+
+	if (!(defined $STRIP)) {
+		$STRIP = "";
+	}
+	if (!(defined $AR)) {
+		$AR = "";
+	}
+	if (!(defined $RANLIB)) {
+		$RANLIB = "";
 	}
 }
 
@@ -930,6 +969,11 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $ARGV[$i];
 			$AR = $var;
+		}
+		elsif ((lc ($var) eq "-as") or (lc ($var) eq "--as")) {
+			$i++;
+			$var = $ARGV[$i];
+			$AS = $var;
 		}
 		elsif ((lc ($var) eq "-ranlib") or (lc ($var) eq "--ranlib")) {
 			$i++;
@@ -1339,7 +1383,7 @@ sub PostProcessOptions_ ()
 	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
 
 	if ($ARCH eq "") {
-		if ($COMPILER_DRIVER_CPlusPlus eq "") {
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
 			###tmphack needed for windows where we don't find the compiler variable here (SHOULD FIX THAT) @todo - LGP 2017-12-17
 			if ($configurationName =~ /64$/) {
 				$ARCH = "x86_64";
@@ -1451,6 +1495,18 @@ PostProcessOptions_ ();
 
 
 
+sub GetMSVCVarName_
+{
+	my $useProjectDir= "$thisScriptDir/Library/Projects/" . $PROJECTPLATFORMSUBDIR;
+	if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
+		require "$useProjectDir/SetupBuildCommonVars.pl";
+	}
+
+	my $envVarName= $_[0];
+	my %e = GetAugmentedEnvironmentVariablesForConfiguration ($configurationName);
+	return "$e{$envVarName}"
+}
+
 
 # Eventually  -make this more central - put all configs here, and then
 # build C++/dirs etc from this!
@@ -1473,6 +1529,7 @@ sub	WriteConfigFile_
 	else {
 		print (OUT "    <ConfigTags></ConfigTags>\n");
 	}
+	print (OUT "    <AS>$AS</AS>\n");
 	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
 	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
 
@@ -1550,15 +1607,9 @@ sub	WriteConfigFile_
 	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
 	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
 
-	if (defined $AR) {
-		print (OUT "    <AR>$AR</AR>\n");
-	}
-	if (defined $RANLIB) {
-		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
-	}
-	if (defined $STRIP) {
-		print (OUT "    <STRIP>$STRIP</STRIP>\n");
-	}
+	print (OUT "    <AR>$AR</AR>\n");
+	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	print (OUT "    <STRIP>$STRIP</STRIP>\n");
 
 	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
 
