@@ -1,10 +1,10 @@
 export StroikaRoot?=$(shell realpath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Frameworks/
+SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
 ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk

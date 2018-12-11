@@ -1,4 +1,4 @@
-include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
 SrcDir					=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Platform/POSIX/
 ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Platform/POSIX/

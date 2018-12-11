@@ -1,7 +1,7 @@
-include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
-SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/StructuredStreamEvents/
+SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/
+ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/StructuredStreamEvents/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk

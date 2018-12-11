@@ -3,7 +3,7 @@ export StroikaRoot?=$(realpath ../../)/
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
