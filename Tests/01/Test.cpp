@@ -199,7 +199,7 @@ namespace {
                     else {
                         shared_ptr<FolderDetails_> fd = make_shared<FolderDetails_> (); // and fill in default values looking at disk
                         lockedCache->Add (folder, fd);
-                        return move (fd);
+                        return fd;
                     }
                 }
 
