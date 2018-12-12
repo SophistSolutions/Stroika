@@ -127,7 +127,7 @@ else
 	#Build to CURRENT - if its 32-bit debug/relase
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	$(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -147,7 +147,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	$(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -172,7 +172,7 @@ endif
 	#Build to CURRENT - if its 64-bit debug/relase
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	$(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -193,7 +193,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	$(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
