@@ -135,6 +135,9 @@ project-files:
 	@echo -n "Building VisualStudio.Net-2017 project files..."
 	@cd Projects/VisualStudio.Net-2017 && ./BuildProjectsFiles.pl
 	@echo done
+	@echo -n "Building VisualStudio.Net-2019 project files..."
+	@cd Projects/VisualStudio.Net-2019 && ./BuildProjectsFiles.pl
+	@echo done
 
 
 tests:
