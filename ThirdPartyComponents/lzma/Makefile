@@ -119,6 +119,8 @@ else
 	#clean out CURRENT
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		CC="$(CC)" \
+		CXX="$(CXX)" \
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \

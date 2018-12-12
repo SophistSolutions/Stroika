@@ -248,21 +248,26 @@ LINKTARGETPREFIX= -o
 
 
 %.$(OBJSUFFIX) : %.cpp
+	echo "$(CXX)" $(CFLAGS) -c $<
 	"$(CXX)" $(CFLAGS) -c $<
 
 %.$(OBJSUFFIX) : %.c
+	echo "$(CC)" $(CFLAGS) -c $<
 	"$(CC)" $(CFLAGS) -c $<
 
 
 all:		lzma.$(LIBSUFFIX) 7zDec$(EXESUFFIX) lzma$(EXESUFFIX)
 
 lzma.$(LIBSUFFIX):	$(LibObjs)
+	echo "$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
 	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
 
 7zDec$(EXESUFFIX):	7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
+	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXESUFFIX) 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
 	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXESUFFIX) 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
 	
 lzma$(EXESUFFIX):	LzmaAlone.$(OBJSUFFIX) 	lzma.$(LIBSUFFIX)
+	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXESUFFIX) LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
 	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXESUFFIX) LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
 
 clean:
