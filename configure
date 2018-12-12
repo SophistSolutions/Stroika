@@ -1424,6 +1424,7 @@ sub PostProcessOptions_ ()
 			else {
 				$ARCH = "x86";
 			}
+			print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
 		}
 		else {
 			$ARCH = trim (`./ScriptsLib/GetCompilerArch.sh $COMPILER_DRIVER_CPlusPlus`);
@@ -1536,7 +1537,11 @@ sub GetMSVCVarName_
 	}
 
 	my $envVarName= $_[0];
-	my %e = GetAugmentedEnvironmentVariablesForConfiguration ($configurationName);
+	#my %e = GetAugmentedEnvironmentVariablesForConfiguration ($configurationName);
+	if ($ARCH eq "") {
+		die ("reorg code so this set first");
+	}
+	my %e = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH);
 	return "$e{$envVarName}"
 }
 

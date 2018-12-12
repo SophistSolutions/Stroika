@@ -94,7 +94,7 @@ my $VSDIR_VC = "$VSDIR\\VC";
 
 ### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2017 for docs on calling vcvarsall.bat
 
-sub GetString2InsertIntoBatchFileToInit32BitCompiles
+sub GetString2InsertIntoBatchFileToInit32BitCompiles_
 {
 	my $result = "";
 	##pushd/popd needed cuz vcvars now changes directories (no idea why)
@@ -106,7 +106,7 @@ sub GetString2InsertIntoBatchFileToInit32BitCompiles
 	return $result;
 }
 
-sub GetString2InsertIntoBatchFileToInit64BitCompiles
+sub GetString2InsertIntoBatchFileToInit64BitCompiles_
 {
 	my $result = "";
 	##pushd/popd needed cuz vcvars now changes directories (no idea why)
@@ -129,11 +129,11 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
+		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles_();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles();
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles_();
 		print $fh $result;
 	}
 	else {
@@ -147,9 +147,9 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 }
 
 
-sub GetEnvironmentVariablesForConfiguration
+sub GetEnvironmentVariablesForConfiguration_
 {
-	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
+	my $activeConfigBits = $_[0];
 	my $resultStr = RunBackTickWithVCVarsSetInEnvironment_($activeConfigBits, "set");
 	my %result =     ();
 	foreach $line (split /[\r\n]/, $resultStr) {
@@ -166,6 +166,13 @@ sub GetEnvironmentVariablesForConfiguration
 sub GetConfig32Or64_
 {
 	my $activeConfig = $_[0];
+	if ($activeConfig eq "x86") {
+		return "32";
+	}
+	if ($activeConfig eq "x86_64") {
+		return "64";
+	}
+	print STDERR "WARNING BAD ARCH passed to SetupBuildCommonVars module: ARCH= $activeConfig\n";
 	if ($activeConfig =~ m/32/) {
 	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 32\r\n");
 		return "32";
@@ -177,6 +184,8 @@ sub GetConfig32Or64_
 	die ("failed to map config $activeConfig to 32/64")
 }
 
+
+### POSSIBLY SOON DEPRECATE - BUT STILL USED TO RUN MSBUILD - LGP 2018-12-12
 sub RunSystemWithVCVarsSetInEnvironment
 {
 	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
@@ -186,11 +195,11 @@ sub RunSystemWithVCVarsSetInEnvironment
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
+		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles_();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles();
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles_();
 		#print "64 case and result=$result\r\n";
 		print $fh $result;
 	}
@@ -207,23 +216,24 @@ sub RunSystemWithVCVarsSetInEnvironment
 }
 
 
-sub convertWinPathVar2CygwinPathVar_
-{
-	my $winPath = $_[0];
-	#print "doing convertWinPathVar2CygwinPathVar_ (" . $winPath . ")\n";
-	my $newCygPath = "";
-	foreach $pathElt (split (";",$winPath)) {
-		$newCygPath .= toCygPath_ ($pathElt) . ":";
-	}
-	#print "returning convertWinPathVar2CygwinPathVar_ (" . $newCygPath . ")\n";
-	return $newCygPath;
-}
+# IF WE STILL NEEDEED THIS - cygpath --path does it faster/simpler
+#sub convertWinPathVar2CygwinPathVar_
+#{
+#	my $winPath = $_[0];
+#	#print "doing convertWinPathVar2CygwinPathVar_ (" . $winPath . ")\n";
+#	my $newCygPath = "";
+#	foreach $pathElt (split (";",$winPath)) {
+#		$newCygPath .= toCygPath_ ($pathElt) . ":";
+#	}
+#	#print "returning convertWinPathVar2CygwinPathVar_ (" . $newCygPath . ")\n";
+#	return $newCygPath;
+#}
 
 
 sub GetAugmentedEnvironmentVariablesForConfiguration
 {
 	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
-	my %resEnv = GetEnvironmentVariablesForConfiguration ($activeConfigBits);
+	my %resEnv = GetEnvironmentVariablesForConfiguration_ ($activeConfigBits);
 
 	my $cwVSDIR = toCygPath_ ($VSDIR);
 
@@ -280,8 +290,9 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	# print "  new-ip=$ip\n";
 	#}
 
+	## Sorting is not desirable, but has doesn't preserve order anyhow, so best the output is regular (the same across runs)
 	my $param_string = "";
-	foreach my $ip (keys %newFullPathHash) {
+	foreach my $ip (sort (keys %newFullPathHash)) {
 		#print "  new-ip=$ip\n";
 		$ip = trim ($ip);
 		if (! ($param_string eq "")) {

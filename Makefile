@@ -344,13 +344,13 @@ default-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making default configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
-		./configure Debug-U-32 --config-tag Windows --config-tag 32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Debug-U-64 --config-tag Windows --config-tag 64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-DbgMemLeaks-U-32 --config-tag Windows --config-tag 32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-32 --config-tag Windows --config-tag 32 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-64 --config-tag Windows --config-tag 64 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-32 --config-tag Windows --config-tag 32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-64 --config-tag Windows --config-tag 64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-DbgMemLeaks-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
 		./configure Debug --config-tag Unix --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release --config-tag Unix --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
