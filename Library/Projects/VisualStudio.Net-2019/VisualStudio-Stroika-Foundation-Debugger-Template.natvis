@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="Stroika::Foundation::Characters::String">
+    <DisplayString>
+      {((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart}</DisplayString>
+    <Expand>
+      <Item Name="length">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fEnd - ((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
+      <Item Name="c_str">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
+    </Expand>
+  </Type>
+  <Type Name="Stroika::Foundation::Containers::Sequence&lt;*&gt;">
+    <DisplayString>
+      Sequence&lt;&gt; size: {size ()}
+    </DisplayString>
+    <Expand>
+      <Item Name="length">size ()</Item>
+    </Expand>
+  </Type>
+  <Type Name="Stroika::Foundation::Containers::Set&lt;*&gt;">
+    <DisplayString>
+      Set&lt;&gt; size: {size ()}
+    </DisplayString>
+    <Expand>
+      <Item Name="length">size ()</Item>
+    </Expand>
+  </Type>
+  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,0&gt;">
+    <DisplayString Condition="fEngaged_">
+      {fEngagedValue_}
+    </DisplayString>
+    <DisplayString Condition="!fEngaged_">Missing</DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,1&gt;">
+    <DisplayString Condition="fValue_!=nullptr">
+      {*fValue_}
+    </DisplayString>
+    <DisplayString Condition="fValue_==nullptr">Missing</DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::Memory::Optional&lt;*&gt;">
+    <DisplayString>
+     {fStorage_}
+    </DisplayString>
+  </Type>
+
+</AutoVisualizer>

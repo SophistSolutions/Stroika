@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
+  </ItemGroup>
+</Project>

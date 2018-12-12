@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Client\Makefile">
+      <Filter>Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Makefile">
+      <Filter>Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.inl">
+      <Filter>Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.inl">
+      <Filter>Server</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Client">
+      <UniqueIdentifier>{daf7aafe-6bee-4ad2-9a57-1538854184ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{1b4c9996-eedc-4b2b-bd58-4b2a822e85a1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

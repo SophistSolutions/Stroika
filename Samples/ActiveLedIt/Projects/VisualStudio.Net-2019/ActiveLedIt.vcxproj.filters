@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{19e6140a-3f63-495d-8873-81c90e0e40db}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{36f353b8-4ea4-40ed-87d3-7b07c34283b9}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{1ba3c696-e65f-4c4d-9f31-2b0b891ad045}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="CabFile">
+      <UniqueIdentifier>{6fc575df-6168-4e1e-864b-e8bcc129d62a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\ActiveLedIt.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\Sources\AboutBoxImage.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\AboutBoxImage.vsd">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\AboutBoxImage_Demo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\AboutBoxImage_Demo.vsd">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ActiveLedIt.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ActiveLedItControl.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_ActiveLedIt.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Bold.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_CheckSpelling.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Copy.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Cut.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Find.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_FontColor.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_InsertSymbol.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_InsertTable.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_InsertURL.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Italics.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_JustifyCenter.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_JustifyFull.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\PreComp.pch">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_JustifyLeft.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_JustifyRight.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_ListStyle_Bullet.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_ListStyle_None.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_ParagraphIndents.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_ParagraphSpacing.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Paste.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Print.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Redo.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Replace.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Underline.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ToolbarButton_Undo.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\UnknownEmbeddingIcon.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\UnsupportedPictFormat.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\URLEmbeddingIcon.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Sources\ActiveLedIt.manifest.xml">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\ActiveLedIt Source ReadMe.rtf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\ActiveLedItReference.rtf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\ActiveLedItTemplate.inf" />
+    <None Include="..\..\BuildCAB.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\Demo ReadMe.rtf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\ReadMe.rtf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\ActiveLedIt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\ActiveLedItControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\ActiveLedItPpg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\FontMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\LedItView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Toolbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\UserConfigCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\ActiveLedIt.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\ActiveLedItConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\ActiveLedItControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\ActiveLedItPpg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\DispIDs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\FontMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\LedItView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Toolbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\UserConfigCommands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="..\..\Sources\ActiveLedIt.odl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\ActiveLedIt.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

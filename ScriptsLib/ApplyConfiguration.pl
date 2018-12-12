@@ -509,7 +509,7 @@ sub WriteStroikaConfigMakeHeader
 	if ($PROJECTPLATFORMSUBDIR eq "Unix") {
 		print (OUT "LIBSUFFIX=.a\n");
 	}
-	elsif ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+	elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 		print (OUT "LIBSUFFIX=.lib\n");
 	}
 
@@ -535,7 +535,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "IncludeDebugSymbolsInLibraries=	$IncludeDebugSymbolsInLibraries\n");
 
 
-	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 		print (OUT "\n");
 		print (OUT "##\n");
 		print (OUT "##\n");

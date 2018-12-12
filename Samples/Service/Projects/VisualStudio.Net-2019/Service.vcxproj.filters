@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{ac8f3ba5-301b-485e-acad-ed42b0062d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Installers">
+      <UniqueIdentifier>{2f8adc94-004a-4e92-9ffa-6c6750c0b788}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ReadMe.md" />
+    <None Include="..\..\Makefile" />
+    <None Include="..\..\Sources\Service.inl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\Installers\Makefile">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\stroika-sampleservice.control">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\stroika-sampleservice.rpm.spec">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\stroika-sampleservice.service">
+      <Filter>Installers</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Service.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
