@@ -92,6 +92,7 @@ if (! (-e toCygPath_ ($VSDIR))) {
 
 my $VSDIR_VC = "$VSDIR\\VC";
 
+### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2017 for docs on calling vcvarsall.bat
 
 sub GetString2InsertIntoBatchFileToInit32BitCompiles
 {
@@ -100,7 +101,7 @@ sub GetString2InsertIntoBatchFileToInit32BitCompiles
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x86 > nul;\r\n";
+	$result 	.=	"\" x64_x86 > nul;\r\n";
 	$result 	.=	"popd\r\n";
 	return $result;
 }
@@ -226,8 +227,10 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 
 	my $cwVSDIR = toCygPath_ ($VSDIR);
 
+	#my $HOSTSTR="HostX86";	-- I doubt anyone develops on 32bit anymore, but if they do we can easily detect and fix this
+	my $HOSTSTR="HostX64";
 	if (index($activeConfigBits, "32") != -1) {
-		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
+		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
 		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
 		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
@@ -235,7 +238,7 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
+		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
 		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
 		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");

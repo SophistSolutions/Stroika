@@ -78,6 +78,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ProjectPlatformSubdir'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<TOOLS_PATH_ADDITIONS>");
+		if (defined $pps) {
+			$configuration {'TOOLS_PATH_ADDITIONS'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<ARCH>");
 		if (defined $pps) {
 			$configuration {'ARCH'} = $pps;

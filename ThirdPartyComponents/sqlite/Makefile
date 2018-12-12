@@ -31,12 +31,6 @@ FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 .NOTPARALLEL:
 
 
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-# PATH setting needed for win64 only, else we get c1: fatal error C1356: unable to find mspdbcore.dll
-PATH	=	$(shell perl $(StroikaRoot)ScriptsLib/PrintEnvVarFromCommonBuildVars.pl "$(CONFIGURATION)" PATH)
-endif
-
-
 
 BUILDS_ROOT=../../Builds/
 INTERMEDIATES_ROOT=../../IntermediateFiles/
@@ -110,7 +104,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:
 	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG)  $(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	"$(AR)" /OUT:$@ /nologo $(OBJS)
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" "$(AR)" /OUT:$@ /nologo $(OBJS)
 endif
 
 
@@ -152,7 +146,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	INCLUDE="$(WIN_INCLUDES_PATH)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" INCLUDE="$(WIN_INCLUDES_PATH)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
 endif
 
 

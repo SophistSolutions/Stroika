@@ -427,6 +427,7 @@ sub WriteStroikaConfigMakeHeader
 	#}
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
@@ -575,6 +576,11 @@ sub WriteStroikaConfigMakeHeader
 			my $tmp		=	trim (`cygpath --windows --path "$INCLUDES_PATH"`);
 			print (OUT "WIN_INCLUDES_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
 		}
+		#{
+		#	my $TOOLS_PATH_ADDITIONS = GetConfigurationParameter($activeConfiguration, "TOOLS_PATH_ADDITIONS");
+		#	my $tmp		=	trim (`cygpath --windows --path "$TOOLS_PATH_ADDITIONS"`);
+		#	print (OUT "WIN_TOOLS_PATH_ADDITIONS=$tmp \n");		#nb: space importnat if $tmp ends in backslash
+		#}
 
 		print (OUT "\n");
 		print (OUT "\n");
