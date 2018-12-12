@@ -118,6 +118,7 @@ my $COMPILER_DRIVER_CPlusPlus = "";
 my $AS = undef;
 my $AR = undef;
 my $RANLIB = undef;
+my $Linker = undef;
 my $STRIP = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_PREFIX_LINKER_ARGS = "";
@@ -705,10 +706,25 @@ sub	SetDefaultForCompilerDriver_
 		$STRIP = "";
 	}
 	if (!(defined $AR)) {
-		$AR = "";
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+			my $x = GetMSVCVarName_ ("AR");
+			$AR = trim ($x);
+		}
+		else {
+			$AR = "";
+		}
 	}
 	if (!(defined $RANLIB)) {
 		$RANLIB = "";
+	}
+	if (!(defined $Linker)) {
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+			my $x = GetMSVCVarName_ ("LD");
+			$Linker = trim ($x);
+		}
+		else {
+			$Linker = $COMPILER_DRIVER_CPlusPlus;
+		}
 	}
 }
 
@@ -1630,6 +1646,8 @@ sub	WriteConfigFile_
 
 	print (OUT "    <AR>$AR</AR>\n");
 	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	print (OUT "    <Linker>$Linker</Linker>\n");
+	
 	print (OUT "    <STRIP>$STRIP</STRIP>\n");
 
 	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");

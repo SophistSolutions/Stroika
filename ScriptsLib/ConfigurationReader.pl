@@ -94,6 +94,14 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'OptimizerFlag'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<Linker>");
+		if (defined $pps) {
+			$configuration {'Linker'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<AS>");
+		if (defined $pps) {
+			$configuration {'AS'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CXX>");
 		if (defined $pps) {
 			$configuration {'CXX'} = $pps;
@@ -279,27 +287,6 @@ sub	GetConfigurationParameter {
 	}
 	
 	my $result = $configuration{$paramName};
-	if ($result eq "") {
-		if (index ($configuration{"ProjectPlatformSubdir"}, "VisualStudio") != -1) {
-			my $script = GetThisScriptDir() . "/PrintEnvVarFromCommonBuildVars.pl";
-			if ($paramName eq "CC") {
-				return `$script "$configName" CC`;
-			}
-			if ($paramName eq "CXX") {
-				return `$script "$configName" CC`;
-			}
-			if ($paramName eq "AR") {
-				return `$script "$configName" AR`;
-			}
-			if ($paramName eq "AS") {
-				return `$script "$configName" AS`;
-			}
-			if ($paramName eq "Linker") {
-				#see above where handled for unix
-				return `$script "$configName" LD`;
-			}
-		}
-	}
 
 	# aliases
 	if ($result eq "") {
@@ -311,13 +298,6 @@ sub	GetConfigurationParameter {
 			## ALIAS DEPRECATED
 			return GetConfigurationParameter ($configName, "CXX");
 		}
-
-		#temporary - cleanup/todo
-		if ($paramName eq "Linker") {
-			#see above where handled for windows
-			return GetConfigurationParameter ($configName, "CXX");
-		}
-
 	}
 
 	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");
