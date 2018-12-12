@@ -577,6 +577,16 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 	}
+	if ($AS eq "") {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			$AS = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'gcc', 'as');
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			if (!IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+				$AS = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'clang', 'as');
+			}
+		}
+	}
 	if (! defined $STDLIB) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			$STDLIB = "libstdc++";
