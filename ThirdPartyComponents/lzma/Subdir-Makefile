@@ -231,10 +231,11 @@ SubDirs2Compile=	\
 vpath %cpp $(SubDirs2Compile)
 vpath %c $(SubDirs2Compile)
 
-CC=gcc
+CC?=gcc
+CXX?=g++
 CFLAGS+=-D_7ZIP_ST
 
-AR=ar
+AR?=ar
 ARCRATEFLAGS=cru
 ARTARGETPREFIX=
 
