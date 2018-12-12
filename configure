@@ -132,7 +132,7 @@ my @LIBS_PATH_ADD  = qw();
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
 my $STDLIB = undef;
-
+my $TOOLS_PATH_ADDITIONS = undef;
 
 
 sub	DoHelp_
@@ -308,6 +308,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
 	}
 	if (!defined ($INCLUDES_PATH)) {
+
 		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
 			my $x = GetMSVCVarName_ ("INCLUDE");
 			$INCLUDES_PATH = trim (`cygpath --unix --path \"$x\"`);
@@ -416,6 +417,19 @@ sub     FillDefaultLibDependencies_
 				$LIB_DEPENDENCIES .= " ";
 			}
 			$LIB_DEPENDENCIES .= "-lrt";
+		}
+	}
+}
+sub     FillInToolsPathAdditionsIfNeeded_
+{
+	my $includeAutomaticDependencies = !defined ($TOOLS_PATH_ADDITIONS);
+	if ($includeAutomaticDependencies) {
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
+			$TOOLS_PATH_ADDITIONS = trim ($x);
+		}
+		else {
+			$TOOLS_PATH_ADDITIONS = "";
 		}
 	}
 }
@@ -1605,10 +1619,14 @@ sub	WriteConfigFile_
 
 	FillDefaultLibsPathIfNeeded_();
 	FillDefaultLibDependencies_();
+	FillInToolsPathAdditionsIfNeeded_ ();
+	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
 	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
 	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
+
+
 
 	print (OUT "    <AR>$AR</AR>\n");
 	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");

@@ -243,9 +243,67 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 
-	my $winPATH = %resEnv{"PATH"};
-	#print "GOT env32 PATH=" . $winPATH . "\n";
-	$resEnv{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
+	my $myOrigFullPath = $ENV{'PATH'};
+	#print "myOrigFullPath=$myOrigFullPath\n";
+	my $newFullPath = $resEnv{"PATH"};
+	$newFullPath=`cygpath --unix --path \"$newFullPath\"`;
+
+	my %myOrigFullPathHash;
+	foreach my $i (split /:/, $myOrigFullPath) {
+	  $myOrigFullPathHash{$i} = "";
+	}
+
+	my %newFullPathHash;
+	foreach my $i (split /:/, $newFullPath) {
+	  $newFullPathHash{$i} = "";
+	}
+
+	#print "ORIG:\n";
+	#foreach my $ip (keys %myOrigFullPathHash) {
+	# print "  ip=$ip\n";
+	#}
+
+	#print "NEW:\n";
+	foreach my $ip (keys %newFullPathHash) {
+	 #print "  new-ip=$ip\n";
+	  if (exists($myOrigFullPathHash{$ip})) {
+	    #print "deleting $ip\n";
+		delete $newFullPathHash{$ip};
+	  }
+	}
+
+	#print "NEW-SUBSET-ADDED:\n";
+	#foreach my $ip (keys %newFullPathHash) {
+	# print "  new-ip=$ip\n";
+	#}
+
+	my $param_string = "";
+	foreach my $ip (keys %newFullPathHash) {
+		#print "  new-ip=$ip\n";
+		$ip = trim ($ip);
+		if (! ($param_string eq "")) {
+			$param_string.= ":";
+		}
+		$param_string.= "$ip";
+	}
+	$resEnv{"TOOLS_PATH_ADDITIONS"} = $param_string;
+
+	#CONVERT TO UNIX PATH STYLE
+	#my $initialSegmentLen = length ($myOrigFullPath);
+	#my $diff = length ($newFullPath) - $initialSegmentLen;
+	#print ("myOrigFullPath=$myOrigFullPath\n\n");
+	#print ("newFullPath=$newFullPath\n\n");
+	#print ("initialSegmentLen=$initialSegmentLen\n\n");
+	#print ("diff=$diff\n\n");
+	#if ($diff > 0 and (substr ($newFullPath, 0, $initialSegmentLen) eq $myOrigFullPath)) {
+	#	print ("in match case - with substr (newfullapth, initseglen)");
+	#	$resEnv{"TOOLS_PATH_ADDITIONS"} = substr ($newFullPath, $initialSegmentLen);
+	#}
+	#else {
+	#	print "other case\n";
+	#	$resEnv{"TOOLS_PATH_ADDITIONS"} = convertWinPathVar2CygwinPathVar_($winPATH);
+	#}
+
 
 	return %resEnv;
 }
