@@ -49,6 +49,8 @@ namespace {
                 return SDKSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
             case ERROR_OUTOFMEMORY:
                 return SDKSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
+            case WSAEADDRNOTAVAIL:
+                return SDKSTR ("Socket address not available (WSAEADDRNOTAVAIL)");
         }
         if (INTERNET_ERROR_BASE <= win32Err and win32Err < INTERNET_ERROR_BASE + INTERNET_ERROR_LAST) {
             switch (win32Err) {
