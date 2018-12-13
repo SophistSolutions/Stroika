@@ -66,5 +66,8 @@ void SemWaitableEvent::Set ()
 #else
     sem_t* pSem = &fSem_;
 #endif
+    // see https://stroika.atlassian.net/browse/STK-677 - save/restore errno so this doesn't spoil errno if called from signal handler
+    errno_t saved = errno;
     Verify (::sem_post (pSem) == 0);
+    errno = saved;
 }

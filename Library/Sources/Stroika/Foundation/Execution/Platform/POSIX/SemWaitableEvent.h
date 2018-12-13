@@ -41,6 +41,8 @@ namespace Stroika::Foundation::Execution::Platform::POSIX {
     public:
         /**
          *  @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/sem_post.html
+         *
+         *  \note this is SAFE to call from within a signal handler on POSIX.
          */
         nonvirtual void Set ();
 
