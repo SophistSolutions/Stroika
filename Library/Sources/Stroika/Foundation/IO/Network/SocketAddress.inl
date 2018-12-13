@@ -41,6 +41,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         switch (iaddr.GetAddressFamily ()) {
             case InternetAddress::AddressFamily::V4: {
+                fSocketAddress_V4_            = sockaddr_in{};
                 fSocketAddress_V4_.sin_family = AF_INET;
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                 fSocketAddress_V4_.sin_port = htons (portNumber);                                   //NB no '::' cuz some systems use macro
@@ -48,7 +49,7 @@ namespace Stroika::Foundation::IO::Network {
                 fSocketAddress_V4_.sin_addr = iaddr.As<in_addr> ();
             } break;
             case InternetAddress::AddressFamily::V6: {
-                Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
+                fSocketAddress_V6_             = sockaddr_in6{};
                 fSocketAddress_V6_.sin6_family = AF_INET6;
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                 fSocketAddress_V6_.sin6_port = htons (portNumber);                                  //NB no ':' cuz some systems use macro
