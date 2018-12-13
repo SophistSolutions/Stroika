@@ -100,6 +100,10 @@ echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMP
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    uname=`uname -a`" >>$TEST_OUT_FILE 2>&1
+GIT_COMMIT=`git describe --tags`
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1
+fi
 command -v lsb_release 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    lsb_release=`lsb_release -d`" >>$TEST_OUT_FILE 2>&1
