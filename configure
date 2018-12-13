@@ -529,6 +529,28 @@ sub     ReplaceLast_
 
 sub	SetDefaultForCompilerDriver_
 {
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		if ($ARCH eq "32" or $ARCH eq "WIN32") {
+			$ARCH = "x86";
+		}
+		if ($ARCH eq "64" or $ARCH eq "WIN64") {
+			$ARCH = "x86_64";
+		}
+		if ($ARCH eq "") {
+			if ($configurationName =~ /64$/) {
+				$ARCH = "x86_64";
+				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			}
+			if ($configurationName =~ /32/) {
+				$ARCH = "x86";
+				print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			}
+		}
+		if ($ARCH eq "") {
+			die ("reorg code so this set first");
+		}
+	}
+
 	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
@@ -1297,20 +1319,20 @@ sub     CHECK_FEATURE_OPTION
 {
     my $x = shift(@_);
     if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
-            die ("Cannot identify ProjectPlatformSubdir\n");
+            die ("Cannot identify ProjectPlatformSubdir");
     }
 }
 
 sub	CHECK_OPTIONS_
 {
 	if ($PROJECTPLATFORMSUBDIR eq "") {
-		die ("Cannot identify ProjectPlatformSubdir\n");
+		die ("Cannot identify ProjectPlatformSubdir");
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2012") {
-		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012\n");
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012");
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2015") {
-		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2015\n");
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2015");
 	}
   	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
@@ -1450,14 +1472,7 @@ sub PostProcessOptions_ ()
 
 	if ($ARCH eq "") {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			###tmphack needed for windows where we don't find the compiler variable here (SHOULD FIX THAT) @todo - LGP 2017-12-17
-			if ($configurationName =~ /64$/) {
-				$ARCH = "x86_64";
-			}
-			else {
-				$ARCH = "x86";
-			}
-			print STDERR "WARNING: guessing the target arch (x86 or x86_64) from the configuration name: use --arch instead!\n";
+			die ("assert error - sb handled earlier");
 		}
 		else {
 			$ARCH = trim (`./ScriptsLib/GetCompilerArch.sh $COMPILER_DRIVER_CPlusPlus`);
@@ -1630,7 +1645,7 @@ sub	WriteConfigFile_
 			print (OUT "    <qFeatureFlag_OpenSSL_ExtraArgs>$FEATUREFLAG_OpenSSLExtraArgs</qFeatureFlag_OpenSSL_ExtraArgs>\n");
 		}
 		else {
-            die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use\n");
+            die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use");
 		}
 	}
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
