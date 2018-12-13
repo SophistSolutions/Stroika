@@ -124,6 +124,9 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         if (e == WSAEACCES) {
             Throw (StringException (Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
         }
+        else {
+            ReThrow ();
+        }
     }
 #else
     // EACCESS reproted as FileAccessException - which is crazy confusing.
