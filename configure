@@ -35,6 +35,7 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 
 
+my @EXTRA_ARGS = ();
 
 
 ########### CONFIG_Variables ###############
@@ -206,6 +207,9 @@ sub	DoHelp_
         print("	                                                       any arg you can pass to -fsanitize=XXXX */\n");
         print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
         print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
+        print("\n");
+        print("Configure's behavior is also influenced by the following environment variables:\n");
+        print("	    CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
 		
 	exit ($x);
 }
@@ -794,16 +798,63 @@ sub	SetDefaultForPlatform_
 }
 
 
+sub	ParseEnvVarsToSetupInfluencedVariables_
+{
+	if (defined ($ENV{'ARCH'})) {
+		push @EXTRA_ARGS, "--arch";
+		push @EXTRA_ARGS, $ENV{'ARCH'};
+	}
+	if (defined ($ENV{'PLATFORM'})) {
+		push @EXTRA_ARGS, "--platform";
+		push @EXTRA_ARGS, $ENV{'PLATFORM'};
+	}
+	if (defined ($ENV{'CC'})) {
+		push @EXTRA_ARGS, "--compiler-driver";
+		push @EXTRA_ARGS, $ENV{'CC'};
+		$COMPILER_DRIVER_C = $ENV{'CC'};
+	}
+	if (defined ($ENV{'CXX'})) {
+		push @EXTRA_ARGS, "--compiler-driver";
+		push @EXTRA_ARGS, $ENV{'CXX'};
+		$COMPILER_DRIVER_CPlusPlus = $ENV{'CXX'};
+	}
+	if (defined ($ENV{'AR'})) {
+		push @EXTRA_ARGS, "--ar";
+		push @EXTRA_ARGS, $ENV{'AR'};
+	}
+	if (defined ($ENV{'AS'})) {
+		push @EXTRA_ARGS, "--as";
+		push @EXTRA_ARGS, $ENV{'AS'};
+	}
+	if (defined ($ENV{'$RANLIB'})) {
+		push @EXTRA_ARGS, "--ranlib";
+		push @EXTRA_ARGS, $ENV{'$RANLIB'};
+	}
+	if (defined ($ENV{'STRIP'})) {
+		push @EXTRA_ARGS, "--strip";
+		push @EXTRA_ARGS, $ENV{'STRIP'};
+	}
+}
+
+
+# merge 'extra' args (from environment variables) with those specified on the commandline
+sub GetAppArgs_ ()
+{
+	my @args = @ARGV;
+	splice(@args, 1, 0, @EXTRA_ARGS);
+	return @args;
+}
 
 
 ### Do initial pass, just looking for platform
 sub	ParseCommandLine_Platform_
 {
-	for (my $i = 0; $i <= $#ARGV; $i++) {
-		my $var = $ARGV[$i];
+	my @args = GetAppArgs_ ();
+	for (my $i = 0; $i <= $#args; $i++) {
+		my $var = $args[$i];
 		if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$PROJECTPLATFORMSUBDIR = $var;
 			SetDefaultForPlatform_ ();
 		}
@@ -813,11 +864,12 @@ sub	ParseCommandLine_Platform_
 ### Do initial pass, just looking for platform
 sub	ParseCommandLine_CompilerDriver_
 {
-	for (my $i = 0; $i <= $#ARGV; $i++) {
-		my $var = $ARGV[$i];
+	my @args = GetAppArgs_ ();
+	for (my $i = 0; $i <= $#args; $i++) {
+		my $var = $args[$i];
 		if (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$COMPILER_DRIVER = $var;
 			$COMPILER_DRIVER_C = "";		#reset so computed later
 			$COMPILER_DRIVER_CPlusPlus = "";
@@ -833,31 +885,32 @@ sub	ParseCommandLine_CompilerDriver_
 
 sub	ParseCommandLine_Remaining_
 {
-	for (my $i = 1; $i <= $#ARGV; $i++) {
-		my $var = $ARGV[$i];
+	my @args = GetAppArgs_ ();
+	for (my $i = 1; $i <= $#args; $i++) {
+		my $var = $args[$i];
 		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			push (@useExtraCDefines, $var);
 		}
 		elsif (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			push (@useExtraMakeDefines, $var);
 		}
 		elsif (lc ($var) eq "-platform" or lc ($var) eq "--platform") {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$PROJECTPLATFORMSUBDIR = $var;
 		}
 		elsif (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$ARCH = $var;
 		}
 		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "enable") {
 				$ENABLE_ASSERTIONS = 1;
 			}
@@ -874,7 +927,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-block-allocation") or (lc ($var) eq "--block-allocation")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "enable") {
 				push (@useExtraCDefines, '#define qAllowBlockAllocation 1');
 			}
@@ -890,7 +943,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-valgrind") or (lc ($var) eq "--valgrind")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "enable") {
 				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 1');
 			}
@@ -906,7 +959,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-glibcxx_debug") or (lc ($var) eq "--glibcxx_debug")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "enable") {
 				$ENABLE_GLIBCXX_DEBUG = 1;
 			}
@@ -923,18 +976,18 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$CPPSTD_VERSION_FLAG = $var;
 			print "--cppstd-version-flag deprecated - use --cppstd-version\n";
 		}
 		elsif ((lc ($var) eq "-stdlib") or (lc ($var) eq "--stdlib")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$STDLIB = $var;
 		}
 		elsif ((lc ($var) eq "-cppstd-version") or (lc ($var) eq "--cppstd-version")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "c++14" ) {
 				print "Warning: c++14 not supported by Stroika v2.1 or later\n";
 			}
@@ -945,12 +998,12 @@ sub	ParseCommandLine_Remaining_
 		}
         elsif ((lc ($var) eq "-activeperl") or (lc ($var) eq "--activeperl")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_ActivePerl = $var;
         }
         elsif ((lc ($var) eq "-config-tag") or (lc ($var) eq "--config-tag")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
 			if ($var=~/[\s+.]+/)  {
 				die "No spaces allowed in config-tag" 
 			}
@@ -964,62 +1017,62 @@ sub	ParseCommandLine_Remaining_
         }
         elsif ((lc ($var) eq "-private-cmake-override") or (lc ($var) eq "--private-cmake-override")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_PrivateOverrideOfCMake = $var;
         }
         elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_LIBCURL = $var;
         }
         elsif ((lc ($var) eq "-boost") or (lc ($var) eq "--boost")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_boost = $var;
         }
         elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_OpenSSL = $var;
         }
         elsif ((lc ($var) eq "-openssl-extraargs") or (lc ($var) eq "--openssl-extraargs")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_OpenSSLExtraArgs = $var;
         }
         elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_WinHTTP = $var;
         }
         elsif ((lc ($var) eq "-atlmfc") or (lc ($var) eq "--atlmfc")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_ATLMFC = $var;
         }
         elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_Xerces = $var;
         }
         elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_ZLib = $var;
         }
         elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_sqlite = $var;
         }
         elsif ((lc ($var) eq "-lzma") or (lc ($var) eq "--lzma")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             $FEATUREFLAG_LZMA = $var;
         }
 		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "enable") {
 				$ENABLE_TRACE2FILE = 1;
 			}
@@ -1036,7 +1089,7 @@ sub	ParseCommandLine_Remaining_
 		}
         elsif ((lc ($var) eq "-static-link-gccruntime") or (lc ($var) eq "--static-link-gccruntime")) {
             $i++;
-            $var = $ARGV[$i];
+            $var = $args[$i];
             if ($var eq "enable") {
 				$STATIC_LINK_GCCRUNTIME = 1;
 			}
@@ -1050,37 +1103,37 @@ sub	ParseCommandLine_Remaining_
         }
 		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$COPTIMIZE_FLAGS = $var;
 		}
 		elsif ((lc ($var) eq "-ar") or (lc ($var) eq "--ar")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$AR = $var;
 		}
 		elsif ((lc ($var) eq "-as") or (lc ($var) eq "--as")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$AS = $var;
 		}
 		elsif ((lc ($var) eq "-ranlib") or (lc ($var) eq "--ranlib")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$RANLIB = $var;
 		}
 		elsif ((lc ($var) eq "-strip") or (lc ($var) eq "--strip")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$STRIP = $var;
 		}
 		elsif ((lc ($var) eq "-compiler-warning-args") or (lc ($var) eq "--compiler-warning-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$CWARNING_FLAGS = $var;
 		}
 		elsif ((lc ($var) eq "-append-compiler-warning-args") or (lc ($var) eq "--append-compiler-warning-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($ADD2CWARNING_FLAGS eq "")) {
 				$ADD2CWARNING_FLAGS .= " ";
 			}
@@ -1088,12 +1141,12 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$EXTRA_COMPILER_ARGS = $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-compiler-args") or (lc ($var) eq "--append-extra-compiler-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($EXTRA_COMPILER_ARGS eq "")) {
 				$EXTRA_COMPILER_ARGS .= " ";
 			}
@@ -1101,12 +1154,12 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-extra-prefix-linker-args") or (lc ($var) eq "--extra-prefix-linker-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$EXTRA_PREFIX_LINKER_ARGS = $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-prefix-linker-args") or (lc ($var) eq "--append-extra-prefix-linker-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
 				$EXTRA_PREFIX_LINKER_ARGS .= " ";
 			}
@@ -1114,12 +1167,12 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-extra-suffix-linker-args") or (lc ($var) eq "--extra-suffix-linker-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$EXTRA_SUFFIX_LINKER_ARGS = $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-suffix-linker-args") or (lc ($var) eq "--append-extra-suffix-linker-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
 				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 			}
@@ -1127,42 +1180,42 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$INCLUDES_PATH = $var;
 		}
 		elsif ((lc ($var) eq "-append-includes-path") or (lc ($var) eq "--append-includes-path")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			push @INCLUDES_PATH_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$LIBS_PATH = $var;
 		}
 		elsif ((lc ($var) eq "-append-libs-path") or (lc ($var) eq "--append-libs-path")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			push @LIBS_PATH_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$LIB_DEPENDENCIES = $var;
 		}
 		elsif ((lc ($var) eq "-append-lib-dependencies") or (lc ($var) eq "--append-lib-dependencies")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			push @LIB_DEPENDENCIES_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			$RUN_PREFIX = $var;
 		}
 		elsif ((lc ($var) eq "-append-run-prefix") or (lc ($var) eq "--append-run-prefix")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($RUN_PREFIX eq "")) {
 				$RUN_PREFIX .= " ";
 			}
@@ -1170,7 +1223,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-append-extra-compiler-and-linker-args") or (lc ($var) eq "--append-extra-compiler-and-linker-args")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($EXTRA_COMPILER_ARGS eq "")) {
 				$EXTRA_COMPILER_ARGS .= " ";
 			}
@@ -1186,7 +1239,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "enable") {
 				$ENABLE_LTO = 1;
 			}
@@ -1203,7 +1256,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-cross-compiling") or (lc ($var) eq "--cross-compiling")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($var eq "true" || $var eq "false")) {
 				die ("Invalid argument to --cross-compiling");
 			}
@@ -1211,7 +1264,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-debug-symbols") or (lc ($var) eq "--debug-symbols")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($var eq "true" || $var eq "false")) {
 				die ("Invalid argument to --debug-symbols");
 			}
@@ -1220,7 +1273,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-debug-symbols-lib") or (lc ($var) eq "--debug-symbols-lib")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($var eq "true" || $var eq "false")) {
 				die ("Invalid argument to --debug-symbols-lib");
 			}
@@ -1228,7 +1281,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-debug-symbols-exe") or (lc ($var) eq "--debug-symbols-exe")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($var eq "true" || $var eq "false")) {
 				die ("Invalid argument to --debug-symbols");
 			}
@@ -1236,7 +1289,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
 			$i++;
-			$MALLOC_GUARD = ToBool_ ($ARGV[$i]);
+			$MALLOC_GUARD = ToBool_ ($args[$i]);
 			### DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DON'T WORK TOGETHER
 			### -- LGP 2016-07-14
 			if ($MALLOC_GUARD == true) {
@@ -1245,7 +1298,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if (not ($var eq "true" || $var eq "false")) {
 				die ("Invalid argument to --runtime-stack-check");
 			}
@@ -1253,7 +1306,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			my @splitSanFlags = split(/,/, $var);
 			foreach my $ii (0 .. $#splitSanFlags) {
 				my $flag = $splitSanFlags[$ii];
@@ -1272,7 +1325,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-no-sanitize") or (lc ($var) eq "--no-sanitize")) {
 			$i++;
-			$var = $ARGV[$i];
+			$var = $args[$i];
 			if ($var eq "none") {
 				$noSanitizerFlags = "";
 			}
@@ -1334,6 +1387,11 @@ sub	CHECK_OPTIONS_
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2015") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2015");
 	}
+	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2017", "VisualStudio.Net-2019");
+	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
+	if (not exists ($params{$PROJECTPLATFORMSUBDIR})) {
+		die ("Unrecognized --platfrom argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
+	}
   	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
 
@@ -1367,6 +1425,7 @@ sub	ParseCommandLine_
         DoHelp_ (1);
 	}
 
+	ParseEnvVarsToSetupInfluencedVariables_();
 	ParseCommandLine_Platform_ ();
 	SetDefaultForPlatform_ ();
 
@@ -1598,15 +1657,27 @@ sub GetMSVCVarName_
 # build C++/dirs etc from this!
 sub	WriteConfigFile_
 {
+	my @appArgs = GetAppArgs_ ();
+
     my $configFileName = shift(@_);
 
 	open(OUT,">$configFileName");
-	print (OUT "<!--This file autogenerated by the command\n    configure ");
-	foreach my $argnum (0 .. $#ARGV) {
-	   print (OUT "$ARGV[$argnum] ");
-	}
-	print (OUT "\n-->\n\n");
+	print (OUT "<!--This file autogenerated by the configure command: see Configure-Command-Line, modify it, and re-run-->\n\n");
 	print (OUT "<Configuration>\n");
+
+
+	print (OUT "    <Configure-Command-Line>");
+	print (OUT "configure ");
+	foreach my $argnum (0 .. $#appArgs) {
+		if ($argnum != 0) {
+			print OUT (" ");
+		}
+	   print (OUT "$appArgs[$argnum]");
+	}
+	print (OUT "</Configure-Command-Line>\n");
+
+
+
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
 	if (defined $Config_Tag) {
