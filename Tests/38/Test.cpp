@@ -948,6 +948,7 @@ namespace {
                     VerifyTestResult (countWhereTwoHoldingRead == 0);
                 }
                 else {
+                    // This failed once under helgrind && docker, perhaps while other tests running, so not worrisome unless we see again -- LGP 2018-12-14
                     VerifyTestResult (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
                 }
                 DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
