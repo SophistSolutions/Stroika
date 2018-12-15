@@ -13,7 +13,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .NOTPARALLEL:
 
 
-### link error with clang++ on ubuntu - 3.2.2 - still must debug
 VERSION=3.2.2
 #VERSION=3.2.1
 #VERSION=3.2.0
