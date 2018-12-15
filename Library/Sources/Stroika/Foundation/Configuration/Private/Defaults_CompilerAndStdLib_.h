@@ -326,8 +326,7 @@ ABORTING...
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // still broken in _MSC_VER_2k17_15Pt8_
 // VERIFIED STILL BROKEN in _MSC_VER_2k17_15Pt9_
-// assume broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt0_
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
@@ -566,7 +565,6 @@ lose those deprecated interfaces.
 // verified broken in _MSC_VER_2k17_15Pt8_
 // verified broken in _MSC_VER_2k17_15Pt9_
 // assume broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
@@ -789,8 +787,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // still broken in _MSC_VER_2k17_15Pt8_
 // still broken in _MSC_VER_2k17_15Pt9_
-// assume broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// still broken in _MSC_VER_2k19_16Pt0_
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
@@ -807,9 +804,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // still broken in _MSC_VER_2k17_15Pt8_
 // still broken in _MSC_VER_2k17_15Pt9_
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// FIXED in _MSC_VER_2k19_16Pt0_
+#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy 0
 #endif
@@ -838,8 +834,7 @@ WORKAROUND:
 // assume still broken in _MS_VS_2k17_15Pt8Pt5_
 // assume still broken in _MS_VS_2k17_15Pt8Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt0Pt0_ - preview1
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
@@ -896,8 +891,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // verified still broken in _MSC_VER_2k17_15Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt0_
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
@@ -1039,8 +1033,7 @@ NOTE:
 // verified still broken in _MS_VS_2k17_15Pt8Pt4_
 // assume still broken in _MS_VS_2k17_15Pt8Pt5_
 // verified still broken in _MSC_VER_2k17_15Pt9_
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
@@ -1060,8 +1053,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // verified BROKEN _MSC_VER_2k17_15Pt8_ (OK in debug build, but broken in Release-U-32)
 // verified BROKEN _MSC_VER_2k17_15Pt9_ (OK in debug build, but broken in Release-U-32)
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1) - not not sure anything more than warnings - no buggy behavior seen?
 #define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
@@ -1166,8 +1158,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k17_15Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt0_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
@@ -1199,8 +1190,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k17_15Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt0_
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
@@ -1272,14 +1262,16 @@ namespace {
             
             NOTE - Debug version asserts out, and release version doesn't. BUT - for at least some cases (stroika regtests)
             the release version builds a locale that doesnt work (with my test cases - unicode utf8 conversion).
+           
+
+    FAILED: RegressionTestFailure; false;;C:\Sandbox\Stroika\DevRoot\Tests\02\Test.cpp: 1194
  */
 #ifndef qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
 
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k17_15Pt8_
 // VERIFIED broken IN _MSC_VER_2k17_15Pt9_  (NOTE - this no longer gives the above assertion error but instead just fails in the UTF8 code conversion)
-// assume still broken in _MSC_VER_2k19_16Pt0_
-//#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// VERIFIED still broken in _MSC_VER_2k19_16Pt0_
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
