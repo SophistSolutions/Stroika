@@ -263,12 +263,9 @@ endif
 endif
 
 
-
-ALTERNATE_CMAKE_BINDIR=
-ifeq ($(UNAME),Cygwin)
-#ALTERNATE_CMAKE_BINDIR=$(shell cygpath --absolute --unix ../cmake/CURRENT/bin/)
-endif
-
+# For reasons not totally understood - probably just that the cmake in cygwin is quite old - it doesn't work right here.
+# so use the copy from visual studio which appears to be recent enough to know about the verison of visual studio it comes with ;-)
+#	--LGP 2018-12-15
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PATH_ADJUSTMENT_PREFIX= PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" 
 else

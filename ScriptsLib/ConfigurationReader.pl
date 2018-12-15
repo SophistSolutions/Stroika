@@ -122,10 +122,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_ActivePerl'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qFeatureFlag_PrivateOverrideOfCMake>");
-		if (defined $pps) {
-			$configuration {'qFeatureFlag_PrivateOverrideOfCMake'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_OpenSSL>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_OpenSSL'} = $pps;

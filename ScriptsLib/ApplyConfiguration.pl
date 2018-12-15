@@ -474,7 +474,6 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LZMA");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL_ExtraArgs");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_PrivateOverrideOfCMake");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_sqlite");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WinHTTP");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_Xerces");

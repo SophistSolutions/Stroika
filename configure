@@ -94,7 +94,6 @@ $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-co
 my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
 
 my $FEATUREFLAG_ActivePerl = undef;
-my $FEATUREFLAG_PrivateOverrideOfCMake = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_OpenSSL = "";
@@ -153,7 +152,6 @@ sub	DoHelp_
         print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a\n");
         print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang)\n");
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
-        print("	    --private-cmake-override {use|no}               /* Enables/disables use of private cmake replacement (Windows/cygwin Only) - JUST USED TO BUILD Xerces for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
         print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
@@ -1015,11 +1013,6 @@ sub	ParseCommandLine_Remaining_
 			}
             $Config_Tag .= $var;
         }
-        elsif ((lc ($var) eq "-private-cmake-override") or (lc ($var) eq "--private-cmake-override")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_PrivateOverrideOfCMake = $var;
-        }
         elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
             $i++;
             $var = $args[$i];
@@ -1518,14 +1511,6 @@ sub PostProcessOptions_ ()
 			$FEATUREFLAG_ActivePerl = $LIBFEATUREFLAG_No;
 		}
 	}
-	if (! defined $FEATUREFLAG_PrivateOverrideOfCMake) {
-		if ($FEATUREFLAG_Xerces eq "use" && ("$^O" eq "cygwin")) {
-			$FEATUREFLAG_PrivateOverrideOfCMake = "use";
-		}
-		else {
-			$FEATUREFLAG_PrivateOverrideOfCMake = $LIBFEATUREFLAG_No;
-		}
-	}
 
 	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
 
@@ -1708,7 +1693,6 @@ sub	WriteConfigFile_
 	
 	print (OUT "    <qFeatureFlag_ActivePerl>$FEATUREFLAG_ActivePerl</qFeatureFlag_ActivePerl>\n");
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
-	print (OUT "    <qFeatureFlag_PrivateOverrideOfCMake>$FEATUREFLAG_PrivateOverrideOfCMake</qFeatureFlag_PrivateOverrideOfCMake>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
