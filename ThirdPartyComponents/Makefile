@@ -28,9 +28,6 @@ endif
 ifeq ($(qFeatureFlag_boost), use)
 	USE_boost=1
 endif
-ifeq ($(qFeatureFlag_PrivateOverrideOfCMake), use)
-	USE_cmake=1
-endif
 ifeq ($(qFeatureFlag_LibCurl), use)
 	USE_curl=1
 endif
@@ -59,9 +56,6 @@ endif
 ifeq ($(USE_boost), 1)
 	SubDirs+= boost
 endif
-ifeq ($(USE_cmake), 1)
-	SubDirs+= cmake
-endif
 ifeq ($(USE_curl), 1)
 	SubDirs+= curl
 endif
@@ -85,7 +79,6 @@ endif
 ##WINDOWS ONLY
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(USE_openssl), 1)
-openssl:	cmake
 openssl:	ActivePerl
 endif
 endif
@@ -214,7 +207,6 @@ else
 endif
 	@$(MAKE) --directory ActivePerl --silent $@
 	@$(MAKE) --directory boost --silent $@
-	@$(MAKE) --directory cmake --silent $@
 	@$(MAKE) --directory curl --silent $@
 	@$(MAKE) --directory lzma --silent $@
 	@$(MAKE) --directory openssl --silent $@
