@@ -730,7 +730,8 @@ namespace {
                 newInterface.fInternalInterfaceID = adapterName;
                 newInterface.fFriendlyName        = currAddresses->FriendlyName;
                 newInterface.fDescription         = currAddresses->Description;
-                static const GUID kZeroGUID_{};
+
+                static constexpr GUID kZeroGUID_{};
                 if (memcmp (&currAddresses->NetworkGuid, &kZeroGUID_, sizeof (kZeroGUID_)) != 0) {
                     newInterface.fNetworkGUID = currAddresses->NetworkGuid;
                 }
