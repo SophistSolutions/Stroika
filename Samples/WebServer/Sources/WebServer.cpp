@@ -58,7 +58,6 @@ namespace {
                       Route{RegularExpression (L"GET"), RegularExpression (L"FRED"), [](Request*, Response* response) {
                                 response->write (L"FRED");
                                 response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
-                                response->End ();
                             }},
                       Route{
                           RegularExpression (L"Files/.*"),
