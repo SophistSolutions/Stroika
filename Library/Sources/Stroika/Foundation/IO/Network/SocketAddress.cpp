@@ -43,7 +43,7 @@ String SocketAddress::ToString () const
         return Characters::ToString (GetInternetAddress ()) + L":" + Characters::Format (L"%d", static_cast<int> (GetPort ()));
     }
     else {
-        return Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (&fSocketAddress_), reinterpret_cast<const byte*> (&fSocketAddress_) + sizeof (fSocketAddress_)));
+        return Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (&fSocketAddress_), reinterpret_cast<const byte*> (&fSocketAddress_) + GetRequiredSize ()));
     }
 }
 
