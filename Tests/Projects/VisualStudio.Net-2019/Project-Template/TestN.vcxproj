@@ -782,6 +782,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Association.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Bijection.h" />
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_SortedIterators.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Mapping.h" />
