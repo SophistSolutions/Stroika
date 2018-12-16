@@ -2,6 +2,8 @@
 #use strict;
 #use warnings;
 
+####Stroika 2.1d14
+
 BEGIN{ @INC = ( "./", @INC ); }
 
 
@@ -14,5 +16,6 @@ sub trim($)
 	return $string;
 }
 
+print STDERR "StringUtils.pl DEPRECATED Stroika 2.1d14\n";
 
 1

@@ -11,8 +11,6 @@ my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
 my $configurationFiles	=	GetThisScriptDir() . "/../ConfigurationFiles";
 my $masterXMLConfigFile	=	"";
 
-require (GetThisScriptDir () + "StringUtils.pl");
-
 my @useExtraCDefines;
 my @useExtraMakeDefines;
 
@@ -50,6 +48,7 @@ sub	GetAllOfStringToEndTag($) {
 }
 
 my %configuration = ();
+
 
 
 sub	ReadValue_ {

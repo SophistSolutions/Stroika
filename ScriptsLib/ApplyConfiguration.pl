@@ -9,7 +9,6 @@
 BEGIN{ @INC = ( "./", @INC ); }
 
 require ("Tests/ScriptsLib/TestsList.pl");
-require ("ScriptsLib/StringUtils.pl");
 require ("ScriptsLib/ConfigurationReader.pl");
 
 use constant false => 0;
@@ -68,6 +67,14 @@ my $EXTRA_SUFFIX_LINKER_ARGS = "";
 # just regular
 my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 
+
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
 
 sub	DoHelp_
 {

@@ -19,7 +19,6 @@ use File::Temp qw(tempfile);
 ### SEE http://bugzilla/show_bug.cgi?id=736
 ###
 
-require ("$thisScriptDir/../../../ScriptsLib/StringUtils.pl");
 sub PRINT_ENV_
 {
  	my $msg = shift;
@@ -51,6 +50,13 @@ if (0) {
 
 
 
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
 
 
 local $PROGRAMFILESDIR= $ENV{'PROGRAMFILES'};

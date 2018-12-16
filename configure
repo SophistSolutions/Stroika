@@ -7,8 +7,6 @@ no warnings 'experimental::smartmatch';
 
 BEGIN{ @INC = ( "./", @INC ); }
 
-require ("ScriptsLib/StringUtils.pl");
-
 use constant false => 0;
 use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
@@ -32,6 +30,14 @@ sub	GetThisScriptDir {
 	return $dirname;
 }
 my	$thisScriptDir	=	GetThisScriptDir ();
+
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
 
 
 

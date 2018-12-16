@@ -15,11 +15,20 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 use File::Glob ':bsd_glob';
 use File::Temp qw(tempfile);
 
+
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
+
+
 ### This file is minimally acceptable but mostly wrong.
 ### SEE http://bugzilla/show_bug.cgi?id=736
 ###
 
-require ("$thisScriptDir/../../../ScriptsLib/StringUtils.pl");
 sub PRINT_ENV_
 {
  	my $msg = shift;

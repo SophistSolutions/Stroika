@@ -7,6 +7,8 @@ set _DIR=%3
 ::echo %_LINK%
 ::echo %_TARGET%
 
+
+echo "***DEPRECATED***  in Stroika 2.1d14"
 :: BatchGotAdmin
 :-------------------------------------
 REM  --> Check for permissions
