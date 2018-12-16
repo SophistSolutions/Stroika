@@ -222,6 +222,7 @@ namespace Stroika::Frameworks::WebServer {
          *  Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
          *  that cannot be specified here include:
          *      o   IO::Network::HTTP::HeaderName::kContentLength
+         *      o   IO::Network::HTTP::HeaderName::kContentType
          *
          * It is legal to call anytime before FLush. Illegal to call after flush. 
          * It is legal to call to replace existing headers values.
