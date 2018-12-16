@@ -34,7 +34,15 @@ checkin from one spot.
 
     (on windows bash shell run; takes about 8 HRs)
     ~~~bash
-    USE_TEST_BASENAME=Windows_VS2k17 \
+    USE_TEST_BASENAME=Windows_VS2k17 PLATFORM=VisualStudio.Net-2017 \
+        ./ScriptsLib/RegressionTests.sh
+    ~~~
+
+* $TEST_TARGET=Windows_VS2k19
+
+    (on windows bash shell run; takes about 8 HRs)
+    ~~~bash
+    USE_TEST_BASENAME=Windows_VS2k19 PLATFORM=VisualStudio.Net-2019 \
         ./ScriptsLib/RegressionTests.sh
     ~~~
 
