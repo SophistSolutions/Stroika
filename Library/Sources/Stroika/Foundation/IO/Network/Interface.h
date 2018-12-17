@@ -86,6 +86,9 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Network GUID
          *      @see https://docs.microsoft.com/en-us/windows/desktop/api/iptypes/ns-iptypes-_ip_adapter_addresses_lh "NetworkGuid"
+         *
+         *  I can find no documentation on what this means, and all the network interfaces appear to have the same value (e.g. fake networks and real ones).
+         *  VERGING on deprecating this. It doesn't appear to have any use. But leave for now... -- LGP 2018-12-16
          */
         optional<Common::GUID> fNetworkGUID;
 
