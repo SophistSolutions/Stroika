@@ -14,8 +14,6 @@
 #include "Common.h"
 
 /**
- *
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *
@@ -51,6 +49,8 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
+     * \brief Set<T> is a container of T, where once an item is added, additionally adds () do nothing.
+     *
      *      The Set class is based on SmallTalk-80, The Language & Its Implementation,
      *      page 148.
      *

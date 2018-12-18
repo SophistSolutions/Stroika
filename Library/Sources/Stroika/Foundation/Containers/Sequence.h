@@ -103,6 +103,8 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     /**
+     *  \brief A generalization of a vector: a container whose elements are keyed by the natural numbers.
+     *
      *      SmallTalk book page 153
      *
      *

@@ -34,8 +34,7 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *      Association which allows for the association of two elements, and key and
-     *  a value. The key UNIQUELY specifies its associated value.
+     *      Allows for the association of two elements, and key and one or more values.
      *
      *  @see    SortedAssociation<Key,T>
      *

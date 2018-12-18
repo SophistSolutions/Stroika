@@ -18,6 +18,169 @@ History
 
 
 
+    
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d14">v2.1d14</a><br/>2018-12-17</td>
+<td>
+    <ul>
+        <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d13...v2.1d14</li>
+        <li>New Target Compilers
+            <ul>
+                <li>support visualstudio.net 2k19 (preview 1): do "PLATFORM=VisualStudio.Net-2019 make default-configurations" to generate configuration files targetting VS2k19</li>
+                <li>support _MS_VS_2k17_15Pt9Pt4_</li>
+            </ul>
+        </li>
+        <li>Major revamping of configure scripts/process and related Makefile changes
+            <ul>
+                <li>Can now specifiy CC=x PLATFROM=y to set environment variables (CC, CCX, PLATFORM, ARCH, AS, AR, RANLIB) and they apply to configure as if passed as arguments to configure</li>
+                <li>LIBS_PATH and INCLUDES_PATH (configure --append-libs-path, and --append-includes-path) now are ':' separated, stored in UNIX format always, and converted to windows format as needed (cygpath -p -w), and several related changes</li>
+                <li>Updated calls to configure for windows to pass in --arch argument, since cannot be automatically inferred on windows; configure script warning if no arch and document when we guess arch on windows; Got rid of any (known) remaining code that parsed NAMES of configurations (e.g. -32) and instead keys
+    off this ARCH configuration attribute</li>
+                <li>Library/Projects/Unix/SharedMakeVariables-Default.mk; Lose RANLIB/AR defs here since they are generated in Configure.mk; comment out variables marked earlier as deprecated (StroikaSupportLibs, StroikaLibsWithSupportLibs)</li>
+                <li>Makefile - lose explicit calls to set AR/RANLIB to shell ../../ScriptsLib/GetConfig...Param CONFIG AR etc, since now GUARANTEED in include .../CONFIG/Lib../Configuration.mk</li>
+                <li>configure: IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 0 and add if ($STATIC_LINK_GCCRUNTIME == 1) in case someday fixed and does something (-static-libgcc)</li>
+                <li>better docs about https://stroika.atlassian.net/browse/STK-676  - gcc -static-libgcc</li>
+                <li>restructure parts of thirdpartycomponents makefiles to have StroikaRoot setting, and if neq CONFIGURATION," then include config.mk and load any extra per-config variables by script</li>
+                <li>use _PREFIX_LINKER for -static-libstdc and static-libgcc just cuz not well documented about ordering of this param and others are listed PREFIX; -static-libasan etc only works for gcc, not clang - there use -static-libsan</li>
+                <li>normalize(harmonize) the starts of each makefile - starting with the same sequence - StroikaRoot and then per-config includes/defines</li>
+                <li>PrintEnvVarFromCommonBuildVars.pl now DEPRECATED - use configure directly or GetConfigurationParameter or #include Configuration.mk</li>
+                <li>print to stderr when running deprecated scripts</li>
+                <li>configure: configure $STATIC_LINK_SANITIZERS default to 1 - and add -static-libtsan etc; makefile lose --append-run-prefix 'LD_PRELOAD=/usr/l... for asan on raspberrypi configs since we now statically link these</li>
+                <li>Add ProjectPlatformSubdir and ENABLE_ASSERTIONS to things emitted in Configuration.mk, THEN, lose the explicit script call in makefiles to load these values (big makefile speedup); AND MANY SIMILAR CHANGES</li>
+                <li>replace export StroikaRoot=$(shell realpath ... with export StroikaRoot?=$(shell realpath... so passed down from makefile to submake, and dont have to call realapth again (make speed tweak)</li>
+                <li>a few more makefile cleanups of config vars - moving defines to ApplyConfigurations.pl/Configurations.mk and losing runtime load of those params from makefile</li>
+                <li>cleanup / reduce duplicitvate param passing with makefiles- values inherited dont need to be specified on CMDLINE redundantly; include $(StroikaRoot)ScriptsLib/Makefile-Common.mk in a few that were missing it; lose MAKE_INDENT_LEVEL?, ECHO?=, SHELL= etc, cuz set in ScriptsLib/Makefile-Common.mk now</li>
+                <li>makefile cleanups - replacing use of GetConfigurationParameter with cached valeus genreated by ApplyConfiguraiton.pl</li>
+                <li>ApplyConfigraitons shouldnt wrap strings in quotes (for makefile)</li>
+                <li>Always generated CXX/CC defines in ApplyConfigurations and use those instead of (I think I will deprecate) CompilerDriver-C/CompilerDriver-CXX</li>
+                <li>re-org / depreaction of several makefile variables (CPlusPlus, etc) - and isntead use more standard names; (CXXFLAGS and CXX instead of CFLAGS for C++ and CplusPlus)</li>
+                <li>renamed include (StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk to $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk in usage (did a while back in generation)</li>
+                <li>dont add INCLUDES_PATH to CFLAGS/CXFLAGS (got away with it before because I didnt emit INCLUDES_PATH into Configuration.mk)</li>
+                <li>new TOOLS_PATH_ADDITIONS (really for now just for visual studio.net but could easily extend) - added to configure script - automatically added</li>
+                <li>VisualStudio.Net-2017/SetupBuildCommonVars.pl now emits Hostx64 on windows (could autodetect but assuming 64bit host fine for now).</li>
+                <li>emit TOOLS_PATH_ADDITIONS in ApplyConfiguration, and use in a few places: "PATH=$(TOOLS_PATH_ADDITIONS):$(PATH)"; Sort TOOLS_PATH_ADDITIONS in windows genreated configs - so regular each time (not ideal - should preserve original order probably)</li>
+                <li>Commented out more of - and made more private in Projects/VisualStudio.Net-2017/SetupBuildCommonVars.pl;  GetConfig32Or64_() now takes ARCH as argument - not config name, and same with other routines in this file (so changed calling scripts</li>
+                <li>Also, command line no longer written in COMMENT (which was an unsyntactic comment due to xml def quirks --
+    INstead its written to the element Configure-Command-Line - which it turns out - allows stuff like easily
+    re-running the configuration.
+    which is huge - cuz it means you can now use Stroika-based apps with things like mabu, bitbake
+    etc, and it will automatically configure the appropriate compilers etc.</li>
+                <li>deprecated file StringUtils.pl - included trim() function in those directly; and mark better several deprecated scripts</li>
+            </ul>
+        </li>
+        <li>Makefile cleanups
+            <ul>
+                <li>minor tweak to Tests project file, and tweak to buildprojectfiles script so it doesnt overwrite (change date) if no real change (common)- so avoids annoying reload in visual studio</li>
+                <li>Comment out sleeps on build of openssl for libopenssl - maybe not needed anymore - test more</li>
+                <li>sleep hacks in windows boost makefile no longer appear needed</li>
+                <li>Lose ThirdPartyComponents/cmake and configuration variable FeatureFlag_PrivateOverrideOfCMake:
+				 instead use simple trick of running off cmake that comes with visual studio; simplifies build of Xerces (and fixes on vs2k19)</li>
+            </ul>
+        </li>
+        <li>builds/regression  tests/valgrind/sanitizers
+            <ul>
+                <li>TSAN suppressions: another workaround for https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only, and a woarkound for new issue https://stroika.atlassian.net/browse/STK-677 - sem_post() called from inside signal handler</li>
+                <li>added possible tsan supression for +#https://stroika.atlassian.net/browse/STK-647 - but very hard to test since happens so rarely</li>
+                <li>renamed ThreadSanitizerSuppressions-Ubuntu1810-x86_64.supp to ThreadSanitizerSuppressions.supp because you can only pass in ONE supression file to TSAN and not worth effort to script combining them (though cat would do it)</li>
+                <li>valgrind suppression for https://stroika.atlassian.net/browse/STK-678</li>
+                <li>https://stroika.atlassian.net/browse/STK-679 raspberrypi openssl workaround</li>
+                <li>Added helgrind raspberry pi suppression: https://stroika.atlassian.net/browse/STK-680</li>
+                <li>updated script for creating regttests to allow vs2k17 and vs2k19 testing</li>
+                <li>try possible fix for https://stroika.atlassian.net/browse/STK-677 (and disabled tsan workaround)</li>
+            </ul>
+        </li>
+        <li>Samples
+            <ul>
+                <li>tweak webserver sample, and remove  response.end () call (which caused crash til we can cleanup api/code)</li>
+            </ul>
+        </li>
+        <li>Execution::SignalHandlers/etc
+            <ul>
+                <li>signalHandler API now takes noexcept overload and requires that (for doc/hint purposes) for eDirect signal handlers</li>
+            </ul>
+        </li>
+        <li>MISC
+            <ul>
+                <li>Mark AssertionHandlerType and WeakAssertionHandlerType as noexcept</li>
+                <li>Debug::RegisterDefaultFatalErrorHandlers () now uses noexcept too, and fixed regtests to use noexcept for its assertionahnlder</li>
+                <li>fixed docs on TimedCache and added matching regression test to help keep the docs compiling ;-))</li>
+            </ul>
+        </li>
+        <li>Execution::Thread
+            <ul>
+                <li>weakassert on macos Thread::Rep_::ApplyPriority ()</li>
+                <li>test using pthread_setschedparam instead o fpthread_setschedprio so works on macos</li>
+                <li>EnumNames for Thread::Priority; better debugtrace messages in Thead::ApplyPriority (); Cleanup/simplify/better document/dbgtrace ApplyPrioirty method for POSIX so I realized we can lose qHas_pthread_setschedprio define and pthread_setschedprio () use - use pthread_setschedparam () instead (so works on macosx)</li>
+            </ul>
+        </li>
+        <li>Foundation::Memory
+            <ul>
+                <li>BLOB[] array indexing supported</li>
+            </ul>
+        </li>
+        <li>Docker/RegressionTests/Build System
+            <ul>
+                <li>start adding dockerfile centos support (INCOMPLETE)</li>
+                <li>WEIRD_MACOS_MAKEFILE_DIR_BUG bug define and workaround</li>
+                <li>sqlite makefile  - fixed clobber</li>
+            </ul>
+        </li>
+        <li>IO::Networking
+            <ul>
+                <li>InternetAddress::As<vector<bool>> ()</li>
+                <li>fix socket bind issue on macos - set ss_len on fSocketAddress; Added SocketAddress::GetRequiredSize ()- and fSocketAddress_.ss_len set for qPlatform_MacOS (sb for all BSD?)</li>
+                <li>fixed serious bug in InternetAddress::GetAddressSize () - ipv6 addrs are 16 bytes not 32</li>
+                <li>fixed serious bug with SocketAddress (regression) - must clear out (zero) unused fields for socketaddress_v6</li>
+                <li>in socketaddress code: remove use of casts and replace with a union on socketaddress type (conform better to quirks in https://www.freebsd.org/doc/en/books/developers-handbook/ipv6.html - dont refernce ss_len)</li>
+                <li>fixed bug with Socket::Ptr::Bind() - rethrow on failure (other than WSAEACESS) - windows bug only</li>
+                <li>fix/workaround major bug with bind (or macos) - it would fail with einval if you pass in sizeof(sockaddr_storage) - so pass in size of right type (_in or _in6 sockaddr) with new helper GetRequiredSize (); and in bind, print full socketaddress on fail - not just port#</li>
+                <li>fixed tostring() on SOcketAddress to grab right bytes</li>
+                <li>DNS API now uses Sequence instead of Colleciton for addresses and Aliases: because http://man7.org/linux/man-pages/man3/getaddrinfo.3.html says the application should try using the addresses in the order</li>
+                <li>inet_pton returns 0 on failure, not negative, so fix calls to throw exception proplery on failed parse</li>
+                <li>fixed regression in SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)</li>
+				<li>Big cleanup of IO::Network::Interfaces (and getInteraces): fixed Status (check carrier flag on linux to see if connected but not running); refactoring; added getDefaultGateweay macos/unix; and dnsServer (linux);
+				and get netmask-as-prefix for MacOS/Linx using SIOCGIFNETMASK;  restructure of Interface GetInterfaces ()IO::Network - code - to support macos where ::ioctl (sd, SIOCGIFCONF...) returns the same interface multiple times ;
+				</li>
+                <li>docs/notes about fNetworkGUID in Network Interface object (doesnt appear useful)</li>
+            </ul>
+        </li>
+        <li>Third-Party-Components
+            <ul>
+                <li>sqlite 3.26.0</li>
+            </ul>
+        </li>
+        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d14.txt</li>
+        <li>Tested (passed regtests)
+            <ul>
+                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d14-OUT.txt</li>
+                <li>vc++2k17 (15.9.3)</li>
+                <li>vc++2k19 (16.0.0-preview)</li>
+                <li>MacOS, XCode 10</li>
+                <li>Ubuntu 18.04, Ubuntu 18.10</li>
+                <li>gcc 7, gcc 8</li>
+                <li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
+                <li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+                <li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+                <li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+            </ul>
+        </li>
+        <li>Known issues
+            <ul>
+                <li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+                    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>https://stroika.atlassian.net/browse/STK-675 failures/warnings testing on raspberrypi build on ununtu 1810</li>
+				<li>See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.</li>
+            </ul>
+        </li>
+    </ul>
+</td>
+</tr>
+
+
+
+
+
 
   
   

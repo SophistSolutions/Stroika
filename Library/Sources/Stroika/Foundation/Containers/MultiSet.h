@@ -71,9 +71,8 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  A MultiSet<T, TRAITS> a collection of T elements, but where each time you add something, the tally
-     *  tracks the number of times that thing has been entered. This is not a commonly used class,
-     *  but handy when you want to count things.
+     *  A MultiSet<T, TRAITS> A collection of elements where each time you add something, the MultiSet tallies
+     *  the number of times that thing has been entered. This is not a commonly used class, but handy when you want to count things.
      *
      *  MultiSet<T, TRAITS> inherits from Iterable<CountedValue<T>> instead of Iterable<T> because if you are
      *  using a MultiSet, you probably want access to the counts as you iterate - not just the
