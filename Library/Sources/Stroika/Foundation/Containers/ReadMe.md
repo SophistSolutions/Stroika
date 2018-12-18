@@ -54,7 +54,7 @@
   -  [Bag&lt;T&gt;](Bag.h)
      - The idea is to mimic that of a black bag (not like SmallTalk Bag<T> which Stroika Collection<> is closest to) - but randomized collection.
      - NYI
-  -  [Collection&lt;T&gt;](Colleciton.h)
+  -  [Collection&lt;T&gt;](Collection.h)
      - a container to manage an un-ordered collection of items, without equality defined for T
      - Supported backends: Array, LinkedList, std::fowrad_list
   -  [DataHyperRectange&lt; T, ... INDEXES&gt;](DataHyperRectange.h)

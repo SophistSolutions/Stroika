@@ -50,8 +50,8 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  A Queue is a first-in-first-out (FIFO) data structure, where elements are arranged
-     *  n well-ordered fashion, from HEAD to TAIL.
+     *  \brief A Queue is a first-in-first-out (FIFO) data structure, where elements are arranged
+     *         in well-ordered fashion, from HEAD to TAIL.
      *
      *  The HEAD if the Queue is where elements are removed. The TAIL of the queue is where
      *  elements enter the queue.
