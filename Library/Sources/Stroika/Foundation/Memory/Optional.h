@@ -781,11 +781,17 @@ namespace Stroika::Foundation::Memory {
      *              std::minus{}
      *              std::multiplies{}
      *              std::divides{}
+     *
+     *  @todo add enable_if on CONVERTIBLE_TO_T and CONTAINER templates to make sure those only get matched where desired and enableif OP is an OPERATION
      */
     template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
     template <typename T, typename OP = plus<T>>
-    void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsOptionalValue, const OP& op = OP{});
+    void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op = OP{});
+    template <typename T, template <typename> typename CONTAINER>
+    void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue);
+    template <typename T, template <typename> typename CONTAINER>
+    void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue);
 
     /**
      *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from left to right.
@@ -950,7 +956,6 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T>
     using Optional_Indirect_Storage = Optional<T, Optional_Traits_Blockallocated_Indirect_Storage<T>>;
-
 }
 
 /*

@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Containers/Adapters/Adder.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
@@ -778,22 +779,42 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename CONVERTIBLE_TO_T, typename OP>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
     {
-        if (*lhsOptionalValue) {
-            if (rhsOptionalValue) {
+        if (lhsOptionalValue->has_value ()) {
+            if (rhsOptionalValue.has_value ()) {
                 *lhsOptionalValue = op (**lhsOptionalValue, static_cast<T> (*rhsOptionalValue));
             }
         }
-        else if (rhsOptionalValue) {
+        else if (rhsOptionalValue.has_value ()) {
             *lhsOptionalValue = static_cast<T> (*rhsOptionalValue);
         }
     }
     template <typename T, typename OP>
-    void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsOptionalValue, const OP& op)
+    void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op)
     {
-        if (*lhsOptionalValue) {
-            *lhsOptionalValue = op (**lhsOptionalValue, rhsOptionalValue);
+        if (lhsOptionalValue->has_value ()) {
+            *lhsOptionalValue = op (**lhsOptionalValue, rhsValue);
         }
-        *lhsOptionalValue = rhsOptionalValue;
+        else {
+            *lhsOptionalValue = rhsValue;
+        }
+    }
+    template <typename T, template <typename> typename CONTAINER>
+    void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue)
+    {
+        if (rhsOptionalValue.has_value ()) {
+            if (not lhsOptionalValue->has_value ()) {
+                *lhsOptionalValue = CONTAINER<T>{};
+            }
+            Containers::Adapters::Adder<CONTAINER<T>>::Add (&**lhsOptionalValue, *rhsOptionalValue);
+        }
+    }
+    template <typename T, template <typename> typename CONTAINER>
+    void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue)
+    {
+        if (not lhsOptionalValue->has_value ()) {
+            *lhsOptionalValue = CONTAINER<T>{};
+        }
+        Containers::Adapters::Adder<CONTAINER<T>>::Add (&**lhsOptionalValue, rhsValue);
     }
 
     /*
@@ -1051,6 +1072,5 @@ namespace Stroika::Foundation::Memory {
         AccumulateIf (&result, rhs, divides{});
         return result;
     }
-
 }
 #endif /*_Stroika_Foundation_Memory_Optional_inl_*/
