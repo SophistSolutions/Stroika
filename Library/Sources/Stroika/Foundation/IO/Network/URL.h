@@ -149,19 +149,19 @@ namespace Stroika::Foundation::IO::Network {
          */
         enum ParseOptions {
             /*
-                *  Check for strict url conformance (scheme : data, or http://host/REL)
-                *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
-                *
-                *  (OR MAYBE USE https://tools.ietf.org/html/rfc3986
-                *      and see about whcih part - full url)
-                */
+             *  Check for strict url conformance (scheme : data, or http://host/REL)
+             *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
+             *
+             *  (OR MAYBE USE https://tools.ietf.org/html/rfc3986
+             *      and see about whcih part - full url)
+             */
             eAsFullURL,
 
             /*
-                *  ???http://tools.ietf.org/html/rfc1808
-                *
-                *  (MAYBE USE https://tools.ietf.org/html/rfc3986 and see about whcih part - full url)
-                */
+             *  ???http://tools.ietf.org/html/rfc1808
+             *
+             *  (MAYBE USE https://tools.ietf.org/html/rfc3986 and see about whcih part - full url)
+             */
             eAsRelativeURL,
 
             /**

@@ -54,7 +54,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
      *          c.SetURL (URL::Parse (L"http://www.google.com"));
      *          Response    r   =   c.GET ();
-     *          VerifyTestResult (r.GetSucceeded ());
+     *          Assert (r.GetSucceeded ());
      *          VerifyTestResult (r.GetData ().size () > 1);
      *      \endcode
      *
@@ -105,8 +105,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *      Request r = conn.Send (Request (...));
-         *      ...
+         *			Request r = conn.Send (Request (...));
+         *			...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
@@ -120,8 +120,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *      Request r = conn.GET ();
-         *      ...
+         *			Request r = conn.GET ();
+         *			...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
@@ -135,8 +135,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *      Request r = conn.POST (data);
-         *      ...
+         *			Request r = conn.POST (data);
+         *			...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
@@ -150,8 +150,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *      Request r = conn.Delete ();
-         *      ...
+         *			Request r = conn.Delete ();
+         *			...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
@@ -165,8 +165,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *      Request r = conn.PUT (data);
-         *      ...
+         *			Request r = conn.PUT (data);
+         *			...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *      Request r = conn.OPTIONS ();
+         *			Request r = conn.OPTIONS ();
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
