@@ -138,8 +138,10 @@ namespace Stroika::Foundation::IO::Network {
          *      Construct an InternetAddress object from a string (with optionally specified address family).
          *      If the address is unparsable according to the rules specified, an exception will be thrown.
          *
-         *      Note - this does NOT lookup hostnames (like www.google.com or localhost). It must be a numeric
-         *      form of an internet address.
+         *      \note This does NOT lookup hostnames (like www.google.com or localhost). It must be a numeric
+         *      form of an internet address. Use IO::Network::DNS::Default ().GetHostAddresses () instead.
+         *
+         *      \note also this parser doesn't support surrounding spaces, so Trim () first.
          *
          *  constexpr InternetAddress (const in_addr_t& i);
          *  InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
