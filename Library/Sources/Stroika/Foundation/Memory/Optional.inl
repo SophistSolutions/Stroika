@@ -776,7 +776,7 @@ namespace Stroika::Foundation::Memory {
      ******************************** AccumulateIf **********************************
      ********************************************************************************
      */
-    template <typename T, typename CONVERTIBLE_TO_T, typename OP>
+    template <typename T, typename CONVERTIBLE_TO_T, typename OP, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>*>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
     {
         if (lhsOptionalValue->has_value ()) {
@@ -788,7 +788,7 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = static_cast<T> (*rhsOptionalValue);
         }
     }
-    template <typename T, typename OP>
+    template <typename T, typename OP, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>*>
     void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op)
     {
         if (lhsOptionalValue->has_value ()) {
@@ -798,7 +798,7 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = rhsValue;
         }
     }
-    template <typename T, template <typename> typename CONTAINER>
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue)
     {
         if (rhsOptionalValue.has_value ()) {
@@ -808,7 +808,7 @@ namespace Stroika::Foundation::Memory {
             Containers::Adapters::Adder<CONTAINER<T>>::Add (&**lhsOptionalValue, *rhsOptionalValue);
         }
     }
-    template <typename T, template <typename> typename CONTAINER>
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue)
     {
         if (not lhsOptionalValue->has_value ()) {

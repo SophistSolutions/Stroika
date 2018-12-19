@@ -13,6 +13,7 @@
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Empty.h"
+#include "../Containers/Adapters/Adder.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/NullMutex.h"
 #include "BlockAllocated.h"
@@ -773,6 +774,13 @@ namespace Stroika::Foundation::Memory {
      *          accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
      *      \endcode
      *
+     *  \par Example Usage
+     *      \code
+     *          optional<Sequence<InternetAddress>>>   addresses;
+     *          Memory::AccumulateIf (&addresses, IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()});
+     *      \endcode
+     *
+     *
      *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
      *
      *      \note
@@ -781,16 +789,14 @@ namespace Stroika::Foundation::Memory {
      *              std::minus{}
      *              std::multiplies{}
      *              std::divides{}
-     *
-     *  @todo add enable_if on CONVERTIBLE_TO_T and CONTAINER templates to make sure those only get matched where desired and enableif OP is an OPERATION
      */
-    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>>
+    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
-    template <typename T, typename OP = plus<T>>
+    template <typename T, typename OP = plus<T>, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
     void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op = OP{});
-    template <typename T, template <typename> typename CONTAINER>
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>* = nullptr>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue);
-    template <typename T, template <typename> typename CONTAINER>
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>* = nullptr>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue);
 
     /**
@@ -956,6 +962,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T>
     using Optional_Indirect_Storage = Optional<T, Optional_Traits_Blockallocated_Indirect_Storage<T>>;
+
 }
 
 /*
