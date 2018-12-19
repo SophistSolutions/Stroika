@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Cache {
             VALUE         fValue;
             TimeStampType fDataCapturedAt;
             myVal_ (VALUE&& v, TimeStampType t)
-                : fValue (move (v))
+                : fValue (forward<VALUE> (v))
                 , fDataCapturedAt (t)
             {
             }
