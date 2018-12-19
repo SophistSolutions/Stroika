@@ -19,6 +19,8 @@
 #endif
 #include "Stroika/Frameworks/Service/Main.h"
 
+#include "AppVersion.h"
+
 #include "Service.h"
 
 /**
@@ -90,7 +92,7 @@ namespace {
             cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
             cerr << endl;
         }
-        cerr << "Usage: Sample-Service [options] where options can be:\n";
+        cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName.AsNarrowSDKString () << " [options] where options can be :\n ";
         if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
             cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
             cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kUnInstall) << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
@@ -106,6 +108,7 @@ namespace {
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kPause) << "                 /* Service/Control Function: Pause the service */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kContinue) << "              /* Service/Control Function: Continue the paused service */" << endl;
         cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
+        cerr << "\t--Version               /* print this application version */ " << endl;
         cerr << "\t--run2Idle              /* run2Idle (@todo  TDB) */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
         cerr << endl
@@ -196,6 +199,10 @@ int main (int argc, const char* argv[])
         }
         else if (Execution::MatchesCommandLineArgument (args, L"help")) {
             ShowUsage_ (m);
+            return EXIT_SUCCESS;
+        }
+        else if (Execution::MatchesCommandLineArgument (args, L"version")) {
+            cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": " << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
             return EXIT_SUCCESS;
         }
         else {
