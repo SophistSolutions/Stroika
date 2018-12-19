@@ -69,8 +69,16 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *          Assert (r.GetSucceeded ());
      *          String result = r.GetDataTextInputStream ().ReadAll ();
      *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          auto&&             connection = IO::Network::Transfer::CreateConnection ();
+     *          connection.SetURL (IO::Network::URL::Parse (L"http://myexternalip.com/raw"));
+     *          auto&&             response = connection.GET ();
+     *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
+     *      \endcode
      */
-    Connection CreateConnection (const Connection::Options& options = Connection::Options ());
+    Connection CreateConnection (const Connection::Options& options = {});
 
 }
 
