@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Cache {
          */
         template <typename K1 = KEY>
         nonvirtual void Clear ();
-        template <typename K1 = KEY, enable_if_t<!is_same_v<K1, void>>* = nullptr>
+        template <typename K1 = KEY, enable_if_t<not is_same_v<K1, void>>* = nullptr>
         nonvirtual void Clear (K1 k);
 
     public:
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Cache {
          */
         template <typename K1 = KEY, enable_if_t<is_same_v<void, K1>>* = nullptr>
         nonvirtual void Add (VALUE v);
-        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        template <typename K1 = KEY, enable_if_t<not is_same_v<void, K1>>* = nullptr>
         nonvirtual void Add (K1 k, VALUE v);
 
     public:
@@ -123,17 +123,19 @@ namespace Stroika::Foundation::Cache {
          *
          *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
          *
-         *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
+         *  \note   Some of these Lookup () methods are not const intentionally - as they DO generally modify the cache;
+         *          but others are read-only, and are therefore const.
          */
         template <typename K1 = KEY, enable_if_t<is_same_v<void, K1>>* = nullptr>
         nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const;
         template <typename K1 = KEY, enable_if_t<is_same_v<void, K1>>* = nullptr>
         nonvirtual VALUE Lookup (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
-        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+
+        template <typename K1 = KEY, enable_if_t<not is_same_v<void, K1>>* = nullptr>
         nonvirtual optional<VALUE> Lookup (K1 k, TimeStampType staleIfOlderThan) const;
-        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        template <typename K1 = KEY, enable_if_t<not is_same_v<void, K1>>* = nullptr>
         nonvirtual VALUE Lookup (K1 k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
-        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        template <typename K1 = KEY, enable_if_t<not is_same_v<void, K1>>* = nullptr>
         nonvirtual VALUE Lookup (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
     public:
