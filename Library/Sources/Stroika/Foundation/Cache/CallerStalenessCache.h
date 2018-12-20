@@ -57,6 +57,19 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   KEY may be 'void' - and if so, the KEY parameter to the various Add/Lookup etc functions - is omitted.
      *
+     *  \par Example Usage
+     *      \code
+     *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+     *          {
+     *              using Cache::CallerStalenessCache;
+     *              static CallerStalenessCache<void, optional<InternetAddress>> sCache_;
+     *              return sCache_.Lookup (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<InternetAddress> {
+     *                  ...
+     *                  return IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()};
+     *              });
+     *          }
+     *      \endcode
+     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  @see TimedCache
