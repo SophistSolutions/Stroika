@@ -55,6 +55,8 @@ namespace Stroika::Foundation::Cache {
      *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
      *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
      *
+     *  \note   KEY may be 'void' - and if so, the KEY parameter to the various Add/Lookup etc functions - is omitted.
+     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  @see TimedCache
@@ -79,7 +81,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  \par Example Usage
          *      \code
-         *          CallerStalenessCache<> cc;
+         *          CallerStalenessCache<KEY, VALUE> cc;
          *          if (optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
          *              // look key, but throw disregard if older than 5 seconds (from now)
          *          }
@@ -94,15 +96,22 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  Clear () -- clear all
+         *  Clear (KEY k) - clear just that key
          */
+        template <typename K1 = KEY>
         nonvirtual void Clear ();
-        nonvirtual void Clear (KEY k);
+        template <typename K1 = KEY, enable_if_t<!is_same_v<K1, void>>* = nullptr>
+        nonvirtual void Clear (K1 k);
 
     public:
         /**
          *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
          */
-        nonvirtual void Add (KEY k, VALUE v);
+        template <typename K1 = KEY, enable_if_t<is_same_v<void, K1>>* = nullptr>
+        nonvirtual void Add (VALUE v);
+        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        nonvirtual void Add (K1 k, VALUE v);
 
     public:
         /**
@@ -116,9 +125,16 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
          */
-        nonvirtual optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan) const;
-        nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
-        nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
+        template <typename K1 = KEY, enable_if_t<is_same_v<void, K1>>* = nullptr>
+        nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const;
+        template <typename K1 = KEY, enable_if_t<is_same_v<void, K1>>* = nullptr>
+        nonvirtual VALUE Lookup (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
+        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        nonvirtual optional<VALUE> Lookup (K1 k, TimeStampType staleIfOlderThan) const;
+        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        nonvirtual VALUE Lookup (K1 k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
+        template <typename K1 = KEY, enable_if_t<!is_same_v<void, K1>>* = nullptr>
+        nonvirtual VALUE Lookup (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
     public:
         /**
@@ -138,9 +154,9 @@ namespace Stroika::Foundation::Cache {
         };
 
     private:
-        Containers::Mapping<KEY, myVal_> fMap_;
+        using DT_ = conditional_t<is_same_v<void, KEY>, optional<myVal_>, Containers::Mapping<KEY, myVal_>>;
+        DT_ fData_;
     };
-
 }
 
 /*
