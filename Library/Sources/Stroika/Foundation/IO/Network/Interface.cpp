@@ -722,6 +722,10 @@ namespace {
         ULONG                 ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
         PIP_ADAPTER_ADDRESSES pAddresses  = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
         // NB: we use GetAdapaterAddresses () instead of GetInterfaceInfo  () so we get non-ipv4 addresses
+        //
+        // Note also: calling GetAdaptersAdd () produces about 10 "Invalid parameter passed to C runtime function" lines in the debugger.
+        //      @see https://developercommunity.visualstudio.com/content/problem/363323/getadaptersaddresses-invalid-parameter-passed-to-c.html
+        //
         DWORD dwRetVal = ::GetAdaptersAddresses (family, flags, nullptr, pAddresses, &ulOutBufLen);
         if (dwRetVal == NO_ERROR) {
             for (PIP_ADAPTER_ADDRESSES currAddresses = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
