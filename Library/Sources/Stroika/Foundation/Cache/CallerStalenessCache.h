@@ -15,9 +15,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-449 and Cache::CallerStalenessCache should support
- *              second template argument VALUE=void
- *
  *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
  *
  *      @todo   Add() overload where caller provides the time data was captured (don't assume now)
@@ -54,6 +51,16 @@ namespace Stroika::Foundation::Cache {
      *      o   It records the timestamp when a value is last-updated
      *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
      *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
+     *
+     *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
+     *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
+     *          TimedCache, the expiry is stored with each cached item.
+     *
+     *          Because of this, when you use either of these caches with a KEY=void (essentially to cache a single thing)
+     *          they become indistinguishable.
+     *
+     *          N.B. the KEY=void functionality is NYI for TimedCache, so best to use CallerStalenessCache for that, at least for
+     *          now.
      *
      *  \note   KEY may be 'void' - and if so, the KEY parameter to the various Add/Lookup etc functions - is omitted.
      *
@@ -172,6 +179,7 @@ namespace Stroika::Foundation::Cache {
         using DT_ = conditional_t<is_same_v<void, KEY>, optional<myVal_>, Containers::Mapping<KEY, myVal_>>;
         DT_ fData_;
     };
+
 }
 
 /*

@@ -4,6 +4,7 @@
 //  TEST    Foundation::Caching
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Cache/CallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/Memoizer.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"

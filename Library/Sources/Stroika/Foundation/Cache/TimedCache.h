@@ -93,6 +93,16 @@ namespace Stroika::Foundation::Cache {
      *
      *          This does check the staleness on lookup however, to assure proper staleness semantics.
      *
+     *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
+     *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
+     *          TimedCache, the expiry is stored with each cached item.
+     *
+     *          Because of this, when you use either of these caches with a KEY=void (essentially to cache a single thing)
+     *          they become indistinguishable.
+     *
+     *          N.B. the KEY=void functionality is NYI for TimedCache, so best to use CallerStalenessCache for that, at least for
+     *          now.
+     *
      *  \par Example Usage
      *      Use TimedCache to avoid needlessly redundant lookups
      *
@@ -152,7 +162,6 @@ namespace Stroika::Foundation::Cache {
      *          to OWN an object (see shared_ptr example below) - then specifying kTrackReadAccess
      *          true can be helpful.
      *
-     *
      *  \par Example Usage
      *      To use TimedCache<> to 'own' a set of objects (say a set caches where we are the only
      *      possible updater) - you can make the 'VALUE' type a shared_ptr<X>, and specify
@@ -203,7 +212,7 @@ namespace Stroika::Foundation::Cache {
      *          out of date. For a cache that limits the max number of entries, use the @see LRUCache.
      *
      *  \note   This cache assumes one timeout for all items. To have timeouts vary by item,
-     *          @see CallerStatenessCache.
+     *          @see CallerStalenessCache.
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
      *
@@ -211,7 +220,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
      *
-     *  @see CallerStatenessCache
+     *  @see CallerStalenessCache
      *  @see LRUCache
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
