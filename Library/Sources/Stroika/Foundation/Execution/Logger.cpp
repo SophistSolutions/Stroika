@@ -71,9 +71,9 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     };
     Synchronized<LastMsg_> fLastMsg_;
 
-    Synchronized<Execution::Thread::Ptr>                                    fBookkeepingThread_;
-    atomic<Time::DurationSecondsType>                                       fMaxWindow_{};
-    Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
+    Synchronized<Execution::Thread::Ptr>                                  fBookkeepingThread_;
+    atomic<Time::DurationSecondsType>                                     fMaxWindow_{};
+    Cache::SynchronizedCallerStalenessCache<pair<Priority, String>, bool> fMsgSentMaybeSuppressed_;
 
     Rep_ ()
     {
@@ -336,7 +336,7 @@ void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionT
 {
     Require (suppressionTimeWindow > 0);
     RequireNotNull (fRep_);
-    using CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_)::element_type;
+    using CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_);
     fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ())); // doesn't need to be synchronized
     va_list argsList;
     va_start (argsList, format);
@@ -344,12 +344,12 @@ void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionT
     va_end (argsList);
     DbgTrace (L"Logger::LogIfNew (%s, %e, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_.rwget ()->Lookup (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow), false)) {
+        if (fRep_->fMsgSentMaybeSuppressed_.Lookup (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow), false)) {
             DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
         }
         else {
             Log_ (logLevel, msg);
-            fRep_->fMsgSentMaybeSuppressed_.rwget ()->Add (pair<Priority, String>{logLevel, msg}, true);
+            fRep_->fMsgSentMaybeSuppressed_.Add (pair<Priority, String>{logLevel, msg}, true);
         }
     }
     else {
@@ -360,7 +360,7 @@ void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionT
      *  can become.
      */
     constexpr double kCleanupFactor_{2.0};
-    fRep_->fMsgSentMaybeSuppressed_.rwget ()->ClearOlderThan (CacheType::Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
+    fRep_->fMsgSentMaybeSuppressed_.ClearOlderThan (CacheType::Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
 }
 
 #if qHas_Syslog
