@@ -65,25 +65,25 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not is_same_v<K1, void>>*>
+    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear (K1 k)
     {
         fData_.Remove (k);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<is_same_v<void, K1>>*>
+    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (VALUE v)
     {
         fData_ = myVal_ (move (v), GetCurrentTimestamp ());
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not is_same_v<void, K1>>*>
+    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (K1 k, VALUE v)
     {
         fData_.Add (k, myVal_ (move (v), GetCurrentTimestamp ()));
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<is_same_v<void, K1>>*>
+    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (TimeStampType staleIfOlderThan) const
     {
         optional<myVal_> o = fData_;
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<is_same_v<void, K1>>*>
+    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
     {
         optional<myVal_> o = fData_;
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not is_same_v<void, K1>>*>
+    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan) const
     {
         optional<myVal_> o = fData_.Lookup (k);
@@ -115,22 +115,24 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not is_same_v<void, K1>>*>
-    VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
+    template <typename F, typename K1, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>*>
+    VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan, F cacheFiller)
     {
         optional<myVal_> o = fData_.Lookup (k);
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
-            myVal_ mv (cacheFiller (), GetCurrentTimestamp ());
+            myVal_ mv (cacheFiller (k), GetCurrentTimestamp ());
             fData_.Add (k, mv);
             return move (mv.fValue);
         }
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not is_same_v<void, K1>>*>
+    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue)
     {
-        return Lookup (k, staleIfOlderThan, [defaultValue]() { return defaultValue; });
+        //function<VALUE (K1)> tmp = [defaultValue](K1) { return defaultValue; };
+        // return Lookup (k, staleIfOlderThan, tmp);
+        return Lookup (k, staleIfOlderThan, [defaultValue](K1) { return defaultValue; });
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::clear ()

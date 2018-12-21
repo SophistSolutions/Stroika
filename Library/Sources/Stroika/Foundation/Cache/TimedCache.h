@@ -36,6 +36,9 @@
  *              THEN - maybe reverse order of template params? VALUE/KEY - so then we can have KEY=void as default
  *              arg?
  *
+ *              NOTE - I DID this already for CallerStalenessCache, so pretty easy, but for the case where KEY=void, you can
+ *              really use either so LOW PRIORITY.
+ *
  *      @todo   Improve Regression Tests And Docs (quite weak)
  *
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)

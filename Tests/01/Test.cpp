@@ -251,6 +251,53 @@ namespace {
 }
 
 namespace {
+    namespace Test6_CallerStalenessCache_ {
+        // FROM Example Usage in ???
+        namespace Private_ {
+            unsigned int  sCalls1_{0};
+            optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+            {
+                using Cache::CallerStalenessCache;
+                static CallerStalenessCache<void, optional<int>> sCache_;
+                return sCache_.Lookup (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<int> {
+                    sCalls1_++;
+                    return 1;
+                });
+            }
+            void Test_void_ ()
+            {
+                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+            }
+        }
+        namespace Private_ {
+            unsigned int  sCalls2_{0};
+            optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
+            {
+                using Cache::CallerStalenessCache;
+                static CallerStalenessCache<int, optional<int>> sCache_;
+                return sCache_.Lookup (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+                    sCalls2_++;
+                    return v;
+                });
+            }
+            void Test_keyed_ ()
+            {
+                VerifyTestResult (Private_::MapValue_ (1) == 1 and Private_::sCalls2_ == 1);
+                VerifyTestResult (Private_::MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
+                VerifyTestResult (Private_::MapValue_ (1) == 1 and Private_::sCalls2_ == 2);
+                VerifyTestResult (Private_::MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
+            }
+        }
+        void DoIt ()
+        {
+            Private_::Test_void_ ();
+            Private_::Test_keyed_ ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_Simple_::DoIt ();
@@ -258,6 +305,7 @@ namespace {
         Test3_LRUCache_Elements::DoIt ();
         Test4_TimedCache_::DoIt ();
         Test5_Memoizer_::DoIt ();
+        Test6_CallerStalenessCache_::DoIt ();
     }
 }
 
