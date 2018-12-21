@@ -19,9 +19,6 @@
  *
  *      @todo   Add() overload where caller provides the time data was captured (don't assume now)
  *
- *      @todo   Consider defect - easy to misinterpret 'TimeStampType staleIfOlderThan' arg to Lookup()
- *              as offset (see Ago() API), instead of timestamp to compare with timestamp on data.
- *
  *      @todo   Consider adding way to retreive timestamp for key 'k'. Also consider Iterable<> method (like LRUCache)
  *              so we can dump cache (including timestamps)
  *
@@ -70,17 +67,38 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   KEY may be 'void' - and if so, the KEY parameter to the various Add/Lookup etc functions - is omitted.
      *
+     *  \note   Why take 'valid-since' argument to lookup functions, and not just 'backThisTime' - in otherwords, why force
+     *          the use of 'Ago()'. The reason is that in a complex system (say web services) - where the final requester
+     *          of the data specifies the allowed staleness, you want the 'ago' computation based on ITS time (not the time
+     *          the lookup happens). This is only approximate too, since it doesn't take into account the latency of the return
+     *          but its a little closer to accurate.
+     *
      *  \par Example Usage
      *      \code
+     *          // no key cache
      *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
      *          {
-     *              using Cache::CallerStalenessCache;
      *              static CallerStalenessCache<void, optional<InternetAddress>> sCache_;
      *              return sCache_.Lookup (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<InternetAddress> {
      *                  ...
      *                  return IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()};
      *              });
      *          }
+     *          optional<InternetAddress> iaddr = LookupExternalInternetAddress_ ();    // only invoke connection logic if timed out
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          // keyed cache
+     *          optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
+     *          {
+     *              static CallerStalenessCache<int, optional<int>> sCache_;
+     *              return sCache_.Lookup (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+     *                  return v;   // could be more expensive computation
+     *              });
+     *          }
+     *          VerifyTestResult (MapValue_ (1) == 1);  // skips 'more expensive computation' if in cache
+     *          VerifyTestResult (MapValue_ (2) == 2);  // ''
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

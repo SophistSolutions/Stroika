@@ -130,8 +130,6 @@ namespace Stroika::Foundation::Cache {
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue)
     {
-        //function<VALUE (K1)> tmp = [defaultValue](K1) { return defaultValue; };
-        // return Lookup (k, staleIfOlderThan, tmp);
         return Lookup (k, staleIfOlderThan, [defaultValue](K1) { return defaultValue; });
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
