@@ -34,6 +34,9 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     VALUE SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
     {
+        /*
+         *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
+         */
         auto&& lock = shared_lock{fMutex_};
         if (optional<VALUE> o = inherited::Lookup (key)) {
             return *o;

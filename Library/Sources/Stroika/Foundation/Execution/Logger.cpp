@@ -7,7 +7,7 @@
 #include <syslog.h>
 #endif
 
-#include "../Cache/CallerStalenessCache.h"
+#include "../Cache/SynchronizedCallerStalenessCache.h"
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/String_Constant.h"

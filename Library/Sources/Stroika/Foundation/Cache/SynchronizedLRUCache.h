@@ -71,8 +71,7 @@ namespace Stroika::Foundation::Cache {
     public:
         /*
          *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
-         *  This is because typically, filling the cache
-         *  will be slow (otherwise you wouldbe us using the SynchronizedLRUCache).
+         *  This is because typically, filling the cache will be slow (otherwise you wouldn't be us using a cache).
          *
          *  But this has the downside, that you could try filling the cache multiple times with the same value.
          *

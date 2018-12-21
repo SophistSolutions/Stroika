@@ -17,6 +17,8 @@
  * TODO:
  *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
  *
+ *      @todo   Add StatsType support (like other caches).
+ *
  *      @todo   Add() overload where caller provides the time data was captured (don't assume now)
  *
  *      @todo   Consider adding way to retreive timestamp for key 'k'. Also consider Iterable<> method (like LRUCache)
@@ -169,6 +171,9 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   Some of these Lookup () methods are not const intentionally - as they DO generally modify the cache;
          *          but others are read-only, and are therefore const.
+         *
+         *  \note   Lookup (,,DEFAULT_VALUE) - doesn't fill in the cache value - so not quite the same as
+         *          Lookup (...,[] () { return DEFAULT_VALUE; });
          */
         template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
         nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const;
@@ -203,6 +208,7 @@ namespace Stroika::Foundation::Cache {
         using DT_ = conditional_t<is_same_v<void, KEY>, optional<myVal_>, Containers::Mapping<KEY, myVal_>>;
         DT_ fData_;
     };
+
 }
 
 /*
