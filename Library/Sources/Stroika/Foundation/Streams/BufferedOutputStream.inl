@@ -179,9 +179,9 @@ namespace Stroika::Foundation ::Streams {
         return make_shared<Rep_> (realOut);
     }
     template <typename ELEMENT_TYPE>
-    inline auto BufferedOutputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
+    inline auto BufferedOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (realOut);
             case Execution::eNotKnownInternallySynchronized:

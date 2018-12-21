@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "InputOutputStream.h"
-#include "InternallySyncrhonizedInputOutputStream.h"
+#include "InternallySynchronizedInputOutputStream.h"
 
 /**
 *  \file
@@ -43,13 +43,13 @@ namespace Stroika::Foundation::Streams {
          *      \endcode
          */
         static Ptr New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
     };
 
 }

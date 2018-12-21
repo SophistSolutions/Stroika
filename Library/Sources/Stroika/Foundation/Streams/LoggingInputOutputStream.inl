@@ -136,9 +136,9 @@ namespace Stroika::Foundation::Streams {
         return _mkPtr (make_shared<Rep_> (realStream, logInput, logOutput));
     }
     template <typename ELEMENT_TYPE>
-    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
+    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (realStream, logInput, logOutput);
             case Execution::eNotKnownInternallySynchronized:

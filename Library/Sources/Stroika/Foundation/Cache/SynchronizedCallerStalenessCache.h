@@ -23,7 +23,7 @@
 namespace Stroika::Foundation::Cache {
 
     /**
-     *  \brief simple wrapper on CallerStalenessCache (with the same API) - but internally syncrhonized in a way that is
+     *  \brief simple wrapper on CallerStalenessCache (with the same API) - but internally synchronized in a way that is
      *         more performant than using RWSyncrhonzied<CallerStalenessCache<...>>
      *
      *  @see CallerStalenessCache<> - for unsynchonized base version

@@ -26,7 +26,7 @@
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WriteableReference could be more efficent if not subclassing each other
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in syncrhonized
+ *      @todo   https://stroika.atlassian.net/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
  *
  *      @todo   More operator<, and other operator overloads
  *
@@ -51,20 +51,20 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  The type InternallySyncrhonized is intended to be used as a flag to mark whether or not a given class/type/object
-     *  is internally syncrhonized, or not.
+     *  The type InternallySynchronized is intended to be used as a flag to mark whether or not a given class/type/object
+     *  is internally synchronized, or not.
      *
      *  It is typically provided as an optional argument to static New () methods, such as 
      *  MemoryStream<>::New ()
      *
      *  \note soemthing marked eNotKnownInternallySynchronized - may in fact be internally synchronized.
      */
-    enum class InternallySyncrhonized {
+    enum class InternallySynchronized {
         eInternallySynchronized,
         eNotKnownInternallySynchronized
     };
-    constexpr InternallySyncrhonized eInternallySynchronized         = InternallySyncrhonized::eInternallySynchronized;
-    constexpr InternallySyncrhonized eNotKnownInternallySynchronized = InternallySyncrhonized::eNotKnownInternallySynchronized;
+    constexpr InternallySynchronized eInternallySynchronized         = InternallySynchronized::eInternallySynchronized;
+    constexpr InternallySynchronized eNotKnownInternallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized;
 
     /**
      *  MUTEX:
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Execution {
          *  \brief  get a read-only smart pointer to the underlying Synchronized<> object, holding the readlock the whole
          *          time the return (often temporary) ReadableReference exists.
          *
-         *  \note   this supports multiple readers/single writer, iff the mutex used with Syncrhonized<> supports it (@see Synchronized)
+         *  \note   this supports multiple readers/single writer, iff the mutex used with Synchronized<> supports it (@see Synchronized)
          *
          *  \par Example Usage
          *      auto    lockedConfigData = fConfig_.cget ();

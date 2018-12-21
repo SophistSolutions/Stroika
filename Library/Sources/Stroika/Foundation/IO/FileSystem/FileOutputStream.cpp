@@ -221,9 +221,9 @@ auto FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, 
     return make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
 }
 
-auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const String& fileName, FlushFlag flushFlag) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fileName, AppendFlag::eDEFAULT, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
@@ -234,9 +234,9 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
     }
 }
 
-auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fileName, appendFlag, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
@@ -247,9 +247,9 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
     }
 }
 
-auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         case Execution::eNotKnownInternallySynchronized:

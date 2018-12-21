@@ -1568,9 +1568,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.h" />
@@ -2006,9 +2006,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Makefile" />

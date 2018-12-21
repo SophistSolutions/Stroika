@@ -149,9 +149,9 @@ namespace Stroika::Foundation::Streams::iostream {
         return make_shared<Rep_> (originalStream, seekable);
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream) -> Ptr
+    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (originalStream);
             case Execution::eNotKnownInternallySynchronized:
@@ -162,9 +162,9 @@ namespace Stroika::Foundation::Streams::iostream {
         }
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream, SeekableFlag seekable) -> Ptr
+    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream, SeekableFlag seekable) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (originalStream, seekable);
             case Execution::eNotKnownInternallySynchronized:

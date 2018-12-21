@@ -8,7 +8,7 @@
 
 #include "../../Configuration/Common.h"
 #include "../../Streams/InputOutputStream.h"
-#include "../../Streams/InternallySyncrhonizedInputOutputStream.h"
+#include "../../Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "ConnectionOrientedStreamSocket.h"
 
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::IO::Network {
          *           OutputStream<byte>::Ptr             out = BufferedOutputStream<byte>::New (socketStream); // more important so we don't write multiple packets
          *      \endcode
          */
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd);
         static Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 
     private:
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::IO::Network {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
     };
 
     /**

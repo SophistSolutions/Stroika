@@ -82,15 +82,15 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Is-Internally-Syncrhonized">Rep-Inside-Ptr-Is-Internally-Syncrhonized</a>
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
          */
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eInternallySynchronized);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         static Ptr New (const Memory::BLOB& blob);
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob);
 
     private:
         class Rep_;

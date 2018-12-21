@@ -118,9 +118,9 @@ namespace Stroika::Foundation::Streams::iostream {
         return make_shared<Rep_> (originalStream);
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySyncrhonized internallySyncrhonized, OStreamType& originalStream) -> Ptr
+    inline auto OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, OStreamType& originalStream) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (originalStream);
             case Execution::eNotKnownInternallySynchronized:

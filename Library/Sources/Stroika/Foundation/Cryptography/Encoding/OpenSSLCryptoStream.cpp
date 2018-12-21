@@ -402,9 +402,9 @@ auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction
     return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realIn));
 }
 
-auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
+auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (cryptoParams, direction, realIn);
         case Execution::eNotKnownInternallySynchronized:
@@ -427,9 +427,9 @@ auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Directio
     return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realOut));
 }
 
-auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
+auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (cryptoParams, direction, realOut);
         case Execution::eNotKnownInternallySynchronized:

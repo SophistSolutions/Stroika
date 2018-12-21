@@ -131,9 +131,9 @@ auto SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
     return make_shared<Rep_> (sd);
 }
 
-auto SocketStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
+auto SocketStream::New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (sd);
         case Execution::eNotKnownInternallySynchronized:

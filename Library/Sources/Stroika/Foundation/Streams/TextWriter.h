@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "InternallySyncrhonizedOutputStream.h"
+#include "InternallySynchronizedOutputStream.h"
 #include "OutputStream.h"
 
 /**
@@ -41,7 +41,7 @@
  *              locale. If none, use global locale? Could use codepage instead of locale, but propba
  *              best to have one notion and extract that codepage from the given (or global) locale.(ONLY FOR STREAM OF CHARCTETSD?? Maybe just in WRITER)
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySyncrhonized are AssertNotImplemented on TextReader and TextWriter
+ *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on TextReader and TextWriter
  */
 
 namespace Stroika::Foundation::Streams {
@@ -100,8 +100,8 @@ namespace Stroika::Foundation::Streams {
          */
         static Ptr New (const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
         static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Characters::Character>::Ptr& src);
 
     public:
         /**
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Streams {
         static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<byte>::Ptr& src, Format format);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;
     };
 
     /**

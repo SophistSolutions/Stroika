@@ -248,9 +248,9 @@ auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
     return Ptr{mk_ (src, format)};
 }
 
-auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src) -> Ptr
+auto TextWriter::New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Characters::Character>::Ptr& src) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -262,9 +262,9 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return src;
     }
 }
-auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+auto TextWriter::New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();

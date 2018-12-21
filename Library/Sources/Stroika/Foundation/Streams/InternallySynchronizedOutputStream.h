@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_h_
-#define _Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_h_ 1
+#ifndef _Stroika_Foundation_Streams_InternallySynchronizedOutputStream_h_
+#define _Stroika_Foundation_Streams_InternallySynchronizedOutputStream_h_ 1
 
 #include "../StroikaPreComp.h"
 
@@ -27,16 +27,16 @@ namespace Stroika::Foundation::Streams {
     /**
      */
     template <typename ELEMENT_TYPE, typename BASE_CLASS = OutputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
-    class InternallySyncrhonizedOutputStream : public BASE_CLASS {
+    class InternallySynchronizedOutputStream : public BASE_CLASS {
     private:
         using inherited = BASE_CLASS;
 
     public:
         /**
-         *  'InternallySyncrhonizedOutputStream' is a quasi-namespace: use Ptr or New () members.
+         *  'InternallySynchronizedOutputStream' is a quasi-namespace: use Ptr or New () members.
          */
-        InternallySyncrhonizedOutputStream ()                                          = delete;
-        InternallySyncrhonizedOutputStream (const InternallySyncrhonizedOutputStream&) = delete;
+        InternallySynchronizedOutputStream ()                                          = delete;
+        InternallySynchronizedOutputStream (const InternallySynchronizedOutputStream&) = delete;
 
     public:
         using typename inherited::Ptr;
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::OutputStream<byte>::Ptr syncStream = Streams::InternallySyncrhonizedOutputStream<byte>::New (otherOutputStreamToBeSharedAcrossThread);
+         *          Streams::OutputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedOutputStream<byte>::New (otherOutputStreamToBeSharedAcrossThread);
          *      \endcode
          *
          *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
@@ -64,6 +64,6 @@ namespace Stroika::Foundation::Streams {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "InternallySyncrhonizedOutputStream.inl"
+#include "InternallySynchronizedOutputStream.inl"
 
-#endif /*_Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_InternallySynchronizedOutputStream_h_*/

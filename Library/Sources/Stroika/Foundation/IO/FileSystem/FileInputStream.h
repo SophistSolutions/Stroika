@@ -8,7 +8,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Streams/InputStream.h"
-#include "../../Streams/InternallySyncrhonizedInputStream.h"
+#include "../../Streams/InternallySynchronizedInputStream.h"
 
 #include "FileStream.h"
 
@@ -119,8 +119,8 @@ namespace Stroika::Foundation::IO::FileSystem {
          */
         static Ptr                    New (const String& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
         static Ptr                    New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-        static Ptr                    New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+        static Ptr                    New (Execution::InternallySynchronized internallySynchronized, const String& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+        static Ptr                    New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
         static InputStream<byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
         static InputStream<byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
         static InputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<byte, FileInputStream, FileInputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, FileInputStream, FileInputStream::Rep_>;
     };
 
     /**

@@ -273,9 +273,9 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
+    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New ();
             case Execution::eNotKnownInternallySynchronized:
@@ -291,9 +291,9 @@ namespace Stroika::Foundation::Streams {
         return make_shared<Rep_> (start, end);
     }
     template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:
@@ -311,9 +311,9 @@ namespace Stroika::Foundation::Streams {
     }
     template <typename ELEMENT_TYPE>
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
+    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (New (blob));
             case Execution::eNotKnownInternallySynchronized:

@@ -11,7 +11,7 @@
 #include "../Configuration/Common.h"
 
 #include "InputStream.h"
-#include "InternallySyncrhonizedInputStream.h"
+#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -61,13 +61,13 @@ namespace Stroika::Foundation::Streams {
          *      \endcode
          */
         static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream<ELEMENT_TYPE>, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream<ELEMENT_TYPE>, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
     };
 
 }

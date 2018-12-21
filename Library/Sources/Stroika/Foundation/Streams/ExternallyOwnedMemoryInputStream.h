@@ -13,7 +13,7 @@
 #include "../Memory/BLOB.h"
 
 #include "InputStream.h"
-#include "InternallySyncrhonizedInputStream.h"
+#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -85,15 +85,15 @@ namespace Stroika::Foundation::Streams {
         }
         template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
         static Ptr New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
     };
 
 }

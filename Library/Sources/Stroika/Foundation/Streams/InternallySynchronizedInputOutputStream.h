@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_InternallySyncrhonizedInputOutputStream_h_
-#define _Stroika_Foundation_Streams_InternallySyncrhonizedInputOutputStream_h_ 1
+#ifndef _Stroika_Foundation_Streams_InternallySynchronizedInputOutputStream_h_
+#define _Stroika_Foundation_Streams_InternallySynchronizedInputOutputStream_h_ 1
 
 #include "../StroikaPreComp.h"
 
@@ -29,16 +29,16 @@ namespace Stroika::Foundation::Streams {
      *  the underlying pointed to stream, not the external smart-pointer wrapper.
      */
     template <typename ELEMENT_TYPE, typename BASE_CLASS = InputOutputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
-    class InternallySyncrhonizedInputOutputStream : public BASE_CLASS {
+    class InternallySynchronizedInputOutputStream : public BASE_CLASS {
     private:
         using inherited = BASE_CLASS;
 
     public:
         /**
-         *  'InternallySyncrhonizedInputOutputStream' is a quasi-namespace: use Ptr or New () members.
+         *  'InternallySynchronizedInputOutputStream' is a quasi-namespace: use Ptr or New () members.
          */
-        InternallySyncrhonizedInputOutputStream ()                                               = delete;
-        InternallySyncrhonizedInputOutputStream (const InternallySyncrhonizedInputOutputStream&) = delete;
+        InternallySynchronizedInputOutputStream ()                                               = delete;
+        InternallySynchronizedInputOutputStream (const InternallySynchronizedInputOutputStream&) = delete;
 
     public:
         using typename inherited::Ptr;
@@ -47,12 +47,12 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::InputOutputStream<byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputOutputStream<byte>::New (otherInputOutputStreamToBeSharedAcrossThread);
+         *          Streams::InputOutputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedInputOutputStream<byte>::New (otherInputOutputStreamToBeSharedAcrossThread);
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
+         *          using InternalSyncRep_ = Streams::InternallySynchronizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
          *          Ptr unsyncStream;// = ... get from someplace - maybe make_shared<Rep_> ()...;
          *          Ptr syncStream = InternalSyncRep_::New (unsyncStream);
          *      \endcode
@@ -73,6 +73,6 @@ namespace Stroika::Foundation::Streams {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "InternallySyncrhonizedInputOutputStream.inl"
+#include "InternallySynchronizedInputOutputStream.inl"
 
-#endif /*_Stroika_Foundation_Streams_InternallySyncrhonizedInputOutputStream_h_*/
+#endif /*_Stroika_Foundation_Streams_InternallySynchronizedInputOutputStream_h_*/

@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Cache {
      *      but once analyzed, lots of calls come in at once to read (and maybe update) the set of files
      *      and once nobody has asked for a while, we throw that cache away, and rebuild it as needed.
      *
-     *      This example ALSO shows how to wrap a cache object in 'Syncrhonized' for thread safety.
+     *      This example ALSO shows how to wrap a cache object in 'Synchronized' for thread safety.
      *
      *      \code
      *          using ScanFolderKey_ = String;
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
      *
-     *  @see SyncrhonizedTimedCache<> - for internally ynchonized implementation
+     *  @see SynchronizedTimedCache<> - for internally ynchonized implementation
      *
      *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
      *

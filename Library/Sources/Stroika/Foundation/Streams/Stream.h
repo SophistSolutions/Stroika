@@ -18,7 +18,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo https://stroika.atlassian.net/browse/STK-605 - Possibly add IsInternallySyncrhonized () method to Stream<>::Ptr and _IRep
+ *      @todo https://stroika.atlassian.net/browse/STK-605 - Possibly add IsInternallySynchronized () method to Stream<>::Ptr and _IRep
  */
 
 namespace Stroika::Foundation::Streams {

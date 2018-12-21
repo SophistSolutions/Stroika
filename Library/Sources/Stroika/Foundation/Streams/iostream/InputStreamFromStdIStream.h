@@ -11,7 +11,7 @@
 #include "../../Configuration/Common.h"
 
 #include "../InputStream.h"
-#include "../InternallySyncrhonizedInputStream.h"
+#include "../InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *
          *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized">Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a>
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Synchronized">Rep-Inside-Ptr-Must-Be-Externally-Synchronized</a>
          *              It is also up to the caller to assure no references to or calls to that istream
          *              be made from another thread. However, no data is cached in this class - it just
          *              delegates, so calls CAN be made the the underlying istream - so long as not
@@ -106,14 +106,14 @@ namespace Stroika::Foundation::Streams::iostream {
          */
         static Ptr New (IStreamType& originalStream);
         static Ptr New (IStreamType& originalStream, SeekableFlag seekable);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, IStreamType& originalStream, SeekableFlag seekable);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream, SeekableFlag seekable);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
     };
 
     /**

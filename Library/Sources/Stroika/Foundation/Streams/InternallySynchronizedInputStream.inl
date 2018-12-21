@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_InternallySyncrhonizedInputStream_inl_
-#define _Stroika_Foundation_Streams_InternallySyncrhonizedInputStream_inl_ 1
+#ifndef _Stroika_Foundation_Streams_InternallySynchronizedInputStream_inl_
+#define _Stroika_Foundation_Streams_InternallySynchronizedInputStream_inl_ 1
 
 /*
  ********************************************************************************
@@ -14,11 +14,11 @@ namespace Stroika::Foundation::Streams {
 
     /*
      ********************************************************************************
-     * InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_
+     * InternallySynchronizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename BASE_CLASS, typename BASE_REP_TYPE>
-    class InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
+    class InternallySynchronizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
     public:
         template <typename... ARGS>
         Rep_ (ARGS&&... args)
@@ -73,16 +73,16 @@ namespace Stroika::Foundation::Streams {
 
     /*
      ********************************************************************************
-     ** InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE> **
+     ** InternallySynchronizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE> **
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename BASE_CLASS, typename BASE_REP_TYPE>
     template <typename... ARGS>
-    inline auto InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
+    inline auto InternallySynchronizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
     {
         return inherited::_mkPtr (make_shared<Rep_> (forward<ARGS> (args)...));
     }
 
 }
 
-#endif /*_Stroika_Foundation_Streams_InternallySyncrhonizedInputStream_inl_*/
+#endif /*_Stroika_Foundation_Streams_InternallySynchronizedInputStream_inl_*/

@@ -718,7 +718,7 @@ namespace {
 }
 
 namespace {
-    namespace Test11_SyncrhonizedCaches_ {
+    namespace Test11_SynchronizedCaches_ {
         namespace Private_ {
             static const size_t kIOverallRepeatCount_ = (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 50 : 1000);
             void                SyncLRUCacheT1_ ()
@@ -768,7 +768,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}Test11_SyncrhonizedCaches_...");
+            Debug::TraceContextBumper traceCtx ("{}Test11_SynchronizedCaches_...");
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 #if defined(__arm__)
             static constexpr bool kARM_ = true;
@@ -808,7 +808,7 @@ namespace {
         Test8_AssertExternallySynchronized_::DoIt ();
         Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ();
         Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ();
-        Test11_SyncrhonizedCaches_::DoIt ();
+        Test11_SynchronizedCaches_::DoIt ();
     }
 }
 

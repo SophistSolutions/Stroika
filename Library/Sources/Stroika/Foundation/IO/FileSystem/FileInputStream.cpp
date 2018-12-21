@@ -256,9 +256,9 @@ auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, S
     return _mkPtr (make_shared<Rep_> (fd, adoptFDPolicy, seekable));
 }
 
-auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable) -> Ptr
+auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, const String& fileName, SeekableFlag seekable) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fileName, seekable);
         case Execution::eNotKnownInternallySynchronized:
@@ -269,9 +269,9 @@ auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhoni
     }
 }
 
-auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
+auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fd, adoptFDPolicy, seekable);
         case Execution::eNotKnownInternallySynchronized:

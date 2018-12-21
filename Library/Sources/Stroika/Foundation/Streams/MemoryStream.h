@@ -13,7 +13,7 @@
 #include "../Memory/BLOB.h"
 
 #include "InputOutputStream.h"
-#include "InternallySyncrhonizedInputOutputStream.h"
+#include "InternallySynchronizedInputOutputStream.h"
 
 /*
  *  \file
@@ -77,15 +77,15 @@ namespace Stroika::Foundation ::Streams {
          *          string xxx = out.As<string> ();
          *      \endcode
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized">Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a>
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Synchronized">Rep-Inside-Ptr-Must-Be-Externally-Synchronized</a>
          */
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnownInternallySynchronized);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eNotKnownInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         static Ptr New (const Memory::BLOB& blob);
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob);
 
     private:
         class Rep_;
@@ -97,7 +97,7 @@ namespace Stroika::Foundation ::Streams {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream<ELEMENT_TYPE>, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream<ELEMENT_TYPE>, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
     };
 
     /**

@@ -16,8 +16,8 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #include "../../Memory/BLOB.h"
 #include "../../Memory/Common.h"
 #include "../../Streams/InputStream.h"
-#include "../../Streams/InternallySyncrhonizedInputStream.h"
-#include "../../Streams/InternallySyncrhonizedOutputStream.h"
+#include "../../Streams/InternallySynchronizedInputStream.h"
+#include "../../Streams/InternallySynchronizedOutputStream.h"
 #include "../../Streams/OutputStream.h"
 
 #include "../OpenSSL/CipherAlgorithm.h"
@@ -122,13 +122,13 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         /**
          */
         static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<std::byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<std::byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
     };
 
 #endif
@@ -162,13 +162,13 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         /**
          */
         static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<std::byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<std::byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
     };
 #endif
 

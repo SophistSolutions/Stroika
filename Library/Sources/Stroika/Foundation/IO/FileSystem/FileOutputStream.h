@@ -7,7 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
-#include "../../Streams/InternallySyncrhonizedOutputStream.h"
+#include "../../Streams/InternallySynchronizedOutputStream.h"
 #include "../../Streams/OutputStream.h"
 
 #include "../FileAccessMode.h"
@@ -142,9 +142,9 @@ namespace Stroika::Foundation::IO::FileSystem {
         static Ptr                     New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static OutputStream<byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
         static OutputStream<byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
         static OutputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<byte, FileOutputStream, FileOutputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, FileOutputStream, FileOutputStream::Rep_>;
     };
 
     /**

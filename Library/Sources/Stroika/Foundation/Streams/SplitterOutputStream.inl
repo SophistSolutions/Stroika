@@ -94,9 +94,9 @@ namespace Stroika::Foundation::Streams {
         return make_shared<Rep_> (realOut1, realOut2);
     }
     template <typename ELEMENT_TYPE>
-    inline auto SplitterOutputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr
+    inline auto SplitterOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (realOut1, realOut2);
             case Execution::eNotKnownInternallySynchronized:

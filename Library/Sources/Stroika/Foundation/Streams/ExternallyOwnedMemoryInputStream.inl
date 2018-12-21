@@ -157,9 +157,9 @@ namespace Stroika::Foundation::Streams {
         return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
     }
     template <typename ELEMENT_TYPE>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:
@@ -171,9 +171,9 @@ namespace Stroika::Foundation::Streams {
     }
     template <typename ELEMENT_TYPE>
     template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end) -> Ptr
+    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end) -> Ptr
     {
-        switch (internallySyncrhonized) {
+        switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:

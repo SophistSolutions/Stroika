@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "InternallySyncrhonizedOutputStream.h"
+#include "InternallySynchronizedOutputStream.h"
 #include "OutputStream.h"
 
 /**
@@ -44,13 +44,13 @@ namespace Stroika::Foundation::Streams {
          *      \endcode
          */
         static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream<ELEMENT_TYPE>, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream<ELEMENT_TYPE>, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
     };
 
 }

@@ -12,7 +12,7 @@
 #include "../Configuration/Common.h"
 
 #include "InputStream.h"
-#include "InternallySyncrhonizedInputStream.h"
+#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Streams {
      *          This is useful if calls to the underling stream source can be expensive. This class
      *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
      *
-     *  \note Execution::InternallySyncrhonized not supported cuz cannot externally synchronize withot a lock around multiple operations.
+     *  \note Execution::InternallySynchronized not supported cuz cannot externally synchronize withot a lock around multiple operations.
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */

@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "InputStream.h"
-#include "InternallySyncrhonizedInputStream.h"
+#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -28,7 +28,7 @@
  *              logical here - requires no state - and so more flexible there. May reconsider.
  *              -- LGP 2015-07-06
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySyncrhonized are AssertNotImplemented on TextReader and TextWriter
+ *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on TextReader and TextWriter
  */
 
 namespace Stroika::Foundation::Memory {
@@ -115,19 +115,19 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<Character>::Ptr& src);
         static Ptr New (const Traversal::Iterable<Character>& src);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Character>::Ptr& src);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Traversal::Iterable<Character>& src);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src);
 
         [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (const InputStream<byte>::Ptr& src, bool seekable);
         [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable);
         [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable);
+        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, bool seekable);
+        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable);
+        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable);
 
     private:
         class FromBinaryStreamBaseRep_;
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Streams {
         class IterableAdapterStreamRep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Character, TextReader, InputStream<Character>::_IRep>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<Character, TextReader, InputStream<Character>::_IRep>;
     };
 
     /**

@@ -10,7 +10,7 @@
 
 #include "../../Configuration/Common.h"
 
-#include "../InternallySyncrhonizedOutputStream.h"
+#include "../InternallySynchronizedOutputStream.h"
 #include "../OutputStream.h"
 
 /**
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *
          *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized">Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a>
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Synchronized">Rep-Inside-Ptr-Must-Be-Externally-Synchronized</a>
          *              It is also up to the caller to assure no references to or calls to that ostream
          *              be made from another thread. However, no data is cached in this class - it just
          *              delegates, so calls CAN be made the the underlying ostream - so long as not
@@ -81,13 +81,13 @@ namespace Stroika::Foundation::Streams::iostream {
          *              no other threads access the OStreamType object.
          */
         static Ptr New (OStreamType& originalStream);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, OStreamType& originalStream);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, OStreamType& originalStream);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>, typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>, typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
     };
 
     /**

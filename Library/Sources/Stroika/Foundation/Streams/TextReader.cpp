@@ -566,9 +566,9 @@ auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
     return p;
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Character>::Ptr& src) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -581,9 +581,9 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -596,9 +596,9 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -611,9 +611,9 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -626,9 +626,9 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -641,9 +641,9 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const Traversal::Iterable<Character>& src) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src) -> Ptr
 {
-    switch (internallySyncrhonized) {
+    switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
@@ -671,19 +671,19 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     return New (src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
 }
 
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, bool seekable)
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, bool seekable)
 {
-    return New (internallySyncrhonized, src, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
+    return New (internallySynchronized, src, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
 }
 #if 0
 // no idea why wont compile on msvc, but unimportant, since deprecated, and could easily be never used...
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::TextReader::Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable)
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::TextReader::Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable)
 {
-    return New (internallySyncrhonized, src, charset, (seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable));
+    return New (internallySynchronized, src, charset, (seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable));
 }
 #endif
 
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
+[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
 {
-    return New (internallySyncrhonized, src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
+    return New (internallySynchronized, src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
 }

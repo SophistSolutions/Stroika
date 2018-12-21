@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Streams {
      */
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wattributes\"")
     template <typename ELEMENT_TYPE>
-    inline auto SharedMemoryStream<ELEMENT_TYPE>::New ([[maybe_unused]] Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
+    inline auto SharedMemoryStream<ELEMENT_TYPE>::New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized) -> Ptr
     {
         // always return internally synchronized rep
         return make_shared<Rep_> ();
@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Streams {
         return make_shared<Rep_> (start, end);
     }
     template <typename ELEMENT_TYPE>
-    inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
     {
         return New (start, end);
     }
@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Streams {
     }
     template <typename ELEMENT_TYPE>
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
-    inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
+    inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob) -> Ptr
     {
         return New (blob.begin (), blob.end ());
     }

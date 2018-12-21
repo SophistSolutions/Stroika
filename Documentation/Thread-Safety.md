@@ -80,7 +80,7 @@
 
 ---
 
-<h3><a name='Rep-Inside-Ptr-Is-Internally-Syncrhonized'>Rep-Inside-Ptr-Is-Internally-Syncrhonized</a></h3>
+<h3><a name='Rep-Inside-Ptr-Is-Internally-Synchronized'>Rep-Inside-Ptr-Is-Internally-Synchronized</a></h3>
 	<p>
 	For methods that return a smart pointer, the thread safety of that type are defined by the type itself, but this designates that the returned value
 	is a rep which is internally synchronized.
@@ -88,7 +88,7 @@
 
 ---
 
-<h3><a name='Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized'>Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a></h3>
+<h3><a name='Rep-Inside-Ptr-Must-Be-Externally-Synchronized'>Rep-Inside-Ptr-Must-Be-Externally-Synchronized</a></h3>
 	<p>
 	For methods that return a smart pointer, the thread safety of that type are defined by the type itself, but this designates that the returned value
 	is a rep which is must be externally synchronized (and probably is checked via Debug::AssertExternallySynchronized).
