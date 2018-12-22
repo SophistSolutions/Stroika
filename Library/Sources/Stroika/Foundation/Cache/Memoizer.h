@@ -13,7 +13,6 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Mapping.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
 #include "LRUCache.h"
 
 /**
@@ -49,9 +48,15 @@ namespace Stroika::Foundation::Cache {
      *                  to see how to improve
      *
      *      o   @todo   maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
+     *
+     *  \note   Memoizer works well wtih LRUCache, SynchronizedLRUCache, TimedCache, or SynchronizedTimeCache. But
+     *          it does NOT work with CallerStalenessCache, because that cache requires the caller to specify an allowed staleness on each
+     *          call.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html>Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache. Used with SynchronizedLRUCache and a typical function, for example, this is fully re-entrant</a>
      */
     template <typename RESULT, template <typename, typename> class CACHE = LRUCache, typename... ARGS>
-    class Memoizer : private Debug::AssertExternallySynchronizedLock {
+    class Memoizer {
     public:
         /**
          *  \par Example Usage
