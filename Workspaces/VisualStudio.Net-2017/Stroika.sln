@@ -2377,12 +2377,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ActivePerl", "ActivePerl", 
 		..\..\ThirdPartyComponents\ActivePerl\Makefile = ..\..\ThirdPartyComponents\ActivePerl\Makefile
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cmake", "cmake", "{582D2C28-219C-4F51-B9A3-DCF810062A9F}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\ThirdPartyComponents\cmake\.gitignore = ..\..\ThirdPartyComponents\cmake\.gitignore
-		..\..\ThirdPartyComponents\cmake\Makefile = ..\..\ThirdPartyComponents\cmake\Makefile
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cmake", "cmake", "{9EF5DCF6-CE80-4C93-9044-DE1D30C34A77}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\FindICU.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\FindICU.cmake
@@ -3597,7 +3591,6 @@ Global
 		{5D19F64D-27AE-4210-B0B6-EDAB3526E8D8} = {8D10597B-6ECA-46ED-8E3C-A918A04D615D}
 		{40601CB5-D1E2-423D-A40B-338C603FA971} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
 		{922D134F-C34A-49F2-87DF-24FDEC35201D} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
-		{582D2C28-219C-4F51-B9A3-DCF810062A9F} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
 		{9EF5DCF6-CE80-4C93-9044-DE1D30C34A77} = {816ADD37-229E-4BEF-B264-2076D67F824F}
 		{488CC52D-07B5-472F-8131-D797465FB200} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
 		{23DCA9A8-9238-4A3A-80EF-C35D7A4C226C} = {488CC52D-07B5-472F-8131-D797465FB200}
