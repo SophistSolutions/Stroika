@@ -6,6 +6,7 @@
 
 #include <mutex>
 
+#include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
 #include "Stroika/Foundation/Cache/SynchronizedTimedCache.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
@@ -723,6 +724,7 @@ namespace {
             static const size_t kIOverallRepeatCount_ = (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 50 : 1000);
             void                SyncLRUCacheT1_ ()
             {
+                Debug::TraceContextBumper traceCtx ("{}SyncLRUCacheT1_...");
                 using namespace Cache;
                 SynchronizedLRUCache cache (pair<string, string>{}, 3, 10, hash<string>{});
                 Thread::Ptr          writerThread = Thread::New (
@@ -765,6 +767,35 @@ namespace {
                 Thread::Start ({writerThread, copierThread});
                 Thread::WaitForDone ({writerThread, copierThread});
             }
+            void SyncCallerStalenessCacheT1_ ()
+            {
+                Debug::TraceContextBumper traceCtx ("{}SyncCallerStalenessCacheT1_...");
+                using namespace Cache;
+                auto mapValue = [](int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
+                    static CallerStalenessCache<int, int> sCache_;
+                    return sCache_.Lookup (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) {
+                        return v; // could be more expensive computation
+                    });
+                };
+                using namespace Cache;
+                SynchronizedCallerStalenessCache<int, int> cache;
+                Thread::Ptr                                writerThread = Thread::New (
+                    [&cache, mapValue]() {
+                        for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
+                            VerifyTestResult (mapValue (i) == static_cast<int> (i));
+                        }
+                    },
+                    String{L"writerThread"});
+                Thread::Ptr copierThread = Thread::New (
+                    [&cache, mapValue]() {
+                        for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
+                            VerifyTestResult (mapValue (i) == static_cast<int> (i));
+                        }
+                    },
+                    String{L"copierThread"});
+                Thread::Start ({writerThread, copierThread});
+                Thread::WaitForDone ({writerThread, copierThread});
+            }
         }
         void DoIt ()
         {
@@ -781,6 +812,8 @@ namespace {
             else {
                 Private_::SyncLRUCacheT1_ ();
             }
+
+            Private_::SyncCallerStalenessCacheT1_ ();
         }
     }
 }
