@@ -151,14 +151,6 @@ else
 endif
 
 
-check-prerequisite-tools:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces ... "
-ifeq ($(qFeatureFlag_PrivateOverrideOfCMake), no)
-	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
-endif
-	@$(ECHO) "done";
-
-
 check:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
 ifeq ($(CONFIGURATION),)
@@ -291,3 +283,12 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@$(ECHO) "cp $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ 2>/dev/null || :" >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 	@cp $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ 2>/dev/null || :
 endif
+
+
+
+check-prerequisite-tools:
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces ... "
+	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && $(PATH_ADJUSTMENT_PREFIX) ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
+	@$(ECHO) "done";
+
+
