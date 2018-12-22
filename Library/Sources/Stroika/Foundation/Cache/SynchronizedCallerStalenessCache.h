@@ -98,14 +98,14 @@ namespace Stroika::Foundation::Cache {
          */
         template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
         nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const;
-        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
-        nonvirtual VALUE Lookup (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
         template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
         nonvirtual optional<VALUE> Lookup (K1 k, TimeStampType staleIfOlderThan) const;
+        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
+        nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
         template <typename F, typename K1 = KEY, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>* = nullptr>
-        nonvirtual VALUE Lookup (K1 k, TimeStampType staleIfOlderThan, F cacheFiller);
+        nonvirtual VALUE LookupValue (K1 k, TimeStampType staleIfOlderThan, F cacheFiller);
         template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual VALUE Lookup (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const;
+        nonvirtual VALUE LookupValue (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const;
 
     public:
         /**

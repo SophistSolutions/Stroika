@@ -58,13 +58,6 @@ namespace Stroika::Foundation::Cache {
         return inherited::Lookup (staleIfOlderThan);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
-    {
-        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-        return inherited::Lookup (staleIfOlderThan, cacheFiller);
-    }
-    template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline optional<VALUE> SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan) const
     {
@@ -72,8 +65,15 @@ namespace Stroika::Foundation::Cache {
         return inherited::Lookup (k, staleIfOlderThan);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
+    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
+    {
+        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+        return inherited::Lookup (staleIfOlderThan, cacheFiller);
+    }
+    template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename F, typename K1, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>*>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan, F cacheFiller)
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (K1 k, TimeStampType staleIfOlderThan, F cacheFiller)
     {
         /*
          *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
@@ -102,10 +102,10 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (K1 k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_}; // ignore fHoldWriteLockDuringCacheFill since this is always fast; shared cuz doesn't update cache
-        return inherited::Lookup (k, staleIfOlderThan, defaultValue);
+        return inherited::LookupValue (k, staleIfOlderThan, defaultValue);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     inline void SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::clear ()

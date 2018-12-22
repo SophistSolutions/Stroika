@@ -76,7 +76,9 @@ namespace Stroika::Foundation::Cache {
           * @see TimedCache::Lookup
          */
         nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
-        nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+
+    public:
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
 
     public:
         /**

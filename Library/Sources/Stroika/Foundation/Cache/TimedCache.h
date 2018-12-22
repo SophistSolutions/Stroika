@@ -250,20 +250,28 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  However, the overload returing an optional is occasionally useful, if you don't want to fill the cache
+         *  but just see if a value is present.
+         *
+         *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
+         */
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
+
+    public:
+        /**
          *  Usually one will use this as (cacheFiller overload):
          *      \code
          *          VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *      \endcode
          *
-         *  However, the overload returing an optional is occasionally useful, if you don't want to fill the cache
+         *  However, the method (Lookup) returing an optional is occasionally useful, if you don't want to fill the cache
          *  but just see if a value is present.
          *
          *  The overload with cacheFiller, will update the 'time stored' for the argument key if a new value is fetched.
          *
          *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
-        nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
 
     public:
         /**

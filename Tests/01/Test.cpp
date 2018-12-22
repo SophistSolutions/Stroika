@@ -159,7 +159,7 @@ namespace {
                 // more automatic maintainance of that update pattern
                 DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
                 {
-                    return sDiskUsageCache_.Lookup (diskName,
+                    return sDiskUsageCache_.LookupValue (diskName,
                                                     [](String diskName) -> DiskSpaceUsageType {
                                                         return LookupDiskStats_ (diskName);
                                                     });
@@ -167,7 +167,7 @@ namespace {
                 // or still simpler
                 DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
                 {
-                    return sDiskUsageCache_.Lookup (diskName, LookupDiskStats_);
+                    return sDiskUsageCache_.LookupValue (diskName, LookupDiskStats_);
                 }
                 void DoIt ()
                 {
@@ -259,7 +259,7 @@ namespace {
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<void, optional<int>> sCache_;
-                return sCache_.Lookup (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<int> {
+                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<int> {
                     sCalls1_++;
                     return 1;
                 });
@@ -276,7 +276,7 @@ namespace {
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<int, optional<int>> sCache_;
-                return sCache_.Lookup (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
                     sCalls2_++;
                     return v;
                 });
