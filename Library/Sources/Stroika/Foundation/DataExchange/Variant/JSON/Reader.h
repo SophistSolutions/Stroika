@@ -40,7 +40,16 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *
      *  \note   Any JSON object can be represented as as VariantValue object, and unambiguously mapped back to the same JSON.
      *
+     *  \note   Aliases: JSONReader, JSON Reader, JSON-Reader.
+     *
      *  \note   req inputStream.IsSeekable () - when reading an input stream
+     *
+     *  \par Example Usage
+     *      \code
+     *          string  srcJSON  = "[101]"; // this srcJSON can be a stream, String, string or any of a number of sources (@see DataExchange::Variant::Read)
+     *          VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (srcJSON);
+     *          // now unpack the result of the variant-value, with v1.GetType, v1.As<Sequence<VariantValue>> () etc...
+     *      \endcode
      */
     class Reader : public Variant::Reader {
     private:
@@ -52,6 +61,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
     public:
         Reader ();
     };
+
 }
 
 /*
