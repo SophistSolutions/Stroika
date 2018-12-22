@@ -42,8 +42,7 @@ namespace Stroika::Foundation::Cache {
          *  @see TimedCache constructor for examples
          */
         SynchronizedTimedCache (Time::DurationSecondsType timeoutInSeconds);
-        // support eventually, but not trivial
-        SynchronizedTimedCache (const SynchronizedTimedCache&) = delete;
+        SynchronizedTimedCache (const SynchronizedTimedCache& src);
 
     public:
         // support eventually, but not trivial
