@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Cache {
     inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-        return inherited::Lookup (staleIfOlderThan, cacheFiller);
+        return inherited::LookupValue (staleIfOlderThan, cacheFiller);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename F, typename K1, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>*>

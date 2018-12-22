@@ -160,9 +160,9 @@ namespace {
                 DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
                 {
                     return sDiskUsageCache_.LookupValue (diskName,
-                                                    [](String diskName) -> DiskSpaceUsageType {
-                                                        return LookupDiskStats_ (diskName);
-                                                    });
+                                                         [](String diskName) -> DiskSpaceUsageType {
+                                                             return LookupDiskStats_ (diskName);
+                                                         });
                 }
                 // or still simpler
                 DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
