@@ -771,15 +771,13 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx ("{}SyncCallerStalenessCacheT1_...");
                 using namespace Cache;
-                auto mapValue = [](int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
-                    static CallerStalenessCache<int, int> sCache_;
-                    return sCache_.Lookup (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) {
+                SynchronizedCallerStalenessCache<int, int> cache;
+                auto                                       mapValue = [&cache](int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
+                    return cache.Lookup (value, cache.Ago (allowedStaleness.value_or (30)), [=](int v) {
                         return v; // could be more expensive computation
                     });
                 };
-                using namespace Cache;
-                SynchronizedCallerStalenessCache<int, int> cache;
-                Thread::Ptr                                writerThread = Thread::New (
+                Thread::Ptr writerThread = Thread::New (
                     [&cache, mapValue]() {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             VerifyTestResult (mapValue (i) == static_cast<int> (i));
