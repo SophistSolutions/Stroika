@@ -778,14 +778,14 @@ namespace {
                     });
                 };
                 Thread::Ptr writerThread = Thread::New (
-                    [&cache, mapValue]() {
+                    [&mapValue]() {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             VerifyTestResult (mapValue (i) == static_cast<int> (i));
                         }
                     },
                     String{L"writerThread"});
                 Thread::Ptr copierThread = Thread::New (
-                    [&cache, mapValue]() {
+                    [&mapValue]() {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             VerifyTestResult (mapValue (i) == static_cast<int> (i));
                         }
