@@ -780,14 +780,14 @@ namespace {
                 Thread::Ptr writerThread = Thread::New (
                     [&mapValue]() {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
-                            VerifyTestResult (mapValue (i) == static_cast<int> (i));
+                            VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
                     String{L"writerThread"});
                 Thread::Ptr copierThread = Thread::New (
                     [&mapValue]() {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
-                            VerifyTestResult (mapValue (i) == static_cast<int> (i));
+                            VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
                     String{L"copierThread"});
