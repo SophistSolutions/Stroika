@@ -244,6 +244,8 @@ namespace Stroika::Foundation::Cache {
         nonvirtual TimedCache& operator= (const TimedCache&) = default;
 
 	public:
+		/**
+		 */
 		nonvirtual Time::DurationSecondsType GetTimeout () const;
 
     public:
