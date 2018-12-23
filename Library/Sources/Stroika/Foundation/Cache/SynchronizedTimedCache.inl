@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Cache {
             else {
                 // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
                 // and keep it to minimum logically required (inherited add).
-                VALUE  v         = cacheFiller (key);
+                VALUE v = cacheFiller (key);
                 this->Add (key, v);
                 return v;
             }

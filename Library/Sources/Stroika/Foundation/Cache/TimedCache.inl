@@ -26,12 +26,12 @@ namespace Stroika::Foundation::Cache {
     {
         Require (fTimeout_ > 0.0f);
     }
-	template <typename KEY, typename VALUE, typename TRAITS>
-	Time::DurationSecondsType TimedCache<KEY, VALUE, TRAITS>::GetTimeout () const
-	{
-		shared_lock<const AssertExternallySynchronizedLock> critSec{ *this };
-		return fTimeout_;
-	}
+    template <typename KEY, typename VALUE, typename TRAITS>
+    Time::DurationSecondsType TimedCache<KEY, VALUE, TRAITS>::GetTimeout () const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        return fTimeout_;
+    }
 
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
