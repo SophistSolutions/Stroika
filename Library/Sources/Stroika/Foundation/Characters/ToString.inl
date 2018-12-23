@@ -75,6 +75,49 @@ namespace Stroika::Foundation::Characters {
             //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
             return String::FromNarrowSDKString (t.what ());
         }
+        inline String ToString_ ([[maybe_unused]] const tuple<>& t)
+        {
+            StringBuilder sb;
+            sb << L"{";
+            sb << L"}";
+            return sb.str ();
+        }
+        template <typename T1>
+        String ToString_ (const tuple<T1>& t)
+        {
+            StringBuilder sb;
+            sb << L"{";
+            sb << ToString (t);
+            sb << L"}";
+            return sb.str ();
+        }
+        template <typename T1, typename T2>
+        String ToString_ (const tuple<T1, T2>& t)
+        {
+            StringBuilder sb;
+            sb << L"{";
+            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t));
+            sb << L"}";
+            return sb.str ();
+        }
+        template <typename T1, typename T2, typename T3>
+        String ToString_ (const tuple<T1, T2, T3>& t)
+        {
+            StringBuilder sb;
+            sb << L"{";
+            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t)) + L", " + ToString (get<2> (t));
+            sb << L"}";
+            return sb.str ();
+        }
+        template <typename T1, typename T2, typename T3, typename T4>
+        String ToString_ (const tuple<T1, T2, T3>& t)
+        {
+            StringBuilder sb;
+            sb << L"{";
+            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t)) + L", " + ToString (get<2> (t)) + L", " + ToString (get<3> (t));
+            sb << L"}";
+            return sb.str ();
+        }
         template <typename T>
         String ToString_ (const T& t, enable_if_t<has_pair<T>::value>* = 0)
         {

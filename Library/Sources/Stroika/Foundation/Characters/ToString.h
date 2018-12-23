@@ -13,6 +13,8 @@
 /**
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-566 ToString (...elipsis) support, and cleanup use of templates in Private_
+ *
+ *      @todo   ToString(tuple) should use variadic templates and support multiple (past 3) args
  */
 
 namespace Stroika::Foundation::Characters {
@@ -45,6 +47,7 @@ namespace Stroika::Foundation::Characters {
      *      o   is_array<T>
      *      o   is_enum<T>
      *      o   std::exception
+     *      o   std::tuple
      *      o   std::pair
      *      o   std::optional
      *      o   exception_ptr
