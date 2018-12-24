@@ -487,15 +487,15 @@ namespace {
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            int                   fInt1;
-            Memory::Optional<int> fInt2;
-            Mapping<int, int>     fMapping1;
-            Sequence<int>         fSequence1;
-            int                   fBasicArray1[5];
-            Set<int>              fSet1_;
-            vector<int>           fVector1_;
-            pair<int, String>     fPair1_;
-            tuple<int, String>    fTuple2_;
+            int                fInt1;
+            optional<int>      fInt2;
+            Mapping<int, int>  fMapping1;
+            Sequence<int>      fSequence1;
+            int                fBasicArray1[5];
+            Set<int>           fSet1_;
+            vector<int>        fVector1_;
+            pair<int, String>  fPair1_;
+            tuple<int, String> fTuple2_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -521,7 +521,7 @@ namespace {
 
         ObjectVariantMapper mapper;
 
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
+        mapper.AddCommonType<optional<int>> ();
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<vector<int>> ());
