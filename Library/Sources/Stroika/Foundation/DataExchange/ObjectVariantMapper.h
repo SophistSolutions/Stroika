@@ -46,6 +46,8 @@
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
  *              that adding when already there does nothing, and new KeyedCollection will have property - lilke Mapping - of replacing value.
  *
+ *      @todo   Fix MakeCommonSerializer() for tuple<> to be variadic.
+ *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
  *
@@ -517,6 +519,8 @@ namespace Stroika::Foundation::DataExchange {
          *      o   SortedSet<T>
          *      o   Synchronized<T>
          *      o   vector<T>
+         *      o   tuple<...ARGS>
+         *      o   vector<T>
          *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
          *      o   T[N]
          *
@@ -645,6 +649,14 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
+        template <typename T1, typename T2>
+        static TypeMappingDetails MakeCommonSerializer_ (const pair<T1, T2>*);
+        template <typename T1>
+        static TypeMappingDetails MakeCommonSerializer_ (const tuple<T1>*);
+        template <typename T1, typename T2>
+        static TypeMappingDetails MakeCommonSerializer_ (const tuple<T1, T2>*);
+        template <typename T1, typename T2, typename T3>
+        static TypeMappingDetails MakeCommonSerializer_ (const tuple<T1, T2, T3>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const T*, enable_if_t<is_enum_v<T>>* = 0);
         template <typename T, size_t SZ>

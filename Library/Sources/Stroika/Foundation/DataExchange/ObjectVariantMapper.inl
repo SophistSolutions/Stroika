@@ -389,6 +389,74 @@ namespace Stroika::Foundation::DataExchange {
     {
         return MakeCommonSerializer_WithAdder<vector<T>> ();
     }
+    template <typename T1, typename T2>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const pair<T1, T2>*)
+    {
+        // render as object with two fields first, second, or as array of two elements
+        return TypeMappingDetails{
+            typeid (pair<T1, T2>),
+            [](const ObjectVariantMapper& mapper, const pair<T1, T2>* fromObj) -> VariantValue {
+                return Sequence<VariantValue>{mapper.FromObject<T1> (valueMapper, &fromObj->first), mapper.FromObject<T2> (valueMapper, &fromObj->second)};
+            },
+            [](const ObjectVariantMapper& mapper, const VariantValue& d, pair<T1, T2>* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 2) {
+                    Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for pair")));
+                };
+                *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
+            }};
+    }
+    template <typename T1>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1>*)
+    {
+        // render as array of one element
+        return TypeMappingDetails{
+            typeid (tuple<T1>),
+            FromObjectMapperType<tuple<T1>>{[](const ObjectVariantMapper& mapper, const tuple<T1>* fromObj) -> VariantValue {
+                return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj))};
+            }},
+            ToObjectMapperType<tuple<T1>>{[](const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2>* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 1) {
+                    Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for tuple/1")));
+                };
+                *intoObj = make_tuple (mapper.ToObject<T1> (s[0]));
+            }}};
+    }
+    template <typename T1, typename T2>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2>*)
+    {
+        // render as array of two elements
+        return TypeMappingDetails{
+            typeid (tuple<T1, T2>),
+            FromObjectMapperType<tuple<T1, T2>>{[](const ObjectVariantMapper& mapper, const tuple<T1, T2>* fromObj) -> VariantValue {
+                return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj))};
+            }},
+            ToObjectMapperType<tuple<T1, T2>>{[](const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2>* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 2) {
+                    Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for tuple/2")));
+                };
+                *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
+            }}};
+    }
+    template <typename T1, typename T2, typename T3>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2, T3>*)
+    {
+        // render as array of three elements
+        return TypeMappingDetails{
+            typeid (tuple<T1, T2, T3>),
+            FromObjectMapperType<tuple<T1, T2, T3>>{[](const ObjectVariantMapper& mapper, const tuple<T1, T2, T3>* fromObj) -> VariantValue {
+                return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj)), mapper.FromObject<T3> (std::get<2> (*fromObj))};
+            }},
+            ToObjectMapperType<tuple<T1, T2, T3>>{[](const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2, T3>* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 3) {
+                    Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for tuple/3")));
+                };
+                *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]), mapper.ToObject<T3> (s[2]));
+            }}};
+    }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>*)
     {
