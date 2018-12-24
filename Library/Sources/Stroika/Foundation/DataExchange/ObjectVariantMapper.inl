@@ -148,7 +148,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AddCommonType ()
     {
-        AssertDependentTypesAlreadyInRegistry_ (reinterpret_cast<T*> (nullptr));
+        AssertDependentTypesAlreadyInRegistry_ (static_cast<const T*> (nullptr));
         const auto&& serializer = MakeCommonSerializer<T> ();
         Assert (serializer.fForType == typeid (T));
         Add (serializer);
