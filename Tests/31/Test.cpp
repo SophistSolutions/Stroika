@@ -494,6 +494,8 @@ namespace {
             int                   fBasicArray1[5];
             Set<int>              fSet1_;
             vector<int>           fVector1_;
+            pair<int, String>     fPair1_;
+            tuple<int, String>    fTuple2_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -511,7 +513,9 @@ namespace {
                        fMapping1 == rhs.fMapping1 and
                        fSequence1 == rhs.fSequence1 and
                        fSet1_ == rhs.fSet1_ and
-                       fVector1_ == rhs.fVector1_;
+                       fVector1_ == rhs.fVector1_ and
+                       fPair1_ == rhs.fPair1_ and
+                       fTuple2_ == rhs.fTuple2_;
             }
         };
 
@@ -523,6 +527,8 @@ namespace {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<vector<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<pair<int, String>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<tuple<int, String>> ());
 
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
@@ -533,6 +539,8 @@ namespace {
             {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1)},
             {L"fSet1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_)},
             {L"fVector1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_)},
+            {L"fPair1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fPair1_)},
+            {L"fTuple2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fTuple2_)},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -545,6 +553,8 @@ namespace {
         tmp.fSet1_.Add (193);
         tmp.fVector1_.push_back (3);
         tmp.fVector1_.push_back (-91);
+        tmp.fPair1_    = pair<int, String>{3, L"test"};
+        tmp.fTuple2_   = tuple<int, String>{4, L"test4"};
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();

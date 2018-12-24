@@ -392,23 +392,25 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T1, typename T2>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const pair<T1, T2>*)
     {
-        // render as object with two fields first, second, or as array of two elements
+        using Characters::String_Constant;
+        // render as array of two elements
         return TypeMappingDetails{
             typeid (pair<T1, T2>),
-            [](const ObjectVariantMapper& mapper, const pair<T1, T2>* fromObj) -> VariantValue {
-                return Sequence<VariantValue>{mapper.FromObject<T1> (valueMapper, &fromObj->first), mapper.FromObject<T2> (valueMapper, &fromObj->second)};
-            },
-            [](const ObjectVariantMapper& mapper, const VariantValue& d, pair<T1, T2>* intoObj) -> void {
+            FromObjectMapperType<pair<T1, T2>>{[](const ObjectVariantMapper& mapper, const pair<T1, T2>* fromObj) -> VariantValue {
+                return Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->first), mapper.FromObject<T2> (fromObj->second)};
+            }},
+            ToObjectMapperType<pair<T1, T2>>{[](const ObjectVariantMapper& mapper, const VariantValue& d, pair<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 2) {
                     Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for pair")));
                 };
                 *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
-            }};
+            }}};
     }
     template <typename T1>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1>*)
     {
+        using Characters::String_Constant;
         // render as array of one element
         return TypeMappingDetails{
             typeid (tuple<T1>),
@@ -426,6 +428,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T1, typename T2>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2>*)
     {
+        using Characters::String_Constant;
         // render as array of two elements
         return TypeMappingDetails{
             typeid (tuple<T1, T2>),
@@ -443,6 +446,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T1, typename T2, typename T3>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2, T3>*)
     {
+        using Characters::String_Constant;
         // render as array of three elements
         return TypeMappingDetails{
             typeid (tuple<T1, T2, T3>),
@@ -520,8 +524,9 @@ namespace Stroika::Foundation::DataExchange {
                     DbgTrace (L"Array ('%s') actual size %d out of range", Characters::ToString (typeid (T[SZ])).c_str (), static_cast<int> (s.size ()));
                     Execution::Throw (BadFormatException (String_Constant (L"Array size out of range")));
                 }
-            ToObjectMapperType<T> valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
-            size_t                idx = 0;
+            ToObjectMapperType<T>
+                valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
+            size_t idx = 0;
             for (const auto&& i : s) {
                 actualMember[idx++] = mapper.ToObject<T> (valueMapper, i);
             }
@@ -716,9 +721,10 @@ namespace Stroika::Foundation::DataExchange {
                         DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                         Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                     }
-                ToObjectMapperType<value_type> valueMapper{mapper.ToObjectMapper<value_type> ()};
-                value_type                     from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_))};
-                value_type                     to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_))};
+                ToObjectMapperType<value_type>
+                    valueMapper{mapper.ToObjectMapper<value_type> ()};
+                value_type from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_))};
+                value_type to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_))};
                 *intoObjOfTypeT = CheckedConverter_Range<RANGE_TYPE> (from, to);
             }
         };
@@ -901,7 +907,6 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{forTypeInfo, fromObjectMapper, toObjectMapper};
     }
-
 }
 
 #endif /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_*/
