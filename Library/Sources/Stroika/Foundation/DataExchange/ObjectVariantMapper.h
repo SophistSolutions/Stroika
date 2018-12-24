@@ -60,7 +60,7 @@
  *      @todo   EFFICIENCY NOTES AND TODO MAYBE IMPROVE?
  *
  *              This can be moderately efficient, but it is not highly efficient. The use of function
- *              for the serializer/desearizers adds costs.
+ *              for the serializer/deserializers adds costs.
  *
  *              When serializing / deserializing - (e.g to/from JSON or XML) - we construct DOM tree which is
  *              intrinsically not very cost effective. We DO have the XML sax parser (but that wont work with this).
