@@ -39,9 +39,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Make AddCommonType() - when passed in an optional<T> - Require that
- *              the type T is already in the registry (like with AddClass). To debug!
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
  *              that adding when already there does nothing, and new KeyedCollection will have property - lilke Mapping - of replacing value.
@@ -348,6 +345,15 @@ namespace Stroika::Foundation::DataExchange {
          *  for the builtin types.
          *
          *  @see MakeCommonSerializer for details, and restrictions.
+         *
+         *  \par Example Usage
+         *      \code
+         *          ObjectVariantMapper mapper;
+         *          mapper.Add (ObjectVariantMapper::MakeCommonSerializer<optional<int>> ());   // long way
+         *          mapper.AddCommonType<optional<int>> ();                                     // equivilent, but also checks/asserts underlying
+         *                                                                                      // type has been entered into registry
+         *      \endcode
+         *
          */
         template <typename T>
         nonvirtual void AddCommonType ();
@@ -617,6 +623,46 @@ namespace Stroika::Foundation::DataExchange {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+    private:
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (T*);
+        template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (Containers::Collection<T>*);
+        template <typename T, typename TRAITS>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Traversal::DiscreteRange<T, TRAITS>*);
+        template <typename KEY_TYPE, typename VALUE_TYPE>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (optional<T>*);
+        template <typename T, typename TRAITS>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Traversal::Range<T, TRAITS>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Sequence<T>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Set<T>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*);
+        template <typename KEY_TYPE, typename VALUE_TYPE>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedSet<T>*);
+        template <typename T, typename TRAITS>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const vector<T>*);
+        template <typename T1, typename T2>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const pair<T1, T2>*);
+        template <typename T1>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const tuple<T1>*);
+        template <typename T1, typename T2>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2>*);
+        template <typename T1, typename T2, typename T3>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2, T3>*);
+        template <typename T, size_t SZ>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const T (*)[SZ]);
 
     private:
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>

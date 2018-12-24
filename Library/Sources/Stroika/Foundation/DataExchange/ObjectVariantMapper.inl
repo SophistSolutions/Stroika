@@ -148,6 +148,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AddCommonType ()
     {
+        AssertDependentTypesAlreadyInRegistry_ (reinterpret_cast<T*> (nullptr));
         const auto&& serializer = MakeCommonSerializer<T> ();
         Assert (serializer.fForType == typeid (T));
         Add (serializer);
@@ -231,6 +232,145 @@ namespace Stroika::Foundation::DataExchange {
     {
         return FromObjectMapper<T> () (*this, &from);
     }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (T*)
+    {
+        // by default nothing to check, just check certain partial specializations
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (optional<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (DOMAIN_TYPE)); // just for side-effect of assert check
+        (void)Lookup_ (typeid (RANGE_TYPE));  // just for side-effect of assert check
+#endif
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::Collection<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T, typename TRAITS>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Traversal::DiscreteRange<T, TRAITS>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
+        (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T, typename TRAITS>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Traversal::Range<T, TRAITS>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Sequence<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Set<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
+        (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedSet<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T, typename TRAITS>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const vector<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T1, typename T2>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const pair<T1, T2>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T1>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T1, typename T2>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T1, typename T2, typename T3>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2, T3>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+        (void)Lookup_ (typeid (T3)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T, size_t SZ>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const T (*)[SZ])
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+
     template <typename ACTUAL_CONTAINER_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithAdder ()
     {
@@ -417,7 +557,7 @@ namespace Stroika::Foundation::DataExchange {
             FromObjectMapperType<tuple<T1>>{[](const ObjectVariantMapper& mapper, const tuple<T1>* fromObj) -> VariantValue {
                 return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj))};
             }},
-            ToObjectMapperType<tuple<T1>>{[](const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2>* intoObj) -> void {
+            ToObjectMapperType<tuple<T1>>{[](const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 1) {
                     Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for tuple/1")));
