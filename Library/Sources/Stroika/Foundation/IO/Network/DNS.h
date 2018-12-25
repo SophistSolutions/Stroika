@@ -81,6 +81,14 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         nonvirtual Sequence<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
+
+    public:
+        /**
+         *  Return the primary host address for the given argument hostnameOrAddress. Throws exception if
+         *  it somehow cannot (e.g. if there are zero addresses associated with the given argument or a network
+         *  error retrieving the information).
+         */
+        nonvirtual InternetAddress GetHostAddress (const String& hostNameOrAddress) const;
     };
 
 }

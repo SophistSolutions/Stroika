@@ -165,8 +165,8 @@ namespace Stroika::Foundation::IO::Network {
          *      Construct an InternetAddress octets, either 4 or 16 in length, and which must agree with provided address-family
          */
         constexpr InternetAddress ();
-        InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
-        InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
+        explicit InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
+        explicit InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
         constexpr InternetAddress (const in_addr_t& i);
         InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
         constexpr InternetAddress (const in_addr& i);

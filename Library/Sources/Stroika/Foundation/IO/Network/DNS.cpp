@@ -186,3 +186,15 @@ Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress
 #endif
     return GetHostEntry (hostNameOrAddress).fAddressList;
 }
+
+InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s", Characters::ToString (address).c_str ())};
+#endif
+    auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+    if (h.empty ()) {
+        Execution::Throw (Execution::StringException (L"No associated addresses"));
+    }
+    return h[0];
+}
