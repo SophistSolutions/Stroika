@@ -103,6 +103,12 @@ namespace Stroika::Foundation::Configuration {
 
     public:
         /**
+         *  Returns "1.0" for example.
+         */
+        nonvirtual Characters::String AsMajorMinorString () const;
+
+    public:
+        /**
          *  @see Characters::ToString ();
          */
         nonvirtual Characters::String ToString () const;
