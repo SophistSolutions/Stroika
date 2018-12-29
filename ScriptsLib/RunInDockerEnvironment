@@ -8,6 +8,7 @@
 
 CONTAINER_NAME="${CONTAINER_NAME:-regression-tests}"
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}"
+# Default EXTRA_DNS to include my local LAN DNS server so I get local machine names, like raspberrypi (where I run my rasberry pi regtests)
 EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
 EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 ECHO_DOCKER_COMMANDS="${ECHO_DOCKER_COMMANDS:-0}"
