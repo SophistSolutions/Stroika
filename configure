@@ -111,6 +111,7 @@ my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_librt = undef;
+my $FEATUREFLAG_WIX = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
 my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
@@ -167,6 +168,7 @@ sub	DoHelp_
         print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
         print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
+        print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
         print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
         print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
         print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
@@ -1005,6 +1007,11 @@ sub	ParseCommandLine_Remaining_
             $var = $args[$i];
             $FEATUREFLAG_ActivePerl = $var;
         }
+        elsif ((lc ($var) eq "-WIX") or (lc ($var) eq "--WIX")) {
+            $i++;
+            $var = $args[$i];
+            $FEATUREFLAG_WIX = $var;
+        }
         elsif ((lc ($var) eq "-config-tag") or (lc ($var) eq "--config-tag")) {
             $i++;
             $var = $args[$i];
@@ -1517,6 +1524,14 @@ sub PostProcessOptions_ ()
 			$FEATUREFLAG_ActivePerl = $LIBFEATUREFLAG_No;
 		}
 	}
+	if (! defined $FEATUREFLAG_WIX) {
+		if ("$^O" eq "cygwin") {
+			$FEATUREFLAG_WIX = "use";
+		}
+		else {
+			$FEATUREFLAG_WIX = $LIBFEATUREFLAG_No;
+		}
+	}
 
 	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
 
@@ -1715,6 +1730,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
+	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 
 	if (not ($CWARNING_FLAGS eq "")) {
 		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");

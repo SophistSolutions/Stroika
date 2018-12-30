@@ -16,10 +16,15 @@ FETCHURLS=
 FETCHURLS+=https://github.com/wixtoolset/wix3/releases/download/$(FOLDERNAMEVER)/$(FILEVERNAME).zip
 
 
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	CURRENT/candle.exe		\
+
+
 all:	
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/WIX Build $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
+	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 clean:
 
@@ -32,3 +37,17 @@ $(ZIPEDFILE):
 CURRENT:	$(ZIPEDFILE)
 	@unzip -q $(ZIPEDFILE) -d CURRENT
 
+check-prerequisite-tools:
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite ... "
+	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
+	@$(ECHO) "done";
+
+check:
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
+		if [ ! -e $$i ]; then\
+			$(ECHO) "   FAILED: missing $$i";\
+			exit 1;\
+		fi;\
+	done
+	@$(ECHO) " Stroika/ThirdPartyComponents/WIX -  [Succeeded]";

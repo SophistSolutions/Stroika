@@ -43,6 +43,9 @@ endif
 ifeq ($(qFeatureFlag_Xerces), use)
 	BUILD_Xerces=1
 endif
+ifeq ($(qFeatureFlag_WIX), use)
+	BUILD_WIX=1
+endif
 ifeq ($(qFeatureFlag_ZLib), use)
 	BUILD_zlib=1
 endif
@@ -70,6 +73,9 @@ ifeq ($(BUILD_sqlite), 1)
 endif
 ifeq ($(BUILD_Xerces), 1)
 	SubDirs+= Xerces
+endif
+ifeq ($(BUILD_WIX), 1)
+	SubDirs+= WIX
 endif
 ifeq ($(BUILD_zlib), 1)
 	SubDirs+= zlib
@@ -160,6 +166,9 @@ endif
 ifeq ($(BUILD_Xerces), 1)
 	@$(MAKE) --directory Xerces --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+ifeq ($(BUILD_WIX), 1)
+	@$(MAKE) --directory WIX --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 ifeq ($(BUILD_zlib), 1)
 	@$(MAKE) --directory zlib --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -193,6 +202,9 @@ endif
 ifeq ($(BUILD_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+ifeq ($(BUILD_WIX), 1)
+	@$(MAKE) --directory WIX --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 ifeq ($(BUILD_zlib), 1)
 	@$(MAKE) --directory zlib --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -212,4 +224,5 @@ endif
 	@$(MAKE) --directory openssl --silent $@
 	@$(MAKE) --directory sqlite --silent $@
 	@$(MAKE) --directory Xerces --silent $@
+	@$(MAKE) --directory WIX --silent $@
 	@$(MAKE) --directory zlib --silent $@

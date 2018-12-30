@@ -149,6 +149,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_WinHTTP'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_WIX>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_WIX'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_ATLMFC>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_ATLMFC'} = $pps;

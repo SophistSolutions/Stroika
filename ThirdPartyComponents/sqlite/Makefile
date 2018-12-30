@@ -152,12 +152,8 @@ endif
 
 check-prerequisite-tools:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite ... "
-	@$(MAKE) --no-print-directory --silent check_prerequisites_
-	@$(ECHO) "done";
-
-
-check_prerequisites_:
 	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
+	@$(ECHO) "done";
 
 
 check:
