@@ -23,89 +23,89 @@ APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --conf
 ifneq ($(CONFIGURATION),)
 
 ifeq ($(qFeatureFlag_ActivePerl), use)
-	USE_ActivePerl=1
+	BUILD_ActivePerl=1
 endif
 ifeq ($(qFeatureFlag_boost), use)
-	USE_boost=1
+	BUILD_boost=1
 endif
 ifeq ($(qFeatureFlag_LibCurl), use)
-	USE_curl=1
+	BUILD_curl=1
 endif
 ifeq ($(qFeatureFlag_LZMA), use)
-	USE_lzma=1
+	BUILD_lzma=1
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use)
-	USE_openssl=1
+	BUILD_openssl=1
 endif
 ifeq ($(qFeatureFlag_sqlite), use)
-	USE_sqlite=1
+	BUILD_sqlite=1
 endif
 ifeq ($(qFeatureFlag_Xerces), use)
-	USE_Xerces=1
+	BUILD_Xerces=1
 endif
 ifeq ($(qFeatureFlag_ZLib), use)
-	USE_zlib=1
+	BUILD_zlib=1
 endif
 
 
 
 SubDirs=
-ifeq ($(USE_ActivePerl), 1)
+ifeq ($(BUILD_ActivePerl), 1)
 	SubDirs+= ActivePerl
 endif
-ifeq ($(USE_boost), 1)
+ifeq ($(BUILD_boost), 1)
 	SubDirs+= boost
 endif
-ifeq ($(USE_curl), 1)
+ifeq ($(BUILD_curl), 1)
 	SubDirs+= curl
 endif
-ifeq ($(USE_lzma), 1)
+ifeq ($(BUILD_lzma), 1)
 	SubDirs+= lzma
 endif
-ifeq ($(USE_openssl), 1)
+ifeq ($(BUILD_openssl), 1)
 	SubDirs+= openssl
 endif
-ifeq ($(USE_sqlite), 1)
+ifeq ($(BUILD_sqlite), 1)
 	SubDirs+= sqlite
 endif
-ifeq ($(USE_Xerces), 1)
+ifeq ($(BUILD_Xerces), 1)
 	SubDirs+= Xerces
 endif
-ifeq ($(USE_zlib), 1)
+ifeq ($(BUILD_zlib), 1)
 	SubDirs+= zlib
 endif
 
 
 ##WINDOWS ONLY
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq ($(USE_openssl), 1)
+ifeq ($(BUILD_openssl), 1)
 openssl:	ActivePerl
 endif
 endif
 
 
-ifeq ($(USE_boost), 1)
-ifeq ($(USE_zlib), 1)
+ifeq ($(BUILD_boost), 1)
+ifeq ($(BUILD_zlib), 1)
 boost:		zlib
 endif
 endif
 
-ifeq ($(USE_curl), 1)
-ifeq ($(USE_openssl), 1)
+ifeq ($(BUILD_curl), 1)
+ifeq ($(BUILD_openssl), 1)
 curl:		openssl
 endif
 endif
 
-ifeq ($(USE_openssl), 1)
-ifeq ($(USE_zlib), 1)
+ifeq ($(BUILD_openssl), 1)
+ifeq ($(BUILD_zlib), 1)
 openssl:	zlib
 endif
 endif
 
 ###NOTE - because we set network:BOOL:OFF - Xerces doesn't depend on CURL (but we could make it so if we wanted, but then update dependencies
 ### in ThirdPartyLibs/Makefile
-#ifeq ($(USE_Xerces), 1)
-#ifeq ($(USE_curl), 1)
+#ifeq ($(BUILD_Xerces), 1)
+#ifeq ($(BUILD_curl), 1)
 #Xerces:		curl
 #endif
 #endif
@@ -142,25 +142,25 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
-ifeq ($(USE_boost), 1)
+ifeq ($(BUILD_boost), 1)
 	@$(MAKE) --directory boost --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_openssl), 1)
+ifeq ($(BUILD_openssl), 1)
 	@$(MAKE) --directory openssl --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_curl), 1)
+ifeq ($(BUILD_curl), 1)
 	@$(MAKE) --directory curl --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_lzma), 1)
+ifeq ($(BUILD_lzma), 1)
 	@$(MAKE) --directory lzma --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_sqlite), 1)
+ifeq ($(BUILD_sqlite), 1)
 	@$(MAKE) --directory sqlite --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_Xerces), 1)
+ifeq ($(BUILD_Xerces), 1)
 	@$(MAKE) --directory Xerces --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_zlib), 1)
+ifeq ($(BUILD_zlib), 1)
 	@$(MAKE) --directory zlib --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
@@ -175,25 +175,25 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Check {$(CONFIGURATION)}:"
-ifeq ($(USE_boost), 1)
+ifeq ($(BUILD_boost), 1)
 	@$(MAKE) --directory boost --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_curl), 1)
+ifeq ($(BUILD_curl), 1)
 	@$(MAKE) --directory curl --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_lzma), 1)
+ifeq ($(BUILD_lzma), 1)
 	@$(MAKE) --directory lzma --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_openssl), 1)
+ifeq ($(BUILD_openssl), 1)
 	@$(MAKE) --directory openssl --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_sqlite), 1)
+ifeq ($(BUILD_sqlite), 1)
 	@$(MAKE) --directory sqlite --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_Xerces), 1)
+ifeq ($(BUILD_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(USE_zlib), 1)
+ifeq ($(BUILD_zlib), 1)
 	@$(MAKE) --directory zlib --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
