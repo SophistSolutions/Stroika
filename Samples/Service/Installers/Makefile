@@ -15,7 +15,7 @@ BASIC_NAME=Stroika-SampleService
 OUTDIR_NAME=Samples-Service
 
 
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
@@ -26,8 +26,6 @@ TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
 
-all:	installers
-
 
 
 MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) Major.Minor)
@@ -35,18 +33,44 @@ INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformatio
 INSTALLER_PLATFORM_TAG?=$(shell uname --machine)
 INSTALLER_OS_TAG?=$(shell uname --kernel-name)
 
+TARGET_OUT_INSTALLER_DEB=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
+TARGET_OUT_INSTALLER_RPM=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
 
-installers:	
+TARGET_OUT_INSTALLERS=
+ifeq ($(shell test -x "`command -v dpkg 2>/dev/null`"; echo $$?),0)
+TARGET_OUT_INSTALLERS+=${TARGET_OUT_INSTALLER_DEB}
+endif
+ifeq ($(shell test -x "`command -v rpmbuild 2>/dev/null`"; echo $$?),0)
+TARGET_OUT_INSTALLERS+=${TARGET_OUT_INSTALLER_RPM}
+endif
+
+.PHONY:  all installers
+
+
+all:
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installers without a configuration argument)
 endif
-	@if [ -x "$$(command -v dpkg)" ] ; then \
-		$(MAKE) --no-print-directory installer-deb;\
-	fi
-	@if [ -x "$$(command -v rpmbuild)" ] ; then \
-		$(MAKE) --no-print-directory installer-rpm;\
-	fi
+	@$(MAKE) --silent $(TARGET_OUT_INSTALLERS)
 
+
+installers:
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installers without a configuration argument)
+endif
+	@$(MAKE) --no-print-directory $(TARGET_OUT_INSTALLERS)
+
+installer-deb:
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installers without a configuration argument)
+endif
+	@$(MAKE) --no-print-directory $(TARGET_OUT_INSTALLER_DEB)
+
+installer-rpm:
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installers without a configuration argument)
+endif
+	@$(MAKE) --no-print-directory $(TARGET_OUT_INSTALLER_RPM)
 
 
 #The 'deb' package creator requires the directory have particular permissions. on WSL (windows subsystem for linux)
@@ -57,7 +81,7 @@ endif
 DEB_WORKDIR:=$(shell mktemp -d)/
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
-installer-deb:
+$(TARGET_OUT_INSTALLER_DEB):
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building DEB installer: "
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "temp files in $(DEB_WORKDIR); logging to $(DEB_BUILD_OUT)"`
 ifeq ($(CONFIGURATION),)
@@ -87,16 +111,16 @@ endif
 	@install -m 644 $(BASIC_NAME_LC).service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 
 	@dpkg --build $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION) 2>&1 > $(DEB_BUILD_OUT)
-	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
+	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_INSTALLER_DEB)
 	
 	@rm -rf $(DEB_WORKDIR)
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb"`
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_INSTALLER_DEB)"`
 
 
 RPM_WORKDIR=$(ObjDir)RPM_TMP/
 RPM_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build.Out
-installer-rpm:
+$(TARGET_OUT_INSTALLER_RPM):
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building RPM installer: "
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "temp files in $(RPM_WORKDIR); logging to $(RPM_BUILD_OUT)"`"..."
 ifeq ($(CONFIGURATION),)
@@ -121,5 +145,5 @@ endif
 	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT) 2>&1
 
-	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm"`
+	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_INSTALLER_RPM)
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_INSTALLER_RPM)"`

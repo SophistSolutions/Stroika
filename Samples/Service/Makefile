@@ -23,6 +23,7 @@ else
 TARGETEXE				=	$(TARGETDIR)Service
 endif
 
+.PHONY: installers installer-deb installer-rpm installer-wix all
 
 VPATH	=			$(SrcDir)/Sources/
 
