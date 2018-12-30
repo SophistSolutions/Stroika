@@ -23,6 +23,12 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Service.exe
+else
+BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Service
+endif
+
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
 
@@ -35,6 +41,7 @@ INSTALLER_OS_TAG?=$(shell uname -s)
 
 TARGET_OUT_INSTALLER_DEB=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
 TARGET_OUT_INSTALLER_RPM=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
+TARGET_OUT_INSTALLER_WIX=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).msi
 
 TARGET_OUT_INSTALLERS=
 ifeq ($(shell test -x "`command -v dpkg 2>/dev/null`"; echo $$?),0)
@@ -42,6 +49,9 @@ TARGET_OUT_INSTALLERS+=${TARGET_OUT_INSTALLER_DEB}
 endif
 ifeq ($(shell test -x "`command -v rpmbuild 2>/dev/null`"; echo $$?),0)
 TARGET_OUT_INSTALLERS+=${TARGET_OUT_INSTALLER_RPM}
+endif
+ifneq ($(qFeatureFlag_WIX),no)
+TARGET_OUT_INSTALLERS+=${TARGET_OUT_INSTALLER_WIX}
 endif
 
 .PHONY:  all installers
@@ -72,13 +82,25 @@ ifeq ($(CONFIGURATION),)
 endif
 	@$(MAKE) --no-print-directory $(TARGET_OUT_INSTALLER_RPM)
 
+installer-wix:
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installers without a configuration argument)
+endif
+	@$(MAKE) --no-print-directory $(TARGET_OUT_INSTALLER_WIX)
+
 
 #The 'deb' package creator requires the directory have particular permissions. on WSL (windows subsystem for linux)
 #using the /mnt filesystem, the permissions don't work. So use /tmp for these. But that means creating the directories
 #in a temp location (already emppty) and deleting it at the end (bit of a PITA if you want to review the data, but hten just
 #comment out the delete line)
+#
+# NOTE - if you mount the drivefs filesystem with the option "metadata" permissions work, but until msft makes this the default
+# just comment out...
+# disable compute of workdir (mktemp) on windows / cygwin since not needed and fails and no need to debug now.
+ifneq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 #DEB_WORKDIR=$(ObjDir)DEB_TMP/
 DEB_WORKDIR:=$(shell mktemp -d)/
+endif
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
 $(TARGET_OUT_INSTALLER_DEB):
@@ -107,7 +129,7 @@ endif
 	@chmod 755 $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
-	@install -m 755 --strip --strip-program=$(STRIP) $(TARGET_OUT_DIR)Service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 755 --strip --strip-program=$(STRIP) $(BUILT_SERVICE_EXE) $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 	@install -m 644 $(BASIC_NAME_LC).service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 
 	@dpkg --build $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION) 2>&1 > $(DEB_BUILD_OUT)
@@ -126,7 +148,6 @@ $(TARGET_OUT_INSTALLER_RPM):
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-rpm without a configuration argument)
 endif
-	@#
 	@rm -rf $(RPM_WORKDIR)
 	@#Make directories to be created by the installer
 	@mkdir -p $(RPM_WORKDIR)RPMS $(RPM_WORKDIR)SRPMS $(RPM_WORKDIR)BUILD $(RPM_WORKDIR)SOURCES $(RPM_WORKDIR)SPECS $(RPM_WORKDIR)tmp
@@ -134,7 +155,7 @@ endif
 	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system
 	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/var/opt/$(BASIC_NAME)/
 
-	@install -m 755 --strip --strip-program=$(STRIP) $(TARGET_OUT_DIR)Service $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 755 --strip --strip-program=$(STRIP) $(BUILT_SERVICE_EXE) $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 	@install -m 644 $(BASIC_NAME_LC).service $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 	
 	@cd $(RPM_WORKDIR) && tar -zcf $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/
@@ -147,3 +168,17 @@ endif
 
 	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_INSTALLER_RPM)
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(TARGET_OUT_INSTALLER_RPM)"`
+
+
+WIX_WORKDIR=$(ObjDir)WIX_TMP/
+WIX_BUILD_OUT=$(ObjDir)WIX-Installer-Build.Out
+$(TARGET_OUT_INSTALLER_WIX):
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building WIX installer: "
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "temp files in $(WIX_WORKDIR); logging to $(WIX_BUILD_OUT)"`"..."
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installer-rpm without a configuration argument)
+endif
+	@rm -rf $(WIX_WORKDIR)
+	@#Make directories to be created by the installer
+	@mkdir -p $(WIX_WORKDIR)
+	@cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)$(BASIC_NAME)-Service.exe
