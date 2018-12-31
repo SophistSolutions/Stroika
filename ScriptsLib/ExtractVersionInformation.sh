@@ -21,6 +21,7 @@ OUT_FIELD_NAME=$2
 #		SubStage
 #		Major.Minor
 #		DecoratedStageInfo
+#		Win32FourDot
 #
 
 #echo "-----------"
@@ -87,4 +88,21 @@ fi
 if [ "$OUT_FIELD_NAME" == "DecoratedStageInfo" ]
   then
 	echo -n "$SHORT_VERSION_STAGE$VERSIONSUBSTAGE$SHORT_VERSIONFINAL"
+fi
+if [ "$OUT_FIELD_NAME" == "Win32FourDot" ]
+  then
+	echo -n "$MAJOR.$MINOR.";
+	thirdOctet=0;
+	if [ "$VERSIONSTAGE" == "Dev" ] ; then thirdOctet=32; fi;
+	if [ "$VERSIONSTAGE" == "Alpha" ] ; then thirdOctet=64; fi;
+	if [ "$VERSIONSTAGE" == "Beta" ] ; then thirdOctet=96; fi;
+	if [ "$VERSIONSTAGE" == "ReleaseCandidate" ] ; then thirdOctet=128; fi;
+	if [ "$VERSIONSTAGE" == "Release" ] ; then  thirdOctet=160; fi;
+	# see Version::AsWin32Version4DotString () - (fVerStage) << 5) | (fVerSubStage >> 7)
+	thirdOctet=$(($thirdOctet + ($VERSIONSUBSTAGE>>7)))
+	echo -n "$thirdOctet."
+	# see Version::AsWin32Version4DotString () -  (fVerSubStage & 0x7f) << 1) | static_cast<uint8_t> (fFinalBuild)
+	fourthOctet=$((($VERSIONSUBSTAGE & 0x7f) << 1))
+	if [ "$VERSIONFINAL" == "" ] ; then fourthOctet = $(($fourthOctet + 1)); fi
+	echo -n "$fourthOctet"
 fi
