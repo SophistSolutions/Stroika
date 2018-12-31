@@ -73,6 +73,8 @@ else
 endif
 
 
+clobber::
+	@rm -rf $(TARGETDIR)
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 else
