@@ -34,8 +34,8 @@ VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
 
 
 
-MAJOR_DOT_MINOR_VERSION:=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) Major.Minor)
-INSTALLER_RELEASE_TAG:=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) DecoratedStageInfo)
+MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) Major.Minor)
+INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) DecoratedStageInfo)
 INSTALLER_PLATFORM_TAG?=$(shell uname -m)
 INSTALLER_OS_TAG?=$(shell uname -s)
 
@@ -61,14 +61,18 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installers without a configuration argument)
 endif
+ifneq ($(TARGET_OUT_INSTALLERS),)
 	@$(MAKE) --silent $(TARGET_OUT_INSTALLERS)
+endif
 
 
 installers:
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installers without a configuration argument)
 endif
+ifneq ($(TARGET_OUT_INSTALLERS),)
 	@$(MAKE) --no-print-directory $(TARGET_OUT_INSTALLERS)
+endif
 
 installer-deb:
 ifeq ($(CONFIGURATION),)
