@@ -35,8 +35,8 @@ using Execution::Logger;
 
 namespace {
     const Main::ServiceDescription kServiceDescription_{
-        String_Constant{L"Test-Service"},
-        String_Constant{L"Test Service"}};
+        String_Constant{L"Stroika-Sample-Service"},
+        String_Constant{L"Stroika Sample Service"}};
 }
 
 namespace {

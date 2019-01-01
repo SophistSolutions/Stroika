@@ -944,8 +944,9 @@ void Main::WindowsService::_Install ()
             ::CloseServiceHandle (hSCM);
         });
 
+	DbgTrace (L"registering with command-line: '%s', serviceName: '%s'", cmdLineForRunSvc.c_str (), GetSvcName_ ().c_str ());
     SC_HANDLE hService = ::CreateService (
-        hSCM, GetSvcName_ ().c_str (), GetSvcName_ ().c_str (),
+        hSCM, GetSvcName_ ().c_str (), fAppRep_->GetServiceDescription ().fPrettyName.AsSDKString ().c_str (),
         kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS,
         SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
         cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL);

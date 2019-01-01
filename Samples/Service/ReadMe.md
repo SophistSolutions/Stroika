@@ -24,7 +24,7 @@ Read the documentation on Stroika::Frameworks::Service::Main for more details.
 Special platform instructions:
 WINDOWS:
 	o	Quick summary
-		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --install
+		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --install; (must be done in administrator shell)
 		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --start
 		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --stop
 		..\..\Builds\Debug-U-32\Samples-Service\Service.exe --uninstall
