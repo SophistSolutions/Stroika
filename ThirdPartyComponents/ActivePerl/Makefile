@@ -28,7 +28,9 @@ all:
 clean:
 
 clobber:
+ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT
+endif
 
 capture-current:
 	@cd $(EXTRACT_FROM) && tar --create --file $(TARGET_TAR) *
