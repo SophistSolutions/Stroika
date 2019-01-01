@@ -3148,6 +3148,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bio", "bio", "{C0E368AF-43D
 		..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\build.info = ..\..\ThirdPartyComponents\openssl\CURRENT\crypto\bio\build.info
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WIX", "WIX", "{CCE68503-1428-481D-AAE2-F67B5724B2B8}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\WIX\.gitignore = ..\..\ThirdPartyComponents\WIX\.gitignore
+		..\..\ThirdPartyComponents\WIX\Makefile = ..\..\ThirdPartyComponents\WIX\Makefile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -3628,6 +3634,7 @@ Global
 		{B437C347-5CB8-449D-85A4-58A7163FFDD2} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 		{0AA7353D-A80F-4A2B-AE11-2D5B17ED85F1} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 		{C0E368AF-43D9-4DC7-A3B7-1CC61EEBE245} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
+		{CCE68503-1428-481D-AAE2-F67B5724B2B8} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}
