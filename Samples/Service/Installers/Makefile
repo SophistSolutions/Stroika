@@ -1,7 +1,3 @@
-###
-### @todo https://stroika.atlassian.net/browse/STK-614 -  Add WIX support to Sample Service installers
-###
-
 export StroikaRoot?=$(shell realpath ../../../)/
 
 ifneq ($(CONFIGURATION),)
