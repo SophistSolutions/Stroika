@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 #ifndef _Sample_Serialization_ObjectVariantMapper_h_
 #define _Sample_Serialization_ObjectVariantMapper_h_ 1

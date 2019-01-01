@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Client_CachingListener_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Client_CachingListener_h_ 1

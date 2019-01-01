@@ -128,9 +128,9 @@
     </Property>
 
     <!--
-         ====================================================================================
-         Start to build directory structure
-      -->
+        ====================================================================================
+        Start to build directory structure
+    -->
 
     <!-- We do not have more than one medium (Floppy, CD, ...). Everything in one file. -->
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -180,9 +180,9 @@
     </Directory>
 
     <!--
-         End of directory structure
-         ====================================================================================
-      -->
+        End of directory structure
+        ====================================================================================
+    -->
 
     <!-- Features define which parts of the application can be installed in a custom installation -->
     <Feature Id="Complete" Title="!(loc.ApplicationName)" Description="!(loc.FeatureCompleteDescription)" Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">

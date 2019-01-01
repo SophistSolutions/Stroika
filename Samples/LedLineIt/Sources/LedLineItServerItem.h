@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 #ifndef __LedLineItServerItem_h__
 #define __LedLineItServerItem_h__ 1

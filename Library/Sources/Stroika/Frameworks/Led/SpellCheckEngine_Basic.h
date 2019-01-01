@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 #ifndef __SpellCheckEngine_Basic_h__
 #define __SpellCheckEngine_Basic_h__ 1

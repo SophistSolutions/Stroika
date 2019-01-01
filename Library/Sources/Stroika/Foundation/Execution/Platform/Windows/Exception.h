@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Platform_Windows_Exception_h_
 #define _Stroika_Foundation_Execution_Platform_Windows_Exception_h_ 1
