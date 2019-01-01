@@ -1646,17 +1646,17 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 {
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 10) {
-			print "CONFIGURATION-WARNING: macos clang 10 or later needed on macos (with Stroika 2.1 or later).\n";
+			print "CONFIGURATION-WARNING: Stroika 2.1 requires clang 10 (xcode 10) or later needed\n";
 		}
 	}
 	if (!("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '6.0') {
-			print "CONFIGURATION-WARNING: clang 6 or later needed (with Stroika 2.1 or later).\n";
+			print "CONFIGURATION-WARNING: Stroika 2.1 requires clang 6 or later.\n";
 		}
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		if (GetGCCVersion_ ($COMPILER_DRIVER) < 7) {
-			print "CONFIGURATION-WARNING: gcc 7 or later needed (with Stroika 2.1 or later).\n";
+			print "CONFIGURATION-WARNING: Stroika 2.1 requires gcc 7 or later.\n";
 		}
 	}
 }
