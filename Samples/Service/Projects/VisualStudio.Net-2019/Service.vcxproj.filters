@@ -42,6 +42,15 @@
     <None Include="..\..\Installers\stroika-sampleservice.service">
       <Filter>Installers</Filter>
     </None>
+    <None Include="..\..\Installers\Installer.wix">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\Installer.wixobj">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\Installer_en-us.wxl">
+      <Filter>Installers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Service.h">
