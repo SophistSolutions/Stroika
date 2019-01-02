@@ -7,12 +7,13 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 Includes				+=	-I.
+CFLAGS					+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebServer/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
@@ -30,9 +31,9 @@ Objs	=	\
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
-VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer/AppVersion.h
+VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
-	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer
+	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer
 	@$(StroikaRoot)ScriptsLib/MakeVersionFile.sh $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __Stroika_Sample_WebServer_AppVersion_H__
 
 $(Objs):	$(VERSION_FILE_OUT)

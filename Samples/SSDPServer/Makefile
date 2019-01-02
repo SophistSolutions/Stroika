@@ -7,7 +7,7 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 SrcDir				=	$(StroikaRoot)Samples/SSDPServer/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SSDPServer/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPServer/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk

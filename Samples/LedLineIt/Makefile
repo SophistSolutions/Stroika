@@ -6,8 +6,8 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
-SrcDir				=	$(StroikaRoot)Samples/WebServer/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer/
+SrcDir				=	$(StroikaRoot)Samples/LedLineIt/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedLineIt/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
