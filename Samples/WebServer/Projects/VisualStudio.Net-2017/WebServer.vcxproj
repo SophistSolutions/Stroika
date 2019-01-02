@@ -206,7 +206,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -230,7 +230,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -253,7 +253,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -277,7 +277,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -299,7 +299,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -321,7 +321,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -342,7 +342,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -366,7 +366,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -390,7 +390,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -414,7 +414,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -437,7 +437,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -460,7 +460,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);$(ProjectDir)..\..\..\..\Library\Sources\;$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples_WebServer\;$(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>

@@ -29,12 +29,23 @@ Objs	=	\
 	$(ObjDir)WebServer.o\
 
 
+VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
+VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer/AppVersion.h
+$(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
+	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_WebServer
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile.sh $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __Stroika_Sample_WebServer_AppVersion_H__
+
+$(Objs):	$(VERSION_FILE_OUT)
+
+
+
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/WebServer:"
 	@mkdir -p $(TARGETDIR)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 else
+	@$(MAKE) --silent $(VERSION_FILE_OUT)
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/WebServer.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build";\
 	else\
