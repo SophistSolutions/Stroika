@@ -499,7 +499,9 @@
     <ClCompile Include="..\..\Sources\Service.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Installers\Installer.wix" />
+    <None Include="..\..\Installers\Installer.wix">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\Installers\Installer_en-us.wxl" />
     <None Include="..\..\Installers\Makefile" />
     <None Include="..\..\Installers\stroika-sampleservice.control" />
