@@ -36,6 +36,7 @@ $(ZIPEDFILE):
 
 CURRENT:	$(ZIPEDFILE)
 	@unzip -q $(ZIPEDFILE) -d CURRENT
+	@/bin/find CURRENT -name \*.exe -exec chmod +x {} \;
 
 check-prerequisite-tools:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite ... "
