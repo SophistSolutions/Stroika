@@ -1660,7 +1660,6 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 		}
 	}
 }
-ValidateConfigurationAndEmitNeededWarnings_ ();
 
 
 
@@ -1822,6 +1821,7 @@ if ($onlyGenerateIfCompilerExists) {
 }
 
 if ($generate) {
+	ValidateConfigurationAndEmitNeededWarnings_ ();
 	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
 	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
 	WriteConfigFile_ ($masterXMLConfigFile);
