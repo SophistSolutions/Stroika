@@ -8,7 +8,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 .DEFAULT_GOAL := all
-.PHONY:	all clean clobber check doBuild doCreate doPatch
+.PHONY:	all clean clobber check doBuilds_
 
 
 .NOTPARALLEL:
@@ -25,31 +25,35 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 VERSION=1604
 #VERSION=1602
 BASENAME=lzma$(VERSION)
-ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
+ZIPPEDFILE=../Origs-Cache/$(BASENAME).7z
 
 FETCHURLS=
 FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
+
+
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)/
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 LIBS	=	-lstdc++ -lc
 endif
 
-BUILDS_ROOT=../../Builds/
+BUILDS_ROOT=$(StroikaRoot)Builds/
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7z.h			\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7zCrc.h		\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7zTypes.h
+	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7z.h		\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7zCrc.h		\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7zTypes.h
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/liblzma.a
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lzma.lib
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/lzma.lib
 endif
 
 
@@ -71,12 +75,12 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --no-print-directory check_prerequisites_
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --no-print-directory doBuilds_
 
 
-$(ZIPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
+$(ZIPPEDFILE):
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 check-prerequisite-tools:
@@ -92,42 +96,26 @@ check_prerequisites_:
 	@{ type 7za > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh 7za && exit 1; }
 
 
-doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Extract $(ZIPEDFILE) to CURRENT ... "
-	@rm -rf CURRENT
-	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
-	@#DISABLE - OLD - NOT APPARNETLY NEEDEED ANYMORE - AND CHMOD -R doesn't work on macos --LGP 2017-01-03
-	@#chmod a+r -R CURRENT  #older versions of 7za extract bad permissions -- LGP 2015-12-29
-	@cp Subdir-Makefile CURRENT/Makefile
 
-
-doBuilds:
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see CURRENT/BUILD.OUT ..."
+doBuilds_:
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)BUILD.OUT"` ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
+	@$(MAKE) doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
 
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	$(MAKE) --directory CURRENT ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" CXX="$(CXX)" AR="$(AR)" LIBS="$(LIBS)"
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/liblzma.a
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
+	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" CXX="$(CXX)" AR="$(AR)" LIBS="$(LIBS)"
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
+	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/7zDec $(PER_CONFIGURATION_BUILDS_DIR)
 else
-	#clean out CURRENT
-	$(MAKE) --directory CURRENT \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
-		clobber
-
-	#Build to CURRENT - if its 32-bit debug/relase
+	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) - if its 32-bit debug/relase
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -147,7 +135,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -169,10 +157,10 @@ endif
 endif
 
 
-	#Build to CURRENT - if its 64-bit debug/relase
+	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) - if its 64-bit debug/relase
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -193,7 +181,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory CURRENT \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -216,15 +204,19 @@ endif
 endif
 
 	# Now copy the right output
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
+	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma.exe $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/7zDec.exe $(PER_CONFIGURATION_BUILDS_DIR)
 
 endif
 
 
-ORIGS:	$(ZIPEDFILE)
-	@7z x -oORIGS $(ZIPEDFILE) > /dev/null;
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@7z x -o$@ $(ZIPPEDFILE) > /dev/null
+	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)" ] ; then \
+		cp Subdir-Makefile $@/Makefile;\
+	fi
 
 
 check:
@@ -239,12 +231,13 @@ check:
 
 
 clean:
-	@rm -rf CURRENT
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
 
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/{lzma}* $(BUILDS_ROOT)*/ThirdPartyComponents/include/lzma
+	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{lzma}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/lzma
+	@rm -rf CURRENT
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
