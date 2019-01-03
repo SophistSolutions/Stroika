@@ -254,6 +254,7 @@ else
 IF_PARALLEL_MAKE_USE_NJOBS:=
 endif
 else
+#NOTE - this is RISKY - since we use inherited -j flag, but not inherited job-server file descriptors so could generate too many parallel builds!
 IF_PARALLEL_MAKE_USE_NJOBS:=	-j$(JOBS)
 endif
 endif
