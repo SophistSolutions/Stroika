@@ -37,10 +37,10 @@ FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?down
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 
-#lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/zlib)
+#lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/zlib)
 
-BUILDS_DIR=	$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/
+BUILDS_DIR=	$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/
 BUILDS_ROOT=$(StroikaRoot)Builds/
 
 
@@ -88,7 +88,7 @@ PRODUCED_OUTPUT_ARTIFACTS_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 	@$(MAKE) --no-print-directory doBuilds
 
 
@@ -101,43 +101,43 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT) ..."
-	@echo "export CC=$(CC) cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && ./configure" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@(export CC="$(CC)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT) ..."
+	@echo "export CC=$(CC) cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
+	@(export CC="$(CC)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT 2>&1
 endif
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/BUILD.OUT) ..."
-	@make doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT) ..."
+	@make doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT 2>&1
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/libz.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/libz.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 else
 ifeq ($(CONFIGURATION),Debug-U-32)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Debug32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $($(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Debug32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $($(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-U-32)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-Logging-U-32)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Debug-U-64)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Debug64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Debug64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-U-64)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-Logging-U-64)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 endif
 
@@ -148,37 +148,37 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	rm -rf $(BUILDS_DIR)
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && rm -f *.obj *.pdb *.lib
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && rm -f *.obj *.pdb *.lib
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(BUILDS_DIR)Debug32
-	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.lib $(BUILDS_DIR)Debug32/
+	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(BUILDS_DIR)Debug32/
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(BUILDS_DIR)Release32
-	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.lib $(BUILDS_DIR)Release32/
+	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(BUILDS_DIR)Release32/
 endif
 endif
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG  /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG  /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(BUILDS_DIR)Debug64
-	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.lib $(BUILDS_DIR)Debug64/
+	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(BUILDS_DIR)Debug64/
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(BUILDS_DIR)Release64
-	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.lib $(BUILDS_DIR)Release64/
+	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(BUILDS_DIR)Release64/
 endif
 endif
 else
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) --no-print-directory CC="$(CC)"
+	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory CC="$(CC)"
 endif
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "zlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
@@ -189,7 +189,7 @@ else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@if [ "$@" == "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)" ] ; then \
+	@if [ "$@" == "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)" ] ; then \
 		../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "zlib ${VERSION} - Patching `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$@"` ... "; \
 		dos2unix -q $@/win32/Makefile.msc > $@/PATCHING.OUT; \
 		patch -p0 $@/win32/Makefile.msc Patches/Makefile.msc.PATCH >> $@/PATCHING.OUT; \
@@ -218,7 +218,7 @@ endif
 
 
 clean:
-	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 
 
 clobber:	clean

@@ -30,8 +30,8 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 
-#lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)
+#lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)
 
 BUILDS_ROOT=$(StroikaRoot)Builds/
 
@@ -79,7 +79,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --no-print-directory check_prerequisites_
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 	@$(MAKE) --no-print-directory doBuilds_
 
 
@@ -101,24 +101,24 @@ check_prerequisites_:
 
 
 doBuilds_:
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)BUILD.OUT"` ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)BUILD.OUT"` ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
+	@$(MAKE) doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT 2>&1
 
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" CXX="$(CXX)" AR="$(AR)" LIBS="$(LIBS)"
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
-	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/7zDec $(PER_CONFIGURATION_BUILDS_DIR)
+	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" CXX="$(CXX)" AR="$(AR)" LIBS="$(LIBS)"
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
+	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/7zDec $(PER_CONFIGURATION_BUILDS_DIR)
 else
-	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) - if its 32-bit debug/relase
+	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) - if its 32-bit debug/relase
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -138,7 +138,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -159,10 +159,10 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 endif
 endif
 
-	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) - if its 64-bit debug/relase
+	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) - if its 64-bit debug/relase
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -183,7 +183,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) \
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(CC)" \
 		CXX="$(CXX)" \
@@ -206,17 +206,17 @@ endif
 endif
 
 	# Now copy the right output
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
-	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/lzma.exe $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/7zDec.exe $(PER_CONFIGURATION_BUILDS_DIR)
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
+	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.exe $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/7zDec.exe $(PER_CONFIGURATION_BUILDS_DIR)
 
 endif
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@7z x -o$@ $(ZIPPEDFILE) > /dev/null
-	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)" ] ; then \
+	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)" ] ; then \
 		cp Subdir-Makefile $@/Makefile;\
 	fi
 
@@ -233,7 +233,7 @@ check:
 
 
 clean:
-	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 
 
 clobber:	clean

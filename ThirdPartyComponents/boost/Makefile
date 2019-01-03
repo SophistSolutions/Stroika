@@ -19,8 +19,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 
-#lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
+#lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 
 BUILDS_ROOT=$(StroikaRoot)Builds/
 
@@ -94,7 +94,7 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 	
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "boost ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
@@ -123,7 +123,7 @@ clean:
 ifeq ($(CONFIGURATION),)
 	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/boost/
 else
-	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
 
 
@@ -156,7 +156,7 @@ PRODUCED_OUTPUT_ARTIFACTS_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 	@$(MAKE) --silent bootstrapIfNeeded_
 	@$(MAKE) --silent configureAndBuild_
 
@@ -166,7 +166,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
 else
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/b2
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
 endif
 
 bootstrapIfNeeded_:	$(B2FullPath)
@@ -178,11 +178,11 @@ bootstrap_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP.OUT"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
 endif
 
 
@@ -267,17 +267,17 @@ configureAndBuild_:
 	@
 	@#https://stroika.atlassian.net/browse/STK-633
 ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
+	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 ifeq ($(shell uname -s),Darwin)
-		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR);\
+		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
 		cp project-config.jam project-config.jam.ORIG;\
 		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam;
 else
-		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR);\
+		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
 		cp project-config.jam project-config.jam.ORIG;\
 		sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam;
 endif
@@ -286,8 +286,8 @@ endif
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
 	@#
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
-	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild.OUT
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && \
+		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 		(echo $(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT) && \
 		(sh -c "$(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT")
