@@ -237,6 +237,14 @@ endif
 endif
 
 
+#
+##
+### NOTE - all this nonsense is for a few reasons:
+###		o	make builds a bit faster
+###		o	GNU make makes it very hard to figure out what -j parameter was passed to make
+###		o	boost uses b2, which has a parallel make feature, just one thats incompatiple with the gnu make version
+##
+#
 export JOBS
 ifndef JOBS
 #no easy way to know right number; but hints from https://stackoverflow.com/questions/5303553/gnu-make-extracting-argument-to-j-within-makefile
