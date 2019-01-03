@@ -14,6 +14,9 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
+
+.NOTPARALLEL:
+
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
@@ -196,7 +199,6 @@ B2_CONFIGURATION_ARGS +=	--without-chrono
 B2_CONFIGURATION_ARGS +=	--without-filesystem
 B2_CONFIGURATION_ARGS +=	--without-python
 B2_CONFIGURATION_ARGS +=	--without-regex
-B2_CONFIGURATION_ARGS +=	--without-signals
 #B2_CONFIGURATION_ARGS +=	--without-system
 B2_CONFIGURATION_ARGS +=	--without-wave
 
