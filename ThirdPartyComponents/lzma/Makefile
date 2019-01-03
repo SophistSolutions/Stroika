@@ -11,9 +11,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .PHONY:	all clean clobber check doBuilds_
 
 
-.NOTPARALLEL:
-
-
 
 #
 # CHECK FOR UPDATED VERSIONS http://www.7-zip.org/sdk.html
@@ -69,11 +66,14 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory --silent  $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory --silent CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):
+$(PRODUCED_OUTPUT_ARTIFACTS):	PRODUCED_OUTPUT_ARTIFACTS_
+
+.PHONY: PRODUCED_OUTPUT_ARTIFACTS_
+PRODUCED_OUTPUT_ARTIFACTS_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
