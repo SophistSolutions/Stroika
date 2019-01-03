@@ -270,11 +270,19 @@ endif
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 ifeq ($(shell uname -s),Darwin)
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
-		cp project-config.jam project-config.jam.ORIG;\
+		if [ -e project-config.jam.ORIG ] ; then\
+			mv project-config.jam.ORIG project-config.jam;\
+		else\
+			cp project-config.jam project-config.jam.ORIG;\
+		fi\
 		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam;
 else
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
-		cp project-config.jam project-config.jam.ORIG;\
+		if [ -e project-config.jam.ORIG ] ; then\
+			mv project-config.jam.ORIG project-config.jam;\
+		else\
+			cp project-config.jam project-config.jam.ORIG;\
+		fi\
 		sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam;
 endif
 endif
