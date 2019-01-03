@@ -27,7 +27,8 @@ BUILDS_ROOT=$(StroikaRoot)Builds/
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../boost/"
 
 
-VERSION=1_68_0
+VERSION=1_69_0
+#VERSION=1_68_0
 #VERSION=1_67_0_rc2
 #VERSION=1_66_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
@@ -74,20 +75,16 @@ FETCHURLS+=https://github.com/boostorg/boost/archive/boost-$(VERSION_WITH_DOTS).
 
 
 ## just a smatering of test files to see if it looks like copied
-
-## @todo FIX so UNIX AND WINDOWS BOTH LOSED THE boost-$(VERSION) crap!
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/config.hpp \
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/process.hpp
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/config.hpp		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/process.hpp		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/type_traits.hpp
 
 ## just a smatering of test files to see if it looks like copied
-ifeq (Unix, $(ProjectPlatformSubdir))
-LIBSUFFIX_=a
-else
-LIBSUFFIX_=lib
-endif
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.$(LIBSUFFIX_)
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.$(LIBSUFFIX) \
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_filesystem.$(LIBSUFFIX) \
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_system.$(LIBSUFFIX)
 
 
 $(ZIPPEDFILE):
