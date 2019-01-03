@@ -237,25 +237,30 @@ B2_CONFIGURATION_ARGS +=	toolset=gcc-$(ARCH)
 endif
 endif
 
+export IF_PARALLEL_MAKE_USE_NJOBS
 ifndef IF_PARALLEL_MAKE_USE_NJOBS
-#no easy way to know right number...
-IF_PARALLEL_MAKE_USE_NJOBS=	-j5
-endif
-
-#on windows, we want parallel b2 make, but -j doesn't work with makefile
-ifndef FORCE_PARALLEL_b2_MAKE
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-FORCE_PARALLEL_b2_MAKE=1
+#no easy way to know right number; but hints from https://stackoverflow.com/questions/5303553/gnu-make-extracting-argument-to-j-within-makefile
+MAKE_PID := $(shell echo $$PPID)
+JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$(MAKE)")))
+JOBS     := $(subst -j,,$(JOB_FLAG))
+ifeq ($(JOBS),)
+# if we cannot detect, safest thing is none, but on windows/mac this never works, so there default to 5
+ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+IF_PARALLEL_MAKE_USE_NJOBS:=	-j5
+else ifeq ($(shell uname -s),Darwin)
+IF_PARALLEL_MAKE_USE_NJOBS:=	-j5
 else
-FORCE_PARALLEL_b2_MAKE=0
+# probably no -j on parent make, so none on b2
+IF_PARALLEL_MAKE_USE_NJOBS:=
+endif
+else
+IF_PARALLEL_MAKE_USE_NJOBS:=	-j$(JOBS)
 endif
 endif
 
 
 
-ifeq ($(FORCE_PARALLEL_b2_MAKE),1)
 B2_CONFIGURATION_ARGS +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
-endif
 
 
 configureAndBuild_:
