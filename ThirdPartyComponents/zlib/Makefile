@@ -64,7 +64,6 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/zlib.h		\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/zconf.h
 
-.NOTPARALLEL:
 
 
 
@@ -81,7 +80,10 @@ endif
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):
+$(PRODUCED_OUTPUT_ARTIFACTS):	PRODUCED_OUTPUT_ARTIFACTS_
+
+.PHONY: PRODUCED_OUTPUT_ARTIFACTS_
+PRODUCED_OUTPUT_ARTIFACTS_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
