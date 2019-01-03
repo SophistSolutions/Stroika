@@ -36,12 +36,13 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)
 
+BUILDS_ROOT=$(StroikaRoot)Builds/
+
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 LIBS	=	-lstdc++ -lc
 endif
 
-BUILDS_ROOT=$(StroikaRoot)Builds/
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -96,7 +97,6 @@ endif
 
 check_prerequisites_:
 	@{ type 7za > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh 7za && exit 1; }
-
 
 
 doBuilds_:
@@ -157,7 +157,6 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		all
 endif
 endif
-
 
 	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) - if its 64-bit debug/relase
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))

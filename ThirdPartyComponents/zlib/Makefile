@@ -40,6 +40,8 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/zlib)
 
+BUILDS_DIR=	$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/
+BUILDS_ROOT=$(StroikaRoot)Builds/
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
@@ -48,7 +50,6 @@ WIN_AR	=	$(shell cygpath -w "$(AR)")
 WIN_AS	=	$(shell cygpath -w "$(AS)")
 endif
 
-BUILDS_ROOT=../../Builds/
 
 
 
@@ -68,7 +69,6 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 
 
 
-BUILDS_DIR=	$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/
 
 
 all:
@@ -109,32 +109,32 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 else
 ifeq ($(CONFIGURATION),Debug-U-32)
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include && cp  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Debug32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $($(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-Logging-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release32/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Debug-U-64)
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Debug64/zlib.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Debug64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 ifeq ($(CONFIGURATION),Release-Logging-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/Builds/Release64/zlib.lib $(PER_CONFIGURATION_BUILDS_DIR)lib/
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
 endif
 endif
 
