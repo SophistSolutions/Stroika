@@ -236,31 +236,33 @@ B2_CONFIGURATION_ARGS +=	toolset=gcc-$(ARCH)
 endif
 endif
 
-export IF_PARALLEL_MAKE_USE_NJOBS
-ifndef IF_PARALLEL_MAKE_USE_NJOBS
+
+export JOBS
+ifndef JOBS
 #no easy way to know right number; but hints from https://stackoverflow.com/questions/5303553/gnu-make-extracting-argument-to-j-within-makefile
+#not reasonable - https://blog.jgc.org/2015/03/gnu-make-insanity-finding-value-of-j.html
 MAKE_PID := $(shell echo $$PPID)
-JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$(MAKE)")))
-JOBS     := $(subst -j,,$(JOB_FLAG))
+JOB_FLAG_ := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$(MAKE)")))
+JOBS     ?= $(subst -j,,$(JOB_FLAG_))
+endif
+
+ifndef JOBS_FLAG
 ifeq ($(JOBS),)
 # if we cannot detect, safest thing is none, but on windows/mac this never works, so there default to 5
 ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-IF_PARALLEL_MAKE_USE_NJOBS:=	-j5
+JOBS_FLAG:=	-j5
 else ifeq ($(shell uname -s),Darwin)
-IF_PARALLEL_MAKE_USE_NJOBS:=	-j5
+JOBS_FLAG:=	-j5
 else
-# probably no -j on parent make, so none on b2
-IF_PARALLEL_MAKE_USE_NJOBS:=
+# probably no -j on parent make, so none on b2; but - alas - very frequently the above doesn't work, so use '5' instead
+#JOBS_FLAG:=
+JOBS_FLAG:=	-j5
 endif
-else
-#NOTE - this is RISKY - since we use inherited -j flag, but not inherited job-server file descriptors so could generate too many parallel builds!
-IF_PARALLEL_MAKE_USE_NJOBS:=	-j$(JOBS)
 endif
 endif
 
 
-
-B2_CONFIGURATION_ARGS +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
+B2_CONFIGURATION_ARGS +=	$(JOBS_FLAG)
 
 
 configureAndBuild_:
