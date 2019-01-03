@@ -80,6 +80,7 @@ endif
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
+#dependency on intermediate target allows make parallel without firing PRODUCED_OUTPUT_ARTIFACTS_ for each $(PRODUCED_OUTPUT_ARTIFACTS) target
 $(PRODUCED_OUTPUT_ARTIFACTS):	PRODUCED_OUTPUT_ARTIFACTS_
 
 .PHONY: PRODUCED_OUTPUT_ARTIFACTS_

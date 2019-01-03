@@ -18,7 +18,11 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)/
+
+#lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
+
+BUILDS_ROOT=$(StroikaRoot)Builds/
 
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../boost/"
 
@@ -33,10 +37,6 @@ ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 #VERSION_WITH_2DOTS=1.67.0
 
 
-# Needed for $(PRODUCED_OUTPUT_ARTIFACTS): rule (is there a simple way to disable parallel for just that one rule)?
-.NOTPARALLEL:
-
-
 
 ifneq (,$(findstring /cygdrive/,$(PATH)))
     UNAME := Cygwin
@@ -46,15 +46,6 @@ ifneq (,$(findstring WINDOWS,$(PATH)))
 else
     UNAME := $(shell uname -s)
 endif
-endif
-
-
-# Found true in 2018-12-10 - MacOS XCode 10 - GNU Make 3.81
-#   make CONFIGURATION=Debug /Users/lewis/Sandbox/StroikaDev/IntermediateFiles/Debug/ThirdPartyComponents/boost WORKS
-#   but  make CONFIGURATION=Debug /Users/lewis/Sandbox/StroikaDev/IntermediateFiles/Debug/ThirdPartyComponents/boost/ FAILS
-#	though the argument matches exactly the PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR
-ifeq ($(UNAME),Darwin)
-WEIRD_MACOS_MAKEFILE_DIR_BUG=1
 endif
 
 
@@ -81,7 +72,6 @@ FETCHURLS+=https://github.com/boostorg/boost/archive/boost-$(VERSION_WITH_DOTS).
 
 
 
-BUILDS_ROOT=../../Builds/
 
 ## just a smatering of test files to see if it looks like copied
 
@@ -158,17 +148,15 @@ check-prerequisite-tools:
 	@#none specific to boost
 
 
+#dependency on intermediate target allows make parallel without firing PRODUCED_OUTPUT_ARTIFACTS_ for each $(PRODUCED_OUTPUT_ARTIFACTS) target
+$(PRODUCED_OUTPUT_ARTIFACTS):	PRODUCED_OUTPUT_ARTIFACTS_
 
-$(PRODUCED_OUTPUT_ARTIFACTS):
+.PHONY: PRODUCED_OUTPUT_ARTIFACTS_
+PRODUCED_OUTPUT_ARTIFACTS_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-ifeq ($(WEIRD_MACOS_MAKEFILE_DIR_BUG),1)
-	@$(MAKE) -- $(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
-
-else
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)
-endif
 	@$(MAKE) --silent bootstrapIfNeeded_
 	@$(MAKE) --silent configureAndBuild_
 
@@ -178,7 +166,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
 else
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)b2
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/b2
 endif
 
 bootstrapIfNeeded_:	$(B2FullPath)
@@ -298,7 +286,7 @@ endif
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
 	@#
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
-	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR) && \
 		(echo $(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT) && \
