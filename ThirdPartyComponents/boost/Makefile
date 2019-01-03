@@ -76,15 +76,15 @@ FETCHURLS+=https://github.com/boostorg/boost/archive/boost-$(VERSION_WITH_DOTS).
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/config.hpp		\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/process.hpp		\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/type_traits.hpp
+	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp		\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp		\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/type_traits.hpp
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.$(LIBSUFFIX) \
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_filesystem.$(LIBSUFFIX) \
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_system.$(LIBSUFFIX)
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time.$(LIBSUFFIX) \
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem.$(LIBSUFFIX) \
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_system.$(LIBSUFFIX)
 
 
 $(ZIPPEDFILE):
@@ -110,9 +110,9 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/share/boost-build
 	@rm -rf CURRENT
 else
-	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost
-	@rm -f $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_*
-	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/share/boost-build
+	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)include/boost
+	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_*
+	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)share/boost-build
 endif
 
 
