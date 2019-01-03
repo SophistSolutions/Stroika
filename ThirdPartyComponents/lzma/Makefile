@@ -32,7 +32,9 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)/
+
+#lose trailing / on this variable because on macos make THATDIR doesn't work with trailing slash
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
