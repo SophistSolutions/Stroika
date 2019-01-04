@@ -7,8 +7,6 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-.PHONY:	all
-.DEFAULT_GOAL := all
 
 
 DoCreateSymLink=0
@@ -69,7 +67,7 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 
 
 
-
+.PHONY:	all
 all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
@@ -88,15 +86,15 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --silent CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory doBuilds_
 	@touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_
 
 
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
-
-doBuilds:
+.PHONY: doBuilds_
+doBuilds_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -147,8 +145,6 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	rm -rf $(BUILDS_DIR)
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && rm -f *.obj *.pdb *.lib
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
@@ -218,7 +214,11 @@ endif
 
 
 clean:
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/zlib
+else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+endif
 
 
 clobber:	clean
@@ -226,5 +226,5 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libz.a $(BUILDS_ROOT)*/ThirdPartyComponents/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
-	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
