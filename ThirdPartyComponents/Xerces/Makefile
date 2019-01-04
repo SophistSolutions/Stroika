@@ -212,10 +212,11 @@ CMAKE_ARGS+= -Dmessage-loader=inmemory
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 ifeq (Unix,$(ProjectPlatformSubdir))
-CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
-CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
-CMAKE_ARGS+= -DCMAKE_AR="$(AR)"
-CMAKE_ARGS+= -DCMAKE_RANLIB="$(RANLIB)"
+#for reasons I didn't investigate, CMAKE appears to require this to be a full path (CMAKE_C_COMPILER etc...) -- LGP 2019-01-04
+CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(shell which $(CC))"
+CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(shell which $(CXX))"
+CMAKE_ARGS+= -DCMAKE_AR="$(shell which $(AR))"
+CMAKE_ARGS+= -DCMAKE_RANLIB="$(shell which $(RANLIB))"
 CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 endif
