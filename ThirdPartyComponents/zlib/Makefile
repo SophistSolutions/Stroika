@@ -6,7 +6,11 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
-
+###
+### TODO:
+###		@todo	Cleanup submake (esp on windows) - so we can call make install instead of manually copying
+###				stuff
+###
 
 
 DoCreateSymLink=0
