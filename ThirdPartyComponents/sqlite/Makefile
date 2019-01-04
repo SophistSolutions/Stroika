@@ -24,32 +24,31 @@ FETCHURLS+=https://www.sqlite.org/2017/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2016/$(AMALGAMATION_WITH_VERSION).zip
 
 
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 
-.DEFAULT_GOAL := all
-.PHONY:	all clean clobber check doBuild doCreate doPatch
-
-.NOTPARALLEL:
-
+#lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/sqlite)
 
 
-BUILDS_ROOT=../../Builds/
+
+
+.PHONY:	all clean clobber check
+
+
 INTERMEDIATES_ROOT=../../IntermediateFiles/
 
 
-PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h	\
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libsqlite.a
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib
+SQLITE3LIB=libsqlite.a
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+SQLITE3LIB=sqlite.lib
 endif
 
 
-
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h	\
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
 
 
 
@@ -70,42 +69,42 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPEDFILE)
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
-CURRENT:	$(ZIPEDFILE)
-	@unzip -q $(ZIPEDFILE)
-	@mv $(AMALGAMATION_WITH_VERSION) CURRENT
-	@touch CURRENT
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@mkdir -p $@
+	@unzip -q $(ZIPEDFILE) -d $@
+	@mv $@/$(AMALGAMATION_WITH_VERSION)/* $@/
+	@rm -rf $@/$(AMALGAMATION_WITH_VERSION)
+	@touch $@
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-SQLITE3OBJ=$(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/sqlite3.o
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-SQLITE3OBJ=$(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/sqlite3.obj
-endif
+
+SQLITE3OBJ=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3${OBJSUFFIX}
 OBJS=$(SQLITE3OBJ)
 
 
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CURRENT
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite
-	cp CURRENT/sqlite3.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h
-	
-ifeq (Unix,$(ProjectPlatformSubdir))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libsqlite.a:
+$(PRODUCED_OUTPUT_ARTIFACTS):	$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_
+$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_:
+	@$(MAKE) --silent CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build ..."
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
+	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib
 	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(OBJS)
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	$(AR) cr $@ $(OBJS)
-	$(RANLIB) $@
+ifeq (Unix,$(ProjectPlatformSubdir))
+	$(AR) cr $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB) $(OBJS)
+	$(RANLIB) $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+		"$(AR)" /OUT:`cygpath -w $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)` /nologo `cygpath -w $(OBJS)`
 endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:
-	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG)  $(OBJS)
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" "$(AR)" /OUT:$@ /nologo $(OBJS)
-endif
+
+
 
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
@@ -138,15 +137,14 @@ endif
 
 CFLAGS	+= $(OptimizerFlag)
 
-
-
 $(SQLITE3OBJ):
-	mkdir -p $(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/
 ifeq (Unix,$(ProjectPlatformSubdir))
-	$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(CC) -c -o $@ sqlite3.c $(CFLAGS)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" INCLUDE="$(WIN_INCLUDES_PATH)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" INCLUDE="$(WIN_INCLUDES_PATH)";\
+		cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); \
+		"$(CC)" $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
 endif
 
 
@@ -169,7 +167,7 @@ check:
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf  $(BUILDS_ROOT)*/ThirdPartyComponents/include/sqlite $(BUILDS_ROOT)*/ThirdPartyComponents/lib/*sqlite.*
+	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/sqlite $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*sqlite.*
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
@@ -178,7 +176,7 @@ endif
 clean:
 	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT
 ifeq ($(CONFIGURATION),)
-	@rm -rf  $(INTERMEDIATES_ROOT)*/ThirdPartyComponents/lib/sqlite
+	@rm -rf  $(INTERMEDIATES_ROOT)*/ThirdPartyComponents/sqlite
 else
-	@rm -f $(OBJS)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
