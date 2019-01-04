@@ -18,3 +18,5 @@ export MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 # intentionally DONT set export for this cuz it could vary from makefile to makefile
 SHELL?=/bin/bash
+
+.DEFAULT_GOAL := all
