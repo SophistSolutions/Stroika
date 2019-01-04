@@ -7,9 +7,6 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-
-.DIRECTORY: CURRENT
-
 VERSION=3260000
 #VERSION=3250200
 #VERSION=3240000
@@ -34,8 +31,6 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 
 .PHONY:	all clean clobber check
 
-
-INTERMEDIATES_ROOT=../../IntermediateFiles/
 
 
 
@@ -122,8 +117,7 @@ endif
 ifeq ($(IncludeDebugSymbolsInLibraries), 1)
 	CFLAGS += -g
 endif
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 #/Z7 program databaes debug format
 CFLAGS	+= /Z7
 CFLAGS	+= /nologo
@@ -140,8 +134,7 @@ CFLAGS	+= $(OptimizerFlag)
 $(SQLITE3OBJ):
 ifeq (Unix,$(ProjectPlatformSubdir))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(CC) -c -o $@ sqlite3.c $(CFLAGS)
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" INCLUDE="$(WIN_INCLUDES_PATH)";\
 		cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); \
 		"$(CC)" $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
@@ -176,7 +169,7 @@ endif
 clean:
 	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT
 ifeq ($(CONFIGURATION),)
-	@rm -rf  $(INTERMEDIATES_ROOT)*/ThirdPartyComponents/sqlite
+	@rm -rf  $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/sqlite
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
