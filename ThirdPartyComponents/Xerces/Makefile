@@ -8,6 +8,11 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 .PHONY:	all clean clobber check doBuilds_
 
+###
+### TODO:
+###		@todo	use cmake –G”Unix Makefiles” so that I can run make -jN (or so regular make inherits flags from $(MAKE)
+###				then use that to lose horrible MAKEFLAGS= hack
+###
 
 
 VERSION=3.2.2
@@ -207,10 +212,10 @@ CMAKE_ARGS+= -Dmessage-loader=inmemory
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 ifeq (Unix,$(ProjectPlatformSubdir))
-CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(shell which $(CC))"
-CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(shell which $(CXX))"
-CMAKE_ARGS+= -DCMAKE_AR="$(shell which $(AR))"
-CMAKE_ARGS+= -DCMAKE_RANLIB="$(shell which $(RANLIB))"
+CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
+CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
+CMAKE_ARGS+= -DCMAKE_AR="$(AR)"
+CMAKE_ARGS+= -DCMAKE_RANLIB="$(RANLIB)"
 CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 endif
