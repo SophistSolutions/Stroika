@@ -25,22 +25,21 @@ all:
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 
+
 clean:
+
 
 clobber:
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT
 endif
 
+
 capture-current:
 	@cd $(EXTRACT_FROM) && tar --create --file $(TARGET_TAR) *
 	@gzip --best $(TARGET_TAR)
 
 
-extract:	CURRENT
-
-
 CURRENT:
-	@rm -rf CURRENT
 	@mkdir CURRENT
 	@tar xf $(TARGET_ZIP) --directory CURRENT
