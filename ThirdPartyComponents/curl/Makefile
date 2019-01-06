@@ -41,12 +41,12 @@ OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../curl/"
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-WIN_CC32	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_32)")
-WIN_CC64	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_64)")
-WIN_AS32	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS_32)")
-WIN_AS64	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS_64)")
-WIN_LIB32	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_32)")
-WIN_LIB64	=	$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_64)")
+#WIN_CC32	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_32)")
+#WIN_CC64	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_64)")
+#WIN_AS32	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS_32)")
+#WIN_AS64	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS_64)")
+#WIN_LIB32	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_32)")
+#WIN_LIB64	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_64)")
 endif
 
 BUILDS_DIR=	$(shell pwd)/Builds/
@@ -229,7 +229,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd CURRENT/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
+	@../../ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd CURRENT/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
 	@todo - INCOMPLETE WINDOZE BUILD
 endif
 

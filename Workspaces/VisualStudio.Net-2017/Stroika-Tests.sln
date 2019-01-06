@@ -253,7 +253,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{8D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{15F1E993-1682-447B-9DB0-787D43E22EB5}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\ScriptsLib\PrintTestName = ..\..\Tests\ScriptsLib\PrintTestName
 		..\..\Tests\ScriptsLib\PrintTestName.pl = ..\..\Tests\ScriptsLib\PrintTestName.pl
+		..\..\Tests\ScriptsLib\PrintTestsList = ..\..\Tests\ScriptsLib\PrintTestsList
 		..\..\Tests\ScriptsLib\PrintTestsList.pl = ..\..\Tests\ScriptsLib\PrintTestsList.pl
 		..\..\Tests\ScriptsLib\TestsList.pl = ..\..\Tests\ScriptsLib\TestsList.pl
 	EndProjectSection

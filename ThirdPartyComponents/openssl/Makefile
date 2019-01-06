@@ -249,8 +249,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl configdata.pm --dump >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	echo "MFLAGS= MAKEFLAGS= cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
-	env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	echo "MFLAGS= MAKEFLAGS= cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) 'set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
 endif
 	@
 	@
@@ -261,8 +261,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory all > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"\"" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT
+	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake 2>&1\"\"" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT
 endif
 	@
 	@
@@ -273,8 +273,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory install > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT
+	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 endif
 	@
 	@
@@ -284,7 +284,7 @@ ifeq (false,$(CrossCompiling))
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "openssl ${VERSION} - Running tests (see ${OUTPUT_WORKDIR_PRETTYNAME}TEST-OUT.txt)"` "...";
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@### @todo FIX FOR WINDOWS BUILDS - not sure why all tests fail -- which is why we don't bother with diff
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake test 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt || true
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake test 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt || true
 else
 	@#we get a single failure on BLOW, so ignore, minor, and should do diff of results
 	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory -s test > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt 2>&1 || true

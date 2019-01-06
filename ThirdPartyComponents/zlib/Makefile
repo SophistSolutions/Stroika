@@ -148,24 +148,24 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Debug32
 	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Debug32/
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release32
 	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release32/
 endif
 endif
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG  /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG  /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Debug64
 	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Debug64/
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_AR)\\\" zlib.lib\""
 	mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release64
 	mv $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.lib $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/Builds/Release64/
 endif

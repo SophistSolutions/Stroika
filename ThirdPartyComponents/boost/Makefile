@@ -172,8 +172,8 @@ bootstrap_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP.OUT"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($$SL/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($$SL/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)

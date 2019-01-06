@@ -1,6 +1,10 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #use strict;
 #use warnings;
+
+###
+### NOT TO BE CALLED DIRECTLY - USED INTERNALLY IN PRINTTESTLIST and PRINTTESTNAME
+###
 
 BEGIN{ @INC = ( "./", @INC ); }
 

@@ -136,6 +136,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\PrintLevelLeader.sh = ..\..\ScriptsLib\PrintLevelLeader.sh
 		..\..\ScriptsLib\PrintProgressLine.sh = ..\..\ScriptsLib\PrintProgressLine.sh
 		..\..\ScriptsLib\RegressionTests.sh = ..\..\ScriptsLib\RegressionTests.sh
+		..\..\ScriptsLib\RunArgumentsWithCommonBuildVars = ..\..\ScriptsLib\RunArgumentsWithCommonBuildVars
 		..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl = ..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl
 		..\..\ScriptsLib\RunInDockerEnvironment = ..\..\ScriptsLib\RunInDockerEnvironment
 		..\..\ScriptsLib\RunMKLinkViaUAC.bat = ..\..\ScriptsLib\RunMKLinkViaUAC.bat

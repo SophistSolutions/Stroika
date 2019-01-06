@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28407.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2019\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -253,7 +253,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{8D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{15F1E993-1682-447B-9DB0-787D43E22EB5}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\ScriptsLib\.gitattributes = ..\..\Tests\ScriptsLib\.gitattributes
+		..\..\Tests\ScriptsLib\PrintTestName = ..\..\Tests\ScriptsLib\PrintTestName
 		..\..\Tests\ScriptsLib\PrintTestName.pl = ..\..\Tests\ScriptsLib\PrintTestName.pl
+		..\..\Tests\ScriptsLib\PrintTestsList = ..\..\Tests\ScriptsLib\PrintTestsList
 		..\..\Tests\ScriptsLib\PrintTestsList.pl = ..\..\Tests\ScriptsLib\PrintTestsList.pl
 		..\..\Tests\ScriptsLib\TestsList.pl = ..\..\Tests\ScriptsLib\TestsList.pl
 	EndProjectSection
@@ -261,13 +264,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{F9F18DEE-5178-4CA2-93CC-4D139CCAE749}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Tests\Projects\Unix\.gitignore = ..\..\Tests\Projects\Unix\.gitignore
-		..\..\Tests\Projects\Unix\BuildProjectsFiles.pl = ..\..\Tests\Projects\Unix\BuildProjectsFiles.pl
 		..\..\Tests\Projects\Unix\Makefile-Test-Template.mk = ..\..\Tests\Projects\Unix\Makefile-Test-Template.mk
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project-Template", "{DF99323A-025D-4608-937C-FF5A382BCCBA}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Tests\Projects\Unix\Project-Template\TestN.Makefile = ..\..\Tests\Projects\Unix\Project-Template\TestN.Makefile
+		..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\.gitignore = ..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\.gitignore
+		..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj = ..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj
+		..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj.filters = ..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj.filters
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test49", "..\..\Tests\Projects\VisualStudio.Net-2019\49\Test49.vcxproj", "{F32BB2E2-28C3-44A1-959B-C8CCFEC4A30C}"
@@ -277,7 +281,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.Net-2019", "VisualStudio.Net-2019", "{704D0451-F85C-4C0B-802F-806B9AF680B5}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Tests\Projects\VisualStudio.Net-2019\.gitignore = ..\..\Tests\Projects\VisualStudio.Net-2019\.gitignore
-		..\..\Tests\Projects\VisualStudio.Net-2019\BuildProjectsFiles.pl = ..\..\Tests\Projects\VisualStudio.Net-2019\BuildProjectsFiles.pl
+		..\..\Tests\Projects\VisualStudio.Net-2019\BuildProjectsFiles = ..\..\Tests\Projects\VisualStudio.Net-2019\BuildProjectsFiles
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project-Template", "{6364A1DA-F20C-4C0D-B705-31ECDEC046B4}"
