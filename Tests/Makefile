@@ -163,7 +163,7 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 else
-	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
+	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build"
 endif
 
 run-tests:

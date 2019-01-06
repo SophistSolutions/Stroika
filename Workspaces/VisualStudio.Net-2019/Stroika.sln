@@ -124,6 +124,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\GetConfigurationTags = ..\..\ScriptsLib\GetConfigurationTags
 		..\..\ScriptsLib\GetDefaultShellVariable.sh = ..\..\ScriptsLib\GetDefaultShellVariable.sh
 		..\..\ScriptsLib\GetMessageForMissingTool.sh = ..\..\ScriptsLib\GetMessageForMissingTool.sh
+		..\..\ScriptsLib\GetVisualStudioConfigLine = ..\..\ScriptsLib\GetVisualStudioConfigLine
 		..\..\ScriptsLib\GetVisualStudioConfigLine.pl = ..\..\ScriptsLib\GetVisualStudioConfigLine.pl
 		..\..\ScriptsLib\HasCompiler.sh = ..\..\ScriptsLib\HasCompiler.sh
 		..\..\ScriptsLib\MakeBuildRoot.sh = ..\..\ScriptsLib\MakeBuildRoot.sh

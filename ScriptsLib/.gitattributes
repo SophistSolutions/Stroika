@@ -6,3 +6,4 @@ ApplyConfigurations text eol=lf
 GetConfigurationParameter text eol=lf
 GetConfigurations text eol=lf
 GetConfigurationTags text eol=lf
+GetVisualStudioConfigLine
