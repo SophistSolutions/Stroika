@@ -1,3 +1,9 @@
+###
+### TODO:
+###		@todo	Big cleanup needed to windows make code to be more terse (no need for some many cases now - use vars to 
+###				to parameterize).
+###
+
 export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
@@ -32,8 +38,6 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)
 
-BUILDS_ROOT=$(StroikaRoot)Builds/
-
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 LIBS	=	-lstdc++ -lc
@@ -47,12 +51,9 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/lzma/7zTypes.h
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/lzma.lib
+PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR)lib/lzma.lib
 endif
 
 
@@ -92,7 +93,7 @@ ifeq ($(CONFIGURATION),)
 endif
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for lzma ... "
 	@$(MAKE) --no-print-directory --silent check_prerequisites_
-	@$(ECHO) "done";
+	@$(ECHO) "done"
 
 
 check_prerequisites_:
