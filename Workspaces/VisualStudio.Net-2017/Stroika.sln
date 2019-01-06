@@ -105,6 +105,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{7398AECD-738D-4BD8-B2E4-7B8DB9382F72}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\ScriptsLib\.gitattributes = ..\..\ScriptsLib\.gitattributes
+		..\..\ScriptsLib\ApplyConfiguration = ..\..\ScriptsLib\ApplyConfiguration
 		..\..\ScriptsLib\ApplyConfiguration.pl = ..\..\ScriptsLib\ApplyConfiguration.pl
 		..\..\ScriptsLib\BuildClang.sh = ..\..\ScriptsLib\BuildClang.sh
 		..\..\ScriptsLib\BuildGCC.sh = ..\..\ScriptsLib\BuildGCC.sh
