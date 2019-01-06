@@ -14,15 +14,12 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-.DEFAULT_GOAL := all
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
 
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
-
-BUILDS_ROOT=$(StroikaRoot)Builds/
 
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../boost/"
 
@@ -77,14 +74,14 @@ FETCHURLS+=https://github.com/boostorg/boost/archive/boost-$(VERSION_WITH_DOTS).
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp		\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp		\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp				\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp			\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/type_traits.hpp
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time$(LIBSUFFIX) \
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem$(LIBSUFFIX) \
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time$(LIBSUFFIX)	\
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem$(LIBSUFFIX)	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_system$(LIBSUFFIX)
 
 
@@ -106,9 +103,9 @@ endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/include/boost
-	@rm -f $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libboost_*
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/share/boost-build
+	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/include/boost
+	@rm -f $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/libboost_*
+	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/share/boost-build
 	@rm -rf CURRENT
 else
 	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)include/boost

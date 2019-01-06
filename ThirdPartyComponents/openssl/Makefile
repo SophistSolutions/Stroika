@@ -12,7 +12,6 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
-.DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild_
 .NOTPARALLEL:
 
