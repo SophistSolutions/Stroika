@@ -3,6 +3,9 @@
 
 
 ApplyConfigurations text eol=lf
+BuildClang text eol=lf
+BuildGCC text eol=lf
+CheckFileExists text eol=lf
 GetConfigurationParameter text eol=lf
 GetConfigurations text eol=lf
 GetConfigurationTags text eol=lf

@@ -1,5 +1,5 @@
 #!/bin/bash
-#####DEPRECATED - use GetConfigurations
+(>&2 echo "***GetConfigurations.sh is DEPRECATED since v2.1d15 - use GetConfigurations")
 MY_PATH="`dirname \"$0\"`"
 MY_PATH=`realpath $MY_PATH`
 SORT=/usr/bin/sort

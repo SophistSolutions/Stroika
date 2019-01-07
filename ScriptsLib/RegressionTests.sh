@@ -120,7 +120,7 @@ echo >>$TEST_OUT_FILE 2>&1
 if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
 	if ! [ -e /private-compiler-builds/clang-7.0.0 ]; then
 		echo -n "Building /private-compiler-builds/clang-7.0.0..."
-		VERSION=7.0.0 ./ScriptsLib/BuildClang.sh  >>$TEST_OUT_FILE 2>&1
+		VERSION=7.0.0 ./ScriptsLib/BuildClang  >>$TEST_OUT_FILE 2>&1
 		rm -rf BUILDDIR-LLVM-7.0.0
 		echo "done"
 	fi
