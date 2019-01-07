@@ -15,7 +15,7 @@ $(ObjDir):
 
 ### not sure we need this one anymore...
 %.o : %.cpp
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath $<`) ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables `realpath $<`) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CXXFLAGS) -c $< -o $@";\
 	fi
@@ -23,7 +23,7 @@ $(ObjDir):
 	@$(CXX) $(CFLAGS) -c $< -o $@
 
 $(ObjDir)%.o : %.cpp
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath $<`) ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables `realpath $<`) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CXXFLAGS) -c $< -o $@";\
 	fi
@@ -32,7 +32,7 @@ $(ObjDir)%.o : %.cpp
 
 
 %.i : %.swsp
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath $<`) ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables `realpath $<`) ... "
 	@$(HTMLViewCompiler) $< $@
 
 

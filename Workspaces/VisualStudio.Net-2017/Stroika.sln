@@ -130,7 +130,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\GetMessageForMissingTool.sh = ..\..\ScriptsLib\GetMessageForMissingTool.sh
 		..\..\ScriptsLib\GetVisualStudioConfigLine = ..\..\ScriptsLib\GetVisualStudioConfigLine
 		..\..\ScriptsLib\GetVisualStudioConfigLine.pl = ..\..\ScriptsLib\GetVisualStudioConfigLine.pl
-		..\..\ScriptsLib\HasCompiler.sh = ..\..\ScriptsLib\HasCompiler.sh
+		..\..\ScriptsLib\HasCompiler = ..\..\ScriptsLib\HasCompiler
 		..\..\ScriptsLib\MakeBuildRoot.sh = ..\..\ScriptsLib\MakeBuildRoot.sh
 		..\..\ScriptsLib\MakeDirectorySymbolicLink.sh = ..\..\ScriptsLib\MakeDirectorySymbolicLink.sh
 		..\..\ScriptsLib\Makefile-Common.mk = ..\..\ScriptsLib\Makefile-Common.mk
@@ -147,7 +147,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\RunPerformanceRegressionTests.sh = ..\..\ScriptsLib\RunPerformanceRegressionTests.sh
 		..\..\ScriptsLib\RunRemoteRegressionTests.sh = ..\..\ScriptsLib\RunRemoteRegressionTests.sh
 		..\..\ScriptsLib\StringUtils.pl = ..\..\ScriptsLib\StringUtils.pl
+		..\..\ScriptsLib\SubstituteBackVariables = ..\..\ScriptsLib\SubstituteBackVariables
 		..\..\ScriptsLib\SubstituteBackVariables.sh = ..\..\ScriptsLib\SubstituteBackVariables.sh
+		..\..\ScriptsLib\WebGet = ..\..\ScriptsLib\WebGet
 		..\..\ScriptsLib\WebGet.sh = ..\..\ScriptsLib\WebGet.sh
 	EndProjectSection
 EndProject

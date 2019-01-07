@@ -32,7 +32,7 @@ clobber:
 	@rm -rf CURRENT
 
 $(ZIPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet $(ZIPEDFILE) $(FETCHURLS)
 
 CURRENT:	$(ZIPEDFILE)
 	@unzip -q $(ZIPEDFILE) -d CURRENT
