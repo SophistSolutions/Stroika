@@ -13,7 +13,7 @@ VERSION=3260000
 
 AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 
-ZIPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
+ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
 FETCHURLS=
 FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
@@ -48,8 +48,8 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 
-$(ZIPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
+$(ZIPPEDFILE):
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 SILENT_BUILD_FLAG=	-silent
@@ -64,7 +64,8 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPEDFILE)
+	@#make zippedfile even though a dependenncy on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
@@ -72,7 +73,7 @@ endif
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
-	@unzip -q $(ZIPEDFILE) -d $@
+	@unzip -q $(ZIPPEDFILE) -d $@
 	@mv $@/$(AMALGAMATION_WITH_VERSION)/* $@/
 	@rm -rf $@/$(AMALGAMATION_WITH_VERSION)
 	@touch $@
@@ -160,6 +161,7 @@ check:
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
+	@rm -rf CURRENT ORIGS
 	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/sqlite $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*sqlite.*
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
@@ -167,7 +169,7 @@ endif
 
 	
 clean:
-	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT
+	@rm -rf $(AMALGAMATION_WITH_VERSION)
 ifeq ($(CONFIGURATION),)
 	@rm -rf  $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/sqlite
 else

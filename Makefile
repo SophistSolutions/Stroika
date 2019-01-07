@@ -2,7 +2,11 @@ export StroikaRoot?=$(shell realpath .)/
 
 include ScriptsLib/Makefile-Common.mk
 
+#not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
+# make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
+# have to be built before the samples etc...
 .NOTPARALLEL:
+
 .PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_ check-prerequisite-tools apply-configurations
 
 
