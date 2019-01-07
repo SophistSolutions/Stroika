@@ -21,7 +21,7 @@ EXTRACT_FROM=/cygdrive/c/Perl/
 
 
 all:	
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/ActivePerl Build $(VERSION) {$(CONFIGURATION)}:"
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/ActivePerl Build $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 

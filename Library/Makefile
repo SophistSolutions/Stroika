@@ -16,7 +16,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i all || exit $$?;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Library {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Library {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Foundation/ --no-print-directory --silent all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory --silent all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -28,7 +28,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i check || exit $$?;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika Library {$(CONFIGURATION)}:      "
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Stroika Library {$(CONFIGURATION)}:      "
 	@../ScriptsLib/CheckFileExists $(StroikaFoundationLib) $(StroikaFrameworksLib)
 	@$(ECHO) "[SUCCEEDED]"
 endif
@@ -41,7 +41,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clean;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Stroika/Library Clean {$(CONFIGURATION)} ... "
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/Library Clean {$(CONFIGURATION)} ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \; || true
 else
@@ -62,7 +62,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clobber;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Library Clobber {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Library Clobber {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Foundation/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
 endif

@@ -2,7 +2,7 @@
 ROOT=$1
 
 MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
-PREFIX=`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL`
+PREFIX=`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL`
 
 if [ ! -e $ROOT ] ; then
 	echo "$PREFIX$ROOT doesn't exist, so you cannot link to it as a build root"

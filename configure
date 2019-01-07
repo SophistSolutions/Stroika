@@ -1823,12 +1823,12 @@ if ($onlyGenerateIfCompilerExists) {
 if ($generate) {
 	ValidateConfigurationAndEmitNeededWarnings_ ();
 	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
-	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
+	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
 	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
 	print("done\n");
 }
 else {
-	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoked with --only-if-has-compiler\n");
+	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoked with --only-if-has-compiler\n");
 }
 

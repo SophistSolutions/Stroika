@@ -43,52 +43,52 @@ fi
 RETRIES=2
 
 WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL "$WGET_CMD_BASE $SRCURL1 ... "
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL "$WGET_CMD_BASE $SRCURL1 ... "
 $WGET_CMD_BASE $SRCURL1
 if [ $? -eq 0 ] ; then
     	exit 0;
 fi
 
-$MY_PATH/PrintProgressLine.sh $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL2 ... "
+$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL2 ... "
 $WGET_CMD_BASE $SRCURL2
 if [ $? -eq 0 ] ; then
     	exit 0;
 fi
 
-$MY_PATH/PrintProgressLine.sh $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL3 ... "
+$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL3 ... "
 $WGET_CMD_BASE -O $OUTPUTFILE $SRCURL3
 if [ $? -eq 0 ] ; then
     	exit 0;
 fi
 
-$MY_PATH/PrintProgressLine.sh $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL4 ... "
+$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL4 ... "
 $WGET_CMD_BASE $SRCURL4
 if [ $? -eq 0 ] ; then
     	exit 0;
 fi
 
-$MY_PATH/PrintProgressLine.sh $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL5 ... "
+$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL5 ... "
 $WGET_CMD_BASE $SRCURL5
 if [ $? -eq 0 ] ; then
     	exit 0;
 fi
 
-$MY_PATH/PrintProgressLine.sh $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL6 ... "
+$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL6 ... "
 $WGET_CMD_BASE $SRCURL6
 if [ $? -eq 0 ] ; then
     	exit 0;
 fi
 
-$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  Failed downloading $OUTPUTFILE
+$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  Failed downloading $OUTPUTFILE
 rm -f $OUTPUTFILE
 exit 1
