@@ -22,7 +22,7 @@ help:
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
@@ -34,7 +34,7 @@ endif
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
@@ -48,7 +48,7 @@ endif
 
 clean clobber::
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else

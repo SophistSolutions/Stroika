@@ -266,17 +266,17 @@ endif
 
 check-prerequisite-tools-common:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking for installed tools:"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type sed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh sed && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type wget 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh wget && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type perl 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh perl && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tar 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh tar && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type patch 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh patch && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh tr && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh pkg-config && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh realpath && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type sed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool sed && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type wget 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool wget && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type perl 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool perl && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tar 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool tar && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type patch 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool patch && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool tr && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool pkg-config && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool realpath && exit 1)"
 ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh dos2unix && exit 1)"
-	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh unix2dos && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool dos2unix && exit 1)"
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool unix2dos && exit 1)"
 endif
 	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL

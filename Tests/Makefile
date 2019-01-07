@@ -25,7 +25,7 @@ SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 
 ### @todo - rewrite the below mess so valgrind etc CONSTRUCT a RUN_PREFIX, and then unify the code a bit.
-### and change place where RUN_PREFIX set (RegressionTests.sh) and use the RUN_PREFIX mechanism (configuration)
+### and change place where RUN_PREFIX set (RegressionTests) and use the RUN_PREFIX mechanism (configuration)
 
 
 ifeq (memcheck,$(VALGRIND))
@@ -94,7 +94,7 @@ all:		tests
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i | exit $$?;\
 	done
 else
@@ -108,7 +108,7 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
@@ -121,7 +121,7 @@ endif
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
 	done
 else
@@ -142,7 +142,7 @@ project-files:
 
 tests:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
@@ -168,7 +168,7 @@ endif
 
 run-tests:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `../ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
