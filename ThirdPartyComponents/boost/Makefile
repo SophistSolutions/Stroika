@@ -151,7 +151,6 @@ endif
 	@touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_
 
 
-
 #unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
