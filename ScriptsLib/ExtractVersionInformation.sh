@@ -15,4 +15,4 @@ get_script_dir () {
 }
 MY_PATH=$(get_script_dir)
 
-$MY_PATH/ExtractVersionInformation !@
+$MY_PATH/ExtractVersionInformation $@
