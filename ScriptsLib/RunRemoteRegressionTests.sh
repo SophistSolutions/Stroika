@@ -27,7 +27,7 @@ ssh $SSH_TARGET "rm -rf $BUILD_DIR && mkdir -p $BUILD_DIR"
 echo ssh $SSH_TARGET "git clone git@github.com:SophistSolutions/Stroika.git $BUILD_DIR --branch $BRANCH --quiet"
 ssh $SSH_TARGET "git clone git@github.com:SophistSolutions/Stroika.git $BUILD_DIR --branch $BRANCH --quiet"
 
-VER=`ssh $SSH_TARGET cd $BUILD_DIR && ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
+VER=`ssh $SSH_TARGET cd $BUILD_DIR && ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 #see RegressionTests.sh for this name, and why we require $USE_TEST_BASENAME set
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 

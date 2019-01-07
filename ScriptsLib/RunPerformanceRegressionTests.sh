@@ -9,7 +9,7 @@
 #		EXE=Builds/Release/Test49 USE_TEST_BASENAME=FRED ScriptsLib/RunPerformanceRegressionTests.sh
 #		MULTIPLIER=1 ScriptsLib/RunPerformanceRegressionTests.sh
 #
-VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
+VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 : "${USE_TEST_BASENAME:=UNKNOWN}"
 

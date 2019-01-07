@@ -35,7 +35,7 @@ fi
 : ${RASPBERRYPI_REMOTE_WITH_LOGIN:=lewis@$RASPBERRYPI_REMOTE_MACHINE}
 
 
-VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
+VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 
 mkdir -p Tests/HistoricalRegressionTestResults
