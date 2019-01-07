@@ -58,7 +58,7 @@ all:		samples
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
@@ -72,7 +72,7 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
@@ -86,7 +86,7 @@ endif
 
 samples:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory samples CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)) || exit $$?;\
 	done
 else
