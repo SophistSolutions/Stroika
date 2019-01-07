@@ -337,7 +337,7 @@ endif
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@ScriptsLib/ApplyConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\" ... "
-	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
+	@ScriptsLib/MakeVersionFile STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 	@echo "done"
 

@@ -34,7 +34,7 @@ VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
 VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
 	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer
-	@$(StroikaRoot)ScriptsLib/MakeVersionFile.sh $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __Stroika_Sample_WebServer_AppVersion_H__
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion kAppVersion __Stroika_Sample_WebServer_AppVersion_H__
 
 $(Objs):	$(VERSION_FILE_OUT)
 
