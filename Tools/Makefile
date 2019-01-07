@@ -26,7 +26,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Tools {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -38,7 +38,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika Tools {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -52,7 +52,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ CONFIGURATION=$(CONFIGURATION) --no-print-directory $@ 2> /dev/null || true
 endif
 

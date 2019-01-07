@@ -62,7 +62,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Samples Check {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --no-print-directory check || exit $$?;\
@@ -76,7 +76,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL)  "Stroika/Samples $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent $@ 2> /dev/null || true;\
@@ -90,7 +90,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory samples CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)) || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Samples {$(CONFIGURATION)}:"
 	@$(MAKE) --no-print-directory $(SUBPROJECTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif

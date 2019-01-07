@@ -10,7 +10,7 @@ endif
 FUNCTION_CAPITALIZE_WORD=$(shell echo $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell echo $1 | cut -c 2-99)
 
 # intentionally export just as a performance hack (avoid call to getdefaultshellvariable)
-export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
+export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable ECHO)
 
 # intentionally export cuz sometimes MAKE_INDENT_LEVEL doesnt go up as fast as MAKELEVEL, and so submakes work out
 # looking better with less explicit setting

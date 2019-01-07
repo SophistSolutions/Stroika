@@ -86,7 +86,7 @@ endif
 
 
 check:
-	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(StroikaFoundationLib)
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(StroikaFoundationLib)
 	@$(ECHO) "[SUCCEEDED]"
 
 

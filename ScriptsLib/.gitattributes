@@ -1,14 +1,18 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
 
-
 ApplyConfigurations text eol=lf
 BuildClang text eol=lf
 BuildGCC text eol=lf
 CheckFileExists text eol=lf
 CheckValidConfiguration text eol=lf
 ExtractVersionInformation text eol=lf
+FormatCode text eol=lf
+GetCompilerArch text eol=lf
 GetConfigurationParameter text eol=lf
 GetConfigurations text eol=lf
 GetConfigurationTags text eol=lf
-GetVisualStudioConfigLine
+GetDefaultShellVariable text eol=lf
+GetMessageForMissingTool text eol=lf
+GetVisualStudioConfigLine text eol=lf
+HasCompiler text eol=lf

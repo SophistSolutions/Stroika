@@ -98,7 +98,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i | exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika Tests {$(CONFIGURATION)}:"
 	@for tst in $(TESTS) ; do\
 		$(MAKE) --directory $$tst --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
@@ -112,7 +112,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Tests {$(CONFIGURATION)} ... "
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@$(ECHO) done
@@ -125,7 +125,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Test??
 endif
@@ -146,7 +146,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
 	@(cd Projects/$(ProjectPlatformSubdir) && ./BuildProjectsFiles)
 	@$(MAKE) --no-print-directory $(TESTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
@@ -172,7 +172,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
     if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\

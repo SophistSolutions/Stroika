@@ -233,11 +233,11 @@ endif
 
 format-code:
 	@$(ECHO) Formatting Code:
-	@ScriptsLib/FormatCode.sh Library *.h *.inl *.cpp
-	@ScriptsLib/FormatCode.sh Samples *.h *.inl *.cpp
-	@ScriptsLib/FormatCode.sh Tests *.h *.inl *.cpp
-	@ScriptsLib/FormatCode.sh Tools *.h *.inl *.cpp
-	@ScriptsLib/FormatCode.sh BuildToolsSrc *.h *.inl *.cpp
+	@ScriptsLib/FormatCode Library *.h *.inl *.cpp
+	@ScriptsLib/FormatCode Samples *.h *.inl *.cpp
+	@ScriptsLib/FormatCode Tests *.h *.inl *.cpp
+	@ScriptsLib/FormatCode Tools *.h *.inl *.cpp
+	@ScriptsLib/FormatCode BuildToolsSrc *.h *.inl *.cpp
 
 
 

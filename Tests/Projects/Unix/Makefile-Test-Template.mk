@@ -43,7 +43,7 @@ all:	$(ObjDir) $(TARGETEXE)
 
 check:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Test $(TEST_NUM): $(shell $(StroikaRoot)Tests/ScriptsLib/PrintTestName $(TEST_NUM)) :  "
-	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
