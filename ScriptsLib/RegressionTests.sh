@@ -399,10 +399,10 @@ fi
 if [ $INCLUDE_PERFORMANCE_TESTS -ne 0 ] ; then
 	echo >>$TEST_OUT_FILE 2>&1
 	echo >>$TEST_OUT_FILE 2>&1
-	echo -n "ScriptsLib/RunPerformanceRegressionTests.sh..."
-	echo -n "$PREFIX_OUT_LABEL" "ScriptsLib/RunPerformanceRegressionTests.sh..." >>$TEST_OUT_FILE 2>&1
+	echo -n "ScriptsLib/RunPerformanceRegressionTests ..."
+	echo -n "$PREFIX_OUT_LABEL" "ScriptsLib/RunPerformanceRegressionTests ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	ScriptsLib/RunPerformanceRegressionTests.sh
+	ScriptsLib/RunPerformanceRegressionTests
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1

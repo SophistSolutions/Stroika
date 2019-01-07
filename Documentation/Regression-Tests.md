@@ -27,7 +27,7 @@ checkin from one spot.
     (takes about 1 HR)
     ~~~bash
     MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
-        ./ScriptsLib/RunRemoteRegressionTests.sh
+        ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
 * $TEST_TARGET=Windows_VS2k17
@@ -56,7 +56,7 @@ checkin from one spot.
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
         PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-1804-x64 \
         MACHINE=Hercules \
-        ./ScriptsLib/RunRemoteRegressionTests.sh
+        ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
 * $TEST_TARGET=Ubuntu1804-Cross-Compile2RaspberryPi
@@ -68,7 +68,7 @@ checkin from one spot.
         BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
         MACHINE=Hercules \
-        ./ScriptsLib/RunRemoteRegressionTests.sh
+        ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
 * $TEST_TARGET=Ubuntu1810_x86_64
@@ -80,7 +80,7 @@ checkin from one spot.
         BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests \
         MACHINE=Hercules \
-        ./ScriptsLib/RunRemoteRegressionTests.sh
+        ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
 * $TEST_TARGET=Ubuntu1810-Cross-Compile2RaspberryPi
@@ -92,7 +92,7 @@ checkin from one spot.
         BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests \
         MACHINE=Hercules \
-        ./ScriptsLib/RunRemoteRegressionTests.sh
+        ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
 ## Checkin results
