@@ -40,13 +40,13 @@ check:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/ActiveLedIt...              "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
-		$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE);\
+		$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE);\
 		$(ECHO) "[SUCCEEDED]";\
 	else\
 		$(ECHO) "[SKIPPED]";\
 	fi
 else
-	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 endif
 
