@@ -118,7 +118,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\DoGitRelease = ..\..\ScriptsLib\DoGitRelease
 		..\..\ScriptsLib\ExtractVersionInformation = ..\..\ScriptsLib\ExtractVersionInformation
 		..\..\ScriptsLib\ExtractVersionInformation.sh = ..\..\ScriptsLib\ExtractVersionInformation.sh
-		..\..\ScriptsLib\FetchLinuxTestResults.sh = ..\..\ScriptsLib\FetchLinuxTestResults.sh
 		..\..\ScriptsLib\FormatCode.sh = ..\..\ScriptsLib\FormatCode.sh
 		..\..\ScriptsLib\GetCompilerArch.sh = ..\..\ScriptsLib\GetCompilerArch.sh
 		..\..\ScriptsLib\GetConfigurationParameter = ..\..\ScriptsLib\GetConfigurationParameter
