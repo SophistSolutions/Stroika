@@ -29,7 +29,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika Library {$(CONFIGURATION)}:      "
-	@../ScriptsLib/CheckFileExists.sh $(StroikaFoundationLib) $(StroikaFrameworksLib)
+	@../ScriptsLib/CheckFileExists $(StroikaFoundationLib) $(StroikaFrameworksLib)
 	@$(ECHO) "[SUCCEEDED]"
 endif
 

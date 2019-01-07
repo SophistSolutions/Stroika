@@ -236,12 +236,7 @@ check:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
-		if [ ! -e $$i ]; then\
-			$(ECHO) "FAILED: missing $$i";\
-			exit 1;\
-		fi;\
-	done
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/curl -    [Succeeded]";
 
 

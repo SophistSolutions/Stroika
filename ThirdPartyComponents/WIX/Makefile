@@ -46,10 +46,5 @@ check-prerequisite-tools:
 
 check:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
-	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
-		if [ ! -e $$i ]; then\
-			$(ECHO) "   FAILED: missing $$i";\
-			exit 1;\
-		fi;\
-	done
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/WIX -  [Succeeded]";

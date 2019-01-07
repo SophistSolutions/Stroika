@@ -223,12 +223,7 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 
 check:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
-	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
-		if [ ! -e $$i ]; then\
-			$(ECHO) "   FAILED: missing $$i";\
-			exit 1;\
-		fi;\
-	done
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/lzma -    [Succeeded]";
 
 

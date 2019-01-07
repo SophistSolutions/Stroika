@@ -191,13 +191,8 @@ ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
-	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
-		if [ ! -e $$i ]; then\
-			$(ECHO) "      FAILED: missing $$i";\
-			exit 1;\
-		fi;\
-	done
-	@$(ECHO) " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(ECHO) " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]"
 
 
 $(ZIPPEDFILE):
