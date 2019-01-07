@@ -48,7 +48,7 @@ endif
 
 check:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Tools/WebServer/HTMLViewCompiler...               "
-	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
-	@$(ECHO) "[SUCCEEDED]";
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]"
 
 
