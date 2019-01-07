@@ -1405,7 +1405,7 @@ sub	ParseCommandLine_
 {
 	if (false) {
 		# Helpful to debug scripts...
-		print "Entering GenerateConfiguration.pl (";
+		print "Entering configure (";
 		for (my $i = 0; $i <= $#ARGV; $i++) {
 			my $var = $ARGV[$i];
 			print ("\"$var\"");

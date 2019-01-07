@@ -8,7 +8,7 @@
 
 BEGIN{ @INC = ( "./", @INC ); }
 
-require ("Tests/ScriptsLib/TestsList.pl");
+####obsoleterequire ("Tests/ScriptsLib/TestsList.pl");
 require ("ScriptsLib/ConfigurationReader.pl");
 
 use constant false => 0;

@@ -1115,7 +1115,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
  *  NOTE - this is really NOT A BUG. I just cannot find a clean way to disable this (CORRECT BUT OK) runtime warning (well ubsan calls it an error but ...)
  *  THIS "BUG" really just tracks that fact that I cannot find a clean way to suppress this valid warning
  *
- *  \note @see GenerateConfiguration.pl for actual workaround to this bug - not in C++ code
+ *  \note @see `configure` for actual workaround to this bug - not in C++ code
 */
 #if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
 
