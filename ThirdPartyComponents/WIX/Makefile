@@ -22,7 +22,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 all:	
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/WIX Build $(VERSION) {$(CONFIGURATION)}:"
-	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@../../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 

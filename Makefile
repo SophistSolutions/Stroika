@@ -90,7 +90,7 @@ ifeq ($(MAKECMDGOALS),check)
 	done
 endif
 else
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -115,7 +115,7 @@ else
 	done
 endif
 else
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -137,7 +137,7 @@ libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-confi
 	done
 else
 libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all
 endif
 
@@ -151,7 +151,7 @@ third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-
 	done
 else
 third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all
 endif
 
@@ -186,7 +186,7 @@ tools:	assure-default-configurations-exist_
 	done
 else
 tools:	assure-default-configurations-exist_ libraries
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tools --no-print-directory all
 endif
 
@@ -199,7 +199,7 @@ tests:	assure-default-configurations-exist_
 	done
 else
 tests:	assure-default-configurations-exist_ libraries
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory tests
 endif
 
@@ -212,7 +212,7 @@ samples:	assure-default-configurations-exist_
 	done
 else
 samples:	assure-default-configurations-exist_ libraries
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Samples --no-print-directory samples
 endif
 
@@ -225,7 +225,7 @@ run-tests:
 	done
 else
 run-tests:	tests
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory run-tests
 endif
 
@@ -307,7 +307,7 @@ endif
 
 apply-configuration-if-needed_:	assure-default-configurations-exist_
 ifneq ($(CONFIGURATION),)
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 endif
 
@@ -332,7 +332,7 @@ apply-configuration:
 ifeq ($(CONFIGURATION),)
 	$(error Cannot call apply-configuration without a configuration argument)
 endif
-	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@ScriptsLib/ApplyConfiguration $(CONFIGURATION)

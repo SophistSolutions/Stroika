@@ -139,7 +139,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/OpenSSL Build $(VERSION) {$(CONFIGURATION)}:"
-	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@../../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(ZIPPEDFILE)
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error PRODUCED_OUTPUT_ARTIFACTS missing)

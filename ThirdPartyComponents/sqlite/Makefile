@@ -63,7 +63,7 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@../../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@#make zippedfile even though a dependenncy on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)

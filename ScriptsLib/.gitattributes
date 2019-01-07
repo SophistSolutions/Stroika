@@ -6,6 +6,7 @@ ApplyConfigurations text eol=lf
 BuildClang text eol=lf
 BuildGCC text eol=lf
 CheckFileExists text eol=lf
+CheckValidConfiguration text eol=lf
 ExtractVersionInformation text eol=lf
 GetConfigurationParameter text eol=lf
 GetConfigurations text eol=lf

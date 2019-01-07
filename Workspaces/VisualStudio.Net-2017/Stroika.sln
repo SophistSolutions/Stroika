@@ -111,6 +111,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\BuildGCC = ..\..\ScriptsLib\BuildGCC
 		..\..\ScriptsLib\CheckFileExists = ..\..\ScriptsLib\CheckFileExists
 		..\..\ScriptsLib\CheckFileExists.sh = ..\..\ScriptsLib\CheckFileExists.sh
+		..\..\ScriptsLib\CheckValidConfiguration = ..\..\ScriptsLib\CheckValidConfiguration
 		..\..\ScriptsLib\CheckValidConfiguration.sh = ..\..\ScriptsLib\CheckValidConfiguration.sh
 		..\..\ScriptsLib\CheckWindowsVersion.bat = ..\..\ScriptsLib\CheckWindowsVersion.bat
 		..\..\ScriptsLib\ConfigurationReader.pl = ..\..\ScriptsLib\ConfigurationReader.pl

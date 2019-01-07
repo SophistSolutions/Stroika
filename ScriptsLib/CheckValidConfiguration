@@ -1,5 +1,4 @@
 #!/bin/bash
-(>&2 echo "***CheckValidConfiguration.sh is DEPRECATED since v2.1d15 - use CheckValidConfiguration")
 get_script_dir () {
      #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
      SOURCE="${BASH_SOURCE[0]}"
@@ -14,5 +13,8 @@ get_script_dir () {
      echo "$DIR"
 }
 MY_PATH=$(get_script_dir)
-
-$MY_PATH/CheckValidConfiguration $@
+CONFIGURATION=$1
+if [ ! -e "$MY_PATH/../ConfigurationFiles/$CONFIGURATION.xml" ] ; then
+	echo -n "\"$CONFIGURATION\" is not a valid configuration; valid configurations include: [ " && $MY_PATH/GetConfigurations && echo "]";
+	exit 1;
+fi
