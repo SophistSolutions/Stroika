@@ -96,7 +96,7 @@ else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
 	@if [ "$@" != "ORIGs" ] ; then \
-		patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch;\
+		patch --quiet -p0 $@/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch;\
 	fi
 
 PKG_CONFIG_PATH=
