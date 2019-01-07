@@ -9,7 +9,7 @@ VERSION=311
 FOLDERNAMEVER=wix$(VERSION)1rtm
 FILEVERNAME=wix$(VERSION)-binaries
 
-ZIPEDFILE=../Origs-Cache/$(FILEVERNAME).zip
+ZIPPEDFILE=../Origs-Cache/$(FILEVERNAME).zip
 
 
 FETCHURLS=
@@ -31,11 +31,11 @@ clean:
 clobber:
 	@rm -rf CURRENT
 
-$(ZIPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet $(ZIPEDFILE) $(FETCHURLS)
+$(ZIPPEDFILE):
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
-CURRENT:	$(ZIPEDFILE)
-	@unzip -q $(ZIPEDFILE) -d CURRENT
+CURRENT:	$(ZIPPEDFILE)
+	@unzip -q $(ZIPPEDFILE) -d CURRENT
 	@/bin/find CURRENT -name \*.exe -exec chmod +x {} \;
 	@/bin/find CURRENT -name \*.dll -exec chmod +x {} \;
 
