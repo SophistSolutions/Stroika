@@ -7,16 +7,13 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-.PHONY:	all clean clobber check doBuild doCreate doPatch
-
-
-.NOTPARALLEL:
+.PHONY:	all clean clobber check doBuilds_
 
 
 
-DoCreateSymLink=0
 
-VERSION=7.62.0
+VERSION=7.63.0
+#VERSION=7.62.0
 #VERSION=7.61.1
 #VERSION=7.60.0
 BASENAME=curl-$(VERSION)
@@ -24,7 +21,6 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
-USE_DIRNAME=CURRENT
 
 #
 # CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
@@ -35,9 +31,9 @@ FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
 INTERMEDIATEFILES_ROOT=../../IntermediateFiles/
-BUILDS_ROOT=../../Builds/
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
-PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl/)
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
+#lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl/)
 
 OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../curl/"
 
@@ -51,17 +47,16 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 #WIN_LIB64	=	$(shell cygpath -w "$(shell ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_64)")
 endif
 
-BUILDS_DIR=	$(shell pwd)/Builds/
 
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libcurl.a				\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/curl/curl.h
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libcurl.a				\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/curl/curl.h
+	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
 endif
 
 
@@ -74,7 +69,9 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@#make zippedfile even though a dependenncy on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
+	@$(MAKE) --no-print-directory --silent $(ZIPPEDFILE)
+	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
@@ -82,20 +79,17 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):
+$(PRODUCED_OUTPUT_ARTIFACTS):	$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_
+$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+	@$(MAKE) --no-print-directory doBuilds_
 
 
-doCreate:	$(ZIPPEDFILE)
-	@rm -rf CURRENT
-	@$(MAKE) CURRENT
 
-
-CURRENT ORIGS:	$(ZIPPEDFILE)
+ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh  $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "curl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p ORIGS && rm -rf $@ && mkdir $@
 ifeq ($(shell uname -s),Darwin)
@@ -103,7 +97,9 @@ ifeq ($(shell uname -s),Darwin)
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
-
+	@if [ "$@" != "ORIGs" ] ; then \
+		patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch;\
+	fi
 
 PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
@@ -200,35 +196,29 @@ LIBCURL_CONFIGURE +=  LIBS='-ldl'
 #https://stroika.atlassian.net/browse/STK-527
 #This hack is NO GOOD - but without it - we don't get ssl feature enabled!
 LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
-
 endif
 
 
 
 	
-doBuilds:
+doBuilds_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_
-	@#../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copy/Create/Patch (destination: $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)) ... "`
-	@mkdir -p $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
-	@cp -r CURRENT/* $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
-	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS.OUT) ... "`
-	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR);./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}/CONFIGURE.OUT) ... "`
-	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(ENVIRONMENT_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(ENVIRONMENT_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(ENVIRONMENT_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(ENVIRONMENT_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}/BUILD.OUT) ... "`
-	@echo $(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/BUILD.OUT
-	@$(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
+	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT 2>&1
 
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
-	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
 	@../../ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd CURRENT/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
@@ -271,14 +261,14 @@ clean:
 ifeq ($(CONFIGURATION),)
 	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/curl/
 else
-	@rm -rf $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
+	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
 
 
 clobber:	clean
-	@rm -rf $(BUILDS_DIR)
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/{libcurl}* $(BUILDS_ROOT)*/ThirdPartyComponents/include/curl
+	@rm -rf CURRENT ORIGs
+	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{libcurl}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/curl
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
