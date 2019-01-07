@@ -4,10 +4,10 @@
 # Call from $StroikaRoot
 #
 #	Examples:
-#		ScriptsLib/RunPerformanceRegressionTests.sh
-#		EXE=Builds/my-gcc-6.1.0-release-c++17/Test49 ScriptsLib/RunPerformanceRegressionTests.sh
-#		EXE=Builds/Release/Test49 USE_TEST_BASENAME=FRED ScriptsLib/RunPerformanceRegressionTests.sh
-#		MULTIPLIER=1 ScriptsLib/RunPerformanceRegressionTests.sh
+#		ScriptsLib/RunPerformanceRegressionTests
+#		EXE=Builds/my-gcc-6.1.0-release-c++17/Test49 ScriptsLib/RunPerformanceRegressionTests
+#		EXE=Builds/Release/Test49 USE_TEST_BASENAME=FRED ScriptsLib/RunPerformanceRegressionTests
+#		MULTIPLIER=1 ScriptsLib/RunPerformanceRegressionTests
 #
 VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 

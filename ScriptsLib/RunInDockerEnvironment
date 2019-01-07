@@ -20,7 +20,7 @@ SANDBOX_FROM="${SANDBOX_FROM:=`pwd`}"
 SANDBOX_TO="${SANDBOX_TO:=${SANDBOX_FROM}}"
 
 
-### Can set CMD2RUN=./ScriptsLib/RegressionTests.sh
+### Can set CMD2RUN=./ScriptsLib/RegressionTests
 CMD2RUN="${CMD2RUN:-bash}"
 
 if [ "${USER_FLAGS}" == "" ] ; then
