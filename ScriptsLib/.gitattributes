@@ -16,5 +16,6 @@ GetDefaultShellVariable text eol=lf
 GetMessageForMissingTool text eol=lf
 GetVisualStudioConfigLine text eol=lf
 HasCompiler text eol=lf
-SubstituteBackVariables  text eol=lf
+MakeDirectorySymbolicLink text eol=lf
+SubstituteBackVariables text eol=lf
 WebGet  text eol=lf
