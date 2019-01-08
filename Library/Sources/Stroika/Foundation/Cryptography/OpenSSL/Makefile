@@ -1,10 +1,11 @@
 include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
-SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/OpenSSL/
+SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/
+ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/OpenSSL/
 
-include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 

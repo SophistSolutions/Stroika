@@ -1,10 +1,11 @@
 include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
-SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/FileSystem/
+SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
+ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/FileSystem/
 
-include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 

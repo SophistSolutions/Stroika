@@ -7,8 +7,9 @@ endif
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
 ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
 
-include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
