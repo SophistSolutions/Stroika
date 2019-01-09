@@ -51,6 +51,10 @@ my $PROJECTPLATFORMSUBDIR='';
 my @useExtraCDefines;
 my @useExtraMakeDefines;
 
+my @CFLAGS;
+my $CFLAGS_Overridden = false;
+my @CXXFLAGS;
+my $CXXFLAGS_Overridden = false;
 
 
 #
@@ -1633,6 +1637,103 @@ sub PostProcessOptions_ ()
 		}
 
 	}
+
+	FillDefaultIncludesPathIfNeeded_();
+	FillDefaultLibsPathIfNeeded_();
+	FillDefaultLibDependencies_();
+	FillInToolsPathAdditionsIfNeeded_ ();
+
+	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
+	#
+	# generate CFLAGS and CXXFLAGS
+	# roughly as follows:
+	#	CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
+	#	ifeq ($(IncludeDebugSymbolsInLibraries), 1)
+	#		CFLAGS += -g
+	#	endif
+	#	ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
+	#		CFLAGS +=  -D_GLIBCXX_DEBUG 
+	#	endif
+	#	CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
+	#
+	if ($CFLAGS_Overridden eq false) {
+		if (not ($COPTIMIZE_FLAGS eq "")) {
+			push @CFLAGS, $COPTIMIZE_FLAGS;
+		}
+		if (defined $INCLUDES_PATH) {
+			for my $i (split /:/, $INCLUDES_PATH) {
+				if ($isVisualStudio) {
+					my $wpath = trim (`cygpath --windows \"$i\"`);
+					if (substr($wpath, -1) eq '\\') {
+						$wpath .= '\\';
+					}
+					push @CFLAGS, "/I\"$wpath\"";
+				}
+				else {
+					push @CFLAGS, "-I$i";
+				}
+			}
+		}
+		if (not ($CWARNING_FLAGS eq "")) {
+			for my $i (split / /, $CWARNING_FLAGS) {
+				push @CFLAGS, "$i";
+			}
+		}
+		if ($INCLUDE_SYMBOLS_LIB) {
+			if (not $isVisualStudio) {
+				push @CFLAGS, "-g";
+			}
+		}
+		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
+			push @CFLAGS, "-D_GLIBCXX_DEBUG";
+		}
+		for my $i ($EXTRA_COMPILER_ARGS) {
+			push @CFLAGS, "$i";
+		}
+	}
+	if ($CXXFLAGS_Overridden eq false) {
+		if (not ($CPPSTD_VERSION_FLAG eq "")) {
+			push @CXXFLAGS, $CPPSTD_VERSION_FLAG;
+		}
+		if (not ($COPTIMIZE_FLAGS eq "")) {
+			push @CXXFLAGS, $COPTIMIZE_FLAGS;
+		}
+		if (defined $INCLUDES_PATH) {
+			for my $i (split /:/, $INCLUDES_PATH) {
+				if ($isVisualStudio) {
+					my $wpath = trim (`cygpath --windows \"$i\"`);
+					push @CXXFLAGS, "/I\"$wpath\"";
+				}
+				else {
+					push @CXXFLAGS, "-I$i";
+				}
+			}
+		}
+		if (not ($CWARNING_FLAGS eq "")) {
+			for my $i (split / /, $CWARNING_FLAGS) {
+				push @CXXFLAGS, "$i";
+			}
+		}
+		if ($INCLUDE_SYMBOLS_LIB) {
+			if (not $isVisualStudio) {
+				push @CXXFLAGS, "-g";
+			}
+		}
+		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
+			push @CXXFLAGS, "-D_GLIBCXX_DEBUG";
+		}
+		for my $i ($EXTRA_COMPILER_ARGS) {
+			push @CXXFLAGS, "$i";
+		}
+	}
+
 }
 
 
@@ -1764,13 +1865,40 @@ sub	WriteConfigFile_
 		}
 	print (OUT "    </ExtraCDefines>\n");
 
+	my $firstTime = true;
+	print (OUT "    <CFLAGS>");
+		foreach my $var (@CFLAGS)
+		{
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</CFLAGS>\n");
+
+	$firstTime = true;
+	print (OUT "    <CXXFLAGS>");
+		foreach my $var (@CXXFLAGS)
+		{
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</CXXFLAGS>\n");
+
 	if ($runtimeStackProtectorFlag == true) {
 		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
 	}
 
 	print (OUT "    <EXTRA_COMPILER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
 
-	FillDefaultIncludesPathIfNeeded_();
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 
 	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
@@ -1784,9 +1912,6 @@ sub	WriteConfigFile_
 		print (OUT "    <OptimizerFlag>$COPTIMIZE_FLAGS</OptimizerFlag>\n");
 	}
 
-	FillDefaultLibsPathIfNeeded_();
-	FillDefaultLibDependencies_();
-	FillInToolsPathAdditionsIfNeeded_ ();
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");

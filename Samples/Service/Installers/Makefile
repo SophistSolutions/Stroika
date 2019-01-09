@@ -4,7 +4,6 @@ ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 BASIC_NAME_LC=stroika-sampleservice
 BASIC_NAME=Stroika-SampleService
@@ -13,6 +12,7 @@ OUTDIR_NAME=Samples-Service
 
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 

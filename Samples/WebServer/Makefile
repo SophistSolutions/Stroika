@@ -12,8 +12,7 @@ ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
-Includes				+=	-I.
-CFLAGS					+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
+CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebServer/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))

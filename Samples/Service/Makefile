@@ -4,17 +4,17 @@ ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 SrcDir				=	$(StroikaRoot)Samples/Service/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-CFLAGS					+=	-I.
-CFLAGS					+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
+CXXFLAGS				+=	-I.
+CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Service/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))

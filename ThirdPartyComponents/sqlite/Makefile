@@ -101,8 +101,6 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdi
 endif
 
 
-
-
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 
 ifeq (1,$(ENABLE_ASSERTIONS))
@@ -111,14 +109,7 @@ CFLAGS	+= -DSQLITE_DEBUG
 endif
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	CFLAGS +=  -D_GLIBCXX_DEBUG 
-endif
-ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	CFLAGS += -g
-endif
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 #/Z7 program databaes debug format
 CFLAGS	+= /Z7
 CFLAGS	+= /nologo
@@ -130,7 +121,6 @@ CFLAGS	+= /MT
 endif
 endif
 
-CFLAGS	+= $(OptimizerFlag)
 
 $(SQLITE3OBJ):
 ifeq (Unix,$(ProjectPlatformSubdir))

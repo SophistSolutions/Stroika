@@ -84,20 +84,20 @@ endif
 
 
 
-#CFLAGS	=	-g -DqDebug=$(DEBUG) `gtk-config --cflags`
-CFLAGS	=	`gtk-config --cflags` -DqXWindows=1
+#CXXFLAGS	=	-g -DqDebug=$(DEBUG) `gtk-config --cflags`
+CXXFLAGS	=	`gtk-config --cflags` -DqXWindows=1
 ifeq ($(DEBUG),1)
-CFLAGS +=	-DqDebug=1
+CXXFLAGS +=	-DqDebug=1
 else
-CFLAGS +=	-DqDebug=0 -DNDEBUG -O4
+CXXFLAGS +=	-DqDebug=0 -DNDEBUG -O4
 endif
 ifeq ($(DEBUG_SYMBOLS),1)
-CFLAGS +=	-g
+CXXFLAGS +=	-g
 endif
 ifeq ($(UNICODE),1)
-CFLAGS +=	-DqWideCharacters=1
+CXXFLAGS +=	-DqWideCharacters=1
 else
-CFLAGS +=	-DqSingleByteCharacters=1
+CXXFLAGS +=	-DqSingleByteCharacters=1
 endif
 
 LDFLAGS	=	`gtk-config --libs`
@@ -226,5 +226,5 @@ $(ObjDir):
 
 $(ObjDir)%.o: %.cpp
 	@echo "Compiling $<"
-	@$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 

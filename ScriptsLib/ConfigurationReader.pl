@@ -193,6 +193,14 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'STRIP'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<CFLAGS>");
+		if (defined $pps) {
+			$configuration {'CFLAGS'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<CXXFLAGS>");
+		if (defined $pps) {
+			$configuration {'CXXFLAGS'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<EXTRA_COMPILER_ARGS>");
 		if (defined $pps) {
 			$configuration {'EXTRA_COMPILER_ARGS'} = $pps;
