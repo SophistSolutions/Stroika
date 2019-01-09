@@ -220,6 +220,11 @@ CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 endif
 
+#THIS FAILS, BUT MAYBE SOMETHING SIMILAR WILL WORK
+# like a shellscript that adds replaces make with $(MAKE) value!!!
+#@todo
+#CMAKE_ARGS+= -DCMAKE_MAKE_PROGRAM="$(MAKE)"
+
 ifeq (0,$(ENABLE_ASSERTIONS))
 CMAKE_CONFIGURATION:=Release
 else
