@@ -12,7 +12,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 ### TODO:
 ###		@todo	use cmake –G”Unix Makefiles” so that I can run make -jN (or so regular make inherits flags from $(MAKE)
 ###				then use that to lose horrible MAKEFLAGS= hack
-###				***NOTE*** this is the slowest part of the UNIX build process (latency) - so this maybe a priority
+###				***NOTE*** this is by far the slowest part of the UNIX build process (latency) - so this maybe a priority
 ###
 
 
@@ -94,16 +94,19 @@ CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURREN
 endif
 endif
 
-CFLAGS=$(EXTRA_COMPILER_ARGS)
-
 ifeq (Unix,$(ProjectPlatformSubdir))
-#clang (not clang++) barfs if given --std=c++17 argument
+#clang (not clang++) barfs if given -stdlib= argument
 #And we later get linker errors from clang if we use -flto on object files stored here
-CFLAGS:=$(filter-out --std%, $(CFLAGS))
-CFLAGS:=$(filter-out -std%, $(CFLAGS))
+CFLAGS:=$(filter-out -stdlib%, $(CFLAGS))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
-CXXFLAGS=$(EXTRA_COMPILER_ARGS)
+
+### not sure why???
+#uilding Stroika Tools {clang++-6-release-libstdc++}:
+#         Compiling {StroikaRoot}Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/HTMLViewCompiler.cpp ...
+#      Linking  $StroikaRoot/Builds/clang++-6-release-libstdc++/HTMLViewCompiler...
+#/usr/bin/ld: skipping incompatible /Sandbox/Stroika-Dev/Builds/clang++-6-release-libstdc++/ThirdPartyComponents/lib//libxerces-c.so when searching for -lxerces-c
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces
