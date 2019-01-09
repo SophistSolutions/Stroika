@@ -143,7 +143,7 @@ my $LIBS_PATH = undef;			# space separated list
 my @LIBS_PATH_ADD  = qw();
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
-my $STDLIB = undef;
+my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
 
 
@@ -625,12 +625,12 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 	}
-	if (! defined $STDLIB) {
+	if (! defined $STDCXXLIB) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			$STDLIB = "libstdc++";
+			$STDCXXLIB = "libstdc++";
 		}
 		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			$STDLIB = "libc++";
+			$STDCXXLIB = "libc++";
 		}
 	}
 	if ($ApplyDebugFlags == true) {
@@ -993,7 +993,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-stdlib") or (lc ($var) eq "--stdlib")) {
 			$i++;
 			$var = $args[$i];
-			$STDLIB = $var;
+			$STDCXXLIB = $var;
 		}
 		elsif ((lc ($var) eq "-cppstd-version") or (lc ($var) eq "--cppstd-version")) {
 			$i++;
@@ -1548,10 +1548,10 @@ sub PostProcessOptions_ ()
 		}
 	}
 
-	if (defined $STDLIB) {
+	if (defined $STDCXXLIB) {
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDLIB;
-			$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDLIB;
+			$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDCXXLIB;
+			$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDCXXLIB;
 		}
 	}
 
@@ -1560,7 +1560,7 @@ sub PostProcessOptions_ ()
 			# tried $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=0 in Ubuntu 1804, and g++-7, and failed (still left .so file in ldd)
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
-				my $lib2FindStatic = $STDLIB . ".a";
+				my $lib2FindStatic = $STDCXXLIB . ".a";
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
 				if (defined $lib) {
 					if ($lib ne $lib2FindStatic) {
@@ -1568,7 +1568,7 @@ sub PostProcessOptions_ ()
 					}
 					else {
 						# consider using apt-get install glibc-static libstdc++-static
-						my $dashLName = trim (`echo $STDLIB | sed s/lib//`);
+						my $dashLName = trim (`echo $STDCXXLIB | sed s/lib//`);
 						push @LIB_DEPENDENCIES_ADD, " -l$dashLName";
 					}
 				}
@@ -1614,7 +1614,7 @@ sub PostProcessOptions_ ()
 			}
 			else {
 				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
-					if ($STDLIB eq "libc++") {
+					if ($STDCXXLIB eq "libc++") {
 						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 						push @LIB_DEPENDENCIES_ADD, "-lc++";
 						push @LIB_DEPENDENCIES_ADD, "-lc++experimental";
@@ -1624,7 +1624,7 @@ sub PostProcessOptions_ ()
 					}
 				}
 				else {
-					if ($STDLIB eq "libc++") {
+					if ($STDCXXLIB eq "libc++") {
 						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 						push @LIB_DEPENDENCIES_ADD, "-lc++";
 						push @LIB_DEPENDENCIES_ADD, "-lc++fs";
@@ -1695,7 +1695,12 @@ sub PostProcessOptions_ ()
 			push @CFLAGS, "-D_GLIBCXX_DEBUG";
 		}
 		for my $i ($EXTRA_COMPILER_ARGS) {
-			push @CFLAGS, "$i";
+			if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
+				#ignore
+			}
+			else {
+				push @CFLAGS, "$i";
+			}
 		}
 	}
 	if ($CXXFLAGS_Overridden eq false) {
