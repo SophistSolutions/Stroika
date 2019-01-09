@@ -95,9 +95,7 @@ endif
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-#clang (not clang++) barfs if given -stdlib= argument
 #And we later get linker errors from clang if we use -flto on object files stored here
-CFLAGS:=$(filter-out -stdlib%, $(CFLAGS))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 
 ### not sure why???

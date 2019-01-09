@@ -1694,7 +1694,7 @@ sub PostProcessOptions_ ()
 		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
 			push @CFLAGS, "-D_GLIBCXX_DEBUG";
 		}
-		for my $i ($EXTRA_COMPILER_ARGS) {
+		for my $i (split / /, $EXTRA_COMPILER_ARGS) {
 			if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
 				#ignore
 			}
@@ -1734,7 +1734,7 @@ sub PostProcessOptions_ ()
 		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
 			push @CXXFLAGS, "-D_GLIBCXX_DEBUG";
 		}
-		for my $i ($EXTRA_COMPILER_ARGS) {
+		for my $i (split / /, $EXTRA_COMPILER_ARGS) {
 			push @CXXFLAGS, "$i";
 		}
 	}
