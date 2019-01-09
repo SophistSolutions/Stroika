@@ -501,12 +501,12 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "$var\n");
 	}
 	
-
-	print (OUT "INCLUDES_PATH_COMPILER_DIRECTIVES=");
-	for my $i (split /:/, $INCLUDES_PATH) {
-		print (OUT "-I$i ");
-	}
-	print (OUT "\n");
+	### DEPRECATED/REMOVED STROIKA v2.1d15
+	#print (OUT "INCLUDES_PATH_COMPILER_DIRECTIVES=");
+	#for my $i (split /:/, $INCLUDES_PATH) {
+	#	print (OUT "-I$i ");
+	#}
+	#print (OUT "\n");
 	print (OUT "LIBS_PATH_DIRECTIVES=");
 	for my $l (split /:/, $LIBS_PATH) {
 		print (OUT "-L$l ");

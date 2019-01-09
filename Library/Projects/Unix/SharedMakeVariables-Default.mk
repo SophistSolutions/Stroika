@@ -59,32 +59,30 @@ endif
 #
 #COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
 #
-
-
 ### now defined in included makefile/configure, but keep this around temporarily in case
-ifndef CFLAGS
-CFLAGS?=
-CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
-ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	CFLAGS += -g
-endif
-ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	CFLAGS +=  -D_GLIBCXX_DEBUG 
-endif
-CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
-endif
-
-ifndef CXXFLAGS
-CXXFLAGS?=
-CXXFLAGS	+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
-ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	CXXFLAGS += -g
-endif
-ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	CXXFLAGS +=  -D_GLIBCXX_DEBUG 
-endif
-CXXFLAGS	+=			$(EXTRA_COMPILER_ARGS)
-endif
+#ifndef CFLAGS
+#CFLAGS?=
+#CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
+#ifeq ($(IncludeDebugSymbolsInLibraries), 1)
+#	CFLAGS += -g
+#endif
+#ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
+#	CFLAGS +=  -D_GLIBCXX_DEBUG 
+#endif
+#CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
+#endif
+#
+#ifndef CXXFLAGS
+#CXXFLAGS?=
+#CXXFLAGS	+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
+#ifeq ($(IncludeDebugSymbolsInLibraries), 1)
+#	CXXFLAGS += -g
+#endif
+#ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
+#	CXXFLAGS +=  -D_GLIBCXX_DEBUG 
+#endif
+#CXXFLAGS	+=			$(EXTRA_COMPILER_ARGS)
+#endif
 
 
 
