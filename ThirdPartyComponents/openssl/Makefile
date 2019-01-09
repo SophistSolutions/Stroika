@@ -5,7 +5,7 @@
 export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
 	CONFIGURED_EXTRA_ARGS			=	$(qFeatureFlag_OpenSSL_ExtraArgs)
 endif

@@ -1,7 +1,7 @@
 export StroikaRoot?=$(shell realpath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
@@ -37,7 +37,10 @@ SubDirs=				\
 	Traversal			\
 
 
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs))
+# redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
+# sub-make - easier to just ignore in this one case from here
+# -- LGP 2019-01-09
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
 
 
 all-objs:
@@ -91,22 +94,15 @@ check:
 
 
 clean::
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@for i in $(SubDirs);\
-	do\
-	    $(MAKE) --directory $$i --no-print-directory -s clean;\
-	done
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(StroikaRoot)/IntermediateFiles/*/Library/Foundation
 else
-	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Clean";
+	@rm -rf $(StroikaRoot)/IntermediateFiles/$(CONFIGURATION)/Library/Foundation
 endif
 
 clobber::
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@rm -f $(StroikaFoundationLib)
-else
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Clean";
 endif
-
-# not sure what that target for??? Lose
-#Build:	all
-

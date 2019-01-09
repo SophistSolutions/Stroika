@@ -7,7 +7,7 @@
 export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk

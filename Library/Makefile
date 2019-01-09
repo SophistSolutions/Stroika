@@ -35,34 +35,15 @@ endif
 
 
 
-clean:
+clean clobber:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations` ; do\
-		$(MAKE) --no-print-directory CONFIGURATION=$$i clean;\
+		$(MAKE) --no-print-directory CONFIGURATION=$$i $@;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/Library Clean {$(CONFIGURATION)} ... "
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \; || true
-else
-	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && /bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.obj' -exec rm -f {} \; || true
-	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && /bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.log' -exec rm -f {} \; || true
-	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && /bin/find ../IntermediateFiles/$(CONFIGURATION)/Library/ -depth -name '*.tlog' -type d -exec rm -rf {} \; || true
-endif
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/Library $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
+	@$(MAKE) --directory Sources/Stroika/Foundation --no-print-directory $@
+	@$(MAKE) --directory Sources/Stroika/Frameworks --no-print-directory $@
 	@$(ECHO) done
 endif
 
-
-
-
-
-clobber:
-ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations` ; do\
-		$(MAKE) --no-print-directory CONFIGURATION=$$i clobber;\
-	done
-else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Library Clobber {$(CONFIGURATION)}:"
-	@$(MAKE) --directory Sources/Stroika/Foundation/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
-	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
-endif

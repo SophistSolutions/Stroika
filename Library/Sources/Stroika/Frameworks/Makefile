@@ -1,7 +1,7 @@
 export StroikaRoot?=$(shell realpath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
@@ -32,8 +32,10 @@ SubDirs=	\
 $(SubDirs):
 	@$(MAKE) --directory $@ -s
 
-
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs))
+# redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
+# sub-make - easier to just ignore in this one case from here
+# -- LGP 2019-01-09
+ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
 
 all-objs:
 	@echo $(ALL_OBJS)
@@ -79,22 +81,20 @@ endif
 
 
 clean::
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@for i in $(SubDirs);\
-	do\
-	     $(MAKE) --directory $$i --no-print-directory -s clean;\
-	done
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(StroikaRoot)/IntermediateFiles/*/Frameworks
 else
+	@rm -rf $(StroikaRoot)/IntermediateFiles/$(CONFIGURATION)/Frameworks
 endif
 
 clobber::
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for i in $(SubDirs);\
 	do\
-	    $(MAKE) --directory $$i --no-print-directory -s clobber;\
+	    $(MAKE) --directory $$i --no-print-directory --silent clobber;\
 	done
 	@rm -f $(StroikaFrameworksLib)
-else
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 endif
 
 
