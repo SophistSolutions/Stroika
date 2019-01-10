@@ -1,0 +1,28 @@
+#!/bin/bash
+# cmake doesn't support gnu jobserver, but invokes MAKE internally, so you could get the args there you would win.
+# This module contains hacks to try to forward the JOB_SERVER environment variable or MAKEFLAGS or MFLAGS 
+# but for reasons I don't fully understand, that appears to have not been needed, nor helpful. The only thing I could
+# get working was the simple hack (now commente din) of make -j5 (or -janything, but the point is passing along MFLAGS or MAKEFILES explicitly didnt work)
+# not worth debugging since this is just a hack to get cmake based builds a little faster on my regression tests - no biggie
+
+#echo -n "********START Trampoline:" >> /tmp/foo
+#date >> /tmp/foo
+#echo "IN Trampoline: JOBSERVER_INFO=${JOBSERVER_INFO}" >> /tmp/foo
+if [ "$MAKE" == "" ] ; then
+	echo "Must pass MAKE variable through call to cmake"
+#elif [ "$MAKE" != "make" ] ; then
+#	echo "IN MAKE-Trampoline: MAKE=${MAKE}" >> /tmp/foo
+fi
+#if [[ "$MFLAGS" == "" && "$MAKEFLAGS" == "" ]] ; then
+#	export MFLAGS="${JOBSERVER_INFO}"
+#	echo "IN Trampoline: EXPORTING MFLAGS=${MFLAGS}" >> /tmp/foo
+#else
+#	echo "IN Trampoline: skipping set cuz MFLAGS=$MFLAGS and MAKEFLAGS=$MAKEFLAGS" >> /tmp/foo
+#fi
+#echo "${MAKE} ${MFLAGS} $*" >> /tmp/foo
+#${MAKE} ${MFLAGS} $*
+${MAKE} -j5 $*
+SAVED_RESULT=$?
+#echo -n "********DONE WITH Trampoline:" >> /tmp/foo
+#date >> /tmp/foo
+exit ${SAVED_RESULT}

@@ -613,6 +613,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vtls", "vtls", "{2EBC1CD9-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xerces", "Xerces", "{91DCD5B1-7D72-487C-B8A8-03434500BB8E}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\Xerces\.gitattributes = ..\..\ThirdPartyComponents\Xerces\.gitattributes
+		..\..\ThirdPartyComponents\Xerces\.gitignore = ..\..\ThirdPartyComponents\Xerces\.gitignore
+		..\..\ThirdPartyComponents\Xerces\MAKE-Trampoline = ..\..\ThirdPartyComponents\Xerces\MAKE-Trampoline
 		..\..\ThirdPartyComponents\Xerces\Makefile = ..\..\ThirdPartyComponents\Xerces\Makefile
 		..\..\ThirdPartyComponents\Xerces\ReadMe.txt = ..\..\ThirdPartyComponents\Xerces\ReadMe.txt
 	EndProjectSection

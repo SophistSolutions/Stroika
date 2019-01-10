@@ -220,10 +220,31 @@ CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 endif
 
-#THIS FAILS, BUT MAYBE SOMETHING SIMILAR WILL WORK
-# like a shellscript that adds replaces make with $(MAKE) value!!!
-#@todo
-#CMAKE_ARGS+= -DCMAKE_MAKE_PROGRAM="$(MAKE)"
+#
+#PARALLEL BUILD TRICKERY
+#	We CANNOT find out the argument to -j (-jN). But even if we could, we would
+#	really need to shared the same job-server in any other tasks which is captured in $(JOBSERVER_INFO)
+#	Really - for now - just use if {JOBSERVER_INFO} is empty or not as a flag for whether or not to do any
+#	parallel build magic (windoze and unix)
+#		-- LGP 2019-01-10
+#
+
+# JOBSERVER_INFO is the data to be assigned to MFLAGS in calling sub-make.
+# MAYBE it should come from MAKEFLAGS? and maybe 
+# NOTE: SUBTLE - YOU CANNOT read the MFLAGS variable from THIS MAKE, but must do it from a SUBSHELL
+JOBSERVER_INFO=$(filter -j --jobserver-fds=% --jobserver-auth=%, $(shell echo $${MFLAGS}))
+
+ifneq ($(JOBSERVER_INFO),)
+ifeq (Unix,$(ProjectPlatformSubdir))
+# Trick to make gnu make JOBSERVER work with cmake - pass args to trampoline with environment variables
+export MAKE
+CMAKE_ARGS+= -DCMAKE_MAKE_PROGRAM="$(shell realpath MAKE-Trampoline)"
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+# closest we can easily get to approximating support for job-server
+export CL+=/MP
+endif
+endif
+
 
 ifeq (0,$(ENABLE_ASSERTIONS))
 CMAKE_CONFIGURATION:=Release
@@ -269,6 +290,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PATH_ADJUSTMENT_PREFIX= PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" 
 else
 endif
+
 
 doBuilds_:
 	@mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
