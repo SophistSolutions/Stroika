@@ -11,6 +11,19 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # e.g. The process cannot access the file '....54.tlog\CL.13264.write.1.tlog' because it is being used by another process
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 .NOTPARALLEL:
+
+# JOBSERVER_INFO is the data to be assigned to MFLAGS in calling sub-make.
+# MAYBE it should come from MAKEFLAGS? and maybe 
+# NOTE: SUBTLE - YOU CANNOT read the MFLAGS variable from THIS MAKE, but must do it from a SUBSHELL
+JOBSERVER_INFO=$(filter -j --jobserver-fds=% --jobserver-auth=%, $(shell echo $${MFLAGS}))
+
+ifneq ($(JOBSERVER_INFO),)
+# closest we can easily get to approximating support for job-server
+export CL+=/MP
+MSBUILD_PARALLEL_ARG= -m /p:BuildInParallel=true
+endif
+
+WIN_MSBUILD_CFG_ARG:=$(shell $(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION))
 endif
 
 
@@ -172,7 +185,7 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 else
-	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build"
+	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe ${MSBUILD_PARALLEL_ARG} /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:$(WIN_MSBUILD_CFG_ARG) /target:Build"
 endif
 
 run-tests:
