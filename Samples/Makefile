@@ -10,6 +10,13 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 .PHONY:	samples all check clobber skel
 
 
+# While we still use msbuild we must not be parallel at this level, since multiple msbuilds will stomp all over one another 
+# e.g. The process cannot access the file '....54.tlog\CL.13264.write.1.tlog' because it is being used by another process
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+.NOTPARALLEL:
+endif
+
+
 SUBPROJECTS=
 
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
