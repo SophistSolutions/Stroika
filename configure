@@ -131,7 +131,7 @@ my $AR = undef;
 my $RANLIB = undef;
 my $Linker = undef;
 my $STRIP = undef;
-my $EXTRA_COMPILER_ARGS = "";
+my $EXTRA_COMPILER_ARGS = "";				### OBSOLETE - DEPRECATED ###
 my $EXTRA_PREFIX_LINKER_ARGS = "";
 my $EXTRA_SUFFIX_LINKER_ARGS = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
@@ -1153,6 +1153,7 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$EXTRA_COMPILER_ARGS = $var;
+			print "--extra-compile-args is ***DEPRECATED***\n";
 		}
 		elsif ((lc ($var) eq "-append-extra-compiler-args") or (lc ($var) eq "--append-extra-compiler-args")) {
 			$i++;
@@ -1161,6 +1162,7 @@ sub	ParseCommandLine_Remaining_
 				$EXTRA_COMPILER_ARGS .= " ";
 			}
 			$EXTRA_COMPILER_ARGS .= $var;
+			print "--append-extra-compiler-args is ***DEPRECATED***\n";
 		}
 		elsif ((lc ($var) eq "-extra-prefix-linker-args") or (lc ($var) eq "--extra-prefix-linker-args")) {
 			$i++;
@@ -1351,6 +1353,8 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			$EXTRA_COMPILER_ARGS .= " -pg";
+			push @CFLAGS, "-pg";
+			push @CXXFLAGS, "-pg";
 			$EXTRA_PREFIX_LINKER_ARGS .= " -pg";
 		}
 		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
@@ -1508,12 +1512,14 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		push @flags, "-D_GLIBCXX_DEBUG";
 	}
 	### @todo - need separate flags for C and CXX
-	for my $i (split / /, $EXTRA_COMPILER_ARGS) {
-		if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
-			#ignore
-		}
-		else {
-			push @flags, "$i";
+	if (0) {
+		for my $i (split / /, $EXTRA_COMPILER_ARGS) {
+			if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
+				#ignore
+			}
+			else {
+				push @flags, "$i";
+			}
 		}
 	}
 	return @flags;
@@ -1523,6 +1529,8 @@ sub PostProcessOptions_ ()
 {
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			push @CFLAGS, "-flto";
+			push @CXXFLAGS, "-flto";
 			$EXTRA_COMPILER_ARGS .= " -flto";
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
@@ -1531,16 +1539,21 @@ sub PostProcessOptions_ ()
 		}
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
-		$EXTRA_COMPILER_ARGS .= " -fsanitize=";
-		$EXTRA_PREFIX_LINKER_ARGS .= " -fsanitize=";
-		foreach my $i (0 .. $#sanitizerFlags) {
-			$EXTRA_COMPILER_ARGS .= $sanitizerFlags[$i];
-			$EXTRA_PREFIX_LINKER_ARGS .= $sanitizerFlags[$i];
-			if ($i < $#sanitizerFlags) {
-				$EXTRA_COMPILER_ARGS .= ",";
-				$EXTRA_PREFIX_LINKER_ARGS .= ",";
+		{
+			my $crap2Add2CZZFlags = "";
+			$crap2Add2CZZFlags .= " -fsanitize=";
+			foreach my $i (0 .. $#sanitizerFlags) {
+				$crap2Add2CZZFlags .= $sanitizerFlags[$i];
+				if ($i < $#sanitizerFlags) {
+					$crap2Add2CZZFlags .= ",";
+				}
 			}
+			$EXTRA_COMPILER_ARGS .= $crap2Add2CZZFlags;
+			$EXTRA_PREFIX_LINKER_ARGS .= $crap2Add2CZZFlags;
+			push @CFLAGS, $crap2Add2CZZFlags;
+			push @CXXFLAGS, $crap2Add2CZZFlags;
 		}
+
 
 		if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1) and ($STATIC_LINK_SANITIZERS != 0)) {
 			if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
@@ -1571,6 +1584,8 @@ sub PostProcessOptions_ ()
 	if (not ($noSanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
 		$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
+		push @CFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
+		push @CXXFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
@@ -1618,6 +1633,7 @@ sub PostProcessOptions_ ()
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDCXXLIB;
 			$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDCXXLIB;
+			push @CXXFLAGS, " -stdlib=" . $STDCXXLIB;
 		}
 	}
 
@@ -1897,6 +1913,8 @@ sub	WriteConfigFile_
 
 	if ($runtimeStackProtectorFlag == true) {
 		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
+		unshift(@CFLAGS, '-fstack-protector-all');
+		unshift(@CXXFLAGS, '-fstack-protector-all');
 	}
 
 	print (OUT "    <EXTRA_COMPILER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
