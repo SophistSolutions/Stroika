@@ -236,9 +236,11 @@ JOBSERVER_INFO=$(filter -j --jobserver-fds=% --jobserver-auth=%, $(shell echo $$
 
 ifneq ($(JOBSERVER_INFO),)
 ifeq (Unix,$(ProjectPlatformSubdir))
-# Trick to make gnu make JOBSERVER work with cmake - pass args to trampoline with environment variables
+# Trick to make gnu make JOBSERVER work with cmake - pass args to trampoline with environment variables; doesn't work on darwin(debug? lowpri)
+ifneq ($(shell uname -s),Darwin)
 export MAKE
 CMAKE_ARGS+= -DCMAKE_MAKE_PROGRAM="$(shell realpath MAKE-Trampoline)"
+endif
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 # closest we can easily get to approximating support for job-server
 export CL+=/MP
