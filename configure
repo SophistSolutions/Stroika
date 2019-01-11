@@ -1453,6 +1453,72 @@ sub	ParseCommandLine_
 ParseCommandLine_ ();
 
 
+sub GetDefaultCFLAGSorCXXFLAGS_
+{
+    my @flags  = shift(@_);
+    my $doCFLAGS = shift(@_);
+
+	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
+	if (not $doCFLAGS) {
+		# C++ only flags
+		if (not ($CPPSTD_VERSION_FLAG eq "")) {
+			push @CXXFLAGS, $CPPSTD_VERSION_FLAG;
+		}
+	}
+
+	if (not ($COPTIMIZE_FLAGS eq "")) {
+		push @flags, $COPTIMIZE_FLAGS;
+	}
+	if (defined $INCLUDES_PATH) {
+		for my $i (split /:/, $INCLUDES_PATH) {
+			if ($isVisualStudio) {
+				my $wpath = trim (`cygpath --windows \"$i\"`);
+				if (substr($wpath, -1) eq '\\') {
+					$wpath .= '\\';
+				}
+				push @flags, "/I\"$wpath\"";
+			}
+			else {
+				push @flags, "-I$i";
+			}
+		}
+	}
+	if (not ($CWARNING_FLAGS eq "")) {
+		### @todo - need separate flags for C and CXX
+		for my $i (split / /, $CWARNING_FLAGS) {
+			push @flags, "$i";
+		}
+	}
+	if ($INCLUDE_SYMBOLS_LIB) {
+		if ( $isVisualStudio) {
+			####? push @flags, "/Z7";
+		}
+		else {
+			push @flags, "-g";
+		}
+	}
+	if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
+		push @flags, "-D_GLIBCXX_DEBUG";
+	}
+	### @todo - need separate flags for C and CXX
+	for my $i (split / /, $EXTRA_COMPILER_ARGS) {
+		if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
+			#ignore
+		}
+		else {
+			push @flags, "$i";
+		}
+	}
+	return @flags;
+}
+
 sub PostProcessOptions_ ()
 {
 	if ($ENABLE_LTO == true) {
@@ -1664,79 +1730,10 @@ sub PostProcessOptions_ ()
 	#	CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
 	#
 	if ($CFLAGS_Overridden eq false) {
-		if (not ($COPTIMIZE_FLAGS eq "")) {
-			push @CFLAGS, $COPTIMIZE_FLAGS;
-		}
-		if (defined $INCLUDES_PATH) {
-			for my $i (split /:/, $INCLUDES_PATH) {
-				if ($isVisualStudio) {
-					my $wpath = trim (`cygpath --windows \"$i\"`);
-					if (substr($wpath, -1) eq '\\') {
-						$wpath .= '\\';
-					}
-					push @CFLAGS, "/I\"$wpath\"";
-				}
-				else {
-					push @CFLAGS, "-I$i";
-				}
-			}
-		}
-		if (not ($CWARNING_FLAGS eq "")) {
-			for my $i (split / /, $CWARNING_FLAGS) {
-				push @CFLAGS, "$i";
-			}
-		}
-		if ($INCLUDE_SYMBOLS_LIB) {
-			if (not $isVisualStudio) {
-				push @CFLAGS, "-g";
-			}
-		}
-		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
-			push @CFLAGS, "-D_GLIBCXX_DEBUG";
-		}
-		for my $i (split / /, $EXTRA_COMPILER_ARGS) {
-			if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
-				#ignore
-			}
-			else {
-				push @CFLAGS, "$i";
-			}
-		}
+		@CFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CFLAGS, true);
 	}
 	if ($CXXFLAGS_Overridden eq false) {
-		if (not ($CPPSTD_VERSION_FLAG eq "")) {
-			push @CXXFLAGS, $CPPSTD_VERSION_FLAG;
-		}
-		if (not ($COPTIMIZE_FLAGS eq "")) {
-			push @CXXFLAGS, $COPTIMIZE_FLAGS;
-		}
-		if (defined $INCLUDES_PATH) {
-			for my $i (split /:/, $INCLUDES_PATH) {
-				if ($isVisualStudio) {
-					my $wpath = trim (`cygpath --windows \"$i\"`);
-					push @CXXFLAGS, "/I\"$wpath\"";
-				}
-				else {
-					push @CXXFLAGS, "-I$i";
-				}
-			}
-		}
-		if (not ($CWARNING_FLAGS eq "")) {
-			for my $i (split / /, $CWARNING_FLAGS) {
-				push @CXXFLAGS, "$i";
-			}
-		}
-		if ($INCLUDE_SYMBOLS_LIB) {
-			if (not $isVisualStudio) {
-				push @CXXFLAGS, "-g";
-			}
-		}
-		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
-			push @CXXFLAGS, "-D_GLIBCXX_DEBUG";
-		}
-		for my $i (split / /, $EXTRA_COMPILER_ARGS) {
-			push @CXXFLAGS, "$i";
-		}
+		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CXXFLAGS, false);
 	}
 
 }
