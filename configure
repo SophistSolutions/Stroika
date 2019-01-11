@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+#
+# TODO
+#
+#		@todo	Consider adding output variables CFLAGS_ADDITIONS, CXXFLAGS_ADDITIONS, CFLAGS_REMOVEALS, CXXFLAGS_REMOVEALS
+#
+
 #TRY THESE AGAIN, but for now generate too many problems...
 use strict;
 use warnings;
@@ -39,6 +45,17 @@ sub trim($)
 	return $string;
 }
 
+sub indexOf
+{
+	my @arr = shift;
+	my $v = shift;
+	for (my $ii = 0; $ii <= $#arr; $ii++) {
+	   if ($arr[$ii] eq $v) {
+			return $ii;
+	   }
+	}
+	return -1;
+}
 
 
 my @EXTRA_ARGS = ();
@@ -52,8 +69,10 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 
 my @CFLAGS;
+my @CFLAGS2Remove;
 my $CFLAGS_Overridden = false;
 my @CXXFLAGS;
+my @CXXFLAGS2Remove;
 my $CXXFLAGS_Overridden = false;
 
 
@@ -187,8 +206,13 @@ sub	DoHelp_
         print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
         print("	    --compiler-warning-args {ARG}                   /* Sets variable with compiler warnings flags */\n");
         print("	    --append-compiler-warning-args {ARG}            /* Appends ARG to 'compiler warning flags */\n");
-        print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
-        print("	    --append-extra-compiler-args {ARG}              /* Appends ARG to 'extra compiler */\n");
+        print("	    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */\n");
+        print("	    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n");
+        print("	    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n");
+        print("	    --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */\n");
+        print("	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
+        print("	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
+        print("	    --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
         print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
@@ -1190,6 +1214,48 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
 		}
+		elsif ((lc ($var) eq "-append-CFLAGS") or (lc ($var) eq "--append-CFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CFLAGS, $var;
+		}
+		elsif ((lc ($var) eq "-remove-CFLAGS") or (lc ($var) eq "--remove-CFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CFLAGS2Remove, $var;
+		}
+		elsif ((lc ($var) eq "-replace-all -CFLAGS") or (lc ($var) eq "--replace-all-CFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			for my $i (split / /, $var) {
+				push @CFLAGS, "$i";
+			}
+			$CFLAGS_Overridden = true;
+		}
+		elsif ((lc ($var) eq "-append-CXXFLAGS") or (lc ($var) eq "--append-CXXFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CXXFLAGS, $var;
+		}
+		elsif ((lc ($var) eq "-remove-CXXFLAGS") or (lc ($var) eq "--remove-CXXFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CXXFLAGS2Remove, $var;
+		}
+		elsif ((lc ($var) eq "-replace-all -CXXFLAGS") or (lc ($var) eq "--replace-all-CXXFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			for my $i (split / /, $var) {
+				push @CXXFLAGS, "$i";
+			}
+			$CXXFLAGS_Overridden = true;
+		}
+		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CFLAGS, $var;
+			push @CXXFLAGS, $var;
+		}
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
 			$var = $args[$i];
@@ -1460,6 +1526,7 @@ ParseCommandLine_ ();
 sub GetDefaultCFLAGSorCXXFLAGS_
 {
     my @flags  = shift(@_);
+    my @flagValues2Remove  = shift(@_);
     my $doCFLAGS = shift(@_);
 
 	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
@@ -1520,6 +1587,12 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			else {
 				push @flags, "$i";
 			}
+		}
+	}
+	for my $r (@flagValues2Remove) {
+		my $i = indexOf (@flags, $r);
+		if ($i != -1) {
+			splice (@flags, $i, 1);
 		}
 	}
 	return @flags;
@@ -1746,10 +1819,10 @@ sub PostProcessOptions_ ()
 	#	CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
 	#
 	if ($CFLAGS_Overridden eq false) {
-		@CFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CFLAGS, true);
+		@CFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CFLAGS, [], true);
 	}
 	if ($CXXFLAGS_Overridden eq false) {
-		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CXXFLAGS, false);
+		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CXXFLAGS, [], false);
 	}
 
 }
@@ -1917,7 +1990,7 @@ sub	WriteConfigFile_
 		unshift(@CXXFLAGS, '-fstack-protector-all');
 	}
 
-	print (OUT "    <EXTRA_COMPILER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
+	print (OUT "    <EXTRA_COMPILER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");		# DEPRECATED
 
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 
@@ -1937,7 +2010,6 @@ sub	WriteConfigFile_
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
 	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
 	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
-
 
 
 	print (OUT "    <AR>$AR</AR>\n");
