@@ -12,7 +12,7 @@ $(ObjDir):
 	@mkdir -p $(ObjDir)
 
 
-### As of Stroika v2.1d15 this is still needed to build library, but look into why...
+### As of Stroika v2.1d15 disabled
 #%.o : %.cpp
 #	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables `realpath $<`) ... "
 #	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\

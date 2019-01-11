@@ -54,37 +54,6 @@ endif
 endif
 
 
-#
-# Intentionally use '=' instead of ':=' so variables included in CFLAGS can get re-evaluated
-#
-#COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
-#
-### now defined in included makefile/configure, but keep this around temporarily in case
-#ifndef CFLAGS
-#CFLAGS?=
-#CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
-#ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-#	CFLAGS += -g
-#endif
-#ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-#	CFLAGS +=  -D_GLIBCXX_DEBUG 
-#endif
-#CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
-#endif
-#
-#ifndef CXXFLAGS
-#CXXFLAGS?=
-#CXXFLAGS	+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
-#ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-#	CXXFLAGS += -g
-#endif
-#ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-#	CXXFLAGS +=  -D_GLIBCXX_DEBUG 
-#endif
-#CXXFLAGS	+=			$(EXTRA_COMPILER_ARGS)
-#endif
-
-
 
 
 ECHO_BUILD_LINES	?=	0
@@ -99,7 +68,7 @@ ENABLE_GLIBCXX_DEBUG?=0
 TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
 
 
-### to make this osboetel, 2 new config arrays:
+### to make this obsolete, 2 new config arrays:
 	### PKG_CONFIG_STATIC_COMPONENTS=libcurl openssl			(this we invoke pkg-config with --static...)
 	### PKG_CONFIG_DYNLIB_COMPONENTS=libcurl openssl
 
@@ -141,20 +110,6 @@ ifndef StroikaLibs
 	StroikaLibs					=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
 endif
 
-
-
-####DEPRECATD####
-#ifndef StroikaSupportLibs
-	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-#	StroikaSupportLibs			=	$(StroikaFoundationSupportLibs)
-#endif
-####DEPRECATD####
-#ifndef StroikaLibsWithSupportLibs
-	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-
-	#tmphack - added $(EXTRA_LINKER_ARGS) here as so stdlib etc come AFTER stroika libs so they get pulled in - need double listing of libs sometimes
-#	StroikaLibsWithSupportLibs	=	$(LIBS_PATH_DIRECTIVES) $(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)
-#endif
 
 
 ####
