@@ -66,7 +66,7 @@ namespace {
                           FileSystemRouter{Execution::GetEXEDir () + L"html", String (L"Files"), Sequence<String>{L"index.html"}},
                       },
                   }}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/"} + AppVersion::kVersion.AsMajorMinorString () }}
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/"} + AppVersion::kVersion.AsMajorMinorString ()}}
         {
         }
         // Can declare arguments as Request*,Response*
