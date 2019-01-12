@@ -68,11 +68,11 @@ my $PROJECTPLATFORMSUBDIR='';
 my @useExtraCDefines;
 my @useExtraMakeDefines;
 
-my @CFLAGS;
-my @CFLAGS2Remove;
+my @CFLAGS = qw ();
+my @CFLAGS2Remove = qw ();
 my $CFLAGS_Overridden = false;
-my @CXXFLAGS;
-my @CXXFLAGS2Remove;
+my @CXXFLAGS = qw ();
+my @CXXFLAGS2Remove = qw ();
 my $CXXFLAGS_Overridden = false;
 
 
@@ -1523,11 +1523,14 @@ sub	ParseCommandLine_
 ParseCommandLine_ ();
 
 
+my @GetDefaultCFLAGSorCXXFLAGS_flags;
+my @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
 sub GetDefaultCFLAGSorCXXFLAGS_
 {
-    my @flags  = shift(@_);
-    my @flagValues2Remove  = shift(@_);
+    my @flags  = @GetDefaultCFLAGSorCXXFLAGS_flags;
+    my @flagValues2Remove  = @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
     my $doCFLAGS = shift(@_);
+	#print "entering GetDefaultCFLAGSorCXXFLAGS_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
 
 	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
 	if ($isVisualStudio eq 1) {
@@ -1540,7 +1543,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 	if (not $doCFLAGS) {
 		# C++ only flags
 		if (not ($CPPSTD_VERSION_FLAG eq "")) {
-			push @CXXFLAGS, $CPPSTD_VERSION_FLAG;
+			push @flags, $CPPSTD_VERSION_FLAG;
 		}
 	}
 
@@ -1595,6 +1598,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			splice (@flags, $i, 1);
 		}
 	}
+	#print " GetDefaultCFLAGSorCXXFLAGS_: returning flags=", join("\n", @flags),"\n";
 	return @flags;
 }
 
@@ -1819,10 +1823,14 @@ sub PostProcessOptions_ ()
 	#	CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
 	#
 	if ($CFLAGS_Overridden eq false) {
-		@CFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CFLAGS, [], true);
+		@GetDefaultCFLAGSorCXXFLAGS_flags = @CFLAGS;
+		@GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove = @CFLAGS2Remove;
+		@CFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (true);
 	}
 	if ($CXXFLAGS_Overridden eq false) {
-		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (@CXXFLAGS, [], false);
+		@GetDefaultCFLAGSorCXXFLAGS_flags = @CXXFLAGS;
+		@GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove = @CXXFLAGS2Remove;
+		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (false);
 	}
 
 }
