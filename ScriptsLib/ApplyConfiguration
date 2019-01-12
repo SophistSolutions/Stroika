@@ -480,6 +480,8 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
 	}
 
+	WriteStroikaConfigMakeHeader_CachedLineItem_("HasMakefileBugWorkaround_lto_skipping_undefined_incompatible");
+
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_boost");

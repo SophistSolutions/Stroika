@@ -109,6 +109,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CC'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>");
+		if (defined $pps) {
+			$configuration {'HasMakefileBugWorkaround_lto_skipping_undefined_incompatible'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_boost>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_boost'} = $pps;

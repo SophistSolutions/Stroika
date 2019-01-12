@@ -94,17 +94,17 @@ CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURREN
 endif
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-#And we later get linker errors from clang if we use -flto on object files stored here
-CFLAGS:=$(filter-out -flto, $(CFLAGS))
-
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 ### not sure why???
 #uilding Stroika Tools {clang++-6-release-libstdc++}:
 #         Compiling {StroikaRoot}Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/HTMLViewCompiler.cpp ...
 #      Linking  $StroikaRoot/Builds/clang++-6-release-libstdc++/HTMLViewCompiler...
 #/usr/bin/ld: skipping incompatible /Sandbox/Stroika-Dev/Builds/clang++-6-release-libstdc++/ThirdPartyComponents/lib//libxerces-c.so when searching for -lxerces-c
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+endif
 
+ifeq (Unix,$(ProjectPlatformSubdir))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces

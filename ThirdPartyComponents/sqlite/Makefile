@@ -101,10 +101,11 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdi
 endif
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 #@todo and figure out why we need -flto in library archive?? (need to filter it out)? - only for clang
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 endif
+
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 

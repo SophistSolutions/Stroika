@@ -99,6 +99,10 @@ my $sanitizerFlagsNoneSet = false;
 my @sanitizerFlags = ();
 my $noSanitizerFlags = "";
 
+
+my $HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = DEFAULT_BOOL_OPTIONS;
+
+
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
@@ -1604,6 +1608,9 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 
 sub PostProcessOptions_ ()
 {
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
+	}
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";
@@ -1953,6 +1960,11 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 
+	if ($HasMakefileBugWorkaround_lto_skipping_undefined_incompatible == true) {
+		print (OUT "    <HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>true</HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>\n");
+	}
+
+	
 	if (not ($CWARNING_FLAGS eq "")) {
 		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
 	}
