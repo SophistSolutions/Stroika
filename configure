@@ -6,7 +6,6 @@
 #		@todo	Consider adding output variables CFLAGS_ADDITIONS, CXXFLAGS_ADDITIONS, CFLAGS_REMOVEALS, CXXFLAGS_REMOVEALS
 #
 
-#TRY THESE AGAIN, but for now generate too many problems...
 use strict;
 use warnings;
 no warnings 'experimental::smartmatch';
