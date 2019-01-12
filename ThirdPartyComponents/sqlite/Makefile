@@ -102,12 +102,7 @@ endif
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-#clang warns if given -stdlib=libstdc++ argument (reasonable), so must filter til we fix LIBS flags somehow? 
-#@todo - not sure where that's coming from!
-#@todo and figure out why we need -flto in library archive?? (need to filter it out)?
-#
-#And we later get linker errors from clang if we use -flto on object files stored here
-CFLAGS:=$(filter-out -std%, $(CFLAGS))
+#@todo and figure out why we need -flto in library archive?? (need to filter it out)? - only for clang
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 endif
 
