@@ -102,7 +102,7 @@ endif
 
 
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
-#@todo and figure out why we need -flto in library archive?? (need to filter it out)? - only for clang
+#@todo and figure out why we need -flto in library archive?? (need to filter it out)? - only for clang -- LGP 2019-01-10
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 endif
 
