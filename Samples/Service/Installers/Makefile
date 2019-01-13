@@ -171,6 +171,8 @@ endif
 
 
 WIX_WORKDIR=$(ObjDir)WIX_TMP/
+WIX_OUT_OBJ=$(WIX_WORKDIR)Installer.wixobj
+WIX_OUT_OBJ_WIN=$(shell cygpath --windows $(WIX_OUT_OBJ))
 WIX_BUILD_OUT=$(ObjDir)WIX-Installer-Build.Out
 WIX_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 WIX_4DOT_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation $(VERSION_FILE_IN) Win32FourDot)
@@ -196,8 +198,8 @@ endif
 	@mkdir -p $(WIX_WORKDIR)
 	@cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)$(BASIC_NAME)-Service.exe 2>&1 >> $(WIX_BUILD_OUT)
 	@echo WIX_PATH_PREFIX = $(WIX_PATH_PREFIX) >> $(WIX_BUILD_OUT)
-	@echo candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix  >> $(WIX_BUILD_OUT)
-	@$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH)   -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix 2>&1 >> $(WIX_BUILD_OUT)
-	@echo light.exe Installer.wixobj -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'  >> $(WIX_BUILD_OUT)
-	@$(WIX_PATH_PREFIX) light.exe Installer.wixobj -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)' 2>&1 >> $(WIX_BUILD_OUT)
+	@echo candle.exe -v -arch $(CANDLE_ARCH)   -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix -out "$(WIX_OUT_OBJ_WIN)" >> $(WIX_BUILD_OUT)
+	@$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH)   -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix -out "$(WIX_OUT_OBJ_WIN)" 2>&1 >> $(WIX_BUILD_OUT)
+	@echo light.exe light.exe "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'  >> $(WIX_BUILD_OUT)
+	@$(WIX_PATH_PREFIX) light.exe "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)' 2>&1 >> $(WIX_BUILD_OUT)
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_WIX)"`
