@@ -103,7 +103,7 @@ ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 else ifeq (Unix,$(ProjectPlatformSubdir))
-## similar bug with g++ - but just warning shere
+## similar bug with g++ - but just warnings here (all regtests pass without this change)
 ##/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Builds/g++-optimized/ThirdPartyComponents/include/xercesc/util/BinInputStream.hpp:29:22: warning: type 'struct BinInputStream' violates the C++ One Definition Rule [-Wodr]
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
