@@ -44,7 +44,7 @@ modern, reliable and threaded applications easier to write.
   For more details on individual release changes, see:
 	[Release-Notes.md](Release-Notes.md)
 
-"Getting Started" build instructions can be found in: [Documentation/Building Stroika.pdf](Documentation/Building%20Stroika.pdf)
+"Getting Started" build instructions can be found in: [Documentation/Building Stroika.md](Documentation/Building%20Stroika.md)
 
 Looking through the samples is also a good way to start: [Samples/ReadMe.md](Samples/ReadMe.md)
 

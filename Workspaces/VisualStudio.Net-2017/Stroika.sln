@@ -160,8 +160,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{15FFD4B0-34FC-4F9D-A32D-16D3927ADF06}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Documentation\.gitignore = ..\..\Documentation\.gitignore
-		..\..\Documentation\Building Stroika.docx = ..\..\Documentation\Building Stroika.docx
-		..\..\Documentation\Building Stroika.pdf = ..\..\Documentation\Building Stroika.pdf
+		..\..\Documentation\Building Stroika.md = ..\..\Documentation\Building Stroika.md
 		..\..\Documentation\Code-Status.md = ..\..\Documentation\Code-Status.md
 		..\..\Documentation\Coding Conventions.docx = ..\..\Documentation\Coding Conventions.docx
 		..\..\Documentation\Coding Conventions.pdf = ..\..\Documentation\Coding Conventions.pdf
