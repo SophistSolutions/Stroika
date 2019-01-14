@@ -14,8 +14,9 @@ Stroika is a C++ class library. The only fully supported build environment for S
 or
 
     git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
-
-  `make --directory Stroika-Dev all run-tests`
+then
+  
+    make --directory Stroika-Dev all run-tests
 
   If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
@@ -104,7 +105,9 @@ or
 
 ### Configuration Basic Concepts
 
-- define CFLAGS and CXXFLAGS and (explain others) variables used in a regular makefile. You define (on the command line) variables (like 'assertions') which are used to generate to generate a bunch of other variables which appear in configuration files.
+- Each configuraiton has a name (e.g. Debug, Release-clang-7, Debug-raspberry-pi, Release-Centos-6, etc)
+- Each configuration can have multiple 'tags' - like Unix, Windows, x86, arm, etc - which can be used to build sets of configurations
+- each configuration defines CFLAGS and CXXFLAGS and (explain others) variables used in a regular makefile. You define (on the command line) variables (like 'assertions') which are used to generate to generate a bunch of other variables which appear in configuration files.
 
 ### Sample default build rules (just to provide context for the defined configuration variables)
 
@@ -186,7 +189,11 @@ Configure's behavior is also influenced by the following environment variables:
             CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure
 ~~~~
 
-### list of configuration options
+### Environment variables that affect generation of configuration
+
+- CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP
+
+The reason this is so important, is that it allows an external build system like bitbake, or node-gyp, etc to define parameters for a build, and easily generate appropriate configurations.
 
 ### Printing configure variables from a script
 
