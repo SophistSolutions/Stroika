@@ -32,6 +32,7 @@
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
   <?define serviceEXESourcePath = "..\..\..\IntermediateFiles\$(var.CONFIGURATION)\Samples-Service\WIX_TMP\Stroika-SampleService-Service.exe" ?>
+  <?define serviceName = "Stroika-Sample-Service" ?>
 
   <!--
       ====================================================================================
@@ -167,9 +168,9 @@
               <File Source="$(var.serviceEXESourcePath)" Id="StroikaSampleServiceExe" KeyPath="yes" />
 
               <ServiceInstall Id="ServiceInstaller" Account="LocalSystem" Description="!(loc.ServiceDescription)" DisplayName="!(loc.ServiceDisplayName)" ErrorControl="normal"
-                              LoadOrderGroup="NetworkProvider" Name="Stroika-Sample-Service" Start="auto" Type="ownProcess" Vital="yes" Arguments="--run-as-service" />
+                              LoadOrderGroup="NetworkProvider" Name="$(var.serviceName)" Start="auto" Type="ownProcess" Vital="yes" Arguments="--run-as-service" />
 
-              <ServiceControl Id="ServiceControl" Name="Stroika-Sample-Service" Start="install" Stop="both" Remove="uninstall" />
+              <ServiceControl Id="ServiceControl" Name="$(var.serviceName)" Start="install" Stop="both" Remove="uninstall" />
 
             </Component>
 

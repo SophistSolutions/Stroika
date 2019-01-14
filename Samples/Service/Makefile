@@ -13,7 +13,7 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-CXXFLAGS				+=	-I.
+#CXXFLAGS				+=	-I.
 CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Service/
@@ -23,7 +23,6 @@ else
 TARGETEXE				=	$(TARGETDIR)Service
 endif
 
-.PHONY: installers installer-deb installer-rpm installer-wix all
 
 VPATH	=			$(SrcDir)/Sources/
 
@@ -42,6 +41,7 @@ $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
 $(Objs):	$(VERSION_FILE_OUT)
 
 
+.PHONY: all
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Service:"
 	@mkdir -p $(TARGETDIR)
@@ -88,7 +88,7 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 endif
 
 
-
+.PHONY:  installers installer-deb installer-rpm installer-wix
 installers installer-deb installer-rpm installer-wix:   $(TARGETEXE)
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Installers:"
 	@$(MAKE) --no-print-directory --directory Installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
