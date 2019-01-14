@@ -1,69 +1,205 @@
 # Building Stroika
 
-# Common
+## Common
+---------
 
-Stroika is a C++ class library. For the most part, it&#39;s built make. However, internally, some of these make rules use Perl etc scripts.
+Stroika is a C++ class library. The only fully supported build environment for Stroika is GNU Make. Once you have that setup, you can build through your favorite IDE.
 
-# Required Tools and compatible compiler versions
+## Quick Start
+---------
 
-Roughly, Stroika requires a modern C++ compiler, and gnu make to build.
+    wget https://github.com/SophistSolutions/Stroika/archive/V2.1-Release.tar.gz
+    tar xf V2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
 
-### Stroika v2.0 {prior version}
+or
 
-- C++ 14 or later
+    git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
 
-### Stroika v2.1 {this version}
+  `make --directory Stroika-Dev all run-tests`
 
-- C++17 or later
+  If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
-The details are below. But Stroika is regularly tested with gcc 7 and later, clang++6 or later, and visual studio 2017 (latest), and XCode 10.
+## More Details on Getting Started
+----------------------------------
 
-# Quick Start
+### Install required tools
 
-## For the very impatient
+ This mostly conists of GNU make, and perl (see details below depending on your platform).
 
-wget [https://github.com/SophistSolutions/Stroika/archive/V2.1-Release.tar.gz](https://github.com/SophistSolutions/Stroika/archive/V2.1-Release.tar.gz)
+#### Required for ALL platforms
+- c++ compiler supporting C++17 or later
+- make (gnu make)
+- patch
+- perl
+- pkg-config
+- realpath
+- sed
+- tar
+- tr
+- wget
+- 7za (if building with LZMA SDK – the default)
+- unzip
 
-tar xf V2.1-Release.tar.gz
+#### For MacOS
+- XCode 10 or later
+  - install from appstore,
+  - Then from command line
+    - xcode-select –install
+    - Homebrew can be helpful (but use whatever package mgr you wish)
+      - ruby -e &quot;$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/master/install](https://raw.githubusercontent.com/Homebrew/install/master/install))&quot;
+      - to install apps with brew, use &quot;brew install APPNAME&quot;
+    - brew install gnu-sed
+    - brew install p7zip  (if building lzma)
 
-make --directory Stroika-2.1-Release all run-tests
+#### For Windows
+- Visual Studio.net 2017 (or later)
+  - Currently tested with 15.8.6
+- Cygwin
+   
+   Including
+  - dos2unix
+  - unix2dos
 
-## For the more patient (hints about what to try next)
+#### For UNIX
+- Compiler
+  - gcc 7 or later OR
+    - Stroika v2.1 is currently tested with gcc7, and gcc8
+  - llvm (clang++) 6 or later
+    - Stroika v2.1 is currently tested with clang6, and clang7
+- automake  (if building curl)
+- libtool (gnu version) – (if building curl)
 
-- See Required Tools below (or wait for warnings during the build process)
-- wget [https://github.com/SophistSolutions/Stroika/archive/V2.1-Release.tar.gz](https://github.com/SophistSolutions/Stroika/archive/V2.1-Release.tar.gz%20)
 
-_or_
 
-wget [https://github.com/SophistSolutions/Stroika/archive/v2.1d1.tar.gz](https://github.com/SophistSolutions/Stroika/archive/v2.1d1.tar.gz)
+### Things to try/explore
+- `make help`
+   
+   Not needed, but gives some idea of make options.
 
-- tar xf V2.1-Release.tar.gz
-- cd Stroika-2.1d1 (or whatever version extracted)
-- make help
+- `make check-prerequisite-tools`
 
-_Not needed, but gives some idea of make options_
+    Not needed, but tells you if you are missing anything critical.
 
-- make check-tools
+- `make default-configurations`
 
-_Not needed, but tells you if you are missing anything critical_
+   Not needed, but it&#39;s a springboard for setting up the configuration you want.
 
-- make default-configurations
+   Review ConfigurationFiles/Debug.xml or any of the other default configuration files
 
-_Not needed, but it&#39;s a springboard for setting up the configuration you want._
+## The **configure** script
+---------
 
--
-  - Review/edit ConfigurationFiles/Debug.xml
-  - Or try something like
-    - configure MyGCC7Config -assertions enable --trace2file enable --compiler-driver &#39;g++-7
+ - Examples
 
-_or_
+   - `./configure Debug-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-debug-flags`
+   - `./configure Debug --config-tag Unix --apply-default-debug-flags`
+   - `./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++ --trace2file enable`
+   - `CXX=clang++ ./configure Debug-clang --config-tag Unix --apply-default-debug-flags`
 
--
-  -
-    - configure MyCPP17Test --assertions enable --trace2file enable _--cppstd-version-flag &#39;--std=c++17&#39;_
 
-_or_
+### Configuration File Format
 
+  Simple XML format (@todo provide XSD).
+  The command-line used to generate the configuration is the first element of the XML file, so its easy to regenerate the configuration with whatever slight variation you wish.
+
+### Configuration Basic Concepts
+
+- define CFLAGS and CXXFLAGS and (explain others) variables used in a regular makefile. You define (on the command line) variables (like 'assertions') which are used to generate to generate a bunch of other variables which appear in configuration files.
+
+### Sample default build rules (just to provide context for the defined configuration variables)
+
+### Command-line reference
+~~~~
+  configure CONFIGURATION-NAME [OPTIONS]* where options can be:
+            --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */
+            [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */
+            --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */
+            --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */
+            --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */
+            --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */
+            --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */
+            --cppstd-version-flag {FLAG}                    /* DEPRECATED - use -cppstd-version (without --std part */
+            --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a
+            --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang)
+            --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/
+            --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/
+            --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */
+            --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */
+            --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */
+            --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */
+            --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */
+            --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */
+            --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */
+            --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */
+            --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/
+            --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */
+            --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */
+            --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */
+            --cpp-optimize-flag  {FLAG}                     /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */
+            --c-define {ARG}                                /* Define C++ pre-processor define for the given configuration: arg appears as a line in Stroika-Configuration.h
+                                                               (e.g. --c-define '\#define qCompilerAndStdLib_quick_exit_Buggy 1')*/
+            --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */
+            --compiler-driver {ARG}                         /* default is gcc */
+            --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */
+            --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */
+            --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */
+            --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */
+            --compiler-warning-args {ARG}                   /* Sets variable with compiler warnings flags */
+            --append-compiler-warning-args {ARG}            /* Appends ARG to 'compiler warning flags */
+            --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */
+            --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */
+            --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */
+            --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */
+            --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */
+            --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */
+            --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */
+            --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */
+            --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */
+            --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */
+            --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */
+            --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */
+            --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */
+            --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */
+            --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */
+            --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */
+            --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */
+            --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,
+                                                               such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */
+            --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */
+            --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */
+            --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */
+            --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */
+            --apply-default-debug-flags                     /*  */
+            --apply-default-release-flags                   /*  */
+            --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/
+            --debug-symbols {true|false}                    /* --debug-symbols-lib AND --debug-symbols-exe at the same time */
+            --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */
+            --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */
+            --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */
+            --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */
+            --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -
+                                                               any arg you can pass to -fsanitize=XXXX */
+                                                            /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */
+            --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */
+
+Configure's behavior is also influenced by the following environment variables:
+            CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure
+~~~~
+
+### list of configuration options
+
+### Printing configure variables from a script
+
+#### Example
+ 
+ - `./ScriptsLib/GetConfigurationParameter Debug-U-32 CFLAGS`
+
+ - `./ScriptsLib/GetConfigurationParameter Debug-U-32 Linker`
+
+
+
+
+## @todo organize this next section
 -
   -
     - configure --help
@@ -83,56 +219,8 @@ Builds everything for ALL configurations (in the folder ConfigurationFiles/)
 
 _Runs regression tests (optionally on remote machines, or with VALGRIND)_
 
-# Required Tools
 
-## Required for ALL platforms
 
-- c++ compiler supporting C++17 or later
-- make (gnu make)
-- patch
-- perl
-- pkg-config
-- realpath
-- sed
-- tar
-- tr
-- wget
-- 7za (if building with LZMA SDK – the default)
-- unzip
-
-## For MacOS
-
-- XCode 10 or later
-  - install from appstore,
-  - Then from command line
-    - xcode-select –install
-    - Homebrew can be helpful (but use whatever package mgr you wish)
-      - ruby -e &quot;$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/master/install](https://raw.githubusercontent.com/Homebrew/install/master/install))&quot;
-      - to install apps with brew, use &quot;brew install APPNAME&quot;
-    - brew install gnu-sed
-    - brew install p7zip  (if building lzma)
-
-## For UNIX
-
-- Compiler
-  - gcc 7 or later OR
-    - Stroika v2.1 is currently tested with gcc7, and gcc8
-  - llvm (clang++) 6 or later
-    - Stroika v2.1 is currently tested with clang6, and clang7
-- automake  (if building curl)
-- libtool (gnu version) – (if building curl)
-
-## For Windows
-
-- Visual Studio.net 2017 (or later)
-  - Currently tested with 15.8.6
-- Cygwin
-
-Including
-
--
-  - dos2unix
-  - unix2dos
 
 ## Third Party Components
 
@@ -150,15 +238,17 @@ These components automatically downloaded and built and integrated into Stroika 
 
 ## Alternatives
 
-We seriously considered a number of build systems, including cmake, ant, perl scripts, qmake, etc. They all weak, with ant possibly being the best alternative, except that it&#39;s heavily java oriented.
+We seriously considered a number of build systems, including cmake, ant, perl scripts, qmake, etc. They all had substantial weaknesses, with ant possibly being the best alternative, except that it&#39;s heavily java oriented. Maybe for c++ cmake would have been the best?
 
-Just normal GNU make – appears to be the least bad alternative, so that&#39;s what we&#39;re doing.
+But just plain GNU make – appears to be the least bad alternative, so that&#39;s what we&#39;re doing.
+
+But - even with just plain make, you need some sort of configure script to establish what compiler options will be defined. Again, lots of different alternatives here, but in the end I decided to just build custom scripts which build a very simple XML configuration declaration, and which drives the make process by #included 'config' makefile.
 
 ## Configurations
 
-The design is to make a set of configuration files – each stored in the ConfigurationFiles/ directory. Configurations are described by a single XML file. They can be generated using the configure script.
+The design is to make a set of configuration files – each stored in the `ConfigurationFiles/` directory. Configurations are described by a single XML file. They can be generated using the configure script.
 
- configure --help
+`configure --help`
 
 for more information.
 
@@ -166,13 +256,14 @@ A configuration comprises BOTH target platform (e.g. windows/linux), hardware (e
 
 This stands in contrast to several other systems (like Visual Studio.net) that treats platform and &#39;configuration&#39; as orthogonal choices.
 
-Configuration files can be edited by hand.
+### Amending a configuration
+Configuration files should **not** be edited by hand. Instead, the current command line is the first element of the configuration file: take that as a starting point and ammend it as needed, and re-run.
 
-@todo A FUTURE version of Stroika will have an XML Schema (XSD) to describe the configuration file format.
+ - @todo A FUTURE version of Stroika will have an XML Schema (XSD) to describe the configuration file format.
 
 You can call
 
- make apply-configurations
+ `make apply-configurations`
 
 to generate all the directories and files dependent on the defined configurations. Note – this is generally not necessary, and called automatically.
 
@@ -188,31 +279,31 @@ On any platform, building Stroika, and all is demo applications and regression t
 
 ## Special Targets
 
-- make
+- `make`
 
 Make with no arguments runs &#39;make help&#39;
 
-- make help
+- `make help`
 
 Prints the names and details of the special targets
 
-- make all
+- `make all`
 
 builds the stroika library, tests, demos, etc.
 
-- make libraries
+- `make libraries`
 
 Builds just the Stroika libraries
 
-- make samples
+- `make samples`
 
 Builds the Stroika sample applications
 
-- make run-tests
+- make `run-tests`
 
 Builds Stroika, and all the regression tests, and runs the regression tests
 
-- make project-files
+- make `project-files`
 
 Builds project files which can be used for things like visual studio (not needed)
 
@@ -232,7 +323,7 @@ Visual Studio.net project and solution files are available for the Stroika demos
 
 Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project files at the top level of your Stroika directory. Then you can open that .creator file in qtCreator, and build and debug Stroika-based applications.
 
-# Building For…
+### Cross-Compiling
 
 ## Building for Raspberry Pi
 
@@ -262,9 +353,10 @@ Using SSH, it&#39;s also helpful to setup ssh keys to avoid re-entering password
 
  [http://sshkeychain.sourceforge.net/mirrors/SSH-with-Keys-HOWTO/SSH-with-Keys-HOWTO-4.html](http://sshkeychain.sourceforge.net/mirrors/SSH-with-Keys-HOWTO/SSH-with-Keys-HOWTO-4.html)
 
-# Common Errors
+## Common Errors
+----------------
 
-## Tar f **a** ilure
+## Tar failure
 
 Errors about invalid parameters, and/or bad blocks can usually be fixed by installing a copy of gnu tar. We&#39;ve tested 1.27.
 
