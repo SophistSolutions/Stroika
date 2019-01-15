@@ -2,6 +2,11 @@ export StroikaRoot?=$(shell realpath .)/
 
 include ScriptsLib/Makefile-Common.mk
 
+ifeq ($(filter 3.81, $(firstword $(sort $(MAKE_VERSION) 3.81))),)
+$(info Warning - version of GNU Make - $(MAKE_VERSION) - appears too old)
+endif
+
+
 #not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
 # make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
 # have to be built before the samples etc...
