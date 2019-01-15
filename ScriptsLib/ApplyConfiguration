@@ -24,8 +24,6 @@ my $activeConfiguration	=	$ARGV[0];
 
 my $PROJECTPLATFORMSUBDIR='';
 
-my $forceRecreate = true;
-
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
@@ -90,12 +88,6 @@ sub	ParseCommandLine_
 {
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
-		if (lc ($var) eq "-force" or lc ($var) eq "--force") {
-			$forceRecreate = true;
-		}
-		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
-			$forceRecreate = false;
-		}
 		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
 		}
@@ -202,7 +194,7 @@ mkdir ($intermediateFiles);
 #
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
-my $configFileCName		=	"$intermediateFiles$activeConfiguration/Stroika-Current-Configuration.h";
+my $configFileDotHName	=	"$intermediateFiles$activeConfiguration/Stroika-Current-Configuration.h";
 my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
 
 
@@ -211,24 +203,12 @@ my $stkRoot	=	trim(`realpath .`);
 
 
 
-sub MakeUnixDirs {
-	if ($forceRecreate) {
-		system ("rm -rf $intermediateFiles/$activeConfiguration");
-	}
-	unless (-e "$intermediateFiles/$activeConfiguration") {
-		mkdir "$intermediateFiles$activeConfiguration";
-		mkdir "$intermediateFiles$activeConfiguration/Library";
-	}
-}
-
-
-
 
 
 sub WriteStroikaConfigCHeader
 {
-	#open(OUT,">$configFileCName");
-	open(OUT,">:crlf", "$configFileCName");
+	#open(OUT,">$configFileDotHName");
+	open(OUT,">:crlf", "$configFileDotHName");
 	print (OUT "/*\n");
 	print (OUT " * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved\n");
 	print (OUT " */\n");
@@ -629,8 +609,7 @@ sub WriteStroikaConfigMakeHeader
 
 
 	#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
-	#But still dependended on as of 2018-03-23
-	system ("cp $configFileMakeName  $intermediateFiles$activeConfiguration/Library/Configuration.mk")
+	#system ("cp $configFileMakeName  $intermediateFiles$activeConfiguration/Library/Configuration.mk")
 }
 
 
@@ -638,24 +617,27 @@ sub WriteStroikaConfigMakeHeader
 #print ("OS: $^O\n");
 
 
+#
+#@ todo write to temporary file and only update if actually changed
+#
 
-if ($forceRecreate) {
-    system ("rm -f $configFileCName $configFileMakeName");
-}
-
-#Really only for UNIX (for now) but harmless on WinDoze
-MakeUnixDirs ();
+system ("rm -f $configFileDotHName $configFileMakeName");
 
 unless (-e $intermediateFiles) {
     mkdir ($intermediateFiles);
 }
 
-unless (-e $configFileCName) {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileCName\" ... ");
+#Really only for UNIX (for now) but harmless on WinDoze
+unless (-e "$intermediateFiles/$activeConfiguration") {
+	mkdir "$intermediateFiles$activeConfiguration";
+	mkdir "$intermediateFiles$activeConfiguration/Library";
+}
+
+unless (-e $configFileDotHName) {
+	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileDotHName\" ... ");
 	WriteStroikaConfigCHeader ();
 	print("done\n");
 }
-
 
 unless (-e $configFileMakeName) {
 	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
