@@ -141,7 +141,6 @@ The command-line used to generate the configuration is the first element of the 
     <qFeatureFlag_sqlite>use</qFeatureFlag_sqlite>
     <qFeatureFlag_LZMA>use</qFeatureFlag_LZMA>
     <qFeatureFlag_WIX>no</qFeatureFlag_WIX>
-    <CWARNING_FLAGS>-Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs </CWARNING_FLAGS>
     <ExtraCDefines>
     </ExtraCDefines>
     <CFLAGS> -fsanitize=address,undefined -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g -D_GLIBCXX_DEBUG</CFLAGS>
@@ -217,14 +216,16 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
                                                                configuration [default use-system on windows,
                                                                and no otherwise] */
             --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this
-                                                               configuration [default use-system on windows, 
+                                                               configuration [default use-system on windows,
                                                                and no otherwise] */
-            --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */
-            --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */
+            --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration
+                                                               [default use] */
+            --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration 
+                                                               [default use] */
             --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this
                                                                configuration [default use] */
             --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only)
-                                                               - to build windows installers*/
+                                                               - to build windows installers */
             --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */
             --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */
             --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link 
@@ -236,24 +237,32 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
                                                                Stroika-Configuration.h
                                                                (e.g. --c-define '\#define qCompilerAndStdLib_quick_exit_Buggy 1')*/
                                                                Functionally similar to --append-CPPFLAGS */\n");
-            --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */
+            --make-define {ARG}                             /* Define makefile define for the given configuration:
+                                                               text of arg appears as line in Configuration.mk */
             --compiler-driver {ARG}                         /* default is gcc */
-            --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */
-            --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */
-            --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */
-            --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */
+            --ar {ARG}                                      /* default is undefined, but if compiler-driver is
+                                                               gcc or g++, this is gcc-ar */
+            --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio
+                                                               on visual studio */
+            --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++,
+                                                               this is gcc-ranlib */
+            --strip {ARG}                                   /* sets program to do stripping; default is undefined,
+                                                               but for POSIX, defaults to strip */
             --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */
-            --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */
+            --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args;
+                                                               processed after all adds applied) */
             --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */
             --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */
-            --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */
+            --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args;
+                                                               processed after all adds applied) */
             --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */
             --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */
             --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */
             --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */
             --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */
             --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */
-            --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */
+            --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix
+                                                               standard and allows spaces) */
             --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */
             --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated,
                                                                since unix standard and allows spaces) */
@@ -285,10 +294,9 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
             --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */
             --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to
                                                                sanitized feature (gcc/clang only) -
-                                                               any arg you can pass to -fsanitize=XXXX */
-                                                            /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf
-                                                               (search -fsanitize=; eg. --sanitize address,
-                                                               undefined */
+                                                               any arg you can pass to -fsanitize=XXXX.
+                                                               See https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf
+                                                               (search -fsanitize=; eg. --sanitize address, undefined */
             --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */
 
 Configure's behavior is also influenced by the following environment variables:
@@ -319,6 +327,18 @@ The reason this is so important, is that it allows an external build system like
 - `./ScriptsLib/GetConfigurationParameter Release CXXFLAGS`
 
   -flto --std=c++17 -O3 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Release/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Release/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g
+
+---------
+
+## Static Linking vs. Dynamic Libraries
+
+Stroika itself is only provided as a static library. This is because static libraries are much simpler, better for optimizing, and more flexible about configuraiton of the particular build options desired.
+
+I cannot rule out ever providing a dynmaic link option/feature, but I see exceedingly little point to it.
+
+Of course, you can still use dynamic (shared library) linking however you wish for any components you build (like you can build shared libraries with Stroika), and obviously for most operatiing systems, the libraries your apps must like to are shared libraries.
+
+But this bias towards static linking is reflected in all the defaults and samples provided with Stroika.
 
 ---------
 
@@ -357,41 +377,41 @@ On any platform, building Stroika, and all is demo applications and regression t
 
 - `make`
 
-Make with no arguments runs &#39;make help&#39;
+  Make with no arguments runs &#39;make help&#39;
 
 - `make help`
 
-Prints the names and details of the special targets
+  Prints the names and details of the special targets
 
 - `make all`
 
-builds the stroika library, tests, demos, etc.
+  Builds the stroika library, tests, demos, etc.
 
 - `make libraries`
 
-Builds just the Stroika libraries
+  Builds just the Stroika libraries
 
 - `make samples`
 
-Builds the Stroika sample applications
+  Builds the Stroika sample applications
 
 - `make run-tests`
 - `make ONFIGURATION=zyx run-tests REMOTE='lewis@raspberrypi'`
 - `make CONFIGURATION=abc run-tests VALGRIND=memcheck`
 
-Builds Stroika, and all the regression tests, and runs the regression tests. If REMOTE= is specified, the code is copied to the target machine with ssh, and the test run there (helpful for when cross-compiling). VALGRIND= is used to run memcheck, leakcheck, or helgrind on the given configuraiton.
+  Builds Stroika, and all the regression tests, and runs the regression tests. If REMOTE= is specified, the code is copied to the target machine with ssh, and the test run there (helpful for when cross-compiling). VALGRIND= is used to run memcheck, leakcheck, or helgrind on the given configuraiton.
 
 - make `project-files`
 
-Builds project files which can be used for things like visual studio (not needed)
+  Builds project files which can be used for things like visual studio (not needed)
 
 - `make check-prerequisite-tools`
 
-Checks if the tools needed to build Stroika are installed and in your path. This is done automatically, and generally not needed explicitly.
+  Checks if the tools needed to build Stroika are installed and in your path. This is done automatically, and generally not needed explicitly.
 
 - `make apply-configurations`
 
-   to generate all the directories and files dependent on the defined configurations. Note – this is generally not necessary, and called automatically.
+   To generate all the directories and files dependent on the defined configurations. Note – this is generally not necessary, and called automatically.
 
 ### CONFIGURATION arguments to make
 
@@ -403,19 +423,19 @@ This allows for building (or clobbering or whatever) a related family of configu
 
 - `make TAGS=Windows`
 
-runs all the windows compiles. 
+  runs all the windows builds.
 
 - `make TAGS=Unix` all
 
-runs all the UNIX compiles
+  runs all the UNIX compiles
 
 - `make TAGS="Windows 32" all`
 
-This builds all the configurations with BOTH the Windows and 32 tag (so all the 32-bit builds)
+  This builds all the configurations with BOTH the Windows and 32 tag (so all the 32-bit builds)
 
 - `make TAGS="Unix arm" list-configurations`
 
-This doesn't build anything, but just lists all the matching configurations.
+  This doesn't build anything, but just lists all the matching configurations.
 
 - `make list-configurations`
 - `make list-configuration-tags`
@@ -433,7 +453,7 @@ This doesn't build anything, but just lists all the matching configurations.
 
 To cross-compile for Raspberry pi,
 
-- install some suitable cross compiler (in this example arm-linux-gnueabihf-g++-5)
+- install some suitable cross compiler (in this example arm-linux-gnueabihf-g++-7)
 
 On unubtu, sudo apt-get install g++-7-arm-linux-gnueabihf
 
@@ -471,24 +491,6 @@ Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project
 
 ---------
 
-## Common Errors
-
-### Tar failure
-
-Errors about invalid parameters, and/or bad blocks can usually be fixed by installing a copy of gnu tar. We&#39;ve tested 1.27.
-
-### cp: illegal option –
-
-Install a copy of GNU cp
-
-### Cannot find &#39;blah&#39; in Cygwin
-
-If you are trying to install required components in Cygwin, and cannot find them in the Cygwin setup GUI, try:
-
-cygcheck -p dos2unix
-
------------
-
 ## But Why? Build / Configuration Design
 
 ### Alternatives
@@ -498,3 +500,21 @@ We seriously considered a number of build systems, including cmake, ant, perl sc
 But just plain GNU make – appears to be a nearly universally available alternative, very standard and simple, so that&#39;s what we&#39;re doing.
 
 But - even with just plain make, you need some sort of configure script to establish what compiler options will be defined. Again, lots of different alternatives here, but in the end I decided to just build custom scripts which build a very simple XML configuration declaration, and which drives the make process by #included 'config' makefile.
+
+---------
+
+## Common Errors
+
+- Tar failure
+
+  Errors about invalid parameters, and/or bad blocks can usually be fixed by installing a copy of gnu tar. We&#39;ve tested 1.27.
+
+- cp: illegal option –
+
+  Install a copy of GNU cp
+
+- Cannot find &#39;blah&#39; in Cygwin
+
+  If you are trying to install required components in Cygwin, and cannot find them in the Cygwin setup GUI, try:
+
+  cygcheck -p dos2unix
