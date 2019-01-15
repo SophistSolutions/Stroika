@@ -23,6 +23,10 @@ followed by:
 
   If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
+**NOTE**
+
+It takes a while to build all of Stroika (10-20 minutes per configuration), so adding -j10 (or so) helps alot.
+
 ---------
 
 ## More Details on Getting Started
