@@ -200,7 +200,7 @@ sub	DoHelp_
         print("	    --cpp-optimize-flag  {FLAG}                     /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                                /* Define C++ pre-processor define for the given configuration: arg appears as a line in Stroika-Configuration.h\n");
         print("	                                                       (e.g. --c-define '\\#define qCompilerAndStdLib_quick_exit_Buggy 1')\n");
-        print("	                                                       Functionally similar to --append-CPPFLAGS*/\n");
+        print("	                                                       Functionally similar to --append-CPPFLAGS */\n");
         print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
         print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
