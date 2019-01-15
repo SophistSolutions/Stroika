@@ -97,7 +97,7 @@ followed by:
 
 ## The **configure** script
 
-Like many non-trivial C/C++ libraries, you run configure to establish some build parameters, before invoking make. But unlike most such configuration systems, Stroika creates 'named' configurations, and facilitites building multiple such named configurations at once.
+Like many non-trivial C/C++ libraries, you run configure to establish some build parameters, before invoking make. But unlike most such configuration systems, Stroika creates 'named' configurations, and facilitates building multiple such named configurations at once.
 
 Each configuration is stored in in a file named ${CONFIGNAME}.xml in the top-level `ConfigurationFiles/` directory.
 
@@ -168,9 +168,9 @@ The command-line used to generate the configuration is the first element of the 
 
 ### Configuration Basic Concepts
 
-- Each configuraiton has a name (e.g. Debug, Release-clang-7, Debug-raspberry-pi, Release-Centos-6, etc)
+- Each configuration has a name (e.g. Debug, Release-clang-7, Debug-raspberry-pi, Release-Centos-6, etc)
 - Each configuration can have multiple 'tags' - like Unix, Windows, x86, arm, etc - which can be used to build sets of configurations
-- each configuration defines CFLAGS and CXXFLAGS and (explain others) variables used in a regular makefile. You define (on the command line) variables (like 'assertions') which are used to generate to generate a bunch of other variables which appear in configuration files.
+- Each configuration defines CFLAGS and CXXFLAGS and (explain others) variables used in a regular makefile. You define (on the command line) variables (like 'assertions') which are used to generate to generate a bunch of other variables which appear in configuration files.
 
 ### Sample default build rules (just to provide context for the defined configuration variables)
 
@@ -293,7 +293,8 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
             --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */
 
 Configure's behavior is also influenced by the following environment variables:
-            CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure
+      CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; 
+these just simulate adding the obvious associated argument to configure
 ~~~~
 
 ### Amending a configuration
