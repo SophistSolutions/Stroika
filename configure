@@ -4,6 +4,7 @@
 # TODO
 #
 #		@todo	Consider adding output variables CFLAGS_ADDITIONS, CXXFLAGS_ADDITIONS, CFLAGS_REMOVEALS, CXXFLAGS_REMOVEALS
+#		@todo	Consider adding support for ASFLAGS (like CFLAGS)
 #
 
 use strict;
