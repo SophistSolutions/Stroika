@@ -1,4 +1,4 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
 SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/
 ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/

@@ -1,4 +1,4 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
 SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
 ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/
