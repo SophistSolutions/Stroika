@@ -181,9 +181,8 @@ sub	DoHelp_
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version-flag {FLAG}                    /* DEPRECATED - use -cppstd-version (without --std part */\n");
-        print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a\n");
-        print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang)\n");
+        print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */\n");
+        print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
