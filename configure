@@ -206,8 +206,6 @@ sub	DoHelp_
         print("	    --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */\n");
         print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
         print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
-        print("	    --compiler-warning-args {ARG}                   /* Sets variable with compiler warnings flags */\n");
-        print("	    --append-compiler-warning-args {ARG}            /* Appends ARG to 'compiler warning flags */\n");
         print("	    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */\n");
         print("	    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n");
         print("	    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n");
@@ -1166,6 +1164,7 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$CWARNING_FLAGS = $var;
+			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
 		}
 		elsif ((lc ($var) eq "-append-compiler-warning-args") or (lc ($var) eq "--append-compiler-warning-args")) {
 			$i++;
@@ -1174,6 +1173,7 @@ sub	ParseCommandLine_Remaining_
 				$ADD2CWARNING_FLAGS .= " ";
 			}
 			$ADD2CWARNING_FLAGS .= $var;
+			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
 		}
 		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
 			$i++;
@@ -1964,6 +1964,7 @@ sub	WriteConfigFile_
 
 	
 	if (not ($CWARNING_FLAGS eq "")) {
+		### DEPRECATED###
 		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
 	}
 

@@ -241,8 +241,6 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
             --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */
             --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */
             --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */
-            --compiler-warning-args {ARG}                   /* Sets variable with compiler warnings flags */
-            --append-compiler-warning-args {ARG}            /* Appends ARG to 'compiler warning flags */
             --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */
             --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */
             --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */

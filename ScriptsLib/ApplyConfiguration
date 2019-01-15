@@ -477,6 +477,7 @@ sub WriteStroikaConfigMakeHeader
 
 
 	if (not ($CWARNING_FLAGS eq '')) {
+		print (OUT "#CWARNING_FLAGS ***DEPRECATED as of Stroika v2.1d15\n");
 		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
 	}
 
