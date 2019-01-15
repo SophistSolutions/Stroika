@@ -235,6 +235,8 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
                                                                given configuration: arg appears as a line in
                                                                Stroika-Configuration.h
                                                                (e.g. --c-define '\#define qCompilerAndStdLib_quick_exit_Buggy 1')*/
+                                                               similar to append-CPPFLAGS, except doesn't generate compiler argument, but
+                                                               Stroika-Current-Configuration.h contents*/\n");
             --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */
             --compiler-driver {ARG}                         /* default is gcc */
             --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */
