@@ -1,4 +1,8 @@
-TEST_NUM=$(shell basename `pwd`)
-include ../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(realpath ../../)/
 
-include $(StroikaRoot)/Tests/Projects/Unix/Makefile-Test-Template.mk
+ifneq ($(CONFIGURATION),)
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
+
+TEST_NUM=$(shell basename `pwd`)
+include $(StroikaRoot)/Tests/Makefile-Test-Template.mk

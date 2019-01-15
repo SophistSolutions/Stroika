@@ -241,6 +241,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests {top level}", "Tests {top level}", "{281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Tests\Makefile = ..\..\Tests\Makefile
+		..\..\Tests\Makefile-Test-Template.mk = ..\..\Tests\Makefile-Test-Template.mk
 		..\..\Tests\Tests-Description.txt = ..\..\Tests\Tests-Description.txt
 		..\..\Tests\ThreadSanitizerSuppressions.supp = ..\..\Tests\ThreadSanitizerSuppressions.supp
 		..\..\Tests\TODO.txt = ..\..\Tests\TODO.txt
@@ -259,19 +260,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\Tests\ScriptsLib\PrintTestsList = ..\..\Tests\ScriptsLib\PrintTestsList
 		..\..\Tests\ScriptsLib\PrintTestsList.pl = ..\..\Tests\ScriptsLib\PrintTestsList.pl
 		..\..\Tests\ScriptsLib\TestsList.pl = ..\..\Tests\ScriptsLib\TestsList.pl
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{F9F18DEE-5178-4CA2-93CC-4D139CCAE749}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\Tests\Projects\Unix\.gitignore = ..\..\Tests\Projects\Unix\.gitignore
-		..\..\Tests\Projects\Unix\Makefile-Test-Template.mk = ..\..\Tests\Projects\Unix\Makefile-Test-Template.mk
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project-Template", "{DF99323A-025D-4608-937C-FF5A382BCCBA}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\.gitignore = ..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\.gitignore
-		..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj = ..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj
-		..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj.filters = ..\..\Tests\Projects\VisualStudio.Net-2019\Project-Template\TestN.vcxproj.filters
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test49", "..\..\Tests\Projects\VisualStudio.Net-2019\49\Test49.vcxproj", "{F32BB2E2-28C3-44A1-959B-C8CCFEC4A30C}"
@@ -2142,8 +2130,6 @@ Global
 		{281EACD8-7BD9-4ABD-8AEF-8C024990AB6C} = {A4F20229-F4CF-4EC3-9887-AB6FBE5C3BAB}
 		{8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235} = {281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}
 		{15F1E993-1682-447B-9DB0-787D43E22EB5} = {281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}
-		{F9F18DEE-5178-4CA2-93CC-4D139CCAE749} = {8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}
-		{DF99323A-025D-4608-937C-FF5A382BCCBA} = {F9F18DEE-5178-4CA2-93CC-4D139CCAE749}
 		{704D0451-F85C-4C0B-802F-806B9AF680B5} = {8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}
 		{6364A1DA-F20C-4C0D-B705-31ECDEC046B4} = {704D0451-F85C-4C0B-802F-806B9AF680B5}
 	EndGlobalSection
