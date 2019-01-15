@@ -1162,12 +1162,6 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$STRIP = $var;
 		}
-		elsif ((lc ($var) eq "-compiler-warning-args") or (lc ($var) eq "--compiler-warning-args")) {
-			$i++;
-			$var = $args[$i];
-			$CWARNING_FLAGS = $var;
-			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
-		}
 		elsif ((lc ($var) eq "-append-compiler-warning-args") or (lc ($var) eq "--append-compiler-warning-args")) {
 			$i++;
 			$var = $args[$i];
@@ -1218,17 +1212,17 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
 		}
-		elsif ((lc ($var) eq "-append-CFLAGS") or (lc ($var) eq "--append-CFLAGS")) {
+		elsif ((lc ($var) eq "-append-CFLAGS") or (lc ($var) eq "--append-cflags")) {
 			$i++;
 			$var = $args[$i];
 			push @CFLAGS, $var;
 		}
-		elsif ((lc ($var) eq "-remove-CFLAGS") or (lc ($var) eq "--remove-CFLAGS")) {
+		elsif ((lc ($var) eq "-remove-CFLAGS") or (lc ($var) eq "--remove-cflags")) {
 			$i++;
 			$var = $args[$i];
 			push @CFLAGS2Remove, $var;
 		}
-		elsif ((lc ($var) eq "-replace-all -CFLAGS") or (lc ($var) eq "--replace-all-CFLAGS")) {
+		elsif ((lc ($var) eq "-replace-all -CFLAGS") or (lc ($var) eq "--replace-all-cflags")) {
 			$i++;
 			$var = $args[$i];
 			for my $i (split / /, $var) {
@@ -1236,17 +1230,17 @@ sub	ParseCommandLine_Remaining_
 			}
 			$CFLAGS_Overridden = true;
 		}
-		elsif ((lc ($var) eq "-append-CXXFLAGS") or (lc ($var) eq "--append-CXXFLAGS")) {
+		elsif ((lc ($var) eq "-append-CXXFLAGS") or (lc ($var) eq "--append-cxxflags")) {
 			$i++;
 			$var = $args[$i];
 			push @CXXFLAGS, $var;
 		}
-		elsif ((lc ($var) eq "-remove-CXXFLAGS") or (lc ($var) eq "--remove-CXXFLAGS")) {
+		elsif ((lc ($var) eq "-remove-CXXFLAGS") or (lc ($var) eq "--remove-cxxflags")) {
 			$i++;
 			$var = $args[$i];
 			push @CXXFLAGS2Remove, $var;
 		}
-		elsif ((lc ($var) eq "-replace-all -CXXFLAGS") or (lc ($var) eq "--replace-all-CXXFLAGS")) {
+		elsif ((lc ($var) eq "-replace-all -CXXFLAGS") or (lc ($var) eq "--replace-all-cxxflags")) {
 			$i++;
 			$var = $args[$i];
 			for my $i (split / /, $var) {
@@ -1254,7 +1248,7 @@ sub	ParseCommandLine_Remaining_
 			}
 			$CXXFLAGS_Overridden = true;
 		}
-		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
+		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-cppflags")) {
 			$i++;
 			$var = $args[$i];
 			push @CFLAGS, $var;
@@ -1435,6 +1429,12 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ (0);
+		}
+		elsif ((lc ($var) eq "-compiler-warning-args") or (lc ($var) eq "--compiler-warning-args")) {
+			$i++;
+			$var = $args[$i];
+			$CWARNING_FLAGS = $var;
+			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
 		}
         else {
             if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
