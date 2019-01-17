@@ -276,6 +276,8 @@ namespace Stroika::Frameworks::Service {
          *  This function / operation WILL FAIL if the service is already running (so this automatically implements
          *  protection against running multiple instances of the same service - singleton pattern.
          *
+         *  If the startup of the service fails due to exception, it will be propagated back to the caller.
+         *
          *  @see RunDirectly
          */
         nonvirtual void RunAsService ();
@@ -290,6 +292,8 @@ namespace Stroika::Frameworks::Service {
          *  When using RunDirectly - other operations like 'status' and 'kill' etc - will NOT function.
          *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
          *  so that can be debugged, but possibly also for testing or other purposes).
+         *
+         *  If the startup of the service fails due to exception, it will be propagated back to the caller.
          *
          *  @see RunAsService
          */

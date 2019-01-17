@@ -536,7 +536,7 @@ void Main::RunTilIdleService::_RunAsService ()
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
     float timeTilIdleHack = 3.0;
-    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone (timeTilIdleHack)); //tmphack - as
+    fRunThread_.Join (timeTilIdleHack); //tmphack
 }
 
 void Main::RunTilIdleService::_RunDirectly ()
@@ -548,7 +548,7 @@ void Main::RunTilIdleService::_RunDirectly ()
             appRep->MainLoop ([]() {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone ());
+    fRunThread_.Join ();
 }
 
 void Main::RunTilIdleService::_Start ([[maybe_unused]] Time::DurationSecondsType timeout)
@@ -719,8 +719,7 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_));
     Thread::Ptr t = fRunThread_.load ();
-    t.WaitForDone ();
-    t.ThrowIfDoneWithException ();
+    t.Join ();
 }
 
 void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -1016,8 +1015,7 @@ void Main::WindowsService::_RunDirectly ()
             appRep->MainLoop ([]() {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone ());
-    fRunThread_.ThrowIfDoneWithException ();
+    fRunThread_.Join ();
 }
 
 void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
@@ -1172,10 +1170,13 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
     //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 
-    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone ()); //tmphack - as
-    fServiceStatus_.dwWin32ExitCode = 0;
-
-    //Logger::Get ().Log (Logger::Priority::eInfo, "Service stopped");
+    try {
+        fRunThread_.Join ();
+    }
+    catch (...) {
+        DbgTrace (L"mapping run-thread.Join () exception %s to dwWin32ExitCode=1", Characters::ToString (current_exception ()));
+        fServiceStatus_.dwWin32ExitCode = 1; // some non-zero exit code
+    }
     SetServiceStatus_ (SERVICE_STOPPED);
 }
 
