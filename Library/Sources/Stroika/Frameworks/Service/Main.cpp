@@ -706,7 +706,7 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
         Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
-    fRunThread_.load ().WaitForDone ();
+    fRunThread_.load ().Join ();
 }
 
 void Main::BasicUNIXServiceImpl::_RunDirectly ()
