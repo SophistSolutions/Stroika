@@ -343,8 +343,7 @@ void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::Dura
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     Thread::Ptr                                         t{fRep_->fProcessRunner};
-    t.WaitForDone (timeout);
-    t.ThrowIfDoneWithException ();
+    t.Join (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::Terminate ()
@@ -489,15 +488,13 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
         // @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here - must shutdown threads on timeout!
         if (processResult == nullptr) {
             Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
-            t.WaitForDone (timeout);
-            t.ThrowIfDoneWithException ();
+            t.Join (timeout);
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
             [[maybe_unused]] auto&&                   cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
             Thread::Ptr                               t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
-            t.WaitForDone (timeout);
-            t.ThrowIfDoneWithException ();
+            t.Join (timeout);
         }
     }
 }
