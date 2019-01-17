@@ -91,7 +91,7 @@ endif
 
 #The 'deb' package creator requires the directory have particular permissions. on WSL (windows subsystem for linux)
 #using the /mnt filesystem, the permissions don't work. So use /tmp for these. But that means creating the directories
-#in a temp location (already emppty) and deleting it at the end (bit of a PITA if you want to review the data, but hten just
+#in a temp location (already emppty) and deleting it at the end (bit of a PITA if you want to review the data, but then just
 #comment out the delete line)
 #
 # NOTE - if you mount the drivefs filesystem with the option "metadata" permissions work, but until msft makes this the default

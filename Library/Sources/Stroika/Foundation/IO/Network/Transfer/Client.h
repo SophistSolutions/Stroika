@@ -38,7 +38,7 @@
  *              way to configure http client support library (winhttp versus libcurl or other).
  *
  *      @todo   Redo Response to fully/properly support incremental read through streams. Must do
- *              CTOR on response object taking a stream, and hten reasonably (tbd) how to handle
+ *              CTOR on response object taking a stream, and then reasonably (tbd) how to handle
  *              calls to getResponseBLOB? (probably assert or except?)
  *
  *      @todo   Progress Callbacks?
