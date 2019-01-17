@@ -240,6 +240,16 @@ namespace Stroika::Foundation::Execution {
             }
         return GetStatus_ ();
     }
+    inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const
+    {
+        JoinUntil (timeout + Time::GetTickCount ());
+    }
+    inline void Thread::Ptr::JoinUntil (Time::DurationSecondsType timeoutAt) const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        WaitForDoneUntil (timeoutAt);
+        ThrowIfDoneWithException ();
+    }
     inline void Thread::Ptr::WaitForDone (Time::DurationSecondsType timeout) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

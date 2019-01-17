@@ -25,17 +25,6 @@
  *      @todo   Probably no longer need siginterrupt () calls, since we DON'T set SA_RESTART in our call to sigaction().
  *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
- *
- *      @todo   Consider using ThrowIfDoneWithException () more thoroughly, possibly
- *              redefining the meaning of WaitForDone() or possibly adding WaitAndThrowAnyChildThreadExceptions
- *              or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
- *              of the thread?
- *
- *      @todo   Provide API where we can return a reference to the underlying thread object
- *              (but probably one to ADOPT an existing thread because then we couldnt hook the run-proc,
- *              which is needed for our exception stuff - I think.
- *
- *              (mostly did this - but keep todo around to update docs)
  */
 namespace Stroika::Foundation::Characters {
     class String;
@@ -201,6 +190,14 @@ namespace Stroika::Foundation::Execution {
      *          just cannot start a thread before main, nor allow it to still be running (not completed) before exiting.
      *          #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
      *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
+     *
+     *  \note   Considered adding an API to return the underlying std::thread or std::thread::native_handle (), but
+     *          have not needed this so far, and it might create some confusion about ownership? Detatching would be
+     *          a problem because the owned thread object has hooks into the Stroika Thread object, so that kind of
+     *          needs to be left around. I suppose we might want to allow an accessor to std::thread* which is like an
+     *          internal pointer (thread safety questions too with that). MAYBE better to just allow construction of a 
+     *          Stroika Thread from an std::thread (but then we don't have the wrapper logic for maining reference counts).
+     *          No compelling need so far, and no obviously best approach.
      */
     class Thread {
     public:
@@ -638,6 +635,63 @@ namespace Stroika::Foundation::Execution {
          *  @see Abort
          */
         nonvirtual void Interrupt () const;
+
+    public:
+        /**
+         *  \brief  Wait for the pointed-to thread to be done. If the thread completed with an exception (other than thread abort exception)
+         *          that exeception will be re-thrown in the calling thread.
+         *
+         *  This API is frequently preferred over WaitForDone () - because you frequently will do work in a thread which when failing - you want
+         *  reported somehow. But this is not ALWAYS desirable - like when you have worker threads are just trying to clean up, and don't care that
+         *  parts of it may have failed.
+         *
+         *  JoinUntil (timeout + Time::GetTickCount ());
+         *
+         *  @see WaitForDone ()
+         *  @see ThrowIfDoneWithException ()
+         *
+         *  \note ***Cancelation Point***
+         *
+         *  \req *this != nullptr
+         */
+        nonvirtual void Join (Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+    public:
+        /**
+         *  \brief  Wait for the pointed-to thread to be done. If the thread completed with an exception (other than thread abort exception)
+         *          that exeception will be re-thrown in the calling thread.
+         *
+         *  This API is frequently preferred over WaitForDone () - because you frequently will do work in a thread which when failing - you want
+         *  reported somehow. But this is not ALWAYS desirable - like when you have worker threads are just trying to clean up, and don't care that
+         *  parts of it may have failed.
+         *
+         *  WaitForDoneUnitl () followed up ThrowIfDoneWithException ()
+         *
+         *  \note   Considered using ThrowIfDoneWithException () always in WaitForDone() 
+         *          or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
+         *          of the thread?
+         *
+         *          Decided against always re-throwing because sometimes you just don't care for a given thread what sort of erorrs
+         *          it had (maybe cuz you've given up on the larger task).
+         *
+         *          Decided against encoding that choice in the Thread::New () function (making it a property) and then always doing in WaitForDone () - becaues
+         *          then the the choice would be far away from where the waiting is done - and that Waiting - really needs to be setup to KNOW its likely
+         *          to get an exception. So that seemed the wrong place.
+         *
+         *          Considered making this just an overload of WaitForDone () - with an extra param - reThrow - and thats really close to what I ended up 
+         *          with. But overloading would force me to pick a default, which would cause a struggle between backward compatabilitiy and what
+         *          I think is the more common case. Or maybe there is no clearly more common case. This name seems fine.
+         *
+         *  \note   Possible aliases WaitAndThrowAnyChildThreadExceptions, WaitForDoneUntilAndPropagateExceptions ()
+         *
+         *  @see WaitForDoneUntil ()
+         *  @see ThrowIfDoneWithException ()
+         *
+         *  \note ***Cancelation Point***
+         *
+         *  \req *this != nullptr
+         */
+        nonvirtual void JoinUntil (Time::DurationSecondsType timeoutAt) const;
 
     public:
         /**
