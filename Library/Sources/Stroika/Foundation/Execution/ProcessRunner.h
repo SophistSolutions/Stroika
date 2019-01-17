@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Execution {
          */
         struct ProcessResultType {
             optional<int> fExitStatus;
-            optional<int> fSignalNumber;
+            optional<int> fTerminatedByUncaughtSignalNumber;
         };
 
     public:
@@ -317,17 +317,44 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *
+         *  @see Join ()./B
+         *  @see JoinUntil ()
          */
         nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
     public:
         /**
+         *  \brief Join () does WaitForDone () and throw exception if there was any error (see PropagateIfException).
+         *
+         *  \note   Aliases - this used to be called WaitForDoneAndPropagateErrors; but used the name Join () to mimic the name used with Threads - NOT
+         *          because thats used in the implementation, but because its essentially logically the same thing.
+         *
+         *  @see JoinUntil ()
+         *  @see WaitForDone ()
          */
-        nonvirtual void WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual void Join (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
     public:
         /**
-         *   If the process has completed with an error, throw exception reflecting that failure.
+         *  \brief WaitForDoneUntil () and throw exception if there was any error (see PropagateIfException).
+         *
+         *  @see Join ()
+         *  @see WaitForDone ()
+         */
+        nonvirtual void JoinUntil (Time::DurationSecondsType timeoutAt) const;
+
+    public:
+        [[deprecated ("Use Join instead - as of v2.1d16")]] void WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout = Time::kInfinite) const
+        {
+            Join (timeout);
+        }
+
+    public:
+        /**
+         *  If the process has completed with an error, throw exception reflecting that failure.
+         *
+         *  \note if the process has not completed, this likely does nothing.
          */
         nonvirtual void PropagateIfException () const;
 

@@ -325,11 +325,16 @@ optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::Get
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (auto o = GetProcessResult ()) {
-        // usethis insteadt cuz thread may have terminated, and we still want ot do this..
-    }
-    Thread::Ptr t{fRep_->fProcessRunner};
+    Thread::Ptr                                         t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
+    if (auto o = GetProcessResult ()) {
+        if (o->fExitStatus and o->fExitStatus != 0) {
+            AssertNotReached (); // I don't think this can happen since it should have resulted in a propaged exception
+        }
+        if (o->fTerminatedByUncaughtSignalNumber) {
+            AssertNotReached (); // I don't think this can happen since it should have resulted in a propaged exception
+        }
+    }
 }
 
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
@@ -339,11 +344,20 @@ void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType ti
     t.WaitForDone (timeout);
 }
 
-void ProcessRunner::BackgroundProcess::WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout) const
+void ProcessRunner::BackgroundProcess::Join (Time::DurationSecondsType timeout) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     Thread::Ptr                                         t{fRep_->fProcessRunner};
     t.Join (timeout);
+    // if he asserts in PropagateIfException () are wrong, I may need to call that here!
+}
+
+void ProcessRunner::BackgroundProcess::JoinUntil (Time::DurationSecondsType timeoutAt) const
+{
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    Thread::Ptr                                         t{fRep_->fProcessRunner};
+    t.JoinUntil (timeoutAt);
+    // if he asserts in PropagateIfException () are wrong, I may need to call that here!
 }
 
 void ProcessRunner::BackgroundProcess::Terminate ()
