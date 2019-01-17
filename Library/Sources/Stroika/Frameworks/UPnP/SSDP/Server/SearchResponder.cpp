@@ -181,5 +181,5 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
             }
         },
         Execution::Thread::eAutoStart, kThreadName_);
-    fListenThread_.WaitForDone ();
+    fListenThread_.Join ();
 }

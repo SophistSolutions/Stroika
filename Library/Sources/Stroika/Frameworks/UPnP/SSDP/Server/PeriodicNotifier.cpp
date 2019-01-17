@@ -94,5 +94,5 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
             }
         },
         Execution::Thread::eAutoStart, kThreadName_);
-    fListenThread_.WaitForDone ();
+    fListenThread_.Join ();
 }
