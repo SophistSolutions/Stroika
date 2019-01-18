@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *
-         *  @see Join ()./B
+         *  @see Join ()
          *  @see JoinUntil ()
          */
         nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;

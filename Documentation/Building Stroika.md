@@ -338,7 +338,7 @@ The reason this is so important, is that it allows an external build system like
 
 Stroika itself is only provided as a static library. This is because static libraries are much simpler, better for optimizing, and more flexible about configuraiton of the particular build options desired.
 
-I cannot rule out ever providing a dynmaic link option/feature, but I see exceedingly little point to it.
+I cannot rule out ever providing a dynamic link option/feature, but I see exceedingly little point to it.
 
 Of course, you can still use dynamic (shared library) linking however you wish for any components you build (like you can build shared libraries with Stroika), and obviously for most operatiing systems, the libraries your apps must like to are shared libraries.
 
