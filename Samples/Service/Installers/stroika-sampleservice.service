@@ -1,4 +1,4 @@
-# INSTALL THIS FILE TO /etc/systemd/system/stroika-sampleservice.service
+# INSTALL THIS FILE TO /usr/lib/systemd/system/stroika-sampleservice.service
 
 [Unit]
 Description=Stroika Sample Service
@@ -7,7 +7,11 @@ After=syslog.target
 #Conflicts=sendmail.service exim.service
 
 [Service]
-#Type=forking
+#
+# NOTE, we can support Type=simple by setting ExecStart=/opt/Stroika-SampleService/Stroika-SampleService --run-directly
+# but then I'd have to read up on how todo restart/stop
+#
+Type=forking
 PIDFile=/run/Test-Service.pid
 #EnvironmentFile=-/etc/sysconfig/network
 #ExecStartPre=-/usr/libexec/postfix/aliasesdb
