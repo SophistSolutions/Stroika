@@ -12,7 +12,9 @@ After=syslog.target
 # but then I'd have to read up on how todo restart/stop
 #
 Type=forking
-PIDFile=/run/Test-Service.pid
+
+# In stroika, this defaults to IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + String_Constant{L".pid"};
+PIDFile=/var/run/Stroika-Sample-Service.pid
 #EnvironmentFile=-/etc/sysconfig/network
 #ExecStartPre=-/usr/libexec/postfix/aliasesdb
 #ExecStartPre=-/usr/libexec/postfix/chroot-update
