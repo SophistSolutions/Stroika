@@ -27,7 +27,49 @@ namespace Stroika::Foundation::Characters {
      ********************************* ToString *************************************
      ********************************************************************************
      */
-    namespace Private_ {
+	template <>
+	String ToString (const exception_ptr& t);
+	template <>
+	String ToString (const type_info& t);
+	template <>
+	String ToString (const type_index& t);
+
+	String ToString (const char* t);
+
+	/*
+	 * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
+	 *      There are five standard signed integer types : signed char, short int, int,
+	 *      long int, and long long int. In this list, each type provides at least as much
+	 *      storage as those preceding it in the list.
+	 *      For each of the standard signed integer types, there exists a corresponding (but different)
+	 *      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
+	 *      and unsigned long long int, each of which occupies the same amount of storage and has the
+	 *      same alignment requirements.
+	 */
+	template <>
+	String ToString (const bool& t);
+	template <>
+	String ToString (const signed char& t);
+	template <>
+	String ToString (const short int& t);
+	template <>
+	String ToString (const int& t);
+	template <>
+	String ToString (const long int& t);
+	template <>
+	String ToString (const long long int& t);
+	template <>
+	String ToString (const unsigned char& t);
+	template <>
+	String ToString (const unsigned short& t);
+	template <>
+	String ToString (const unsigned int& t);
+	template <>
+	String ToString (const unsigned long& t);
+	template <>
+	String ToString (const unsigned long long& t);
+
+	namespace Private_ {
 
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ToString, (x.ToString ()));
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginenditerable, (x.begin () != x.end ()));
@@ -196,48 +238,6 @@ namespace Stroika::Foundation::Characters {
     {
         return Private_::ToString_ (t);
     }
-
-    template <>
-    String ToString (const exception_ptr& t);
-    template <>
-    String ToString (const type_info& t);
-    template <>
-    String ToString (const type_index& t);
-
-    String ToString (const char* t);
-
-    /*
-     * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
-     *      There are five standard signed integer types : signed char, short int, int,
-     *      long int, and long long int. In this list, each type provides at least as much
-     *      storage as those preceding it in the list.
-     *      For each of the standard signed integer types, there exists a corresponding (but different)
-     *      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
-     *      and unsigned long long int, each of which occupies the same amount of storage and has the
-     *      same alignment requirements.
-     */
-    template <>
-    String ToString (const bool& t);
-    template <>
-    String ToString (const signed char& t);
-    template <>
-    String ToString (const short int& t);
-    template <>
-    String ToString (const int& t);
-    template <>
-    String ToString (const long int& t);
-    template <>
-    String ToString (const long long int& t);
-    template <>
-    String ToString (const unsigned char& t);
-    template <>
-    String ToString (const unsigned short& t);
-    template <>
-    String ToString (const unsigned int& t);
-    template <>
-    String ToString (const unsigned long& t);
-    template <>
-    String ToString (const unsigned long long& t);
 
 }
 

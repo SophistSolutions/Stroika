@@ -29,7 +29,8 @@ using Containers::Sequence;
 
 int main (int argc, const char* argv[])
 {
-    String targetAddress;
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};
+    String                    targetAddress;
     enum class MajorOp {
         ePing,
         eTraceroute,
