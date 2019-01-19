@@ -400,7 +400,7 @@ On any platform, building Stroika, and all is demo applications and regression t
   Builds the Stroika sample applications
 
 - `make run-tests`
-- `make ONFIGURATION=zyx run-tests REMOTE='lewis@raspberrypi'`
+- `make CONFIGURATION=zyx run-tests REMOTE='lewis@raspberrypi'`
 - `make CONFIGURATION=abc run-tests VALGRIND=memcheck`
 
   Builds Stroika, and all the regression tests, and runs the regression tests. If REMOTE= is specified, the code is copied to the target machine with ssh, and the test run there (helpful for when cross-compiling). VALGRIND= is used to run memcheck, leakcheck, or helgrind on the given configuraiton.
