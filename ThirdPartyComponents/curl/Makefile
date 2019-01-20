@@ -259,7 +259,6 @@ endif
 
 
 clean:
-	@rm -rf CURRENT ORIGS
 ifeq ($(CONFIGURATION),)
 	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/curl/
 else
