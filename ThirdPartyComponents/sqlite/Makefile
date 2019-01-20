@@ -84,12 +84,12 @@ SQLITE3OBJ=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3${OBJ
 OBJS=$(SQLITE3OBJ)
 
 
-#dependency on intermediate target allows make parallel without firing PRODUCED_OUTPUT_ARTIFACTS_ for each $(PRODUCED_OUTPUT_ARTIFACTS) target
-#Indirect through an extra makefile allows us to not rebuild (because intermediate files gone) after a make clean
-$(PRODUCED_OUTPUT_ARTIFACTS):	$(StroikaRoot)ConfigurationFiles/$(CONFIGURATION).xml
-	@$(MAKE) $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_
+#ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
+#multiple tries to run the same rule. So remap all to making the first.
+$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(StroikaRoot)ConfigurationFiles/$(CONFIGURATION).xml
+	@$(MAKE) $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
 
-$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/PRODUCED_OUTPUT_ARTIFACTS_:
+$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(MAKE) --silent CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build ..."
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
