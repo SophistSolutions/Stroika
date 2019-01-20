@@ -12,6 +12,11 @@ $(ObjDir):
 	@mkdir -p $(ObjDir)
 
 
+# Because of this rule (and others) - its important that Objs 'recursively expanded'
+$(Objs):	$(ObjDir)
+
+
+
 ### As of Stroika v2.1d15 disabled
 #%.o : %.cpp
 #	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables `realpath $<`) ... "
