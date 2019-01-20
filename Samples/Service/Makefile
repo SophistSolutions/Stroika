@@ -13,7 +13,6 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-#CXXFLAGS				+=	-I.
 CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Service/
@@ -77,9 +76,10 @@ endif
 clobber::
 	@rm -rf $(TARGETDIR)
 
+
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 else
-$(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
+$(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)/ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)";\
