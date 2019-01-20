@@ -12,7 +12,6 @@ $(ObjDir):
 	@mkdir -p $(ObjDir)
 
 
-# Because of this rule (and others) - its important that Objs 'recursively expanded'
 $(Objs):	$(ObjDir)
 
 
