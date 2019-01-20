@@ -2,7 +2,7 @@
 #
 #
 
-.PHONY:			all clean clobber list-objs Build
+.PHONY:			all clean clobber list-objs
 
 
 .SUFFIXES:	.o .cpp .i .h .swsp .a
