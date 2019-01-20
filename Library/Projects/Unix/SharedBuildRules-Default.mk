@@ -12,7 +12,7 @@ $(ObjDir):
 	@mkdir -p $(ObjDir)
 
 
-$(Objs):	$(ObjDir)
+$(Objs):	| $(ObjDir)
 
 
 
