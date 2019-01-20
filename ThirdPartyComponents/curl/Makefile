@@ -1,3 +1,10 @@
+#
+#	TODO:
+#		@todo	NOTE - try for $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)) and $(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+#				(repeated in most ThirdPartyComponents makefiles)
+#				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
+#				exceedingly rare case; but certainly a defect of this approach.
+
 export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
@@ -79,8 +86,7 @@ $(ZIPPEDFILE):
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
 #multiple tries to run the same rule. So remap all to making the first.
-$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(StroikaRoot)ConfigurationFiles/$(CONFIGURATION).xml
-	@$(MAKE) $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
 
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)

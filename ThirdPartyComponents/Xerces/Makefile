@@ -1,3 +1,14 @@
+#
+#	TODO:
+###		@todo	use cmake –G”Unix Makefiles” so that I can run make -jN (or so regular make inherits flags from $(MAKE)
+###				then use that to lose horrible MAKEFLAGS= hack
+###				***NOTE*** this is by far the slowest part of the UNIX build process (latency) - so this maybe a priority
+###
+#		@todo	NOTE - try for $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)) and $(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+#				(repeated in most ThirdPartyComponents makefiles)
+#				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
+#				exceedingly rare case; but certainly a defect of this approach.
+#
 export StroikaRoot?=$(shell realpath ../..)/
 
 ifneq ($(CONFIGURATION),)
@@ -10,10 +21,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 ###
 ### TODO:
-###		@todo	use cmake –G”Unix Makefiles” so that I can run make -jN (or so regular make inherits flags from $(MAKE)
-###				then use that to lose horrible MAKEFLAGS= hack
-###				***NOTE*** this is by far the slowest part of the UNIX build process (latency) - so this maybe a priority
-###
 
 
 VERSION=3.2.2
@@ -138,8 +145,7 @@ endif
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
 #multiple tries to run the same rule. So remap all to making the first.
-$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(StroikaRoot)ConfigurationFiles/$(CONFIGURATION).xml
-	@$(MAKE) $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
 
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)
