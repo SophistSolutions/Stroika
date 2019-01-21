@@ -20,6 +20,77 @@ History
 
 
 
+    
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d16">v2.1d16</a><br/>2019-01-21x</td>
+<td>
+    <ul>
+        <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d15...v2.1d16</li>
+        <li>Make/Build system and ThirdPartyComponents/Makefiles
+            <ul>
+                <li>slight refactor - adding extra indirection in thirdpartycomponents makefiles - so no need to rebuild
+	all of third party components after make clean but still works with parallel make</li>
+                <li>fixed thirdpartycompoentns stuff to work with clean/clobber and parallel make</li>
+                <li>added $(Objs):       $(ObjDir) rule to Unix/SharedBuildRules-Default.mk</li>
+                <li>makefile fix : string = intead of == bash</li>
+                <li>deprecate OBJSUFFIX, LIBSUFFIX, and use OBJ_SUFFIX, LIB_SUFFIX, and EXE_SUFFIX (gen from ApplyConfigurations)
+				and use those new vars in place of .o, .a, .exe - so that makefiles between windows and unix will be more uniform</li>
+            </ul>
+        </li>
+        <li>Frameworks::Service
+            <ul>
+                <li>Replace Thread::Ptr t; t.WaitForDone () followed by t.t.ThrowIfDoneWithException () in several places (essentially a no-op).</li>
+                <li>Replace fRunThread.WaitForDone () with .Join () in a few places - in one case a critical bug fix -
+                    fixing issue in WTF - where failure on startup wasn't reported - because it failed in one thread and that failure never
+                    got propagated to the calling thread.</li>
+                <li>Cleanup some IgnoreExceptionsExceptThreadInterruptForCall () and those waits - get rid of most of them
+                    and document that the RunDirectly etc methods all propagate service thread exceptions</li>
+                <li>Likewise for Main::WindowsService::_Start () - but also set
+                    fServiceStatus_.dwWin32ExitCode to 1 on caught propagated exception</li>
+                <li>must include Type=forking for stroika-sampleservice.service (else systemd thinks failed to start)</li>
+                <li>fixed bad PIDFILE name and docs in Samples/Service/Installers/stroika-sampleservice.service</li>
+            </ul>
+        </li>
+        <li>Execution
+            <ul>
+                <li>new methods Thread::Ptr::Join () and Thread::Ptr::JoinUntil () - ***PREFERRED OVER Thread::Ptr::WaitForDone () ***</li>
+                <li>In Execution::ProcessRunner - replace t.WaitForDone ()/t.ThrowIfDoneWithException () with t.Join () - 
+				so semantically no change - just cleanup</li>
+                <li>ProcessRunner: WaitForDoneAndPropagateErrors DEPRECATED: replaced with Join (); and JoinUntil</li>
+            </ul>
+        </li>
+        <li>Frameworks/UPNP/SSDP listener/notifier - use fListenerThread.Join () instead of .WaitForDone () - so exceptions they experience in their guts maybe propagated to their caller</li>
+        <li>Small fix to ToString () code so Characters::ToString (vector<const char*> (argv, argv + argc)): 
+		now works with argv from main () of apps, and then used that in most sample apps: Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (Lmain, Largv=%s, Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};</li>
+        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d15.txt</li>
+        <li>Tested (passed regtests)
+            <ul>
+                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d15-OUT.txt</li>
+                <li>vc++2k17 (15.9.5)</li>
+                <li>vc++2k19 (16.0.0-preview)</li>
+                <li>MacOS, XCode 10</li>
+                <li>Ubuntu 18.04, Ubuntu 18.10</li>
+                <li>gcc 7, gcc 8</li>
+                <li>clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}</li>
+                <li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+                <li>cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and valgrind:memcheck/helgrind</li>
+                <li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+            </ul>
+        </li>
+        <li>Known issues
+            <ul>
+                <li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+                    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>https://stroika.atlassian.net/browse/STK-675 failures/warnings testing on raspberrypi build on ununtu 1810</li>
+				<li>See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.</li>
+            </ul>
+        </li>
+    </ul>
+</td>
+</tr>
+
+
 
 
 
