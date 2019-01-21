@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Streams {
         _SharedIRep fRep_;
 
     private:
-        bool fSeekable_;
+        bool fSeekable_{false};
     };
 
     template <typename ELEMENT_TYPE>
