@@ -6,6 +6,7 @@ BuildClang text eol=lf
 BuildGCC text eol=lf
 CheckFileExists text eol=lf
 CheckValidConfiguration text eol=lf
+DoGitRelease text eol=lf
 ExtractVersionInformation text eol=lf
 FormatCode text eol=lf
 GetCompilerArch text eol=lf
