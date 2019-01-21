@@ -61,7 +61,7 @@ PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR)lib/lzma.lib
 endif
 
 
-OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}/Inter.../Thir.../lzma/"
+OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../lzma/"
 
 
 
