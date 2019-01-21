@@ -1,219 +1,219 @@
 
 
-OBJSUFFIX=o
-LIBSUFFIX=a
+OBJ_SUFFIX=.o
+LIB_SUFFIX=.a
 
 COMMON_OBJS = \
-  CommandLineParser.$(OBJSUFFIX) \
-  CRC.$(OBJSUFFIX) \
-  CrcReg.$(OBJSUFFIX) \
-  IntToString.$(OBJSUFFIX) \
-  ListFileUtils.$(OBJSUFFIX) \
-  NewHandler.$(OBJSUFFIX) \
-  StdInStream.$(OBJSUFFIX) \
-  StdOutStream.$(OBJSUFFIX) \
-  MyString.$(OBJSUFFIX) \
-  Sha256Reg.$(OBJSUFFIX) \
-  StringConvert.$(OBJSUFFIX) \
-  StringToInt.$(OBJSUFFIX) \
-  UTFConvert.$(OBJSUFFIX) \
-  MyVector.$(OBJSUFFIX) \
-  Wildcard.$(OBJSUFFIX) \
-  XzCrc64Reg.$(OBJSUFFIX) \
+  CommandLineParser$(OBJ_SUFFIX) \
+  CRC$(OBJ_SUFFIX) \
+  CrcReg$(OBJ_SUFFIX) \
+  IntToString$(OBJ_SUFFIX) \
+  ListFileUtils$(OBJ_SUFFIX) \
+  NewHandler$(OBJ_SUFFIX) \
+  StdInStream$(OBJ_SUFFIX) \
+  StdOutStream$(OBJ_SUFFIX) \
+  MyString$(OBJ_SUFFIX) \
+  Sha256Reg$(OBJ_SUFFIX) \
+  StringConvert$(OBJ_SUFFIX) \
+  StringToInt$(OBJ_SUFFIX) \
+  UTFConvert$(OBJ_SUFFIX) \
+  MyVector$(OBJ_SUFFIX) \
+  Wildcard$(OBJ_SUFFIX) \
+  XzCrc64Reg$(OBJ_SUFFIX) \
 
 WIN_OBJS = \
-  DLL.$(OBJSUFFIX) \
-  ErrorMsg.$(OBJSUFFIX) \
-  FileDir.$(OBJSUFFIX) \
-  FileFind.$(OBJSUFFIX) \
-  FileIO.$(OBJSUFFIX) \
-  FileLink.$(OBJSUFFIX) \
-  FileName.$(OBJSUFFIX) \
-  MemoryLock.$(OBJSUFFIX) \
-  PropVariant.$(OBJSUFFIX) \
-  PropVariantConv.$(OBJSUFFIX) \
-  Synchronization.$(OBJSUFFIX) \
-  System.$(OBJSUFFIX) \
-  TimeUtils.$(OBJSUFFIX) \
+  DLL$(OBJ_SUFFIX) \
+  ErrorMsg$(OBJ_SUFFIX) \
+  FileDir$(OBJ_SUFFIX) \
+  FileFind$(OBJ_SUFFIX) \
+  FileIO$(OBJ_SUFFIX) \
+  FileLink$(OBJ_SUFFIX) \
+  FileName$(OBJ_SUFFIX) \
+  MemoryLock$(OBJ_SUFFIX) \
+  PropVariant$(OBJ_SUFFIX) \
+  PropVariantConv$(OBJ_SUFFIX) \
+  Synchronization$(OBJ_SUFFIX) \
+  System$(OBJ_SUFFIX) \
+  TimeUtils$(OBJ_SUFFIX) \
 
 7ZIP_COMMON_OBJS = \
-  CreateCoder.$(OBJSUFFIX) \
-  CWrappers.$(OBJSUFFIX) \
-  FilePathAutoRename.$(OBJSUFFIX) \
-  FileStreams.$(OBJSUFFIX) \
-  InBuffer.$(OBJSUFFIX) \
-  InOutTempBuffer.$(OBJSUFFIX) \
-  FilterCoder.$(OBJSUFFIX) \
-  LimitedStreams.$(OBJSUFFIX) \
-  MethodId.$(OBJSUFFIX) \
-  MethodProps.$(OBJSUFFIX) \
-  OffsetStream.$(OBJSUFFIX) \
-  OutBuffer.$(OBJSUFFIX) \
-  ProgressUtils.$(OBJSUFFIX) \
-  PropId.$(OBJSUFFIX) \
-  StreamBinder.$(OBJSUFFIX) \
-  StreamObjects.$(OBJSUFFIX) \
-  StreamUtils.$(OBJSUFFIX) \
-  UniqBlocks.$(OBJSUFFIX) \
-  VirtThread.$(OBJSUFFIX) \
+  CreateCoder$(OBJ_SUFFIX) \
+  CWrappers$(OBJ_SUFFIX) \
+  FilePathAutoRename$(OBJ_SUFFIX) \
+  FileStreams$(OBJ_SUFFIX) \
+  InBuffer$(OBJ_SUFFIX) \
+  InOutTempBuffer$(OBJ_SUFFIX) \
+  FilterCoder$(OBJ_SUFFIX) \
+  LimitedStreams$(OBJ_SUFFIX) \
+  MethodId$(OBJ_SUFFIX) \
+  MethodProps$(OBJ_SUFFIX) \
+  OffsetStream$(OBJ_SUFFIX) \
+  OutBuffer$(OBJ_SUFFIX) \
+  ProgressUtils$(OBJ_SUFFIX) \
+  PropId$(OBJ_SUFFIX) \
+  StreamBinder$(OBJ_SUFFIX) \
+  StreamObjects$(OBJ_SUFFIX) \
+  StreamUtils$(OBJ_SUFFIX) \
+  UniqBlocks$(OBJ_SUFFIX) \
+  VirtThread$(OBJ_SUFFIX) \
 
 AR_OBJS = \
-  LzmaHandler.$(OBJSUFFIX) \
-  SplitHandler.$(OBJSUFFIX) \
-  XzHandler.$(OBJSUFFIX) \
+  LzmaHandler$(OBJ_SUFFIX) \
+  SplitHandler$(OBJ_SUFFIX) \
+  XzHandler$(OBJ_SUFFIX) \
 
 AR_COMMON_OBJS = \
-  CoderMixer2.$(OBJSUFFIX) \
-  CrossThreadProgress.$(OBJSUFFIX) \
-  DummyOutStream.$(OBJSUFFIX) \
-  HandlerOut.$(OBJSUFFIX) \
-  InStreamWithCRC.$(OBJSUFFIX) \
-  ItemNameUtils.$(OBJSUFFIX) \
-  MultiStream.$(OBJSUFFIX) \
-  OutStreamWithCRC.$(OBJSUFFIX) \
-  ParseProperties.$(OBJSUFFIX) \
+  CoderMixer2$(OBJ_SUFFIX) \
+  CrossThreadProgress$(OBJ_SUFFIX) \
+  DummyOutStream$(OBJ_SUFFIX) \
+  HandlerOut$(OBJ_SUFFIX) \
+  InStreamWithCRC$(OBJ_SUFFIX) \
+  ItemNameUtils$(OBJ_SUFFIX) \
+  MultiStream$(OBJ_SUFFIX) \
+  OutStreamWithCRC$(OBJ_SUFFIX) \
+  ParseProperties$(OBJ_SUFFIX) \
 
 
 7Z_OBJS = \
-  $O\7zCompressionMode.$(OBJSUFFIX) \
-  $O\7zDecode.$(OBJSUFFIX) \
-  $O\7zEncode.$(OBJSUFFIX) \
-  $O\7zExtract.$(OBJSUFFIX) \
-  $O\7zFolderInStream.$(OBJSUFFIX) \
-  $O\7zFolderOutStream.$(OBJSUFFIX) \
-  $O\7zHandler.$(OBJSUFFIX) \
-  $O\7zHandlerOut.$(OBJSUFFIX) \
-  $O\7zHeader.$(OBJSUFFIX) \
-  $O\7zIn.$(OBJSUFFIX) \
-  $O\7zOut.$(OBJSUFFIX) \
-  $O\7zProperties.$(OBJSUFFIX) \
-  $O\7zRegister.$(OBJSUFFIX) \
-  $O\7zSpecStream.$(OBJSUFFIX) \
-  $O\7zUpdate.$(OBJSUFFIX) \
+  $O\7zCompressionMode$(OBJ_SUFFIX) \
+  $O\7zDecode$(OBJ_SUFFIX) \
+  $O\7zEncode$(OBJ_SUFFIX) \
+  $O\7zExtract$(OBJ_SUFFIX) \
+  $O\7zFolderInStream$(OBJ_SUFFIX) \
+  $O\7zFolderOutStream$(OBJ_SUFFIX) \
+  $O\7zHandler$(OBJ_SUFFIX) \
+  $O\7zHandlerOut$(OBJ_SUFFIX) \
+  $O\7zHeader$(OBJ_SUFFIX) \
+  $O\7zIn$(OBJ_SUFFIX) \
+  $O\7zOut$(OBJ_SUFFIX) \
+  $O\7zProperties$(OBJ_SUFFIX) \
+  $O\7zRegister$(OBJ_SUFFIX) \
+  $O\7zSpecStream$(OBJ_SUFFIX) \
+  $O\7zUpdate$(OBJ_SUFFIX) \
 
 COMPRESS_OBJS = \
-  $O\Bcj2Coder.$(OBJSUFFIX) \
-  $O\Bcj2Register.$(OBJSUFFIX) \
-  $O\BcjCoder.$(OBJSUFFIX) \
-  $O\BcjRegister.$(OBJSUFFIX) \
-  $O\BranchMisc.$(OBJSUFFIX) \
-  $O\BranchRegister.$(OBJSUFFIX) \
-  $O\ByteSwap.$(OBJSUFFIX) \
-  $O\CopyCoder.$(OBJSUFFIX) \
-  $O\CopyRegister.$(OBJSUFFIX) \
-  $O\DeltaFilter.$(OBJSUFFIX) \
-  $O\Lzma2Decoder.$(OBJSUFFIX) \
-  $O\Lzma2Encoder.$(OBJSUFFIX) \
-  $O\Lzma2Register.$(OBJSUFFIX) \
-  $O\LzmaDecoder.$(OBJSUFFIX) \
-  $O\LzmaEncoder.$(OBJSUFFIX) \
-  $O\LzmaRegister.$(OBJSUFFIX) \
+  $O\Bcj2Coder$(OBJ_SUFFIX) \
+  $O\Bcj2Register$(OBJ_SUFFIX) \
+  $O\BcjCoder$(OBJ_SUFFIX) \
+  $O\BcjRegister$(OBJ_SUFFIX) \
+  $O\BranchMisc$(OBJ_SUFFIX) \
+  $O\BranchRegister$(OBJ_SUFFIX) \
+  $O\ByteSwap$(OBJ_SUFFIX) \
+  $O\CopyCoder$(OBJ_SUFFIX) \
+  $O\CopyRegister$(OBJ_SUFFIX) \
+  $O\DeltaFilter$(OBJ_SUFFIX) \
+  $O\Lzma2Decoder$(OBJ_SUFFIX) \
+  $O\Lzma2Encoder$(OBJ_SUFFIX) \
+  $O\Lzma2Register$(OBJ_SUFFIX) \
+  $O\LzmaDecoder$(OBJ_SUFFIX) \
+  $O\LzmaEncoder$(OBJ_SUFFIX) \
+  $O\LzmaRegister$(OBJ_SUFFIX) \
 
 CRYPTO_OBJS = \
-  7zAes.$(OBJSUFFIX) \
-  7zAesRegister.$(OBJSUFFIX) \
-  MyAes.$(OBJSUFFIX) \
-  MyAesReg.$(OBJSUFFIX) \
-  RandGen.$(OBJSUFFIX) \
+  7zAes$(OBJ_SUFFIX) \
+  7zAesRegister$(OBJ_SUFFIX) \
+  MyAes$(OBJ_SUFFIX) \
+  MyAesReg$(OBJ_SUFFIX) \
+  RandGen$(OBJ_SUFFIX) \
 
 
 
 
 
 C_OBJS = \
-  7zStream.$(OBJSUFFIX) \
-  7zAlloc.$(OBJSUFFIX) \
-  7zArcIn.$(OBJSUFFIX) \
-  7zBuf.$(OBJSUFFIX) \
-  7zBuf2.$(OBJSUFFIX) \
-  7zCrc.$(OBJSUFFIX) \
-  7zCrcOpt.$(OBJSUFFIX) \
-  7zDec.$(OBJSUFFIX) \
-  CpuArch.$(OBJSUFFIX) \
-  Delta.$(OBJSUFFIX) \
-  LzmaDec.$(OBJSUFFIX) \
-  Lzma2Dec.$(OBJSUFFIX) \
-  Ppmd7.$(OBJSUFFIX) \
-  Ppmd7Dec.$(OBJSUFFIX) \
-  7zFile.$(OBJSUFFIX) \
-  7zStream.$(OBJSUFFIX) \
-  7zArcIn.$(OBJSUFFIX) \
-  Alloc.$(OBJSUFFIX) \
-  Bcj2.$(OBJSUFFIX) \
-  Bra.$(OBJSUFFIX) \
-  Bra86.$(OBJSUFFIX) \
-  BraIA64.$(OBJSUFFIX) \
-  CpuArch.$(OBJSUFFIX) \
-  Delta.$(OBJSUFFIX) \
-  LzFind.$(OBJSUFFIX) \
-  Lzma2Dec.$(OBJSUFFIX) \
-  Lzma2Enc.$(OBJSUFFIX) \
-  LzmaDec.$(OBJSUFFIX) \
-  LzmaEnc.$(OBJSUFFIX) \
-  Sha256.$(OBJSUFFIX) \
-  Sort.$(OBJSUFFIX) \
-  Xz.$(OBJSUFFIX) \
-  XzDec.$(OBJSUFFIX) \
-  XzEnc.$(OBJSUFFIX) \
-  XzIn.$(OBJSUFFIX)
+  7zStream$(OBJ_SUFFIX) \
+  7zAlloc$(OBJ_SUFFIX) \
+  7zArcIn$(OBJ_SUFFIX) \
+  7zBuf$(OBJ_SUFFIX) \
+  7zBuf2$(OBJ_SUFFIX) \
+  7zCrc$(OBJ_SUFFIX) \
+  7zCrcOpt$(OBJ_SUFFIX) \
+  7zDec$(OBJ_SUFFIX) \
+  CpuArch$(OBJ_SUFFIX) \
+  Delta$(OBJ_SUFFIX) \
+  LzmaDec$(OBJ_SUFFIX) \
+  Lzma2Dec$(OBJ_SUFFIX) \
+  Ppmd7$(OBJ_SUFFIX) \
+  Ppmd7Dec$(OBJ_SUFFIX) \
+  7zFile$(OBJ_SUFFIX) \
+  7zStream$(OBJ_SUFFIX) \
+  7zArcIn$(OBJ_SUFFIX) \
+  Alloc$(OBJ_SUFFIX) \
+  Bcj2$(OBJ_SUFFIX) \
+  Bra$(OBJ_SUFFIX) \
+  Bra86$(OBJ_SUFFIX) \
+  BraIA64$(OBJ_SUFFIX) \
+  CpuArch$(OBJ_SUFFIX) \
+  Delta$(OBJ_SUFFIX) \
+  LzFind$(OBJ_SUFFIX) \
+  Lzma2Dec$(OBJ_SUFFIX) \
+  Lzma2Enc$(OBJ_SUFFIX) \
+  LzmaDec$(OBJ_SUFFIX) \
+  LzmaEnc$(OBJ_SUFFIX) \
+  Sha256$(OBJ_SUFFIX) \
+  Sort$(OBJ_SUFFIX) \
+  Xz$(OBJ_SUFFIX) \
+  XzDec$(OBJ_SUFFIX) \
+  XzEnc$(OBJ_SUFFIX) \
+  XzIn$(OBJ_SUFFIX)
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 C_OBJS+=\
-  Bcj2Enc.$(OBJSUFFIX)\
-  MtCoder.$(OBJSUFFIX)\
-  Threads.$(OBJSUFFIX)\
-  LzFindMt.$(OBJSUFFIX)
+  Bcj2Enc$(OBJ_SUFFIX)\
+  MtCoder$(OBJ_SUFFIX)\
+  Threads$(OBJ_SUFFIX)\
+  LzFindMt$(OBJ_SUFFIX)
 endif
   
   
 LibObjs=	\
 		$(C_OBJS)\
-		C_FileIO.$(OBJSUFFIX) \
-		System.$(OBJSUFFIX) \
-		Bench.$(OBJSUFFIX) \
-		BenchCon.$(OBJSUFFIX) \
-		ConsoleClose.$(OBJSUFFIX) \
-		LzmaDecoder.$(OBJSUFFIX) \
-		LzmaEncoder.$(OBJSUFFIX) \
-		LzmaRegister.$(OBJSUFFIX) \
-		CreateCoder.$(OBJSUFFIX) \
-		CWrappers.$(OBJSUFFIX) \
-		FileStreams.$(OBJSUFFIX) \
-		FilterCoder.$(OBJSUFFIX) \
-		MethodProps.$(OBJSUFFIX) \
-		StreamUtils.$(OBJSUFFIX) \
-		CommandLineParser.$(OBJSUFFIX) \
-		CRC.$(OBJSUFFIX) \
-		CrcReg.$(OBJSUFFIX) \
-		IntToString.$(OBJSUFFIX) \
-		MyString.$(OBJSUFFIX) \
-		MyVector.$(OBJSUFFIX) \
-		MyWindows.$(OBJSUFFIX) \
-		StringConvert.$(OBJSUFFIX) \
-		StringToInt.$(OBJSUFFIX) \
-		PropVariant.$(OBJSUFFIX) \
-		7zCrc.$(OBJSUFFIX) \
-		7zCrcOpt.$(OBJSUFFIX) \
-		Alloc.$(OBJSUFFIX) \
-		Bra86.$(OBJSUFFIX) \
-		CpuArch.$(OBJSUFFIX) \
-		LzFind.$(OBJSUFFIX) \
-		LzmaDec.$(OBJSUFFIX) \
-		LzmaEnc.$(OBJSUFFIX) \
-		Lzma86Dec.$(OBJSUFFIX) \
-		Lzma86Enc.$(OBJSUFFIX)
+		C_FileIO$(OBJ_SUFFIX) \
+		System$(OBJ_SUFFIX) \
+		Bench$(OBJ_SUFFIX) \
+		BenchCon$(OBJ_SUFFIX) \
+		ConsoleClose$(OBJ_SUFFIX) \
+		LzmaDecoder$(OBJ_SUFFIX) \
+		LzmaEncoder$(OBJ_SUFFIX) \
+		LzmaRegister$(OBJ_SUFFIX) \
+		CreateCoder$(OBJ_SUFFIX) \
+		CWrappers$(OBJ_SUFFIX) \
+		FileStreams$(OBJ_SUFFIX) \
+		FilterCoder$(OBJ_SUFFIX) \
+		MethodProps$(OBJ_SUFFIX) \
+		StreamUtils$(OBJ_SUFFIX) \
+		CommandLineParser$(OBJ_SUFFIX) \
+		CRC$(OBJ_SUFFIX) \
+		CrcReg$(OBJ_SUFFIX) \
+		IntToString$(OBJ_SUFFIX) \
+		MyString$(OBJ_SUFFIX) \
+		MyVector$(OBJ_SUFFIX) \
+		MyWindows$(OBJ_SUFFIX) \
+		StringConvert$(OBJ_SUFFIX) \
+		StringToInt$(OBJ_SUFFIX) \
+		PropVariant$(OBJ_SUFFIX) \
+		7zCrc$(OBJ_SUFFIX) \
+		7zCrcOpt$(OBJ_SUFFIX) \
+		Alloc$(OBJ_SUFFIX) \
+		Bra86$(OBJ_SUFFIX) \
+		CpuArch$(OBJ_SUFFIX) \
+		LzFind$(OBJ_SUFFIX) \
+		LzmaDec$(OBJ_SUFFIX) \
+		LzmaEnc$(OBJ_SUFFIX) \
+		Lzma86Dec$(OBJ_SUFFIX) \
+		Lzma86Enc$(OBJ_SUFFIX)
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 LibObjs+=		\
-  FileIO.$(OBJSUFFIX)\
-  System.$(OBJSUFFIX)
+  FileIO$(OBJ_SUFFIX)\
+  System$(OBJ_SUFFIX)
 endif
 
 
 
 Objs=	$(LibObjs) \
-		LzmaAlone.$(OBJSUFFIX) \
+		LzmaAlone$(OBJ_SUFFIX) \
 
 
 SubDirs2Compile=	\
@@ -247,31 +247,31 @@ LINKTARGETPREFIX= -o
 #-D_7ZIP_PPMD_SUPPPORT
 
 
-%.$(OBJSUFFIX) : %.cpp
+%$(OBJ_SUFFIX) : %.cpp
 	echo "$(CXX)" $(CFLAGS) -c $<
 	"$(CXX)" $(CFLAGS) -c $<
 
-%.$(OBJSUFFIX) : %.c
+%$(OBJ_SUFFIX) : %.c
 	echo "$(CC)" $(CFLAGS) -c $<
 	"$(CC)" $(CFLAGS) -c $<
 
 
-all:		lzma.$(LIBSUFFIX) 7zDec$(EXESUFFIX) lzma$(EXESUFFIX)
+all:		lzma$(LIB_SUFFIX) 7zDec$(EXE_SUFFIX) lzma$(EXE_SUFFIX)
 
-lzma.$(LIBSUFFIX):	$(LibObjs)
-	echo "$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
-	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
+lzma$(LIB_SUFFIX):	$(LibObjs)
+	echo "$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma$(LIB_SUFFIX) $(LibObjs)
+	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma$(LIB_SUFFIX) $(LibObjs)
 
-7zDec$(EXESUFFIX):	7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
-	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXESUFFIX) 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
-	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXESUFFIX) 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
+7zDec$(EXE_SUFFIX):	7zMain$(OBJ_SUFFIX) lzma$(LIB_SUFFIX)
+	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXE_SUFFIX) 7zMain$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
+	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXE_SUFFIX) 7zMain$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
 	
-lzma$(EXESUFFIX):	LzmaAlone.$(OBJSUFFIX) 	lzma.$(LIBSUFFIX)
-	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXESUFFIX) LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
-	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXESUFFIX) LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX) $(LIBS)
+lzma$(EXE_SUFFIX):	LzmaAlone$(OBJ_SUFFIX) 	lzma$(LIB_SUFFIX)
+	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXE_SUFFIX) LzmaAlone$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
+	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXE_SUFFIX) LzmaAlone$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
 
 clean:
-	@rm -f *.$(OBJSUFFIX)
+	@rm -f *$(OBJ_SUFFIX)
 
 clobber:	clean
-	@rm -f *.$(LIBSUFFIX) lzma
+	@rm -f *$(LIB_SUFFIX) lzma

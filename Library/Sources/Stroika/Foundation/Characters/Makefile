@@ -12,15 +12,15 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Character.o\
-	$(ObjDir)CodePage.o\
-	$(ObjDir)FloatConversion.o\
-	$(ObjDir)Format.o\
-	$(ObjDir)RegularExpression.o\
-	$(ObjDir)String.o\
-	$(ObjDir)StringBuilder.o\
-	$(ObjDir)String2Int.o\
-	$(ObjDir)ToString.o\
+	$(ObjDir)Character${OBJ_SUFFIX}\
+	$(ObjDir)CodePage${OBJ_SUFFIX}\
+	$(ObjDir)FloatConversion${OBJ_SUFFIX}\
+	$(ObjDir)Format${OBJ_SUFFIX}\
+	$(ObjDir)RegularExpression${OBJ_SUFFIX}\
+	$(ObjDir)String${OBJ_SUFFIX}\
+	$(ObjDir)StringBuilder${OBJ_SUFFIX}\
+	$(ObjDir)String2Int${OBJ_SUFFIX}\
+	$(ObjDir)ToString${OBJ_SUFFIX}\
 
 SubDirs	=	\
 	Concrete \

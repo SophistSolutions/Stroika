@@ -17,18 +17,14 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 Includes				+=	-I.
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ArchiveUtility/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)ArchiveUtility.exe
-else
-TARGETEXE				=	$(TARGETDIR)ArchiveUtility
-endif
+TARGETEXE				=	$(TARGETDIR)ArchiveUtility${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)ArchiveUtility.o\
+	$(ObjDir)ArchiveUtility${OBJ_SUFFIX}\
 
 
 all:

@@ -14,8 +14,8 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)String_ExternalMemoryOwnership_ApplicationLifetime.o\
-	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime.o\
+	$(ObjDir)String_ExternalMemoryOwnership_ApplicationLifetime${OBJ_SUFFIX}\
+	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime${OBJ_SUFFIX}\
 
 .PHONY:	$(SubDirs)
 

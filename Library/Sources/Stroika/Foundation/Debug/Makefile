@@ -12,14 +12,14 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Assertions.o\
-	$(ObjDir)AssertExternallySynchronizedLock.o\
-	$(ObjDir)BackTrace.o\
-	$(ObjDir)Debugger.o\
-	$(ObjDir)Demangle.o\
-	$(ObjDir)Fatal.o\
-	$(ObjDir)MallocGuard.o\
-	$(ObjDir)Trace.o\
+	$(ObjDir)Assertions${OBJ_SUFFIX}\
+	$(ObjDir)AssertExternallySynchronizedLock${OBJ_SUFFIX}\
+	$(ObjDir)BackTrace${OBJ_SUFFIX}\
+	$(ObjDir)Debugger${OBJ_SUFFIX}\
+	$(ObjDir)Demangle${OBJ_SUFFIX}\
+	$(ObjDir)Fatal${OBJ_SUFFIX}\
+	$(ObjDir)MallocGuard${OBJ_SUFFIX}\
+	$(ObjDir)Trace${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

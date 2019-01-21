@@ -14,8 +14,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)ICMP.o\
-	$(ObjDir)IP.o\
+	$(ObjDir)ICMP${OBJ_SUFFIX}\
+	$(ObjDir)IP${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

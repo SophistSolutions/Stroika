@@ -15,18 +15,14 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebServer/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)WebServer.exe
-else
-TARGETEXE				=	$(TARGETDIR)WebServer
-endif
+TARGETEXE				=	$(TARGETDIR)WebServer${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)WebServer.o\
+	$(ObjDir)WebServer${OBJ_SUFFIX}\
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION

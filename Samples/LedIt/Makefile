@@ -15,7 +15,7 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/LedIt.exe
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/LedIt${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/

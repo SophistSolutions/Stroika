@@ -20,21 +20,21 @@ SubDirs	=				\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)CIDR.o\
-	$(ObjDir)ConnectionlessSocket.o\
-	$(ObjDir)ConnectionOrientedMasterSocket.o\
-	$(ObjDir)ConnectionOrientedStreamSocket.o\
-	$(ObjDir)DNS.o\
-	$(ObjDir)Interface.o\
-	$(ObjDir)InternetAddress.o\
-	$(ObjDir)InternetAddressRange.o\
-	$(ObjDir)LinkMonitor.o\
-	$(ObjDir)Listener.o\
-	$(ObjDir)Socket.o\
-	$(ObjDir)SocketAddress.o\
-	$(ObjDir)SocketStream.o\
-	$(ObjDir)URL.o\
-	$(ObjDir)WaitForSocketIOReady.o\
+	$(ObjDir)CIDR${OBJ_SUFFIX}\
+	$(ObjDir)ConnectionlessSocket${OBJ_SUFFIX}\
+	$(ObjDir)ConnectionOrientedMasterSocket${OBJ_SUFFIX}\
+	$(ObjDir)ConnectionOrientedStreamSocket${OBJ_SUFFIX}\
+	$(ObjDir)DNS${OBJ_SUFFIX}\
+	$(ObjDir)Interface${OBJ_SUFFIX}\
+	$(ObjDir)InternetAddress${OBJ_SUFFIX}\
+	$(ObjDir)InternetAddressRange${OBJ_SUFFIX}\
+	$(ObjDir)LinkMonitor${OBJ_SUFFIX}\
+	$(ObjDir)Listener${OBJ_SUFFIX}\
+	$(ObjDir)Socket${OBJ_SUFFIX}\
+	$(ObjDir)SocketAddress${OBJ_SUFFIX}\
+	$(ObjDir)SocketStream${OBJ_SUFFIX}\
+	$(ObjDir)URL${OBJ_SUFFIX}\
+	$(ObjDir)WaitForSocketIOReady${OBJ_SUFFIX}\
 
 all:	$(ObjDir) $(Objs) $(SubDirs)
 

@@ -21,8 +21,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Hash.o\
-	$(ObjDir)Format.o\
+	$(ObjDir)Hash${OBJ_SUFFIX}\
+	$(ObjDir)Format${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)

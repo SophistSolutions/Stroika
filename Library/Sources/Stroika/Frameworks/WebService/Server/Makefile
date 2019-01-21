@@ -12,8 +12,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Basic.o\
-	$(ObjDir)VariantValue.o\
+	$(ObjDir)Basic${OBJ_SUFFIX}\
+	$(ObjDir)VariantValue${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)

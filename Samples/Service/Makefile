@@ -16,19 +16,15 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Service/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)Service.exe
-else
-TARGETEXE				=	$(TARGETDIR)Service
-endif
+TARGETEXE				=	$(TARGETDIR)Service${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)Service.o\
-	$(ObjDir)Main.o\
+	$(ObjDir)Service${OBJ_SUFFIX}\
+	$(ObjDir)Main${OBJ_SUFFIX}\
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION

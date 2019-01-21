@@ -49,7 +49,7 @@ all-objs:
 $(ALL_OBJS):	all_objs_
 
 
-$(ObjDir)%.o : %.cpp
+$(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@#suppress normal rule so just all_objs_ fires
 
 

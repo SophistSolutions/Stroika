@@ -12,9 +12,9 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)CachingListener.o\
-	$(ObjDir)Listener.o\
-	$(ObjDir)Search.o\
+	$(ObjDir)CachingListener${OBJ_SUFFIX}\
+	$(ObjDir)Listener${OBJ_SUFFIX}\
+	$(ObjDir)Search${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

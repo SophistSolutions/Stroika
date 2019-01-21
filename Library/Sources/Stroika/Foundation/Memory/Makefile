@@ -12,11 +12,11 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 VPATH = $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)BLOB.o\
-	$(ObjDir)BlockAllocator.o\
-	$(ObjDir)Common.o\
-	$(ObjDir)MemoryAllocator.o\
-	$(ObjDir)SharedPtr.o\
+	$(ObjDir)BLOB${OBJ_SUFFIX}\
+	$(ObjDir)BlockAllocator${OBJ_SUFFIX}\
+	$(ObjDir)Common${OBJ_SUFFIX}\
+	$(ObjDir)MemoryAllocator${OBJ_SUFFIX}\
+	$(ObjDir)SharedPtr${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

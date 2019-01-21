@@ -15,18 +15,14 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 Includes				+=	-I.
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Traceroute/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)Traceroute.exe
-else
-TARGETEXE				=	$(TARGETDIR)Traceroute
-endif
+TARGETEXE				=	$(TARGETDIR)Traceroute${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)Traceroute.o\
+	$(ObjDir)Traceroute${OBJ_SUFFIX}\
 
 
 all:

@@ -14,16 +14,12 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 VPATH = $(SrcDir)
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler.exe
-else
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler
-endif
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler${EXE_SUFFIX}
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 Objs	=	\
-	$(ObjDir)HTMLViewCompiler.o
+	$(ObjDir)HTMLViewCompiler${OBJ_SUFFIX}
 else
 Objs	=	
 endif

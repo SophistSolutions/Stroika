@@ -15,14 +15,14 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/SimpleLedTest.exe
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/SimpleLedTest${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)WebServer.o\
+	$(ObjDir)WebServer${OBJ_SUFFIX}\
 
 
 all:

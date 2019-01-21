@@ -13,21 +13,21 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Common.o\
-	$(ObjDir)Directory.o\
-	$(ObjDir)DirectoryIterable.o\
-	$(ObjDir)DirectoryIterator.o\
-	$(ObjDir)Disk.o\
-	$(ObjDir)FileInputStream.o\
-	$(ObjDir)FileOutputStream.o\
-	$(ObjDir)FileStream.o\
-	$(ObjDir)FileSystem.o\
-	$(ObjDir)FileUtils.o\
-	$(ObjDir)MemoryMappedFileReader.o\
-	$(ObjDir)MountedFilesystem.o\
-	$(ObjDir)PathName.o\
-	$(ObjDir)ThroughTmpFileWriter.o\
-	$(ObjDir)WellKnownLocations.o\
+	$(ObjDir)Common${OBJ_SUFFIX}\
+	$(ObjDir)Directory${OBJ_SUFFIX}\
+	$(ObjDir)DirectoryIterable${OBJ_SUFFIX}\
+	$(ObjDir)DirectoryIterator${OBJ_SUFFIX}\
+	$(ObjDir)Disk${OBJ_SUFFIX}\
+	$(ObjDir)FileInputStream${OBJ_SUFFIX}\
+	$(ObjDir)FileOutputStream${OBJ_SUFFIX}\
+	$(ObjDir)FileStream${OBJ_SUFFIX}\
+	$(ObjDir)FileSystem${OBJ_SUFFIX}\
+	$(ObjDir)FileUtils${OBJ_SUFFIX}\
+	$(ObjDir)MemoryMappedFileReader${OBJ_SUFFIX}\
+	$(ObjDir)MountedFilesystem${OBJ_SUFFIX}\
+	$(ObjDir)PathName${OBJ_SUFFIX}\
+	$(ObjDir)ThroughTmpFileWriter${OBJ_SUFFIX}\
+	$(ObjDir)WellKnownLocations${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

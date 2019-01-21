@@ -16,20 +16,16 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 Includes				+=	-I.
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Serialization/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)Serialization.exe
-else
-TARGETEXE				=	$(TARGETDIR)Serialization
-endif
+TARGETEXE				=	$(TARGETDIR)Serialization${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)Main.o\
+	$(ObjDir)Main${OBJ_SUFFIX}\
 	\
-	$(ObjDir)ObjectVariantMapper.o\
+	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
 
 
 all:

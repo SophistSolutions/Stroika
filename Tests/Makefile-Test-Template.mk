@@ -20,9 +20,10 @@ endif
 
 Includes				+=	-I.
 
-
+# @todo - no need for extra level of folders here on windows, I think. Even if .pdb file gets stuck in same directory its OK. MAYBE in BOTH cases
+#        add Tests folder, so $(CONFIGURATION)/Tests/Test1${EXE_SUFFIX}
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)/Test$(TEST_NUM).exe
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)/Test$(TEST_NUM)${EXE_SUFFIX}
 else
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)
 endif
@@ -32,10 +33,10 @@ VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
 
 
 Objs	=	\
-	$(ObjDir)Test.o\
-	$(ObjDir)NotCopyable.o\
-	$(ObjDir)SimpleClass.o\
-	$(ObjDir)TestHarness.o\
+	$(ObjDir)Test${OBJ_SUFFIX}\
+	$(ObjDir)NotCopyable${OBJ_SUFFIX}\
+	$(ObjDir)SimpleClass${OBJ_SUFFIX}\
+	$(ObjDir)TestHarness${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(TARGETEXE)

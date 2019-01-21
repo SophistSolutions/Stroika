@@ -12,10 +12,10 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)CommonInsertersAndExtractors.o\
-	$(ObjDir)FStreamSupport.o\
-	$(ObjDir)SerializeItemToBLOB.o\
-	$(ObjDir)Utilities.o\
+	$(ObjDir)CommonInsertersAndExtractors${OBJ_SUFFIX}\
+	$(ObjDir)FStreamSupport${OBJ_SUFFIX}\
+	$(ObjDir)SerializeItemToBLOB${OBJ_SUFFIX}\
+	$(ObjDir)Utilities${OBJ_SUFFIX}\
 	
 
 all:	$(ObjDir) $(Objs)

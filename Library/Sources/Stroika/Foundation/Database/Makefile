@@ -12,8 +12,8 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)ODBCClient.o\
-	$(ObjDir)SQLite.o\
+	$(ObjDir)ODBCClient${OBJ_SUFFIX}\
+	$(ObjDir)SQLite${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

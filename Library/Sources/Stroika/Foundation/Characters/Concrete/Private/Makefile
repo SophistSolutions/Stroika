@@ -12,7 +12,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)String_BufferedStringRep.o\
+	$(ObjDir)String_BufferedStringRep${OBJ_SUFFIX}\
 
 all:	$(ObjDir) $(Objs)
 

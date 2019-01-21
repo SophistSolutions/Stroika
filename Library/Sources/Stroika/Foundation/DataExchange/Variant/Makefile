@@ -11,8 +11,8 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Reader.o\
-	$(ObjDir)Writer.o\
+	$(ObjDir)Reader${OBJ_SUFFIX}\
+	$(ObjDir)Writer${OBJ_SUFFIX}\
 
 SubDirs	=	\
 	CharacterDelimitedLines \

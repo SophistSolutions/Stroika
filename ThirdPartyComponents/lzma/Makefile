@@ -137,9 +137,6 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
@@ -157,9 +154,6 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
 		all
 endif
 endif
@@ -182,9 +176,6 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
@@ -203,9 +194,6 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
 		all
 endif
 endif

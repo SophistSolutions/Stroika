@@ -13,9 +13,9 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Matrix.o\
-	$(ObjDir)Tensor.o\
-	$(ObjDir)Vector.o\
+	$(ObjDir)Matrix${OBJ_SUFFIX}\
+	$(ObjDir)Tensor${OBJ_SUFFIX}\
+	$(ObjDir)Vector${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

@@ -11,9 +11,9 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)SemWaitableEvent.o\
-	$(ObjDir)SignalBlock.o\
-	$(ObjDir)Users.o\
+	$(ObjDir)SemWaitableEvent${OBJ_SUFFIX}\
+	$(ObjDir)SignalBlock${OBJ_SUFFIX}\
+	$(ObjDir)Users${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

@@ -12,7 +12,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Range.o\
+	$(ObjDir)Range${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

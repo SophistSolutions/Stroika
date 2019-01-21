@@ -12,10 +12,10 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Locale.o\
-	$(ObjDir)StroikaConfig.o\
-	$(ObjDir)SystemConfiguration.o\
-	$(ObjDir)Version.o
+	$(ObjDir)Locale${OBJ_SUFFIX}\
+	$(ObjDir)StroikaConfig${OBJ_SUFFIX}\
+	$(ObjDir)SystemConfiguration${OBJ_SUFFIX}\
+	$(ObjDir)Version${OBJ_SUFFIX}
 
 
 all:	$(ObjDir) $(Objs)

@@ -13,19 +13,19 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)ClientErrorException.o\
-	$(ObjDir)ConnectionManager.o\
-	$(ObjDir)Connection.o\
-	$(ObjDir)DefaultFaultInterceptor.o\
-	$(ObjDir)FileSystemRouter.o\
-	$(ObjDir)Interceptor.o\
-	$(ObjDir)InterceptorChain.o\
-	$(ObjDir)Message.o\
-	$(ObjDir)LoggingInterceptor.o\
-	$(ObjDir)Request.o\
-	$(ObjDir)RequestHandler.o\
-	$(ObjDir)Response.o\
-	$(ObjDir)Router.o\
+	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
+	$(ObjDir)ConnectionManager${OBJ_SUFFIX}\
+	$(ObjDir)Connection${OBJ_SUFFIX}\
+	$(ObjDir)DefaultFaultInterceptor${OBJ_SUFFIX}\
+	$(ObjDir)FileSystemRouter${OBJ_SUFFIX}\
+	$(ObjDir)Interceptor${OBJ_SUFFIX}\
+	$(ObjDir)InterceptorChain${OBJ_SUFFIX}\
+	$(ObjDir)Message${OBJ_SUFFIX}\
+	$(ObjDir)LoggingInterceptor${OBJ_SUFFIX}\
+	$(ObjDir)Request${OBJ_SUFFIX}\
+	$(ObjDir)RequestHandler${OBJ_SUFFIX}\
+	$(ObjDir)Response${OBJ_SUFFIX}\
+	$(ObjDir)Router${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

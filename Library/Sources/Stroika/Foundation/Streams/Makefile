@@ -17,13 +17,13 @@ SubDirs	=	\
 
 
 Objs	=	\
-	$(ObjDir)EOFException.o\
-	$(ObjDir)InputStream.o\
-	$(ObjDir)OutputStream.o\
-	$(ObjDir)MemoryStream.o\
-	$(ObjDir)SharedMemoryStream.o\
-	$(ObjDir)TextReader.o\
-	$(ObjDir)TextWriter.o\
+	$(ObjDir)EOFException${OBJ_SUFFIX}\
+	$(ObjDir)InputStream${OBJ_SUFFIX}\
+	$(ObjDir)OutputStream${OBJ_SUFFIX}\
+	$(ObjDir)MemoryStream${OBJ_SUFFIX}\
+	$(ObjDir)SharedMemoryStream${OBJ_SUFFIX}\
+	$(ObjDir)TextReader${OBJ_SUFFIX}\
+	$(ObjDir)TextWriter${OBJ_SUFFIX}\
 
 all:	$(ObjDir) $(Objs)  $(SubDirs)
 

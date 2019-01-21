@@ -11,7 +11,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Reader.o\
+	$(ObjDir)Reader${OBJ_SUFFIX}\
 
 SubDirs	=	\
 	Zip \

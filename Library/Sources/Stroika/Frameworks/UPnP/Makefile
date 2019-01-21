@@ -18,8 +18,8 @@ SubDirs	=	\
 
 
 Objs	=	\
-	$(ObjDir)Device.o\
-	$(ObjDir)DeviceDescription.o\
+	$(ObjDir)Device${OBJ_SUFFIX}\
+	$(ObjDir)DeviceDescription${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)

@@ -16,17 +16,13 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 Includes				+=	-I.
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SystemPerformanceClient/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)SystemPerformanceClient.exe
-else
-TARGETEXE				=	$(TARGETDIR)SystemPerformanceClient
-endif
+TARGETEXE				=	$(TARGETDIR)SystemPerformanceClient${EXE_SUFFIX}
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)SystemPerformanceClient.o\
+	$(ObjDir)SystemPerformanceClient${OBJ_SUFFIX}\
 
 
 all:

@@ -12,11 +12,11 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)CPU.o\
-	$(ObjDir)Memory.o\
-	$(ObjDir)Filesystem.o\
-	$(ObjDir)Network.o\
-	$(ObjDir)Process.o\
+	$(ObjDir)CPU${OBJ_SUFFIX}\
+	$(ObjDir)Memory${OBJ_SUFFIX}\
+	$(ObjDir)Filesystem${OBJ_SUFFIX}\
+	$(ObjDir)Network${OBJ_SUFFIX}\
+	$(ObjDir)Process${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

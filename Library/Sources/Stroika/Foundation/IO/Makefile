@@ -20,10 +20,10 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)FileAccessException.o\
-	$(ObjDir)FileAccessMode.o\
-	$(ObjDir)FileBusyException.o\
-	$(ObjDir)FileFormatException.o\
+	$(ObjDir)FileAccessException${OBJ_SUFFIX}\
+	$(ObjDir)FileAccessMode${OBJ_SUFFIX}\
+	$(ObjDir)FileBusyException${OBJ_SUFFIX}\
+	$(ObjDir)FileFormatException${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)

@@ -18,7 +18,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)OpenSSLCryptoStream.o\
+	$(ObjDir)OpenSSLCryptoStream${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)  $(SubDirs)

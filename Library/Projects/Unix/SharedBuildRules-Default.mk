@@ -5,7 +5,7 @@
 .PHONY:			all clean clobber list-objs
 
 
-.SUFFIXES:	.o .cpp .i .h .swsp .a
+.SUFFIXES:	${OBJ_SUFFIX} .cpp .i .h .swsp .a
 
 
 $(ObjDir):
@@ -15,7 +15,7 @@ $(ObjDir):
 $(Objs):	| $(ObjDir)
 
 
-$(ObjDir)%.o : %.cpp
+$(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables `realpath $<`) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX) $(CXXFLAGS) -c $< -o $@";\

@@ -11,10 +11,10 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)ClientContext.o\
-	$(ObjDir)Common.o\
-	$(ObjDir)ServerContext.o\
-	$(ObjDir)SSLSocket.o\
+	$(ObjDir)ClientContext${OBJ_SUFFIX}\
+	$(ObjDir)Common${OBJ_SUFFIX}\
+	$(ObjDir)ServerContext${OBJ_SUFFIX}\
+	$(ObjDir)SSLSocket${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

@@ -11,9 +11,9 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)BasicServer.o\
-	$(ObjDir)PeriodicNotifier.o\
-	$(ObjDir)SearchResponder.o\
+	$(ObjDir)BasicServer${OBJ_SUFFIX}\
+	$(ObjDir)PeriodicNotifier${OBJ_SUFFIX}\
+	$(ObjDir)SearchResponder${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

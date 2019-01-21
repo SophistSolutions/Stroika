@@ -11,10 +11,10 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)CRC32.o\
-	$(ObjDir)Jenkins.o\
-	$(ObjDir)MD5.o\
-	$(ObjDir)SuperFastHash.o\
+	$(ObjDir)CRC32${OBJ_SUFFIX}\
+	$(ObjDir)Jenkins${OBJ_SUFFIX}\
+	$(ObjDir)MD5${OBJ_SUFFIX}\
+	$(ObjDir)SuperFastHash${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

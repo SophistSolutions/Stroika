@@ -19,12 +19,12 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)AllInstruments.o\
-	$(ObjDir)Capturer.o\
-	$(ObjDir)CaptureSet.o\
-	$(ObjDir)Instrument.o\
-	$(ObjDir)Measurement.o\
-	$(ObjDir)MeasurementSet.o\
+	$(ObjDir)AllInstruments${OBJ_SUFFIX}\
+	$(ObjDir)Capturer${OBJ_SUFFIX}\
+	$(ObjDir)CaptureSet${OBJ_SUFFIX}\
+	$(ObjDir)Instrument${OBJ_SUFFIX}\
+	$(ObjDir)Measurement${OBJ_SUFFIX}\
+	$(ObjDir)MeasurementSet${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)

@@ -17,8 +17,8 @@ SubDirs	=	\
 .PHONY:			$(SubDirs)
 
 Objs	=	\
-	$(ObjDir)Advertisement.o\
-	$(ObjDir)Common.o\
+	$(ObjDir)Advertisement${OBJ_SUFFIX}\
+	$(ObjDir)Common${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs) $(SubDirs)

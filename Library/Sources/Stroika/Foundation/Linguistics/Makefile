@@ -14,7 +14,7 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Words.o\
+	$(ObjDir)Words${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

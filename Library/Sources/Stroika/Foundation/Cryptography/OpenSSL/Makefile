@@ -14,10 +14,10 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)CipherAlgorithm.o\
-	$(ObjDir)DigestAlgorithm.o\
-	$(ObjDir)DerivedKey.o\
-	$(ObjDir)Exception.o\
+	$(ObjDir)CipherAlgorithm${OBJ_SUFFIX}\
+	$(ObjDir)DigestAlgorithm${OBJ_SUFFIX}\
+	$(ObjDir)DerivedKey${OBJ_SUFFIX}\
+	$(ObjDir)Exception${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)  $(SubDirs)

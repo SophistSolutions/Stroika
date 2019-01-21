@@ -14,13 +14,13 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Client.o\
-	$(ObjDir)Client_libcurl.o\
-	$(ObjDir)Client_WinHTTP.o\
-	$(ObjDir)Connection.o\
-	$(ObjDir)Exception.o\
-	$(ObjDir)Request.o\
-	$(ObjDir)Response.o\
+	$(ObjDir)Client${OBJ_SUFFIX}\
+	$(ObjDir)Client_libcurl${OBJ_SUFFIX}\
+	$(ObjDir)Client_WinHTTP${OBJ_SUFFIX}\
+	$(ObjDir)Connection${OBJ_SUFFIX}\
+	$(ObjDir)Exception${OBJ_SUFFIX}\
+	$(ObjDir)Request${OBJ_SUFFIX}\
+	$(ObjDir)Response${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

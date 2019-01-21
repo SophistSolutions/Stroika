@@ -12,7 +12,7 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Main.o\
+	$(ObjDir)Main${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

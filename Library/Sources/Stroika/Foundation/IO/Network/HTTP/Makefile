@@ -12,9 +12,9 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Cookies.o\
-	$(ObjDir)Exception.o\
-	$(ObjDir)MessageStartTextInputStreamBinaryAdapter.o\
+	$(ObjDir)Cookies${OBJ_SUFFIX}\
+	$(ObjDir)Exception${OBJ_SUFFIX}\
+	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

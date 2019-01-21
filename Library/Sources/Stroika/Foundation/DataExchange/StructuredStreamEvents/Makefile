@@ -11,8 +11,8 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)IConsumer.o\
-	$(ObjDir)ObjectReader.o\
+	$(ObjDir)IConsumer${OBJ_SUFFIX}\
+	$(ObjDir)ObjectReader${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)

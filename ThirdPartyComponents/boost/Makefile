@@ -87,9 +87,9 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time$(LIBSUFFIX)	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem$(LIBSUFFIX)	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_system$(LIBSUFFIX)
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time$(LIB_SUFFIX)	\
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem$(LIB_SUFFIX)	\
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_system$(LIB_SUFFIX)
 
 
 $(ZIPPEDFILE):

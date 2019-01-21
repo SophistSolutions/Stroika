@@ -15,23 +15,19 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 Includes				+=	-I.
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Containers/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)Containers.exe
-else
-TARGETEXE				=	$(TARGETDIR)Containers
-endif
+TARGETEXE				=	$(TARGETDIR)Containers${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)Main.o\
+	$(ObjDir)Main${OBJ_SUFFIX}\
 	\
-	$(ObjDir)Collection.o\
-	$(ObjDir)Mapping.o\
-	$(ObjDir)Sequence.o\
-	$(ObjDir)Set.o\
+	$(ObjDir)Collection${OBJ_SUFFIX}\
+	$(ObjDir)Mapping${OBJ_SUFFIX}\
+	$(ObjDir)Sequence${OBJ_SUFFIX}\
+	$(ObjDir)Set${OBJ_SUFFIX}\
 
 
 all:

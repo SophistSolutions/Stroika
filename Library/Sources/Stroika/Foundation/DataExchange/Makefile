@@ -12,15 +12,15 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Atom.o\
-	$(ObjDir)BadFormatException.o\
-	$(ObjDir)CheckedConverter.o\
-	$(ObjDir)InternetMediaType.o\
-	$(ObjDir)InternetMediaTypeRegistry.o\
-	$(ObjDir)ObjectVariantMapper.o\
-	$(ObjDir)OptionsFile.o\
-	$(ObjDir)StructFieldMetaInfo.o\
-	$(ObjDir)VariantValue.o\
+	$(ObjDir)Atom${OBJ_SUFFIX}\
+	$(ObjDir)BadFormatException${OBJ_SUFFIX}\
+	$(ObjDir)CheckedConverter${OBJ_SUFFIX}\
+	$(ObjDir)InternetMediaType${OBJ_SUFFIX}\
+	$(ObjDir)InternetMediaTypeRegistry${OBJ_SUFFIX}\
+	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
+	$(ObjDir)OptionsFile${OBJ_SUFFIX}\
+	$(ObjDir)StructFieldMetaInfo${OBJ_SUFFIX}\
+	$(ObjDir)VariantValue${OBJ_SUFFIX}\
 
 SubDirs	=	\
 	Archive \

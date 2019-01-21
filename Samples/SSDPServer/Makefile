@@ -17,17 +17,13 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 Includes				+=	-I.
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(TARGETDIR)SSDPServer.exe
-else
-TARGETEXE				=	$(TARGETDIR)SSDPServer
-endif
+TARGETEXE				=	$(TARGETDIR)SSDPServer${EXE_SUFFIX}
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)SSDPServer.o\
+	$(ObjDir)SSDPServer${OBJ_SUFFIX}\
 
 
 all:

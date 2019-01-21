@@ -11,10 +11,10 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Namespace.o\
-	$(ObjDir)SAXReader.o\
-	$(ObjDir)SerializationConfiguration.o\
-	$(ObjDir)WriterUtils.o\
+	$(ObjDir)Namespace${OBJ_SUFFIX}\
+	$(ObjDir)SAXReader${OBJ_SUFFIX}\
+	$(ObjDir)SerializationConfiguration${OBJ_SUFFIX}\
+	$(ObjDir)WriterUtils${OBJ_SUFFIX}\
 
 
 all:	$(ObjDir) $(Objs)
