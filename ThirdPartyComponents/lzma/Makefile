@@ -137,6 +137,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
@@ -154,6 +155,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
 		all
 endif
 endif
@@ -176,6 +178,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
 		all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
@@ -194,6 +197,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
 		all
 endif
 endif
