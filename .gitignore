@@ -4,7 +4,6 @@ ConfigurationFiles
 .project
 .cproject
 .externalToolBuilders
-StroikaDevRoot.*
 *.sdf
 .vscode/
 *.opensdf
