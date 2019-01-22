@@ -18,16 +18,9 @@ ifndef TEST_NUM
 endif
 
 
-Includes				+=	-I.
+#Includes				+=	-I.
 
-# @todo - no need for extra level of folders here on windows, I think. Even if .pdb file gets stuck in same directory its OK. MAYBE in BOTH cases
-#        add Tests folder, so $(CONFIGURATION)/Tests/Test1${EXE_SUFFIX}
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)/Test$(TEST_NUM)${EXE_SUFFIX}
-else
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)
-endif
-
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Tests/Test$(TEST_NUM)${EXE_SUFFIX}
 
 VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
 
@@ -50,6 +43,7 @@ check:
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
+	@mkdir -p $(dir $(TARGETEXE))
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)";\
 	fi

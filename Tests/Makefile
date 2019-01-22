@@ -33,13 +33,8 @@ endif
 
 TESTS=	        $(shell ScriptsLib/PrintTestsList)
 
-ifeq (Unix,$(ProjectPlatformSubdir))
-BASEEXEPATTERN=Test$$i
-EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i
-else
-BASEEXEPATTERN=Test$$i.exe
-EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i/Test$$i.exe
-endif
+BASEEXEPATTERN=Test$$i${EXE_SUFFIX}
+EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
 
 
 #SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
