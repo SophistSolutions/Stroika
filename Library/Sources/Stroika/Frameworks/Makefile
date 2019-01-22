@@ -24,7 +24,7 @@ SubDirs=	\
 		WebService\
 		UPnP\
 
-.PHONY:	$(SubDirs) all_objs_ all_objs_ all
+.PHONY:	$(SubDirs) all_objs_ all
 
 
 .PHONY:			$(SubDirs)
@@ -35,31 +35,27 @@ $(SubDirs):
 # redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
 # sub-make - easier to just ignore in this one case from here
 # -- LGP 2019-01-09
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
-
-all-objs:
-	@echo $(ALL_OBJS)
-
+Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
 
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@#suppress normal rule so just all_objs_ fires
 
 
-$(ALL_OBJS): all_objs_
+$(Objs): all_objs_
 
 all_objs_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs:";
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
-$(StroikaFrameworksLib):	$(ALL_OBJS)
+$(StroikaFrameworksLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
 	@rm -f $(StroikaFrameworksLib)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-		echo "      $(AR) cr $(StroikaFrameworksLib) $(ALL_OBJS)";\
+		echo "      $(AR) cr $(StroikaFrameworksLib) $(Objs)";\
 	fi
-	@$(AR) cr $(StroikaFrameworksLib) $(ALL_OBJS)
+	@$(AR) cr $(StroikaFrameworksLib) $(Objs)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 		echo "      $(RANLIB) $(StroikaFrameworksLib)";\
 	fi
