@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../../../../../)/
+StroikaRoot=$(abspath ../../../../../../../)/
 
 include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
