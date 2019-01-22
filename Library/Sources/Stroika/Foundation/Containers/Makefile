@@ -1,7 +1,9 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../)/
 
-SrcDir					=       $(StroikaRoot)Library/Sources/Stroika/Foundation/Containers/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Containers/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Containers/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Containers/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -13,4 +15,4 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)

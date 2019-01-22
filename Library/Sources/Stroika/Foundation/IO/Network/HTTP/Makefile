@@ -1,7 +1,9 @@
-include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../../../)/
 
-SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/HTTP/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/HTTP/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -17,5 +19,5 @@ Objs	=	\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)
 

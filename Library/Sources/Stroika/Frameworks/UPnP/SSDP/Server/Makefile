@@ -1,7 +1,9 @@
-include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../../../)/
 
-SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/Server/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/Server/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/Server/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/Server/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -16,4 +18,4 @@ Objs	=	\
 	$(ObjDir)SearchResponder${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)

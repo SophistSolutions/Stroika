@@ -1,7 +1,9 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../)/
 
-SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -22,7 +24,7 @@ Objs	=	\
 	$(ObjDir)DeviceDescription${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs) $(SubDirs)
+all:	$(Objs) $(SubDirs)
 
 
 $(SubDirs):

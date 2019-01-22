@@ -1,7 +1,9 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../)/
 
-SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Memory/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Memory/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Memory/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Memory/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -19,5 +21,5 @@ Objs	=	\
 	$(ObjDir)SharedPtr${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)
 	

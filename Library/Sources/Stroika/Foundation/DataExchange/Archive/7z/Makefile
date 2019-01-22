@@ -1,7 +1,9 @@
-include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../../)/
 
-SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Archive/7z/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Archive/7z/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Archive/7z/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Archive/7z/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -13,4 +15,4 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Reader${OBJ_SUFFIX}\
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)

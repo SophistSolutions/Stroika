@@ -1,4 +1,6 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../)/
+
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
 SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/
 ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/
@@ -26,7 +28,7 @@ Objs	=	\
 	$(ObjDir)FileFormatException${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs) $(SubDirs)
+all:	$(Objs) $(SubDirs)
 
 
 $(SubDirs):

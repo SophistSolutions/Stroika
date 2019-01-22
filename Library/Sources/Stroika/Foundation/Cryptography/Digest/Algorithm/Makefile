@@ -1,7 +1,9 @@
-include ../../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../../../)/
 
-SrcDir					=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/Digest/Algorithm/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/Digest/Algorithm/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -17,5 +19,5 @@ Objs	=	\
 	$(ObjDir)SuperFastHash${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)
 

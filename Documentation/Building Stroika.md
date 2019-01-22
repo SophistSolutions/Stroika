@@ -182,7 +182,7 @@ $(ObjDir)%.o : %.cpp
         @#n.b. no CPPFLAGS here - 'configure --append-CPPFLAGS' adds directly to CFLAGS and CXXFLAGS
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
+$(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)
 ~~~~
 

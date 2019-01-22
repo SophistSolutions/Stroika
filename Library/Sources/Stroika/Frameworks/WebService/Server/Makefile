@@ -1,7 +1,9 @@
-include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../../)/
 
-SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebService/Server/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebService/Server/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebService/Server/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebService/Server/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -16,7 +18,7 @@ Objs	=	\
 	$(ObjDir)VariantValue${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs) $(SubDirs)
+all:	$(Objs) $(SubDirs)
 
 
 $(SubDirs):

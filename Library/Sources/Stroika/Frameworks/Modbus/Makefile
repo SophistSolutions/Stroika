@@ -1,7 +1,9 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../)/
 
-SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Modbus/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Modbus/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Modbus/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Modbus/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -15,4 +17,4 @@ Objs	=	\
 	$(ObjDir)Server.o\
 
 
-all:	$(ObjDir) $(Objs)
+all:	$(Objs)

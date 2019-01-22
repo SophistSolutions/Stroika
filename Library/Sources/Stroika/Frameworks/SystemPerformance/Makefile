@@ -1,7 +1,9 @@
-include ../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../)/
 
-SrcDir						=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
-ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
+ObjDir	 =	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -27,7 +29,7 @@ Objs	=	\
 	$(ObjDir)MeasurementSet${OBJ_SUFFIX}\
 
 
-all:	$(ObjDir) $(Objs) $(SubDirs)
+all:	$(Objs) $(SubDirs)
 
 
 Instruments:

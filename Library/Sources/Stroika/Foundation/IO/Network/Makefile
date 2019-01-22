@@ -1,12 +1,13 @@
-include ../../../../../../IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+export StroikaRoot?=$(shell realpath ../../../../../../)/
 
-SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/
+include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
-
 
 
 SubDirs	=				\
@@ -36,7 +37,7 @@ Objs	=	\
 	$(ObjDir)URL${OBJ_SUFFIX}\
 	$(ObjDir)WaitForSocketIOReady${OBJ_SUFFIX}\
 
-all:	$(ObjDir) $(Objs) $(SubDirs)
+all:	$(Objs) $(SubDirs)
 
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

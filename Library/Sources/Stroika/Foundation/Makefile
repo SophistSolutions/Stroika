@@ -4,8 +4,8 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
@@ -40,13 +40,10 @@ SubDirs=				\
 # redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
 # sub-make - easier to just ignore in this one case from here
 # -- LGP 2019-01-09
-ALL_OBJS := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
+Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
 
 
-all-objs:
-	@echo $(ALL_OBJS)
-
-$(ALL_OBJS):	all_objs_
+$(Objs):	all_objs_
 
 
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
@@ -64,14 +61,14 @@ all_objs_:
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
-$(StroikaFoundationLib):	$(ALL_OBJS)
+$(StroikaFoundationLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
 	@rm -f $(StroikaFoundationLib)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-		echo "      $(AR) cr $(StroikaFoundationLib) $(ALL_OBJS)";\
+		echo "      $(AR) cr $(StroikaFoundationLib) $(Objs)";\
 	fi
-	@$(AR) cr $(StroikaFoundationLib) $(ALL_OBJS)
+	@$(AR) cr $(StroikaFoundationLib) $(Objs)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 		echo "      $(RANLIB) $(StroikaFoundationLib)";\
 	fi
