@@ -5,7 +5,6 @@ ConfigurationFiles
 .cproject
 .externalToolBuilders
 *.sdf
-.vscode/
 *.opensdf
 *.opendb
 *.suo
