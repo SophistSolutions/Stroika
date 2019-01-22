@@ -6,11 +6,14 @@
 ifndef StroikaRoot
 $(error("StroikaRoot must be defined and included before this file"))
 endif
-
-FUNCTION_CAPITALIZE_WORD=$(shell echo $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell echo $1 | cut -c 2-99)
+#nb: StroikaRoot exported for use in some included scripts with minimal scripting effort in makefiles that call them
+export StroikaRoot
 
 # intentionally export just as a performance hack (avoid call to getdefaultshellvariable)
+# nb we need to define ECHO at all (instead of using echo) because of some braindead default echo implementations, like AIX
 export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable ECHO)
+
+FUNCTION_CAPITALIZE_WORD=$(shell $(ECHO) $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell $(ECHO) $1 | cut -c 2-99)
 
 # intentionally export cuz sometimes MAKE_INDENT_LEVEL doesnt go up as fast as MAKELEVEL, and so submakes work out
 # looking better with less explicit setting
