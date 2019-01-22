@@ -1,4 +1,4 @@
-export StroikaRoot?=$(realpath ../)/
+export StroikaRoot?=$(abspath ../)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk

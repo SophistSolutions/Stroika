@@ -7,7 +7,7 @@
 #	Checkin the created .tar.gz in ../Origs-Cache
 #	Then you can uninstall perl
 #
-export StroikaRoot?=$(shell realpath ../..)/
+export StroikaRoot?=$(abspath ../..)/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 

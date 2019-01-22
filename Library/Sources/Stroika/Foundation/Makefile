@@ -1,4 +1,4 @@
-export StroikaRoot?=$(shell realpath ../../../../)/
+export StroikaRoot?=$(abspath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
@@ -10,8 +10,6 @@ ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
-
-
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)

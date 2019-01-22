@@ -1,4 +1,4 @@
-export StroikaRoot?=$(shell realpath ../../../../../)/
+export StroikaRoot?=$(abspath ../../../../../)/
 
 include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
