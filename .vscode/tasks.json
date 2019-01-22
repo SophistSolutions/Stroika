@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "isBackground": true,
+            "label": "make",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${input:CONFIGURATION}",
+                "${input:make-targets}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated",
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "CONFIGURATION",
+            "description": "configuration name?",
+            "default": "Debug-U-32",
+            "type": "pickString",
+            "options": [
+                "",
+                "Debug-U-32",
+                "Debug-U-64",
+                "Release-U-32",
+                "Release-U-64",
+            ]
+        },
+        {
+            "id": "make-targets",
+            "description": "typically all, clean, clobber, libraries, tests, run-tests, etc.",
+            "default": "all",
+            "type": "promptString"
+        }
+    ]
+}
