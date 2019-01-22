@@ -12,7 +12,6 @@ include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
-.PHONY: all_objs_ all
 
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
@@ -51,11 +50,11 @@ $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 
 
 .PHONY:			$(SubDirs)
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s
 
 
+.PHONY: all_objs_
 all_objs_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Foundation Objs:";
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))

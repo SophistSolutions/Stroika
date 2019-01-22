@@ -9,8 +9,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
-.PHONY:			Algorithm
-
 SubDirs	=	\
 	Algorithm	\
 
@@ -22,5 +20,6 @@ Objs	=	\
 
 all:	$(Objs)  $(SubDirs)
 
+.PHONY:	$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ --no-print-directory -s

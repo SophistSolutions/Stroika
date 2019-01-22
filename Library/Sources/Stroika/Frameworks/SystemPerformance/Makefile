@@ -14,8 +14,6 @@ SubDirs	=	\
 	Instruments	\
 	Support	\
 
-.PHONY:			$(SubDirs)
-
 
 vpath %cpp $(SrcDir)
 
@@ -32,5 +30,6 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Instruments:
-	@$(MAKE) --directory Instruments -s
+.PHONY:			$(SubDirs)
+$(SubDirs):
+	@$(MAKE) --directory $@ -s

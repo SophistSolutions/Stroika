@@ -20,3 +20,5 @@ export MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 SHELL?=/bin/bash
 
 .DEFAULT_GOAL := all
+
+.PHONY:			all clean clobber check

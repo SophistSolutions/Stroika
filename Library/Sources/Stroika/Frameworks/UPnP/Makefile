@@ -16,7 +16,6 @@ vpath %cpp $(SrcDir)
 SubDirs	=	\
 	SSDP	\
 
-.PHONY:			$(SubDirs)
 
 
 Objs	=	\
@@ -27,5 +26,6 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
+.PHONY:			$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

@@ -7,9 +7,6 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
-.PHONY:	all clean clobber check
-
-
 
 
 #Handy shortcut
@@ -119,7 +116,6 @@ endif
 
 
 .PHONY: $(SubDirs)
-
 $(SubDirs):
 	@$(MAKE) --directory $@ --silent all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif

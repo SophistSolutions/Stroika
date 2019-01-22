@@ -74,7 +74,6 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 
 
 
-.PHONY:	all
 all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)

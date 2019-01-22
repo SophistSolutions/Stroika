@@ -14,7 +14,6 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-.PHONY:	all clean clobber check doBuilds_
 
 
 
@@ -208,6 +207,7 @@ endif
 
 
 	
+.PHONY:	doBuilds_
 doBuilds_:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)

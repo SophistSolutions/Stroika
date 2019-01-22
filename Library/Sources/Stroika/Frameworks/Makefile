@@ -24,13 +24,12 @@ SubDirs=	\
 		WebService\
 		UPnP\
 
-.PHONY:	$(SubDirs) all_objs_ all
 
 
 .PHONY:			$(SubDirs)
-
 $(SubDirs):
 	@$(MAKE) --directory $@ -s
+
 
 # redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
 # sub-make - easier to just ignore in this one case from here
@@ -43,6 +42,7 @@ $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 
 $(Objs): all_objs_
 
+.PHONY:	all_objs_
 all_objs_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs:";
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))

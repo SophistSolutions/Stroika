@@ -31,11 +31,10 @@ SubDirs	=	\
 	StructuredStreamEvents \
 	XML \
 
-.PHONY:				$(SubDirs)
-
 
 all:	$(Objs) $(SubDirs)
 
 
+.PHONY:				$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

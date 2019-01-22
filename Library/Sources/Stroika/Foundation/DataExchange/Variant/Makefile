@@ -22,11 +22,11 @@ SubDirs	=	\
 	JSON \
 	XML \
 
-.PHONY:				$(SubDirs)
 
 
 all:	$(Objs) $(SubDirs)
 
 
+.PHONY:				$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

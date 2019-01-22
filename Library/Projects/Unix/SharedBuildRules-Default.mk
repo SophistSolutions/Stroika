@@ -2,9 +2,6 @@
 #
 #
 
-.PHONY:			all clean clobber list-objs
-
-
 .SUFFIXES:	${OBJ_SUFFIX} .cpp .i .h .swsp .a
 
 

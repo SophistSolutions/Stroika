@@ -16,7 +16,6 @@ SubDirs	=	\
 	Client	\
 	Server	\
 
-.PHONY:			$(SubDirs)
 
 Objs	=	\
 	$(ObjDir)Advertisement${OBJ_SUFFIX}\
@@ -26,5 +25,6 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
+.PHONY:			$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

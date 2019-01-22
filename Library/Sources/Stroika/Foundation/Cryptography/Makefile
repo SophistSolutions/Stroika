@@ -16,8 +16,6 @@ SubDirs	=		\
 	OpenSSL		\
 	SSL			\
 
-.PHONY:			$(SubDirs)
-
 
 vpath %cpp $(SrcDir)
 
@@ -30,5 +28,6 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
+.PHONY:			$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

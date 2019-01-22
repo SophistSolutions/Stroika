@@ -15,7 +15,6 @@ vpath %cpp $(SrcDir)
 SubDirs	=	\
 	iostream	\
 
-.PHONY:			$(SubDirs)
 
 
 Objs	=	\
@@ -30,5 +29,6 @@ Objs	=	\
 all:	$(Objs)  $(SubDirs)
 
 
+.PHONY:			$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

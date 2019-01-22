@@ -28,9 +28,9 @@ SubDirs	=	\
 	Concrete \
 	CString \
 
-.PHONY:	$(SubDirs)
 
 all:	$(Objs) $(SubDirs)
 
+.PHONY:	$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s

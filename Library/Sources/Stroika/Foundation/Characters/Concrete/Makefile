@@ -19,10 +19,7 @@ Objs	=	\
 	$(ObjDir)String_ExternalMemoryOwnership_ApplicationLifetime${OBJ_SUFFIX}\
 	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime${OBJ_SUFFIX}\
 
-.PHONY:	$(SubDirs)
-
 all:	$(Objs) $(SubDirs)
-
 
 
 list-objs::
@@ -32,5 +29,6 @@ list-objs::
 	 done
 
 
-Private:
-	@$(MAKE) --directory Private -s
+.PHONY:	$(SubDirs)
+$(SubDirs):
+	@$(MAKE) --directory $@ -s

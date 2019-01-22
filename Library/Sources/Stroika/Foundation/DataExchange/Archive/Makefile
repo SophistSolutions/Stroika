@@ -19,11 +19,11 @@ SubDirs	=	\
 	7z \
 	Zip \
 
-.PHONY:				$(SubDirs)
 
 
 all:	$(Objs) $(SubDirs)
 
 
+.PHONY:				$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s
