@@ -61,7 +61,8 @@ PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR)lib/lzma.lib
 endif
 
 
-OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../lzma/"
+#OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../lzma/"
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
 
@@ -106,7 +107,7 @@ check_prerequisites_:
 
 
 doBuilds_:
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT"` ..."
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD.OUT ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
