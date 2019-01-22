@@ -311,6 +311,38 @@ sub	GetConfigurationParameter {
 		}
 	}
 
+	#default values
+	if ($result eq "") {
+		if ($paramName eq "LIB_SUFFIX") {
+			my $PROJECTPLATFORMSUBDIR = GetConfigurationParameter($configName, "ProjectPlatformSubdir");
+			if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+				return ".a";
+			}
+			elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				return ".lib";
+			}
+		}
+		if ($paramName eq "OBJ_SUFFIX") {
+			my $PROJECTPLATFORMSUBDIR = GetConfigurationParameter($configName, "ProjectPlatformSubdir");
+			if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+				return ".o";
+			}
+			elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				return ".obj";
+			}
+		}
+		if ($paramName eq "EXE_SUFFIX") {
+			my $PROJECTPLATFORMSUBDIR = GetConfigurationParameter($configName, "ProjectPlatformSubdir");
+			if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+				return "";
+			}
+			elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				return ".exe";
+			}
+		}
+	}
+
+
 	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");
 	return $result;
 }

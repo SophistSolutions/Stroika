@@ -505,17 +505,14 @@ sub WriteStroikaConfigMakeHeader
 	if ($PROJECTPLATFORMSUBDIR eq "Unix") {
 		print (OUT "LIBSUFFIX=.a\n");	# DEPRECATED
 		print (OUT "OBJSUFFIX=.o\n");	# DEPRECATED
-		print (OUT "LIB_SUFFIX=.a\n");
-		print (OUT "OBJ_SUFFIX=.o\n");
-		print (OUT "EXE_SUFFIX=\n");
 	}
 	elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 		print (OUT "LIBSUFFIX=.lib\n");	# DEPRECATED
 		print (OUT "OBJSUFFIX=.obj\n");	# DEPRECATED
-		print (OUT "LIB_SUFFIX=.lib\n");
-		print (OUT "OBJ_SUFFIX=.obj\n");
-		print (OUT "EXE_SUFFIX=.exe\n");
 	}
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LIB_SUFFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("OBJ_SUFFIX");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("EXE_SUFFIX");
 
 	
 	print (OUT "\n");
