@@ -78,9 +78,9 @@ endif
 
 clean::
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)/IntermediateFiles/*/Frameworks
+	@rm -rf $(StroikaRoot)IntermediateFiles/*/Frameworks
 else
-	@rm -rf $(StroikaRoot)/IntermediateFiles/$(CONFIGURATION)/Frameworks
+	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Frameworks
 endif
 
 clobber::

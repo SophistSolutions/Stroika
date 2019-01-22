@@ -89,9 +89,9 @@ check:
 
 clean::
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)/IntermediateFiles/*/Library/Foundation
+	@rm -rf $(StroikaRoot)IntermediateFiles/*/Library/Foundation
 else
-	@rm -rf $(StroikaRoot)/IntermediateFiles/$(CONFIGURATION)/Library/Foundation
+	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation
 endif
 
 clobber::
