@@ -11,7 +11,7 @@
 #				exceedingly rare case; but certainly a defect of this approach.
 #
 
-export StroikaRoot?=$(abspath ../..)/
+StroikaRoot=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk

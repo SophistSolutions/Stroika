@@ -1,4 +1,4 @@
-export StroikaRoot?=$(abspath .)/
+StroikaRoot=$(abspath .)/
 
 include ScriptsLib/Makefile-Common.mk
 

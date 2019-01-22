@@ -1,7 +1,7 @@
 #
 # This optional component may be used on windows to build windows installers (MSI files)
 #
-export StroikaRoot?=$(abspath ../..)/
+StroikaRoot=$(abspath ../..)/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
