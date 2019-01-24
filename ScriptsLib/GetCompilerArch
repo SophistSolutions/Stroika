@@ -3,7 +3,7 @@ CC=$1
 OUTPUT=`$CC -dumpmachine 2> /dev/null`
 if [ $? -eq 0 ] ; then
 	# @todo must find a better way!!!
-	if [ "arm-linux-gnueabihf" = "$OUTPUT" ] echo "armhf"; exit 0; fi
+	if [ "arm-linux-gnueabihf" = "$OUTPUT" ] ; then echo "armhf"; exit 0; fi
 	echo $OUTPUT | awk '{split($0,a,"-"); print a[1]}'
 elif [[ "xxx/x64/cl" =~ .*\/x64\/cl ]] ; then 
 	echo x86_64
