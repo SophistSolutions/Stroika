@@ -2,5 +2,6 @@
 ARCH=$1
 if [ "x86_64" = "$ARCH" ] ; then echo "amd64"; exit 0; fi
 if [ "x86" = "$ARCH" ] ; then echo "i386"; exit 0; fi
-#not right, but probably best we can do...for now...
-echo "any"
+#not right, but probably best we can do...for now...(did't appear to work)
+#echo "any"
+echo "$ARCH"
