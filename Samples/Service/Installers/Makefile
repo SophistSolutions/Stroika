@@ -32,7 +32,8 @@ VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
 
 MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformation $(VERSION_FILE_IN) Major.Minor)
 INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformation $(VERSION_FILE_IN) DecoratedStageInfo)
-INSTALLER_PLATFORM_TAG?=$(shell uname -m)
+#INSTALLER_PLATFORM_TAG?=$(shell uname -m)
+INSTALLER_PLATFORM_TAG?=$(ARCH)
 INSTALLER_OS_TAG?=$(shell uname -s)
 
 TARGET_OUT_INSTALLER_DEB=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
