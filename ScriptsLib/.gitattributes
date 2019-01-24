@@ -20,6 +20,7 @@ HasCompiler text eol=lf
 MakeDirectorySymbolicLink text eol=lf
 MakeBuildRoot text eol=lf
 MakeVersionFile text eol=lf
+MapArch2DebFileArchitecture text eol=lf
 PrintLevelLeader text eol=lf
 PrintProgressLine text eol=lf
 RegressionTests text eol=lf
