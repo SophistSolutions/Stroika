@@ -30,22 +30,22 @@
     <None Include="..\..\Sources\Service.inl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\Installers\Installer.wix">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\Installer_en-us.wxl">
+      <Filter>Installers</Filter>
+    </None>
     <None Include="..\..\Installers\Makefile">
       <Filter>Installers</Filter>
     </None>
-    <None Include="..\..\Installers\stroika-sampleservice.control">
+    <None Include="..\..\Installers\stroika-sampleservice.control.static">
       <Filter>Installers</Filter>
     </None>
     <None Include="..\..\Installers\stroika-sampleservice.rpm.spec">
       <Filter>Installers</Filter>
     </None>
     <None Include="..\..\Installers\stroika-sampleservice.service">
-      <Filter>Installers</Filter>
-    </None>
-    <None Include="..\..\Installers\Installer.wix">
-      <Filter>Installers</Filter>
-    </None>
-    <None Include="..\..\Installers\Installer_en-us.wxl">
       <Filter>Installers</Filter>
     </None>
   </ItemGroup>

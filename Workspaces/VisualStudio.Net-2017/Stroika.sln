@@ -137,6 +137,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\Makefile-Common.mk = ..\..\ScriptsLib\Makefile-Common.mk
 		..\..\ScriptsLib\MakeVersionFile = ..\..\ScriptsLib\MakeVersionFile
 		..\..\ScriptsLib\MakeVersionFile.sh = ..\..\ScriptsLib\MakeVersionFile.sh
+		..\..\ScriptsLib\MapArch2DebFileArchitecture = ..\..\ScriptsLib\MapArch2DebFileArchitecture
 		..\..\ScriptsLib\PrintConfigurationVariable.pl = ..\..\ScriptsLib\PrintConfigurationVariable.pl
 		..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl = ..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl
 		..\..\ScriptsLib\PrintLevelLeader = ..\..\ScriptsLib\PrintLevelLeader
