@@ -529,7 +529,7 @@ But - even with just plain make, you need some sort of configure script to estab
   - fix by
     - sudo vi /etc/apt/sources.list"
     - temporarily add
-        ~~~~
+        ~~~~bash
         #tmphack to load GLIBC_2 2.28
         deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
         ~~~~
