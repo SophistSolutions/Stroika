@@ -280,11 +280,13 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case ParseFormat::eXML:
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case ParseFormat::eISO8601: {
             if (rep.empty ())
                 [[UNLIKELY_ATTR]]
@@ -658,11 +660,14 @@ String DateTime::Format (PrintFormat pf) const
             }
             return mungedData;
         }
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case PrintFormat::eXML:
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
+
         case PrintFormat::eISO8601: {
             String r = fDate_.Format (Date::PrintFormat::eISO8601);
             if (fTimeOfDay_.has_value ()) {

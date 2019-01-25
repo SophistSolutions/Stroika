@@ -199,6 +199,7 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+
 }
 
 #endif /*_Stroika_Foundation_Time_DateTime_inl_*/

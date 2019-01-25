@@ -258,11 +258,13 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         }
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case ParseFormat::eXML:
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case ParseFormat::eISO8601: {
             int hour   = 0;
             int minute = 0;
@@ -496,10 +498,6 @@ String TimeOfDay::Format (PrintFormat pf) const
             String tmp = Format (locale{});
             /*
              * This logic probably needs to be locale-specific, but this is good enuf for now...
-             *
-             *  This code also uses wstring stuff instead of String becuase my STRING API SUCKS!!!
-             *  Adjust String API so this code can be made clear!
-             *          -- LGP 2013-03-02
              */
             optional<size_t> i;
             while ((i = tmp.RFind (L":00"))) {
@@ -524,11 +522,13 @@ String TimeOfDay::Format (PrintFormat pf) const
             }
             return tmp;
         }
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         case PrintFormat::eXML:
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case PrintFormat::eISO8601: {
             uint32_t hour    = fTime_ / (60 * 60);
             uint32_t minutes = (fTime_ - hour * 60 * 60) / 60;
