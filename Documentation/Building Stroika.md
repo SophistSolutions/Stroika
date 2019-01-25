@@ -522,3 +522,21 @@ But - even with just plain make, you need some sort of configure script to estab
   If you are trying to install required components in Cygwin, and cannot find them in the Cygwin setup GUI, try:
 
   cygcheck -p dos2unix
+
+- On raspberry pi
+
+  >  /tmp/Test43: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/Test43)
+  - fix by
+    - sudo vi /etc/apt/sources.list"
+    - temporarily add
+        ~~~~
+        #tmphack to load GLIBC_2 2.28
+        deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
+        ~~~~
+    - `sudo apt-get update`
+    - `apt-cache policy libc6`
+    - `sudo apt-get install libc6=2.28-5+rpi1`
+    - undo edit to /etc/apt/sources.list (or comment out addition)
+    - sudo apt-get update
+
+    NOTE - if you area dealing later versions some variation on this will likely work. Select the next debian release past your current one for the /etc/apt/sources.list addition and use apt-cache policy to find an available version.
