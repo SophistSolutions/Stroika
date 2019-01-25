@@ -40,6 +40,9 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 sub trim($)
 {
 	my $string = shift;
+	if (not defined($string)) {
+		return $string;
+	}
 	$string =~ s/^\s+//;
 	$string =~ s/\s+$//;
 	return $string;
