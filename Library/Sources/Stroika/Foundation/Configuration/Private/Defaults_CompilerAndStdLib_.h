@@ -125,6 +125,7 @@
 // _MSC_VER=1920
 #define _MSC_VER_2k19_16Pt0_ 1920
 #define _MS_VS_2k19_16Pt0Pt0pre1_ 192027027
+#define _MS_VS_2k19_16Pt0Pt0pre2_ 192027305
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -143,9 +144,9 @@
 #endif
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt0_
 // check which pointer-version of MSVC2k17 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre1_
+#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre2_
 // @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-pre1 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-pre2 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
