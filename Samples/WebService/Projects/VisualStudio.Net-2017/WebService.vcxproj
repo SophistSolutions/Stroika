@@ -54,7 +54,7 @@
     <ProjectGuid>{D87B1477-CD62-4751-8A7D-AF9DAC2EBDFC}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>WebServices</ProjectName>
+    <ProjectName>WebService</ProjectName>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
