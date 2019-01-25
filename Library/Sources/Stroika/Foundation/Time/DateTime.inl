@@ -158,6 +158,7 @@ namespace Stroika::Foundation::Time {
 namespace Stroika::Foundation::Configuration {
     template <>
     struct DefaultNames<Stroika::Foundation::Time::DateTime::ParseFormat> : EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         static constexpr EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> k{
@@ -170,6 +171,7 @@ namespace Stroika::Foundation::Configuration {
                 }}};
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
         DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> (k)
         {
@@ -177,6 +179,7 @@ namespace Stroika::Foundation::Configuration {
     };
     template <>
     struct DefaultNames<Stroika::Foundation::Time::DateTime::PrintFormat> : EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         static constexpr EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> k{
@@ -190,6 +193,7 @@ namespace Stroika::Foundation::Configuration {
                 }}};
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
         DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> (k)
         {
