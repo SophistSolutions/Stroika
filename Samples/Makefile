@@ -39,6 +39,7 @@ SUBPROJECTS+=	SSDPServer
 SUBPROJECTS+=	SystemPerformanceClient
 SUBPROJECTS+=	Traceroute
 SUBPROJECTS+=	WebServer
+SUBPROJECTS+=	WebService
 
 
 
