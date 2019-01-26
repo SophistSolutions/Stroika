@@ -26,6 +26,6 @@ push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-	docker push sophistsolutionsinc/sophistsolutionsinc/stroika-buildvm-centos-7-small
+	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev
