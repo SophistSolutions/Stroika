@@ -5,7 +5,6 @@
 		}
 	],
 	"settings": {
-		    "C_Cpp.clang_format_style": "file ../../.clang-format"
 
 	}
 }
