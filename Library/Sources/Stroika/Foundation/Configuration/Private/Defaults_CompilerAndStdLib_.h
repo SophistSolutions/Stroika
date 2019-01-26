@@ -567,6 +567,7 @@ lose those deprecated interfaces.
 // verified broken in _MSC_VER_2k17_15Pt8_
 // verified broken in _MSC_VER_2k17_15Pt9_
 // assume broken in _MSC_VER_2k19_16Pt0_
+// verified broken _MS_VS_2k19_16Pt0Pt0pre2_
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
@@ -658,7 +659,7 @@ lose those deprecated interfaces.
 #ifndef qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
 #if defined(_MSC_VER)
 // assume broken in _MS_VS_2k17_15Pt7Pt3_
-// appears fixed in _MS_VS_2k17_15Pt7Pt4_
+// verified fixed in _MS_VS_2k17_15Pt7Pt4_
 #define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
 #else
 #define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy 0
@@ -790,7 +791,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MSC_VER_2k17_15Pt8_
 // still broken in _MSC_VER_2k17_15Pt9_
 // still broken in _MSC_VER_2k19_16Pt0_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified FINALLY FIXED IN _MS_VS_2k19_16Pt0Pt0pre2_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre1_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -837,6 +839,7 @@ WORKAROUND:
 // assume still broken in _MS_VS_2k17_15Pt8Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0Pt0_ - preview1
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
@@ -1006,7 +1009,7 @@ NOTE:
 // Assume broken in _MS_VS_2k17_15Pt5Pt3_
 // Assume broken in _MS_VS_2k17_15Pt5Pt5_
 // still broken in _MS_VS_2k17_15Pt6Pt0_
-// APPEARS fixed with _MS_VS_2k17_15Pt7Pt1_
+// verfiied fixed with _MS_VS_2k17_15Pt7Pt1_
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
@@ -1036,6 +1039,7 @@ NOTE:
 // assume still broken in _MS_VS_2k17_15Pt8Pt5_
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
@@ -1056,6 +1060,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified BROKEN _MSC_VER_2k17_15Pt8_ (OK in debug build, but broken in Release-U-32)
 // verified BROKEN _MSC_VER_2k17_15Pt9_ (OK in debug build, but broken in Release-U-32)
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1) - not not sure anything more than warnings - no buggy behavior seen?
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 #define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
@@ -1161,6 +1166,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // first noticed broken in _MSC_VER_2k17_15Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
@@ -1274,6 +1280,7 @@ namespace {
 // first broken in _MSC_VER_2k17_15Pt8_
 // VERIFIED broken IN _MSC_VER_2k17_15Pt9_  (NOTE - this no longer gives the above assertion error but instead just fails in the UTF8 code conversion)
 // VERIFIED still broken in _MSC_VER_2k19_16Pt0_
+// VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
