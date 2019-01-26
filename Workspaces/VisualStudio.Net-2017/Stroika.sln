@@ -3105,9 +3105,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win32", "Win32", "{D2183708
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DockerBuildContainers", "DockerBuildContainers", "{4CA6CEC9-9BEB-4810-B815-00D81B06570D}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\CreateImages = ..\..\DockerBuildContainers\CreateImages
-		..\..\DockerBuildContainers\PushImages = ..\..\DockerBuildContainers\PushImages
-		..\..\DockerBuildContainers\RunImage = ..\..\DockerBuildContainers\RunImage
+		..\..\DockerBuildContainers\.gitattributes = ..\..\DockerBuildContainers\.gitattributes
+		..\..\DockerBuildContainers\Makefile = ..\..\DockerBuildContainers\Makefile
+		..\..\DockerBuildContainers\ReadMe.md = ..\..\DockerBuildContainers\ReadMe.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ubuntu1804-Small", "Ubuntu1804-Small", "{15B8B21F-E6D3-4F26-80EC-56EBF7D4372B}"
@@ -3168,6 +3168,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WIX", "WIX", "{CE000226-84A
 	ProjectSection(SolutionItems) = preProject
 		..\..\ThirdPartyComponents\WIX\.gitignore = ..\..\ThirdPartyComponents\WIX\.gitignore
 		..\..\ThirdPartyComponents\WIX\Makefile = ..\..\ThirdPartyComponents\WIX\Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Centos-7-Small", "Centos-7-Small", "{68162BBE-4D1F-4017-A9B3-7BCC5775A7A2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\DockerBuildContainers\Centos-7-Small\Dockerfile = ..\..\DockerBuildContainers\Centos-7-Small\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared-Files", "Shared-Files", "{83ADB297-9D2A-4224-9648-E95E15B98F07}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\DockerBuildContainers\Shared-Files\Getting-Started.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started.md
 	EndProjectSection
 EndProject
 Global
@@ -3651,6 +3661,8 @@ Global
 		{0AA7353D-A80F-4A2B-AE11-2D5B17ED85F1} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 		{C0E368AF-43D9-4DC7-A3B7-1CC61EEBE245} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
 		{CE000226-84A7-4D0A-A333-5537FEDD8FBF} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
+		{68162BBE-4D1F-4017-A9B3-7BCC5775A7A2} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
+		{83ADB297-9D2A-4224-9648-E95E15B98F07} = {4CA6CEC9-9BEB-4810-B815-00D81B06570D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}
