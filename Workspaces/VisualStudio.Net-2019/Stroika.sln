@@ -3182,7 +3182,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WIX", "WIX", "{CCE68503-142
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared-Files", "Shared-Files", "{FAC4EA19-48C7-45B3-9B1B-3E4693AF37DF}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Shared-Files\Getting-Started.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started.md
+		..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Centos-7-Small", "Centos-7-Small", "{02483A36-F8B1-4458-AEA0-C5A108DD212B}"

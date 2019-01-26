@@ -41,6 +41,6 @@ RUN apt-get install -y libasan5 libubsan1
 #locale support not strictly required, but some regression tests depend on it
 RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
 
-COPY Shared-Files/Getting-Started.md ./
+COPY Shared-Files/Getting-Started-With-Stroika.md ./
 
 CMD /bin/bash

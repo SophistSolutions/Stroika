@@ -3,7 +3,6 @@ FROM sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-
 # Just to echo information in regression test output
 RUN apt-get install -y lsb-release
 

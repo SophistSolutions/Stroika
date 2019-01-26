@@ -8,8 +8,11 @@ help:
 	@echo "    docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small   OR"
 	@echo "    docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests   ETC"
 	@echo
-	@echo "n.b. use --security-opt seccomp=unconfined to run debugger (ptrace/address randomization disable)"
-	@echo "and first thing when you run docker image, cat ReadMe.md"
+	@echo "n.b. you may need to use"
+	@echo "    --security-opt seccomp=unconfined"
+	@echo "to run debugger (ptrace/address randomization disable, or for debug builds that use sanitizers)"
+	@echo
+	@echo "And first thing when you run docker image, cat /Getting-Started-With-Stroika.md"
 
 
 docker-images:

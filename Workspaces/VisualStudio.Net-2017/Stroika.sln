@@ -3177,7 +3177,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Centos-7-Small", "Centos-7-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared-Files", "Shared-Files", "{83ADB297-9D2A-4224-9648-E95E15B98F07}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Shared-Files\Getting-Started.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started.md
+		..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md
 	EndProjectSection
 EndProject
 Global
