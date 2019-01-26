@@ -24,4 +24,4 @@ RUN  apt-get install zlib1g-dev
 RUN apt-get install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get update && apt-get install -y g++-7-arm-linux-gnueabihf g++-8-arm-linux-gnueabihf iputils-ping
+RUN apt-get install -y g++-7-arm-linux-gnueabihf g++-8-arm-linux-gnueabihf iputils-ping
