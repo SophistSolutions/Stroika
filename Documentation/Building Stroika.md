@@ -1,6 +1,7 @@
 # Building Stroika
 
 ---------
+
 ## Common
 
 Stroika is a C++ class library. The only fully supported build environment for Stroika is GNU Make. Once you have that setup, you can build through your favorite IDE.
@@ -23,9 +24,18 @@ followed by:
 
   If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
-**NOTE**
+### Build with Docker
 
-It takes a while to build all of Stroika (10-20 minutes per configuration), so adding -j10 (or so) helps alot.
+If you are missing any components and just want a quick environment to test that has all the right build components installed, you can use the pre-built docker containers:
+
+  ~~~~bash
+  docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
+  cat /Getting-Started-With-Stroika.md
+  ~~~~
+
+### ***Note***
+
+It takes a while to build all of Stroika (10-20 minutes per configuration), so adding -j10 (or so) helps a lot.
 
 ---------
 
@@ -540,3 +550,26 @@ But - even with just plain make, you need some sort of configure script to estab
     - sudo apt-get update
 
     NOTE - if you area dealing later versions some variation on this will likely work. Select the next debian release past your current one for the /etc/apt/sources.list addition and use apt-cache policy to find an available version.
+
+- Under Docker
+
+  ~~~bash
+  ==7192==LeakSanitizer has encountered a fatal error.
+  ==7192==HINT: For debugging, try setting environment variable LSAN_OPTIONS=verbosity=1:log_threads=1
+  ==7192==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
+  ~~~
+
+  OR
+
+  ~~~bash
+  warning: Error disabling address space randomization: Operation not permitted
+  warning: Could not trace the inferior process.
+  warning: ptrace: Operation not permitted
+  ~~~
+
+  run the docker container (docker run or docker exec line) - with:
+    `--security-opt seccomp=unconfined`
+
+  - See also
+    [../ScriptsLib/RunInDockerEnvironment](../ScriptsLib/RunInDockerEnvironment) 
+    for more hints on developing flags with docker containers.
