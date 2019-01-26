@@ -90,7 +90,13 @@ namespace {
             void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
             {
                 Test_1_SimpleFetch_Google_C_ (factory ());
+#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                if (not Debug::IsRunningUnderValgrind ()) {
+                    Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+                }
+#else
                 Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+#endif
             }
         }
         void DoTests_ ()

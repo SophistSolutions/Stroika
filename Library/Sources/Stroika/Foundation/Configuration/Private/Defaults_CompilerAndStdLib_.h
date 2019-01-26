@@ -1304,8 +1304,8 @@ namespace {
  */
 #ifndef qCompilerAndStdLib_arm_openssl_valgrind_Buggy
 
-#if defined(__GNUC__)
-// tested still generates warning with gcc8
+#if defined(__GNUC__) && defined(__arm__)
+// tested still generates warning with gcc8 (actually crash on valgrind and raspberrypi - stretch - maybe fixed in buster? - maybe got worse cuz I upgraded libc on that machine but not valgrind to buster?)
 #define qCompilerAndStdLib_arm_openssl_valgrind_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #else
 #define qCompilerAndStdLib_arm_openssl_valgrind_Buggy 0
