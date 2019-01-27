@@ -23,19 +23,19 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     namespace STROIKA_PRIVATE_ {
         // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
         template <typename IGNORED_F_RETURN_TYPE>
-        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<IGNORED_F_RETURN_TYPE (void)>& f)
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, [[maybe_unused]] const function<IGNORED_F_RETURN_TYPE (void)>& f)
         {
             Require (variantValueArgs.size () == 0);
             return make_tuple ();
         }
         template <typename IGNORED_F_RETURN_TYPE, typename SINGLE_ARG>
-        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<IGNORED_F_RETURN_TYPE (SINGLE_ARG)>& f)
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, [[maybe_unused]] const function<IGNORED_F_RETURN_TYPE (SINGLE_ARG)>& f)
         {
             Require (variantValueArgs.size () == 1);
             return make_tuple (objVarMapper.ToObject<SINGLE_ARG> (variantValueArgs.Nth (0)));
         }
         template <typename IGNORED_F_RETURN_TYPE, typename ARG_FIRST, typename... REST_ARG_TYPES>
-        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<IGNORED_F_RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
+        inline auto mkArgsTuple_ (const Iterable<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, [[maybe_unused]] const function<IGNORED_F_RETURN_TYPE (ARG_FIRST, REST_ARG_TYPES...)>& f)
         {
             Require (variantValueArgs.size () == sizeof...(REST_ARG_TYPES) + 1);
             return tuple_cat (
