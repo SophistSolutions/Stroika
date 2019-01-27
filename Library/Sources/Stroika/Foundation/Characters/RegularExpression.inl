@@ -13,10 +13,10 @@
 namespace Stroika::Foundation::Characters {
 
     /*
-        ********************************************************************************
-        ********************** Characters::RegularExpression ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** Characters::RegularExpression ***************************
+     ********************************************************************************
+     */
     inline RegularExpression::RegularExpression ()
         : fCompiledRegExp_ ()
     {
@@ -32,6 +32,34 @@ namespace Stroika::Foundation::Characters {
     inline const wregex& RegularExpression::GetCompiled () const
     {
         return fCompiledRegExp_;
+    }
+
+    /*
+     ********************************************************************************
+     **************************** operator "" _RegEx ********************************
+     ********************************************************************************
+     */
+    inline RegularExpression operator"" _RegEx (const char* str, size_t len) noexcept
+    {
+        return RegularExpression{String::FromASCII (str, str + len)};
+    }
+    inline RegularExpression operator"" _RegEx (const wchar_t* str, size_t len) noexcept
+    {
+        return RegularExpression{String{str, str + len}};
+    }
+#if __cpp_char8_t >= 201811L
+    inline RegularExpression operator"" _RegEx (const char8_t* str, size_t len) noexcept
+    {
+        return RegularExpression{String{str, str + len}};
+    }
+#endif
+    inline RegularExpression operator"" _RegEx (const char16_t* str, size_t len) noexcept
+    {
+        return RegularExpression{String{str, str + len}};
+    }
+    inline RegularExpression operator"" _RegEx (const char32_t* str, size_t len) noexcept
+    {
+        return RegularExpression{String{str, str + len}};
     }
 
 }
