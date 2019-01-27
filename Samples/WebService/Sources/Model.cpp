@@ -29,6 +29,9 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = []() {
         []([[maybe_unused]] const ObjectVariantMapper& mapper, const Number* obj) -> VariantValue {
             StringBuilder sb;
             if (obj->real () != 0) {
+                if (obj->imag () == 0) {
+                    return obj->real (); // return a number in this case, not a string
+                }
                 sb += Characters::Format (L"%f", obj->real ());
             }
             if (obj->imag () != 0) {

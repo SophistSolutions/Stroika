@@ -10,9 +10,9 @@ This sample guides you to breakup your web-service application into serveral par
 - WSImpl - the pure application logic part of your webservices. Here you inherit from IWSAPI, and simple return the appropriate C++ object results.
 - WebServer - this ties together the abstract interface with URL rules (routes etc), and simply maps delegated route handlers to the IWSAPI
 
-
-* To test this example:
-  * Run the service (under the debugger if you wish)
-  * curl  http://localhost:8080/ OR
-  * curl  http://localhost:8080/FRED OR      (to see rror handling)
-  * curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
+- To test this example:
+  - Run the service (under the debugger if you wish)
+  - curl  http://localhost:8080/ OR
+  - curl  http://localhost:8080/FRED OR      (to see rror handling)
+  - curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
+  - curl -H "Content-Type: application/json" -X POST -d '{"arg1":1, "arg2": 3 }' http://localhost:8080/plus

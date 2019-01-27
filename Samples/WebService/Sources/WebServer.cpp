@@ -56,22 +56,25 @@ public:
         : kRouter_{
               Sequence<Route>{
                   Route{
-                      RegularExpression (IO::Network::HTTP::Methods::kOptions, RegularExpression::eECMAScript),
+					  RegularExpression {IO::Network::HTTP::Methods::kOptions},
                       RegularExpression::kAny,
                       []([[maybe_unused]] Message* m) {}},
-                  Route{RegularExpression (L""), DefaultPage_},
-                  Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
-                  Route{RegularExpression (L"GET"), RegularExpression (L"FRED"), [](Request*, Response* response) {
-                            response->write (L"FRED");
-                            response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
+                  Route{L""_RegEx, DefaultPage_},
+                  Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
+                  Route{L"GET"_RegEx, L"FRED"_RegEx, [](Request*, Response* response) {
+        response->write (L"FRED");
+        response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
 
-                  // This doesn't belong here - move to new WebService sample
-                  Route{RegularExpression (L"plus", RegularExpression::eECMAScript), mkRequestHandler (WebServiceMethodDescription{{}, {}, DataExchange::PredefinedInternetMediaType::JSON_CT ()}, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<double(double, double)>{[=](double arg1, double arg2) { return arg1 + arg2; }})},
-                  Route{RegularExpression (L"test-void-return", RegularExpression::eECMAScript), mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) { if (check > 10) { Execution::Throw (Execution::StringException (L"more than 10")); } }})},
+                  Route{L"plus"_RegEx, mkRequestHandler (WebServiceMethodDescription{{}, {}, DataExchange::PredefinedInternetMediaType::JSON_CT ()}, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) {
+        return fWSImpl_->plus (arg1, arg2); }})},
+                  Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) {
+        if (check > 10) {
+            Execution::Throw (Execution::StringException (L"more than 10"));
+        } }})},
 
               }}
-        , fWSImpl_{}
+        , fWSImpl_{wsImpl}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServices/"} + AppVersion::kVersion.AsMajorMinorString ()}}
     {
         // @todo - move this to some framework-specific regtests...
@@ -91,7 +94,7 @@ public:
         response->writeln (L"<li>curl http://localhost:8080/ OR</li>");
         response->writeln (L"<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>");
         response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>");
-        response->writeln (L"<li>curl http://localhost:8080/Files/index.html -v</li>");
+        response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 1, \"arg2\": 3 }' http://localhost:8080/plus</li>");
         response->writeln (L"</ul>");
         response->writeln (L"</body></html>");
 
