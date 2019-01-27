@@ -775,6 +775,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
 
 #if defined(_MSC_VER)
+
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
@@ -791,8 +792,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MSC_VER_2k17_15Pt8_
 // still broken in _MSC_VER_2k17_15Pt9_
 // still broken in _MSC_VER_2k19_16Pt0_
-// verified FINALLY FIXED IN _MS_VS_2k19_16Pt0Pt0pre2_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre1_)
+// CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
