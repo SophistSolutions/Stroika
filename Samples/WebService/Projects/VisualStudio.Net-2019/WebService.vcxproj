@@ -493,8 +493,14 @@
     <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2019\Stroika-Frameworks-WebServer.vcxproj">
       <Project>{bb1903e4-c75b-430b-9e6f-8caea64bf194}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2019\Stroika-Frameworks-WebService.vcxproj">
+      <Project>{9454f6d7-68b9-4c91-92d1-99958ec9ea42}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\IWSAPI.cpp" />
+    <ClCompile Include="..\..\Sources\Main.cpp" />
+    <ClCompile Include="..\..\Sources\Model.cpp" />
     <ClCompile Include="..\..\Sources\WebServer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -509,19 +515,22 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\WSImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
-    <None Include="..\..\sample-html-folder\index.html" />
-    <None Include="..\..\sample-html-folder\js\0.js" />
-    <None Include="..\..\sample-html-folder\js\1.js" />
-    <None Include="..\..\sample-html-folder\js\2.js" />
-    <None Include="..\..\sample-html-folder\js\3.js" />
+    <None Include="..\..\Sources\IWSAPI.inl" />
+    <None Include="..\..\Sources\Model.inl" />
+    <None Include="..\..\Sources\WebServer.inl" />
+    <None Include="..\..\Sources\WSImpl.inl" />
     <None Include="..\..\Todo.md" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\sample-html-folder\SophistSolutionsBanner.gif" />
+    <ClInclude Include="..\..\Sources\IWSAPI.h" />
+    <ClInclude Include="..\..\Sources\Model.h" />
+    <ClInclude Include="..\..\Sources\WebServer.h" />
+    <ClInclude Include="..\..\Sources\WSImpl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

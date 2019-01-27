@@ -5,23 +5,21 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
-    </Filter>
-    <Filter Include="sample-html-folder">
-      <UniqueIdentifier>{dd20d7c5-c9d1-4497-828c-7f7630406e6c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="sample-html-folder\js">
-      <UniqueIdentifier>{36aa548c-413d-497a-83fb-a73ef7538fe2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\WebServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\IWSAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\WSImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,25 +27,31 @@
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Todo.md" />
     <None Include="..\..\Makefile" />
-    <None Include="..\..\sample-html-folder\index.html">
-      <Filter>sample-html-folder</Filter>
+    <None Include="..\..\Sources\IWSAPI.inl">
+      <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\sample-html-folder\js\0.js">
-      <Filter>sample-html-folder\js</Filter>
+    <None Include="..\..\Sources\Model.inl">
+      <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\sample-html-folder\js\1.js">
-      <Filter>sample-html-folder\js</Filter>
+    <None Include="..\..\Sources\WebServer.inl">
+      <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\sample-html-folder\js\2.js">
-      <Filter>sample-html-folder\js</Filter>
-    </None>
-    <None Include="..\..\sample-html-folder\js\3.js">
-      <Filter>sample-html-folder\js</Filter>
+    <None Include="..\..\Sources\WSImpl.inl">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\sample-html-folder\SophistSolutionsBanner.gif">
-      <Filter>sample-html-folder</Filter>
-    </Image>
+    <ClInclude Include="..\..\Sources\IWSAPI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Model.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\WebServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\WSImpl.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -22,7 +22,11 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
+	$(ObjDir)IWSAPI${OBJ_SUFFIX}\
+	$(ObjDir)Main${OBJ_SUFFIX}\
+	$(ObjDir)Model${OBJ_SUFFIX}\
 	$(ObjDir)WebServer${OBJ_SUFFIX}\
+	$(ObjDir)WSImpl${OBJ_SUFFIX}\
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
@@ -48,7 +52,6 @@ else
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
 	fi
 endif
-	@mkdir -p $(TARGETDIR)html && cp -r sample-html-folder/* $(TARGETDIR)html/
 
 
 check:
