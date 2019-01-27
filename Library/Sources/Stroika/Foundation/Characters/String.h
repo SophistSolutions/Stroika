@@ -312,9 +312,15 @@ namespace Stroika::Foundation::Characters {
          * the terminating NUL-character.
          */
         String ();
+#if __cpp_char8_t >= 201811L
+        String (const char8_t* cString);
+#endif
         String (const char16_t* cString);
         String (const char32_t* cString);
         String (const wchar_t* cString);
+#if __cpp_char8_t >= 201811L
+        String (const char8_t* from, const char8_t* to);
+#endif
         String (const char16_t* from, const char16_t* to);
         String (const char32_t* from, const char32_t* to);
         String (const wchar_t* from, const wchar_t* to);

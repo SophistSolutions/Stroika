@@ -149,6 +149,15 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
+#if __cpp_char8_t >= 201811L
+    inline String::String (const char8_t* from, const char8_t* to)
+        : inherited ((from == to) ? mkEmpty_ () : FromUTF8 (from, to))
+    {
+        Require ((from == nullptr) == (to == nullptr));
+        Require (from <= to);
+        _AssertRepValidType (); // just make sure non-null and right type
+    }
+#endif
     inline String::String (const char16_t* from, const char16_t* to)
         : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
     {

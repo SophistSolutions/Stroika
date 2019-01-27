@@ -202,6 +202,14 @@ Traversal::Iterator<Character> String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYPE
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
+#if __cpp_char8_t >= 201811L
+String::String (const char8_t* cString)
+    : String (cString, cString + Characters::CString::Length (cString))
+{
+    RequireNotNull (cString);
+}
+#endif
+
 String::String (const char16_t* cString)
     : String (cString, cString + Characters::CString::Length (cString))
 {
