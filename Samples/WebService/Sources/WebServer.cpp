@@ -46,29 +46,32 @@ using namespace StroikaSample::WebServices;
  */
 class WebServer::Rep_ {
 public:
-    const Router      kRouter_;
-    ConnectionManager fConnectionMgr_;
+    const Router       kRouter_;
+    shared_ptr<IWSAPI> fWSImpl_;
+    ConnectionManager  fConnectionMgr_;
 
     static const WebServiceMethodDescription kPlus_;
 
-    Rep_ (uint16_t portNumber)
+    Rep_ (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
         : kRouter_{
               Sequence<Route>{
                   Route{
                       RegularExpression (IO::Network::HTTP::Methods::kOptions, RegularExpression::eECMAScript),
                       RegularExpression::kAny,
-                      [](Message* m) {}},
+                      []([[maybe_unused]] Message* m) {}},
                   Route{RegularExpression (L""), DefaultPage_},
                   Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
                   Route{RegularExpression (L"GET"), RegularExpression (L"FRED"), [](Request*, Response* response) {
                             response->write (L"FRED");
                             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
+
                   // This doesn't belong here - move to new WebService sample
                   Route{RegularExpression (L"plus", RegularExpression::eECMAScript), mkRequestHandler (WebServiceMethodDescription{{}, {}, DataExchange::PredefinedInternetMediaType::JSON_CT ()}, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<double(double, double)>{[=](double arg1, double arg2) { return arg1 + arg2; }})},
                   Route{RegularExpression (L"test-void-return", RegularExpression::eECMAScript), mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) { if (check > 10) { Execution::Throw (Execution::StringException (L"more than 10")); } }})},
 
               }}
+        , fWSImpl_{}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServices/"} + AppVersion::kVersion.AsMajorMinorString ()}}
     {
         // @todo - move this to some framework-specific regtests...
@@ -115,6 +118,6 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
 };
 
 WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
-    : fRep_ (make_shared<Rep_> (portNumber))
+    : fRep_ (make_shared<Rep_> (portNumber, wsImpl))
 {
 }
