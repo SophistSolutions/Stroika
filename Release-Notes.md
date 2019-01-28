@@ -59,13 +59,16 @@ History
     of String_Contant {xx} syntax with xx_k roughly: cleaner and more readable but 
     with trickiness about namespaces
 
--  HistoricalPerformanceRegressionTestResults/
-   PerformanceDump-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d17.txt
+- HistoricalPerformanceRegressionTestResults/
+
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, MacOS_XCode10}-2.1d17.txt
 
 - Tested (passed regtests)
-  - OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Windows_VS2k19,
-    Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,
-    Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d17-OUT.txt
+  - OUTPUT FILES:
+
+    Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+    Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+    Ubuntu1810-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d17-OUT.txt
   - vc++2k17 (15.9.6)
   - vc++2k19 (16.0.0-preview2)
   - MacOS, XCode 10
@@ -77,10 +80,11 @@ History
     valgrind:memcheck/helgrind
   - gcc with --sanitize address,undefined,thread and debug/release builds on tests
 
--  Known issues
-   -  bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
-      (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
-      cuz too slow
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
+    cuz too slow
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
 
 
 
