@@ -345,19 +345,19 @@ optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family
 String InternetAddress::ToString () const
 {
     if (V4::kAddrAny == *this) {
-        return String_Constant{L"INADDR_ANY"};
+        return L"INADDR_ANY"_k;
     }
     if (V6::kAddrAny == *this) {
-        return String_Constant{L"in6addr_any"};
+        return L"in6addr_any"_k;
     }
     if (V4::kLocalhost == *this) {
-        return String_Constant{L"localhost"};
+        return L"localhost"_k;
     }
     if (V6::kLocalhost == *this) {
-        return String_Constant{L"v6-localhost"}; // no well-defined constant for this, but a good guess
+        return L"v6-localhost"_k; // no well-defined constant for this, but a good guess
     }
     if (V6::kV4MappedLocalhost == *this) {
-        return String_Constant{L"v4-localhost-As-v6"}; // no well-defined constant for this, but a good guess
+        return L"v4-localhost-As-v6"_k; // no well-defined constant for this, but a good guess
     }
     return As<String> ();
 }

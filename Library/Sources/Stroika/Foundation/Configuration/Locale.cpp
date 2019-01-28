@@ -16,9 +16,8 @@
 #include "Locale.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Configuration;
-
-using Characters::String_Constant;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -62,7 +61,7 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
     // horrible!!!! - see TOOD
     vector<Characters::String> result;
     result.reserve (10);
-    IgnoreExceptionsForCall (result.push_back (FindLocaleName (String_Constant{L"en"}, String_Constant{L"us"})));
+    IgnoreExceptionsForCall (result.push_back (FindLocaleName (L"en"_k, L"us"_k)));
     return result;
 }
 #endif
@@ -75,7 +74,7 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 Characters::String Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
-    using Characters::String;
+    using namespace Characters;
     Require (iso2LetterLanguageCode.length () == 2);
     Require (iso2LetterTerritoryCode.length () == 2); // may lift this in the future and make it optional
 
@@ -102,10 +101,10 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
             {L"."},
             {L" "},
 #else
-        String_Constant{L"-"},
-            String_Constant{L"_"},
-            String_Constant{L"."},
-            String_Constant{L" "},
+        L"-"_k,
+            L"_"_k,
+            L"."_k,
+            L" "_k,
 #endif
     };
     set<String> part3{
@@ -119,8 +118,8 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
         {L""},
             {L".utf8"},
 #else
-        String_Constant{L""},
-            String_Constant{L".utf8"},
+        L""_k,
+            L".utf8"_k,
 #endif
     };
     for (auto&& i1 : part1) {

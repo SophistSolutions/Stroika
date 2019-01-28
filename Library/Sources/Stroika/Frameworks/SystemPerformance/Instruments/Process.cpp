@@ -474,7 +474,7 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (String dir : IO::FileSystem::DirectoryIterable (String_Constant{L"/proc"})) {
+            for (String dir : IO::FileSystem::DirectoryIterable (L"/proc"_k)) {
                 bool isAllNumeric = not dir.FindFirstThat ([](Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files");
@@ -608,7 +608,7 @@ namespace {
                         try {
                             if (processDetails.fKernelProcess == true) {
                                 // I think these are always running as root -- LGP 2015-05-21
-                                processDetails.fUserName = String_Constant{L"root"};
+                                processDetails.fUserName = L"root"_k;
                             }
                             else {
                                 proc_status_data_ stats  = Readproc_proc_status_data_ (processDirPath + kStatusFilename_);

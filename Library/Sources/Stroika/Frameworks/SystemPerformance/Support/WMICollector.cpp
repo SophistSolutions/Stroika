@@ -23,6 +23,7 @@
 #include "WMICollector.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
@@ -149,7 +150,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
  ********************* SystemPerformance::Support::WMICollector *****************
  ********************************************************************************
  */
-String WMICollector::kWildcardInstance = String_Constant{L"*"};
+String WMICollector::kWildcardInstance = L"*"_k;
 
 WMICollector::WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName)
     : fObjectName_ (objectName)

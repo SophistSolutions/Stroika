@@ -557,8 +557,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     template <typename T>
-    const pair<Name, Name> RangeReader<T>::kDefaultBoundsNames{Name{Characters::String_Constant{L"LowerBound"}, Name::eAttribute}, Name{Characters::String_Constant{L"UpperBound"}, Name::eAttribute}};
-    template <typename T>
     RangeReader<T>::RangeReader (T* intoVal, const pair<Name, Name>& pairNames)
         : fPairNames (pairNames)
         , fValue_ (intoVal)
@@ -816,7 +814,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     }
                 else {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
-                    Execution::Throw (BadFormatException (Characters::String_Constant{L"Enumeration value out of range"}));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"_k));
                 }
             }
         };
@@ -857,7 +855,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     }
                 else {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
-                    Execution::Throw (BadFormatException (Characters::String_Constant{L"Enumeration value out of range"}));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"_k));
                 }
             }
         };

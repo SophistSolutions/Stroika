@@ -226,7 +226,7 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
  ********************************************************************************
  */
 Thread::InterruptException::InterruptException ()
-    : InterruptException (Characters::String_Constant{L"Thread Interrupt"})
+    : InterruptException (L"Thread Interrupt"_k)
 {
 }
 
@@ -242,7 +242,7 @@ const Thread::InterruptException Thread::InterruptException::kThe;
  ********************************************************************************
  */
 Thread::AbortException::AbortException ()
-    : InterruptException (Characters::String_Constant{L"Thread Abort"})
+    : InterruptException (L"Thread Abort"_k)
 {
 }
 

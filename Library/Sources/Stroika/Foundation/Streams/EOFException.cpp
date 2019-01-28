@@ -8,6 +8,7 @@
 #include "EOFException.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Streams;
 
 /*
@@ -18,7 +19,7 @@ using namespace Stroika::Foundation::Streams;
 const EOFException EOFException::kThe;
 
 EOFException::EOFException (bool partialReadCompleted)
-    : StringException (partialReadCompleted ? Characters::String_Constant{L"Premature End-Of-Stream (partial read)"} : Characters::String_Constant{L"Premature End-Of-Stream"})
+    : StringException (partialReadCompleted ? L"Premature End-Of-Stream (partial read)"_k : L"Premature End-Of-Stream"_k)
     , fPartialReadCompleted_ (partialReadCompleted)
 {
 }

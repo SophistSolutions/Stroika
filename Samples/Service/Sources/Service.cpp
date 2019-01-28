@@ -21,9 +21,9 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks::Service;
 
-using Characters::String_Constant;
 using Execution::Thread;
 
 using namespace Samples::Service;
@@ -34,9 +34,7 @@ using Execution::Logger;
 #endif
 
 namespace {
-    const Main::ServiceDescription kServiceDescription_{
-        String_Constant{L"Stroika-Sample-Service"},
-        String_Constant{L"Stroika Sample Service"}};
+    const Main::ServiceDescription kServiceDescription_{L"Stroika-Sample-Service"_k, L"Stroika Sample Service"_k};
 }
 
 namespace {

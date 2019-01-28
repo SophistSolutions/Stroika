@@ -13,6 +13,7 @@
 #include "VariantValue.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 
@@ -20,8 +21,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::WebService::Server;
 
-using Characters::String_Constant;
-using Characters::StringBuilder;
 using WebServer::ClientErrorException;
 
 /*
@@ -79,7 +78,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
     }
     else {
         Execution::Throw (ClientErrorException (
-            String_Constant{L"Expected GET with query-string arguments or PUT or POST"} +
+            L"Expected GET with query-string arguments or PUT or POST"_k +
             (fromInMessage ? (L" from " + *fromInMessage) : L"")));
     }
 }

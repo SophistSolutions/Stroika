@@ -44,7 +44,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = []() {
                 sb += Characters::Format (L"%fi", obj->imag ());
             }
             if (sb.empty ()) {
-                return String_Constant{L"0"};
+                return L"0"_k;
             }
             return sb.str ();
         },

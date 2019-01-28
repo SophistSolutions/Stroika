@@ -26,6 +26,7 @@
 #include "CPU.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Memory;
@@ -34,7 +35,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU;
 
-using Characters::String_Constant;
 using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -357,7 +357,7 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if qUseWMICollectionSupport_
-        WMICollector fSystemWMICollector_{String_Constant{L"System"}, {kInstanceName_}, {kProcessorQueueLength_}};
+        WMICollector fSystemWMICollector_{L"System"_k, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
         struct WinSysTimeCaptureContext_ {
             double IdleTime;
@@ -477,7 +477,7 @@ namespace {
 }
 
 namespace {
-    const MeasurementType kCPUMeasurment_ = MeasurementType{String_Constant{L"CPU-Usage"}};
+    const MeasurementType kCPUMeasurment_ = MeasurementType{L"CPU-Usage"_k};
 }
 
 namespace {

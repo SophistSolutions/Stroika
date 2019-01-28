@@ -28,10 +28,10 @@
 #include "SignalHandlers.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
-using Characters::String_Constant;
 using Containers::Mapping;
 using Containers::Set;
 using Time::DurationSecondsType;
@@ -186,7 +186,7 @@ public:
                 }
             },
             Thread::eAutoStart,
-            String_Constant{L"Signal Handler Safe Execution Thread"});
+            L"Signal Handler Safe Execution Thread"_k);
     }
 
 public:

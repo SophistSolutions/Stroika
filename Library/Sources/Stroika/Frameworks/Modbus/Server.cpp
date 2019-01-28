@@ -431,5 +431,5 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
             }
             WaitableEvent{}.Wait (); // forever (til thread abort)
         },
-        String_Constant{L"Modbus-Listener"});
+        L"Modbus-Listener"_k);
 }

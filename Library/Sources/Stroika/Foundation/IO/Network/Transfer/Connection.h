@@ -230,7 +230,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
         /**
          */
-        String fUserAgent{Characters::String_Constant{L"Stroika/2.0"}};
+        String fUserAgent{Characters::String_Constant{L"Stroika/2.1"}};
 
         /**
          */
