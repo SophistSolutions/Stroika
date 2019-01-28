@@ -144,22 +144,22 @@ Characters::String Version::AsWin32Version4DotString () const
 
 Characters::String Version::AsPrettyVersionString () const
 {
-    String stageStr = String_Constant (L"?");
+    String stageStr = L"?"_k;
     switch (fVerStage) {
         case VersionStage::Dev:
-            stageStr = String_Constant (L"d");
+            stageStr = L"d"_k;
             break;
         case VersionStage::Alpha:
-            stageStr = String_Constant (L"a");
+            stageStr = L"a"_k;
             break;
         case VersionStage::Beta:
-            stageStr = String_Constant (L"b");
+            stageStr = L"b"_k;
             break;
         case VersionStage::ReleaseCandidate:
-            stageStr = String_Constant (L"rc");
+            stageStr = L"rc"_k;
             break;
         case VersionStage::Release:
-            stageStr = fVerSubStage == 0 ? String () : String_Constant (L".");
+            stageStr = fVerSubStage == 0 ? String () : L"."_k;
             break;
     }
     String verSubStagStr;

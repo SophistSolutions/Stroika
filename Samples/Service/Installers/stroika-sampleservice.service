@@ -13,7 +13,7 @@ After=syslog.target
 #
 Type=forking
 
-# In stroika, this defaults to IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + String_Constant{L".pid"};
+# In stroika, this defaults to IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"_k;
 PIDFile=/var/run/Stroika-Sample-Service.pid
 #EnvironmentFile=-/etc/sysconfig/network
 #ExecStartPre=-/usr/libexec/postfix/aliasesdb

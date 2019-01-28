@@ -20,6 +20,7 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks;
@@ -27,8 +28,6 @@ using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 using namespace Stroika::Frameworks::WebServer;
 
-using Characters::String;
-using Characters::String_Constant;
 using Containers::Sequence;
 using Server::BasicServer;
 
@@ -76,20 +75,20 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
         Device d;
         d.fLocation.SetPortNumber (portForOurWS);
-        d.fServer   = UPnP::SSDP::MakeServerHeaderValue (String_Constant (L"MyStroikaBasedSampleProduct/1.0"));
+        d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"_k);
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String_Constant (L"315CAAE0-1335-57BF-A178-24C9EE756627"));
 
         DeviceDescription deviceInfo;
-        deviceInfo.fPresentationURL  = URL::Parse (String_Constant (L"http://www.sophists.com/"));
-        deviceInfo.fDeviceType       = String_Constant (L"urn:sophists.com:device:deviceType:1.0");
-        deviceInfo.fManufactureName  = String_Constant (L"Sophist Solutions, Inc.");
-        deviceInfo.fFriendlyName     = String_Constant (L"Sophist Solutions fake device");
-        deviceInfo.fManufacturingURL = URL::Parse (String_Constant (L"http://www.sophists.com/"));
-        deviceInfo.fModelDescription = String_Constant (L"long user-friendly title");
-        deviceInfo.fModelName        = String_Constant (L"model name");
-        deviceInfo.fModelNumber      = String_Constant (L"model number");
-        deviceInfo.fModelURL         = URL::Parse (String_Constant (L"http://www.sophists.com/"));
-        deviceInfo.fSerialNumber     = String_Constant (L"manufacturer's serial number");
+        deviceInfo.fPresentationURL  = URL::Parse (L"http://www.sophists.com/"_k);
+        deviceInfo.fDeviceType       = L"urn:sophists.com:device:deviceType:1.0"_k;
+        deviceInfo.fManufactureName  = L"Sophist Solutions, Inc."_k;
+        deviceInfo.fFriendlyName     = L"Sophist Solutions fake device"_k;
+        deviceInfo.fManufacturingURL = URL::Parse (L"http://www.sophists.com/"_k);
+        deviceInfo.fModelDescription = L"long user-friendly title"_k;
+        deviceInfo.fModelName        = L"model name"_k;
+        deviceInfo.fModelNumber      = L"model number"_k;
+        deviceInfo.fModelURL         = URL::Parse (L"http://www.sophists.com/"_k);
+        deviceInfo.fSerialNumber     = L"manufacturer's serial number"_k;
 
         WebServerForDeviceDescription_ deviceWS (portForOurWS, d, deviceInfo);
         BasicServer                    b (d, deviceInfo, BasicServer::FrequencyInfo ());

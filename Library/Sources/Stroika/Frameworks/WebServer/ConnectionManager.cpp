@@ -59,12 +59,12 @@ namespace {
                      *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
                      *  on all responses, but these others just when you do a preflight - using OPTIONS.
                      */
-                    response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant{L"*"});
+                    response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, L"*"_k);
                     if (m->PeekRequest ()->GetHTTPMethod () == IO::Network::HTTP::Methods::kOptions) {
-                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowCredentials, String_Constant{L"true"});
-                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant{L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"});
-                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowMethods, String_Constant{L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"});
-                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlMaxAge, String_Constant{L"86400"});
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowCredentials, L"true"_k);
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"_k);
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowMethods, L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"_k);
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlMaxAge, L"86400"_k);
                     }
                 }
             }

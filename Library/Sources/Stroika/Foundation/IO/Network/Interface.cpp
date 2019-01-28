@@ -675,17 +675,17 @@ namespace {
                 auto mapCipher = [](DOT11_CIPHER_ALGORITHM s) -> String {
                     switch (s) {
                         case DOT11_CIPHER_ALGO_NONE:
-                            return String_Constant{L"None"};
+                            return L"None"_k;
                         case DOT11_CIPHER_ALGO_WEP40:
-                            return String_Constant{L"WEP-40"};
+                            return L"WEP-40"_k;
                         case DOT11_CIPHER_ALGO_TKIP:
-                            return String_Constant{L"TKIP"};
+                            return L"TKIP"_k;
                         case DOT11_CIPHER_ALGO_CCMP:
-                            return String_Constant{L"CCMP"};
+                            return L"CCMP"_k;
                         case DOT11_CIPHER_ALGO_WEP104:
-                            return String_Constant{L"WEP-104"};
+                            return L"WEP-104"_k;
                         case DOT11_CIPHER_ALGO_WEP:
-                            return String_Constant{L"WEP"};
+                            return L"WEP"_k;
                         default:
                             return Characters::Format (L"%d", s);
                     }

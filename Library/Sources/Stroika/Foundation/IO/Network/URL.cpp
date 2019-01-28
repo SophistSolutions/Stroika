@@ -69,12 +69,12 @@ optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
     static const pair<String_Constant, uint16_t> kPredefined_[] = {
-        {String_Constant{L"http"}, static_cast<uint16_t> (80)},
-        {String_Constant{L"https"}, static_cast<uint16_t> (443)},
-        {String_Constant{L"ldap"}, static_cast<uint16_t> (389)},
-        {String_Constant{L"ldaps"}, static_cast<uint16_t> (636)},
-        {String_Constant{L"ftp"}, static_cast<uint16_t> (21)},
-        {String_Constant{L"ftps"}, static_cast<uint16_t> (990)},
+        {L"http"_k, static_cast<uint16_t> (80)},
+        {L"https"_k, static_cast<uint16_t> (443)},
+        {L"ldap"_k, static_cast<uint16_t> (389)},
+        {L"ldaps"_k, static_cast<uint16_t> (636)},
+        {L"ftp"_k, static_cast<uint16_t> (21)},
+        {L"ftps"_k, static_cast<uint16_t> (990)},
     };
     for (auto i : kPredefined_) {
         if (i.first == proto) {
@@ -430,17 +430,17 @@ String URL::GetFullURL () const
         if (fPort_.has_value () and fPort_ != GetDefaultPortForScheme (scheme)) {
             result += Format (L":%d", *fPort_);
         }
-        result += String_Constant (L"/");
+        result += L"/"_k;
     }
 
     result += fRelPath_;
 
     if (not fQuery_.empty ()) {
-        result += String_Constant (L"?") + fQuery_;
+        result += L"?"_k + fQuery_;
     }
 
     if (not fFragment_.empty ()) {
-        result += String_Constant (L"#") + fFragment_;
+        result += L"#"_k + fFragment_;
     }
 
     return result;

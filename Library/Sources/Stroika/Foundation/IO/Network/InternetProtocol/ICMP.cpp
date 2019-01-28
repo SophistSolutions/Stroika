@@ -21,37 +21,37 @@ namespace {
         // from  @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
         switch (code) {
             case 0:
-                return String_Constant{L"ICMP Destination Unreachable: Network unreachable error."};
+                return L"ICMP Destination Unreachable: Network unreachable error."_k;
             case 1:
-                return String_Constant{L"ICMP Destination Unreachable: Host unreachable error."};
+                return L"ICMP Destination Unreachable: Host unreachable error."_k;
             case 2:
-                return String_Constant{L"ICMP Destination Unreachable: Protocol unreachable error (the designated transport protocol is not supported)."};
+                return L"ICMP Destination Unreachable: Protocol unreachable error (the designated transport protocol is not supported)."_k;
             case 3:
-                return String_Constant{L"ICMP Destination Unreachable: Destination port unreachable."};
+                return L"ICMP Destination Unreachable: Destination port unreachable."_k;
             case 4:
-                return String_Constant{L"ICMP Destination Unreachable: Fragmentation required, and DF flag set."};
+                return L"ICMP Destination Unreachable: Fragmentation required, and DF flag set."_k;
             case 5:
-                return String_Constant{L"ICMP Destination Unreachable: Source route failed."};
+                return L"ICMP Destination Unreachable: Source route failed."_k;
             case 6:
-                return String_Constant{L"ICMP Destination Unreachable: Destination network unknown."};
+                return L"ICMP Destination Unreachable: Destination network unknown."_k;
             case 7:
-                return String_Constant{L"ICMP Destination Unreachable: Destination host unknown."};
+                return L"ICMP Destination Unreachable: Destination host unknown."_k;
             case 8:
-                return String_Constant{L"ICMP Destination Unreachable: Source host isolated."};
+                return L"ICMP Destination Unreachable: Source host isolated."_k;
             case 9:
-                return String_Constant{L"ICMP Destination Unreachable: Network administratively prohibited."};
+                return L"ICMP Destination Unreachable: Network administratively prohibited."_k;
             case 10:
-                return String_Constant{L"ICMP Destination Unreachable: Host administratively prohibited."};
+                return L"ICMP Destination Unreachable: Host administratively prohibited."_k;
             case 11:
-                return String_Constant{L"ICMP Destination Unreachable: Network unreachable for ToS."};
+                return L"ICMP Destination Unreachable: Network unreachable for ToS."_k;
             case 12:
-                return String_Constant{L"ICMP Destination Unreachable: Host unreachable for ToS."};
+                return L"ICMP Destination Unreachable: Host unreachable for ToS."_k;
             case 13:
-                return String_Constant{L"ICMP Destination Unreachable: Communication administratively prohibited."};
+                return L"ICMP Destination Unreachable: Communication administratively prohibited."_k;
             case 14:
-                return String_Constant{L"ICMP Destination Unreachable: Host Precedence Violation."};
+                return L"ICMP Destination Unreachable: Host Precedence Violation."_k;
             case 15:
-                return String_Constant{L"ICMP Destination Unreachable: Precedence cutoff in effect."};
+                return L"ICMP Destination Unreachable: Precedence cutoff in effect."_k;
             default:
                 return Characters::Format (L"ICMP Destination Unreachable: code %d.", code);
         }

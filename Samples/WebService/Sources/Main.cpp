@@ -22,7 +22,6 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
-//using namespace Stroika::Foundation::IO::Network;
 
 using Characters::String;
 using Containers::Sequence;

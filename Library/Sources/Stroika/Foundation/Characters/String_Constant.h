@@ -29,6 +29,17 @@ namespace Stroika::Foundation::Characters {
      */
     using String_Constant = Concrete::String_ExternalMemoryOwnership_ApplicationLifetime;
 
+    /**
+     *  \brief shorthand for String_Constant { ARGUMENT }
+     *
+     *  \par Example:
+     *      \code
+     *          String s1 = L"some-string"_k;
+     *          String s2 = String_Constant { L"some-string" };
+     *      \endcode
+     */
+    String_Constant operator"" _k (const wchar_t* s, size_t len);
+
 }
 
 /*
@@ -36,5 +47,7 @@ namespace Stroika::Foundation::Characters {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include "String_Constant.inl"
 
 #endif /*_Stroika_Foundation_Characters_String_Constant_h_*/

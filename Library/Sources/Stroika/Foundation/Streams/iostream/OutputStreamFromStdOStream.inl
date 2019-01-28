@@ -88,7 +88,8 @@ namespace Stroika::Foundation::Streams::iostream {
             if (fOriginalStream_.fail ())
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to write from ostream")));
+                    using namespace Characters;
+                    Execution::Throw (Execution::StringException (L"Failed to write from ostream"_k));
                 }
         }
         virtual void Flush () override
@@ -99,7 +100,8 @@ namespace Stroika::Foundation::Streams::iostream {
             if (fOriginalStream_.fail ())
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to flush ostream")));
+                    using namespace Characters;
+                    Execution::Throw (Execution::StringException (L"Failed to flush ostream"_k));
                 }
         }
 

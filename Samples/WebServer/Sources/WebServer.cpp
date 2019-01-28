@@ -25,21 +25,12 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
 using Memory::BLOB;
-
-/*
- *  To test this example: (make sure you run with 'current directory == top level directory of this sample else you wont find sample-html-folder)
- *
- *      o   Run the service (under the debugger if you wish)
- *      o   curl  http://localhost:8080/ OR
- *      o   curl  http://localhost:8080/FRED OR      (to see error handling)
- *      o   curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
- *      o   curl  http://localhost:8080/Files/foo.html -v
- */
 
 namespace {
     /*
@@ -55,9 +46,9 @@ namespace {
         MyWebServer_ (uint16_t portNumber)
             : kRouter_{
                   Sequence<Route>{
-                      Route{RegularExpression (L""), DefaultPage_},
-                      Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
-                      Route{RegularExpression (L"GET"), RegularExpression (L"FRED"), [](Request*, Response* response) {
+                      Route{L""_RegEx, DefaultPage_},
+                      Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
+                      Route{L"GET"_RegEx, L"FRED"_RegEx, [](Request*, Response* response) {
                                 response->write (L"FRED");
                                 response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                             }},

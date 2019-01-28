@@ -46,11 +46,12 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  */
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType)
 {
+    using namespace Characters;
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
         return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
     }
-    Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Unrecognized content-type")));
+    Execution::Throw (DataExchange::BadFormatException (L"Unrecognized content-type"_k));
 }
 
 /*

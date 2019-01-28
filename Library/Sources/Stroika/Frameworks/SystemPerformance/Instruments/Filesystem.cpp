@@ -42,6 +42,7 @@
 #include "Filesystem.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
@@ -188,38 +189,38 @@ namespace {
     {
         RequireNotNull (volumes);
         static const Set<String> kRealDiskFS{
-            String_Constant{L"ext2"},
-            String_Constant{L"ext3"},
-            String_Constant{L"ext4"},
-            String_Constant{L"xfs"},
-            String_Constant{L"jfs2"},
+            L"ext2"_k,
+            L"ext3"_k,
+            L"ext4"_k,
+            L"xfs"_k,
+            L"jfs2"_k,
         };
         static const Set<String> kSysFSList_{
-            String_Constant{L"autofs"},
-            String_Constant{L"binfmt_misc"},
-            String_Constant{L"cgroup"},
-            String_Constant{L"configfs"},
-            String_Constant{L"debugfs"},
-            String_Constant{L"devpts"},
-            String_Constant{L"devtmpfs"},
-            String_Constant{L"fusectl"},
-            String_Constant{L"fuse.gvfsd-fuse"},
-            String_Constant{L"hugetlbfs"},
-            String_Constant{L"mqueue"},
-            String_Constant{L"nfsd"}, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
-            String_Constant{L"pstore"},
-            String_Constant{L"proc"},
-            String_Constant{L"rpc_pipefs"},
-            String_Constant{L"securityfs"},
-            String_Constant{L"selinuxfs"},
-            String_Constant{L"sunrpc"},
-            String_Constant{L"sysfs"},
-            String_Constant{L"usbfs"},
+            L"autofs"_k,
+            L"binfmt_misc"_k,
+            L"cgroup"_k,
+            L"configfs"_k,
+            L"debugfs"_k,
+            L"devpts"_k,
+            L"devtmpfs"_k,
+            L"fusectl"_k,
+            L"fuse.gvfsd-fuse"_k,
+            L"hugetlbfs"_k,
+            L"mqueue"_k,
+            L"nfsd"_k, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
+            L"pstore"_k,
+            L"proc"_k,
+            L"rpc_pipefs"_k,
+            L"securityfs"_k,
+            L"selinuxfs"_k,
+            L"sunrpc"_k,
+            L"sysfs"_k,
+            L"usbfs"_k,
         };
         static const Set<String> kNetworkFS_{
-            String_Constant{L"nfs"},
-            String_Constant{L"nfs3"},
-            String_Constant{L"vboxsf"},
+            L"nfs",
+            L"nfs3"_k,
+            L"vboxsf"_k,
         };
         for (auto i : *volumes) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
@@ -659,7 +660,7 @@ namespace {
 #if qUseWMICollectionSupport_
             , fLogicalDiskWMICollector_
         {
-            String_Constant{L"LogicalDisk"}, {},
+            L"LogicalDisk"_k, {},
             {
                 kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,
                     (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
@@ -1078,7 +1079,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
 }
 
 namespace {
-    static const MeasurementType kMountedVolumeUsage_ = MeasurementType{String_Constant{L"Mounted-Filesystem-Usage"}};
+    static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"_k};
 }
 
 namespace {
@@ -1121,7 +1122,7 @@ namespace {
 Instrument SystemPerformance::Instruments::Filesystem::GetInstrument (Options options)
 {
     return Instrument (
-        InstrumentNameType{String_Constant{L"Filesystem"}},
+        InstrumentNameType{L"Filesystem"_k},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kMountedVolumeUsage_},
         GetObjectVariantMapper ());

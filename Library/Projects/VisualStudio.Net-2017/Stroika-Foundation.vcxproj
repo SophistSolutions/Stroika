@@ -1645,6 +1645,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />

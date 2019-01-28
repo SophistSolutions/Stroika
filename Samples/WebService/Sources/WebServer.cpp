@@ -56,22 +56,22 @@ public:
         : kRouter_{
               Sequence<Route>{
                   Route{
-					  RegularExpression {IO::Network::HTTP::Methods::kOptions},
+                      RegularExpression{IO::Network::HTTP::Methods::kOptions},
                       RegularExpression::kAny,
                       []([[maybe_unused]] Message* m) {}},
                   Route{L""_RegEx, DefaultPage_},
                   Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
                   Route{L"GET"_RegEx, L"FRED"_RegEx, [](Request*, Response* response) {
-        response->write (L"FRED");
-        response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
+                            response->write (L"FRED");
+                            response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
 
-                  Route{L"plus"_RegEx, mkRequestHandler (WebServiceMethodDescription{{}, {}, DataExchange::PredefinedInternetMediaType::JSON_CT ()}, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) {
-        return fWSImpl_->plus (arg1, arg2); }})},
+                  Route{L"plus"_RegEx, mkRequestHandler (WebServiceMethodDescription{{}, {}, DataExchange::PredefinedInternetMediaType::JSON_CT ()}, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
+
                   Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) {
-        if (check > 10) {
-            Execution::Throw (Execution::StringException (L"more than 10"));
-        } }})},
+                                    if (check > 10) {
+                                        Execution::Throw (Execution::StringException (L"more than 10"));
+                                    } }})},
 
               }}
         , fWSImpl_{wsImpl}
@@ -109,7 +109,7 @@ public:
     }
 };
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
-    String_Constant{L"plus"},
+    L"plus"_k,
     Set<String>{String_Constant{IO::Network::HTTP::Methods::kGet}},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},

@@ -18,33 +18,33 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
-    : kOctetStream_CT (String_Constant{L"application/octet-stream"})
+    : kOctetStream_CT (L"application/octet-stream"_k)
 
-    , kImage_CT (String_Constant{L"image"})
-    , kImage_PNG_CT (String_Constant{L"image/png"})
-    , kImage_GIF_CT (String_Constant{L"image/gif"})
-    , kImage_JPEG_CT (String_Constant{L"image/jpeg"})
+    , kImage_CT (L"image"_k)
+    , kImage_PNG_CT (L"image/png"_k)
+    , kImage_GIF_CT (L"image/gif"_k)
+    , kImage_JPEG_CT (L"image/jpeg"_k)
 
-    , kText_CT (String_Constant{L"text"})
-    , kText_HTML_CT (String_Constant{L"text/html"})
-    , kText_XHTML_CT (String_Constant{L"text/xhtml"})
-    , kText_XML_CT (String_Constant{L"text/xml"})
-    , kText_PLAIN_CT (String_Constant{L"text/plain"})
-    , kText_CSV_CT (String_Constant{L"text/csv"})
+    , kText_CT (L"text"_k)
+    , kText_HTML_CT (L"text/html"_k)
+    , kText_XHTML_CT (L"text/xhtml"_k)
+    , kText_XML_CT (L"text/xml"_k)
+    , kText_PLAIN_CT (L"text/plain"_k)
+    , kText_CSV_CT (L"text/csv"_k)
 
-    , kJSON_CT (String_Constant{L"application/json"})
+    , kJSON_CT (L"application/json"_k)
 
-    , kPDF_CT (String_Constant{L"application/pdf"})
+    , kPDF_CT (L"application/pdf"_k)
 
     // very unclear what to use, no clear standard!
-    , kURL_CT (String_Constant{L"application/x-url"})
+    , kURL_CT (L"application/x-url"_k)
 
-    , kXML_CT (String_Constant{L"text/xml"})
+    , kXML_CT (L"text/xml"_k)
 
-    , kXSLT_CT (String_Constant{L"application/x-xslt"})
-    , kJavaArchive_CT (String_Constant{L"application/java-archive"})
-    , kApplication_RTF_CT (String_Constant{L"application/rtf"})
-    , kApplication_Zip_CT (String_Constant{L"application/zip"})
+    , kXSLT_CT (L"application/x-xslt"_k)
+    , kJavaArchive_CT (L"application/java-archive"_k)
+    , kApplication_RTF_CT (L"application/rtf"_k)
+    , kApplication_Zip_CT (L"application/zip"_k)
 {
 }
 

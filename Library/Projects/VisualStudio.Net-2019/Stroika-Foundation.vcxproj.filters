@@ -3279,6 +3279,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\GUID.inl">
       <Filter>Sources\Common</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
