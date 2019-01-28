@@ -787,6 +787,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap) -> ReaderFromVoidStarFactory
     {
+        using namespace Characters;
         struct myReader_ : public IElementConsumer {
             Containers::Bijection<ENUM_TYPE, String> fNameMap;
             myReader_ (const Containers::Bijection<ENUM_TYPE, String>& nameMap, ENUM_TYPE* intoVal)
@@ -828,6 +829,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_EnumAsInt () -> ReaderFromVoidStarFactory
     {
+        using namespace Characters;
         struct myReader_ : public IElementConsumer {
             myReader_ (ENUM_TYPE* intoVal)
                 : fValue_ (intoVal)
