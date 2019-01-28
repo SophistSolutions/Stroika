@@ -53,7 +53,7 @@ namespace {
                                 response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                             }},
                       Route{
-                          RegularExpression (L"Files/.*"),
+                          L"Files/.*"_RegEx,
                           FileSystemRouter{Execution::GetEXEDir () + L"html", String (L"Files"), Sequence<String>{L"index.html"}},
                       },
                   }}
