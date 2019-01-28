@@ -7,6 +7,88 @@ to be aware of when upgrading.
 History
 =======
 
+## 2.1d17 {2019-01-29x}
+
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d16...v2.1d17
+
+- fixed uninitialized variable (detected by sanitizers in WTF) - for fSeekable_ in Stream<> class
+
+- vsCode support
+  - for now, allow checking of .vscode folder
+  - draft vscode/tasks file - to do makefile builds
+
+- Docker Builds
+  - renamed BuildContainers/ DockerBuildContainers/
+  - building stroika docs now better documents issues with and how to build/develop with docker
+
+- Compiler Versions
+  - Support VS2k19 preview 2
+  - Support VS2k17 - 15.9.6
+
+- Workaround raspberrypi glibc dll version issue
+  - https://stroika.atlassian.net/browse/STK-675
+  - wroteup docs (Building Stroika.md) on how to overcome the `GLIBC_2.28' issue on raspberrypi
+
+- Samples
+  -  service sample deb (.control file) renamed to .static and also add architecture field based on \${ARCH} config variable (so can build for raspberrypi etc)
+  -  installer default name based on ARCH, not uname -m for service sample
+  -  draft WebService sample application
+
+- Build System / Makefiles / Configure
+  -  ScriptsLib/GetConfigurations now warns if given TAGS= arg with nothing that matches (since often a typo/mistake)
+  -  EXE_SUFFIX, LIB_SUFFIX, and OBJ_SUFFIX now defined in Scripts/GetConfigurationParameter and just cached in ApplyConfigurations
+  -  use $(StroikaRoot) more thouroughly and initialize at top of each Makefile
+  -  in toplevel Foundation makefile, use Objs instead of ALL_OBJS just for
+     uniformity (can use inherited list-objs instead of make all-objs)
+  -  Makefile cleanups (subdirs .phony)
+  -  attempt at better formatting of ScriptsLib/SubstituteBackVariables for StroikaRoot
+  -  normalize where Tests binaries are stored across windows/unix - Tests/TestNN\${EXE_SUFFIX}
+  -  makefiles - replace shell realpath with builtin abspath for StroikaRoot
+  -  makefile - replace export StroikaRoot?= with StroikaRoot= since no longer performance costly
+  -  experiment with different OUTPUT_WORKDIR_PRETTYNAME in ThirdPartyComponents makefiles
+  -  Added utility ScriptsLib/MapArch2DebFileArchitecture
+  -  fixed ScriptsLib/GetCompilerArch to manually map arm-linux-gnueabihf to armhf (needed in .deb as arhcitecure so can be installed)
+
+- qCompilerAndStdLib_arm_openssl_valgrind_Buggy bug got slightly worse (maybe cuz of change I made to 
+  raspberrypi  - updating libc version and maybe incompate iwth older valgrind on that system)
+
+- Foundation::Characters
+  - String CTOR (const char8_t*) when available
+  - added  operator " _RegEx
+  - Added String_Constant operator" _k and used that in a few places to test (replacing use
+    of String_Contant {xx} syntax with xx_k roughly: cleaner and more readable but 
+    with trickiness about namespaces
+
+-  HistoricalPerformanceRegressionTestResults/
+   PerformanceDump-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d17.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Windows_VS2k19,
+    Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,
+    Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d17-OUT.txt
+  - vc++2k17 (15.9.6)
+  - vc++2k19 (16.0.0-preview2)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10
+  - gcc 7, gcc 8
+  - clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+-  Known issues
+   -  bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+      (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
+      cuz too slow
+
+
+
+------------------------
+# OLD FORMAT REVISION HISTORY
+------------------------
+
+
 <table style='table-layout: fixed; white-space: normal'>
 
   <thead>
@@ -16,14 +98,10 @@ History
 
 
 
-
-
-
-
     
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d16">v2.1d16</a><br/>2019-01-21x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d16">v2.1d16</a><br/>2019-01-21</td>
 <td>
     <ul>
         <li>https://github.com/SophistSolutions/Stroika/compare/v2.1d15...v2.1d16</li>
@@ -63,10 +141,10 @@ History
         <li>Frameworks/UPNP/SSDP listener/notifier - use fListenerThread.Join () instead of .WaitForDone () - so exceptions they experience in their guts maybe propagated to their caller</li>
         <li>Small fix to ToString () code so Characters::ToString (vector<const char*> (argv, argv + argc)): 
 		now works with argv from main () of apps, and then used that in most sample apps: Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (Lmain, Largv=%s, Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};</li>
-        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d15.txt</li>
+        <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1810_x86_64,MacOS_XCode10}-2.1d16.txt</li>
         <li>Tested (passed regtests)
             <ul>
-                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d15-OUT.txt</li>
+                <li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Windows_VS2k19,Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi,Ubuntu1810_x86_64,Ubuntu1810-Cross-Compile2RaspberryPi,MacOS_XCode10}-2.1d16-OUT.txt</li>
                 <li>vc++2k17 (15.9.5)</li>
                 <li>vc++2k19 (16.0.0-preview)</li>
                 <li>MacOS, XCode 10</li>
