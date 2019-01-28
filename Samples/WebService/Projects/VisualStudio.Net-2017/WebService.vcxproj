@@ -493,6 +493,9 @@
     <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Frameworks-WebServer.vcxproj">
       <Project>{bb1903e4-c75b-430b-9e6f-8caea64bf194}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Frameworks-WebService.vcxproj">
+      <Project>{9454f6d7-68b9-4c91-92d1-99958ec9ea42}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\IWSAPI.cpp" />
