@@ -12,7 +12,9 @@ This sample guides you to breakup your web-service application into serveral par
 
 - To test this example:
   - Run the service (under the debugger if you wish)
-  - curl  http://localhost:8080/ OR
-  - curl  http://localhost:8080/FRED OR      (to see rror handling)
-  - curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
-  - curl -H "Content-Type: application/json" -X POST -d '{"arg1":1, "arg2": 3 }' http://localhost:8080/plus
+  - curl  http://localhost:8080/ -- best if viewed in web browser
+
+  - curl -H "Content-Type: application/json" -X POST -d '{"arg1":"2 + i", "arg2": 3.2 }' http://localhost:8080/plus --output -
+  - curl -H "Content-Type: application/json" -X POST -d '{"arg1":"2 + i", "arg2": 3.2 }' http://localhost:8080/minus --output -
+  - curl -H "Content-Type: application/json" -X POST -d '{"arg1":"2 + i", "arg2": 3.2 }' http://localhost:8080/times --output -
+  - curl -H "Content-Type: application/json" -X POST -d '{"arg1":"2 + i", "arg2": 3.2 }' http://localhost:8080/divide --output -

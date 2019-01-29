@@ -24,6 +24,9 @@ namespace StroikaSample::WebServices {
     class WSImpl : public IWSAPI {
     public:
         virtual Number plus (Number lhs, Number rhs) const override;
+        virtual Number minus (Number lhs, Number rhs) const override;
+        virtual Number times (Number lhs, Number rhs) const override;
+        virtual Number divide (Number lhs, Number rhs) const override;
     };
 
 }

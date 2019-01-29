@@ -51,6 +51,9 @@ public:
     ConnectionManager  fConnectionMgr_;
 
     static const WebServiceMethodDescription kPlus_;
+    static const WebServiceMethodDescription kMinus;
+    static const WebServiceMethodDescription kTimes;
+    static const WebServiceMethodDescription kDivide;
 
     Rep_ (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
         : kRouter_{
@@ -69,7 +72,10 @@ public:
                             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
 
-                  Route{L"plus"_RegEx, mkRequestHandler (WebServiceMethodDescription{{}, {}, DataExchange::PredefinedInternetMediaType::JSON_CT ()}, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
+                  Route{L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
+                  Route{L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
+                  Route{L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
+                  Route{L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
 
                   Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) {
                                     if (check > 10) {
@@ -90,18 +96,16 @@ public:
     // Can declare arguments as Request*,Response*
     static void DefaultPage_ (Request*, Response* response)
     {
-        response->writeln (L"<html><body>");
-        response->writeln (L"<p>Stroika WebService Sample</p>");
-        response->writeln (L"<ul>");
-        response->writeln (L"Run the service (under the debugger if you wish)");
-        response->writeln (L"<li>curl http://localhost:8080/ OR</li>");
-        response->writeln (L"<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>");
-        response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>");
-        response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 1, \"arg2\": 3 }' http://localhost:8080/plus</li>");
-        response->writeln (L"</ul>");
-        response->writeln (L"</body></html>");
+        WriteDocsPage (
+            response,
+            Sequence<WebServiceMethodDescription>{
+                kPlus_,
+                kMinus,
+                kTimes,
+                kDivide,
 
-        response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_HTML);
+            },
+            DocsOptions{L"Stroika Sample WebServices - Web Methods"_k});
     }
     // Can declare arguments as Message* message
     static void SetAppState_ (Message* message)
@@ -113,14 +117,43 @@ public:
 };
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
-    Set<String>{String_Constant{IO::Network::HTTP::Methods::kGet}},
+    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
-        L"curl http://localhost:8080/plus",
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/plus --output -",
     },
-    Sequence<String>{L"Fetch the xxxx.",
-                     L"@todo - in the xxxx"},
+    Sequence<String>{L"add the two argument numbers"},
+};
+const WebServiceMethodDescription WebServer::Rep_::kMinus{
+    L"minus"_k,
+    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    DataExchange::PredefinedInternetMediaType::kJSON,
+    {},
+    Sequence<String>{
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/minus --output -",
+    },
+    Sequence<String>{L"subtract the two argument numbers"},
+};
+const WebServiceMethodDescription WebServer::Rep_::kTimes{
+    L"times"_k,
+    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    DataExchange::PredefinedInternetMediaType::kJSON,
+    {},
+    Sequence<String>{
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
+    },
+    Sequence<String>{L"multiply the two argument numbers"},
+};
+const WebServiceMethodDescription WebServer::Rep_::kDivide{
+    L"divide"_k,
+    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    DataExchange::PredefinedInternetMediaType::kJSON,
+    {},
+    Sequence<String>{
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/divide --output -",
+    },
+    Sequence<String>{L"divide the two argument numbers"},
 };
 
 WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)

@@ -28,7 +28,10 @@ namespace StroikaSample::WebServices {
     public:
         /**
          */
-        virtual Number plus (Number lhs, Number rhs) const = 0;
+        virtual Number plus (Number lhs, Number rhs) const   = 0;
+        virtual Number minus (Number lhs, Number rhs) const  = 0;
+        virtual Number times (Number lhs, Number rhs) const  = 0;
+        virtual Number divide (Number lhs, Number rhs) const = 0;
     };
 
 }

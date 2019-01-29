@@ -24,3 +24,18 @@ Number WSImpl::plus (Number lhs, Number rhs) const
 {
     return lhs + rhs;
 }
+
+Number WSImpl::minus (Number lhs, Number rhs) const
+{
+    return lhs - rhs;
+}
+
+Number WSImpl::times (Number lhs, Number rhs) const
+{
+    return lhs * rhs;
+}
+
+Number WSImpl::divide (Number lhs, Number rhs) const
+{
+    return lhs / rhs;
+}
