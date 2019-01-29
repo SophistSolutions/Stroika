@@ -47,14 +47,12 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
 
-using Characters::SDKChar;
-using Characters::String_Constant;
-using Characters::StringBuilder;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 
@@ -825,16 +823,16 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             ifstream s;
             Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
             DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader ().ReadProfile (s);
-            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
-            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
-            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID");
+            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME"_k);
+            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME"_k);
+            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID"_k);
         }
         catch (...) {
             DbgTrace ("Failure reading /etc/os-release");
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/centos-release"_k)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = L"Centos";
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -848,7 +846,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/redhat-release"_k)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = L"RedHat";
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -921,7 +919,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             }
         }
 #elif qPlatform_Windows
-        tmp.fTokenName = String_Constant (L"Windows");
+        tmp.fTokenName = L"Windows"_k;
         /*
          *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
          *
@@ -939,17 +937,17 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         DISABLE_COMPILER_MSC_WARNING_END (4996)
         if (osvi.dwMajorVersion == 6) {
             if (osvi.dwMinorVersion == 0) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows Vista") : String_Constant (L"Windows Server 2008");
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows Vista"_k : L"Windows Server 2008"_k;
             }
             else if (osvi.dwMinorVersion == 1) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows 7") : String_Constant (L"Windows Server 2008 R2");
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 7"_k : L"Windows Server 2008 R2"_k;
             }
             else if (osvi.dwMinorVersion == 2) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows 8") : String_Constant (L"Windows Server 2012");
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 8"_k : L"Windows Server 2012"_k;
             }
             else if (osvi.dwMinorVersion == 3) {
                 if (osvi.wProductType == VER_NT_WORKSTATION)
-                    tmp.fShortPrettyName = String_Constant (L"Windows 8.1");
+                    tmp.fShortPrettyName = L"Windows 8.1"_k;
             }
         }
         if (tmp.fShortPrettyName.empty ()) {

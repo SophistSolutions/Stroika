@@ -38,7 +38,7 @@ Database::Exception::Exception (const String& message)
  ********************************************************************************
  */
 Database::NoDataException::NoDataException ()
-    : Exception (String_Constant (L"No Data"))
+    : Exception (L"No Data"_k)
 {
 }
 

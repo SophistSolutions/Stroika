@@ -13,6 +13,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
@@ -37,7 +38,7 @@ namespace {
                 fSpacesPerIndent = 0;
             }
             if (fSpacesPerIndent != 0) {
-                fIndentSpace = String_Constant{L" "}.Repeat (fSpacesPerIndent);
+                fIndentSpace = L" "_k.Repeat (fSpacesPerIndent);
             }
         }
         Characters::Float2StringOptions fFloatOptions;
