@@ -50,9 +50,9 @@ public:
     MyRep_ (const wchar_t* start, const wchar_t* end)
         : inherited (start, end) // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
     {
-		// NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
-		Require (*end == '\0' and start + ::wcslen (start) <= end);
-	}
+        // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
+        Require (*end == '\0' and start + ::wcslen (start) <= end);
+    }
     virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
     {
         /*
