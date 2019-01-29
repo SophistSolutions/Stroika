@@ -3,6 +3,8 @@
 This sample application shows how to integrate with the Stroika WebServer and WebServices frameworks to build web-service functionality into
 your application.
 
+This example does not show the shortest/simplest path, but is organized in a pattern I've used many times to separate implementation of webservice from mapping the APIs into a (typically RESTFUL) WebServer route mapping. For the simplest approach, see the [WebServer](../WebServer/) sample.
+
 This sample guides you to breakup your web-service application into serveral parts:
 
 - Model - the objects you read/write/manipulate through your web service API (things that have to be serialized/deserialized)
