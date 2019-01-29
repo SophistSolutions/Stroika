@@ -1,4 +1,4 @@
-# WebServices sample
+# WebService Sample
 
 This sample application shows how to integrate with the Stroika WebServer and WebServices frameworks to build web-service functionality into
 your application.

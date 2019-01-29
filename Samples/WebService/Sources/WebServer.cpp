@@ -105,7 +105,7 @@ public:
                 kDivide,
 
             },
-            DocsOptions{L"Stroika Sample WebServices - Web Methods"_k});
+            DocsOptions{L"Stroika Sample WebService - Web Methods"_k});
     }
     // Can declare arguments as Message* message
     static void SetAppState_ (Message* message)
