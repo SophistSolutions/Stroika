@@ -326,23 +326,23 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
         //%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
         //%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
         //%S        The seconds [00,60]; leading zeros are permitted but not required.
-        static const char* kFmtStrs2Try[] = {
-            "%X"sv,
-            "%EX"sv,
-            "%T"sv,
-            "%r"sv,
-            "%H:%M:%S"sv,
-            "%H:%M"sv,
-            "%I%p"sv,
-            "%I%P"sv,
-            "%I%t%p"sv,
-            "%I%t%P"sv,
-            "%I:%M%t%p"sv,
-            "%I:%M%t%P"sv,
-            "%I:%M:%S%t%p"sv,
-            "%I:%M:%S%t%P"sv,
-            "%I:%M"sv,
-            "%I:%M:%S"sv,
+        static	constexpr const char* kFmtStrs2Try[] = {
+            "%X",
+            "%EX",
+            "%T",
+            "%r",
+            "%H:%M:%S",
+            "%H:%M",
+            "%I%p",
+            "%I%P",
+            "%I%t%p",
+            "%I%t%P",
+            "%I:%M%t%p",
+            "%I:%M%t%P",
+            "%I:%M:%S%t%p",
+            "%I:%M:%S%t%P",
+            "%I:%M",
+            "%I:%M:%S",
         };
         if (state & ios::failbit) {
             string tmp = WideStringToNarrowSDKString (rep.As<wstring> ());
