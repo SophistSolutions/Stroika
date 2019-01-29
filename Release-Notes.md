@@ -85,6 +85,8 @@ History
     (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
     cuz too slow
   - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+  - REPRODUCED https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_) so
+    changed TSAN suppression - can safely ignore.
 
 
 

@@ -11,4 +11,10 @@ race:pipe
 #https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
 #since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedLock (in one stacktrace)
 #NB: This is ONLY needed on DEBUG builds
-deadlock:FirstPassSignalHandler_*AssertExternallySynchronizedLock
+
+# tried this suppression and got the error again. TRY NEW SUPPRESSION STRING
+#deadlock:FirstPassSignalHandler_*AssertExternallySynchronizedLock
+
+# Ideally, we would match on having ONE of these in one stack, and the other in the other stack, but could come in either order
+deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock
+deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
