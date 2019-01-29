@@ -55,4 +55,4 @@
   is an example of how to use the web server framework, including routers, interceptors, etc.
 
 * [WebService](WebService/)
-  is an example of how to use the web service framework. Separate the WebService model marshalling from the service API. And separate implementation of webservice from mapping the APIs into a (typically RESTFUL) WebServer route mapping.
+  is an example of how to use the web service framework. The sample separates the WebService model marshalling from the service API, and it separates implementation of webservice from mapping the APIs into a (typically RESTFUL) WebServer route mapping.

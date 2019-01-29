@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/StringException.h"
 
 #include "WSImpl.h"
 
@@ -37,5 +38,8 @@ Number WSImpl::times (Number lhs, Number rhs) const
 
 Number WSImpl::divide (Number lhs, Number rhs) const
 {
+    if (rhs == 0) {
+        Execution::Throw (Execution::StringException (L"divide by zero"sv));
+    }
     return lhs / rhs;
 }
