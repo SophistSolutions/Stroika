@@ -326,7 +326,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
         //%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
         //%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
         //%S        The seconds [00,60]; leading zeros are permitted but not required.
-        static	constexpr const char* kFmtStrs2Try[] = {
+        static constexpr const char* kFmtStrs2Try[] = {
             "%X",
             "%EX",
             "%T",
