@@ -49,6 +49,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = []() {
             return sb.str ();
         },
         []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, Number* intoObj) -> void {
+            Lambda_Arg_Unused_BWA (mapper);
             //tmphack wrong - incomplete - no support for imaginary
             String tmpInBuf = d.As<String> ();
             *intoObj        = Characters::String2Float (tmpInBuf);

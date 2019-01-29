@@ -58,9 +58,12 @@ public:
                   Route{
                       RegularExpression{IO::Network::HTTP::Methods::kOptions},
                       RegularExpression::kAny,
-                      []([[maybe_unused]] Message* m) {}},
+                      []([[maybe_unused]] Message* m) { Lambda_Arg_Unused_BWA (m); }},
+
                   Route{L""_RegEx, DefaultPage_},
+
                   Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
+
                   Route{L"GET"_RegEx, L"FRED"_RegEx, [](Request*, Response* response) {
                             response->write (L"FRED");
                             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
