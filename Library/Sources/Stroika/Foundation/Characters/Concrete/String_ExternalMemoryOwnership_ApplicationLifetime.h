@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <string_view>
+
 #include "../String.h"
 
 /**
@@ -65,8 +67,9 @@ namespace Stroika::Foundation::Characters::Concrete {
          */
         template <size_t SIZE>
         explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE]);
-        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end);
-        String_ExternalMemoryOwnership_ApplicationLifetime (const String_ExternalMemoryOwnership_ApplicationLifetime& src) = default;
+		String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end);
+		String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str);
+		String_ExternalMemoryOwnership_ApplicationLifetime (const String_ExternalMemoryOwnership_ApplicationLifetime& src) = default;
 
     public:
         nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s) = default;
