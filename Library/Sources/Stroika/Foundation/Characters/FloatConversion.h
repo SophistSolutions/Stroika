@@ -165,6 +165,8 @@ namespace Stroika::Foundation::Characters {
     String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions ());
 
     /**
+     *  String2Float/1:
+     *
      *  Convert the given decimal-format floating point string to an float,
      *  double, or long double.
      *
@@ -185,14 +187,23 @@ namespace Stroika::Foundation::Characters {
      *  value will be returned:
      *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
      *
-     *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod () /
+     *  @see strtod(), or @see wcstod (), or String2Float/2 (). This is a simple wrapper on strtod() / wcstod () /
      *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
      *
-     *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
-     *  Use strtod etc directly to see if the string parsed properly.
+     *  String2Float/2:
+     *
+     *  Simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
+     *  unused portion of the string in the REQUIRED remainder OUT parameter.
+     *
+     *  \note UNLIKE String2Float/1, this SKIPS leading spaces, and is OK with trailing extra characters.
+     *
+     *  \req remainder != nullptr
+     *
      */
     template <typename T = double>
     T String2Float (const String& s);
+    template <typename T = double>
+    T String2Float (const String& s, String* remainder);
 
 }
 

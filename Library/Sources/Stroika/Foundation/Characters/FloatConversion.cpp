@@ -282,3 +282,36 @@ namespace Stroika::Foundation::Characters {
         return String2Float_<long double> (s, wcstold);
     }
 }
+
+namespace {
+    template <typename RETURN_TYPE, typename FUNCTION>
+    inline RETURN_TYPE String2Float_ (const String& s, String* remainder, FUNCTION F)
+    {
+        RequireNotNull (remainder);
+        wchar_t*       e   = nullptr;
+        const wchar_t* cst = s.c_str ();
+        RETURN_TYPE    d   = F (cst, &e);
+        *remainder         = e;
+        return d;
+    }
+}
+
+namespace Stroika::Foundation::Characters {
+    template <>
+    float String2Float (const String& s, String* remainder)
+    {
+        return String2Float_<float> (s, remainder, wcstof);
+    }
+
+    template <>
+    double String2Float (const String& s, String* remainder)
+    {
+        return String2Float_<double> (s, remainder, wcstod);
+    }
+
+    template <>
+    long double String2Float (const String& s, String* remainder)
+    {
+        return String2Float_<long double> (s, remainder, wcstold);
+    }
+}
