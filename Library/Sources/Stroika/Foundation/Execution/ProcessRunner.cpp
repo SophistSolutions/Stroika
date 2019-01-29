@@ -913,7 +913,7 @@ namespace {
                     stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
                     Throw (ProcessRunner::Exception (
                         effectiveCmdLine,
-                        L"Spawned program",
+                        L"Spawned program"sv,
                         stderrMsg.str (),
                         WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},

@@ -189,38 +189,38 @@ namespace {
     {
         RequireNotNull (volumes);
         static const Set<String> kRealDiskFS{
-            L"ext2"_k,
-            L"ext3"_k,
-            L"ext4"_k,
-            L"xfs"_k,
-            L"jfs2"_k,
+            L"ext2"sv,
+            L"ext3"sv,
+            L"ext4"sv,
+            L"xfs"sv,
+            L"jfs2"sv,
         };
         static const Set<String> kSysFSList_{
-            L"autofs"_k,
-            L"binfmt_misc"_k,
-            L"cgroup"_k,
-            L"configfs"_k,
-            L"debugfs"_k,
-            L"devpts"_k,
-            L"devtmpfs"_k,
-            L"fusectl"_k,
-            L"fuse.gvfsd-fuse"_k,
-            L"hugetlbfs"_k,
-            L"mqueue"_k,
-            L"nfsd"_k, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
-            L"pstore"_k,
-            L"proc"_k,
-            L"rpc_pipefs"_k,
-            L"securityfs"_k,
-            L"selinuxfs"_k,
-            L"sunrpc"_k,
-            L"sysfs"_k,
-            L"usbfs"_k,
+            L"autofs"sv,
+            L"binfmt_misc"sv,
+            L"cgroup"sv,
+            L"configfs"sv,
+            L"debugfs"sv,
+            L"devpts"sv,
+            L"devtmpfs"sv,
+            L"fusectl"sv,
+            L"fuse.gvfsd-fuse"sv,
+            L"hugetlbfs"sv,
+            L"mqueue"sv,
+            L"nfsd"sv, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
+            L"pstore"sv,
+            L"proc"sv,
+            L"rpc_pipefs"sv,
+            L"securityfs"sv,
+            L"selinuxfs"sv,
+            L"sunrpc"sv,
+            L"sysfs"sv,
+            L"usbfs"sv,
         };
         static const Set<String> kNetworkFS_{
-            L"nfs",
-            L"nfs3"_k,
-            L"vboxsf"_k,
+            L"nfs"sv,
+            L"nfs3"sv,
+            L"vboxsf"sv,
         };
         for (auto i : *volumes) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
@@ -660,7 +660,7 @@ namespace {
 #if qUseWMICollectionSupport_
             , fLogicalDiskWMICollector_
         {
-            L"LogicalDisk"_k, {},
+            L"LogicalDisk"sv, {},
             {
                 kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,
                     (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
@@ -1079,7 +1079,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
 }
 
 namespace {
-    static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"_k};
+    static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"sv};
 }
 
 namespace {
@@ -1122,7 +1122,7 @@ namespace {
 Instrument SystemPerformance::Instruments::Filesystem::GetInstrument (Options options)
 {
     return Instrument (
-        InstrumentNameType{L"Filesystem"_k},
+        InstrumentNameType{L"Filesystem"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kMountedVolumeUsage_},
         GetObjectVariantMapper ());

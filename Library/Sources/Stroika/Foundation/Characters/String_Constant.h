@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Characters {
      *      \code
      *          String s1 = L"some-string"_k;
      *          String s2 = String_Constant { L"some-string" };
+     *          String s3 = L"some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
      *      \endcode
      */
     String_Constant operator"" _k (const wchar_t* s, size_t len);

@@ -3771,25 +3771,25 @@ CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::sCodePageNames
 CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::MakeDefaultCodePageNames ()
 {
     CodePageNames codePageNames;
-    codePageNames.fUNICODE_WIDE           = L"UNICODE {wide characters}";
-    codePageNames.fUNICODE_WIDE_BIGENDIAN = L"UNICODE {wide characters - big endian}";
-    codePageNames.fANSI                   = L"ANSI (1252)";
-    codePageNames.fMAC                    = L"MAC (2)";
-    codePageNames.fPC                     = L"IBM PC United States code page (437)";
-    codePageNames.fSJIS                   = L"Japanese SJIS {932}";
-    codePageNames.fUTF7                   = L"UNICODE {UTF-7}";
-    codePageNames.fUTF8                   = L"UNICODE {UTF-8}";
-    codePageNames.f850                    = L"Latin I - MS-DOS Multilingual (850)";
-    codePageNames.f851                    = L"Latin II - MS-DOS Slavic (850)";
-    codePageNames.f866                    = L"Russian - MS-DOS (866)";
-    codePageNames.f936                    = L"Chinese {Simplfied} (936)";
-    codePageNames.f949                    = L"Korean (949)";
-    codePageNames.f950                    = L"Chinese {Traditional} (950)";
-    codePageNames.f1250                   = L"Eastern European Windows (1250)";
-    codePageNames.f1251                   = L"Cyrilic (1251)";
-    codePageNames.f10000                  = L"Roman {Macintosh} (10000)";
-    codePageNames.f10001                  = L"Japanese {Macintosh} (10001)";
-    codePageNames.f50220                  = L"Japanese JIS (50220)";
+    codePageNames.fUNICODE_WIDE           = L"UNICODE {wide characters}"sv;
+    codePageNames.fUNICODE_WIDE_BIGENDIAN = L"UNICODE {wide characters - big endian}"sv;
+    codePageNames.fANSI                   = L"ANSI (1252)"sv;
+    codePageNames.fMAC                    = L"MAC (2)"sv;
+    codePageNames.fPC                     = L"IBM PC United States code page (437)"sv;
+    codePageNames.fSJIS                   = L"Japanese SJIS {932}"sv;
+    codePageNames.fUTF7                   = L"UNICODE {UTF-7}"sv;
+    codePageNames.fUTF8                   = L"UNICODE {UTF-8}"sv;
+    codePageNames.f850                    = L"Latin I - MS-DOS Multilingual (850)"sv;
+    codePageNames.f851                    = L"Latin II - MS-DOS Slavic (850)"sv;
+    codePageNames.f866                    = L"Russian - MS-DOS (866)"sv;
+    codePageNames.f936                    = L"Chinese {Simplfied} (936)"sv;
+    codePageNames.f949                    = L"Korean (949)"sv;
+    codePageNames.f950                    = L"Chinese {Traditional} (950)"sv;
+    codePageNames.f1250                   = L"Eastern European Windows (1250)"sv;
+    codePageNames.f1251                   = L"Cyrilic (1251)"sv;
+    codePageNames.f10000                  = L"Roman {Macintosh} (10000)"sv;
+    codePageNames.f10001                  = L"Japanese {Macintosh} (10001)"sv;
+    codePageNames.f50220                  = L"Japanese JIS (50220)"sv;
     return codePageNames;
 }
 

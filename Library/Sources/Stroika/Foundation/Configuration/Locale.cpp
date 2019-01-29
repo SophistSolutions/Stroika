@@ -61,7 +61,7 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
     // horrible!!!! - see TOOD
     vector<Characters::String> result;
     result.reserve (10);
-    IgnoreExceptionsForCall (result.push_back (FindLocaleName (L"en"_k, L"us"_k)));
+    IgnoreExceptionsForCall (result.push_back (FindLocaleName (L"en"sv, L"us"sv)));
     return result;
 }
 #endif
@@ -101,10 +101,10 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
             {L"."},
             {L" "},
 #else
-        L"-"_k,
-            L"_"_k,
-            L"."_k,
-            L" "_k,
+        L"-"sv,
+            L"_"sv,
+            L"."sv,
+            L" "sv,
 #endif
     };
     set<String> part3{
@@ -118,8 +118,8 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
         {L""},
             {L".utf8"},
 #else
-        L""_k,
-            L".utf8"_k,
+        String{},
+            L".utf8"sv,
 #endif
     };
     for (auto&& i1 : part1) {

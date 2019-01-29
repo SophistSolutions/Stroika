@@ -21,37 +21,37 @@ namespace {
         // from  @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
         switch (code) {
             case 0:
-                return L"ICMP Destination Unreachable: Network unreachable error."_k;
+                return L"ICMP Destination Unreachable: Network unreachable error."sv;
             case 1:
-                return L"ICMP Destination Unreachable: Host unreachable error."_k;
+                return L"ICMP Destination Unreachable: Host unreachable error."sv;
             case 2:
-                return L"ICMP Destination Unreachable: Protocol unreachable error (the designated transport protocol is not supported)."_k;
+                return L"ICMP Destination Unreachable: Protocol unreachable error (the designated transport protocol is not supported)."sv;
             case 3:
-                return L"ICMP Destination Unreachable: Destination port unreachable."_k;
+                return L"ICMP Destination Unreachable: Destination port unreachable."sv;
             case 4:
-                return L"ICMP Destination Unreachable: Fragmentation required, and DF flag set."_k;
+                return L"ICMP Destination Unreachable: Fragmentation required, and DF flag set."sv;
             case 5:
-                return L"ICMP Destination Unreachable: Source route failed."_k;
+                return L"ICMP Destination Unreachable: Source route failed."sv;
             case 6:
-                return L"ICMP Destination Unreachable: Destination network unknown."_k;
+                return L"ICMP Destination Unreachable: Destination network unknown."sv;
             case 7:
-                return L"ICMP Destination Unreachable: Destination host unknown."_k;
+                return L"ICMP Destination Unreachable: Destination host unknown."sv;
             case 8:
-                return L"ICMP Destination Unreachable: Source host isolated."_k;
+                return L"ICMP Destination Unreachable: Source host isolated."sv;
             case 9:
-                return L"ICMP Destination Unreachable: Network administratively prohibited."_k;
+                return L"ICMP Destination Unreachable: Network administratively prohibited."sv;
             case 10:
-                return L"ICMP Destination Unreachable: Host administratively prohibited."_k;
+                return L"ICMP Destination Unreachable: Host administratively prohibited."sv;
             case 11:
-                return L"ICMP Destination Unreachable: Network unreachable for ToS."_k;
+                return L"ICMP Destination Unreachable: Network unreachable for ToS."sv;
             case 12:
-                return L"ICMP Destination Unreachable: Host unreachable for ToS."_k;
+                return L"ICMP Destination Unreachable: Host unreachable for ToS."sv;
             case 13:
-                return L"ICMP Destination Unreachable: Communication administratively prohibited."_k;
+                return L"ICMP Destination Unreachable: Communication administratively prohibited."sv;
             case 14:
-                return L"ICMP Destination Unreachable: Host Precedence Violation."_k;
+                return L"ICMP Destination Unreachable: Host Precedence Violation."sv;
             case 15:
-                return L"ICMP Destination Unreachable: Precedence cutoff in effect."_k;
+                return L"ICMP Destination Unreachable: Precedence cutoff in effect."sv;
             default:
                 return Characters::Format (L"ICMP Destination Unreachable: code %d.", code);
         }

@@ -50,7 +50,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
         return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
     }
-    Execution::Throw (DataExchange::BadFormatException (L"Unrecognized content-type"_k));
+    Execution::Throw (DataExchange::BadFormatException (L"Unrecognized content-type"sv));
 }
 
 /*
@@ -78,7 +78,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
     }
     else {
         Execution::Throw (ClientErrorException (
-            L"Expected GET with query-string arguments or PUT or POST"_k +
+            L"Expected GET with query-string arguments or PUT or POST"sv +
             (fromInMessage ? (L" from " + *fromInMessage) : L"")));
     }
 }

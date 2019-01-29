@@ -357,7 +357,7 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if qUseWMICollectionSupport_
-        WMICollector fSystemWMICollector_{L"System"_k, {kInstanceName_}, {kProcessorQueueLength_}};
+        WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
         struct WinSysTimeCaptureContext_ {
             double IdleTime;
@@ -477,7 +477,7 @@ namespace {
 }
 
 namespace {
-    const MeasurementType kCPUMeasurment_ = MeasurementType{L"CPU-Usage"_k};
+    const MeasurementType kCPUMeasurment_ = MeasurementType{L"CPU-Usage"sv};
 }
 
 namespace {

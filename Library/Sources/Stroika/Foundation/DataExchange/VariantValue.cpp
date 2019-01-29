@@ -642,7 +642,7 @@ map<wstring, VariantValue> VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-map<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException (L"Cannot coerce VariantValue to map"_k));
+            Execution::Throw (DataExchange::BadFormatException (L"Cannot coerce VariantValue to map"sv));
         }
     }
 }
@@ -666,7 +666,7 @@ Mapping<String, VariantValue> VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-Mapping<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException (L"Cannot coerce VariantValue to map"_k));
+            Execution::Throw (DataExchange::BadFormatException (L"Cannot coerce VariantValue to map"sv));
         }
     }
 }

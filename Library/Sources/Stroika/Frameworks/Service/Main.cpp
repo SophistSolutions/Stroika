@@ -57,7 +57,7 @@ using namespace Stroika::Frameworks::Service;
 
 namespace {
     // safe to declare here because we cannot start the threads before main...
-    const String kServiceRunThreadName_ = L"Service 'Run' thread"_k;
+    const String kServiceRunThreadName_ = L"Service 'Run' thread"sv;
 }
 
 /*
@@ -195,7 +195,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (not args.fMajorOperation.has_value ()) {
-        Execution::Throw (Execution::InvalidCommandLineArgument (L"No recognized operation"_k));
+        Execution::Throw (Execution::InvalidCommandLineArgument (L"No recognized operation"sv));
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
@@ -581,7 +581,7 @@ void Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 
 pid_t Main::RunTilIdleService::_GetServicePID () const
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"GetServicePID"_k));
+    Execution::Throw (Execution::OperationNotSupportedException (L"GetServicePID"sv));
 }
 
 #if qPlatform_POSIX
@@ -656,19 +656,19 @@ Main::State Main::BasicUNIXServiceImpl::_GetState () const
 
 void Main::BasicUNIXServiceImpl::_Install ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"Install"_k));
+    Execution::Throw (Execution::OperationNotSupportedException (L"Install"sv));
 }
 
 void Main::BasicUNIXServiceImpl::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"UnInstall"_k));
+    Execution::Throw (Execution::OperationNotSupportedException (L"UnInstall"sv));
 }
 
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService");
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::StringException (L"Service Already Running"_k));
+        Execution::Throw (Execution::StringException (L"Service Already Running"sv));
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;
@@ -727,10 +727,10 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::StringException (L"Cannot Start service because its already running"_k));
+        Execution::Throw (Execution::StringException (L"Cannot Start service because its already running"sv));
     }
 
-    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ({String (), (L"--"_k + String (CommandNames::kRunAsService))}));
+    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ({String (), (L"--"sv + String (CommandNames::kRunAsService))}));
 
     while (_GetServicePID () <= 0) {
         Execution::Sleep (500ms);
@@ -815,7 +815,7 @@ void Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 
 String Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"_k;
+    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"sv;
 }
 
 void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
@@ -931,7 +931,7 @@ void Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_Install");
 
     const DWORD kServiceMgrAccessPrivs = SC_MANAGER_CREATE_SERVICE;
-    String      cmdLineForRunSvc       = L"\""_k + Execution::GetEXEPath () + L"\" --"_k + CommandNames::kRunAsService;
+    String      cmdLineForRunSvc       = L"\""sv + Execution::GetEXEPath () + L"\" --"sv + CommandNames::kRunAsService;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     [[maybe_unused]] auto&& cleanup = Execution::Finally (

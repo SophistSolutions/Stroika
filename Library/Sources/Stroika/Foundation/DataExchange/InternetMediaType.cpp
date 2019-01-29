@@ -18,33 +18,33 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
-    : kOctetStream_CT (L"application/octet-stream"_k)
+    : kOctetStream_CT (L"application/octet-stream"sv)
 
-    , kImage_CT (L"image"_k)
-    , kImage_PNG_CT (L"image/png"_k)
-    , kImage_GIF_CT (L"image/gif"_k)
-    , kImage_JPEG_CT (L"image/jpeg"_k)
+    , kImage_CT (L"image"sv)
+    , kImage_PNG_CT (L"image/png"sv)
+    , kImage_GIF_CT (L"image/gif"sv)
+    , kImage_JPEG_CT (L"image/jpeg"sv)
 
-    , kText_CT (L"text"_k)
-    , kText_HTML_CT (L"text/html"_k)
-    , kText_XHTML_CT (L"text/xhtml"_k)
-    , kText_XML_CT (L"text/xml"_k)
-    , kText_PLAIN_CT (L"text/plain"_k)
-    , kText_CSV_CT (L"text/csv"_k)
+    , kText_CT (L"text"sv)
+    , kText_HTML_CT (L"text/html"sv)
+    , kText_XHTML_CT (L"text/xhtml"sv)
+    , kText_XML_CT (L"text/xml"sv)
+    , kText_PLAIN_CT (L"text/plain"sv)
+    , kText_CSV_CT (L"text/csv"sv)
 
-    , kJSON_CT (L"application/json"_k)
+    , kJSON_CT (L"application/json"sv)
 
-    , kPDF_CT (L"application/pdf"_k)
+    , kPDF_CT (L"application/pdf"sv)
 
     // very unclear what to use, no clear standard!
-    , kURL_CT (L"application/x-url"_k)
+    , kURL_CT (L"application/x-url"sv)
 
-    , kXML_CT (L"text/xml"_k)
+    , kXML_CT (L"text/xml"sv)
 
-    , kXSLT_CT (L"application/x-xslt"_k)
-    , kJavaArchive_CT (L"application/java-archive"_k)
-    , kApplication_RTF_CT (L"application/rtf"_k)
-    , kApplication_Zip_CT (L"application/zip"_k)
+    , kXSLT_CT (L"application/x-xslt"sv)
+    , kJavaArchive_CT (L"application/java-archive"sv)
+    , kApplication_RTF_CT (L"application/rtf"sv)
+    , kApplication_Zip_CT (L"application/zip"sv)
 {
 }
 

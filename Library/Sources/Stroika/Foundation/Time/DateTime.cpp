@@ -164,7 +164,7 @@ namespace {
 const DateTime::FormatException DateTime::FormatException::kThe;
 
 DateTime::FormatException::FormatException ()
-    : StringException (L"Invalid DateTime Format"_k)
+    : StringException (L"Invalid DateTime Format"sv)
 {
 }
 
@@ -259,18 +259,18 @@ DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noex
 const String DateTime::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
 const String DateTime::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
 
-const String DateTime::kShortLocaleFormatPattern = L"%x %X"_k;
+const String DateTime::kShortLocaleFormatPattern = L"%x %X"sv;
 
 const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
     kLocaleStandardFormat,
     kLocaleStandardAlternateFormat,
-    L"%x %X"_k,
-    L"%Ex %EX"_k,
-    L"%Y-%b-%d %H:%M:%S"_k, // no obvious reference for this so maybe not a good idea
-    L"%D%t%T"_k,            // no obvious reference for this so maybe not a good idea
-    L"%D%t%r"_k,            // no obvious reference for this so maybe not a good idea
-    L"%D%t%R"_k,            // no obvious reference for this so maybe not a good idea
-    L"%a %b %e %T %Y"_k,    // no obvious reference for this so maybe not a good idea
+    L"%x %X"sv,
+    L"%Ex %EX"sv,
+    L"%Y-%b-%d %H:%M:%S"sv, // no obvious reference for this so maybe not a good idea
+    L"%D%t%T"sv,            // no obvious reference for this so maybe not a good idea
+    L"%D%t%r"sv,            // no obvious reference for this so maybe not a good idea
+    L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
+    L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
 };
 
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
@@ -769,7 +769,7 @@ String DateTime::Format (LCID lcid) const
         if (fTimeOfDay_.has_value ()) {
             String tod = fTimeOfDay_->Format (lcid);
             if (not tod.empty ()) {
-                r += L" "_k + tod;
+                r += L" "sv + tod;
             }
         }
         return r;

@@ -186,7 +186,7 @@ public:
                 }
             },
             Thread::eAutoStart,
-            L"Signal Handler Safe Execution Thread"_k);
+            L"Signal Handler Safe Execution Thread"sv);
     }
 
 public:

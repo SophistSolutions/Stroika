@@ -71,7 +71,7 @@ public:
     }
     void Start ()
     {
-        static const String kThreadName_ = L"SSDP Listener"_k;
+        static const String kThreadName_ = L"SSDP Listener"sv;
         fThread_                         = Execution::Thread::New (
             [this]() { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
     }

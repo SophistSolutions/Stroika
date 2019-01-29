@@ -221,6 +221,16 @@ String::String (const char32_t* cString)
 {
 }
 
+String::String (const basic_string_view<wchar_t>& str)
+    : String{String_Constant{str}} // safe to avoid copying string rep here - just point at memory for string
+{
+    Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
+                                               // for these const strings are also nul-terminated.
+                                               // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
+                                               // be nul-terminated.
+                                               // -- LGP 2019-01-29
+}
+
 namespace {
     inline String mkWS_ (const Traversal::Iterable<Character>& src)
     {

@@ -815,7 +815,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     }
                 else {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
-                    Execution::Throw (BadFormatException (L"Enumeration value out of range"_k));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"sv));
                 }
             }
         };
@@ -857,7 +857,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     }
                 else {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
-                    Execution::Throw (BadFormatException (L"Enumeration value out of range"_k));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"sv));
                 }
             }
         };

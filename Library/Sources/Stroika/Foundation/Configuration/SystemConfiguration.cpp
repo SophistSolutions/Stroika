@@ -283,7 +283,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         using Characters::String2Int;
         using IO::FileSystem::FileInputStream;
         using Streams::TextReader;
-        const String_Constant kProcCPUInfoFileName_{L"/proc/cpuinfo"};
+        const String kProcCPUInfoFileName_{L"/proc/cpuinfo"sv};
         /*
         * Example 1:
         *
@@ -373,10 +373,10 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
-            static const String_Constant kOldProcessorLabel_{L"Processor"};
-            static const String_Constant kProcessorIDLabel_{L"processor"};
-            static const String_Constant kModelNameLabel_{L"model name"};
-            static const String_Constant kSocketIDLabel_{L"physical id"}; // a bit of a guess?
+            static const String kOldProcessorLabel_{L"Processor"sv};
+            static const String kProcessorIDLabel_{L"processor"sv};
+            static const String kModelNameLabel_{L"model name"sv};
+            static const String kSocketIDLabel_{L"physical id"sv}; // a bit of a guess?
             if (line.Trim ().empty ()) {
                 Sequence<String> lineTokens = line.Tokenize (Set<Character>{':'});
                 if (lineTokens.size () >= 2) {
@@ -663,38 +663,38 @@ namespace {
                     if (osvi.wProductType != VER_NT_WORKSTATION) {
                         if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64) {
                             if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter Edition for Itanium-based Systems";
+                                goodName += L"Datacenter Edition for Itanium-based Systems"sv;
                             }
                             else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Enterprise Edition for Itanium-based Systems";
+                                goodName += L"Enterprise Edition for Itanium-based Systems"sv;
                             }
                         }
                         else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
                             if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter x64 Edition";
+                                goodName += L"Datacenter x64 Edition"sv;
                             }
                             else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Enterprise x64 Edition";
+                                goodName += L"Enterprise x64 Edition"sv;
                             }
                             else {
-                                goodName += L"Standard x64 Edition";
+                                goodName += L"Standard x64 Edition"sv;
                             }
                         }
                         else {
                             if (osvi.wSuiteMask & VER_SUITE_COMPUTE_SERVER) {
-                                goodName += L"Compute Cluster Edition";
+                                goodName += L"Compute Cluster Edition"sv;
                             }
                             else if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter Edition";
+                                goodName += L"Datacenter Edition"sv;
                             }
                             else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Enterprise Edition";
+                                goodName += L"Enterprise Edition"sv;
                             }
                             else if (osvi.wSuiteMask & VER_SUITE_BLADE) {
-                                goodName += L"Web Edition";
+                                goodName += L"Web Edition"sv;
                             }
                             else {
-                                goodName += L"Standard Edition";
+                                goodName += L"Standard Edition"sv;
                             }
                         }
                     }
@@ -726,64 +726,64 @@ namespace {
             }
             switch (dwType) {
                 case PRODUCT_CORE:
-                    result += L"Home";
+                    result += L"Home"sv;
                     break;
                 case PRODUCT_CORE_N:
-                    result += L"Home N";
+                    result += L"Home N"sv;
                     break;
                 case PRODUCT_ULTIMATE:
-                    result += L"Ultimate Edition";
+                    result += L"Ultimate Edition"sv;
                     break;
                 case PRODUCT_PROFESSIONAL:
-                    result += L"Professional";
+                    result += L"Professional"sv;
                     break;
                 case PRODUCT_HOME_PREMIUM:
-                    result += L"Home Premium Edition";
+                    result += L"Home Premium Edition"sv;
                     break;
                 case PRODUCT_HOME_BASIC:
-                    result += L"Home Basic Edition";
+                    result += L"Home Basic Edition"sv;
                     break;
                 case PRODUCT_ENTERPRISE:
-                    result += L"Enterprise Edition";
+                    result += L"Enterprise Edition"sv;
                     break;
                 case PRODUCT_BUSINESS:
-                    result += L"Business Edition";
+                    result += L"Business Edition"sv;
                     break;
                 case PRODUCT_STARTER:
-                    result += L"Starter Edition";
+                    result += L"Starter Edition"sv;
                     break;
                 case PRODUCT_CLUSTER_SERVER:
-                    result += L"Cluster Server Edition";
+                    result += L"Cluster Server Edition"sv;
                     break;
                 case PRODUCT_DATACENTER_SERVER:
-                    result += L"Datacenter Edition";
+                    result += L"Datacenter Edition"sv;
                     break;
                 case PRODUCT_DATACENTER_SERVER_CORE:
-                    result += L"Datacenter Edition (core installation)";
+                    result += L"Datacenter Edition (core installation)"sv;
                     break;
                 case PRODUCT_ENTERPRISE_SERVER:
-                    result += L"Enterprise Edition";
+                    result += L"Enterprise Edition"sv;
                     break;
                 case PRODUCT_ENTERPRISE_SERVER_CORE:
-                    result += L"Enterprise Edition (core installation)";
+                    result += L"Enterprise Edition (core installation)"sv;
                     break;
                 case PRODUCT_ENTERPRISE_SERVER_IA64:
-                    result += L"Enterprise Edition for Itanium-based Systems";
+                    result += L"Enterprise Edition for Itanium-based Systems"sv;
                     break;
                 case PRODUCT_SMALLBUSINESS_SERVER:
-                    result += L"Small Business Server";
+                    result += L"Small Business Server"sv;
                     break;
                 case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
-                    result += L"Small Business Server Premium Edition";
+                    result += L"Small Business Server Premium Edition"sv;
                     break;
                 case PRODUCT_STANDARD_SERVER:
-                    result += L"Standard Edition";
+                    result += L"Standard Edition"sv;
                     break;
                 case PRODUCT_STANDARD_SERVER_CORE:
-                    result += L"Standard Edition (core installation)";
+                    result += L"Standard Edition (core installation)"sv;
                     break;
                 case PRODUCT_WEB_SERVER:
-                    result += L"Web Server Edition";
+                    result += L"Web Server Edition"sv;
                     break;
                 default:
                     result += Characters::Format (L"Unknown Edition %d", dwType);
@@ -795,10 +795,10 @@ namespace {
 
         if (osvi.dwMajorVersion >= 6) {
             if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-                result += L", 64-bit";
+                result += L", 64-bit"sv;
             }
             else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
-                result += L", 32-bit";
+                result += L", 32-bit"sv;
             }
         }
         return result.str ();
@@ -823,16 +823,16 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             ifstream s;
             Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
             DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader ().ReadProfile (s);
-            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME"_k);
-            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME"_k);
-            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID"_k);
+            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME"sv);
+            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME"sv);
+            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID"sv);
         }
         catch (...) {
             DbgTrace ("Failure reading /etc/os-release");
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/centos-release"_k)).ReadAll ().Trim ();
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/centos-release"sv)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = L"Centos";
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -846,7 +846,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/redhat-release"_k)).ReadAll ().Trim ();
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/redhat-release"sv)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = L"RedHat";
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -919,7 +919,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             }
         }
 #elif qPlatform_Windows
-        tmp.fTokenName = L"Windows"_k;
+        tmp.fTokenName = L"Windows"sv;
         /*
          *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
          *
@@ -937,17 +937,17 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         DISABLE_COMPILER_MSC_WARNING_END (4996)
         if (osvi.dwMajorVersion == 6) {
             if (osvi.dwMinorVersion == 0) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows Vista"_k : L"Windows Server 2008"_k;
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows Vista"sv : L"Windows Server 2008"sv;
             }
             else if (osvi.dwMinorVersion == 1) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 7"_k : L"Windows Server 2008 R2"_k;
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 7"sv : L"Windows Server 2008 R2"sv;
             }
             else if (osvi.dwMinorVersion == 2) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 8"_k : L"Windows Server 2012"_k;
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 8"sv : L"Windows Server 2012"sv;
             }
             else if (osvi.dwMinorVersion == 3) {
                 if (osvi.wProductType == VER_NT_WORKSTATION)
-                    tmp.fShortPrettyName = L"Windows 8.1"_k;
+                    tmp.fShortPrettyName = L"Windows 8.1"sv;
             }
         }
         if (tmp.fShortPrettyName.empty ()) {

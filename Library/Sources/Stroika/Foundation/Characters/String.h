@@ -8,6 +8,7 @@
 
 #include <locale>
 #include <string>
+#include <string_view>
 
 #include "../Common/Compare.h"
 #include "../Containers/Sequence.h"
@@ -310,6 +311,9 @@ namespace Stroika::Foundation::Characters {
          * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
          * except for the case of single char* argument constructors - which find the length based on
          * the terminating NUL-character.
+         *
+         *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
+         *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          */
         String ();
 #if __cpp_char8_t >= 201811L
@@ -325,6 +329,7 @@ namespace Stroika::Foundation::Characters {
         String (const char32_t* from, const char32_t* to);
         String (const wchar_t* from, const wchar_t* to);
         String (const Character* from, const Character* to);
+        String (const basic_string_view<wchar_t>& str);
         String (const wstring& r);
         String (const u16string& r);
         String (const u32string& r);

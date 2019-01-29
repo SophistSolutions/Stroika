@@ -38,7 +38,7 @@ namespace {
                 fSpacesPerIndent = 0;
             }
             if (fSpacesPerIndent != 0) {
-                fIndentSpace = L" "_k.Repeat (fSpacesPerIndent);
+                fIndentSpace = String_Constant{L" "}.Repeat (fSpacesPerIndent);
             }
         }
         Characters::Float2StringOptions fFloatOptions;

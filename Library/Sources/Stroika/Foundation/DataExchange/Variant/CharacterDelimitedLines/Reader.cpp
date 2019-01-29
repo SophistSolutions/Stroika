@@ -45,7 +45,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return String_Constant (L".txt");
+        return L".txt"sv;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {

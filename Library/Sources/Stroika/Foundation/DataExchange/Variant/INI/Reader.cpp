@@ -52,17 +52,17 @@ public:
         Section          currentSection;
         for (String line : in.ReadLines ()) {
             line = line.Trim ();
-            if (line.StartsWith (L"[") and line.EndsWith (L"]")) {
+            if (line.StartsWith (L"[") and line.EndsWith (L"]"sv)) {
                 if (readingSection.has_value ()) {
                     p.fNamedSections.Add (*readingSection, currentSection);
                     currentSection.fProperties.clear ();
                 }
                 readingSection = line.SubString (1, -1);
             }
-            else if (line.StartsWith (L";")) {
+            else if (line.StartsWith (L";"sv)) {
                 // drop comments on the floor
             }
-            else if (line.Contains (L"=")) {
+            else if (line.Contains (L"="sv)) {
                 size_t i     = *line.Find ('=');
                 String key   = line.SubString (0, i).Trim ();
                 String value = line.SubString (i + 1).Trim ();

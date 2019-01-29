@@ -111,9 +111,9 @@ namespace {
                         useSocket.SendTo (data.begin (), data.end (), sendTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         String msg;
-                        msg += String (L"location=") + a.fLocation + L", ";
-                        msg += String (L"TARGET(ST/NT)=") + a.fTarget + L", ";
-                        msg += String (L"USN=") + a.fUSN;
+                        msg += L"location=" sz + a.fLocation + L", ";
+                        msg += L"TARGET(ST/NT)=" sz + a.fTarget + L", ";
+                        msg += L"USN=" sz + a.fUSN;
                         DbgTrace (L"(%s)", msg.c_str ());
 #endif
                     }

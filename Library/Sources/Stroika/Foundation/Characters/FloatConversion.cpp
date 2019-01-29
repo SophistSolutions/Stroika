@@ -185,8 +185,8 @@ namespace {
             case FP_INFINITE: {
                 Assert (isinf (f));
                 Assert (!isnan (f));
-                static const String_Constant kNEG_INF_STR_{L"-INF"};
-                static const String_Constant kINF_STR_{L"INF"};
+                static const String kNEG_INF_STR_{L"-INF"sv};
+                static const String kINF_STR_{L"INF"sv};
                 return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
             }
             case FP_NAN: {

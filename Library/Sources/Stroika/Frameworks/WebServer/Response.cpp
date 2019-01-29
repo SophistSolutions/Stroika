@@ -85,7 +85,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fContentSizePolicy_ (ContentSizePolicy::eAutoCompute)
     , fContentSize_ (0)
 {
-    AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"_k);
+    AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"sv);
 }
 
 void Response::SetContentSizePolicy (ContentSizePolicy csp)

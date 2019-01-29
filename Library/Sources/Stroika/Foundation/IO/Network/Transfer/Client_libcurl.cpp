@@ -269,8 +269,8 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     Mapping<String, String> overrideHeaders = request.fOverrideHeaders;
     if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
         static const Mapping<String, String> kSilenceTheseHeaders_{
-            {pair<String, String>{L"Expect"_k, {}},
-             pair<String, String>{L"Transfer-Encoding"_k, {}}}};
+            {pair<String, String>{L"Expect"sv, {}},
+             pair<String, String>{L"Transfer-Encoding"sv, {}}}};
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {

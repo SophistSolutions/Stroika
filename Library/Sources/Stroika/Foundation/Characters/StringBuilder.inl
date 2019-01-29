@@ -59,6 +59,10 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (s);
         Append (s, s + ::wcslen (s));
     }
+    inline void StringBuilder::Append (const basic_string_view<wchar_t>& s)
+    {
+        Append (s.data (), s.data () + s.length ());
+    }
     inline void StringBuilder::Append (const char16_t* s, const char16_t* e)
     {
         Require (s == e or (s != nullptr and e != nullptr));

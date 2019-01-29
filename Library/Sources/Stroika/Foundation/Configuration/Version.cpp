@@ -77,7 +77,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         [[UNLIKELY_ATTR]]
         {
             DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
-            Execution::Throw (Execution::StringException (L"Invalid Version String"));
+            Execution::Throw (Execution::StringException (L"Invalid Version String"sv));
         }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd + 1; // end plus '.' separator
@@ -87,7 +87,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         [[UNLIKELY_ATTR]]
         {
             DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
-            Execution::Throw (Execution::StringException (L"Invalid Version String")); // require form 1.0a3, or at least 1.0, but no 1
+            Execution::Throw (Execution::StringException (L"Invalid Version String"sv)); // require form 1.0a3, or at least 1.0, but no 1
         }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd;
@@ -144,22 +144,22 @@ Characters::String Version::AsWin32Version4DotString () const
 
 Characters::String Version::AsPrettyVersionString () const
 {
-    String stageStr = L"?"_k;
+    String stageStr = L"?"sv;
     switch (fVerStage) {
         case VersionStage::Dev:
-            stageStr = L"d"_k;
+            stageStr = L"d"sv;
             break;
         case VersionStage::Alpha:
-            stageStr = L"a"_k;
+            stageStr = L"a"sv;
             break;
         case VersionStage::Beta:
-            stageStr = L"b"_k;
+            stageStr = L"b"sv;
             break;
         case VersionStage::ReleaseCandidate:
-            stageStr = L"rc"_k;
+            stageStr = L"rc"sv;
             break;
         case VersionStage::Release:
-            stageStr = fVerSubStage == 0 ? String () : L"."_k;
+            stageStr = fVerSubStage == 0 ? String{} : L"."sv;
             break;
     }
     String verSubStagStr;

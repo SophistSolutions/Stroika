@@ -45,7 +45,7 @@ namespace {
     }
     inline String mkMessage_ ()
     {
-        return L"Badly formatted input"_k;
+        return L"Badly formatted input"sv;
     }
     inline String mkMessage_ (const String& details)
     {
@@ -56,7 +56,7 @@ namespace {
         String msg           = mkMessage_ ();
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += L" ("_k + lineInfoExtra + L")."_k;
+            msg += L" ("sv + lineInfoExtra + L")."sv;
         }
         return msg;
     }
@@ -65,7 +65,7 @@ namespace {
         String msg           = mkMessage_ (details);
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += L" ("_k + lineInfoExtra + L")."_k;
+            msg += L" ("sv + lineInfoExtra + L")."sv;
         }
         return msg;
     }

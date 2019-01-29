@@ -23,13 +23,13 @@ namespace {
     void Indent_ (const OutputStream<Character>::Ptr& out, int indentLevel)
     {
         for (int i = 0; i < indentLevel; ++i) {
-            out.Write (L"    "_k);
+            out.Write (L"    "sv);
         }
     }
 }
 namespace {
-    static const String kTrueLbl_  = L"true"_k;
-    static const String kFalseLbl_ = L"false"_k;
+    static const String kTrueLbl_  = L"true"sv;
+    static const String kFalseLbl_ = L"false"sv;
     void                PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
     void                PrettyPrint_ (bool v, const OutputStream<Character>::Ptr& out)
     {
@@ -154,7 +154,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".xml"_k;
+        return L".xml"sv;
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {

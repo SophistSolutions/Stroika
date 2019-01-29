@@ -155,7 +155,7 @@ const String Date::kLocaleStandardAlternateFormat = String_Constant{kLocaleStand
 const Traversal::Iterable<String> Date::kDefaultParseFormats{
     kLocaleStandardFormat,
     kLocaleStandardAlternateFormat,
-    L"%D"_k,
+    L"%D"sv,
     kISO8601Format,
 };
 

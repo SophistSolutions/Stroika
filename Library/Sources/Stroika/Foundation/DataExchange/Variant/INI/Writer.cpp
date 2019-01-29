@@ -29,8 +29,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        using namespace Characters;
-        return L".ini"_k;
+        return L".ini"sv;
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {
