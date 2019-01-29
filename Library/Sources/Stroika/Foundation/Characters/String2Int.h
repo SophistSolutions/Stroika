@@ -43,8 +43,8 @@ namespace Stroika::Foundation::Characters {
      *
      *  \par Example Usage
      *      \code
-     *      uint32_t    n1      =   String2Int<uint32_t> (L"33");
-     *      int         n2      =   String2Int (L"33");
+     *          uint32_t    n1      =   String2Int<uint32_t> (L"33");
+     *          int         n2      =   String2Int (L"33");
      *      \endcode
      */
     template <typename T = int>
