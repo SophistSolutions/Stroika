@@ -7,14 +7,16 @@ This example does not show the shortest/simplest path, but is organized in a pat
 
 This sample guides you to breakup your web-service application into serveral parts:
 
-- [Model](Sources/Model.cpp) - the objects you read/write/manipulate through your web service API (things that have to be serialized/deserialized)
-- [IWSAPI](Sources/IWSAPI.h) - the abstract C++ API defininng what methods can be called (pure C++ objects, no marshalling etc)
-- [WSImpl](Sources/WSImpl.cpp) - the pure application logic part of your webservices. Here you inherit from IWSAPI, and simple return the appropriate C++ object results.
-- [WebServer](Sources/WebServer.cpp) - this ties together the abstract interface with URL rules (routes etc), and simply maps delegated route handlers to the IWSAPI
+- [Model.h](Sources/Model.h) / [Model.cpp](Sources/Model.cpp) - the objects you read/write/manipulate through your web service API (things that have to be serialized/deserialized)
+- [IWSAPI.h](Sources/IWSAPI.h) - the abstract C++ API defininng what methods can be called (pure C++ objects, no marshalling etc)
+- [WSImpl.cpp](Sources/WSImpl.cpp) - the pure application logic part of your webservices. Here you inherit from IWSAPI, and simple return the appropriate C++ object results.
+- [WebServer.cpp](Sources/WebServer.cpp) - this ties together the abstract interface with URL rules (routes etc), and simply maps delegated route handlers to the IWSAPI
 
 - To test this example:
   - Run the service (under the debugger if you wish)
-  - `curl  http://localhost:8080/` -- best if viewed in web browser
+  - `curl  http://localhost:8080/` 
+  
+    best if viewed in web browser
 
   - `curl -H "Content-Type: application/json" -X POST -d '{"arg1": 3, "arg2": 5 }' http://localhost:8080/plus --output -`
   - `curl -H "Content-Type: application/json" -X POST -d '{"arg1": 4.5, "arg2": -3.23 }' http://localhost:8080/minus --output -`
