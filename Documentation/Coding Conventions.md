@@ -1,10 +1,14 @@
 # Coding Conventions
 
+---
+
 ## Formatting
 
 make format-code
 
 I&#39;m not even slightly happy about the way this looks but I&#39;ve found no better alternative. At least its automated and consistent. It can be configured to use astyle or clang-format, but I&#39;ve found clang-format slightly less buggy.
+
+---
 
 ## STL naming versus &quot;Studly Caps&quot; or &quot;CamelCase&quot;
 
@@ -37,6 +41,8 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 - begin()     // sort of – usually using Stroika iterators
 - end()           // ditto
 
+---
+
 ## Name Prefixes and Suffixes
 
 ### Prefixes
@@ -51,6 +57,8 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 ### Suffix
 
 - &#39;\_&#39; suffix for PRIVATE instance variables or functions
+
+---
 
 ## Begin/End versus start/length
 
@@ -77,6 +85,22 @@ To map this to an internal representation you have todo:
 
 but if count was numeric\_limits\&lt;size\_t\&gt;::max(), then the e pointer computation would overflow. There are ways around this, but mixing the two styles creates a number of problems - but for implementations – and for use.
 
+---
+
+## User-defined literals
+
+- Stroika makes extensive use of the builtin `operator"" sv`, which produces (more efficient) String objects (really the STL version produces string_view but Stroika's String class converts string_view to a String more efficiently - reusing the space for the characters)
+
+  Stroika also provides `operator"" _k` which does about the same thing (producing String_Constant) but we use internally and encourage use of operator"" sv (since its a standard and does about the same thing). `operator"" _k` is only provided as an option because there are a few cases of ambiguity where its helpful.
+
+- `operator"" _RegEx () can be used as a shortcut for defining regular expressions
+
+  ~~~c++
+  RegularExpression re = L"foo.*"_RegEx;
+  ~~~
+
+---
+
 ## New static methods and Factories
 
 In Stroika, a New () is static method, which allocates an instance of some class, but returns some kind of shared\_ptr/smart pointer to the type – not a bare C++ pointer.
@@ -92,6 +116,8 @@ struct T\_Factory {
 That technique is used to control the default kind of containers (backend algorithm) that is used.
 
 Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New method to construct the actual stream, and the definition of the Ptr type – smart pointer – used to access the stream.
+
+---
 
 ## Compare () and operator\&lt;, operator\&gt;, etc…
 
@@ -121,6 +147,8 @@ So for example:
 
 Works as expected, so long as either the left or right side is a String class, and the other side is convertible to a String.
 
+---
+
 ## Using T= versus typedef
 
 C++11 now supports a new typedef syntax – using T=…. This is nearly the same as typedef in terms of semantics.
@@ -129,6 +157,8 @@ Stroika code will generally use the using T = syntax in preference to typedef fo
 
 - The using = syntax is slightly more powerful, in that it supports defining derivative template typdefs.
 - And more importantly, I believe it makes code more readable, because the type of INTEREST is the one being defined = which appears first. What it maps to is often more complicated (why we define the typedef) – and one can often ignore that detail (or skim it).
+
+---
 
 ## Procedure name suffixes for string return type
 
@@ -146,10 +176,12 @@ For this reason, a handful of Stroika APIs follow the convention of a suffix of:
 - \_N for string return, being interpreted as the &#39;narrow SDK code page&#39;
 - \_A for string returns which are guaranteed to be ASCII
 
+---
 ## kThe for some final singleton objects
 
 Some objects which are only usable after the start of main (and until end of main), may be slightly more convenient and performant to use pre-existing ones. For example, EOFException::kThe, InterruptException::kThe, etc.
 
+---
 ## enable_if<> usage
 
 I’ve experiment with a number of different styles of enable_if usage, and finally standardized on an approach.
