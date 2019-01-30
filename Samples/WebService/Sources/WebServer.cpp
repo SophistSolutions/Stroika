@@ -126,7 +126,7 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/plus --output -",
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
     },
     Sequence<String>{L"add the two argument numbers"},
 };
@@ -136,7 +136,7 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus{
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/minus --output -",
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
     },
     Sequence<String>{L"subtract the two argument numbers"},
 };
@@ -146,7 +146,7 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
-		L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
+		L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
 			L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
 },
     Sequence<String>{L"multiply the two argument numbers"},
