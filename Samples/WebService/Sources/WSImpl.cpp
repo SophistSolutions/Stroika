@@ -38,7 +38,7 @@ Number WSImpl::times (Number lhs, Number rhs) const
 
 Number WSImpl::divide (Number lhs, Number rhs) const
 {
-    if (rhs == 0) {
+    if (rhs == Number{0}) {
         Execution::Throw (Execution::StringException (L"divide by zero"sv));
     }
     return lhs / rhs;

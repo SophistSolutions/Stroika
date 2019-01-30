@@ -45,9 +45,9 @@ using namespace StroikaSample::WebServices;
  */
 class WebServer::Rep_ {
 public:
-    const Router       kRouter_;            // rules saying how to map urls to code
-    shared_ptr<IWSAPI> fWSImpl_;            // application logic actually handling webservices
-    ConnectionManager  fConnectionMgr_;     // manage http connection objects, thread pool, etc
+    const Router       kRouter_;        // rules saying how to map urls to code
+    shared_ptr<IWSAPI> fWSImpl_;        // application logic actually handling webservices
+    ConnectionManager  fConnectionMgr_; // manage http connection objects, thread pool, etc
 
     static const WebServiceMethodDescription kPlus_;
     static const WebServiceMethodDescription kMinus;
@@ -72,18 +72,17 @@ public:
                         }},
 
                   Route{L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
-                 
+
                   Route{L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
-                  
+
                   Route{L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
-                  
+
                   Route{L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
 
                   Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) {
                                     if (check > 10) {
                                         Execution::Throw (Execution::StringException (L"more than 10"));
-                                    }}}
-                                    )},
+                                    } }})},
 
               }}
         , fWSImpl_{wsImpl}
