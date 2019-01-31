@@ -40,7 +40,7 @@ Number WSImpl::times (Number lhs, Number rhs) const
 Number WSImpl::divide (Number lhs, Number rhs) const
 {
     if (rhs == Number{0}) {
-		// Note - important to use ClientErrorException so web-server returns HTTP status 400, instead of 500
+        // Note - important to use ClientErrorException so web-server returns HTTP status 400, instead of 500
         Execution::Throw (ClientErrorException (L"divide by zero"sv));
     }
     return lhs / rhs;
