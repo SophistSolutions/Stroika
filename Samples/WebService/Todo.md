@@ -1,9 +1,5 @@
 # WebService Sample TODO
 
-- Exception case (divide by zero) - make sure returns 400 error - need ApplicationException class which we catch/propagate
-  or some other logic to map.
-  MUST THINK OUT GOOD DESIGN - DONT REALLY HAVE ONE
-
 - Add data structures you can use AddCommonType<> for since this is by far the most common usage pattern! Goes before RARE
   CUSTOM pattern (for numbers). Maybe something with array of numbers
   plus: [ vector] [vector]??? Could do but not sure common/good pattern

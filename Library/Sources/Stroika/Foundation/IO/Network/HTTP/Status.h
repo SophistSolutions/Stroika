@@ -6,14 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include <map>
-#include <string>
-
-#include "../../../Configuration/Common.h"
-
 /**
- * TODO:
- *      (o)
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {
@@ -24,9 +17,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for details on these status codes.
      */
     namespace StatusCodes {
-        constexpr Status kOK               = 200;
+        constexpr Status kOK      = 200;
+        constexpr Status kCreated = 201;
+
         constexpr Status kMovedPermanently = 301;
         constexpr Status kNotModified      = 304;
+
         /*
          * Bad CLIENT request.
          * The request could not be understood by the server due to malformed syntax.
@@ -40,6 +36,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  The server did not receive a complete request message within the time that it was prepared to wait.
          */
         constexpr Status kRequestTimeout = 408;
+        constexpr Status kConflict       = 408;
+
         /*
          * This is principally for internal server exceptions.
          */

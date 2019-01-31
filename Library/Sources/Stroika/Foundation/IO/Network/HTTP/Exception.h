@@ -24,6 +24,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     /**
      *  See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
+     *
+     *  @see ClientErrorException
      */
     class Exception : public StringException {
     public:

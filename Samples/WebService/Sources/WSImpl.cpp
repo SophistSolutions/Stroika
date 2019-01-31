@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Execution/StringException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 
 #include "WSImpl.h"
 
@@ -13,6 +13,7 @@
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 using namespace Stroika::Foundation;
+using IO ::Network::HTTP::ClientErrorException;
 
 using namespace StroikaSample::WebServices;
 
@@ -39,7 +40,8 @@ Number WSImpl::times (Number lhs, Number rhs) const
 Number WSImpl::divide (Number lhs, Number rhs) const
 {
     if (rhs == Number{0}) {
-        Execution::Throw (Execution::StringException (L"divide by zero"sv));
+		// Note - important to use ClientErrorException so web-server returns HTTP status 400, instead of 500
+        Execution::Throw (ClientErrorException (L"divide by zero"sv));
     }
     return lhs / rhs;
 }

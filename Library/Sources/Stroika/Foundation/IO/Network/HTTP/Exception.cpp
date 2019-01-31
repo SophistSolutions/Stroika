@@ -63,7 +63,6 @@ namespace {
     String mkReason_ (Status status, const String& reason)
     {
         String effectiveReason = mkCanBeEmptyReason_ (status, reason);
-        ;
         if (effectiveReason.empty ()) {
             return CString::Format (L"HTTP exception: status %d", status);
         }
@@ -74,7 +73,6 @@ namespace {
     String mkExceptionMessage_ (Status status, const String& reason)
     {
         String effectiveReason = mkCanBeEmptyReason_ (status, reason);
-        ;
         if (effectiveReason.empty ()) {
             return CString::Format (L"HTTP exception: status %d", status);
         }
@@ -84,6 +82,11 @@ namespace {
     }
 }
 
+/*
+ ********************************************************************************
+ ************************** IO::Network::HTTP::Exception ************************
+ ********************************************************************************
+ */
 Exception::Exception (Status status, const String& reason)
     : StringException (mkExceptionMessage_ (status, reason))
     , fStatus_ (status)

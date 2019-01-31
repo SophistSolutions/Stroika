@@ -146,9 +146,9 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
-		L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
-			L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
-},
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
+    },
     Sequence<String>{L"multiply the two argument numbers"},
 };
 const WebServiceMethodDescription WebServer::Rep_::kDivide{

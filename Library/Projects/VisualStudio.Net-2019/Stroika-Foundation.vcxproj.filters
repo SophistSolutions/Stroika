@@ -807,6 +807,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp">
       <Filter>Sources\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2015,6 +2018,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h">
       <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3281,6 +3287,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

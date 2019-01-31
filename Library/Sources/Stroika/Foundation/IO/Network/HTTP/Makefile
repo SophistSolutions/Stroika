@@ -14,6 +14,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
 	$(ObjDir)Cookies${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
