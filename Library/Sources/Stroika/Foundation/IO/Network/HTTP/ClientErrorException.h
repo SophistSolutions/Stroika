@@ -45,6 +45,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         ClientErrorException (Status status, const exception& basedOnInnerException);
         ClientErrorException (const exception_ptr& basedOnInnerException);
         ClientErrorException (Status status, const exception_ptr& basedOnInnerException);
+
+        /**
+         *  Utility to map any functions thrown in the given (typically lambda) into a ClientErrorExcpetion
+         */
+        template <typename FUNCTION>
+        static void TreatExceptionsAsClientError (FUNCTION f);
     };
 
 }
