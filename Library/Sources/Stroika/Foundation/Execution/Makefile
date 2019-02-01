@@ -40,6 +40,7 @@ Objs	=	\
 	$(ObjDir)SignalHandlers${OBJ_SUFFIX}\
 	$(ObjDir)Sleep${OBJ_SUFFIX}\
 	$(ObjDir)SpinLock${OBJ_SUFFIX}\
+	$(ObjDir)StringException${OBJ_SUFFIX}\
 	$(ObjDir)Thread${OBJ_SUFFIX}\
 	$(ObjDir)ThreadPool${OBJ_SUFFIX}\
 	$(ObjDir)TimeOutException${OBJ_SUFFIX}\

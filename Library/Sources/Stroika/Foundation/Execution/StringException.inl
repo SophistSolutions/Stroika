@@ -18,24 +18,29 @@ namespace Stroika::Foundation::Execution {
      ******************************** StringException *******************************
      ********************************************************************************
      */
-    inline StringException::StringException (const Characters::String& reasonForError)
-        : fError_ (reasonForError)
+    inline StringException::StringException (const Characters::String& reasonForError, optional<error_code> oErrCode)
+        : fErrorMessage_ (reasonForError)
+        , fErrorCode_{oErrCode.value_or (kDefaultErrorCode_)}
         , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
     {
     }
     template <>
     inline wstring StringException::As () const
     {
-        return fError_.As<wstring> ();
+        return fErrorMessage_.As<wstring> ();
     }
     template <>
     inline Characters::String StringException::As () const
     {
-        return fError_;
+        return fErrorMessage_;
     }
     inline const char* StringException::what () const noexcept
     {
         return fSDKCharString_.c_str ();
+    }
+    inline error_code StringException::GetErrorCode () const
+    {
+        return fErrorCode_;
     }
 
 }

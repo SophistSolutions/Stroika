@@ -6,8 +6,11 @@
 
 #include "../StroikaPreComp.h"
 
+#include <cerrno>
 #include <exception>
+#include <optional>
 #include <string>
+#include <system_error>
 
 #include "../Characters/String.h"
 
@@ -15,8 +18,14 @@
 
 /*
  * TODO:
- *          @todo   Consider if StringException should be templated, so it can be used to wrap as a C++ StirngException
+ *          @todo   Consider if StringException should be templated, so it can be used to wrap as a C++ StringException
  *                  any base std::exception subclass.
+ *
+ *          @todo   Consider renaming StringException to Exception - the stroika exception class.
+ *                  adds assoication with an error_code (especially if I can find a way to provide a generic one with the right message,
+ *                  or maybe the generic one is 'no error code').
+ *
+ *          @todo   Maybe add As<error_code> () as well.
  */
 
 namespace Stroika::Foundation::Execution {
@@ -30,7 +39,9 @@ namespace Stroika::Foundation::Execution {
         using inherited = exception;
 
     public:
-        StringException (const Characters::String& reasonForError);
+        StringException ()                       = delete;
+        StringException (const StringException&) = default;
+        StringException (const Characters::String& reasonForError, optional<error_code> oErrCode = {});
 
     public:
         /**
@@ -43,6 +54,25 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+        TODO - writeup and test theory
+
+        from   https://stackoverflow.com/questions/32232295/use-cases-for-stderror-code
+
+        void handle_error(error_code code) {
+           if     (code == error_condition1) do_something();
+           else if(code == error_condition2) do_something_else();
+           else                              do_yet_another_thing();
+        }
+
+         So example use would be catch (StringException e) {
+            if (e.As<error_code> () == condition1) {
+            // and this would MATCH somehow differnt codes via categories to see if it matches the condition
+            }
+         */
+        nonvirtual error_code GetErrorCode () const;
+
+    public:
+        /**
          *  Provide a 'c string' variant of the exception message. Convert the UNICODE
          *  string argument to a narrow-string (multibyte) in the SDK code page.
          *  @see GetDefaultSDKCodePage()
@@ -50,8 +80,10 @@ namespace Stroika::Foundation::Execution {
         virtual const char* what () const noexcept override;
 
     private:
-        Characters::String fError_;
-        string             fSDKCharString_;
+        Characters::String      fErrorMessage_;
+        error_code              fErrorCode_{};
+        string                  fSDKCharString_;
+        static const error_code kDefaultErrorCode_; // for now - later improve to capture string somehow
     };
 
     template <>
