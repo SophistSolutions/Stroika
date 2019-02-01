@@ -10,8 +10,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 
-using Characters::String_Constant;
-
 /*
  ********************************************************************************
  ********************************* TimeOutException *****************************
@@ -20,11 +18,11 @@ using Characters::String_Constant;
 const TimeOutException TimeOutException::kThe;
 
 TimeOutException::TimeOutException ()
-    : StringException (String_Constant (L"Timeout Expired"))
+    : Exception (L"Timeout Expired"sv)
 {
 }
 
 TimeOutException::TimeOutException (const Characters::String& message)
-    : StringException (message)
+    : Exception (message)
 {
 }

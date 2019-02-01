@@ -66,9 +66,9 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
         /**
          * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
          */
-        class DestinationUnreachableException : public Execution::StringException {
+        class DestinationUnreachableException : public Execution::Exception<> {
         private:
-            using inherited = Execution::StringException;
+            using inherited = Execution::Exception<>;
 
         public:
             /**

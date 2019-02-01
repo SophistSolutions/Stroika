@@ -86,7 +86,7 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
     if (rc != SQLITE_OK)
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (StringException (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())));
+            Execution::Throw (Exception (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())));
         }
     AssertNotNull (fStatementObj_);
     fParamsCount_ = ::sqlite3_column_count (fStatementObj_);
@@ -208,7 +208,7 @@ Connection::Connection (const String& dbPath, const function<void(Connection&)>&
         {
             Assert (fDB_ == nullptr);
             // @todo add error string
-            Execution::Throw (StringException (Characters::Format (L"SQLite Error %d:", e)));
+            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
         }
 }
 
@@ -231,7 +231,7 @@ Connection::Connection (InMemoryDBFlag, const function<void(Connection&)>& dbIni
         {
             Assert (fDB_ == nullptr);
             // @todo add error string
-            Execution::Throw (StringException (Characters::Format (L"SQLite Error %d:", e)));
+            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
         }
 }
 
@@ -256,10 +256,10 @@ void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
         {
             if (db_err == nullptr or *db_err == '\0') {
                 DbgTrace (L"Failed doing sqllite command: %s", cmd2Exec.c_str ());
-                Execution::Throw (StringException (Characters::Format (L"SQLite Error %d", e)));
+                Execution::Throw (Exception (Characters::Format (L"SQLite Error %d", e)));
             }
             else {
-                Execution::Throw (StringException (Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())));
+                Execution::Throw (Exception (Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())));
             }
         }
 }

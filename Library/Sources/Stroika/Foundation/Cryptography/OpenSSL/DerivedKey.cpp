@@ -247,7 +247,7 @@ namespace {
             [[UNLIKELY_ATTR]]
             {
                 // Could truncate and fill to adapt to differnt sized salt...
-                Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
+                Execution::Throw (Execution::Exception (L"only 8-byte salt with EVP_BytesToKey"sv));
             }
         int i = ::EVP_BytesToKey (
             FakeCryptoAlgo_ (keyLen, ivLen),
@@ -293,7 +293,7 @@ namespace {
         if (a == 0)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
+                Execution::Throw (Execution::Exception (L"PKCS5_PBKDF2_HMAC error"sv));
             }
         const byte* p = outBuf.begin ();
         return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));

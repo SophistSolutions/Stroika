@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note - Many low level functions map OS / platform exceptions to this type as appropriate
      */
-    class TimeOutException : public StringException {
+    class TimeOutException : public Execution::Exception<> {
     public:
         TimeOutException ();
         TimeOutException (const Characters::String& message);

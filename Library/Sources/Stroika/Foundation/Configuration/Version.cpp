@@ -35,12 +35,12 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     if (major < 0 or major > 255)
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::StringException (L"Invalid Version String"));
+            Execution::Throw (Execution::Exception (L"Invalid Version String"sv));
         }
     if (minor < 0 or minor > 255)
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::StringException (L"Invalid Version String"));
+            Execution::Throw (Execution::Exception (L"Invalid Version String"sv));
         }
     int verStage = static_cast<uint16_t> (verStageOctet) >> 5;
     Assert (verStage == Memory::BitSubstring (verStageOctet, 5, 8)); // really only true cuz verStageOctet SB 8-bits - so if this fails, this answer probably better --LGP 2016-07-08
@@ -48,7 +48,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     bool     verFinal    = verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         DbgTrace (L"win32Version4DotString=%s", win32Version4DotString.c_str ());
-        Execution::Throw (Execution::StringException (L"Invalid Version String"));
+        Execution::Throw (Execution::Exception (L"Invalid Version String"sv));
     }
     return Version (static_cast<uint8_t> (major), static_cast<uint8_t> (minor), static_cast<VersionStage> (verStage), verSubStage, verFinal);
 }
@@ -65,7 +65,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
             [[UNLIKELY_ATTR]]
             {
                 DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
-                Execution::Throw (Execution::StringException (L"Invalid Version String: component out of range"));
+                Execution::Throw (Execution::Exception (L"Invalid Version String: component out of range"));
             }
         return static_cast<uint8_t> (l);
     };
@@ -77,7 +77,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         [[UNLIKELY_ATTR]]
         {
             DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
-            Execution::Throw (Execution::StringException (L"Invalid Version String"sv));
+            Execution::Throw (Execution::Exception (L"Invalid Version String"sv));
         }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd + 1; // end plus '.' separator
@@ -87,7 +87,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         [[UNLIKELY_ATTR]]
         {
             DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
-            Execution::Throw (Execution::StringException (L"Invalid Version String"sv)); // require form 1.0a3, or at least 1.0, but no 1
+            Execution::Throw (Execution::Exception (L"Invalid Version String"sv)); // require form 1.0a3, or at least 1.0, but no 1
         }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd;
@@ -126,7 +126,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         [[UNLIKELY_ATTR]]
         {
             DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
-            Execution::Throw (Execution::StringException (L"Invalid Version String")); // require form 1.0a3, or at least 1.0, but no 1
+            Execution::Throw (Execution::Exception (L"Invalid Version String"sv)); // require form 1.0a3, or at least 1.0, but no 1
         }
     i               = tokenEnd;
     bool finalBuild = true;

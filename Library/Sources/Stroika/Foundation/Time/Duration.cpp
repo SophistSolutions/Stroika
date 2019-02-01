@@ -36,7 +36,7 @@ using namespace Time;
  ********************************************************************************
  */
 Duration::FormatException::FormatException ()
-    : StringException (String_Constant (L"Invalid Duration Format"))
+    : inherited (L"Invalid Duration Format"sv)
 {
 }
 

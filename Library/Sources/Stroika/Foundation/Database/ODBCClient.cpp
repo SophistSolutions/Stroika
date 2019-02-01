@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const String& message)
-    : StringException (Format (L"Database connection error: %s", message.c_str ()))
+    : inherited (Format (L"Database connection error: %s", message.c_str ()))
 {
 }
 

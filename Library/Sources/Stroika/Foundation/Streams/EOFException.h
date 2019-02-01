@@ -19,6 +19,9 @@ namespace Stroika::Foundation::Streams {
     /**
      */
     class EOFException : public Execution::StringException {
+    private:
+        using inherited = Execution::StringException;
+
     public:
         EOFException ();
         EOFException (bool partialReadCompleted);

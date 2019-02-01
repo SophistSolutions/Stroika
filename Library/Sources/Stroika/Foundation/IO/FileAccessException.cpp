@@ -41,7 +41,7 @@ namespace {
     }
 }
 FileAccessException::FileAccessException (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
-    : StringException (mkMessage_ (fileName, fileAccessMode))
+    : inherited (mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
     , fFileAccessMode_ (fileAccessMode)
 {

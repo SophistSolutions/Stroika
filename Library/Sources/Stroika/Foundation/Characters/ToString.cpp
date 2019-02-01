@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Characters {
         try {
             rethrow_exception (e);
         }
-        catch (const Execution::StringException& e) {
+        catch (const Execution::ExceptionStringHelper& e) {
             //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
             //return kExceptPefix_ + e.As<String> ();
             return e.As<String> ();

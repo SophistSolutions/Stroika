@@ -62,7 +62,10 @@ namespace Stroika::Foundation::Database {
 
     using Characters::String;
 
-    class Exception : public Execution::StringException {
+    class Exception : public Execution::Exception<> {
+    private:
+        using inherited = Execution::Exception<>;
+
     public:
         Exception (const String& message);
     };

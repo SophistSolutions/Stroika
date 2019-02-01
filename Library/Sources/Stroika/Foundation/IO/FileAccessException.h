@@ -25,6 +25,9 @@ namespace Stroika::Foundation::IO {
      * failure (like read, write, or list).
      */
     class FileAccessException : public Execution::StringException {
+    private:
+        using inherited = Execution::StringException;
+
     public:
         FileAccessException (const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
 

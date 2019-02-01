@@ -29,7 +29,7 @@ namespace {
 }
 
 FileBusyException::FileBusyException (const String& fileName)
-    : StringException (mkMessage_ (fileName))
+    : inherited (mkMessage_ (fileName))
     , fFileName_ (fileName)
 {
 }

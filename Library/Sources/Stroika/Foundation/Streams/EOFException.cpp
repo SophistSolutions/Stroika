@@ -19,7 +19,7 @@ using namespace Stroika::Foundation::Streams;
 const EOFException EOFException::kThe;
 
 EOFException::EOFException (bool partialReadCompleted)
-    : StringException (partialReadCompleted ? L"Premature End-Of-Stream (partial read)"sv : L"Premature End-Of-Stream"sv)
+    : inherited (partialReadCompleted ? L"Premature End-Of-Stream (partial read)"sv : L"Premature End-Of-Stream"sv)
     , fPartialReadCompleted_ (partialReadCompleted)
 {
 }

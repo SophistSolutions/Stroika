@@ -22,7 +22,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 #if qHasFeature_OpenSSL
     /**
      */
-    class Exception : public Execution::StringException {
+    class Exception : public Execution::Exception<> {
+    private:
+        using inherited = Execution::Exception<>;
+
     public:
         using InternalErrorCodeType = unsigned long;
 

@@ -1242,7 +1242,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
         if (tmp.size () == 0)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
+                Execution::Throw (Execution::Exception (L"invalid command argument to DetachedProcessRunner"sv));
             }
         exe  = tmp[0];
         args = tmp;

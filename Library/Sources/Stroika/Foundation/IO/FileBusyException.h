@@ -16,6 +16,9 @@ namespace Stroika::Foundation::IO {
     /**
      */
     class FileBusyException : public Execution::StringException {
+    private:
+        using inherited = Execution::StringException;
+
     public:
         FileBusyException (const String& fileName = String ());
 
