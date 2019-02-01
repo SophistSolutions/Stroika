@@ -29,12 +29,14 @@ using IO::Network::HTTP::ClientErrorException;
  */
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url)
 {
-    Mapping<String, VariantValue> result;
-    Mapping<String, String>       unconverted = url.GetQuery ().GetMap ();
-    unconverted.Apply ([&](const KeyValuePair<String, String>& kvp) {
-        result.Add (kvp.fKey, VariantValue{kvp.fValue});
+    return ClientErrorException::TreatExceptionsAsClientError ([&]() {
+        Mapping<String, VariantValue> result;
+        Mapping<String, String>       unconverted = url.GetQuery ().GetMap ();
+        unconverted.Apply ([&](const KeyValuePair<String, String>& kvp) {
+            result.Add (kvp.fKey, VariantValue{kvp.fValue});
+        });
+        return result;
     });
-    return result;
 }
 
 /*
@@ -47,7 +49,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     using namespace Characters;
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
-        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
+        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&]() { return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> (); });
     }
     Execution::Throw (ClientErrorException (L"Unrecognized content-type"sv));
 }
@@ -90,26 +92,27 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
 DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantValue (Request* request)
 {
     RequireNotNull (request);
-    Mapping<String, DataExchange::VariantValue> result;
-
-    {
-        Memory::BLOB inData = request->GetBody ();
-        if (not inData.empty ()) {
-            DataExchange::VariantValue bodyObj = Variant::JSON::Reader ().Read (inData);
-            switch (bodyObj.GetType ()) {
-                case DataExchange::VariantValue::eMap:
-                    result = bodyObj.As<Mapping<String, DataExchange::VariantValue>> ();
-                    break;
-                case DataExchange::VariantValue::eNull:
-                    break;
-                default:
-                    // Other types cannot be merged with URL data, so just return what we had in the body
-                    return bodyObj;
+    return ClientErrorException::TreatExceptionsAsClientError ([&]() {
+        Mapping<String, DataExchange::VariantValue> result;
+        {
+            Memory::BLOB inData = request->GetBody ();
+            if (not inData.empty ()) {
+                DataExchange::VariantValue bodyObj = Variant::JSON::Reader ().Read (inData);
+                switch (bodyObj.GetType ()) {
+                    case DataExchange::VariantValue::eMap:
+                        result = bodyObj.As<Mapping<String, DataExchange::VariantValue>> ();
+                        break;
+                    case DataExchange::VariantValue::eNull:
+                        break;
+                    default:
+                        // Other types cannot be merged with URL data, so just return what we had in the body
+                        return bodyObj;
+                }
             }
         }
-    }
-    result.AddAll (PickoutParamValuesFromURL (request));
-    return result.empty () ? DataExchange::VariantValue{} : DataExchange::VariantValue{result};
+        result.AddAll (PickoutParamValuesFromURL (request));
+        return result.empty () ? DataExchange::VariantValue{} : DataExchange::VariantValue{result};
+    });
 }
 
 /*

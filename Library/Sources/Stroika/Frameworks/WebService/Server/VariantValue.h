@@ -47,6 +47,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  @see PickoutParamValuesFromBody () to just pickout params from Body
      *  @see PickoutParamValues () to pickout params from both url arg and body
+     *
+     *  \note - PickoutParamValuesFromURL maps exceptions returned to IO::Network::HTTP::ClientErrorException
      */
     Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request);
     Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url);
@@ -56,6 +58,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
      *  @see PickoutParamValues () to pickout params from both url arg and body
+     *
+     *  \note - PickoutParamValuesFromBody map exceptions returned to IO::Network::HTTP::ClientErrorException
      */
     Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request);
     Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType);
@@ -70,6 +74,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
      *  @see PickoutParamValuesFromBody () to just pickout params from Body
      *  @see OrderParamValues () to produce a Sequence<VariantValue> {} from the mapping.
+     *
+     *  \note - PickoutParamValues maps exceptions returned to IO::Network::HTTP::ClientErrorException
      */
     Mapping<String, VariantValue> PickoutParamValues (Request* request);
 

@@ -11,6 +11,8 @@
  */
 #include <tuple>
 
+#include "../../../Foundation/IO/Network/HTTP/ClientErrorException.h"
+
 #include "Basic.h"
 
 namespace Stroika::Frameworks::WebService::Server::VariantValue {
@@ -46,13 +48,16 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     template <typename RETURN_TYPE, typename... ARG_TYPES>
     VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPES...)>& f)
     {
+        using IO::Network::HTTP::ClientErrorException;
         Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
+        // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
+        auto&& args = ClientErrorException::TreatExceptionsAsClientError ([&]() { return STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f); });
         if constexpr (is_same_v<RETURN_TYPE, void>) {
-            apply (f, STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f));
+            apply (f, args);
             return VariantValue{};
         }
         else {
-            return objVarMapper.FromObject (apply (f, STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f)));
+            return objVarMapper.FromObject (apply (f, args));
         }
     }
     template <typename RETURN_TYPE, typename... ARG_TYPES>
