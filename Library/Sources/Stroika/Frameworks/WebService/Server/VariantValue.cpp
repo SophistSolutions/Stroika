@@ -5,8 +5,7 @@
 
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-
-#include "../../WebServer/ClientErrorException.h"
+#include "../../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 
 #include "Basic.h"
 
@@ -21,7 +20,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::WebService::Server;
 
-using WebServer::ClientErrorException;
+using IO::Network::HTTP::ClientErrorException;
 
 /*
  ********************************************************************************
@@ -50,7 +49,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
         return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
     }
-    Execution::Throw (DataExchange::BadFormatException (L"Unrecognized content-type"sv));
+    Execution::Throw (ClientErrorException (L"Unrecognized content-type"sv));
 }
 
 /*

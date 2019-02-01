@@ -17,7 +17,7 @@
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
@@ -33,6 +33,8 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
+
+using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1

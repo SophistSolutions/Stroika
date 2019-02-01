@@ -75,7 +75,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp" />
@@ -105,7 +104,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl" />

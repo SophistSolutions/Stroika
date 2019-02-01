@@ -10,8 +10,7 @@
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-
-#include "../../WebServer/ClientErrorException.h"
+#include "../../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 
 #include "Basic.h"
 
@@ -24,7 +23,7 @@ using namespace Stroika::Frameworks::WebService;
 
 using Characters::String_Constant;
 using Characters::StringBuilder;
-using WebServer::ClientErrorException;
+using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1

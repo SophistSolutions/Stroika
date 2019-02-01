@@ -10,7 +10,7 @@
 #include "../../Foundation/IO/FileSystem/Common.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/PathName.h"
-#include "../../Foundation/IO/Network/HTTP/Exception.h"
+#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/Streams/InputStream.h"
 
 #include "FileSystemRouter.h"
@@ -25,6 +25,8 @@ using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
+
+using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -62,7 +64,7 @@ namespace {
                 }
             }
             catch (const IO::FileAccessException&) {
-                Execution::Throw (IO::Network::HTTP::Exception{StatusCodes::kNotFound});
+                Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
             }
         }
         String ExtractFileName_ (const Message* m) const
@@ -77,7 +79,7 @@ namespace {
                     }
                 }
                 else {
-                    Execution::Throw (IO::Network::HTTP::Exception{StatusCodes::kNotFound});
+                    Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
                 }
             }
             if ((urlRelPath.empty () or urlRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {

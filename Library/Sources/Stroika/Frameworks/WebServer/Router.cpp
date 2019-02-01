@@ -5,7 +5,7 @@
 
 #include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
-#include "../../Foundation/IO/Network/HTTP/Exception.h"
+#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 
 #include "Router.h"
@@ -17,6 +17,8 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
+
+using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -53,11 +55,11 @@ struct Router::Rep_ : Interceptor::_IRep {
                 StringBuilder res;
                 o->Apply ([&res](const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
                 m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAllow, res.str ());
-                Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kMethodNotAllowed));
+                Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kMethodNotAllowed));
             }
             else {
                 DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ());
-                Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kNotFound));
+                Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kNotFound));
             }
         }
     }

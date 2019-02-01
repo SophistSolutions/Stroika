@@ -17,6 +17,7 @@
 #include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/IO/FileSystem/FileOutputStream.h"
 #include "../../Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
@@ -24,8 +25,6 @@
 #include "../../Foundation/Streams/LoggingInputOutputStream.h"
 #include "../../Foundation/Streams/SplitterOutputStream.h"
 #include "../../Foundation/Time/DateTime.h"
-
-#include "ClientErrorException.h"
 
 #include "Connection.h"
 
@@ -38,6 +37,8 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
+
+using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1

@@ -15,7 +15,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
 	$(ObjDir)ConnectionManager${OBJ_SUFFIX}\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
 	$(ObjDir)DefaultFaultInterceptor${OBJ_SUFFIX}\
