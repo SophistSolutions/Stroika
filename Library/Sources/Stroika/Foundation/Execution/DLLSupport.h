@@ -51,9 +51,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual ProcAddress GetProcAddress (const wchar_t* procName) const;
 
 #if !qPlatform_Windows
-        // ssw: not sure what to set for flags here, or if we should leave up to user
-        // see linux.die.net/man/3/dlopen
-        nonvirtual DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW | RTLD_GLOBAL);
+		/*
+		 * see linux.die.net/man/3/dlopen for flags
+		 */
+		nonvirtual DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
 #endif
     private:
         DLLHandle fModule;
