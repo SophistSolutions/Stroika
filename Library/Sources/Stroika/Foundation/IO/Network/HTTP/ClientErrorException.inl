@@ -25,11 +25,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : ClientErrorException (StatusCodes::kBadRequest, reason)
     {
     }
-    template <typename FUNCTION>
-    inline void ClientErrorException::TreatExceptionsAsClientError (FUNCTION f)
+    template <typename FUNCTION, typename RESULT_TYPE>
+    inline RESULT_TYPE ClientErrorException::TreatExceptionsAsClientError (FUNCTION f)
     {
         try {
-            f ();
+            return f ();
         }
         catch (...) {
             Execution::Throw (ClientErrorException (current_exception ()));

@@ -16,8 +16,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Foundation::Characters::String;
 
     /**
-     *  \brief This is typically what you want to throw (or translate to one of these) an exception in the webserver framework
-     *         that should be treated as an error in the client request, and not a server failure (assignment of blame).
+     *  \brief  ClientErrorException is to capture exceptions caused by a bad (e.g ill-formed) request.
+     *
+     *      This is typically what you want to throw (or translate to one of these) an exception in the webserver framework
+     *      that should be treated as an error in the client request, and not a server failure (assignment of blame).
      *
      *  TODO:
      *      @todo consider adding a 'based-on' field so that original exception gets copied around.
@@ -49,8 +51,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Utility to map any functions thrown in the given (typically lambda) into a ClientErrorExcpetion
          */
-        template <typename FUNCTION>
-        static void TreatExceptionsAsClientError (FUNCTION f);
+        template <typename FUNCTION, typename RESULT_TYPE = std::invoke_result_t<FUNCTION>>
+        static RESULT_TYPE TreatExceptionsAsClientError (FUNCTION f);
     };
 
 }
