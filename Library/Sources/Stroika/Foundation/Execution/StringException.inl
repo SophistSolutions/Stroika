@@ -30,6 +30,11 @@ namespace Stroika::Foundation::Execution {
         return fErrorMessage_.As<wstring> ();
     }
     template <>
+    inline error_code StringException::As () const
+    {
+        return fErrorCode_;
+    }
+    template <>
     inline Characters::String StringException::As () const
     {
         return fErrorMessage_;
@@ -38,7 +43,7 @@ namespace Stroika::Foundation::Execution {
     {
         return fSDKCharString_.c_str ();
     }
-    inline error_code StringException::GetErrorCode () const
+    inline error_code StringException::code () const
     {
         return fErrorCode_;
     }

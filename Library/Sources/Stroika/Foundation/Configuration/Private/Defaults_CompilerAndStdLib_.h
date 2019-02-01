@@ -365,6 +365,20 @@ ABORTING...
 
 #endif
 
+// According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
+#ifndef qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
+
+#if defined(__GNUC__)
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#elif defined(_MSC_VER)
+// verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+#else
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy 0
+#endif
+
+#endif
+
 /*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *
