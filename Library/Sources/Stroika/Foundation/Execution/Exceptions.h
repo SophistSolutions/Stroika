@@ -104,13 +104,13 @@ namespace Stroika::Foundation::Execution {
         using inherited = Exception<system_error>;
 
     private:
-        static Characters::String mkMsg_ (error_code _Errcode)
+        static Characters::String mkMsg_ (error_code errCode)
         {
-            return Characters::String::FromNarrowSDKString (_Errcode.message ());
+            return Characters::String::FromNarrowSDKString (errCode.message ());
         }
-        static Characters::String mkMsg_ (error_code _Errcode, const Characters::String& _Message)
+        static Characters::String mkMsg_ (error_code errCode, const Characters::String& message)
         {
-            return _Message + L": " + mkMsg_ (_Errcode);
+            return message + L": " + mkMsg_ (errCode);
         }
 
     public:
@@ -118,16 +118,16 @@ namespace Stroika::Foundation::Execution {
             : inherited (mkMsg_ (_Errcode), _Errcode)
         {
         }
-        SystemException (error_code _Errcode, const Characters::String& _Message)
-            : inherited (mkMsg_ (_Errcode, _Message), _Errcode)
+        SystemException (error_code errCode, const Characters::String& message)
+            : inherited (mkMsg_ (errCode, message), errCode)
         {
         }
         SystemException (int ev, const std::error_category& ecat)
             : inherited (mkMsg_ (error_code (ev, ecat)), error_code (ev, ecat))
         {
         }
-        SystemException (int ev, const std::error_category& ecat, const Characters::String& _Message)
-            : inherited (mkMsg_ (error_code (ev, ecat), _Message), error_code (ev, ecat))
+        SystemException (int ev, const std::error_category& ecat, const Characters::String& message)
+            : inherited (mkMsg_ (error_code (ev, ecat), message), error_code (ev, ecat))
         {
         }
     };

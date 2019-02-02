@@ -654,9 +654,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.cpp">
       <Filter>Sources\IO\Network\SOAP</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>

@@ -747,7 +747,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
@@ -875,28 +874,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Throw.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
@@ -1395,7 +1376,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
@@ -1477,6 +1457,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Throw.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
@@ -1843,7 +1824,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
@@ -1896,9 +1876,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Throw.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl" />
