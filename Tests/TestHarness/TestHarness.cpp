@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/Debug/Debugger.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
-#include "Stroika/Foundation/Execution/StringException.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "TestHarness.h"
 
@@ -80,7 +80,7 @@ int TestHarness::PrintPassOrFail (void (*regressionTest) ())
         auto exc = current_exception ();
         cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc).AsNarrowSDKString () << endl;
         cout << "Failed" << endl;
-        DbgTrace (L"FAILED: REGRESSION TEST (Execution::StringException): '%s", Characters::ToString (exc).c_str ());
+        DbgTrace (L"FAILED: REGRESSION TEST (Exception): '%s", Characters::ToString (exc).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
         return EXIT_FAILURE;
     }
