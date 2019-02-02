@@ -12,6 +12,6 @@
 
 namespace Stroika::Foundation::Execution {
 
- }
+}
 
 #endif /*_Stroia_Foundation_Execution_StringException_inl_*/

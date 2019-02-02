@@ -12,8 +12,8 @@
 #include "../Containers/Common.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/Common.h"
-#include "../Execution/OperationNotSupportedException.h"
 #include "../Execution/Exception.h"
+#include "../Execution/OperationNotSupportedException.h"
 #include "../Memory/SmallStackBuffer.h"
 
 #include "TextWriter.h"

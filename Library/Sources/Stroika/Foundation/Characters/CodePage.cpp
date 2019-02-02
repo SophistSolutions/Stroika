@@ -13,8 +13,8 @@
 #include "../Configuration/Common.h"
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
-#include "../Execution/Exceptions.h"
 #include "../Execution/Exception.h"
+#include "../Execution/Exceptions.h"
 #include "../Memory/SmallStackBuffer.h"
 
 #include "CodePage.h"

@@ -12,8 +12,8 @@
 
 #include "../../Characters/String_Constant.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
-#include "../../Execution/Exceptions.h"
 #include "../../Execution/Exception.h"
+#include "../../Execution/Exceptions.h"
 
 namespace Stroika::Foundation::Streams::iostream {
 
