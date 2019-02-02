@@ -121,7 +121,7 @@ namespace {
  ********************************************************************************
  */
 LibCurlException::LibCurlException (CURLcode ccode)
-    : StringException (mkExceptMsg_ (ccode))
+    : Execution::Exception<> (mkExceptMsg_ (ccode))
     , fCurlCode_ (ccode)
 {
 }

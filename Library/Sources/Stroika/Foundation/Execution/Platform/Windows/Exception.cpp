@@ -108,7 +108,7 @@ namespace {
  ********************************************************************************
  */
 Execution::Platform::Windows::Exception::Exception (DWORD error)
-    : StringException (SDKString2Wide (Win32Error2String_ (error)))
+    : Execution::Exception<> (SDKString2Wide (Win32Error2String_ (error)))
     , fError (error)
 {
 }

@@ -31,7 +31,7 @@ SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
     if (sockaddr.iSockaddrLength > sizeof (fSocketAddressStorage_))
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::StringException (L"bad socket address size"));
+            Execution::Throw (Execution::Exception (L"bad socket address size"sv));
         }
     (void)::memcpy (&fSocketAddressStorage_, sockaddr.lpSockaddr, sockaddr.iSockaddrLength);
 }

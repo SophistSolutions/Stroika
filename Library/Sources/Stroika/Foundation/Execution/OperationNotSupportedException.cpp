@@ -17,13 +17,13 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 OperationNotSupportedException::OperationNotSupportedException ()
-    : StringException (String_Constant (L"Operation Not Supported"))
+    : Execution::Exception<> (L"Operation Not Supported"sv)
     , fOperationName_ ()
 {
 }
 
 OperationNotSupportedException::OperationNotSupportedException (const String& operationName)
-    : StringException (String_Constant (L"Operation '") + operationName + String_Constant (L"' Not Supported"))
+    : Execution::Exception<> (L"Operation '"sv + operationName + L"' Not Supported"sv)
     , fOperationName_ (operationName)
 {
 }

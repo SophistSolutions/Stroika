@@ -115,7 +115,7 @@ String Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
     int  ret = ::proc_pidpath (processID, pathbuf, sizeof (pathbuf));
     if (ret <= 0) {
-        Execution::Throw (StringException (L"proc_pidpath failed")); // @todo - horrible reporting, but not obvious what this API is? proc_pidpath?
+        Execution::Throw (Exception (L"proc_pidpath failed"sv)); // @todo - horrible reporting, but not obvious what this API is? proc_pidpath?
     }
     else {
         return String::FromSDKString (pathbuf);

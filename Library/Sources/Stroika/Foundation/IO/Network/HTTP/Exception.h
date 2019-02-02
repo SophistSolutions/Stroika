@@ -20,14 +20,13 @@
 namespace Stroika::Foundation::IO::Network::HTTP {
 
     using Foundation::Characters::String;
-    using Foundation::Execution::StringException;
 
     /**
      *  See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
      *
      *  @see ClientErrorException
      */
-    class Exception : public StringException {
+    class Exception : public Execution::Exception<> {
     public:
         // If no reason is given, a default is generated based on the status code
         Exception (Status status, const String& reason = String ());

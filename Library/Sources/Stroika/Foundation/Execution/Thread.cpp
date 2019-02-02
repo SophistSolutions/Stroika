@@ -231,7 +231,7 @@ Thread::InterruptException::InterruptException ()
 }
 
 Thread::InterruptException::InterruptException (const Characters::String& msg)
-    : StringException (msg)
+    : Exception<> (msg)
 {
 }
 const Thread::InterruptException Thread::InterruptException::kThe;

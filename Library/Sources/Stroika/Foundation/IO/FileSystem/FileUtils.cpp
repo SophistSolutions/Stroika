@@ -159,7 +159,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
         if (filePathName.empty ())
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (StringException (String_Constant (L"bad filename")));
+                Execution::Throw (Exception (L"bad filename"sv));
             }
         struct stat s;
         ThrowErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));

@@ -279,7 +279,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
                 sb += c.fServerAndShare->fServer + L"\\" + c.fServerAndShare->fShare;
             }
             else {
-                Execution::Throw (Execution::StringException (L"for absolute path need drive letter or server/share"));
+                Execution::Throw (Execution::Exception (L"for absolute path need drive letter or server/share"sv));
             }
         }
         else {
@@ -317,7 +317,7 @@ String IO::FileSystem::Ptr::GetFullPathName (const String& pathName)
         [[UNLIKELY_ATTR]]
         {
             //throw bad path name @todo improve exception
-            Execution::Throw (Execution::StringException (L"invalid pathname"));
+            Execution::Throw (Execution::Exception (L"invalid pathname"sv));
         }
     if (pathName[0] == '/') {
         return pathName;

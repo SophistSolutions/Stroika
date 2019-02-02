@@ -26,7 +26,7 @@
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
-    class LibCurlException : public Execution::StringException {
+    class LibCurlException : public Execution::Exception<> {
     public:
         using CURLcode = int; // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
     public:

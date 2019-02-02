@@ -271,7 +271,7 @@ RetryWithNoCERTCheck:
 RetryWithAuth:
     try {
         if (request.fData.size () > numeric_limits<DWORD>::max ()) {
-            Throw (StringException (String_Constant (L"Too large a message to send using WinHTTP")));
+            Throw (Execution::Exception (L"Too large a message to send using WinHTTP"sv));
         }
         DISABLE_COMPILER_MSC_WARNING_START (4267)
         ThrowIfFalseGetLastError (::WinHttpSendRequest (

@@ -202,7 +202,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 #else
     AssertNotImplemented ();
 #endif
-    Execution::Throw (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
+    Execution::Throw (Exception (L"Unknown error creating file"sv), "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
 String AppTempFileManager::GetTempDir (const String& fileNameBase)
@@ -221,7 +221,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
             return s;
         }
     }
-    Execution::Throw (StringException (String_Constant (L"Unknown error creating temporary file")), "AppTempFileManager::GetTempDir (): failed to create tempdir");
+    Execution::Throw (Exception (L"Unknown error creating temporary file"sv), "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
 
 #if 0
@@ -303,7 +303,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
                 }
             }
         }
-        Execution::Throw (StringException (L"Unknown error creating file"));
+        Execution::Throw (Exception (L"Unknown error creating file"sv));
 #else
         AssertNotImplemented ();
 #endif
@@ -342,7 +342,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
 #else
         AssertNotImplemented ();
 #endif
-        Execution::Throw (StringException (L"Unknown error creating temporary file"));
+        Execution::Throw (Exception (L"Unknown error creating temporary file"sv));
     }
 
 #endif

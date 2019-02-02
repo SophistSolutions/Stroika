@@ -88,7 +88,7 @@ namespace {
  ********************************************************************************
  */
 Exception::Exception (Status status, const String& reason)
-    : StringException (mkExceptionMessage_ (status, reason))
+    : Execution::Exception<> (mkExceptionMessage_ (status, reason))
     , fStatus_ (status)
     , fReason_ (reason)
 {

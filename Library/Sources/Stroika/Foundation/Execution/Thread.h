@@ -954,7 +954,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    class Thread::InterruptException : public StringException {
+    class Thread::InterruptException : public Exception<> {
     public:
         InterruptException ();
 

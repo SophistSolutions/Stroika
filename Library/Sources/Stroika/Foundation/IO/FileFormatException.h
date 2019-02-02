@@ -15,9 +15,9 @@ namespace Stroika::Foundation::IO {
 
     /**
      */
-    class FileFormatException : public Execution::StringException {
+    class FileFormatException : public Execution::Exception<> {
     private:
-        using inherited = Execution::StringException;
+        using inherited = Execution::Exception<>;
 
     public:
         FileFormatException (const String& fileName);

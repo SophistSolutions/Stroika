@@ -122,7 +122,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const Execution::Platform::Windows::Exception& e) {
         if (e == WSAEACCES) {
-            Throw (StringException (Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
+            Throw (Exception (Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
         }
         else {
             ReThrow ();
@@ -135,11 +135,11 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
     }
     catch (const IO::FileAccessException&) {
-        Throw (StringException (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
+        Throw (Exception (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
     }
 #endif
     catch (...) {
-        Throw (StringException (Characters::Format (L"Cannot Bind to %s: %s", Characters::ToString (sockAddr).c_str (), Characters::ToString (current_exception ()).c_str ())));
+        Throw (Exception (Characters::Format (L"Cannot Bind to %s: %s", Characters::ToString (sockAddr).c_str (), Characters::ToString (current_exception ()).c_str ())));
     }
 }
 

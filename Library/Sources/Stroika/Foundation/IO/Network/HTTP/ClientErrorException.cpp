@@ -16,12 +16,12 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
  ************************** ClientErrorException ********************************
  ********************************************************************************
  */
-ClientErrorException::ClientErrorException (const StringException& basedOnInnerException)
+ClientErrorException::ClientErrorException (const Exception& basedOnInnerException)
     : ClientErrorException (400, Characters::ToString (basedOnInnerException))
 {
 }
 
-ClientErrorException::ClientErrorException (Status status, const StringException& basedOnInnerException)
+ClientErrorException::ClientErrorException (Status status, const Exception& basedOnInnerException)
     : ClientErrorException (status, Characters::ToString (basedOnInnerException))
 {
 }

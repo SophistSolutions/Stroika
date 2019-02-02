@@ -31,7 +31,7 @@ namespace {
     }
 }
 RequiredComponentMissingException::RequiredComponentMissingException (const wstring& component)
-    : StringException (mkMsg (component))
+    : Execution::Exception<> (mkMsg (component))
     , fComponent (component)
 {
 }

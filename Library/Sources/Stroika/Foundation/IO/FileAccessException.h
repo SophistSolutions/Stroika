@@ -24,9 +24,9 @@ namespace Stroika::Foundation::IO {
      * on a given file (which is usually given in the object). It also is the result of a perticular operation/access
      * failure (like read, write, or list).
      */
-    class FileAccessException : public Execution::StringException {
+    class FileAccessException : public Execution::Exception<> {
     private:
-        using inherited = Execution::StringException;
+        using inherited = Execution::Exception<>;
 
     public:
         FileAccessException (const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);

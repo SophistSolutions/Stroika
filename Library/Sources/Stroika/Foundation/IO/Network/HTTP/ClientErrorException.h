@@ -41,8 +41,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         ClientErrorException (Status status = StatusCodes::kBadRequest, const String& reason = String{});
         ClientErrorException (const String& reason);
-        ClientErrorException (const StringException& basedOnInnerException);
-        ClientErrorException (Status status, const StringException& basedOnInnerException);
+        ClientErrorException (const Exception& basedOnInnerException);
+        ClientErrorException (Status status, const Exception& basedOnInnerException);
         ClientErrorException (const exception& basedOnInnerException);
         ClientErrorException (Status status, const exception& basedOnInnerException);
         ClientErrorException (const exception_ptr& basedOnInnerException);

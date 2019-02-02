@@ -23,9 +23,9 @@ namespace Stroika::Foundation::Execution {
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
-    class StructuredException : public StringException {
+    class StructuredException : public Execution::Exception<> {
     private:
-        using inherited = StringException;
+        using inherited = Execution::Exception<>;
 
     private:
         unsigned int fSECode;

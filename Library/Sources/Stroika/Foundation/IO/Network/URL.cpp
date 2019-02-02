@@ -36,7 +36,7 @@ namespace {
             if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+'))
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::StringException (String_Constant (L"bad character in scheme")));
+                    Execution::Throw (Execution::Exception (L"bad character in scheme"sv));
                 }
         }
     }

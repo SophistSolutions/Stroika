@@ -356,9 +356,9 @@ namespace Stroika::Foundation::Time {
     template <>
     chrono::nanoseconds Duration::AsPinned () const;
 
-    class Duration::FormatException : public Execution::StringException {
+    class Duration::FormatException : public Execution::Exception<> {
     private:
-        using inherited = Execution::StringException;
+        using inherited = Execution::Exception<>;
 
     public:
         FormatException ();

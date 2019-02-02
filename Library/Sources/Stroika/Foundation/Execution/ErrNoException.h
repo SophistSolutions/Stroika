@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    class errno_ErrorException : public StringException {
+    class errno_ErrorException : public Execution::Exception<> {
     public:
         explicit errno_ErrorException (errno_t e);
 

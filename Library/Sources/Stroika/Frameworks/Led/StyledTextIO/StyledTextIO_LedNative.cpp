@@ -260,7 +260,7 @@ struct PortableStyleRunData_Version6 {
     static unsigned char RecordLenFromNameLen (size_t len)
     {
         if (len > 255) {
-            Execution::Throw (Execution::StringException (L"RecordLenFromNameLen too long"));
+            Execution::Throw (Execution::Exception (L"RecordLenFromNameLen too long"sv));
         }
         size_t xtra = offsetof (PortableStyleRunData_Version6, fFontName);
         return (unsigned char)min (xtra + size_t (len), size_t (256));

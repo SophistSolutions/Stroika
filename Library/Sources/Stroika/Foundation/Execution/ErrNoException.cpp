@@ -29,7 +29,7 @@ using Debug::TraceContextBumper;
  ********************************************************************************
  */
 errno_ErrorException::errno_ErrorException (Execution::errno_t e)
-    : StringException (SDKString2Wide (LookupMessage (e)))
+    : Execution::Exception<> (SDKString2Wide (LookupMessage (e)))
     , fError (e)
 {
 }

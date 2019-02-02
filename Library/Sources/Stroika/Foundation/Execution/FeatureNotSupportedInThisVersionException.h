@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    class FeatureNotSupportedInThisVersionException : public StringException {
+    class FeatureNotSupportedInThisVersionException : public Execution::Exception<> {
     public:
         FeatureNotSupportedInThisVersionException (const wstring& feature);
 

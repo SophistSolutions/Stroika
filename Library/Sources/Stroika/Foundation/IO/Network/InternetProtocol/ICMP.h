@@ -90,9 +90,9 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
 
         /**
          */
-        class UnknownICMPPacket : public Execution::StringException {
+        class UnknownICMPPacket : public Execution::Exception<> {
         private:
-            using inherited = Execution::StringException;
+            using inherited = Execution::Exception<>;
 
         public:
             /**
@@ -114,9 +114,9 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
          *
          *  'ReachedIP' is the address reached by the packet when the TTL expired.
          */
-        class TTLExpiredException : public Execution::StringException {
+        class TTLExpiredException : public Execution::Exception<> {
         private:
-            using inherited = Execution::StringException;
+            using inherited = Execution::Exception<>;
 
         public:
             /**

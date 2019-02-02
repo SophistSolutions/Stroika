@@ -422,7 +422,7 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     if (not fExecutable_.has_value ())
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::StringException (L"need command-line or executable path to run a process"));
+            Execution::Throw (Execution::Exception (L"need command-line or executable path to run a process"sv));
         }
     sb += *fExecutable_;
     for (String i : fArgs_) {
