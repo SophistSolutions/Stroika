@@ -7,7 +7,7 @@
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Execution/ErrNoException.h"
-#include "../../Execution/StringException.h"
+#include "../../Execution/Exception.h"
 #include "../../Memory/BLOB.h"
 
 #include "SocketAddress.h"

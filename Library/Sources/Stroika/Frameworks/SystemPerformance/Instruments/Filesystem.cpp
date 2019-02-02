@@ -32,7 +32,7 @@
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
 #include "../../../Foundation/Execution/Sleep.h"
-#include "../../../Foundation/Execution/StringException.h"
+#include "../../../Foundation/Execution/Exception.h"
 #include "../../../Foundation/IO/FileSystem/Disk.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/IO/FileSystem/FileSystem.h"

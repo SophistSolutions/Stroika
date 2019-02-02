@@ -12,7 +12,7 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 
 #include "../../Configuration/Common.h"
 #include "../../Cryptography/SSL/Common.h"
-#include "../../Execution/StringException.h"
+#include "../../Execution/Exception.h"
 #include "../../Memory/BLOB.h"
 #include "../../Memory/Common.h"
 #include "../../Streams/InputStream.h"

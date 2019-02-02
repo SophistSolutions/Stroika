@@ -11,7 +11,7 @@
 #include "../Characters/SDKString.h"
 #include "../Characters/String_Constant.h"
 #include "../Execution/Exceptions.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 
 #include "Locale.h"
 

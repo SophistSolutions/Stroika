@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 
 /**
  *  \file

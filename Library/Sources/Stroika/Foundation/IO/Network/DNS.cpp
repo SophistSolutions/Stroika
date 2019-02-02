@@ -23,7 +23,7 @@
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
 #endif
-#include "../../Execution/StringException.h"
+#include "../../Execution/Exception.h"
 #include "SocketAddress.h"
 
 #include "DNS.h"

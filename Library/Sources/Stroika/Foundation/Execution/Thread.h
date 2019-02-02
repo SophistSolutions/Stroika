@@ -15,8 +15,8 @@
 #include "../Time/Realtime.h"
 #include "../Traversal/Iterable.h"
 
+#include "Exception.h"
 #include "Signals.h"
-#include "StringException.h"
 
 /**
  *  \file

@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "../Characters/String.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 #include "../Memory/Optional.h"
 
 #include "FileAccessMode.h"

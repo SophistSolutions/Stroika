@@ -11,7 +11,7 @@
 #endif
 
 #include "../../Configuration/Common.h"
-#include "../../Execution/StringException.h"
+#include "../../Execution/Exception.h"
 #include "../../Memory/Common.h"
 
 /**

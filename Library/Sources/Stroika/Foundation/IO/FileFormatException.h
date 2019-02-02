@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/String.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 
 namespace Stroika::Foundation::IO {
 

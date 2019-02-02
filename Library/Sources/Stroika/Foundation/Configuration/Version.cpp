@@ -7,7 +7,7 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/String_Constant.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 #include "../Memory/Bits.h"
 
 #include "Version.h"

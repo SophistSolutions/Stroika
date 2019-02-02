@@ -13,7 +13,7 @@
 #endif
 
 #include "../Characters/SDKString.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 
 namespace Stroika::Foundation::Execution {
 

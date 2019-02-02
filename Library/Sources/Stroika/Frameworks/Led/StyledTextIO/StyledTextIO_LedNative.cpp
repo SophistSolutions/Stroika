@@ -17,7 +17,7 @@
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/Execution/StringException.h"
+#include "../../../Foundation/Execution/Exception.h"
 
 #include "../StyledTextEmbeddedObjects.h"
 

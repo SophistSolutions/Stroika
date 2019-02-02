@@ -15,7 +15,7 @@
 #include "../Containers/Common.h"
 #include "../Containers/Set.h"
 #include "../Execution/Exceptions.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 #include "../Math/Common.h"
 #include "../Memory/BlockAllocated.h"
 #include "../Memory/Common.h"

@@ -9,7 +9,7 @@
 #include <cerrno>
 #include <exception>
 
-#include "StringException.h"
+#include "Exception.h"
 
 /**
  *  TODO:

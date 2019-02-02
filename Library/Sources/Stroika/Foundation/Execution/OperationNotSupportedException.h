@@ -8,7 +8,7 @@
 
 #include "../Characters/String.h"
 
-#include "StringException.h"
+#include "Exception.h"
 
 namespace Stroika::Foundation::Execution {
 

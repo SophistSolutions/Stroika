@@ -14,7 +14,7 @@
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 #include "../Memory/SmallStackBuffer.h"
 
 #include "CodePage.h"

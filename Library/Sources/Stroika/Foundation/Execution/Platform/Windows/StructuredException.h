@@ -14,8 +14,8 @@
 
 #include "../../../Configuration/Common.h"
 
+#include "../../Exception.h"
 #include "../../Exceptions.h"
-#include "../../StringException.h"
 
 namespace Stroika::Foundation::Execution {
     using Characters::SDKString;

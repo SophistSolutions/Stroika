@@ -12,7 +12,7 @@
 #include "../Common/KeyValuePair.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
-#include "../Execution/StringException.h"
+#include "../Execution/Exception.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
 
