@@ -41,7 +41,7 @@ Objs	=	\
 	$(ObjDir)SpinLock${OBJ_SUFFIX}\
 	$(ObjDir)Thread${OBJ_SUFFIX}\
 	$(ObjDir)ThreadPool${OBJ_SUFFIX}\
-	$(ObjDir)Throw{OBJ_SUFFIX}\
+	$(ObjDir)Throw${OBJ_SUFFIX}\
 	$(ObjDir)TimeOutException${OBJ_SUFFIX}\
 	$(ObjDir)UserCanceledException${OBJ_SUFFIX}\
 	$(ObjDir)Users${OBJ_SUFFIX}\
