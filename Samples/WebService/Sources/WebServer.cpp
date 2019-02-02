@@ -81,7 +81,7 @@ public:
 
                   Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) {
                                     if (check > 10) {
-                                        Execution::Throw (Execution::StringException (L"more than 10"));
+                                        Execution::Throw (Execution::Exception (L"more than 10"sv));
                                     } }})},
 
               }}

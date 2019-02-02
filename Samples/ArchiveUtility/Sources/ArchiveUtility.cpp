@@ -117,7 +117,7 @@ namespace {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
-        Execution::Throw (Execution::StringException (L"Unrecognized format"));
+        Execution::Throw (Execution::Exception (L"Unrecognized format"sv));
     }
 }
 

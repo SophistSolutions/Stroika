@@ -27,7 +27,7 @@
  *      Sadly, there is no documentation (I'm aware of) or specification of the characterset/code page reported
  *      back by the what () on an exception. It tends to be ascii. Stroika guarantees that all exceptions it throws
  *      will use the current SDK characters (@see SDKString). But - its best to check for inheriting from
- *      StringException, since the SDK characterset might not allow representing some unicode characters.
+ *      Exception<>, since the SDK characterset might not allow representing some unicode characters.
  *
  *  TODO:
  *      @todo   Review new <system_error> stuff

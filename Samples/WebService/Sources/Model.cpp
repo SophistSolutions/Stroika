@@ -89,7 +89,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = []() {
                 }
             }
             if (not remainingNumber2Parse.empty ()) {
-                Execution::Throw (Execution::StringException (L"invalid complex number: " + vv.As<String> ()));
+                Execution::Throw (Execution::Exception (L"invalid complex number: "sv + vv.As<String> ()));
             }
             *intoObj = accum;
         });
