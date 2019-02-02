@@ -14,7 +14,6 @@
 #endif
 
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Execution/StringException.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -43,16 +42,16 @@ namespace {
     {
         {
             try {
-                Throw (StringException (L"HiMom"));
+                Throw (Exception (L"HiMom"));
                 VerifyTestResult (false);
             }
-            catch (const StringException& e) {
+            catch (const Exception<>& e) {
                 VerifyTestResult (e.As<wstring> () == L"HiMom");
             }
         }
         {
             try {
-                Throw (StringException (L"HiMom"));
+                Throw (Exception (L"HiMom"));
                 VerifyTestResult (false);
             }
             catch (const std::exception& e) {

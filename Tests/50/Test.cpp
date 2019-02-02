@@ -39,7 +39,7 @@
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
-#include "Stroika/Foundation/Execution/StringException.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -1488,11 +1488,11 @@ namespace {
             failedTests.Apply ([&listAsMsg](String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-                Execution::Throw (StringException (L"At least one test failed expected time constaint (see above): " + listAsMsg));
+                Execution::Throw (Exception (L"At least one test failed expected time constaint (see above): " + listAsMsg));
 #endif
             }
             else {
-                Execution::Throw (StringException (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())));
+                Execution::Throw (Exception (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())));
             }
         }
     }
