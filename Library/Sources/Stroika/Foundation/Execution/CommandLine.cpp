@@ -20,19 +20,19 @@ using Characters::String_Constant;
  ********************************************************************************
  */
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
-    : StringException (String_Constant (L"Invalid Command Argument"))
+    : Execution::Exception<> (L"Invalid Command Argument"sv)
     , fMessage ()
     , fArgument ()
 {
 }
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
-    : StringException (message.As<wstring> ())
+    : Execution::Exception<> (message.As<wstring> ())
     , fMessage (message)
     , fArgument ()
 {
 }
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
-    : StringException (message.As<wstring> ())
+    : Execution::Exception<> (message.As<wstring> ())
     , fMessage (message)
     , fArgument (argument)
 {

@@ -85,7 +85,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     int                     errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
-        Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
+        Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
     AssertNotNull (res); // else would have thrown
 
@@ -150,7 +150,7 @@ optional<String> DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return {};
         default:
-            Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
+            Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 }
 
@@ -194,7 +194,7 @@ InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
 #endif
     auto h = GetHostEntry (hostNameOrAddress).fAddressList;
     if (h.empty ()) {
-        Execution::Throw (Execution::StringException (L"No associated addresses"));
+        Execution::Throw (Exception (L"No associated addresses"sv));
     }
     return h[0];
 }

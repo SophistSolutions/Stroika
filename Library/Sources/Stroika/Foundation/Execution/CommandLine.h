@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  TODO - REFACTOR/CLEANUP/BETTER ORGNAIZE EXCEPTIONS!!!!
      */
-    class InvalidCommandLineArgument : public Execution::StringException {
+    class InvalidCommandLineArgument : public Execution::Exception<> {
     public:
         InvalidCommandLineArgument ();
         InvalidCommandLineArgument (const String& message);

@@ -1391,7 +1391,7 @@ namespace {
                         goto Again;
                     }
                     if (status != 0) {
-                        Throw (Execution::StringException (L"Bad result from NtQuerySystemInformation"));
+                        Throw (Execution::Exception (L"Bad result from NtQuerySystemInformation"sv));
                     }
                     fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
                 }

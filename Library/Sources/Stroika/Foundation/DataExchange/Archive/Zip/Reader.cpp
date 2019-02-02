@@ -2684,7 +2684,7 @@ public:
         if (fZipFile_ == nullptr)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::StringException (L"failed to open zipfile"));
+                Execution::Throw (Execution::Exception (L"failed to open zipfile"sv));
             }
     }
     ~Rep_ ()
@@ -2700,7 +2700,7 @@ public:
         if (err != UNZ_OK)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGetGlobalInfo", err)));
+                Execution::Throw (Execution::Exception (Characters::Format (L"error %d with zipfile in unzGetGlobalInfo", err)));
             }
         for (size_t i = 0; i < gi.number_entry; i++) {
             char            filename_inzip[10 * 1024];
@@ -2712,7 +2712,7 @@ public:
             if (err != UNZ_OK)
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)));
+                    Execution::Throw (Execution::Exception (Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)));
                     break;
                 }
             if ((i + 1) < gi.number_entry) {
@@ -2720,7 +2720,7 @@ public:
                 if (err != UNZ_OK)
                     [[UNLIKELY_ATTR]]
                     {
-                        Execution::Throw (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)));
+                        Execution::Throw (Execution::Exception (Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)));
                         break;
                     }
             }
@@ -2814,7 +2814,7 @@ public:
         if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' not found", fileName.c_str ())));
+                Execution::Throw (Execution::Exception (Characters::Format (L"File '%s' not found", fileName.c_str ())));
             }
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
@@ -2826,7 +2826,7 @@ public:
             if (err < 0)
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
+                    Execution::Throw (Execution::Exception (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
                 }
             else if (err > 0) {
                 Assert (static_cast<size_t> (err) <= NEltsOf (buf));

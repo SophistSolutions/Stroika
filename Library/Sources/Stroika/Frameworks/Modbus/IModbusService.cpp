@@ -21,7 +21,7 @@ using namespace Stroika::Frameworks::Modbus;
  ********************************************************************************
  */
 Modbus::Exception::Exception (ExceptionCode exceptionCode)
-    : StringException (Characters::Format (L"Modbus Exception: %d", exceptionCode))
+    : Execution::Exception<> (Characters::Format (L"Modbus Exception: %d", exceptionCode))
     , fExceptionCode (exceptionCode)
 {
 }

@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
 #if !qPlatform_Windows
-    class DLLException : public StringException {
+    class DLLException : public Execution::Exception<> {
     public:
         DLLException (const char* message);
     };
@@ -51,10 +51,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual ProcAddress GetProcAddress (const wchar_t* procName) const;
 
 #if !qPlatform_Windows
-		/*
-		 * see linux.die.net/man/3/dlopen for flags
-		 */
-		nonvirtual DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
+        /*
+         * see linux.die.net/man/3/dlopen for flags
+         */
+        nonvirtual DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
 #endif
     private:
         DLLHandle fModule;

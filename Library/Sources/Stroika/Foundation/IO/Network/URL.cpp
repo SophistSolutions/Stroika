@@ -133,7 +133,7 @@ URL URL::Parse (const String& w, ParseOptions po)
     if (w.empty ())
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::StringException (L"Cannot parse empty URL"));
+            Execution::Throw (Execution::Exception (L"Cannot parse empty URL"sv));
             //return result;
         }
 
@@ -159,7 +159,7 @@ URL URL::Parse (const String& w, ParseOptions po)
             // result.fScheme_ = String_Constant (L"http");
         }
         else {
-            Execution::Throw (Execution::StringException (L"URL missing scheme"));
+            Execution::Throw (Execution::Exception (L"URL missing scheme"sv));
         }
         if (result.fScheme_) {
             ValidateScheme_ (*result.fScheme_);

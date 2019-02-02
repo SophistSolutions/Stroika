@@ -90,7 +90,7 @@ protected:
             [[UNLIKELY_ATTR]]
             {
                 // not sure waht to throw!
-                Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
+                Execution::Throw (Execution::Exception (L"Error converting characters codepage"sv));
             }
     }
     virtual void Flush () override

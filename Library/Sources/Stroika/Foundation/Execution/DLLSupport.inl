@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
     }
 #if !qPlatform_Windows
     inline DLLException::DLLException (const char* message)
-        : StringException (Characters::NarrowSDKStringToWide (message))
+        : Execution::Exception<> (Characters::NarrowSDKStringToWide (message))
     {
     }
 #endif

@@ -140,7 +140,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 
         // Make sure the reply is sane
         if (n < header_len + ICMP::V4::ICMP_MIN) {
-            Execution::Throw (Execution::StringException (L"too few bytes from " + Characters::ToString (fromAddress))); // draft @todo fix
+            Execution::Throw (Execution::Exception (L"too few bytes from "sv + Characters::ToString (fromAddress))); // draft @todo fix
         }
 
         /*

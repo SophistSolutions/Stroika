@@ -39,13 +39,13 @@ namespace {
             {
                 switch (err) {
                     case Z_VERSION_ERROR:
-                        Execution::Throw (Execution::StringException (L"ZLIB Z_VERSION_ERROR"sv));
+                        Execution::Throw (Execution::Exception (L"ZLIB Z_VERSION_ERROR"sv));
                     case Z_DATA_ERROR:
-                        Execution::Throw (Execution::StringException (L"ZLIB Z_DATA_ERROR"sv));
+                        Execution::Throw (Execution::Exception (L"ZLIB Z_DATA_ERROR"sv));
                     case Z_ERRNO:
-                        Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)));
+                        Execution::Throw (Execution::Exception (Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)));
                     default:
-                        Execution::Throw (Execution::StringException (Characters::Format (L"ZLIB ERR %d", err)));
+                        Execution::Throw (Execution::Exception (Characters::Format (L"ZLIB ERR %d", err)));
                 }
             }
     }

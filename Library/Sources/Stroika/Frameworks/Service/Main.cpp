@@ -668,7 +668,7 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService");
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::StringException (L"Service Already Running"sv));
+        Execution::Throw (Execution::Exception (L"Service Already Running"sv));
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;
@@ -698,10 +698,10 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
         out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
+        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
     }
     if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
-        Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
+        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
     fRunThread_.load ().Join ();
 }
@@ -727,7 +727,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::StringException (L"Cannot Start service because its already running"sv));
+        Execution::Throw (Execution::Exception (L"Cannot Start service because its already running"sv));
     }
 
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ({String (), (L"--"sv + String (CommandNames::kRunAsService))}));

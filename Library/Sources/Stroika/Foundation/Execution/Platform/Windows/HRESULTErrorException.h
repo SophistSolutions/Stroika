@@ -25,13 +25,14 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 
     /**
     */
-    class HRESULTErrorException : public StringException {
+    class HRESULTErrorException : public Execution::Exception<> {
     private:
-        using inherited = StringException;
+        using inherited = Execution::Exception<>;
 
     public:
         HRESULTErrorException (HRESULT hresult);
 
+    public:
         operator HRESULT () const;
 
     public:

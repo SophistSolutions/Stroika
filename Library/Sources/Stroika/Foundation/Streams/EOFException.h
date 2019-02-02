@@ -18,9 +18,9 @@ namespace Stroika::Foundation::Streams {
 
     /**
      */
-    class EOFException : public Execution::StringException {
+    class EOFException : public Execution::Exception<> {
     private:
-        using inherited = Execution::StringException;
+        using inherited = Execution::Exception<>;
 
     public:
         EOFException ();

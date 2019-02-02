@@ -45,7 +45,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     if (result == nullptr)
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (StringException (String_Constant (L"No such username")));
+            Execution::Throw (Exception (L"No such username"sv));
         }
     return pwd.pw_uid;
 }
@@ -71,7 +71,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
         errno_ErrorException::Throw (err);
     }
     if (result == nullptr) {
-        Execution::Throw (StringException (String_Constant (L"No such username")));
+        Execution::Throw (Exception (L"No such username"sv));
     }
     return String::FromSDKString (pwd.pw_name);
 }

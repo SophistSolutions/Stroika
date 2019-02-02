@@ -179,7 +179,7 @@ Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbI
         {
             Assert (fDB_ == nullptr);
             // @todo add error string
-            Execution::Throw (StringException (Characters::Format (L"SQLite Error %d:", e)));
+            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
         }
 }
 
