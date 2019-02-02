@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    class SystemException : Exception<system_error> {
+    class SystemException : public Exception<system_error> {
         using inherited = Exception<system_error>;
 
     private:
