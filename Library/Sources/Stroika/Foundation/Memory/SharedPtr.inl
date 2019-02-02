@@ -14,8 +14,8 @@
 #include "BlockAllocated.h"
 
 #include "../Execution/Common.h"
-#include "../Execution/Exceptions.h"
 #include "../Execution/SpinLock.h"
+#include "../Execution/Throw.h"
 
 namespace Stroika::Foundation::Memory {
 

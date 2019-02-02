@@ -10,7 +10,7 @@
 #include "../../Foundation/Characters/CString/Utilities.h"
 #include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "GDI.h"

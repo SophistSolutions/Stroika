@@ -6,7 +6,7 @@
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
 
-#include "Exceptions.h"
+#include "Throw.h"
 #if qPlatform_Windows
 #include "Platform/Windows/Exception.h"
 #endif

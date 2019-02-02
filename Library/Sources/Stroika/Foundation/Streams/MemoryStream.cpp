@@ -6,7 +6,7 @@
 #include <algorithm>
 
 #include "../Execution/Common.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 #include "../Memory/BlockAllocated.h"
 #include "../Traversal/Iterator.h"
 

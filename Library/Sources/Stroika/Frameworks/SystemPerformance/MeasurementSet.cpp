@@ -3,13 +3,4 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <algorithm>
-#include <cstdlib>
-
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/DataExchange/BadFormatException.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Execution/Exceptions.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
-
 #include "MeasurementSet.h"

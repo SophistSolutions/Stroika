@@ -10,7 +10,7 @@
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Sequence.h"
-#include "../Execution/Exception.h"
+#include "../Execution/Exceptions.h"
 
 namespace Stroika::Foundation::Execution {
 

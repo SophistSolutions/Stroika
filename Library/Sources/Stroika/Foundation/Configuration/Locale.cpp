@@ -10,8 +10,8 @@
 #include "../Characters/Format.h"
 #include "../Characters/SDKString.h"
 #include "../Characters/String_Constant.h"
-#include "../Execution/Exception.h"
 #include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 
 #include "Locale.h"
 

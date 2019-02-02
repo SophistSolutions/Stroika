@@ -874,6 +874,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Throw.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp">
@@ -1395,7 +1396,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
@@ -1477,6 +1477,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Throw.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
@@ -1844,7 +1845,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
@@ -1900,6 +1900,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Throw.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl" />

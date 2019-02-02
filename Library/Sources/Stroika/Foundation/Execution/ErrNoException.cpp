@@ -7,7 +7,7 @@
 
 #include "../IO/FileAccessException.h"
 
-#include "Exceptions.h"
+#include "Throw.h"
 #include "TimeOutException.h"
 
 #include "ErrNoException.h"

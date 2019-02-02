@@ -6,7 +6,7 @@
 
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Memory/Common.h"
 #include "../../Foundation/StroikaPreComp.h"
 #include "../../Foundation/Time/Realtime.h"

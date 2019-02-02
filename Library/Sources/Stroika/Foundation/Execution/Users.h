@@ -9,8 +9,6 @@
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 
-#include "Exceptions.h"
-
 namespace Stroika::Foundation::Execution {
 
     enum class UserNameFormat : uint8_t {

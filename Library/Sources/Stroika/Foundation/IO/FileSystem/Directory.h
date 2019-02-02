@@ -13,7 +13,6 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Debug/Assertions.h"
-#include "../../Execution/Exceptions.h"
 #include "../../Execution/Thread.h"
 #include "../../Time/DateTime.h"
 

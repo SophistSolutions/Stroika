@@ -10,7 +10,7 @@
 #endif
 
 #include "../../../Debug/Trace.h"
-#include "../../../Execution/Exceptions.h"
+#include "../../../Execution/Throw.h"
 
 #include "CodePage.h"
 

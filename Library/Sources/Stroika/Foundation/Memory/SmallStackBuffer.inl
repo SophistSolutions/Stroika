@@ -14,7 +14,7 @@
 #include <type_traits>
 
 #include "../Debug/Assertions.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 #include "Common.h"
 
 namespace Stroika::Foundation::Memory {

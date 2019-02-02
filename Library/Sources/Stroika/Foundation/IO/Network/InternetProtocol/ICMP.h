@@ -10,7 +10,7 @@
 
 #include "../../../Configuration/Common.h"
 #include "../../../Configuration/Endian.h"
-#include "../../../Execution/Exception.h"
+#include "../../../Execution/Exceptions.h"
 #include "../../../Memory/Common.h"
 
 #include "../InternetAddress.h"

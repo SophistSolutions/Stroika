@@ -10,7 +10,6 @@
 #endif
 #include <cstdlib>
 
-#include "../../Execution/Exceptions.h"
 #include "../../Execution/OperationNotSupportedException.h"
 
 #include "SocketStream.h"

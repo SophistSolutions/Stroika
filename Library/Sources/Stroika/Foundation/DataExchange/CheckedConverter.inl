@@ -13,7 +13,7 @@
 #include <type_traits>
 
 #include "../Characters/String_Constant.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 #include "../Math/Common.h"
 
 namespace Stroika::Foundation::DataExchange {

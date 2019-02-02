@@ -6,7 +6,7 @@
 #include "../../Characters/String_Constant.h"
 #include "../../Containers/Common.h"
 #include "../../Execution/ErrNoException.h"
-#include "../../Execution/Exceptions.h"
+#include "../../Execution/Throw.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "Utilities.h"

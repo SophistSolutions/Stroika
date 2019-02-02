@@ -10,7 +10,6 @@
 
 #include "../Time/Realtime.h"
 
-#include "Exception.h"
 #include "Exceptions.h"
 
 namespace Stroika::Foundation::Execution {

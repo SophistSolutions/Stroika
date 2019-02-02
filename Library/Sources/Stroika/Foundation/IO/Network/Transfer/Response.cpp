@@ -5,7 +5,6 @@
 
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String_Constant.h"
-#include "../../../Execution/Exceptions.h"
 #include "../../../Execution/RequiredComponentMissingException.h"
 #include "../../../Streams/TextReader.h"
 #include "../HTTP/Headers.h"

@@ -18,7 +18,7 @@
 #include "../../Debug/Trace.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/ErrNoException.h"
-#include "../../Execution/Exceptions.h"
+#include "../../Execution/Throw.h"
 #if qPlatform_POSIX
 #include "../../Execution/ErrNoException.h"
 #elif qPlatform_Windows

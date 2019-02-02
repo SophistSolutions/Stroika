@@ -17,8 +17,8 @@
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String_Constant.h"
 #include "../../../Containers/STL/Utilities.h"
-#include "../../../Execution/Exceptions.h"
 #include "../../../Execution/Finally.h"
+#include "../../../Execution/Throw.h"
 #include "../../../Time/Date.h"
 #include "../../../Time/DateTime.h"
 #if qPlatform_Windows

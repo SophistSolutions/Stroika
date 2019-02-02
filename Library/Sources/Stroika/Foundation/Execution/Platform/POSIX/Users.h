@@ -15,8 +15,6 @@
 #include "../../../Characters/String.h"
 #include "../../../Configuration/Common.h"
 
-#include "../../Exceptions.h"
-
 namespace Stroika::Foundation::Execution::Platform::POSIX {
 
     using Characters::String;

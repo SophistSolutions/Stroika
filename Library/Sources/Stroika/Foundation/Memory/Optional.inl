@@ -12,7 +12,7 @@
 #include "../Containers/Adapters/Adder.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Common.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 
 namespace Stroika::Foundation::Memory {
 

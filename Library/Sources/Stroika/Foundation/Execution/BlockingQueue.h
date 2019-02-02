@@ -10,7 +10,6 @@
 #include "../Containers/Queue.h"
 
 #include "ConditionVariable.h"
-#include "Exceptions.h"
 #include "Synchronized.h"
 #include "WaitableEvent.h"
 

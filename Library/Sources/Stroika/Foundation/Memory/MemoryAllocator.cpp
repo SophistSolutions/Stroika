@@ -9,8 +9,8 @@
 #include <set>
 
 #include "../Execution/Common.h"
-#include "../Execution/Exceptions.h"
 #include "../Execution/ModuleInit.h"
+#include "../Execution/Throw.h"
 
 #include "MemoryAllocator.h"
 

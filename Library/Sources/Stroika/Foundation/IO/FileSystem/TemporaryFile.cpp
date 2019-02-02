@@ -25,7 +25,6 @@
 #include "../../Characters/String_Constant.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/ErrNoException.h"
-#include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #include "../../Execution/Platform/Windows/HRESULTErrorException.h"

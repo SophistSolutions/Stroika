@@ -12,7 +12,6 @@
 #include "../Configuration/Common.h"
 
 #include "ConditionVariable.h"
-#include "Exceptions.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>

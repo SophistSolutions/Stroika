@@ -16,7 +16,7 @@
 #include "../Characters/ToString.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/ErrNoException.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif

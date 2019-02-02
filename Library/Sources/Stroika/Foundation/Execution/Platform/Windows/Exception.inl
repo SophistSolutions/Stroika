@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Exceptions.h"
+#include "../../Throw.h"
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 

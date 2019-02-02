@@ -17,8 +17,6 @@
 
 #include "../Configuration/Common.h"
 
-#include "Exceptions.h"
-
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"
 #endif

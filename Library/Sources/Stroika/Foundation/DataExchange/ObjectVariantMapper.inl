@@ -14,7 +14,7 @@
 #include "../Containers/Adapters/Adder.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Sanitizer.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 
 #include "BadFormatException.h"
 #include "CheckedConverter.h"

@@ -810,6 +810,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Throw.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2025,7 +2028,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exception.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Throw.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3297,7 +3300,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Exception.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Throw.inl">
       <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>

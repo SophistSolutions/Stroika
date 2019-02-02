@@ -14,7 +14,6 @@
 
 #include "../Characters/String.h"
 
-#include "Exception.h"
 #include "Exceptions.h"
 
 //_DeprecatedFile_ ("DEPRECATED in v2.1d18 - #include Exception.h instead of StringException.h");
@@ -22,7 +21,7 @@
 namespace Stroika::Foundation::Execution {
 
 #if 1
-    using StringException[[deprecated ("DEPRECATED in v2.1d18 - use Exception<>")]] = Exception<exception>;
+    using StringException [[deprecated ("DEPRECATED in v2.1d18 - use Exception<>")]] = Exception<exception>;
 #else
     /**
      *  This takes a 'String' argument, and maps it to the 'what()' in std::exception.

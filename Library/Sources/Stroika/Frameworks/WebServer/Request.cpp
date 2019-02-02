@@ -14,7 +14,7 @@
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Versions.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"

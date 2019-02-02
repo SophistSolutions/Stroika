@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 #include "../Debug/Assertions.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 
 namespace Stroika::Foundation::Execution {
 

@@ -6,7 +6,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Execution/Exceptions.h"
-#include "../Execution/Exception.h"
+#include "../Execution/Throw.h"
 #include "../Streams/InputStream.h"
 
 #include "BLOB.h"

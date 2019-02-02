@@ -13,7 +13,6 @@
 #include "../../../Containers/Common.h"
 #include "../../../DataExchange/BadFormatException.h"
 #include "../../../Debug/Assertions.h"
-#include "../../../Execution/Exceptions.h"
 #include "../../../Memory/BLOB.h" // ONLY FOR QUICKHACK IMPL OF ENCODE...
 #include "../../../Memory/SmallStackBuffer.h"
 

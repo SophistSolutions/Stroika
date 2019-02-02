@@ -4,7 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Debug/Demangle.h"
-#include "../Execution/Exception.h"
+#include "../Execution/Exceptions.h"
 
 #include "String_Constant.h"
 

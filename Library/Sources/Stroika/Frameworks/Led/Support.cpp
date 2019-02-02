@@ -10,7 +10,7 @@
 #include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/String.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "Config.h" // For qPlatform_Windows etc defines...

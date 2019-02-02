@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-#include "../Execution/Exception.h"
+#include "../Execution/Exceptions.h"
 
 /*
  *  \file

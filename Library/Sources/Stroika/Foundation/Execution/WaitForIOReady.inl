@@ -10,8 +10,6 @@
  ********************************************************************************
  */
 
-#include "Exceptions.h"
-
 namespace Stroika::Foundation::Execution {
 
     /*

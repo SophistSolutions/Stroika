@@ -8,14 +8,12 @@
 
 #include <exception>
 
-#include "Exceptions.h"
-
 namespace Stroika::Foundation::Execution {
 
     /**
      * Throw this when an error has already been reported - so that it isn't reported again
      */
-    class SilentException : public exception {
+    class SilentException : public std::exception {
     public:
         /**
          *  \note not inline because in the SilentException class, this type is incomplete (sad - as of C++17 limitation).

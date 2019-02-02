@@ -9,7 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/Exceptions.h"
 #include "../Execution/ModuleInit.h"
 
 namespace Stroika::Foundation::Time {

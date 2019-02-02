@@ -13,7 +13,7 @@
 #include "../Characters/Platform/Windows/SmartBSTR.h"
 #endif
 #include "../Debug/Assertions.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif

@@ -8,7 +8,7 @@
 
 #include <optional>
 
-#include "../Execution/Exception.h"
+#include "../Execution/Exceptions.h"
 
 namespace Stroika::Foundation::DataExchange {
 

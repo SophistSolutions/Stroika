@@ -18,7 +18,7 @@
 #include "../Containers/Sequence.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
-#include "../Execution/Exceptions.h"
+#include "../Execution/Throw.h"
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif

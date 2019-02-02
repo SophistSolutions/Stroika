@@ -14,7 +14,7 @@
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/IO/FileSystem/FileOutputStream.h"
 #include "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"

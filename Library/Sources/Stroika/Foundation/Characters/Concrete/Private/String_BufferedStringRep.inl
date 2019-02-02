@@ -11,7 +11,6 @@
  */
 #include "../../../Containers/Common.h"
 #include "../../../Debug/Assertions.h"
-#include "../../../Execution/Exceptions.h"
 #include "../../../Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Characters::Concrete {

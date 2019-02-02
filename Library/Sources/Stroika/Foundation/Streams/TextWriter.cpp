@@ -12,7 +12,7 @@
 #include "../Containers/Common.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/Common.h"
-#include "../Execution/Exception.h"
+#include "../Execution/Exceptions.h"
 #include "../Execution/OperationNotSupportedException.h"
 #include "../Memory/SmallStackBuffer.h"
 

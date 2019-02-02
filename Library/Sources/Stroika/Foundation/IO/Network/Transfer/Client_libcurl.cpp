@@ -12,7 +12,7 @@
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String_Constant.h"
 #include "../../../Debug/Trace.h"
-#include "../../../Execution/Exceptions.h"
+#include "../../../Execution/Throw.h"
 
 #include "../HTTP/Headers.h"
 #include "../HTTP/Methods.h"
