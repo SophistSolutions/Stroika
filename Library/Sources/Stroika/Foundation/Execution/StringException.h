@@ -22,7 +22,7 @@
 namespace Stroika::Foundation::Execution {
 
 #if 1
-    [[deprecated ("DEPRECATED in v2.1d18 - use Exception<>")]] using StringException = Exception<exception>;
+    using[[deprecated ("DEPRECATED in v2.1d18 - use Exception<>")]] StringException = Exception<exception>;
 #else
     /**
      *  This takes a 'String' argument, and maps it to the 'what()' in std::exception.
