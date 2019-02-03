@@ -120,10 +120,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         // require errno != 0
-        // Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
-        // From X
-        // From X  - "If the argument ev corresponds to a POSIX errno value posv, the function shall return error_- condition(posv, generic_category()). Otherwise, the function "
+         *  \req errNo != 0
+         * 
+         *  Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
+         *
+         *  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  - 
+         *      "If the argument ev corresponds to a POSIX errno value posv, the function 
+         *      shall return error_- condition(posv, generic_category()). Otherwise, the function"
          *
          *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX
          *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
@@ -132,10 +135,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-        // require errno != 0
-        // Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
-        // From C++ spec (reference):
-        //   That object’s category() member shall return std::system_category() for errors originating from the operating system, or a reference to an implementation-
+         *  \req sysErr != 0
+         *
+         * Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
+         *
+         *  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
+         *      "That object’s category() member shall return std::system_category() for errors originating
+         *      from the operating system, or a reference to an implementation"
          *
          *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX 
          *        POSIX system, there could be some extra error numbers (so for those the meaning differs).

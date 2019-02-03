@@ -62,8 +62,8 @@ namespace Stroika::Foundation::Execution {
      ********************************** SystemException *****************************
      ********************************************************************************
      */
-    inline SystemException::SystemException (error_code _Errcode)
-        : inherited (mkMsg_ (_Errcode), _Errcode)
+    inline SystemException::SystemException (error_code errCode)
+        : inherited (mkMsg_ (errCode), errCode)
     {
     }
     inline SystemException::SystemException (error_code errCode, const Characters::String& message)
