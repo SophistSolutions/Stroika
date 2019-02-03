@@ -25,6 +25,10 @@ namespace Stroika::Foundation::IO {
     {
         return fFileAccessMode_;
     }
+	inline FileAccessException::FileAccessException (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
+		: FileAccessException (make_error_code (errc::permission_denied), fileName, fileAccessMode)
+	{
+	}
 
 }
 

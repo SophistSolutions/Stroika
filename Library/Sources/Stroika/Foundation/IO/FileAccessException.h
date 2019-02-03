@@ -23,13 +23,20 @@ namespace Stroika::Foundation::IO {
      * file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
      * on a given file (which is usually given in the object). It also is the result of a perticular operation/access
      * failure (like read, write, or list).
+	 *
+	 *	// @todo - this should subclass from Execution::Exception<filesystem::filesystem_error> - but needs some work...
      */
-    class FileAccessException : public Execution::Exception<> {
+    class FileAccessException : public Execution::SystemException {
     private:
-        using inherited = Execution::Exception<>;
+        using inherited = Execution::SystemException;
 
     public:
-        FileAccessException (const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
+		/**
+		 *	This is almost equally likely to be errc::permission_denied or errc::no_such_file_or_directory. So best to call
+		 *	with explicit error_code, but if not we can guess.
+		 */
+		FileAccessException (const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
+		FileAccessException (error_code ec, const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
 
     public:
         /**

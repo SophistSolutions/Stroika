@@ -40,8 +40,8 @@ namespace {
         return message;
     }
 }
-FileAccessException::FileAccessException (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
-    : inherited (mkMessage_ (fileName, fileAccessMode))
+FileAccessException::FileAccessException (error_code ec, const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
+    : inherited (ec, mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
     , fFileAccessMode_ (fileAccessMode)
 {
