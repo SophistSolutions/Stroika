@@ -87,14 +87,13 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 #endif
 
 #if 1
-    if (constexpr qPlatform_POSIX) {
+#if qPlatform_POSIX
         // on a POSIX system, treat this as a system error code because it could be an extension code
         SystemException::ThrowSystemErrNo (error);
-    }
-    else {
+#else
         // on a NON-POSIX system, nothing we can do but use 'generic' error category
         SystemException::ThrowPOSIXErrNo (error);
-    }
+#endif
 #else
 
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
