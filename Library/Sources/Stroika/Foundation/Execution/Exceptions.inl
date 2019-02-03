@@ -57,6 +57,28 @@ namespace Stroika::Foundation::Execution {
         return fSDKCharString_.c_str ();
     }
 
+    /*
+     ********************************************************************************
+     ********************************** SystemException *****************************
+     ********************************************************************************
+     */
+    inline SystemException::SystemException (error_code _Errcode)
+        : inherited (mkMsg_ (_Errcode), _Errcode)
+    {
+    }
+    inline SystemException::SystemException (error_code errCode, const Characters::String& message)
+        : inherited (mkMsg_ (errCode, message), errCode)
+    {
+    }
+    inline SystemException::SystemException (int ev, const std::error_category& ecat)
+        : inherited (mkMsg_ (error_code (ev, ecat)), error_code (ev, ecat))
+    {
+    }
+    inline SystemException::SystemException (int ev, const std::error_category& ecat, const Characters::String& message)
+        : inherited (mkMsg_ (error_code (ev, ecat), message), error_code (ev, ecat))
+    {
+    }
+
 }
 
 #endif /*_Stroia_Foundation_Execution_Exceptions_inl_*/

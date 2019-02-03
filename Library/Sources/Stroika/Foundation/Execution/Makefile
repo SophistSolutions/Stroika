@@ -24,6 +24,7 @@ Objs	=	\
 	$(ObjDir)CommandLine${OBJ_SUFFIX}\
 	$(ObjDir)DLLSupport${OBJ_SUFFIX}\
 	$(ObjDir)ErrNoException${OBJ_SUFFIX}\
+	$(ObjDir)Exceptions${OBJ_SUFFIX}\
 	$(ObjDir)FeatureNotSupportedInThisVersionException${OBJ_SUFFIX}\
 	$(ObjDir)Logger${OBJ_SUFFIX}\
 	$(ObjDir)Module${OBJ_SUFFIX}\

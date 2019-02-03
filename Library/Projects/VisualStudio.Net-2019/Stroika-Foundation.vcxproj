@@ -747,6 +747,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />

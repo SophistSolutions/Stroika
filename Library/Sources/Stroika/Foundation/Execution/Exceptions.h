@@ -99,37 +99,47 @@ namespace Stroika::Foundation::Execution {
     using RuntimeException = Exception<runtime_error>;
 
     /**
+     *  Simple wrapper on std::system_error, but adding support for Stroika String, and other utility methods.
      */
     class SystemException : public Exception<system_error> {
+    private:
         using inherited = Exception<system_error>;
 
-    private:
-        static Characters::String mkMsg_ (error_code errCode)
-        {
-            return Characters::String::FromNarrowSDKString (errCode.message ());
-        }
-        static Characters::String mkMsg_ (error_code errCode, const Characters::String& message)
-        {
-            return message + L": " + mkMsg_ (errCode);
-        }
+    public:
+        /**
+         */
+        SystemException (error_code _Errcode);
+        SystemException (error_code errCode, const Characters::String& message);
+        SystemException (int ev, const std::error_category& ecat);
+        SystemException (int ev, const std::error_category& ecat, const Characters::String& message);
 
     public:
-        SystemException (error_code _Errcode)
-            : inherited (mkMsg_ (_Errcode), _Errcode)
-        {
-        }
-        SystemException (error_code errCode, const Characters::String& message)
-            : inherited (mkMsg_ (errCode, message), errCode)
-        {
-        }
-        SystemException (int ev, const std::error_category& ecat)
-            : inherited (mkMsg_ (error_code (ev, ecat)), error_code (ev, ecat))
-        {
-        }
-        SystemException (int ev, const std::error_category& ecat, const Characters::String& message)
-            : inherited (mkMsg_ (error_code (ev, ecat), message), error_code (ev, ecat))
-        {
-        }
+        /**
+         // require errno != 0
+        // Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
+        // From X
+        // From X  - "If the argument ev corresponds to a POSIX errno value posv, the function shall return error_- condition(posv, generic_category()). Otherwise, the function "
+         *
+         *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX
+         *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
+         */
+        static void ThrowPOSIXErrNo (int errNo);
+
+    public:
+        /**
+        // require errno != 0
+        // Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
+        // From C++ spec (reference):
+        //   That object’s category() member shall return std::system_category() for errors originating from the operating system, or a reference to an implementation-
+         *
+         *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX 
+         *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
+         */
+        static void ThrowSystemErrNo (int sysErr);
+
+    private:
+        static Characters::String mkMsg_ (error_code errCode);
+        static Characters::String mkMsg_ (error_code errCode, const Characters::String& message);
     };
 
 #if 0
