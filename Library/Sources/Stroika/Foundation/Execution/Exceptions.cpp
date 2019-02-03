@@ -43,6 +43,7 @@ Characters::String SystemException::mkMsg_ (error_code errCode, const Characters
     return message + L": "sv + mkMsg_ (errCode);
 }
 
+#if !qPlatform_POSIX
 void SystemException::ThrowPOSIXErrNo (int errNo)
 {
     Require (errNo != 0);
@@ -65,6 +66,7 @@ void SystemException::ThrowPOSIXErrNo (int errNo)
         } break;
     }
 }
+#endif
 
 void SystemException::ThrowSystemErrNo (int sysErr)
 {

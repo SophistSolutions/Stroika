@@ -78,6 +78,12 @@ namespace Stroika::Foundation::Execution {
         : inherited (mkMsg_ (error_code (ev, ecat), message), error_code (ev, ecat))
     {
     }
+#if qPlatform_POSIX
+    inline void SystemException::ThrowPOSIXErrNo (int errNo)
+    {
+        ThrowSystemErrNo (errNo);
+    }
+#endif
 
 }
 

@@ -120,34 +120,39 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief treats errNo as a `POSIX errno` value, and throws a SystemError (subclass of @std::system_error) exception with it.
+         *
          *  \req errNo != 0
          * 
-         *  Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
+         *  \note   Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
          *
-         *  \nb: On a POSIX system, this amounts to a call to ThrowSystemErrNo.
+         *  \note   On a POSIX system, this amounts to a call to ThrowSystemErrNo.
+		 *			But even on a non-POSIX system, many APIs map their error numbers to POSIX error numbers so this can make sense to use.
          *
-         *  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  - 
-         *      "If the argument ev corresponds to a POSIX errno value posv, the function 
-         *      shall return error_- condition(posv, generic_category()). Otherwise, the function"
+         *	\note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  - 
+         *			"If the argument ev corresponds to a POSIX errno value posv, the function 
+         *			shall return error_- condition(posv, generic_category()). Otherwise, the function"
          *
-         *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX
-         *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
+         *  See:
+         *      @see ThrowSystemErrNo ();
          */
         [[noreturn]] static void ThrowPOSIXErrNo (int errNo);
 
     public:
         /**
-         *  \req sysErr != 0
+		 *  \brief treats sysErr as a standard error number value for the current compiled platform, and throws a SystemError (subclass of @std::system_error) exception with it.
+		 *
+		 *  \req sysErr != 0
          *
-         * Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
+		 *  \note   Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
+		 *
+		 *   \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
+		 *			"That object’s category() member shall return std::system_category() for errors originating
+         *			from the operating system, or a reference to an implementation"
          *
-         *  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
-         *      "That object’s category() member shall return std::system_category() for errors originating
-         *      from the operating system, or a reference to an implementation"
-         *
-         *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX 
-         *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
-         */
+		 *  See:
+		 *      @see ThrowPOSIXErrNo ();
+		 */
         [[noreturn]] static void ThrowSystemErrNo (int sysErr);
 
     private:
