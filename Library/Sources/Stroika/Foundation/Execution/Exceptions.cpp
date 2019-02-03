@@ -10,6 +10,7 @@
 #include <wininet.h> // for error codes
 #endif
 
+#include "../Characters/Format.h"
 #include "../IO/FileAccessException.h"
 
 #include "Throw.h"
@@ -40,7 +41,20 @@ Characters::String SystemException::mkMsg_ (error_code errCode)
 
 Characters::String SystemException::mkMsg_ (error_code errCode, const Characters::String& message)
 {
-    return message + L": "sv + mkMsg_ (errCode);
+	if (errCode.category () == system_category ()
+#if qPlatform_POSIX
+		or errCode.category () == generic_category ()
+#endif
+		) {
+#if qPlatform_POSIX
+		return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
+#elif qPlatform_Windows
+		return message + L": "sv + Characters::Format (L"{Windows error %d}", errCode.value ());
+#else
+		return message + L": "sv + Characters::Format (L"{system error %d}", errCode.value ());
+#endif
+	}
+	return message + L": "sv + Characters::Format (L"{%s %d}", Characters::String::FromNarrowSDKString (errCode.category ().name ()).c_str (), errCode.value ());
 }
 
 #if !qPlatform_POSIX
