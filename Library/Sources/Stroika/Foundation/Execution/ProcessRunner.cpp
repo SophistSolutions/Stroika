@@ -649,7 +649,7 @@ namespace {
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
                 if (commandLine.empty ()) {
-                    errno_ErrorException::Throw (errno);
+                    SystemException::ThrowPOSIXErrNo (errno);
                 }
                 else {
                     try {

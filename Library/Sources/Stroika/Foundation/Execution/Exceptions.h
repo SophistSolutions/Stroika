@@ -122,7 +122,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \req errNo != 0
          * 
-         *  Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc
+         *  Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
+         *
+         *  \nb: On a POSIX system, this amounts to a call to ThrowSystemErrNo.
          *
          *  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  - 
          *      "If the argument ev corresponds to a POSIX errno value posv, the function 
@@ -131,7 +133,7 @@ namespace Stroika::Foundation::Execution {
          *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX
          *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
          */
-        static void ThrowPOSIXErrNo (int errNo);
+        [[noreturn]] static void ThrowPOSIXErrNo (int errNo);
 
     public:
         /**
@@ -146,7 +148,7 @@ namespace Stroika::Foundation::Execution {
          *  \note On a POSIX system, ThrowPOSIXErrNo () and ThrowSystemErrNo () amount to about the same thing, but even on a POSIX 
          *        POSIX system, there could be some extra error numbers (so for those the meaning differs).
          */
-        static void ThrowSystemErrNo (int sysErr);
+        [[noreturn]] static void ThrowSystemErrNo (int sysErr);
 
     private:
         static Characters::String mkMsg_ (error_code errCode);
