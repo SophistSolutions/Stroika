@@ -18,11 +18,16 @@ using namespace Stroika::Foundation::Execution;
 const TimeOutException TimeOutException::kThe;
 
 TimeOutException::TimeOutException ()
-    : Exception (L"Timeout Expired"sv)
+    : TimeOutException (L"Timeout Expired"sv)
+{
+}
+
+TimeOutException::TimeOutException (error_code ec)
+    : TimeOutException (ec, L"Timeout Expired"sv)
 {
 }
 
 TimeOutException::TimeOutException (const Characters::String& message)
-    : Exception (message)
+    : TimeOutException (make_error_code (errc::timed_out), message)
 {
 }
