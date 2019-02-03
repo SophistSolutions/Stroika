@@ -40,7 +40,7 @@ Characters::String SystemException::mkMsg_ (error_code errCode, const Characters
 
 void SystemException::ThrowPOSIXErrNo (int errNo)
 {
-	// @todo see errno_ErrorException::Throw () for additional needed mappings
+    // @todo see errno_ErrorException::Throw () for additional needed mappings
     switch (static_cast<errc> (errNo)) {
         case errc::not_enough_memory: {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
@@ -56,11 +56,11 @@ void SystemException::ThrowPOSIXErrNo (int errNo)
 
 void SystemException::ThrowSystemErrNo (int sysErr)
 {
-	// @todo see Execution::Platform::Windows::Exception::Throw - many more translations needed and this one needs testing
+    // @todo see Execution::Platform::Windows::Exception::Throw - many more translations needed and this one needs testing
     error_code ec{sysErr, system_category ()};
     if (ec == errc::not_enough_memory) {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-		DbgTrace ("SystemException::ThrowSystemErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", sysErr);
+        DbgTrace ("SystemException::ThrowSystemErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", sysErr);
 #endif
         Execution::Throw (bad_alloc ());
     }
