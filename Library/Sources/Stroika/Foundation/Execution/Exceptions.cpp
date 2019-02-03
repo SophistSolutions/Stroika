@@ -47,19 +47,19 @@ void SystemException::ThrowPOSIXErrNo (int errNo)
 {
     Require (errNo != 0);
     // @todo see errno_ErrorException::Throw () for additional needed mappings
-    switch (static_cast<errc> (errNo)) {
-        case errc::not_enough_memory: {
+	switch (static_cast<errc> (errNo)) {
+	case errc::not_enough_memory: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", errNo);
+		DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", errNo);
 #endif
-            Throw (bad_alloc ());
-        } break;
-        case errc::timed_out: {
+		Throw (bad_alloc ());
+	} break;
+	case errc::timed_out: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to TimeOutException", errNo);
+		DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to TimeOutException", errNo);
 #endif
-            Throw (TimeOutException::kThe);
-        }
+		Throw (TimeOutException::kThe);
+	}
         default: {
             Throw (SystemException (errNo, generic_category ()));
         } break;
