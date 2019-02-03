@@ -49,16 +49,16 @@ void SystemException::ThrowPOSIXErrNo (int errNo)
     // @todo see errno_ErrorException::Throw () for additional needed mappings
     switch (static_cast<errc> (errNo)) {
         case errc::not_enough_memory: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", errNo);
 #endif
-            Execution::Throw (bad_alloc ());
+            Throw (bad_alloc ());
         } break;
         case errc::timed_out: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to TimeOutException", errNo);
 #endif
-            Execution::Throw (TimeOutException::kThe);
+            Throw (TimeOutException::kThe);
         }
         default: {
             Throw (SystemException (errNo, generic_category ()));
@@ -72,16 +72,16 @@ void SystemException::ThrowSystemErrNo (int sysErr)
     // @todo see Execution::Platform::Windows::Exception::Throw - many more translations needed and this one needs testing
     error_code ec{sysErr, system_category ()};
     if (ec == errc::not_enough_memory) {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("SystemException::ThrowSystemErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", sysErr);
 #endif
-        Execution::Throw (bad_alloc ());
+        Throw (bad_alloc ());
     }
     if (ec == errc::timed_out) {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("SystemException::ThrowSystemErrNo (0x%x) - translating errc::timed_out to TimeOutException", sysErr);
 #endif
-        Execution::Throw (Execution::TimeOutException (ec));
+        Throw (TimeOutException (ec));
     }
 #if qPlatform_Windows && qDebug
     switch (sysErr) {

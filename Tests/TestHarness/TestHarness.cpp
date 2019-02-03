@@ -12,8 +12,8 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Debugger.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
-#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 
 #include "TestHarness.h"
 

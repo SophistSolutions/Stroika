@@ -117,8 +117,8 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
 {
     switch (error) {
         case ERROR_SUCCESS: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
             DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED) from %s", Execution::Private_::GetBT_s ().c_str ());
 #else
             DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
@@ -130,45 +130,45 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
         }
         case ERROR_NOT_ENOUGH_MEMORY:
         case ERROR_OUTOFMEMORY: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing bad_alloc", error);
 #endif
             Execution::Throw (bad_alloc ());
         }
         case ERROR_SHARING_VIOLATION: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileBusyException", error);
 #endif
             Execution::Throw (IO::FileBusyException ());
         }
         case ERROR_ACCESS_DENIED: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
 #endif
             Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
         case ERROR_FILE_NOT_FOUND: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
 #endif
             Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
         case ERROR_PATH_NOT_FOUND: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
 #endif
             Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
         case WAIT_TIMEOUT:
         case ERROR_INTERNET_TIMEOUT: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing TimeOutException", error);
 #endif
             Execution::Throw (Execution::TimeOutException ());
         }
         default: {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception from %s", error, Execution::Private_::GetBT_s ().c_str ());
 #else
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception", error);

@@ -112,8 +112,8 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
             }
 #endif
     }
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
     DbgTrace (L"errno_ErrorException::Throw (%d) - throwing errno_ErrorException '%s' from %s", error, SDKString2Wide (LookupMessage (error)).c_str (), Private_::GetBT_ws ().c_str ());
 #else
     DbgTrace (L"errno_ErrorException::Throw (%d) - throwing errno_ErrorException '%s'", error, SDKString2Wide (LookupMessage (error)).c_str ());

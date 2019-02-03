@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Execution {
 
     namespace Private_ {
 // avoid header dependencies on Debug/BackTrace and no Characters/String
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         string  GetBT_s ();
         wstring GetBT_ws ();
 #endif
@@ -41,8 +41,8 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] inline void Throw (const T& e2Throw)
     {
         static_assert (is_convertible_v<T*, exception*>);
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace ("Throwing exception: %s from %s", Private_::Except2String_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
 #else
         DbgTrace ("Throwing exception: %s", Private_::Except2String_ (e2Throw).c_str ());
@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Execution {
      */
     [[noreturn]] inline void ReThrow ()
     {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
 #else
         DbgTrace ("ReThrow");
@@ -83,8 +83,8 @@ namespace Stroika::Foundation::Execution {
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e)
     {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
 #else
         DbgTrace ("ReThrow");
@@ -94,8 +94,8 @@ namespace Stroika::Foundation::Execution {
     }
     [[noreturn]] inline void ReThrow ([[maybe_unused]] const char* traceMsg)
     {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace ("ReThrow %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
 #else
         DbgTrace ("ReThrow: %s", traceMsg);
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Execution {
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const char* traceMsg)
     {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace ("ReThrow: %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
 #else
         DbgTrace ("ReThrow: %s", traceMsg);
@@ -114,8 +114,8 @@ namespace Stroika::Foundation::Execution {
     }
     [[noreturn]] inline void ReThrow ([[maybe_unused]] const wchar_t* traceMsg)
     {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
 #else
         DbgTrace (L"ReThrow: %s", traceMsg);
@@ -125,8 +125,8 @@ namespace Stroika::Foundation::Execution {
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const wchar_t* traceMsg)
     {
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
         DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
 #else
         DbgTrace (L"ReThrow: %s", traceMsg);
