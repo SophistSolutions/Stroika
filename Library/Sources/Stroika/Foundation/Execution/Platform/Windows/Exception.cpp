@@ -128,6 +128,18 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
             // a bad reason code?
             throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED);
         }
+#if 1
+        default: {
+#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
+            DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception from %s", error, Execution::Private_::GetBT_s ().c_str ());
+#else
+            DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception", error);
+#endif
+#endif
+            throw Execution::SystemException (error, system_category ());
+        }
+#else
         case ERROR_NOT_ENOUGH_MEMORY:
         case ERROR_OUTOFMEMORY: {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpoint
@@ -176,6 +188,7 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
 #endif
             throw Platform::Windows::Exception (error);
         }
+#endif
     }
 }
 

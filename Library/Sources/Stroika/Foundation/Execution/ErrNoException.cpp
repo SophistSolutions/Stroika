@@ -85,6 +85,18 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw", L"error = %d", error};
 #endif
+
+#if 1
+    if (constexpr qPlatform_POSIX) {
+        // on a POSIX system, treat this as a system error code because it could be an extension code
+        SystemException::ThrowSystemErrNo (error);
+    }
+    else {
+        // on a NON-POSIX system, nothing we can do but use 'generic' error category
+        SystemException::ThrowPOSIXErrNo (error);
+    }
+#else
+
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
     switch (error) {
         case ENOMEM: {
@@ -120,4 +132,5 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 #endif
 #endif
     throw errno_ErrorException (error);
+#endif
 }

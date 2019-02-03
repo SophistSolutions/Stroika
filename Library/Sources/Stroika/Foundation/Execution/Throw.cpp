@@ -5,7 +5,7 @@
 
 #include "Throw.h"
 
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
 #include "../Characters/String.h"
 #include "../Debug/BackTrace.h"
 #endif
@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::Execution;
  ******************** Execution::Private_::GetBT_s/GetBT_ws *********************
  ********************************************************************************
  */
-#if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
 string Private_::GetBT_s ()
 {
     // KISS, and don't use string if you don't want truncation

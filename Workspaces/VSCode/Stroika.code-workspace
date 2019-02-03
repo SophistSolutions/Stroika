@@ -5,6 +5,13 @@
 		}
 	],
 	"settings": {
+		"files.exclude": {
+			"**/.o": true,
+			"**/.obj": true
+		},
+		"files.associations": {
+			"system_error": "cpp"
+		}
 
 	}
 }
