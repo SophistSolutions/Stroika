@@ -41,11 +41,10 @@ Characters::String SystemException::mkMsg_ (error_code errCode)
 
 Characters::String SystemException::mkMsg_ (error_code errCode, const Characters::String& message)
 {
-	if (errCode.category () == system_category ()
-#if qPlatform_POSIX
-		or errCode.category () == generic_category ()
-#endif
-		) {
+	if (errCode.category () == generic_category ()) {
+		return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
+	}
+	else if (errCode.category () == system_category ()) {
 #if qPlatform_POSIX
 		return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
 #elif qPlatform_Windows
