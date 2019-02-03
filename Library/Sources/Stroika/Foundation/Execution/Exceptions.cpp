@@ -45,6 +45,7 @@ Characters::String SystemException::mkMsg_ (error_code errCode, const Characters
 
 void SystemException::ThrowPOSIXErrNo (int errNo)
 {
+    Require (errNo != 0);
     // @todo see errno_ErrorException::Throw () for additional needed mappings
     switch (static_cast<errc> (errNo)) {
         case errc::not_enough_memory: {
@@ -67,6 +68,7 @@ void SystemException::ThrowPOSIXErrNo (int errNo)
 
 void SystemException::ThrowSystemErrNo (int sysErr)
 {
+    Require (sysErr != 0);
     // @todo see Execution::Platform::Windows::Exception::Throw - many more translations needed and this one needs testing
     error_code ec{sysErr, system_category ()};
     if (ec == errc::not_enough_memory) {

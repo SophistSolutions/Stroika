@@ -36,8 +36,11 @@
  */
 
 namespace Stroika::Foundation::Execution {
+
     /**
-  */
+     *  This is a base class for Execution::Exception<> template, which gets mixed with the std c++ exception class, to mix
+     *  in Stroika string support.
+     */
     class ExceptionStringHelper {
     public:
         ExceptionStringHelper ()                             = delete;
@@ -64,6 +67,7 @@ namespace Stroika::Foundation::Execution {
     Characters::String ExceptionStringHelper::As () const;
 
     /**
+     *  \brief Exception<> is a replacement (subclass) for any std c++ exception class (e.g. the default 'std::exception'), which adds UNICODE String support.
      */
     template <typename BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {
@@ -95,6 +99,7 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
+     *  A wrapper on std::runtime_error, which adds Stroika UNICODE string support.
      */
     using RuntimeException = Exception<runtime_error>;
 
