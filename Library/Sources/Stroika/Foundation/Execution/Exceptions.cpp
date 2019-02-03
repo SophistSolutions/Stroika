@@ -41,19 +41,19 @@ Characters::String SystemException::mkMsg_ (error_code errCode)
 
 Characters::String SystemException::mkMsg_ (error_code errCode, const Characters::String& message)
 {
-	if (errCode.category () == generic_category ()) {
-		return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
-	}
-	else if (errCode.category () == system_category ()) {
+    if (errCode.category () == generic_category ()) {
+        return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
+    }
+    else if (errCode.category () == system_category ()) {
 #if qPlatform_POSIX
-		return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
+        return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
 #elif qPlatform_Windows
-		return message + L": "sv + Characters::Format (L"{Windows error %d}", errCode.value ());
+        return message + L": "sv + Characters::Format (L"{Windows error %d}", errCode.value ());
 #else
-		return message + L": "sv + Characters::Format (L"{system error %d}", errCode.value ());
+        return message + L": "sv + Characters::Format (L"{system error %d}", errCode.value ());
 #endif
-	}
-	return message + L": "sv + Characters::Format (L"{%s %d}", Characters::String::FromNarrowSDKString (errCode.category ().name ()).c_str (), errCode.value ());
+    }
+    return message + L": "sv + Characters::Format (L"{%s %d}", Characters::String::FromNarrowSDKString (errCode.category ().name ()).c_str (), errCode.value ());
 }
 
 #if !qPlatform_POSIX
