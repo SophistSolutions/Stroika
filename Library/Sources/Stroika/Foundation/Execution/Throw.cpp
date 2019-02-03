@@ -3,14 +3,14 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/ToString.h"
+
+#include "Throw.h"
+
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
 #include "../Characters/String.h"
 #include "../Debug/BackTrace.h"
 #endif
-
-#include "../Characters/ToString.h"
-
-#include "Throw.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
