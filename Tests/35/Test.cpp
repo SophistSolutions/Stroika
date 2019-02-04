@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 
 #include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Execution/TimeoutException.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
