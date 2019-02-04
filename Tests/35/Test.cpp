@@ -65,7 +65,7 @@ namespace {
 }
 
 namespace {
-    namespace Test3_SystemException_ {
+    namespace Test3_SystemErrorException_ {
         namespace Private_ {
             void T1_system_error_ ()
             {
@@ -75,9 +75,9 @@ namespace {
 
                 // One way
                 try {
-                    SystemException::ThrowPOSIXErrNo (kErr2TestFor_);
+                    SystemErrorException::ThrowPOSIXErrNo (kErr2TestFor_);
                 }
-                catch (const Execution::SystemException& e) {
+                catch (const Execution::SystemErrorException& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
                     msg1 = Characters::ToString (e);
@@ -89,7 +89,7 @@ namespace {
                 }
                 // But this works too
                 try {
-                    SystemException::ThrowPOSIXErrNo (kErr2TestFor_);
+					SystemErrorException::ThrowPOSIXErrNo (kErr2TestFor_);
                 }
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
@@ -104,7 +104,7 @@ namespace {
 
                 const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
                 try {
-                    Execution::Throw (SystemException (kErr2TestFor_, generic_category (), kMsgWithUnicode_));
+                    Execution::Throw (SystemErrorException (kErr2TestFor_, generic_category (), kMsgWithUnicode_));
                 }
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
@@ -169,7 +169,7 @@ namespace {
     {
         RegressionTest1_ ();
         Test2_ThrowCatchStringException_ ();
-        Test3_SystemException_::TestAll_ ();
+        Test3_SystemErrorException_::TestAll_ ();
     }
 }
 
