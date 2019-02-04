@@ -21,15 +21,16 @@
  *
  *  \note \em Design Note
  *      (essentially) All exceptions thrown by Stroika (except where needed by quirks of underlying library
- *      integrated with) inherit from std::exception, or Stroika::Foundation::Execution::SilentException.
+ *      integrated with) inherit from std::exception, or Stroika::Foundation::Execution::SilentException, or bad_alloc.
  *
- *      This means that any code which wishes to report an exception can catch these two types, and use
+ *      This means that any code which wishes to report an exception can catch these three types, and use
  *      the 'what()' method to report the text of the exception message.
  *
  *      Sadly, there is no documentation (I'm aware of) or specification of the characterset/code page reported
  *      back by the what () on an exception. It tends to be ascii. Stroika guarantees that all exceptions it throws
- *      will use the current SDK characters (@see SDKString). But - its best to check for inheriting from
- *      StringException, since the SDK characterset might not allow representing some unicode characters.
+ *      will use the current SDK characters (@see SDKString). But - its best to use Characters::ToString () on the
+ *      caught exception, since this uses ExceptionStringHelper to properly handle characters the SDK characterset might not
+ *      allow representing some unicode characters.
  *
  * TODO:
  *          @todo   And make FileAccessException subclass from SystemErrorr? instead of StringExcpetion?
@@ -83,7 +84,8 @@ namespace Stroika::Foundation::Execution {
     Characters::String ExceptionStringHelper::As () const;
 
     /**
-     *  \brief Exception<> is a replacement (subclass) for any std c++ exception class (e.g. the default 'std::exception'), which adds UNICODE String support.
+     *  \brief Exception<> is a replacement (subclass) for any std c++ exception class (e.g. the default 'std::exception'), 
+     *         which adds UNICODE String support.
      */
     template <typename BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {

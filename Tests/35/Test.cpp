@@ -94,8 +94,8 @@ namespace {
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-					VerifyTestResult (msg1.Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
-				}
+                    VerifyTestResult (msg1.Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
+                }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
                     VerifyTestResult (false); //oops
