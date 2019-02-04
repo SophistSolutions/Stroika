@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 
     /**
      */
-    class Exception : public Execution::Exception<> {
+    class Exception : public Execution::SystemException {
     public:
         explicit Exception (DWORD error);
 

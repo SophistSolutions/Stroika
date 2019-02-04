@@ -108,7 +108,7 @@ namespace {
  ********************************************************************************
  */
 Execution::Platform::Windows::Exception::Exception (DWORD error)
-    : Execution::Exception<> (SDKString2Wide (Win32Error2String_ (error)))
+	: Execution::SystemException (error_code( error, system_category () ), SDKString2Wide (Win32Error2String_ (error)))
     , fError (error)
 {
 }
@@ -130,6 +130,8 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
         }
 #if 1
         default: {
+			Execution::SystemException::ThrowSystemErrNo (error);
+#if 0
 #if qStroika_Foundation_Exection_Throw_TraceThrowpoint
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception from %s", error, Execution::Private_::GetBT_s ().c_str ());
@@ -137,7 +139,9 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception", error);
 #endif
 #endif
+
             throw Execution::SystemException (error, system_category ());
+#endif
         }
 #else
         case ERROR_NOT_ENOUGH_MEMORY:
