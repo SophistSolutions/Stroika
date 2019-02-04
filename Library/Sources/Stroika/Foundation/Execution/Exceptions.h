@@ -126,24 +126,17 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note see https://en.cppreference.com/w/cpp/error/errc for a mapping of errc conditions and ERRNO values.
      *
-     *  \par Example Usage
-     *      \code
-     *          try {
-     *              SystemErrorException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
-     *          }
-     *          catch (const std::system_error& e) {
-     *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
-     *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-     *              Assert (Characters::ToString (e); == L"bad address {errno: 14}"sv);
-     *          }
-     *      \endcode
+     *  \note   It's best to not catch (const SystemErrorException&) - and instead catch (const system_error&), since you can
+     *          still exactract the UNICODE message with Characters::ToString () - and caching  const SystemErrorException& risks
+     *          missing exceptions from non-Stroika sources (which will just throw system_error) or subclasses of system_error such as
+     *          filesystem_error.
      *
      *  \par Example Usage
      *      \code
      *          try {
      *              SystemErrorException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
-     *          catch (const Execution::SystemErrorException& e) {   // use either class to catch {SystemErrorException or system_error}
+     *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
      *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
      *              Assert (Characters::ToString (e); == L"bad address {errno: 14}"sv);
@@ -180,7 +173,6 @@ namespace Stroika::Foundation::Execution {
      *              }
      *          }
      *      \endcode
-     *
      */
     class SystemErrorException : public Exception<system_error> {
     private:

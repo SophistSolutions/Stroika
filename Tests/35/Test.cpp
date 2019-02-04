@@ -69,32 +69,16 @@ namespace {
         namespace Private_ {
             void T1_system_error_ ()
             {
-                static const int                kErr2TestFor_ = make_error_code (errc::bad_address).value (); // any value from errc would do
-                Characters::String              msg1;
-                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv; // maybe not always right due to locales?
+                static const int                kErr2TestFor_            = make_error_code (errc::bad_address).value (); // any value from errc would do
+                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv;                 // maybe not always right due to locales?
 
-                // One way
-                try {
-                    SystemErrorException::ThrowPOSIXErrNo (kErr2TestFor_);
-                }
-                catch (const Execution::SystemErrorException& e) {
-                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
-                    VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    msg1 = Characters::ToString (e);
-                    VerifyTestResult (msg1.Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
-                }
-                catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
-                }
-                // But this works too
                 try {
                     SystemErrorException::ThrowPOSIXErrNo (kErr2TestFor_);
                 }
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    VerifyTestResult (msg1.Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
+                    VerifyTestResult (Characters::ToString (e).Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
