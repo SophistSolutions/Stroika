@@ -52,8 +52,8 @@ namespace Stroika::Foundation::Execution {
     /**
      *  This is a base class for Execution::Exception<> template, which gets mixed with the std c++ exception class, to mix
      *  in Stroika string support.
-	 *
-	 *	This probably should NOT be used directly.
+     *
+     *  This probably should NOT be used directly.
      */
     class ExceptionStringHelper {
     public:
@@ -70,8 +70,10 @@ namespace Stroika::Foundation::Execution {
         template <typename T>
         nonvirtual T As () const;
 
+    protected:
+        nonvirtual const string& _PeekAtSDKString_ () const;
+
     private:
-    public:
         Characters::String fErrorMessage_;
         string             fSDKCharString_;
     };
@@ -176,7 +178,7 @@ namespace Stroika::Foundation::Execution {
      *              }
      *          }
      *      \endcode
-	 *
+     *
      */
     class SystemErrorException : public Exception<system_error> {
     private:

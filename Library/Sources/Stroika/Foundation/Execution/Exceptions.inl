@@ -22,6 +22,10 @@ namespace Stroika::Foundation::Execution {
         , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
     {
     }
+    inline const string& ExceptionStringHelper::_PeekAtSDKString_ () const
+    {
+        return fSDKCharString_;
+    }
     template <>
     inline wstring ExceptionStringHelper::As () const
     {
@@ -54,7 +58,7 @@ namespace Stroika::Foundation::Execution {
     template <typename BASE_EXCEPTION>
     const char* Exception<BASE_EXCEPTION>::what () const noexcept
     {
-        return fSDKCharString_.c_str ();
+        return _PeekAtSDKString_ ().c_str ();
     }
 
     /*
