@@ -81,7 +81,7 @@ namespace {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
                     msg1 = Characters::ToString (e);
-                    VerifyTestResult (msg1 == kErr2TestForExpectedMsg_);
+                    VerifyTestResult (msg1.Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
@@ -89,13 +89,13 @@ namespace {
                 }
                 // But this works too
                 try {
-					SystemErrorException::ThrowPOSIXErrNo (kErr2TestFor_);
+                    SystemErrorException::ThrowPOSIXErrNo (kErr2TestFor_);
                 }
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    VerifyTestResult (msg1 == Characters::ToString (e));
-                }
+					VerifyTestResult (msg1.Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
+				}
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
                     VerifyTestResult (false); //oops
@@ -109,7 +109,7 @@ namespace {
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_));
+                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::CompareOptions::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
