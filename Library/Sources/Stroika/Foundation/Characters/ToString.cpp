@@ -137,4 +137,15 @@ namespace Stroika::Foundation::Characters {
         (void)::swprintf (buf, NEltsOf (buf), L"0x%llx", t);
         return buf;
     }
+    namespace Private_ {
+        String ToString_ex_ (const std::exception& t)
+        {
+            if (auto p = dynamic_cast<const Execution::ExceptionStringHelper*> (&t)) {
+                return p->As<String> ();
+            }
+            //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
+            //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
+            return String::FromNarrowSDKString (t.what ());
+        }
+    }
 }

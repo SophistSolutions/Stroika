@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 //  TEST    Foundation::Execution::Exceptions
@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/TimeoutException.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -66,7 +67,7 @@ namespace {
 namespace {
     namespace Test3_SystemException_ {
         namespace Private_ {
-            void T1_ ()
+            void T1_system_error_ ()
             {
                 static const int                kErr2TestFor_ = make_error_code (errc::bad_address).value (); // any value from errc would do
                 Characters::String              msg1;
@@ -83,7 +84,7 @@ namespace {
                     VerifyTestResult (msg1 == kErr2TestForExpectedMsg_);
                 }
                 catch (...) {
-                    DbgTrace (L"err=", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
                     VerifyTestResult (false); //oops
                 }
                 // But this works too
@@ -96,15 +97,68 @@ namespace {
                     VerifyTestResult (msg1 == Characters::ToString (e));
                 }
                 catch (...) {
-                    DbgTrace (L"err=", Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
                     VerifyTestResult (false); //oops
                 }
                 // and test throwing fancy unicode string
+
+                const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
+                try {
+                    Execution::Throw (SystemException (kErr2TestFor_, generic_category (), kMsgWithUnicode_));
+                }
+                catch (const std::system_error& e) {
+                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
+                    VerifyTestResult (e.code ().category () == generic_category ());
+                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_));
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+            }
+            void T2_TestTimeout_ ()
+            {
+                try {
+                    Execution::Throw (Execution::TimeOutException{});
+                }
+                catch (const system_error& e) {
+                    VerifyTestResult (e.code () == errc::timed_out);
+                    VerifyTestResult (e.code () != errc::already_connected);
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+                try {
+                    Execution::Throw (Execution::TimeOutException{});
+                }
+                catch (const Execution::TimeOutException& e) {
+                    VerifyTestResult (e.code () == errc::timed_out);
+                    VerifyTestResult (e.code () != errc::already_connected);
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+                const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
+                try {
+                    Execution::Throw (Execution::TimeOutException{kMsg1_});
+                }
+                catch (const system_error& e) {
+                    VerifyTestResult (e.code () == errc::timed_out);
+                    VerifyTestResult (e.code () != errc::already_connected);
+                    VerifyTestResult (Characters::ToString (e).Contains (kMsg1_));
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
             }
         }
         void TestAll_ ()
         {
-            Private_::T1_ ();
+            Private_::T1_system_error_ ();
+            Private_::T2_TestTimeout_ ();
         }
     }
 }

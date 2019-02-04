@@ -110,14 +110,16 @@ namespace Stroika::Foundation::Characters {
         {
             return L"'" + static_cast<String> (t) + L"'";
         }
+
+        String ToString_ex_ (const exception& t);
+
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, const exception&>>* = 0)
         {
-            //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
-            //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
-            return String::FromNarrowSDKString (t.what ());
+            return ToString_ex_ (t);
         }
-        inline String ToString_ ([[maybe_unused]] const tuple<>& t)
+        template <typename T>
+        inline String ToString_ ([[maybe_unused]] const T& t, enable_if_t<is_convertible_v<T, tuple<>>>* = 0)
         {
             StringBuilder sb;
             sb << L"{";

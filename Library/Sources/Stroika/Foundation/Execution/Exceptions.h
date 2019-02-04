@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
  */
 #ifndef _Stroia_Foundation_Execution_Exceptions_h_
@@ -137,10 +137,23 @@ namespace Stroika::Foundation::Execution {
      *          try {
      *              SystemException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
-     *          catch (const Execution::SystemException& e) {	// use either class to catch {SystemException or system_error}
+     *          catch (const Execution::SystemException& e) {   // use either class to catch {SystemException or system_error}
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
      *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
      *              Assert (Characters::ToString (e); == L"bad address {errno: 14}"sv);
+     *          }
+     *      \endcode
+     *
+     *  Note this preserves UNICODE characters in messages, even if not using UNICODE code page/locale
+     *  \par Example Usage
+     *      \code
+     *          try {
+     *          const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
+     *          try {
+     *              Execution::Throw (SystemException (make_error_code (errc::bad_address), kMsgWithUnicode_));
+     *          }
+     *          catch (const std::system_error& e) {
+     *              Assert (Characters::ToString (e).Contains (kMsgWithUnicode_));  // message also includes the number for bad_address
      *          }
      *      \endcode
      *
@@ -211,7 +224,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
          *
          *   \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
-         *          "That object�s category() member shall return std::system_category() for errors originating
+         *          "That object’s category() member shall return std::system_category() for errors originating
          *          from the operating system, or a reference to an implementation"
          *
          *  See:
