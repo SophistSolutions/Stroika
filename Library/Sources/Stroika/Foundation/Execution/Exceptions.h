@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         static Characters::String mkMsg_ (error_code errCode);
-        static Characters::String mkMsg_ (error_code errCode, const Characters::String& message);
+        static Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
     };
 
 #if 0

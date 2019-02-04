@@ -11,6 +11,7 @@
 #endif
 
 #include "../Characters/Format.h"
+#include "../Characters/StringBuilder.h"
 #include "../IO/FileAccessException.h"
 
 #include "Throw.h"
@@ -39,21 +40,26 @@ Characters::String SystemException::mkMsg_ (error_code errCode)
     return Characters::String::FromNarrowSDKString (errCode.message ());
 }
 
-Characters::String SystemException::mkMsg_ (error_code errCode, const Characters::String& message)
+Characters::String SystemException::mkCombinedMsg_ (error_code errCode, const Characters::String& message)
 {
+    StringBuilder sb{message};
+    sb += L" ";
     if (errCode.category () == generic_category ()) {
-        return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
+        sb += Characters::Format (L"{errno: %d}", errCode.value ());
     }
     else if (errCode.category () == system_category ()) {
 #if qPlatform_POSIX
-        return message + L": "sv + Characters::Format (L"{errno %d}", errCode.value ());
+        sb += Characters::Format (L"{errno: %d}", errCode.value ());
 #elif qPlatform_Windows
-        return message + L": "sv + Characters::Format (L"{Windows error %d}", errCode.value ());
+        sb += Characters::Format (L"{Windows error: %d}", errCode.value ());
 #else
-        return message + L": "sv + Characters::Format (L"{system error %d}", errCode.value ());
+        sb += Characters::Format (L"{system error: %d}", errCode.value ());
 #endif
     }
-    return message + L": "sv + Characters::Format (L"{%s %d}", Characters::String::FromNarrowSDKString (errCode.category ().name ()).c_str (), errCode.value ());
+    else {
+        sb += Characters::Format (L"{%s: %d}", Characters::String::FromNarrowSDKString (errCode.category ().name ()).c_str (), errCode.value ());
+    }
+    return sb.str ();
 }
 
 #if !qPlatform_POSIX

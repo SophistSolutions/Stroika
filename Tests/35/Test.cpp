@@ -13,6 +13,8 @@
 #include <wininet.h> // for error codes
 #endif
 
+#include "Stroika/Foundation/Characters/ToString.h"
+
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
@@ -62,11 +64,57 @@ namespace {
 }
 
 namespace {
+    namespace Test3_SystemException_ {
+        namespace Private_ {
+            void T1_ ()
+            {
+                static const int                kErr2TestFor_ = make_error_code (errc::bad_address).value (); // any value from errc would do
+                Characters::String              msg1;
+                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv; // maybe not always right due to locales?
+
+                // One way
+                try {
+                    SystemException::ThrowPOSIXErrNo (kErr2TestFor_);
+                }
+                catch (const Execution::SystemException& e) {
+                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
+                    VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+                    msg1 = Characters::ToString (e);
+                    VerifyTestResult (msg1 == kErr2TestForExpectedMsg_);
+                }
+                catch (...) {
+                    DbgTrace (L"err=", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+                // But this works too
+                try {
+                    SystemException::ThrowPOSIXErrNo (kErr2TestFor_);
+                }
+                catch (const std::system_error& e) {
+                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
+                    VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+                    VerifyTestResult (msg1 == Characters::ToString (e));
+                }
+                catch (...) {
+                    DbgTrace (L"err=", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+            }
+        }
+        void TestAll_ ()
+        {
+            Private_::T1_ ();
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
         RegressionTest1_ ();
         Test2_ThrowCatchStringException_ ();
+        Test3_SystemException_::TestAll_ ();
     }
 }
 

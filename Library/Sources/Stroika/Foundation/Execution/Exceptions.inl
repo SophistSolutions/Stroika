@@ -63,19 +63,19 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline SystemException::SystemException (error_code errCode)
-        : inherited (mkMsg_ (errCode), errCode)
+        : SystemException (errCode, mkMsg_ (errCode))
     {
     }
     inline SystemException::SystemException (error_code errCode, const Characters::String& message)
-        : inherited (mkMsg_ (errCode, message), errCode)
+        : inherited (mkCombinedMsg_ (errCode, message), errCode)
     {
     }
     inline SystemException::SystemException (int ev, const std::error_category& ecat)
-        : inherited (mkMsg_ (error_code (ev, ecat)), error_code (ev, ecat))
+        : SystemException (error_code{ev, ecat})
     {
     }
     inline SystemException::SystemException (int ev, const std::error_category& ecat, const Characters::String& message)
-        : inherited (mkMsg_ (error_code (ev, ecat), message), error_code (ev, ecat))
+        : SystemException (error_code{ev, ecat}, message)
     {
     }
 #if qPlatform_POSIX

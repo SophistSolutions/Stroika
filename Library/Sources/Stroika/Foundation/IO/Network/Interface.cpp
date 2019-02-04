@@ -705,7 +705,7 @@ namespace {
             wirelessInfo2Merge = GetInterfaces_Windows_WirelessInfo_ ();
         }
         catch (const Execution::SystemException& e) {
-			if (e.code () == error_code{ ERROR_SERVICE_NOT_ACTIVE, system_category () }) {
+            if (e.code () == error_code{ERROR_SERVICE_NOT_ACTIVE, system_category ()}) {
                 // this just means no wireless services active, so return empty iterable
                 return Traversal::Iterable<Interface>{};
             }
