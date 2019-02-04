@@ -99,6 +99,7 @@ namespace {
                     DbgTrace (L"err=", Characters::ToString (current_exception ()).c_str ());
                     VerifyTestResult (false); //oops
                 }
+                // and test throwing fancy unicode string
             }
         }
         void TestAll_ ()

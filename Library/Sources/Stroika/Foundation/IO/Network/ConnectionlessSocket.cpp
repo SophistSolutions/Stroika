@@ -195,7 +195,7 @@ namespace {
                             try {
                                 setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_LOOP, loopMode);
                             }
-                            catch (const Execution::SystemException& e) {
+                            catch (const std::system_error& e) {
                                 // I've dug into this, and have no idea why its failing - with EINVAL
                                 if (e.code () == errc::invalid_argument) {
                                     DbgTrace (L"IPV6_MULTICAST_LOOP: For now ignoring what is probbaly a very small, minor bug, but one where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
