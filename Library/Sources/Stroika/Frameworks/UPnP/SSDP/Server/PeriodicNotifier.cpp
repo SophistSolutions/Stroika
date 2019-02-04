@@ -79,7 +79,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
                         s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
                     }
                 }
-                catch ([[maybe_unused]] const Execution::SystemException& e) {
+                catch ([[maybe_unused]] const system_error& e) {
                     // Error ENETUNREACH is common when you have network connection issues, for example on boot before
                     // full connection
                     DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", Characters::ToString (e).c_str ());

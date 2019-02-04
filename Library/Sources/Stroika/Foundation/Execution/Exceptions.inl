@@ -59,27 +59,27 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ********************************** SystemException *****************************
+     ***************************** SystemErrorException *****************************
      ********************************************************************************
      */
-    inline SystemException::SystemException (error_code errCode)
-        : SystemException (errCode, mkMsg_ (errCode))
+    inline SystemErrorException::SystemErrorException (error_code errCode)
+        : SystemErrorException (errCode, mkMsg_ (errCode))
     {
     }
-    inline SystemException::SystemException (error_code errCode, const Characters::String& message)
+    inline SystemErrorException::SystemErrorException (error_code errCode, const Characters::String& message)
         : inherited (mkCombinedMsg_ (errCode, message), errCode)
     {
     }
-    inline SystemException::SystemException (int ev, const std::error_category& ecat)
-        : SystemException (error_code{ev, ecat})
+    inline SystemErrorException::SystemErrorException (int ev, const std::error_category& ecat)
+        : SystemErrorException (error_code{ev, ecat})
     {
     }
-    inline SystemException::SystemException (int ev, const std::error_category& ecat, const Characters::String& message)
-        : SystemException (error_code{ev, ecat}, message)
+    inline SystemErrorException::SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message)
+        : SystemErrorException (error_code{ev, ecat}, message)
     {
     }
 #if qPlatform_POSIX
-    inline void SystemException::ThrowPOSIXErrNo (errno_t errNo)
+    inline void SystemErrorException::ThrowPOSIXErrNo (errno_t errNo)
     {
         ThrowSystemErrNo (errNo);
     }

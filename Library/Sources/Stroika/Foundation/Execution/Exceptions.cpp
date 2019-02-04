@@ -32,15 +32,15 @@ using Debug::TraceContextBumper;
 
 /*
  ********************************************************************************
- ***************************** SystemException **********************************
+ ************************* SystemErrorException *********************************
  ********************************************************************************
  */
-Characters::String SystemException::mkMsg_ (error_code errCode)
+Characters::String SystemErrorException::mkMsg_ (error_code errCode)
 {
     return Characters::String::FromNarrowSDKString (errCode.message ());
 }
 
-Characters::String SystemException::mkCombinedMsg_ (error_code errCode, const Characters::String& message)
+Characters::String SystemErrorException::mkCombinedMsg_ (error_code errCode, const Characters::String& message)
 {
     StringBuilder sb{message};
     sb += L" ";
@@ -63,10 +63,10 @@ Characters::String SystemException::mkCombinedMsg_ (error_code errCode, const Ch
 }
 
 #if !qPlatform_POSIX
-void SystemException::ThrowPOSIXErrNo (errno_t errNo)
+void SystemErrorException::ThrowPOSIXErrNo (errno_t errNo)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContenxtBumper tctx (L"SystemException::ThrowPOSIXErrNo (%d)", error);
+    TraceContenxtBumper tctx (L"SystemErrorException::ThrowPOSIXErrNo (%d)", error);
 #endif
     Require (errNo != 0);
     switch (static_cast<errc> (errNo)) {
@@ -77,16 +77,16 @@ void SystemException::ThrowPOSIXErrNo (errno_t errNo)
             Throw (TimeOutException::kThe);
         }
         default: {
-            Throw (SystemException (errNo, generic_category ()));
+            Throw (SystemErrorException (errNo, generic_category ()));
         } break;
     }
 }
 #endif
 
-void SystemException::ThrowSystemErrNo (int sysErr)
+void SystemErrorException::ThrowSystemErrNo (int sysErr)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContenxtBumper tctx (L"SystemException::ThrowSystemErrNo (%d)", error);
+    TraceContenxtBumper tctx (L"SystemErrorException::ThrowSystemErrNo (%d)", error);
 #endif
     Require (sysErr != 0);
     // @todo see Execution::Platform::Windows::Exception::Throw - many more translations needed and this one needs testing
@@ -110,5 +110,5 @@ void SystemException::ThrowSystemErrNo (int sysErr)
             break;
     }
 #endif
-    Throw (SystemException (ec));
+    Throw (SystemErrorException (ec));
 }

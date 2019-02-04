@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note - Many low level functions map OS / platform exceptions to this type as appropriate (via @see SystemError::ThrowPOSIXErrNo and @see SystemError::ThrowSystemErrNo)
      */
-    class TimeOutException : public Execution::SystemException {
+    class TimeOutException : public Execution::SystemErrorException {
     public:
         TimeOutException ();
         TimeOutException (error_code ec);

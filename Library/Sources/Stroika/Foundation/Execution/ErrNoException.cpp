@@ -86,5 +86,5 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw", L"error = %d", error};
 #endif
 
-    SystemException::ThrowPOSIXErrNo (error);
+    SystemErrorException::ThrowPOSIXErrNo (error);
 }

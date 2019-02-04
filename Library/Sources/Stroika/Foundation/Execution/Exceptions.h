@@ -52,6 +52,8 @@ namespace Stroika::Foundation::Execution {
     /**
      *  This is a base class for Execution::Exception<> template, which gets mixed with the std c++ exception class, to mix
      *  in Stroika string support.
+	 *
+	 *	This probably should NOT be used directly.
      */
     class ExceptionStringHelper {
     public:
@@ -113,7 +115,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  A wrapper on std::runtime_error, which adds Stroika UNICODE string support.
      */
-    using RuntimeException = Exception<runtime_error>;
+    using RuntimeErrorException = Exception<runtime_error>;
 
     /**
      *  Simple wrapper on std::system_error, but adding support for Stroika String, and other utility methods.
@@ -123,7 +125,7 @@ namespace Stroika::Foundation::Execution {
      *  \par Example Usage
      *      \code
      *          try {
-     *              SystemException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
+     *              SystemErrorException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
      *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
@@ -135,9 +137,9 @@ namespace Stroika::Foundation::Execution {
      *  \par Example Usage
      *      \code
      *          try {
-     *              SystemException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
+     *              SystemErrorException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
-     *          catch (const Execution::SystemException& e) {   // use either class to catch {SystemException or system_error}
+     *          catch (const Execution::SystemErrorException& e) {   // use either class to catch {SystemErrorException or system_error}
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
      *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
      *              Assert (Characters::ToString (e); == L"bad address {errno: 14}"sv);
@@ -150,7 +152,7 @@ namespace Stroika::Foundation::Execution {
      *          try {
      *          const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
      *          try {
-     *              Execution::Throw (SystemException (make_error_code (errc::bad_address), kMsgWithUnicode_));
+     *              Execution::Throw (SystemErrorException (make_error_code (errc::bad_address), kMsgWithUnicode_));
      *          }
      *          catch (const std::system_error& e) {
      *              Assert (Characters::ToString (e).Contains (kMsgWithUnicode_));  // message also includes the number for bad_address
@@ -174,19 +176,19 @@ namespace Stroika::Foundation::Execution {
      *              }
      *          }
      *      \endcode
-
+	 *
      */
-    class SystemException : public Exception<system_error> {
+    class SystemErrorException : public Exception<system_error> {
     private:
         using inherited = Exception<system_error>;
 
     public:
         /**
          */
-        SystemException (error_code _Errcode);
-        SystemException (error_code errCode, const Characters::String& message);
-        SystemException (int ev, const std::error_category& ecat);
-        SystemException (int ev, const std::error_category& ecat, const Characters::String& message);
+        SystemErrorException (error_code _Errcode);
+        SystemErrorException (error_code errCode, const Characters::String& message);
+        SystemErrorException (int ev, const std::error_category& ecat);
+        SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message);
 
     public:
         /**
@@ -194,7 +196,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \req errNo != 0
          * 
-         *  \note   Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
+         *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
          *
          *  \note   On a POSIX system, this amounts to a call to ThrowSystemErrNo.
          *          But even on a non-POSIX system, many APIs map their error numbers to POSIX error numbers so this can make sense to use.
@@ -214,14 +216,14 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief treats sysErr as a standard error number value for the current compiled platform, and throws a SystemError (subclass of @std::system_error) exception with it.
+         *  \brief treats sysErr as a standard error number value for the current compiled platform, and throws a SystemErrorException (subclass of @std::system_error) exception with it.
          *
          *  \req sysErr != 0
          *
          *  \note   stdc++ uses 'int' for the type of this error number, but Windows generally defines the type to be
          *          DWORD.
          *
-         *  \note   Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
+         *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
          *
          *   \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
          *          "That object’s category() member shall return std::system_category() for errors originating

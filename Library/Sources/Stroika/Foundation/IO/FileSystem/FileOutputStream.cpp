@@ -54,7 +54,7 @@ public:
             int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
             errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
             if (e != 0) {
-                Execution::SystemException::ThrowPOSIXErrNo (e);
+                Execution::SystemErrorException::ThrowPOSIXErrNo (e);
             }
             ThrowIfFalseGetLastError (fFD_ != -1);
 #else

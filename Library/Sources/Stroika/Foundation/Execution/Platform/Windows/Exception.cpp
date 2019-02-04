@@ -108,7 +108,7 @@ namespace {
  ********************************************************************************
  */
 Execution::Platform::Windows::Exception::Exception (DWORD error)
-    : Execution::SystemException (error_code (error, system_category ()), SDKString2Wide (Win32Error2String_ (error)))
+    : Execution::SystemErrorException (error_code (error, system_category ()), SDKString2Wide (Win32Error2String_ (error)))
     , fError (error)
 {
 }
@@ -130,7 +130,7 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
         }
 #if 1
         default: {
-            Execution::SystemException::ThrowSystemErrNo (error);
+            Execution::SystemErrorException::ThrowSystemErrNo (error);
 #if 0
 #if qStroika_Foundation_Exection_Throw_TraceThrowpoint
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
@@ -140,7 +140,7 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
 #endif
 #endif
 
-            throw Execution::SystemException (error, system_category ());
+            throw Execution::SystemErrorException (error, system_category ());
 #endif
         }
 #else
