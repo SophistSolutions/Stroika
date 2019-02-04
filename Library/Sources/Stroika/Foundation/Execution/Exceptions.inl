@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
     {
     }
 #if qPlatform_POSIX
-    inline void SystemException::ThrowPOSIXErrNo (int errNo)
+    inline void SystemException::ThrowPOSIXErrNo (errno_t errNo)
     {
         ThrowSystemErrNo (errNo);
     }

@@ -86,50 +86,5 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw", L"error = %d", error};
 #endif
 
-#if 1
-#if qPlatform_POSIX
-    // on a POSIX system, treat this as a system error code because it could be an extension code
-    SystemException::ThrowSystemErrNo (error);
-#else
-    // on a NON-POSIX system, nothing we can do but use 'generic' error category
     SystemException::ThrowPOSIXErrNo (error);
-#endif
-#else
-
-    //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
-    switch (error) {
-        case ENOMEM: {
-            Execution::Throw (bad_alloc (), "errno_ErrorException::Throw (ENOMEM) - throwing bad_alloc");
-        }
-        case ENOENT: {
-            Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
-        }
-        case EACCES: {
-            Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
-        }
-        case ETIMEDOUT: {
-            Execution::Throw (Execution::TimeOutException::kThe);
-        }
-// If I decide to pursue mapping, this maybe a good place to start
-//  http://aplawrence.com/Unixart/errors.html
-//      -- LGP 2009-01-02
-#if 0
-        case    EPERM: {
-                // not sure any point in this unification. Maybe if I added my OWN private 'access denied' exception
-                // the mapping/unification would make sense.
-                //      -- LGP 2009-01-02
-                DbgTrace ("errno_ErrorException::Throw (EPERM) - throwing ERROR_ACCESS_DENIED");
-                throw Win32Exception (ERROR_ACCESS_DENIED);
-            }
-#endif
-    }
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
-#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-    DbgTrace (L"errno_ErrorException::Throw (%d) - throwing errno_ErrorException '%s' from %s", error, SDKString2Wide (LookupMessage (error)).c_str (), Private_::GetBT_ws ().c_str ());
-#else
-    DbgTrace (L"errno_ErrorException::Throw (%d) - throwing errno_ErrorException '%s'", error, SDKString2Wide (LookupMessage (error)).c_str ());
-#endif
-#endif
-    throw errno_ErrorException (error);
-#endif
 }

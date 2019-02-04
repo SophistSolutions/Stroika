@@ -38,6 +38,18 @@
 namespace Stroika::Foundation::Execution {
 
     /**
+     *  The type of 'errno' variable.
+     *
+     *  \note   POSIX and C99 just say to assume its an int and doesn't define errno_t.
+     *          But I find this type usage clearer.
+     */
+#if qCompilerAndStdLib_Supports_errno_t
+    using errno_t = ::errno_t;
+#else
+    using errno_t = int;
+#endif
+
+    /**
      *  This is a base class for Execution::Exception<> template, which gets mixed with the std c++ exception class, to mix
      *  in Stroika string support.
      */
@@ -105,6 +117,27 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  Simple wrapper on std::system_error, but adding support for Stroika String, and other utility methods.
+     *
+     *  \note see https://en.cppreference.com/w/cpp/error/errc for a mapping of errc conditions and ERRNO values.
+     *
+     *
+     *  \par Example Usage
+     *      \code
+     *          try {
+     *              s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+     *          }
+     *          catch (const Execution::SystemException& e) {
+     *              if (e.code () == errc::no_such_device) {
+     *                  // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
+     *                  DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
+     *                  Execution::Sleep (1);
+     *                  goto Again;
+     *              }
+     *              else {
+     *                  Execution::ReThrow ();
+     *              }
+     *          }
+     *      \endcode
      */
     class SystemException : public Exception<system_error> {
     private:
@@ -128,21 +161,28 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   On a POSIX system, this amounts to a call to ThrowSystemErrNo.
          *          But even on a non-POSIX system, many APIs map their error numbers to POSIX error numbers so this can make sense to use.
+         *          Also, on POSIX systems, its legal to call this with POSIX compatible extended (and therefore not POSIX) erorr nubmbers.
+         *          In other words, you can call this with anything (except 0) you read out of errno on a POSIX system.
          *
          *  \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  - 
          *          "If the argument ev corresponds to a POSIX errno value posv, the function 
          *          shall return error_- condition(posv, generic_category()). Otherwise, the function"
          *
+         *  \note this function takes errno as a default value because you almost always want to call it with the value from errno.
+         *
          *  See:
          *      @see ThrowSystemErrNo ();
          */
-        [[noreturn]] static void ThrowPOSIXErrNo (int errNo);
+        [[noreturn]] static void ThrowPOSIXErrNo (errno_t errNo = errno);
 
     public:
         /**
          *  \brief treats sysErr as a standard error number value for the current compiled platform, and throws a SystemError (subclass of @std::system_error) exception with it.
          *
          *  \req sysErr != 0
+         *
+         *  \note   stdc++ uses 'int' for the type of this error number, but Windows generally defines the type to be
+         *          DWORD.
          *
          *  \note   Translates some throws to subclass of SystemException like TimedException or other classes like bad_alloc.
          *

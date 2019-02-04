@@ -649,11 +649,11 @@ namespace {
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
                 if (commandLine.empty ()) {
-                    SystemException::ThrowPOSIXErrNo (errno);
+                    SystemException::ThrowPOSIXErrNo ();
                 }
                 else {
                     try {
-                        errno_ErrorException::Throw (errno);
+                        SystemException::ThrowPOSIXErrNo ();
                     }
                     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (commandLine[0], IO::FileAccessMode::eRead);
                 }
@@ -683,7 +683,7 @@ namespace {
             posix_spawnattr_t* attr   = nullptr;
             int                status = ::posix_spawnp (&childPID, thisEXEPath_cstr, &file_actions, attr, thisEXECArgv, environ);
             if (status != 0) {
-                errno_ErrorException::Throw (status);
+                SystemException::ThrowPOSIXErrNo (status);
             }
         }
         else {
@@ -813,7 +813,7 @@ namespace {
 #endif
                 if (nBytesRead < 0) {
                     if (errno != EINTR and errno != EAGAIN) {
-                        errno_ErrorException::Throw (errno);
+                        SystemException::ThrowPOSIXErrNo (errno);
                     }
                 }
                 if (eof != nullptr) {

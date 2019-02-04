@@ -40,7 +40,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     if (err < 0)
         [[UNLIKELY_ATTR]]
         {
-            errno_ErrorException::Throw (err);
+            SystemException::ThrowPOSIXErrNo (err);
         }
     if (result == nullptr)
         [[UNLIKELY_ATTR]]
@@ -68,7 +68,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
     struct passwd* result = nullptr;
     int            err    = ::getpwuid_r (uid, &pwd, buf, bufsize, &result);
     if (err < 0) {
-        errno_ErrorException::Throw (err);
+        SystemException::ThrowPOSIXErrNo (err);
     }
     if (result == nullptr) {
         Execution::Throw (Exception (L"No such username"sv));

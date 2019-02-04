@@ -63,7 +63,11 @@ namespace Stroika::Foundation::Execution {
     template <typename INT_TYPE>
     INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode);
 
-    void ThrowErrNoIfNull (void* returnCode);
+    /**
+     *  Check the argument 'return value' from some funciton, and if its null, throw a SystemError exception with
+     *  the current errno value.
+     */
+    void ThrowErrNoIfNull (void* returnValue);
 
     /**
      *  \brief Handle UNIX EINTR system call behavior - fairly transparently - just effectively removes them from the set of errors that can be returned

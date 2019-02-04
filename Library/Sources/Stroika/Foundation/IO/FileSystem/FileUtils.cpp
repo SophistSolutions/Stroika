@@ -248,8 +248,8 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
         }
         // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
         if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
-            if (errno != 0 and errno != EEXIST) {
-                Execution::Throw (errno_ErrorException (errno));
+            if (errno != EEXIST) {
+                Execution::SystemException::ThrowPOSIXErrNo (errno));
             }
         }
 #else

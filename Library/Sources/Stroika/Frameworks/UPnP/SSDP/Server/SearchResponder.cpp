@@ -147,8 +147,8 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
                 try {
                     s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
                 }
-                catch (const Execution::errno_ErrorException& e) {
-                    if (e == ENODEV) {
+                catch (const Execution::SystemException& e) {
+                    if (e.code () == errc::no_such_device) {
                         // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
                         DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
                         Execution::Sleep (1);

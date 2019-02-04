@@ -159,7 +159,7 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
                 return path2FileOrShortcut;
             }
             else {
-                Execution::errno_ErrorException::Throw (e);
+                SystemException::ThrowPOSIXErrNo (e);
             }
         }
         Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
@@ -251,7 +251,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
         //      realpath(path, NULL)
         char* tmp{::realpath (path2FileOrShortcut.AsSDKString ().c_str (), nullptr)};
         if (tmp == nullptr) {
-            errno_ErrorException::Throw (errno);
+            SystemException::ThrowPOSIXErrNo (errno);
         }
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
         return String::FromNarrowSDKString (tmp);
@@ -477,7 +477,7 @@ bool IO::FileSystem::Ptr::RemoveFileIf (const String& fileName)
 #endif
         if (r < 0) {
             if (errno != ENOENT) {
-                errno_ErrorException::Throw (errno);
+                SystemException::ThrowPOSIXErrNo (errno);
             }
         }
         return r == 0;
@@ -513,7 +513,7 @@ Again:
                 triedRMRF = true;
                 goto Again;
             }
-            errno_ErrorException::Throw (errno);
+            SystemException::ThrowPOSIXErrNo (errno);
         }
     }
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
@@ -548,7 +548,7 @@ Again:
                 goto Again;
             }
             if (errno != ENOENT) {
-                errno_ErrorException::Throw (errno);
+                SystemException::ThrowPOSIXErrNo (errno);
             }
         }
         return r == 0;

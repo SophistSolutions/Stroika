@@ -57,21 +57,17 @@ Characters::String SystemException::mkMsg_ (error_code errCode, const Characters
 }
 
 #if !qPlatform_POSIX
-void SystemException::ThrowPOSIXErrNo (int errNo)
+void SystemException::ThrowPOSIXErrNo (errno_t errNo)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContenxtBumper tctx (L"SystemException::ThrowPOSIXErrNo (%d)", error);
+#endif
     Require (errNo != 0);
-    // @todo see errno_ErrorException::Throw () for additional needed mappings
     switch (static_cast<errc> (errNo)) {
         case errc::not_enough_memory: {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", errNo);
-#endif
             Throw (bad_alloc ());
         } break;
         case errc::timed_out: {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("SystemException::ThrowPOSIXErrNo (0x%x) - translating errc::not_enough_memory to TimeOutException", errNo);
-#endif
             Throw (TimeOutException::kThe);
         }
         default: {
@@ -83,19 +79,16 @@ void SystemException::ThrowPOSIXErrNo (int errNo)
 
 void SystemException::ThrowSystemErrNo (int sysErr)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContenxtBumper tctx (L"SystemException::ThrowSystemErrNo (%d)", error);
+#endif
     Require (sysErr != 0);
     // @todo see Execution::Platform::Windows::Exception::Throw - many more translations needed and this one needs testing
     error_code ec{sysErr, system_category ()};
     if (ec == errc::not_enough_memory) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("SystemException::ThrowSystemErrNo (0x%x) - translating errc::not_enough_memory to bad_alloc", sysErr);
-#endif
         Throw (bad_alloc ());
     }
     if (ec == errc::timed_out) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("SystemException::ThrowSystemErrNo (0x%x) - translating errc::timed_out to TimeOutException", sysErr);
-#endif
         Throw (TimeOutException (ec));
     }
 #if qPlatform_Windows && qDebug
