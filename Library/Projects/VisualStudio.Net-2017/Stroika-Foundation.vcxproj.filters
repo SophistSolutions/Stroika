@@ -813,6 +813,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2030,6 +2033,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Throw.h">
       <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.h">
+      <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3302,6 +3308,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Throw.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -946,6 +946,26 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)IO-FileSystem-Exception.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.cpp" />
@@ -1514,6 +1534,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.h" />
@@ -1935,6 +1956,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.inl" />

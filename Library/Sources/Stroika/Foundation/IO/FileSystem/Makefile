@@ -20,6 +20,7 @@ Objs	=	\
 	$(ObjDir)DirectoryIterable${OBJ_SUFFIX}\
 	$(ObjDir)DirectoryIterator${OBJ_SUFFIX}\
 	$(ObjDir)Disk${OBJ_SUFFIX}\
+	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)FileInputStream${OBJ_SUFFIX}\
 	$(ObjDir)FileOutputStream${OBJ_SUFFIX}\
 	$(ObjDir)FileStream${OBJ_SUFFIX}\
