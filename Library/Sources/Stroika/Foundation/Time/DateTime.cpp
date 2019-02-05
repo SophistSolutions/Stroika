@@ -213,7 +213,7 @@ DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexce
 #elif qPlatform_Windows
     tm tmTimeDataBuf{};
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
-        SystemErrorException::ThrowPOSIXErrNo (e);
+        SystemErrorException<>::ThrowPOSIXErrNo (e);
     };
     tm* tmTimeData = &tmTimeDataBuf;
 #else

@@ -90,6 +90,9 @@ namespace Stroika::Foundation::Execution {
     template <typename BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {
     private:
+        static_assert (is_base_of_v<exception, BASE_EXCEPTION>);
+
+    private:
         using inherited = BASE_EXCEPTION;
 
     public:
@@ -134,7 +137,7 @@ namespace Stroika::Foundation::Execution {
      *  \par Example Usage
      *      \code
      *          try {
-     *              SystemErrorException::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
+     *              SystemErrorException<>::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
      *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
@@ -149,7 +152,7 @@ namespace Stroika::Foundation::Execution {
      *          try {
      *          const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
      *          try {
-     *              Execution::Throw (SystemErrorException (make_error_code (errc::bad_address), kMsgWithUnicode_));
+     *              Execution::Throw (SystemErrorException<> (make_error_code (errc::bad_address), kMsgWithUnicode_));
      *          }
      *          catch (const std::system_error& e) {
      *              Assert (Characters::ToString (e).Contains (kMsgWithUnicode_));  // message also includes the number for bad_address
@@ -174,9 +177,16 @@ namespace Stroika::Foundation::Execution {
      *          }
      *      \endcode
      */
-    class SystemErrorException : public Exception<system_error> {
+    namespace Private_ {
+
+    }
+    template <typename BASE_EXCEPTION = system_error>
+    class SystemErrorException : public Exception<BASE_EXCEPTION> {
     private:
-        using inherited = Exception<system_error>;
+        static_assert (is_base_of_v<system_error, BASE_EXCEPTION>);
+
+    private:
+        using inherited = Exception<BASE_EXCEPTION>;
 
     public:
         /**
@@ -229,10 +239,6 @@ namespace Stroika::Foundation::Execution {
          *      @see ThrowPOSIXErrNo ();
          */
         [[noreturn]] static void ThrowSystemErrNo (int sysErr);
-
-    private:
-        static Characters::String mkMsg_ (error_code errCode);
-        static Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
     };
 
 }

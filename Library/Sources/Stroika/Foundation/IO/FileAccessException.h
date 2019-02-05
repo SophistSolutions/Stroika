@@ -26,9 +26,9 @@ namespace Stroika::Foundation::IO {
      *
      *  // @todo - this should subclass from Execution::Exception<filesystem::filesystem_error> - but needs some work...
      */
-    class FileAccessException : public Execution::SystemErrorException {
+    class FileAccessException : public Execution::SystemErrorException<> {
     private:
-        using inherited = Execution::SystemErrorException;
+        using inherited = Execution::SystemErrorException<>;
 
     public:
         /**

@@ -10,7 +10,16 @@
  ********************************************************************************
  */
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 namespace Stroika::Foundation::Execution {
+
+    namespace Private_::SystemErrorExceptionPrivate_ {
+        Characters::String mkMsg_ (error_code errCode);
+        Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
+        void               TranslateException_ (error_code errCode);
+    }
 
     /*
      ********************************************************************************
@@ -66,28 +75,52 @@ namespace Stroika::Foundation::Execution {
      ***************************** SystemErrorException *****************************
      ********************************************************************************
      */
-    inline SystemErrorException::SystemErrorException (error_code errCode)
-        : SystemErrorException (errCode, mkMsg_ (errCode))
+    template <typename BASE_EXCEPTION>
+    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (error_code errCode)
+        : SystemErrorException (errCode, Private_::SystemErrorExceptionPrivate_::mkMsg_ (errCode))
     {
     }
-    inline SystemErrorException::SystemErrorException (error_code errCode, const Characters::String& message)
-        : inherited (mkCombinedMsg_ (errCode, message), errCode)
+    template <typename BASE_EXCEPTION>
+    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (error_code errCode, const Characters::String& message)
+        : inherited (Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (errCode, message), errCode)
     {
     }
-    inline SystemErrorException::SystemErrorException (int ev, const std::error_category& ecat)
+    template <typename BASE_EXCEPTION>
+    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (int ev, const std::error_category& ecat)
         : SystemErrorException (error_code{ev, ecat})
     {
     }
-    inline SystemErrorException::SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message)
+    template <typename BASE_EXCEPTION>
+    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message)
         : SystemErrorException (error_code{ev, ecat}, message)
     {
     }
-#if qPlatform_POSIX
-    inline void SystemErrorException::ThrowPOSIXErrNo (errno_t errNo)
+    template <typename BASE_EXCEPTION>
+    inline void SystemErrorException<BASE_EXCEPTION>::ThrowPOSIXErrNo (errno_t errNo)
     {
-        ThrowSystemErrNo (errNo);
-    }
+#if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
+		TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowPOSIXErrNo (%d)", error);
 #endif
+		Require (errNo != 0);
+#if qPlatform_POSIX
+        ThrowSystemErrNo (errNo);
+#else
+        error_code ec{errNo, generic_category ()};
+        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
+        Throw (SystemErrorException (ec));
+#endif
+    }
+    template <typename BASE_EXCEPTION>
+    void SystemErrorException<BASE_EXCEPTION>::ThrowSystemErrNo (int sysErr)
+    {
+#if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
+        TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowSystemErrNo (%d)", error);
+#endif
+        Require (sysErr != 0);
+        error_code ec{sysErr, system_category ()};
+        Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
+        Throw (SystemErrorException (ec));
+    }
 
 }
 

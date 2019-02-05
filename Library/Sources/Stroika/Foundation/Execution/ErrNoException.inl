@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Execution {
         if (returnCode < 0)
             [[UNLIKELY_ATTR]]
             {
-                SystemErrorException::ThrowPOSIXErrNo (errno);
+                SystemErrorException<>::ThrowPOSIXErrNo (errno);
             }
         return returnCode;
     }
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
         if (returnValue == nullptr)
             [[UNLIKELY_ATTR]]
             {
-                SystemErrorException::ThrowPOSIXErrNo (errno);
+                SystemErrorException<>::ThrowPOSIXErrNo (errno);
             }
     }
 
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowIfError_errno_t (errno_t e)
     {
         if (e != 0) {
-            SystemErrorException::ThrowPOSIXErrNo (e);
+            SystemErrorException<>::ThrowPOSIXErrNo (e);
         }
     }
 
