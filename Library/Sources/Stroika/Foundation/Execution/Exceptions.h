@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        SystemErrorException (error_code _Errcode);
+        SystemErrorException (error_code errCode);
         SystemErrorException (error_code errCode, const Characters::String& message);
         SystemErrorException (int ev, const std::error_category& ecat);
         SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message);
