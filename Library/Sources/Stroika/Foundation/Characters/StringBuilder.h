@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *
      *  \note   Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
-     *          one thread while being read or updated on another.
+     *          one thread while being accessed on another.
      *
      *  @see String
      *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Characters {
     public:
         StringBuilder ();
         StringBuilder (const StringBuilder&) = default;
-        explicit StringBuilder (const String& initialValue);
+        StringBuilder (const String& initialValue);
 
     public:
         nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;
