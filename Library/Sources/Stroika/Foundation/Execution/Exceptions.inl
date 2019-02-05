@@ -58,10 +58,10 @@ namespace Stroika::Foundation::Execution {
     {
     }
     template <typename BASE_EXCEPTION>
-    template <typename... ARGS>
-    inline Exception<BASE_EXCEPTION>::Exception (const Characters::String& reasonForError, ARGS... args)
+    template <typename... BASE_EXCEPTION_ARGS>
+    inline Exception<BASE_EXCEPTION>::Exception (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs)
         : ExceptionStringHelper{reasonForError}
-        , inherited{forward<ARGS> (args)...}
+        , inherited{forward<BASE_EXCEPTION_ARGS> (baseExceptionArgs)...}
     {
     }
     template <typename BASE_EXCEPTION>
@@ -96,25 +96,31 @@ namespace Stroika::Foundation::Execution {
     {
     }
     template <typename BASE_EXCEPTION>
+    template <typename... BASE_EXCEPTION_ARGS>
+    inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs)
+        : inherited{reasonForError, forward<BASE_EXCEPTION_ARGS> (baseExceptionArgs)...}
+    {
+    }
+    template <typename BASE_EXCEPTION>
     inline void SystemErrorException<BASE_EXCEPTION>::ThrowPOSIXErrNo (errno_t errNo)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-		TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowPOSIXErrNo (%d)", error);
+        TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowPOSIXErrNo (%d)", errNo);
 #endif
-		Require (errNo != 0);
+        Require (errNo != 0);
 #if qPlatform_POSIX
-        ThrowSystemErrNo (errNo);
+        error_code ec{errNo, system_category ()};
 #else
         error_code ec{errNo, generic_category ()};
+#endif
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
         Throw (SystemErrorException (ec));
-#endif
     }
     template <typename BASE_EXCEPTION>
     void SystemErrorException<BASE_EXCEPTION>::ThrowSystemErrNo (int sysErr)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowSystemErrNo (%d)", error);
+        TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowSystemErrNo (%d)", sysErr);
 #endif
         Require (sysErr != 0);
         error_code ec{sysErr, system_category ()};

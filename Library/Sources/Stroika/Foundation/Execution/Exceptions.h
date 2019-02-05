@@ -105,10 +105,10 @@ namespace Stroika::Foundation::Execution {
     protected:
         /**
          * For BASE_EXCEPTION classes with constructors OTHER than just 'message' - you cannot use a 'using X = Exception(x)' but a subclass
-         * which uses this delegating hmethod.
+         * which uses this delegating method.
          */
-        template <typename... ARGS>
-        Exception (const Characters::String& reasonForError, ARGS... args);
+        template <typename... BASE_EXCEPTION_ARGS>
+        explicit Exception (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs);
 
     public:
         /**
@@ -177,9 +177,6 @@ namespace Stroika::Foundation::Execution {
      *          }
      *      \endcode
      */
-    namespace Private_ {
-
-    }
     template <typename BASE_EXCEPTION = system_error>
     class SystemErrorException : public Exception<BASE_EXCEPTION> {
     private:
@@ -195,6 +192,16 @@ namespace Stroika::Foundation::Execution {
         SystemErrorException (error_code errCode, const Characters::String& message);
         SystemErrorException (int ev, const std::error_category& ecat);
         SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message);
+
+    protected:
+        /**
+         * For BASE_EXCEPTION classes with constructors OTHER than just 'message' - you cannot use a 'using X = Exception(x)' but a subclass
+         * which uses this delegating method.
+         *
+         *  \note - _PeekAtSDKString_ () will probably have to be among the baseExceptionArgs.
+         */
+        template <typename... BASE_EXCEPTION_ARGS>
+        explicit SystemErrorException (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs);
 
     public:
         /**
@@ -222,7 +229,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief treats sysErr as a standard error number value for the current compiled platform, and throws a SystemErrorException (subclass of @std::system_error) exception with it.
+         *  \brief treats sysErr as a platform-defined error number, and throws a SystemErrorException (subclass of @std::system_error) exception with it.
          *
          *  \req sysErr != 0
          *
