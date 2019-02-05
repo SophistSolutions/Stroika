@@ -84,6 +84,6 @@ void Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code err
                 AssertNotReached ();      // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
                 break;
         }
+	}
 #endif
-    }
 }
