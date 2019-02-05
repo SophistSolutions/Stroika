@@ -21,6 +21,7 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
+    using Execution::errno_t;
 
     /**
      *  Simple wrapper on std::filesystem_error, but adding support for Stroika String, and other utility methods.
