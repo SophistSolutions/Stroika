@@ -45,7 +45,7 @@ namespace std::filesystem {
 namespace Stroika::Foundation::IO::FileSystem {
 
 // clang-format off
-#if __has_include(<filesystem>) || __has_include(<experimental/filesystem>)
+#if __has_include(<filesystem>) || __has_include(<experimental/filesystem>) || qHasFeature_boost
                 using namespace std::filesystem;
 #endif
     // clang-format on
