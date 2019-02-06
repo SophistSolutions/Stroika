@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Execution::errno_t;
 
     // Hack to workaround the fact that XCode10 doesn't have a filesystem implementation so using boost, but that doesn't interact
-    // well with the reset of the C++ exceptions code
+    // well with the rest of the C++ exceptions code
     namespace Private_ {
 #if qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
         // Cannot use boost filesystem_error because catch (system_error& then wouldn't work -- boost::filesystem_error inherits from boost::system::erorr
@@ -36,7 +36,6 @@ namespace Stroika::Foundation::IO::FileSystem {
         struct filesystem_error : system_error {
             path m_path1;
             path m_path2;
-
             filesystem_error (const std::string& what_arg, error_code ec)
                 : system_error (ec, what_arg)
             {
@@ -83,7 +82,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *          }
      *      \endcode
      *
-      *  \par Example Usage (can catch as system_error as well since thats a base class of filesystem_error)
+     *  \par Example Usage (can catch as system_error as well since thats a base class of filesystem_error)
      *      \code
      *          try {
      *              FileSystem::ThrowPOSIXErrNo (make_error_code (errc::filename_too_long).value ());
@@ -117,6 +116,13 @@ namespace Stroika::Foundation::IO::FileSystem {
          *      @see ThrowSystemErrNo ();
          */
         [[noreturn]] static void ThrowPOSIXErrNo (errno_t errNo, const path& p1 = {}, const path& p2 = {});
+
+    public:
+        /**
+         *  Look at the argument value and if < 0,ThrowPOSIXErrNo (), and otherwise return it.
+         */
+        template <typename INT_TYPE>
+        static INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode, const path& p1 = {}, const path& p2 = {});
 
     public:
         /**

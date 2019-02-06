@@ -32,6 +32,7 @@
 #include "../../IO/FileAccessException.h"
 #include "../../IO/FileBusyException.h"
 #include "../../IO/FileFormatException.h"
+#include "../../IO/FileSystem/Exception.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "DirectoryIterable.h"
@@ -159,7 +160,7 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
                 return path2FileOrShortcut;
             }
             else {
-                SystemErrorException<>::ThrowPOSIXErrNo (e);
+                FileSystem::Exception::ThrowPOSIXErrNo (e, path (path2FileOrShortcut.As<wstring> ()));
             }
         }
         Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
@@ -251,7 +252,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
         //      realpath(path, NULL)
         char* tmp{::realpath (path2FileOrShortcut.AsSDKString ().c_str (), nullptr)};
         if (tmp == nullptr) {
-            SystemErrorException<>::ThrowPOSIXErrNo (errno);
+            FileSystem::Exception::ThrowPOSIXErrNo (errno, path (path2FileOrShortcut.As<wstring> ()));
         }
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
         return String::FromNarrowSDKString (tmp);
@@ -395,7 +396,7 @@ FileOffset_t IO::FileSystem::Ptr::GetFileSize (const String& fileName)
 #if qPlatform_POSIX
         struct stat s {
         };
-        ThrowErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
         return s.st_size;
 #elif qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
@@ -415,7 +416,7 @@ DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const String& fileNam
 #if qPlatform_POSIX
         struct stat s {
         };
-        ThrowErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
         return DateTime (s.st_mtime);
 #elif qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
@@ -435,7 +436,7 @@ DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const String& fileName)
 #if qPlatform_POSIX
         struct stat s {
         };
-        ThrowErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
         return DateTime (s.st_atime);
 #elif qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
@@ -477,7 +478,7 @@ bool IO::FileSystem::Ptr::RemoveFileIf (const String& fileName)
 #endif
         if (r < 0) {
             if (errno != ENOENT) {
-                SystemErrorException<>::ThrowPOSIXErrNo (errno);
+                FileSystem::Exception::ThrowPOSIXErrNo (errno, path (fileName.As<wstring> ()));
             }
         }
         return r == 0;
@@ -513,7 +514,7 @@ Again:
                 triedRMRF = true;
                 goto Again;
             }
-            SystemErrorException<>::ThrowPOSIXErrNo (errno);
+            FileSystem::Exception::ThrowPOSIXErrNo (errno, path (directory.As<wstring> ()));
         }
     }
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
@@ -548,7 +549,7 @@ Again:
                 goto Again;
             }
             if (errno != ENOENT) {
-                SystemErrorException<>::ThrowPOSIXErrNo (errno);
+                FileSystem::Exception::ThrowPOSIXErrNo (errno, path (directory.As<wstring> ()));
             }
         }
         return r == 0;

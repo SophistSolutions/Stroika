@@ -117,6 +117,17 @@ namespace Stroika::Foundation::Execution {
         Throw (SystemErrorException (ec));
     }
     template <typename BASE_EXCEPTION>
+    template <typename INT_TYPE>
+    inline INT_TYPE SystemErrorException<BASE_EXCEPTION>::ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode)
+    {
+        if (returnCode < 0)
+            [[UNLIKELY_ATTR]]
+            {
+                ThrowPOSIXErrNo (errno);
+            }
+        return returnCode;
+    }
+    template <typename BASE_EXCEPTION>
     void SystemErrorException<BASE_EXCEPTION>::ThrowSystemErrNo (int sysErr)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
