@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if qHasFeature_boost
+#include <boost/filesystem.hpp>
+#endif
+
 #include "../../Characters/String.h"
 #include "../../Execution/Exceptions.h"
 
@@ -126,6 +130,16 @@ namespace Stroika::Foundation::IO::FileSystem {
          *      @see ThrowPOSIXErrNo ();
          */
         [[noreturn]] static void ThrowSystemErrNo (int sysErr, const path& p1 = {}, const path& p2 = {});
+
+#if qHasFeature_boost
+    public:
+        /**
+         *  If using boost filesystem, you may wisht to map some boost filesystem_error exceptions to ones compatible with the rest of the runtime library.
+         */
+        static Exception TranslateBoostFilesystemException2StandardExceptions (const boost::filesystem::filesystem_error& e);
+        template <typename FUNCTION, enable_if_t<is_invocable_v<FUNCTION>>* = nullptr>
+        static auto TranslateBoostFilesystemException2StandardExceptions (const FUNCTION& f);
+#endif
 
     private:
         static Characters::String mkMsg_ (error_code errCode, const path& p1, const path& p2);

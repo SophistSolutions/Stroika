@@ -26,6 +26,18 @@ namespace Stroika::Foundation::IO::FileSystem {
     {
         Require (not p1.empty () or p2.empty ()); // if only one path provided, provide it first
     }
+#if qHasFeature_boost
+    template <typename FUNCTION, enable_if_t<is_invocable_v<FUNCTION>>*>
+    auto Exception::TranslateBoostFilesystemException2StandardExceptions (const FUNCTION& f)
+    {
+        try {
+            return f ();
+        }
+        catch (const boost::filesystem::filesystem_error& e) {
+            Execution::Throw (TranslateBoostFilesystemException2StandardExceptions (e));
+        }
+    }
+#endif
 
 }
 

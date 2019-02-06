@@ -64,3 +64,38 @@ void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
     error_code ec{sysErr, system_category ()};
     Throw (Exception (ec, p1, p2));
 }
+
+#if qHasFeature_boost
+Exception TranslateBoostFilesystemException2StandardExceptions (const boost::filesystem::filesystem_error& e)
+{
+    // translate error code
+    auto mapCat = [&]() -> const error_category& {
+        if (e.code ().category () == boost::system::generic_category ()) {
+            return generic_category ();
+        }
+        else if (e.code ().category () == boost::system::system_category ()) {
+            return system_category ();
+        }
+        else {
+            class MapBoostCategory_ : public error_category {
+            public:
+                MapBoostCategory_ ()
+                {
+                }
+                virtual const char* name () const noexcept
+                {
+                    return "Unknown boost error";
+                }
+                virtual string message ([[maybe_unused]] int e) const
+                {
+                    return "Unknown boost error";
+                }
+            };
+            static MapBoostCategory_ sCat_; // cannot capture data in these categories cuz can only be one - no biggie - if this happens, identify more boost category mappings
+            return sCat_;
+        }
+    };
+    error_code ec{e.code ().value (), mapCat ()};
+    return Exception (ec, String::FromNarrowSDKString (e.what ()), path (e.path1 ().wstring ()), path (e.path2 ().wstring ()));
+}
+#endif
