@@ -23,6 +23,46 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Characters::String;
     using Execution::errno_t;
 
+    // Hack to workaround the fact that XCode10 doesn't have a filesystem implementation so using boost, but that doesn't interact
+    // well with the reset of the C++ exceptions code
+    namespace Private_ {
+#if qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
+        // Cannot use boost filesystem_error because catch (system_error& then wouldn't work -- boost::filesystem_error inherits from boost::system::erorr
+        // and uses the wrong version of error_code etc
+        struct filesystem_error : system_error {
+            path m_path1;
+            path m_path2;
+
+            filesystem_error (const std::string& what_arg, error_code ec)
+                : system_error (ec, what_arg)
+            {
+            }
+            filesystem_error (const std::string& what_arg, const path& path1_arg, error_code ec)
+                : system_error (ec, what_arg)
+                , m_path1 (path1_arg)
+            {
+            }
+            filesystem_error (
+                const std::string& what_arg, const path& path1_arg,
+                const path& path2_arg, error_code ec) noexcept
+                : system_error (ec, what_arg)
+                , m_path1 (path1_arg)
+                , m_path2 (path2_arg)
+            {
+            }
+            const path& path1 () const noexcept
+            {
+                return m_path1;
+            }
+            const path& path2 () const noexcept
+            {
+                return m_path2;
+            }
+        };
+#endif
+		using PLATFORM_FILESYSTEM_ERROR = filesystem_error;
+	}
+
     /**
      *  Simple wrapper on std::filesystem_error, but adding support for Stroika String, and other utility methods.
      *
@@ -51,9 +91,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      *      \endcode
      *
      */
-    class Exception : public Execution::SystemErrorException<filesystem_error> {
+    class Exception : public Execution::SystemErrorException<Private_::PLATFORM_FILESYSTEM_ERROR> {
     private:
-        using inherited = Execution::SystemErrorException<filesystem_error>;
+        using inherited = Execution::SystemErrorException<Private_::PLATFORM_FILESYSTEM_ERROR>;
 
     public:
         /**

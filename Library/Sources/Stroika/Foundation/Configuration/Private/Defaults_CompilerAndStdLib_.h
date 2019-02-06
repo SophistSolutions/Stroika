@@ -272,7 +272,12 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
- *  in xcode 10 (beta) the headers for filesystem are there but I cannot find libraries, so disable for now... --LGP 2018-06-15
+ *  In xcode 10 std::filesystem is unsupported... --LGP 2018-06-15
+ *  \see https://stackoverflow.com/questions/49577343/filesystem-with-c17-doesnt-work-on-my-mac-os-x-high-sierra
+ *  \see https://news.ycombinator.com/item?id=15941976
+ *       https://stackoverflow.com/questions/50710781/compatibility-of-c17-of-apple-clang-that-xcode-10-beta-bundle
+ *
+ *  In xcode 10 one beta the headers for filesystem are there but I cannot find libraries, so disable for now... --LGP 2018-06-15
  */
 #ifndef qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 

@@ -180,12 +180,7 @@ namespace Stroika::Foundation::Execution {
     template <typename BASE_EXCEPTION = system_error>
     class SystemErrorException : public Exception<BASE_EXCEPTION> {
     private:
-#if !__has_include(<filesystem>) && !__has_include(<experimental/filesystem>) && qHasFeature_boost
-        // not good - but boost filesystem_error doesn't inherit from system_error
-        static_assert (is_base_of_v<system_error, BASE_EXCEPTION> or is_base_of_v<boost::system::system_error, BASE_EXCEPTION>);
-#else
         static_assert (is_base_of_v<system_error, BASE_EXCEPTION>);
-#endif
 
     private:
         using inherited = Exception<BASE_EXCEPTION>;
