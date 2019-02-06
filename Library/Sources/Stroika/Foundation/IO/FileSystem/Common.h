@@ -6,7 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-// clang-format off
 #if __has_include(<filesystem>)
 #include <filesystem>
 #elif __has_include(<experimental/filesystem>) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
@@ -14,7 +13,6 @@
 #elif qHasFeature_boost
 #include <boost/filesystem.hpp>
 #endif
-// clang-format on
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
@@ -25,30 +23,29 @@
 
 /**
  * TODO:
- *
  */
 
-// clang-format off
-#if !(__cpp_lib_filesystem >= 201603) 
+/*
+ *  If forced to use boost filesystem or experimental filesystem, make it look like std::filesystem.
+ */
+#if !(__cpp_lib_filesystem >= 201603)
 #if (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>)) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 namespace std::filesystem {
-        using namespace std::experimental::filesystem;
+    using namespace std::experimental::filesystem;
 }
 #elif qHasFeature_boost
 namespace std::filesystem {
-        using namespace boost::filesystem;
+    using namespace boost::filesystem;
 }
 #endif
 #endif
-// clang-format on
 
 namespace Stroika::Foundation::IO::FileSystem {
 
-// clang-format off
-#if __has_include(<filesystem>) || __has_include(<experimental/filesystem>) || qHasFeature_boost
-                using namespace std::filesystem;
+#if !__has_include(<filesystem>) && !__has_include(<experimental/filesystem>) && !qHasFeature_boost
+    static_assert (false, "some version of std::filesystem is required by Stroika v2.1 or later");
 #endif
-    // clang-format on
+    using namespace std::filesystem;
 
     using Characters::String;
     using Time::DateTime;
