@@ -60,8 +60,8 @@ namespace Stroika::Foundation::IO::FileSystem {
             }
         };
 #endif
-		using PLATFORM_FILESYSTEM_ERROR = filesystem_error;
-	}
+        using PLATFORM_FILESYSTEM_ERROR = filesystem_error;
+    }
 
     /**
      *  Simple wrapper on std::filesystem_error, but adding support for Stroika String, and other utility methods.
