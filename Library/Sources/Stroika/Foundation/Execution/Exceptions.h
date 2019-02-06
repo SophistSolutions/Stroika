@@ -180,7 +180,12 @@ namespace Stroika::Foundation::Execution {
     template <typename BASE_EXCEPTION = system_error>
     class SystemErrorException : public Exception<BASE_EXCEPTION> {
     private:
+#if !__has_include(<filesystem>) && !__has_include(<experimental/filesystem>) && qHasFeature_boost
+        // not good - but boost filesystem_error doesn't inherit from system_error
+        static_assert (is_base_of_v<system_error, BASE_EXCEPTION> or is_base_of_v<boost::system::system_error, BASE_EXCEPTION>);
+#else
         static_assert (is_base_of_v<system_error, BASE_EXCEPTION>);
+#endif
 
     private:
         using inherited = Exception<BASE_EXCEPTION>;
@@ -226,6 +231,13 @@ namespace Stroika::Foundation::Execution {
          *      @see ThrowSystemErrNo ();
          */
         [[noreturn]] static void ThrowPOSIXErrNo (errno_t errNo = errno);
+
+    public:
+        /**
+         *  Look at the argument value and if < 0,ThrowPOSIXErrNo (), and otherwise return it.
+         */
+        template <typename INT_TYPE>
+        static INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode);
 
     public:
         /**
