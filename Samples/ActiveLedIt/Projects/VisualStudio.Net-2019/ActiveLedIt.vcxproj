@@ -104,6 +104,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\..\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
@@ -163,6 +164,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       </DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)\..\..\Sources\ActiveLedIt.manifest.xml</AdditionalManifestFiles>
