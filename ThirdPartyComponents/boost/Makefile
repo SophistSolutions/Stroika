@@ -233,7 +233,7 @@ endif
 # this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
 # darwin.jam file (basically) - and other defaults sort of related to that.
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TOOLSET_NAME=darwin
+TOOLSET_NAME=msvc
 else ifeq ($(shell uname -s),Darwin)
 TOOLSET_NAME=darwin
 else
