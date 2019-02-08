@@ -202,7 +202,6 @@ B2_CONFIGURATION_ARGS +=	--layout=system
 ### omit some things unlikely to be intersted (mostly cuz already adopted into STL) in (due to build speed)
 B2_CONFIGURATION_ARGS +=	--without-atomic
 B2_CONFIGURATION_ARGS +=	--without-chrono
-B2_CONFIGURATION_ARGS +=	--without-filesystem
 B2_CONFIGURATION_ARGS +=	--without-python
 B2_CONFIGURATION_ARGS +=	--without-regex
 #B2_CONFIGURATION_ARGS +=	--without-system

@@ -104,7 +104,7 @@ endif
 
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 ### not sure why???
-#uilding Stroika Tools {clang++-6-release-libstdc++}:
+#Building Stroika Tools {clang++-6-release-libstdc++}:
 #         Compiling {StroikaRoot}Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/HTMLViewCompiler.cpp ...
 #      Linking  $StroikaRoot/Builds/clang++-6-release-libstdc++/HTMLViewCompiler...
 #/usr/bin/ld: skipping incompatible /Sandbox/Stroika-Dev/Builds/clang++-6-release-libstdc++/ThirdPartyComponents/lib//libxerces-c.so when searching for -lxerces-c
