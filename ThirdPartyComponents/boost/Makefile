@@ -204,8 +204,8 @@ B2_CONFIGURATION_ARGS +=	--without-wave
 B2_CONFIGURATION_ARGS +=	--hash
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
-B2_CONFIGURATION_ARGS +=	-d0
-#B2_CONFIGURATION_ARGS +=	-d+2
+#B2_CONFIGURATION_ARGS +=	-d0
+B2_CONFIGURATION_ARGS +=	-d+2
 #SHOW VARIABLES - B2_CONFIGURATION_ARGS +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
@@ -235,6 +235,10 @@ B2_CONFIGURATION_ARGS +=	toolset=darwin-$(ARCH)
 else
 B2_CONFIGURATION_ARGS +=	toolset=gcc-$(ARCH)
 endif
+endif
+
+ifeq (Unix,$(ProjectPlatformSubdir))
+B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam
 endif
 
 
@@ -294,12 +298,8 @@ ifeq ($(shell uname -s),Darwin)
 		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam;
 else
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
-		if [ -e project-config.jam.ORIG ] ; then\
-			mv project-config.jam.ORIG project-config.jam;\
-		else\
-			cp project-config.jam project-config.jam.ORIG;\
-		fi;\
-		sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam;
+		rm -f user-config.jam; \
+		echo 'using gcc : $(ARCH) : ${CXX} : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> user-config.jam;
 endif
 endif
 	@#
