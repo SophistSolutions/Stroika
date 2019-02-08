@@ -224,21 +224,32 @@ endif
 ifeq (1,$(ENABLE_GLIBCXX_DEBUG))
 B2_CONFIGURATION_ARGS += define=_GLIBCXX_DEBUG
 endif
+
+# this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
+# darwin.jam file (basically) - and other defaults sort of related to that.
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-B2_CONFIGURATION_ARGS += toolset=msvc
+TOOLSET_NAME=darwin
+else ifeq ($(shell uname -s),Darwin)
+TOOLSET_NAME=darwin
+else
+TOOLSET_NAME=gcc
+endif
+
+#-arch may not work for msvc
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+B2_CONFIGURATION_ARGS +=	toolset=${TOOLSET_NAME}
+else
+B2_CONFIGURATION_ARGS +=	toolset=${TOOLSET_NAME}-$(ARCH)
+endif
+
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE file
+### MAYBE can do soemthing like toolset=${TOOLSET_NAME}-$(ARCH) change; but didn't appear to work
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq ($(ARCH),x86)
 B2_CONFIGURATION_ARGS +=	address-model=32
 else ifeq ($(ARCH),x86_64)
 B2_CONFIGURATION_ARGS +=	address-model=64
 endif
-else
-ifeq ($(shell uname -s),Darwin)
-TOOLSET_NAME=darwin
-else
-TOOLSET_NAME=gcc
-endif
-B2_CONFIGURATION_ARGS +=	toolset=${TOOLSET_NAME}-$(ARCH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
