@@ -15,10 +15,10 @@
 #endif
 
 namespace Stroika::Foundation::Characters {
-	class String;
+    class String;
 }
 namespace Stroika::Foundation::Time {
-	class DateTime;
+    class DateTime;
 }
 
 /**

@@ -492,7 +492,7 @@ bool IO::FileSystem::Ptr::RemoveFileIf (const String& fileName)
 void IO::FileSystem::Ptr::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::Ptr::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
 #endif
     bool triedRMRF{false};
 Again:
@@ -526,7 +526,7 @@ Again:
 bool IO::FileSystem::Ptr::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::Ptr::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
 #endif
     bool triedRMRF{false};
 Again:

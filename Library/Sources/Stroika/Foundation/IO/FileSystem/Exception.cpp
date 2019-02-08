@@ -4,6 +4,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
 
 #include "Exception.h"
 
