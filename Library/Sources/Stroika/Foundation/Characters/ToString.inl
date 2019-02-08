@@ -238,11 +238,11 @@ namespace Stroika::Foundation::Characters {
             return o.has_value () ? Characters::ToString (*o) : L"[missing]";
         }
     }
-	template <>
-	inline String ToString (const std::filesystem::path& t)
-	{
-		return t.wstring ();
-	}
+    template <>
+    inline String ToString (const std::filesystem::path& t)
+    {
+        return t.wstring ();
+    }
 
     template <typename T>
     inline String ToString (const T& t)

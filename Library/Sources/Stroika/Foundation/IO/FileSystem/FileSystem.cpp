@@ -242,12 +242,12 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
 }
 
-String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, [[maybe_unused]]bool throwIfComponentsNotFound)
+String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, [[maybe_unused]] bool throwIfComponentsNotFound)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-	Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::CanonicalizeName", L"path2FileOrShortcut='%s', throwIfComponentsNotFound=%s", path2FileOrShortcut.c_str (), Characters::ToString (throwIfComponentsNotFound).c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::CanonicalizeName", L"path2FileOrShortcut='%s', throwIfComponentsNotFound=%s", path2FileOrShortcut.c_str (), Characters::ToString (throwIfComponentsNotFound).c_str ());
 #endif
-	try {
+    try {
 #if qPlatform_POSIX
         //  We used to call canonicalize_file_name() - but this doesn't work with AIX 7.1/g++4.9.2, and
         //  according to http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html:
