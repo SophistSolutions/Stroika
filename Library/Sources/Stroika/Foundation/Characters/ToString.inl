@@ -4,6 +4,11 @@
 #ifndef _Stroika_Foundation_Characters_ToString_inl_
 #define _Stroika_Foundation_Characters_ToString_inl_ 1
 
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 #include <exception>
 #include <typeindex>
 #include <typeinfo>
@@ -11,15 +16,11 @@
 
 #include "../Configuration/Concepts.h"
 #include "../Configuration/Enumeration.h"
+#include "../IO/FileSystem/Common.h"
 #include "FloatConversion.h"
 #include "StringBuilder.h"
 #include "String_Constant.h"
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::Characters {
 
     /*
@@ -68,6 +69,9 @@ namespace Stroika::Foundation::Characters {
     String ToString (const unsigned long& t);
     template <>
     String ToString (const unsigned long long& t);
+
+    template <>
+    String ToString (const std::filesystem::path& t);
 
     namespace Private_ {
 
@@ -234,6 +238,11 @@ namespace Stroika::Foundation::Characters {
             return o.has_value () ? Characters::ToString (*o) : L"[missing]";
         }
     }
+	template <>
+	inline String ToString (const std::filesystem::path& t)
+	{
+		return t.wstring ();
+	}
 
     template <typename T>
     inline String ToString (const T& t)
