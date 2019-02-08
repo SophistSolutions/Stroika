@@ -231,10 +231,11 @@ B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 else
 ifeq ($(shell uname -s),Darwin)
-B2_CONFIGURATION_ARGS +=	toolset=darwin-$(ARCH)
+TOOLSET_NAME=darwin
 else
-B2_CONFIGURATION_ARGS +=	toolset=gcc-$(ARCH)
+TOOLSET_NAME=gcc
 endif
+B2_CONFIGURATION_ARGS +=	toolset=${TOOLSET_NAME}-$(ARCH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -288,15 +289,8 @@ endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-ifeq ($(shell uname -s),Darwin)
-		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
-		rm -f user-config.jam; \
-		echo 'using darwin : $(ARCH) : ${CXX} : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> user-config.jam;
-else
-		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
-		rm -f user-config.jam; \
-		echo 'using gcc : $(ARCH) : ${CXX} : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> user-config.jam;
-endif
+	rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam; \
+	echo 'using ${TOOLSET_NAME} : $(ARCH) : ${CXX} : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
 endif
 	@#
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
