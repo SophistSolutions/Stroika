@@ -14,12 +14,12 @@
 #include <boost/filesystem.hpp>
 #endif
 
-#include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
-#include "../../Time/DateTime.h"
-
-#include "../FileAccessMode.h"
-#include "Directory.h"
+namespace Stroika::Foundation::Characters {
+	class String;
+}
+namespace Stroika::Foundation::Time {
+	class DateTime;
+}
 
 /**
  * TODO:
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Time::DateTime;
 
     /**
-     *  @todo MAYBNE MAKE UNSINGED???
+     *  @todo MAYBE MAKE UNSINGED???
      */
     using FileOffset_t = int64_t;
 }
