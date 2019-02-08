@@ -10,6 +10,8 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 #
+#		@todo	Now that we pass in CFLAGS, CXXFLAGS etc, we probably can get away with fewer explicit settings in the build process (like _GLIBCXX_DEBUG)
+#
 
 StroikaRoot=$(abspath ../..)/
 
