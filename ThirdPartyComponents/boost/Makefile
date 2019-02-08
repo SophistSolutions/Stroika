@@ -290,12 +290,8 @@ endif
 ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 ifeq ($(shell uname -s),Darwin)
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
-		if [ -e project-config.jam.ORIG ] ; then\
-			mv project-config.jam.ORIG project-config.jam;\
-		else\
-			cp project-config.jam project-config.jam.ORIG;\
-		fi;\
-		gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam;
+		rm -f user-config.jam; \
+		echo 'using darwin : $(ARCH) : ${CXX} : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> user-config.jam;
 else
 		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);\
 		rm -f user-config.jam; \
