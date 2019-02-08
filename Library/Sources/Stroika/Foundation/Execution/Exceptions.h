@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual T As () const;
 
     protected:
-        nonvirtual const string& _PeekAtSDKString_ () const;
+        nonvirtual const char* _PeekAtNarrowSDKString_ () const;
 
     private:
         Characters::String fErrorMessage_;

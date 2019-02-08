@@ -17,12 +17,12 @@ namespace Stroika::Foundation::IO::FileSystem {
      ********************************************************************************
      */
     inline Exception::Exception (error_code errCode, const path& p1, const path& p2)
-        : inherited (mkMsg_ (errCode, p1, p2), _PeekAtSDKString_ (), p1, p2, errCode)
+        : inherited (mkMsg_ (errCode, p1, p2), mkMsg_ (errCode, p1, p2).AsNarrowSDKString (), p1, p2, errCode)
     {
         Require (not p1.empty () or p2.empty ()); // if only one path provided, provide it first
     }
     inline Exception::Exception (error_code errCode, const Characters::String& message, const path& p1, const path& p2)
-        : inherited (mkMsg_ (errCode, message, p1, p2), _PeekAtSDKString_ (), p1, p2, errCode)
+        : inherited (mkMsg_ (errCode, message, p1, p2), mkMsg_ (errCode, message, p1, p2).AsNarrowSDKString (), p1, p2, errCode)
     {
         Require (not p1.empty () or p2.empty ()); // if only one path provided, provide it first
     }
