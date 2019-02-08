@@ -185,6 +185,13 @@ else
 endif
 
 
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+endif
+
+
+
 ### Run b2.exe --help
 B2_CONFIGURATION_ARGS=
 B2_CONFIGURATION_ARGS +=	link=static
