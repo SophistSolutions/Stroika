@@ -207,7 +207,8 @@ B2_CONFIGURATION_ARGS +=	--hash
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
 #B2_CONFIGURATION_ARGS +=	-d0
-B2_CONFIGURATION_ARGS +=	-d+2
+#B2_CONFIGURATION_ARGS +=	-d+2
+B2_CONFIGURATION_ARGS +=	-d2
 #SHOW VARIABLES - B2_CONFIGURATION_ARGS +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
