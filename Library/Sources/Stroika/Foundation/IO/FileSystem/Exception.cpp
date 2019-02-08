@@ -12,6 +12,9 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+
 /*
  ********************************************************************************
  ******************************* FileSystem::Exception **************************
@@ -43,10 +46,10 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const Char
 
 void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)
 {
-#if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContenxtBumper tctx (L"Exception::ThrowPOSIXErrNo (%d)", errNo);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+	Debug::TraceContextBumper ctx{ Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Exception::ThrowSystemErrNo", L"sysErr=%d, p1=%s, p2=%s", errNo, Characters::ToString (p1).c_str (), Characters::ToString (p2).c_str ()) };
 #endif
-    Require (errNo != 0);
+	Require (errNo != 0);
 #if qPlatform_POSIX
     error_code ec{errNo, system_category ()};
 #else
@@ -57,8 +60,8 @@ void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)
 
 void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
 {
-#if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContenxtBumper tctx (L"Exception::ThrowSystemErrNo (%d)", sysErr);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+	Debug::TraceContextBumper ctx{ Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Exception::ThrowSystemErrNo", L"sysErr=%d, p1=%s, p2=%s", sysErr, Characters::ToString (p1).c_str (), Characters::ToString (p2).c_str ()) };
 #endif
     Require (sysErr != 0);
     error_code ec{sysErr, system_category ()};
