@@ -268,6 +268,8 @@ $(TARGETEXE): $(Objs) $(StroikaLibs)
             --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args;
                                                                processed after all adds applied) */
             --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */
+            --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX
+                                                               (defaults to hidden on gcc/clang/unix compilers) */
             --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */
             --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */
             --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */

@@ -95,13 +95,13 @@ my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = undef;
 my $ADD2CWARNING_FLAGS = "";
+my $SharedSymbolVisibility = undef;	# gcc visibility flag - -fvisible=hidden
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
 my $sanitizerFlagsIsDefined = false;		#sadly perl arrays cannot be 'undefined'
 my $sanitizerFlagsNoneSet = false;
 my @sanitizerFlags = ();
 my $noSanitizerFlags = "";
-
 
 my $HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = DEFAULT_BOOL_OPTIONS;
 
@@ -218,6 +218,7 @@ sub	DoHelp_
         print("	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
         print("	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
         print("	    --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */\n");
+        print("	    --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
         print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
@@ -662,6 +663,14 @@ sub	SetDefaultForCompilerDriver_
 			$STDCXXLIB = "libc++";
 		}
 	}
+	if (! defined $SharedSymbolVisibility) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) or IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			# harmless either way on Linux but on MacOSX sileneces a warning when linking with boost;
+			# probably a good idea in general anyhow as a default
+			# -- LGP 2019-02-09
+			$SharedSymbolVisibility = "hidden";
+		}
+	}
 	if ($ApplyDebugFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 1;
@@ -963,6 +972,11 @@ sub	ParseCommandLine_Remaining_
                 print ("UNRECOGNIZED assertions ARG: $var\n");
                 DoHelp_ (1);
 			}
+		}
+		elsif ((lc ($var) eq "-shared-symbol-visibility") or (lc ($var) eq "--shared-symbol-visibility")) {
+			$i++;
+			$var = $args[$i];
+			$SharedSymbolVisibility = $args[$i];
 		}
 		elsif ((lc ($var) eq "-block-allocation") or (lc ($var) eq "--block-allocation")) {
 			$i++;
@@ -1577,8 +1591,13 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			push @flags, "$i";
 		}
 	}
+
+	if (defined $SharedSymbolVisibility) {
+		push @flags, "-fvisibility=$SharedSymbolVisibility";
+	}
+	
 	if ($INCLUDE_SYMBOLS_LIB) {
-		if ( $isVisualStudio) {
+		if ($isVisualStudio) {
 			####? push @flags, "/Z7";
 		}
 		else {
