@@ -636,10 +636,13 @@ unless (-e "$intermediateFiles/$activeConfiguration") {
 	mkdir "$intermediateFiles$activeConfiguration/Library";
 }
 
-unless (-e $configFileDotHName) {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileDotHName\" ... ");
-	WriteStroikaConfigCHeader ();
-	print("done\n");
+### OBSOLETE AS OF STROIKA v2.1d18, EXCEPT ON WINDOWS STILL NEEDED (cuz doesnt use makefile yet for #defines)
+if ("$^O" eq "cygwin") {
+	unless (-e $configFileDotHName) {
+		print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileDotHName\" ... ");
+		WriteStroikaConfigCHeader ();
+		print("done\n");
+	}
 }
 
 unless (-e $configFileMakeName) {

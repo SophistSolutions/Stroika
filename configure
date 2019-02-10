@@ -1468,6 +1468,17 @@ sub	ParseCommandLine_Remaining_
 	}
 }
 
+sub ZERO_OR_1_
+{
+    my $x = shift(@_);
+	if ($x eq "") {
+		return 0;
+	}
+	if ($x == 1) {
+		return 1;
+	}
+	return 0;
+}
 
 sub     CHECK_FEATURE_OPTION
 {
@@ -1606,6 +1617,44 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 	}
 	if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
 		push @flags, "-D_GLIBCXX_DEBUG";
+	}
+	if (not $doCFLAGS) {
+		# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
+		# Doing this way means the defines appear in compiles of third-party-components, but they should not interfere, and if they ever
+		# did we could add a new separate flag to extract/remove/keep them out (e.g STROIKA_CPP_DEFINE_ARGS, and just -filter-out all those from the CXXFLAGS)
+		#
+		# Doing ALL the flags through the command line is somewhat clear than having MOST done through the Stroika-Configs.h file but a few done through the commandline.
+		#
+		# It has ONE possible disadvantage, which is confusing some tools that preparse the the (like visual studio code) but we must just find some way
+		# to get them to also know about these defines (TBD)
+		#		--LGP 2019-02-10
+		my $dashFlag=$isVisualStudio? "/D" : "-D";
+		push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($ENABLE_ASSERTIONS);
+		push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
+		push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
+		push @flags, $dashFlag . "qHasFeature_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
+		push @flags, $dashFlag . "qHasFeature_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
+		push @flags, $dashFlag . "qHasFeature_Xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
+		push @flags, $dashFlag . "qHasFeature_ZLib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
+		push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
+		push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
+		push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
+		if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
+			push @flags, $dashFlag . "qTraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
+		}
+
+		foreach my $var (@useExtraCDefines)
+		{
+			my ($define, $name, $value) = split(/ /, $var);
+			if ($define != 'define') {
+				die ("NYI");
+			}
+			if ($value == "") {
+				$value = 0;
+			}
+			push @flags, $dashFlag . "$name=" . $value;
+		}
+
 	}
 	### @todo - need separate flags for C and CXX
 	if (0) {
