@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <cstdint>
+
 /**
  *  \file
  *

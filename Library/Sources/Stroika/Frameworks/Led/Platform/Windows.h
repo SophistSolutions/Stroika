@@ -6,6 +6,8 @@
 
 #include "../../../Foundation/StroikaPreComp.h"
 
+#include "../../../Foundation/Debug/CompileTimeFlagChecker.h"
+
 /*
 @MODULE:    Led_Win32
 @DESCRIPTION:
