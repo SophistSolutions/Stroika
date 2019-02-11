@@ -558,29 +558,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 #endif
 
-#if qLedCheckCompilerFlagsConsistency
-    namespace LedCheckCompilerFlags_Led_Win32 {
-        extern bool LedCheckCompilerFlags_ (qSupportWindowsSDKCallbacks);
-        extern bool LedCheckCompilerFlags_ (qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug);
-
-        struct FlagsChecker {
-            FlagsChecker ()
-            {
-                /*
-                    *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
-                    */
-                if (LedCheckCompilerFlags_ (qSupportWindowsSDKCallbacks) != qSupportWindowsSDKCallbacks) {
-                    abort ();
-                }
-                if (LedCheckCompilerFlags_ (qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug) != qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug) {
-                    abort ();
-                }
-            }
-        };
-        static struct FlagsChecker sFlagsChecker;
-    }
-#endif
-
     namespace Private {
         /*
          * Hack to assure the Led_Win32.o module is linked in. Without it being linked in,
@@ -3289,5 +3266,8 @@ namespace Stroika::Frameworks::Led::Platform {
     }
 
 }
+
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qSupportWindowsSDKCallbacks, qSupportWindowsSDKCallbacks);
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug);
 
 #endif /*_Stroika_Frameworks_Led_Platform_Windows_h_*/

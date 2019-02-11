@@ -6,6 +6,7 @@
 
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Debug/Assertions.h"
+#include "../../Foundation/Debug/CompileTimeFlagChecker.h"
 #include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Memory/Common.h"
 #include "../../Foundation/StroikaPreComp.h"
@@ -767,63 +768,10 @@ namespace Stroika::Frameworks::Led {
     string MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs = string ());
 
     /*
-    @CONFIGVAR:     qLedCheckCompilerFlagsConsistency
-    @DESCRIPTION:   <p>Some development environments make it easy to accidentally provide an inconsistent set of compilation flags
-                across compilation units (e.g. MSVC/MS Visual Studio.Net is like this). This is a <em>bad</em> thing.</p>
-                    <p>Led enables certain features - like debug checking - based on certain compilation flags (e.g. @'qDebug').
-                Some virtual methods are added to certain classes (e.g. Invariant check methods). And some other features maybe
-                conditionally defined based on other flags.</p>
-                    <p>This mechanism attempts to detect if these flags are set inconsistently. This is only set on
-                by default for DEBUG builds - but - unfortunately - this can just as easily affect release builds (even
-                when the DEBUG builds work fine. For this reason - if you are seeing strange behavior when you compile for
-                a RELEASE build - you may want to externally specify this flag to test.
-                    </p>
-        */
-#ifndef qLedCheckCompilerFlagsConsistency
-#define qLedCheckCompilerFlagsConsistency qDebug
-#endif
-
-#if qLedCheckCompilerFlagsConsistency
-    namespace LedCheckCompilerFlags {
-#define LedCheckCompilerFlags_(a) _CHECK_##a
-        extern int LedCheckCompilerFlags_ (qDebug);
-        extern int LedCheckCompilerFlags_ (qSingleByteCharacters);
-        extern int LedCheckCompilerFlags_ (qMultiByteCharacters);
-        extern int LedCheckCompilerFlags_ (qWideCharacters);
-        extern int LedCheckCompilerFlags_ (qProvideIMESupport);
-
-        struct FlagsChecker {
-            FlagsChecker ()
-            {
-                /*
-                    *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
-                    */
-                if (LedCheckCompilerFlags_ (qDebug) != qDebug) {
-                    abort ();
-                }
-                if (LedCheckCompilerFlags_ (qSingleByteCharacters) != qSingleByteCharacters) {
-                    abort ();
-                }
-                if (LedCheckCompilerFlags_ (qMultiByteCharacters) != qMultiByteCharacters) {
-                    abort ();
-                }
-                if (LedCheckCompilerFlags_ (qWideCharacters) != qWideCharacters) {
-                    abort ();
-                }
-                if (LedCheckCompilerFlags_ (qProvideIMESupport) != qProvideIMESupport) {
-                    abort ();
-                }
-            }
-        };
-        static struct FlagsChecker sFlagsChecker;
-    }
-#endif
-
-    /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
 
 #if !qHasIsAscii && defined(isascii)
 //#warning  "You probably should define qHasIsAscii for your compiler."
@@ -1452,5 +1400,10 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 }
+
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qSingleByteCharacters, qSingleByteCharacters);
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qMultiByteCharacters, qMultiByteCharacters);
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qWideCharacters, qWideCharacters);
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qProvideIMESupport, qProvideIMESupport);
 
 #endif /*_Stroika_Frameworks_Led_Support_h_*/

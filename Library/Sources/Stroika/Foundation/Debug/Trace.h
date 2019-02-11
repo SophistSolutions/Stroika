@@ -43,7 +43,6 @@ namespace Stroika::Foundation::Debug {
 #if !defined(qTraceToFile)
 #error "qTraceToFile should normally be defined indirectly by StroikaConfig.h"
 #endif
-    CompileTimeFlagChecker_HEADER (qTraceToFile, qTraceToFile);
 
     /*
      *  qDefaultTracingOn
@@ -68,8 +67,6 @@ namespace Stroika::Foundation::Debug {
 #if !defined(qDefaultTracingOn)
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 #endif
-
-    CompileTimeFlagChecker_HEADER (qDefaultTracingOn, qDefaultTracingOn);
 
     namespace Private_ {
         struct TraceModuleData_;

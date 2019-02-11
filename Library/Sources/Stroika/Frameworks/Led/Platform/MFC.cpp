@@ -38,11 +38,7 @@ public:
 } sOneTimeLedMFCAssertionFunctionSetter;
 #endif
 
-#if qLedCheckCompilerFlagsConsistency
-namespace Stroika::Frameworks::Led::Platform::LedCheckCompilerFlags_Led_MFC {
-    int LedCheckCompilerFlags_ (qMFCRequiresCWndLeftmostBaseClass) = qMFCRequiresCWndLeftmostBaseClass;
-}
-#endif
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass);
 
 /*
  ********************************************************************************

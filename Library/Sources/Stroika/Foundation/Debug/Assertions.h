@@ -382,8 +382,13 @@ namespace Stroika::Foundation::Debug {
 #define Verify(c) (c)
 #endif
 
-    CompileTimeFlagChecker_HEADER (qDebug, qDebug);
-
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDebug, qDebug);
 
 #endif /*_Stroika_Foundation_Debug_Assertions_h_*/

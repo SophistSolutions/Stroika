@@ -12,12 +12,8 @@
 
 using namespace Stroika::Foundation;
 
-#if qLedCheckCompilerFlagsConsistency
-namespace Stroika::Frameworks::Led::Platform::LedCheckCompilerFlags_Led_Win32 {
-    bool LedCheckCompilerFlags_ (qSupportWindowsSDKCallbacks)                                       = qSupportWindowsSDKCallbacks;
-    bool LedCheckCompilerFlags_ (qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug) = qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug;
-}
-#endif
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qSupportWindowsSDKCallbacks, qSupportWindowsSDKCallbacks);
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug);
 
 namespace Stroika::Frameworks::Led::Platform {
 
@@ -325,5 +321,4 @@ namespace Stroika::Frameworks::Led::Platform {
             fIdleWnd = ::CreateWindowEx (0, className.c_str (), _T(""), 0, 0, 0, 1, 1, NULL, NULL, NULL, this);
         }
     }
-
 }

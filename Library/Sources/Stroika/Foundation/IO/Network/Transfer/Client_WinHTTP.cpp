@@ -45,6 +45,8 @@ using Stroika::Foundation::Execution::Platform::Windows::ThrowIfFalseGetLastErro
 using Stroika::Foundation::Memory::SmallStackBuffer;
 using Stroika::Foundation::Memory::SmallStackBufferCommon;
 
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
+
 /*
  *  TODO:
  *

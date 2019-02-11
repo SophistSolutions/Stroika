@@ -90,6 +90,8 @@ using namespace Stroika::Foundation::Streams;
 
 using std::byte;
 
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
+
 #if qHasFeature_Xerces
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)

@@ -1762,12 +1762,7 @@ bool Led::Led_CasedStringsEqual (const string& lhs, const string& rhs, bool igno
     return true;
 }
 
-#if qLedCheckCompilerFlagsConsistency
-namespace Stroika::Frameworks::Led::LedCheckCompilerFlags {
-    int LedCheckCompilerFlags_ (qDebug)                = qDebug;
-    int LedCheckCompilerFlags_ (qSingleByteCharacters) = qSingleByteCharacters;
-    int LedCheckCompilerFlags_ (qMultiByteCharacters)  = qMultiByteCharacters;
-    int LedCheckCompilerFlags_ (qWideCharacters)       = qWideCharacters;
-    int LedCheckCompilerFlags_ (qProvideIMESupport)    = qProvideIMESupport;
-}
-#endif
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qSingleByteCharacters, qSingleByteCharacters);
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qMultiByteCharacters, qMultiByteCharacters);
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qWideCharacters, qWideCharacters);
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qProvideIMESupport, qProvideIMESupport);

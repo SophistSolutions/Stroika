@@ -8,25 +8,6 @@
 
 namespace Stroika::Frameworks::Led::Platform {
 
-#if qLedCheckCompilerFlagsConsistency
-    namespace LedCheckCompilerFlags_Led_MFC {
-        extern int LedCheckCompilerFlags_ (qMFCRequiresCWndLeftmostBaseClass);
-
-        struct FlagsChecker {
-            FlagsChecker ()
-            {
-                /*
-                    *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
-                    */
-                if (LedCheckCompilerFlags_ (qMFCRequiresCWndLeftmostBaseClass) != qMFCRequiresCWndLeftmostBaseClass) {
-                    abort ();
-                }
-            }
-        };
-        static struct FlagsChecker sFlagsChecker;
-    }
-#endif
-
     /*
     @METHOD:        AsCPoint
     @DESCRIPTION:   Convert a @'Led_Point' to an MFC CPoint.
@@ -1802,5 +1783,7 @@ namespace Stroika::Frameworks::Led::Platform {
         return fCmdUI;
     }
 }
+
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass)
 
 #endif /*_Stroika_Frameworks_Led_Platform_MFC_inl_*/

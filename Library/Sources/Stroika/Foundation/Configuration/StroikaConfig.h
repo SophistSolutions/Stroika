@@ -6,7 +6,7 @@
 
 /*
  *  For the dyanmically generated (from the configuraiton system) defines
- *		OBSOLETE/DEPRECATED AS OF STROIKA v2.1d18, EXCEPT building with visual studio, cuz I dont yet use makefiles
+ *      OBSOLETE/DEPRECATED AS OF STROIKA v2.1d18, EXCEPT building with visual studio, cuz I dont yet use makefiles
  */
 #ifdef _MSC_VER
 #include "Stroika-Current-Configuration.h"

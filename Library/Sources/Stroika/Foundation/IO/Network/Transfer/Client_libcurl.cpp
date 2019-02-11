@@ -33,6 +33,8 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 // Uncomment this line to enable libcurl to print diagnostics to stderr
 //#define       USE_LIBCURL_VERBOSE_    1
 
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_LibCurl, qHasFeature_LibCurl);
+
 #if qHasFeature_LibCurl
 namespace {
     struct ModuleInit_ {
