@@ -18,6 +18,7 @@ namespace Stroika::Foundation::Execution {
      ******************************* errno_ErrorException ***************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_MSC_WARNING_START (4996); // this whole procedure deprecated so no need to warn its impl is as well
     inline errno_ErrorException::operator errno_t () const
     {
         return fError;
@@ -26,20 +27,13 @@ namespace Stroika::Foundation::Execution {
     {
         return LookupMessage (fError);
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996); // this whole procedure deprecated so no need to warn its impl is as well
 
     /*
      ********************************************************************************
-     ***************************** ThrowErrNoIfNull *********************************
+     ************************** ThrowPOSIXErrNoIfNull *******************************
      ********************************************************************************
      */
-    inline void ThrowErrNoIfNull (void* returnValue)
-    {
-        if (returnValue == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                ThrowPOSIXErrNo (errno);
-            }
-    }
 
     template <typename INT_TYPE>
     [[deprecated ("Since v2.1d18, use Execution::ThrowPOSIXErrNoIfNegative")]] inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
@@ -49,31 +43,17 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ************************ Handle_ErrNoResultInterruption ************************
-     ********************************************************************************
-     */
-    template <typename CALL>
-    auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ())
-    {
-        decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read
-        do {
-            ret = call ();
-            Execution::CheckForThreadInterruption ();
-        } while (ret < 0 and errno == EINTR);
-        return ThrowPOSIXErrNoIfNegative (ret);
-    }
-
-    /*
-     ********************************************************************************
      *************************************** Throw **********************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_MSC_WARNING_START (4996); // this whole procedure deprecated so no need to warn its impl is as well
     template <>
     [[noreturn]] inline void Throw (const errno_ErrorException& e2Throw)
     {
         // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
         errno_ErrorException::Throw (e2Throw);
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996); // this whole procedure deprecated so no need to warn its impl is as well
 
     /*
      ********************************************************************************

@@ -26,9 +26,8 @@
 #include "../Characters/ToString.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
-#if qPlatform_POSIX
-#include "../Execution/ErrNoException.h"
-#elif qPlatform_Windows
+#include "../Execution/Exceptions.h"
+#if qPlatform_Windows
 #include "../Execution/Platform/Windows/Exception.h"
 #endif
 #include "../IO/FileSystem/FileInputStream.h"

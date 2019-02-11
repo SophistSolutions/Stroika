@@ -15,7 +15,7 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "Platform/Windows/WinSock.h"
 #endif

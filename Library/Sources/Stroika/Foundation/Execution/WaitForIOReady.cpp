@@ -18,9 +18,8 @@
 #include "../Memory/SmallStackBuffer.h"
 #include "../Time/Realtime.h"
 
-#if qPlatform_POSIX
-#include "ErrNoException.h"
-#elif qPlatform_Windows
+#include "Exceptions.h"
+#if qPlatform_Windows
 #include "Platform/Windows/Exception.h"
 #include "Platform/Windows/WaitSupport.h"
 #endif

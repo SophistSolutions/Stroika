@@ -8,7 +8,7 @@
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/String_Constant.h"
 #include "../../Debug/Trace.h"
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "CIDR.h"

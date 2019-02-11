@@ -5,7 +5,7 @@
 
 #include <unistd.h>
 
-#include "../../ErrNoException.h"
+#include "../../Exceptions.h"
 
 #include "SemWaitableEvent.h"
 

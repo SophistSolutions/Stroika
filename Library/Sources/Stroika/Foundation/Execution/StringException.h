@@ -16,7 +16,7 @@
 
 #include "Exceptions.h"
 
-//_DeprecatedFile_ ("DEPRECATED in v2.1d18 - #include Exception.h instead of StringException.h");
+//_DeprecatedFile_("DEPRECATED in v2.1d18 - #include Exception.h instead of StringException.h");
 
 namespace Stroika::Foundation::Execution {
 

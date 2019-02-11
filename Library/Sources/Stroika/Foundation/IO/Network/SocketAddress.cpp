@@ -6,7 +6,6 @@
 #include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
-#include "../../Execution/ErrNoException.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Memory/BLOB.h"
 

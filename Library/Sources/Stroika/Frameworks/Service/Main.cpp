@@ -26,7 +26,7 @@
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
 #include "../../Foundation/Execution/CommandLine.h"
-#include "../../Foundation/Execution/ErrNoException.h"
+#include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/Execution/Finally.h"
 #include "../../Foundation/Execution/Module.h"
 #include "../../Foundation/Execution/OperationNotSupportedException.h"

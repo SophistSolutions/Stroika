@@ -17,10 +17,10 @@
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Common.h"
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 #if qPlatform_POSIX
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #elif qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif

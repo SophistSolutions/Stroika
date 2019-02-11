@@ -13,7 +13,7 @@
 #include "../../Characters/String_Constant.h"
 #include "../../Containers/Collection.h"
 #include "../../Debug/Trace.h"
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"

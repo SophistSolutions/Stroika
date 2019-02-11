@@ -26,7 +26,7 @@
 #include "../../Execution/Platform/Windows/Exception.h"
 #include "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #include "../../Execution/Finally.h"
 
 #include "../../IO/FileAccessException.h"
@@ -573,7 +573,7 @@ String IO::FileSystem::Ptr::GetCurrentDirectory () const
 {
 #if qPlatform_POSIX
     SDKChar buf[PATH_MAX];
-    Execution::ThrowErrNoIfNull (::getcwd (buf, NEltsOf (buf)));
+    Execution::ThrowPOSIXErrNoIfNull (::getcwd (buf, NEltsOf (buf)));
     return AssureDirectoryPathSlashTerminated (String::FromSDKString (buf));
 #elif qPlatform_Windows
     SDKChar buf[MAX_PATH];

@@ -256,6 +256,35 @@ namespace Stroika::Foundation::Execution {
      */
     [[noreturn]] static void ThrowSystemErrNo (int sysErr);
 
+    /**
+     *  \brief Handle UNIX EINTR system call behavior - fairly transparently - just effectively removes them from the set of errors that can be returned
+     *
+     *  Run the given (argument) call. After each call, invoke Execution::CheckForThreadInterruption ().
+     *  If the call returns < 0 and errno == EINTR, repeat the call.
+     *  If the result was < 0, but errno != EINTR, then ThrowErrNoIfNegative ();
+     *  Then return the result.
+     *
+     *  \note The only HITCH with respect to automatically handling interuptability is that that its handled by 'restarting' the argument 'call'
+     *        That means if it was partially completed, the provider of 'call' must accomodate that fact (use mutable lambda).
+     *
+     *  This behavior is meant to work with the frequent POSIX API semantics of a return value of < 0
+     *  implying an error, and < 0 but errno == EINTR means retry the call. This API also provides a
+     *  cancelation point - so it makes otherwise blocking calls (like select, or read) work well with thread
+     *  interruption.
+     *
+     *  \note   ***Cancelation Point***
+     */
+    template <typename CALL>
+    auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
+
+    /**
+     *  Check the argument 'return value' from some funciton, and if its null, throw a SystemError exception with
+     *  the current errno value.
+     *
+     *  \note rarely useful, but some POSIX APIs such as getcwd() do return null on error.
+     */
+    void ThrowPOSIXErrNoIfNull (void* returnValue);
+
 }
 
 /*

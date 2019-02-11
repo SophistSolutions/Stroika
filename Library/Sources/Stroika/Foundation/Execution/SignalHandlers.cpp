@@ -15,7 +15,7 @@
 #include "../Debug/Trace.h"
 
 #include "Common.h"
-#include "ErrNoException.h"
+#include "Exceptions.h"
 #if qPlatform_POSIX
 #include "Platform/POSIX/SemWaitableEvent.h"
 #include "Platform/POSIX/SignalBlock.h"

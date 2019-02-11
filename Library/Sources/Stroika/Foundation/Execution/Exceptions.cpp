@@ -17,7 +17,7 @@
 #include "Throw.h"
 #include "TimeOutException.h"
 
-#include "ErrNoException.h"
+#include "Exceptions.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;

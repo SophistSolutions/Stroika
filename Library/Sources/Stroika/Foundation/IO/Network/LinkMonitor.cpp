@@ -28,7 +28,7 @@
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Containers/Collection.h"
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #include "../../Execution/Thread.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"

@@ -7,7 +7,7 @@
 
 #include "../../../Characters/String_Constant.h"
 #include "../../../Memory/SmallStackBuffer.h"
-#include "../../ErrNoException.h"
+#include "../../Exceptions.h"
 
 #include "Users.h"
 

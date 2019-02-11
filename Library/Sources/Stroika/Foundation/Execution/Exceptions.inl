@@ -10,10 +10,15 @@
  ********************************************************************************
  */
 
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace Stroika::Foundation::Execution {
+
+	// forward declare for use below....
+	void CheckForThreadInterruption ();
+
 
     namespace Private_::SystemErrorExceptionPrivate_ {
         Characters::String mkMsg_ (error_code errCode);
@@ -152,6 +157,36 @@ namespace Stroika::Foundation::Execution {
         error_code ec{sysErr, system_category ()};
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
         Throw (SystemErrorException (ec));
+    }
+
+    /*
+     ********************************************************************************
+     ************************ Handle_ErrNoResultInterruption ************************
+     ********************************************************************************
+     */
+    template <typename CALL>
+    auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ())
+    {
+        decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read
+        do {
+            ret = call ();
+            Execution::CheckForThreadInterruption ();
+        } while (ret < 0 and errno == EINTR);
+        return ThrowPOSIXErrNoIfNegative (ret);
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** ThrowPOSIXErrNoIfNull ***************************
+     ********************************************************************************
+     */
+    inline void ThrowPOSIXErrNoIfNull (void* returnValue)
+    {
+        if (returnValue == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                ThrowPOSIXErrNo (errno);
+            }
     }
 
 }

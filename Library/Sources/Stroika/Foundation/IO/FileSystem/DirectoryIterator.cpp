@@ -13,7 +13,7 @@
 #include "../../Characters/ToString.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Debug/Trace.h"
-#include "../../Execution/ErrNoException.h"
+#include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
@@ -36,7 +36,6 @@ using namespace Stroika::Foundation::Traversal;
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
-using Execution::ThrowErrNoIfNull;
 using Execution::ThrowPOSIXErrNo;
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
@@ -77,7 +76,12 @@ public:
             }
             else {
                 errno = 0;
-                ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
+                if ((fCur_ = ::readdir (fDirIt_)) == nullptr) {
+                    // readdir if errno==0 just means EOF
+                    if (errno == 0) {
+                        Execution::ThrowPOSIXErrNo ();
+                    }
+                }
             }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 optional<String> tmphack;
