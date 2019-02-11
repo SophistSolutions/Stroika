@@ -46,14 +46,18 @@ namespace Stroika::Foundation::Execution {
      *************************************** Throw **********************************
      ********************************************************************************
      */
-    DISABLE_COMPILER_MSC_WARNING_START (4996); // this whole procedure deprecated so no need to warn its impl is as well
-    template <>
+	DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+		DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+		DISABLE_COMPILER_MSC_WARNING_START (4996);
+	template <>
     [[noreturn]] inline void Throw (const errno_ErrorException& e2Throw)
     {
         // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
         errno_ErrorException::Throw (e2Throw);
     }
-    DISABLE_COMPILER_MSC_WARNING_END (4996); // this whole procedure deprecated so no need to warn its impl is as well
+	DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+		DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+		DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     /*
      ********************************************************************************

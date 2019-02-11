@@ -31,9 +31,6 @@
  *      will use the current SDK characters (@see SDKString). But - its best to use Characters::ToString () on the
  *      caught exception, since this uses ExceptionStringHelper to properly handle characters the SDK characterset might not
  *      allow representing some unicode characters.
- *
- * TODO:
- *          @todo   And make FileAccessException subclass from SystemErrorr? instead of StringExcpetion?
  */
 
 namespace Stroika::Foundation::Execution {

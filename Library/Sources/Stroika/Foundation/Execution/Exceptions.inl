@@ -10,15 +10,10 @@
  ********************************************************************************
  */
 
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace Stroika::Foundation::Execution {
-
-	// forward declare for use below....
-	void CheckForThreadInterruption ();
-
 
     namespace Private_::SystemErrorExceptionPrivate_ {
         Characters::String mkMsg_ (error_code errCode);
@@ -164,7 +159,9 @@ namespace Stroika::Foundation::Execution {
      ************************ Handle_ErrNoResultInterruption ************************
      ********************************************************************************
      */
-    template <typename CALL>
+	 // forward declare for use below....
+	void CheckForThreadInterruption ();
+	template <typename CALL>
     auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ())
     {
         decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read
