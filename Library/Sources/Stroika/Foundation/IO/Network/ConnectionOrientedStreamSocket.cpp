@@ -70,9 +70,9 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
+                SystemErrorException<>::ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+                SystemErrorException<>::ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -87,11 +87,11 @@ namespace {
 #endif
 
 #if qPlatform_POSIX
-                return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
+                return SystemErrorException<>::ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif qPlatform_Windows
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-                return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
+                return static_cast<size_t> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -116,9 +116,9 @@ namespace {
                             // But MUST check if is EOF or real data available
                             char buf[1024];
 #if qPlatform_POSIX
-                            int tmp = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
+                            int tmp = SystemErrorException<>::ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
 #elif qPlatform_Windows
-                            int tmp = ThrowErrNoIfNegative<int> (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
+                            int tmp = SystemErrorException<>::ThrowPOSIXErrNoIfNegative<int> (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else
                             AssertNotImplemented ();
 #endif
@@ -159,7 +159,7 @@ namespace {
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int     len = static_cast<int> (end - start);
                         ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
-                        ThrowErrNoIfNegative (n);
+                        SystemErrorException<>::ThrowPOSIXErrNoIfNegative (n);
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
                     });
@@ -181,7 +181,7 @@ namespace {
                         int len = static_cast<int> (end - start);
                         int flags = 0;
                         int n = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
-                        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (n);
+                        SystemErrorException<>::ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (n);
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
                     });

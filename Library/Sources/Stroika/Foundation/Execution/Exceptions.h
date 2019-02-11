@@ -230,6 +230,10 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Look at the argument value and if < 0,ThrowPOSIXErrNo (), and otherwise return it.
+         *
+         *  \note   Many POSIX - APIs - return a number which is zero if good, or -1 (or sometimes defined negative) if errno is set and there is an error.
+         *          This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
+         *          throws and a POSIX (generic_error) SystemErrorException.
          */
         template <typename INT_TYPE>
         static INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode);

@@ -55,13 +55,11 @@ namespace Stroika::Foundation::Execution {
         errno_t fError{0};
     };
 
-    /*
-     * Many - mostly POSIX - APIs - return a number which is zero if good, or -1 if errno is set and there is an error.
-     * This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
-     * throws and errno_ErrorException () excpetion.
-     */
     template <typename INT_TYPE>
-    INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode);
+    [[deprecated ("Since v2.1d18, use SystemErrorException<>::ThrowPOSIXErrNoIfNegative")]] inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
+    {
+        return SystemErrorException<>::ThrowPOSIXErrNoIfNegative (returnCode);
+    }
 
     /**
      *  Check the argument 'return value' from some funciton, and if its null, throw a SystemError exception with

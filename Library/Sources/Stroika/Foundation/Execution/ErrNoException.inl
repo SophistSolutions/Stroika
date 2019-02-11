@@ -29,22 +29,6 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ***************************** ThrowErrNoIfNegative *****************************
-     ********************************************************************************
-     */
-    template <typename INT_TYPE>
-    inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
-    {
-        if (returnCode < 0)
-            [[UNLIKELY_ATTR]]
-            {
-                SystemErrorException<>::ThrowPOSIXErrNo (errno);
-            }
-        return returnCode;
-    }
-
-    /*
-     ********************************************************************************
      ***************************** ThrowErrNoIfNull *********************************
      ********************************************************************************
      */
