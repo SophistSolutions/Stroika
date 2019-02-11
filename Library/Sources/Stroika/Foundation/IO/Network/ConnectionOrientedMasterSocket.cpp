@@ -34,9 +34,9 @@ namespace {
                 Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_POSIX
-				ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
+                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
 #elif qPlatform_Windows
-				ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
+                ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
 #else
                 AssertNotImplemented ();
 #endif

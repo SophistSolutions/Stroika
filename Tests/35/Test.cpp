@@ -73,7 +73,7 @@ namespace {
                 static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv;                 // maybe not always right due to locales?
 
                 try {
-                    SystemErrorException<>::ThrowPOSIXErrNo (kErr2TestFor_);
+                    ThrowPOSIXErrNo (kErr2TestFor_);
                 }
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
