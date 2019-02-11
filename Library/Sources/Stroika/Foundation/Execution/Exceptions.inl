@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowPOSIXErrNo (errno_t errNo)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowPOSIXErrNo (%d)", errNo);
+        TraceContenxtBumper tctx (L"Execution::ThrowPOSIXErrNo (%d)", errNo);
 #endif
         Require (errNo != 0);
 #if qPlatform_POSIX
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowSystemErrNo (int sysErr)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowSystemErrNo (%d)", sysErr);
+        TraceContenxtBumper tctx (L"Execution::ThrowSystemErrNo (%d)", sysErr);
 #endif
         Require (sysErr != 0);
         error_code ec{sysErr, system_category ()};
