@@ -47,10 +47,10 @@ using namespace Stroika::Foundation::IO;
     }
 
 /*
-     ********************************************************************************
-     ********************** iostream::OpenInputFileStream ***************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ********************** iostream::OpenInputFileStream ***************************
+ ********************************************************************************
+ */
 ifstream& Streams::iostream::OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ifStream);
@@ -60,8 +60,8 @@ ifstream& Streams::iostream::OpenInputFileStream (ifstream* ifStream, const Stri
 #if qPlatform_Windows
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
 #elif qPlatform_POSIX
-            Execution::ThrowIfError_errno_t ();
-            AssertNotReached (); // errno sb set
+            Execution::ThrowPOSIXErrNo ();
+            AssertNotReached (); // errno sb set but not documented so not sure how best to handle?
 #else
             AssertNotImplemented ();
 #endif
@@ -78,10 +78,10 @@ ifstream& Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const S
 }
 
 /*
-     ********************************************************************************
-     ****************** StreamUtils::OpenOutputFileStream ***************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ****************** StreamUtils::OpenOutputFileStream ***************************
+ ********************************************************************************
+ */
 ofstream& Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ofStream);
@@ -91,8 +91,8 @@ ofstream& Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const Str
 #if qPlatform_Windows
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
 #elif qPlatform_POSIX
-            Execution::ThrowIfError_errno_t ();
-            AssertNotReached (); // errno sb set
+            Execution::ThrowPOSIXErrNo ();
+            AssertNotReached (); // errno sb set, but not documented to be guaranteed so not sure how best to handle this?
 #else
             AssertNotImplemented ();
 #endif

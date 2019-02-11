@@ -460,9 +460,9 @@ void IO::FileSystem::Ptr::RemoveFile (const String& fileName)
 #endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
-        Execution::ThrowErrNoIfNegative (::_wunlink (fileName.c_str ()));
+        Execution::ThrowPOSIXErrNoIfNegative (::_wunlink (fileName.c_str ()));
 #else
-        Execution::ThrowErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()));
+        Execution::ThrowPOSIXErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()));
 #endif
     }
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
@@ -563,7 +563,7 @@ Again:
 void IO::FileSystem::Ptr::CreateSymbolicLink ([[maybe_unused]] const String& linkName, [[maybe_unused]] const String& target)
 {
 #if qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));
+    Execution::ThrowPOSIXErrNoIfNegative (::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));
 #else
     AssertNotReached ();
 #endif
@@ -588,7 +588,7 @@ void IO::FileSystem::Ptr::SetCurrentDirectory (const String& newDir)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::FileSystem::Ptr::SetCurrentDirectory", L"directory='%s'", newDir.c_str ())};
 #if qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
+    Execution::ThrowPOSIXErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
 #elif qPlatform_Windows
     ::SetCurrentDirectory (newDir.AsSDKString ().c_str ());
 #else

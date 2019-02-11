@@ -41,6 +41,12 @@ namespace Stroika::Foundation::Execution {
             }
     }
 
+    template <typename INT_TYPE>
+    [[deprecated ("Since v2.1d18, use Execution::ThrowPOSIXErrNoIfNegative")]] inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
+    {
+        return Execution::ThrowPOSIXErrNoIfNegative (returnCode);
+    }
+
     /*
      ********************************************************************************
      ************************ Handle_ErrNoResultInterruption ************************
@@ -74,7 +80,7 @@ namespace Stroika::Foundation::Execution {
      ****************************** ThrowIfError_errno_t ****************************
      ********************************************************************************
      */
-    inline void ThrowIfError_errno_t (errno_t e)
+    [[deprecated ("Since v2.1d18, use Execution::ThrowPOSIXErrNo (almost never right to look at errno for == OK - only known API where that makes sense is readdir)")]] inline void ThrowIfError_errno_t (errno_t e = errno)
     {
         if (e != 0) {
             ThrowPOSIXErrNo (e);

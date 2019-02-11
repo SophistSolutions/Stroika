@@ -228,7 +228,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
         ifconf ifc;
         ifc.ifc_len = sizeof (buf);
         ifc.ifc_buf = buf;
-        Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeSocket (), SIOCGIFCONF, &ifc));
+        Execution::ThrowPOSIXErrNoIfNegative (::ioctl (s.GetNativeSocket (), SIOCGIFCONF, &ifc));
 
         const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
         for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
@@ -317,7 +317,7 @@ struct LinkMonitor::Rep_ {
                     memset (&addr, 0, sizeof (addr));
                     addr.nl_family = AF_NETLINK;
                     addr.nl_groups = RTMGRP_IPV4_IFADDR;
-                    Execution::ThrowErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
+                    Execution::ThrowPOSIXErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
                 }
 
                 //

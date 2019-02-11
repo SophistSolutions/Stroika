@@ -37,7 +37,7 @@ using namespace Stroika::Foundation::Traversal;
 using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using Execution::ThrowErrNoIfNull;
-using Execution::ThrowIfError_errno_t;
+using Execution::ThrowPOSIXErrNo;
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
 // To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
@@ -73,7 +73,7 @@ public:
         try {
 #if qPlatform_POSIX
             if (fDirIt_ == nullptr) {
-                Execution::ThrowIfError_errno_t ();
+                Execution::ThrowPOSIXErrNo ();
             }
             else {
                 errno = 0;
@@ -101,7 +101,7 @@ public:
         , fDirIt_{::opendir (dirName.AsSDKString ().c_str ())}
     {
         if (fDirIt_ == nullptr) {
-            Execution::ThrowIfError_errno_t ();
+            Execution::ThrowPOSIXErrNo ();
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"curInode=%s", Characters::ToString (curInode).c_str ()};
@@ -156,8 +156,9 @@ public:
             errno = 0;
             fCur_ = ::readdir (fDirIt_);
             if (fCur_ == nullptr) {
-                if (errno != EBADF) {
-                    ThrowIfError_errno_t ();
+                // errno can be zero here at end of directory
+                if (errno != EBADF and errno != 0) {
+                    ThrowPOSIXErrNo ();
                 }
             }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {

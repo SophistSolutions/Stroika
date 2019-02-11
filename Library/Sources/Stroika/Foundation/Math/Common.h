@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Math {
      *  \par Example Usage
      *      \code
      *          size_t  nRequested  =   intoEnd - intoStart;
-     *          return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+     *          return static_cast<size_t> (Execution::ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
      *      \endcode
      */
     template <typename NEW_T, typename T>

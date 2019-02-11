@@ -688,7 +688,7 @@ namespace {
         }
         else {
             childPID = UseFork_ ();
-            Execution::ThrowErrNoIfNegative (childPID);
+            ThrowPOSIXErrNoIfNegative (childPID);
             if (childPID == 0) {
                 try {
                     /*
@@ -766,9 +766,9 @@ namespace {
 
             // To incrementally read from stderr and stderr as we write to stdin, we must assure
             // our pipes are non-blocking
-            ThrowErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
-            ThrowErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
-            ThrowErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
+            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
+            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
+            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
             auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
@@ -855,7 +855,7 @@ namespace {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we don't get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out, false);
                                 readSoNotBlocking (useSTDERR, err, true);
-                                int bytesWritten = ThrowErrNoIfNegative (
+                                int bytesWritten = ThrowPOSIXErrNoIfNegative (
                                     Handle_ErrNoResultInterruption ([useSTDIN, i, e]() {
                                         int tmp = ::write (useSTDIN, i, e - i);
                                         // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
@@ -1297,7 +1297,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
     }
     useArgsV.push_back (nullptr);
 
-    pid_t pid = Execution::ThrowErrNoIfNegative (UseFork_ ());
+    pid_t pid = ThrowPOSIXErrNoIfNegative (UseFork_ ());
     if (pid == 0) {
         /*
          *  @see http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html for some considerations in daemonizing a child process.

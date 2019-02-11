@@ -39,10 +39,10 @@ namespace {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                   sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa]() -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)); }));
+                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa]() -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)); }));
 #elif qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)));
+                ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof (sa)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -76,14 +76,14 @@ namespace {
                 struct sockaddr_storage sa;
                 socklen_t               salen = sizeof (sa);
 #if qPlatform_POSIX
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); })));
+                size_t result = static_cast<size_t> (ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); })));
                 if (fromAddress != nullptr) {
                     *fromAddress = sa;
                 }
                 return result;
 #elif qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen)));
+                size_t result = static_cast<size_t> (ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen)));
                 if (fromAddress != nullptr) {
                     *fromAddress = sa;
                 }

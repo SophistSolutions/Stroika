@@ -1021,7 +1021,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     ComputerNames result;
 #if qPlatform_POSIX
     char nameBuf[1024];
-    Execution::ThrowErrNoIfNegative (::gethostname (nameBuf, NEltsOf (nameBuf)));
+    Execution::ThrowPOSIXErrNoIfNegative (::gethostname (nameBuf, NEltsOf (nameBuf)));
     nameBuf[NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
     result.fHostname               = String::FromNarrowSDKString (nameBuf);
 #elif qPlatform_Windows

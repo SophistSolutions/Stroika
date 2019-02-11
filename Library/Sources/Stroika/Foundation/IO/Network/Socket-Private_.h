@@ -205,9 +205,9 @@ namespace Stroika::Foundation::IO::Network {
                     // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
                     RequireNotNull (optval);
 #if qPlatform_POSIX
-                    ThrowErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                    ThrowPOSIXErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #elif qPlatform_Windows
-                    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                    ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #else
                     AssertNotImplemented ();
 #endif
@@ -227,9 +227,9 @@ namespace Stroika::Foundation::IO::Network {
                     // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
                     RequireNotNull (optval);
 #if qPlatform_POSIX
-                    ThrowErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
+                    ThrowPOSIXErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
 #elif qPlatform_Windows
-                    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
+                    ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
 #else
                     AssertNotImplemented ();
 #endif

@@ -174,7 +174,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
         if ((s.st_mode & desiredMode) != desiredMode) {
             result = chmod (filePathName.AsSDKString ().c_str (), desiredMode);
         }
-        ThrowErrNoIfNegative (result);
+        ThrowPOSIXErrNoIfNegative (result);
 #else
         AssertNotImplemented ();
 #endif

@@ -55,12 +55,6 @@ namespace Stroika::Foundation::Execution {
         errno_t fError{0};
     };
 
-    template <typename INT_TYPE>
-    [[deprecated ("Since v2.1d18, use Execution::ThrowPOSIXErrNoIfNegative")]] inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
-    {
-        return Execution::ThrowPOSIXErrNoIfNegative (returnCode);
-    }
-
     /**
      *  Check the argument 'return value' from some funciton, and if its null, throw a SystemError exception with
      *  the current errno value.
@@ -93,11 +87,6 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] void Throw (const T& e2Throw);
     template <>
     [[noreturn]] void Throw (const errno_ErrorException& e2Throw);
-
-    /*
-     * Throw if errno is non-zero. Not an error - silently ignored - if errno is 0 (NOERROR)
-     */
-    void ThrowIfError_errno_t (errno_t e = errno);
 
 }
 

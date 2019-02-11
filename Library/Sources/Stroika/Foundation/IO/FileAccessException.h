@@ -68,7 +68,7 @@ namespace Stroika::Foundation::IO {
      *  \par Example Usage
      *      \code
      *      try {
-     *          Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+     *          Execution::ThrowPOSIXErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
      *      }
      *      Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
      *      \endcode
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::IO {
      *  \par Example Usage
      *      \code
      *      try {
-     *          Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+     *          Execution::ThrowPOSIXErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
      *      }
      *      Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(fileName);
      *      \endcode

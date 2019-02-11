@@ -50,10 +50,10 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); }));
+    ThrowPOSIXErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); }));
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
-    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
+    ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
     DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
     AssertNotImplemented ();
@@ -118,7 +118,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
     try {
-        ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
+        ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
     }
     catch (const Execution::Platform::Windows::Exception& e) {
         if (e == WSAEACCES) {
@@ -132,7 +132,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     // EACCESS reproted as FileAccessException - which is crazy confusing.
     // @todo - find a better way, but for now remap this...
     try {
-        ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
     }
     catch (const IO::FileAccessException&) {
         Throw (Exception (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
@@ -172,14 +172,14 @@ String Socket::Ptr::ToString () const
 
 /*
  ********************************************************************************
- ******************** Execution::ThrowErrNoIfNegative ***************************
+ ******************** Execution::ThrowPOSIXErrNoIfNegative **********************
  ********************************************************************************
  */
 #if qPlatform_Windows
 namespace Stroika::Foundation::Execution {
     // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
     template <>
-    IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
+    IO::Network::Socket::PlatformNativeHandle ThrowPOSIXErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
     {
         if (returnCode == kINVALID_NATIVE_HANDLE_) {
             Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());

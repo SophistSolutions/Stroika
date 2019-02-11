@@ -149,7 +149,7 @@ void Main::IServiceIntegrationRep::_RunDirectly ()
 
 /*
  ********************************************************************************
- ************************************ Service::Main *****************************
+ ********************************* Service::Main ********************************
  ********************************************************************************
  */
 const wchar_t Service::Main::CommandNames::kInstall[]             = L"Install";
@@ -329,7 +329,7 @@ void Main::ReReadConfiguration ()
 #elif qPlatform_POSIX
     pid_t pid = GetServicePID ();
     Assert (pid != 0); // maybe throw if non-zero???
-    Execution::ThrowErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
+    Execution::ThrowPOSIXErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
 #else
     AssertNotImplemented ();
 #endif
@@ -754,7 +754,7 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("Service running - so sending SIGTERM signal");
 #endif
-            Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
+            Execution::ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
 
             Time::DurationSecondsType waitFor = 0.001; // wait just a little at first but then progressively longer (avoid busy wait)
             while (_GetServicePID () > 0) {
@@ -780,7 +780,7 @@ void Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
     // Send signal to server to stop
     pid_t svcPID = _GetServicePID ();
     if (svcPID > 0) {
-        Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
+        Execution::ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
     }
     // REALY should WAIT for server to stop and only do this it fails -
     (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());

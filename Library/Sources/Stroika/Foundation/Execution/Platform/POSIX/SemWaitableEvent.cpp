@@ -56,7 +56,7 @@ void SemWaitableEvent::Wait ()
     while ((s = ::sem_wait (pSem)) == -1 && errno == EINTR) {
         continue; /* Restart if interrupted by handler */
     }
-    Execution::ThrowErrNoIfNegative (s);
+    Execution::ThrowPOSIXErrNoIfNegative (s);
 }
 
 void SemWaitableEvent::Set ()
