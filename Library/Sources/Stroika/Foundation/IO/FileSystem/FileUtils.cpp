@@ -162,7 +162,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
                 Execution::Throw (Exception (L"bad filename"sv));
             }
         struct stat s;
-        ThrowErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
+		ThrowPOSIXErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
 
         mode_t desiredMode = (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH);
         if (S_ISDIR (s.st_mode)) {

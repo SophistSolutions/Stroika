@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Execution {
             ret = call ();
             Execution::CheckForThreadInterruption ();
         } while (ret < 0 and errno == EINTR);
-        return ThrowErrNoIfNegative (ret);
+        return ThrowPOSIXErrNoIfNegative (ret);
     }
 
     /*

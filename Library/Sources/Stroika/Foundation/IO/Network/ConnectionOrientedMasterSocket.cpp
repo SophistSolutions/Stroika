@@ -34,9 +34,9 @@ namespace {
                 Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
+				ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog]() -> int { return ::listen (fSD_, backlog); }));
 #elif qPlatform_Windows
-                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
+				ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
 #else
                 AssertNotImplemented ();
 #endif
@@ -47,9 +47,9 @@ namespace {
                 sockaddr_storage                                   peer{};
                 socklen_t                                          sz = sizeof (peer);
 #if qPlatform_POSIX
-                return ConnectionOrientedStreamSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); })));
+                return ConnectionOrientedStreamSocket::Attach (ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); })));
 #elif qPlatform_Windows
-                return ConnectionOrientedStreamSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
+                return ConnectionOrientedStreamSocket::Attach (ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else
                 AssertNotImplemented ();
 #endif
