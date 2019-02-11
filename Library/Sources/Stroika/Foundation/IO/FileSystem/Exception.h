@@ -112,7 +112,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \req if (p1.empty() then require (p2.empty ()); but neither is required
          *
          *  See:
-         *      @see SystemErrorException<>::ThrowPOSIXErrNo ();
+         *      @see Execution::ThrowPOSIXErrNo ();
          *      @see ThrowSystemErrNo ();
          */
         [[noreturn]] static void ThrowPOSIXErrNo (errno_t errNo, const path& p1 = {}, const path& p2 = {});

@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Execution {
      *  \par Example Usage
      *      \code
      *          try {
-     *              SystemErrorException<>::ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
+     *              ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
      *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
