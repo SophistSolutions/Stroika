@@ -1840,14 +1840,6 @@ sub PostProcessOptions_ ()
 					push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
 					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
 				}
-
-				# https://stroika.atlassian.net/browse/STK-663
-				# Otherwise (with c++17 and XCode 10beta)
-				#	Undefined symbols for architecture x86_64:
-				#	"boost::system::detail::generic_category_instance", referenced from:
-				#	boost::system::generic_category() in Stroika-Foundation.a(WellKnownLocations.o)
-				#		-- LGP 2018-09-08
-				push (@useExtraCDefines, "#define BOOST_NO_CXX14_CONSTEXPR");
 			}
 			else {
 				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
