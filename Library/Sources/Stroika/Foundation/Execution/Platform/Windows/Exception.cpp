@@ -130,7 +130,7 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
         }
 #if 1
         default: {
-            Execution::SystemErrorException<>::ThrowSystemErrNo (error);
+            Execution::ThrowSystemErrNo (error);
 #if 0
 #if qStroika_Foundation_Exection_Throw_TraceThrowpoint
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace

@@ -54,7 +54,7 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
         return buf + SDKString (SDKSTR (" (") + justErrnoNumberMessage + SDKSTR (")"));
     }
 #elif qPlatform_Linux
-/*
+    /*
      * A bit quirky - GNU-specific and POSIX handle this API fairly differently.
      * https://linux.die.net/man/3/strerror_r - in one case returns int and 0 means worked, 
      * and other case always returns string to use (not in buf)
@@ -86,5 +86,5 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw", L"error = %d", error};
 #endif
 
-    SystemErrorException<>::ThrowPOSIXErrNo (error);
+    ThrowPOSIXErrNo (error);
 }

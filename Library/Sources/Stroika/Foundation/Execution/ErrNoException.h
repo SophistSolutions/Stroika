@@ -56,9 +56,9 @@ namespace Stroika::Foundation::Execution {
     };
 
     template <typename INT_TYPE>
-    [[deprecated ("Since v2.1d18, use SystemErrorException<>::ThrowPOSIXErrNoIfNegative")]] inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
+    [[deprecated ("Since v2.1d18, use Execution::ThrowPOSIXErrNoIfNegative")]] inline INT_TYPE ThrowErrNoIfNegative (INT_TYPE returnCode)
     {
-        return SystemErrorException<>::ThrowPOSIXErrNoIfNegative (returnCode);
+        return Execution::ThrowPOSIXErrNoIfNegative (returnCode);
     }
 
     /**

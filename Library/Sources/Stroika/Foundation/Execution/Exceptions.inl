@@ -101,8 +101,13 @@ namespace Stroika::Foundation::Execution {
         : inherited{reasonForError, forward<BASE_EXCEPTION_ARGS> (baseExceptionArgs)...}
     {
     }
-    template <typename BASE_EXCEPTION>
-    inline void SystemErrorException<BASE_EXCEPTION>::ThrowPOSIXErrNo (errno_t errNo)
+
+    /*
+     ********************************************************************************
+     ******************************** ThrowPOSIXErrNo *******************************
+     ********************************************************************************
+     */
+    inline void ThrowPOSIXErrNo (errno_t errNo)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowPOSIXErrNo (%d)", errNo);
@@ -116,9 +121,14 @@ namespace Stroika::Foundation::Execution {
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
         Throw (SystemErrorException (ec));
     }
-    template <typename BASE_EXCEPTION>
+
+    /*
+     ********************************************************************************
+     ************************* ThrowPOSIXErrNoIfNegative ****************************
+     ********************************************************************************
+     */
     template <typename INT_TYPE>
-    inline INT_TYPE SystemErrorException<BASE_EXCEPTION>::ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode)
+    inline INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode)
     {
         if (returnCode < 0)
             [[UNLIKELY_ATTR]]
@@ -127,8 +137,13 @@ namespace Stroika::Foundation::Execution {
             }
         return returnCode;
     }
-    template <typename BASE_EXCEPTION>
-    void SystemErrorException<BASE_EXCEPTION>::ThrowSystemErrNo (int sysErr)
+
+    /*
+     ********************************************************************************
+     ******************************** ThrowSystemErrNo ******************************
+     ********************************************************************************
+     */
+    inline void ThrowSystemErrNo (int sysErr)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContenxtBumper tctx (L"SystemErrorException<>::ThrowSystemErrNo (%d)", sysErr);

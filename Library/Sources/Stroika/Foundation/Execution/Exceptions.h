@@ -202,62 +202,59 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename... BASE_EXCEPTION_ARGS>
         explicit SystemErrorException (const Characters::String& reasonForError, BASE_EXCEPTION_ARGS... baseExceptionArgs);
-
-    public:
-        /**
-         *  \brief treats errNo as a `POSIX errno` value, and throws a SystemError (subclass of @std::system_error) exception with it.
-         *
-         *  \req errNo != 0
-         * 
-         *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
-         *
-         *  \note   On a POSIX system, this amounts to a call to ThrowSystemErrNo.
-         *          But even on a non-POSIX system, many APIs map their error numbers to POSIX error numbers so this can make sense to use.
-         *          Also, on POSIX systems, its legal to call this with POSIX compatible extended (and therefore not POSIX) erorr nubmbers.
-         *          In other words, you can call this with anything (except 0) you read out of errno on a POSIX system.
-         *
-         *  \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  - 
-         *          "If the argument ev corresponds to a POSIX errno value posv, the function 
-         *          shall return error_- condition(posv, generic_category()). Otherwise, the function"
-         *
-         *  \note this function takes errno as a default value because you almost always want to call it with the value from errno.
-         *
-         *  See:
-         *      @see ThrowSystemErrNo ();
-         */
-        [[noreturn]] static void ThrowPOSIXErrNo (errno_t errNo = errno);
-
-    public:
-        /**
-         *  Look at the argument value and if < 0,ThrowPOSIXErrNo (), and otherwise return it.
-         *
-         *  \note   Many POSIX - APIs - return a number which is zero if good, or -1 (or sometimes defined negative) if errno is set and there is an error.
-         *          This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
-         *          throws and a POSIX (generic_error) SystemErrorException.
-         */
-        template <typename INT_TYPE>
-        static INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode);
-
-    public:
-        /**
-         *  \brief treats sysErr as a platform-defined error number, and throws a SystemErrorException (subclass of @std::system_error) exception with it.
-         *
-         *  \req sysErr != 0
-         *
-         *  \note   stdc++ uses 'int' for the type of this error number, but Windows generally defines the type to be
-         *          DWORD.
-         *
-         *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
-         *
-         *   \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
-         *          "That object’s category() member shall return std::system_category() for errors originating
-         *          from the operating system, or a reference to an implementation"
-         *
-         *  See:
-         *      @see ThrowPOSIXErrNo ();
-         */
-        [[noreturn]] static void ThrowSystemErrNo (int sysErr);
     };
+
+    /**
+     *  \brief treats errNo as a `POSIX errno` value, and throws a SystemError (subclass of @std::system_error) exception with it.
+     *
+     *  \req errNo != 0
+     *
+     *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
+     *
+     *  \note   On a POSIX system, this amounts to a call to ThrowSystemErrNo.
+     *          But even on a non-POSIX system, many APIs map their error numbers to POSIX error numbers so this can make sense to use.
+     *          Also, on POSIX systems, its legal to call this with POSIX compatible extended (and therefore not POSIX) erorr nubmbers.
+     *          In other words, you can call this with anything (except 0) you read out of errno on a POSIX system.
+     *
+     *  \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
+     *          "If the argument ev corresponds to a POSIX errno value posv, the function
+     *          shall return error_- condition(posv, generic_category()). Otherwise, the function"
+     *
+     *  \note this function takes errno as a default value because you almost always want to call it with the value from errno.
+     *
+     *  See:
+     *      @see ThrowSystemErrNo ();
+     */
+    [[noreturn]] void ThrowPOSIXErrNo (errno_t errNo = errno);
+
+    /**
+     *  Look at the argument value and if < 0,ThrowPOSIXErrNo (), and otherwise return it.
+     *
+     *  \note   Many POSIX - APIs - return a number which is zero if good, or -1 (or sometimes defined negative) if errno is set and there is an error.
+     *          This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
+     *          throws and a POSIX (generic_error) SystemErrorException.
+     */
+    template <typename INT_TYPE>
+    INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode);
+
+    /**
+     *  \brief treats sysErr as a platform-defined error number, and throws a SystemErrorException (subclass of @std::system_error) exception with it.
+     *
+     *  \req sysErr != 0
+     *
+     *  \note   stdc++ uses 'int' for the type of this error number, but Windows generally defines the type to be
+     *          DWORD.
+     *
+     *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
+     *
+     *   \note  From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf  -
+     *          "That object’s category() member shall return std::system_category() for errors originating
+     *          from the operating system, or a reference to an implementation"
+     *
+     *  See:
+     *      @see ThrowPOSIXErrNo ();
+     */
+    [[noreturn]] static void ThrowSystemErrNo (int sysErr);
 
 }
 

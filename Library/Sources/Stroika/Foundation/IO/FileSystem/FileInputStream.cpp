@@ -36,7 +36,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-using Execution::SystemErrorException;
+using Execution::ThrowPOSIXErrNo;
+using Execution::ThrowPOSIXErrNoIfNegative;
 using Streams::InputStream;
 using Streams::SeekOffsetType;
 
@@ -65,11 +66,11 @@ public:
 #if qPlatform_Windows
             errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
             if (e != 0) {
-                SystemErrorException<>::ThrowPOSIXErrNo (e);
+                ThrowPOSIXErrNo (e);
             }
             ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-            SystemErrorException<>::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+            ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"opened fd: %d", fFD_);
@@ -136,9 +137,9 @@ public:
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         try {
 #if qPlatform_Windows
-            return static_cast<size_t> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
-            return static_cast<size_t> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eRead);
@@ -166,7 +167,7 @@ public:
         return Read (intoStart, intoEnd);
 #elif qPlatform_POSIX
         pollfd pollData{fFD_, POLLIN, 0};
-        int pollResult = SystemErrorException<>::ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+        int pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
         Assert (pollResult >= 0);
         if (pollResult == 0) {
             return {}; // if no data available, return {}
@@ -188,11 +189,11 @@ public:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_Windows
-        return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #elif qPlatform_Linux
-        return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #else
-        return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
 #endif
     }
     virtual Streams::SeekOffsetType SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
@@ -210,29 +211,29 @@ public:
                         Execution::Throw (range_error ("seek"));
                     }
 #if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
 #elif qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
 #else
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
             } break;
             case Whence::eFromCurrent: {
 #if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
 #elif qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
 #else
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
             } break;
             case Whence::eFromEnd: {
 #if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
 #elif qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
 #else
-                return static_cast<Streams::SeekOffsetType> (SystemErrorException<>::ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
 #endif
             } break;
         }
