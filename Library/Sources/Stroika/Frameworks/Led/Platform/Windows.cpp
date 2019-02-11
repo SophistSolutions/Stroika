@@ -13,7 +13,11 @@
 using namespace Stroika::Foundation;
 
 CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qSupportWindowsSDKCallbacks, qSupportWindowsSDKCallbacks);
-CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug);
+#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, 1);
+#else
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, 0);
+#endif
 
 namespace Stroika::Frameworks::Led::Platform {
 

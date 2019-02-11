@@ -578,22 +578,18 @@ namespace Stroika::Frameworks::Led::Platform {
         , fDefaultWindowMargins ()
         , fControlArrowsScroll (false)
         , fFunnyMSPageUpDownAdjustSelectionBehavior (true)
-        ,
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-        fIMECurCharIdx (0)
-        ,
+        , fIMECurCharIdx (0)
 #endif
-        fUpdateTablet (NULL)
+        , fUpdateTablet (NULL)
         , fAllocatedTablet ()
         , fAcquireCount (0)
         , fMouseTrackingLastPoint ()
         , fDragAnchor (0)
-        ,
 #if qScrollTextDuringThumbTracking
-        fSBarThumbTracking (false)
-        ,
+        , fSBarThumbTracking (false)
 #endif
-        fAutoScrollTimerID (0)
+        , fAutoScrollTimerID (0)
     {
         fDefaultWindowMargins.top    = Led_TWIPS (2 * Led_TWIPS::kPoint);
         fDefaultWindowMargins.left   = Led_TWIPS (2 * Led_TWIPS::kPoint);
@@ -3270,6 +3266,10 @@ namespace Stroika::Frameworks::Led::Platform {
 }
 
 CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qSupportWindowsSDKCallbacks, qSupportWindowsSDKCallbacks);
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug);
+#if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, 1);
+#else
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led::Platform, qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug, 0);
+#endif
 
 #endif /*_Stroika_Frameworks_Led_Platform_Windows_h_*/

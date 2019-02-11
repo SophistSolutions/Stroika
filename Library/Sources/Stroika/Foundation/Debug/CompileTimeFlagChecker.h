@@ -53,6 +53,10 @@ namespace Stroika::Foundation::Debug {
      *      \code
      *          CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
      *      \endcode
+     *
+     *  \note   **DEFECT**
+     *          The VALUE (third) argument to CompileTimeFlagChecker_HEADER and CompileTimeFlagChecker_SOURCE must expand to zero or one, not
+     *          a complex expression due to how the name macro name pasting works. UNDESIRABLE!.
      */
 #define CompileTimeFlagChecker_HEADER(NS_PREFIX, NAME, VALUE) \
     CompileTimeCheck_HEADER_INTERNAL_ (NS_PREFIX, CompileTimeChecker_##NAME, CompileTimeCheck_##NAME, VALUE)
@@ -81,6 +85,10 @@ namespace Stroika::Foundation::Debug {
      *      \code
      *          CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
      *      \endcode
+     *
+     *  \note   **DEFECT**
+     *          The VALUE (third) argument to CompileTimeFlagChecker_HEADER and CompileTimeFlagChecker_SOURCE must expand to zero or one, not
+     *          a complex expression due to how the name macro name pasting works. UNDESIRABLE!.
      */
 #define CompileTimeFlagChecker_SOURCE(NS_PREFIX, NAME, VALUE) \
     CompileTimeCheck_SOURCE_PRIVATE_1_ (NS_PREFIX, CompileTimeCheck_##NAME, VALUE)
