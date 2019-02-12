@@ -1646,10 +1646,10 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		foreach my $var (@useExtraCDefines)
 		{
 			my ($define, $name, $value) = split(/ /, $var);
-			if ($define != 'define') {
+			if (!($define eq 'define')) {
 				die ("NYI");
 			}
-			if ($value == "") {
+			if ($value eq "") {
 				$value = 0;
 			}
 			push @flags, $dashFlag . "$name=" . $value;
