@@ -1647,7 +1647,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		{
 			my ($define, $name, $value) = split(/ /, $var);
 			if (!($define eq 'define')) {
-				die ("NYI");
+				die ("NYI: mapping extraCDEFINE: $var");
 			}
 			if ($value eq "") {
 				$value = 0;
