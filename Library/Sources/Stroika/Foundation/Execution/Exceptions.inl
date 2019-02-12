@@ -153,15 +153,26 @@ namespace Stroika::Foundation::Execution {
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
         Throw (SystemErrorException (ec));
     }
+#if qPlatform_POSIX
+    [[noreturn]] inline void ThrowSystemErrNo ()
+    {
+        ThrowSystemErrNo (errno);
+    }
+#elif qPlatform_Windows
+    [[noreturn]] inline void ThrowSystemErrNo ()
+    {
+        ThrowSystemErrNo (::GetLastError ());
+    }
+#endif
 
     /*
      ********************************************************************************
      ************************ Handle_ErrNoResultInterruption ************************
      ********************************************************************************
      */
-	 // forward declare for use below....
-	void CheckForThreadInterruption ();
-	template <typename CALL>
+    // forward declare for use below....
+    void CheckForThreadInterruption ();
+    template <typename CALL>
     auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ())
     {
         decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read

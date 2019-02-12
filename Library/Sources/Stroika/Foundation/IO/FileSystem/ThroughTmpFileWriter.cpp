@@ -32,7 +32,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
 
 #if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 /*
@@ -71,13 +71,13 @@ void ThroughTmpFileWriter::Commit ()
     try {
 #if qPlatform_Windows
         try {
-            ThrowIfFalseGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
+            ThrowIfZeroGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
         }
-        catch (const Execution::Platform::Windows::Exception& we) {
+        catch (const system_error& we) {
             // On Win9x - this fails cuz OS not impl...
-            if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
+            if (we.code ().category () == system_category () and we.code ().value () == ERROR_CALL_NOT_IMPLEMENTED) {
                 ::DeleteFileW (fRealFilePath_.c_str ());
-                ThrowIfFalseGetLastError (::MoveFileW (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
+                ThrowIfZeroGetLastError (::MoveFileW (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
             }
             else {
                 Execution::ReThrow ();

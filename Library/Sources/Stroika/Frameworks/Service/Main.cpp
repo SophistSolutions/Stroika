@@ -887,14 +887,14 @@ Main::State Main::WindowsService::_GetState () const
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_GetState");
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_STATUS;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != nullptr);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != nullptr);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
@@ -905,7 +905,7 @@ Main::State Main::WindowsService::_GetState () const
     if (kUseQueryServiceStatusEx_) {
         SERVICE_STATUS_PROCESS serviceProcess{};
         DWORD                  ignored = 0;
-        Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
         switch (serviceProcess.dwCurrentState) {
             case SERVICE_RUNNING:
                 return Main::State::eRunning;
@@ -915,7 +915,7 @@ Main::State Main::WindowsService::_GetState () const
     }
     else {
         SERVICE_STATUS serviceStatus{};
-        Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatus (hService, &serviceStatus));
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (::QueryServiceStatus (hService, &serviceStatus));
         switch (serviceStatus.dwCurrentState) {
             case SERVICE_RUNNING:
                 return Main::State::eRunning;
@@ -933,7 +933,7 @@ void Main::WindowsService::_Install ()
     const DWORD kServiceMgrAccessPrivs = SC_MANAGER_CREATE_SERVICE;
     String      cmdLineForRunSvc       = L"\""sv + Execution::GetEXEPath () + L"\" --"sv + CommandNames::kRunAsService;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
@@ -946,7 +946,7 @@ void Main::WindowsService::_Install ()
         kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS,
         SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
         cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
 }
 
 void Main::WindowsService::_UnInstall ()
@@ -955,7 +955,7 @@ void Main::WindowsService::_UnInstall ()
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_STOP | DELETE;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
@@ -963,7 +963,7 @@ void Main::WindowsService::_UnInstall ()
         });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
@@ -975,12 +975,12 @@ void Main::WindowsService::_UnInstall ()
         if (not::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
-                Execution::Platform::Windows::Exception::Throw (e);
+                Execution::ThrowSystemErrNo (e);
             }
         }
     }
 
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::DeleteService (hService));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::DeleteService (hService));
 }
 
 void Main::WindowsService::_RunAsService ()
@@ -999,8 +999,7 @@ void Main::WindowsService::_RunAsService ()
         if (fServiceStatus_.dwWin32ExitCode == ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
             DbgTrace ("fServiceStatus_.dwWin32ExitCode = ERROR_FAILED_SERVICE_CONTROLLER_CONNECT");
         }
-        DbgTrace ("fServiceStatus_.dwWin32ExitCode = %d", fServiceStatus_.dwWin32ExitCode);
-        Execution::Platform::Windows::Exception::Throw (fServiceStatus_.dwWin32ExitCode);
+        Execution::ThrowSystemErrNo (fServiceStatus_.dwWin32ExitCode); // nb: set to getlasterror result above
     }
 }
 
@@ -1022,14 +1021,14 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_START;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
@@ -1038,7 +1037,7 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
     DWORD    dwNumServiceArgs    = 0;
     LPCTSTR* lpServiceArgVectors = nullptr;
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::StartService (hService, dwNumServiceArgs, lpServiceArgVectors));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::StartService (hService, dwNumServiceArgs, lpServiceArgVectors));
 }
 
 void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType timeout)
@@ -1047,7 +1046,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_Stop");
     const DWORD               kServiceMgrAccessPrivs = SERVICE_STOP;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
@@ -1055,7 +1054,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
         });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
@@ -1067,7 +1066,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
         if (not::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
-                Execution::Platform::Windows::Exception::Throw (e);
+                Execution::ThrowSystemErrNo (e);
             }
         }
     }
@@ -1082,14 +1081,14 @@ pid_t Main::WindowsService::_GetServicePID () const
 {
     const DWORD kServiceMgrAccessPrivs = SERVICE_QUERY_STATUS;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
@@ -1098,7 +1097,7 @@ pid_t Main::WindowsService::_GetServicePID () const
 
     SERVICE_STATUS_PROCESS serviceProcess{};
     DWORD                  ignored = 0;
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
     return serviceProcess.dwProcessId;
 }
 
@@ -1113,7 +1112,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_");
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_CONFIG;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
@@ -1121,7 +1120,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
         });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
@@ -1149,7 +1148,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
     // Register the control request handler
     fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
     fServiceStatusHandle_          = ::RegisterServiceCtrlHandler (GetSvcName_ ().c_str (), StaticHandler_);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (fServiceStatusHandle_ != NULL);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (fServiceStatusHandle_);
     SetServiceStatus_ (SERVICE_START_PENDING);
 
     fServiceStatus_.dwWin32ExitCode = S_OK;

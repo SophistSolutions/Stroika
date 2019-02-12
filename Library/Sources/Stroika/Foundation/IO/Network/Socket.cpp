@@ -120,9 +120,9 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     try {
         ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
     }
-    catch (const Execution::Platform::Windows::Exception& e) {
-        if (e == WSAEACCES) {
-            Throw (Exception (Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
+    catch (const system_error& e) {
+        if (e.code ().category () == system_category () and e.code ().value () == WSAEACCES) {
+            Throw (SystemErrorException<> (e.code (), Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
         }
         else {
             ReThrow ();
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Execution {
     IO::Network::Socket::PlatformNativeHandle ThrowPOSIXErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
     {
         if (returnCode == kINVALID_NATIVE_HANDLE_) {
-            Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+            Execution::ThrowSystemErrNo (::WSAGetLastError ());
         }
         return returnCode;
     }

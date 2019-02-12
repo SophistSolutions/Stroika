@@ -437,7 +437,6 @@ namespace {
             result.fInterfaces = interfaceResults;
             {
                 MIB_IPSTATS stats{}; // maybe more useful stats we could pull out of this?
-                memset (&stats, 0, sizeof (stats));
                 Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
                 accumSummary.fTotalPacketsReceived = stats.dwInReceives;
                 accumSummary.fTotalPacketsSent     = stats.dwOutRequests;

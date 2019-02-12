@@ -28,7 +28,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName)
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s"), dllName);
     RequireNotNull (dllName);
 #if qPlatform_Windows
-    Execution::Platform::Windows::ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (fModule = ::LoadLibrary (dllName));
 #else
     fModule = LoadDLL (dllName);
 #endif
@@ -40,7 +40,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPat
     RequireNotNull (dllName);
     try {
 #if qPlatform_Windows
-        Execution::Platform::Windows::ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (fModule = ::LoadLibrary (dllName));
 #else
         fModule = LoadDLL (dllName);
 #endif

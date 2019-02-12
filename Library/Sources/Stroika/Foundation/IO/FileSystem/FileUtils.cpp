@@ -21,7 +21,6 @@
 #endif
 
 #include "../../Characters/Format.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Containers/Set.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
@@ -50,10 +49,8 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
 
-using Characters::String_Constant;
-
 #if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 /*
@@ -210,7 +207,7 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
         if (not::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error != ERROR_ALREADY_EXISTS) {
-                Execution::Throw (Execution::Platform::Windows::Exception (error));
+                Execution::ThrowSystemErrNo (error);
             }
         }
 #elif qPlatform_POSIX
@@ -324,7 +321,7 @@ void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
     // If I DON'T do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
     IO::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
     CreateDirectoryForFile (destPath);
-    ThrowIfFalseGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));
+    ThrowIfZeroGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));
 #else
     AssertNotImplemented ();
 #endif
@@ -389,8 +386,8 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const S
             //SDKString fileName = (LPCTSTR)&fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 String              fileName = String::FromSDKString ((LPCTSTR)&fd.cFileName);
-                static const String kDOT     = String_Constant (L".");
-                static const String kDOTDOT  = String_Constant (L"..");
+                static const String kDOT     = L"."sv;
+                static const String kDOTDOT  = L".."sv;
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
                     resultSet += Containers::Set<String> (FindFiles (usePath + fileName, fileNameToMatch));
                 }

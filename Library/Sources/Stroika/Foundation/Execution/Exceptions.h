@@ -250,8 +250,16 @@ namespace Stroika::Foundation::Execution {
      *
      *  See:
      *      @see ThrowPOSIXErrNo ();
+     *
+     *  \note   zero arg versions only defined for POSIX and Windows platforms, and there the default is the obvious value for each
+     *          platform - errno and GetLastError(). It is still an assertion (require) error to call these when errno / GetLastError () would return 0.
      */
     [[noreturn]] static void ThrowSystemErrNo (int sysErr);
+#if qPlatform_POSIX
+    [[noreturn]] static void ThrowSystemErrNo ();
+#elif qPlatform_Windows
+    [[noreturn]] static void ThrowSystemErrNo ();
+#endif
 
     /**
      *  \brief Handle UNIX EINTR system call behavior - fairly transparently - just effectively removes them from the set of errors that can be returned

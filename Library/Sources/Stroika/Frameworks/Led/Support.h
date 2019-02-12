@@ -360,7 +360,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qPlatform_Windows
-    void Led_ThrowIfFalseGetLastError (bool test);
     void Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
 #endif
 
@@ -933,16 +932,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qPlatform_Windows
-    /*
-    @METHOD:        Led_ThrowIfFalseGetLastError
-    @DESCRIPTION:   <p></p>
-    */
-    inline void Led_ThrowIfFalseGetLastError (bool test)
-    {
-        if (not test) {
-            throw (Win32ErrorException (::GetLastError ()));
-        }
-    }
     /*
     @METHOD:        Led_ThrowIfNotERROR_SUCCESS
     @DESCRIPTION:   <p></p>

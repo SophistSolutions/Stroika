@@ -141,7 +141,7 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
         DurationSecondsType time2WaitThisLoop             = Math::AtLeast<Time::DurationSecondsType> (Math::AtMost<Time::DurationSecondsType> (timeLeft2Wait, qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0), 0);
         int                 time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop * 1000);
         if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
-            Platform::Windows::Exception::Throw (::WSAGetLastError ());
+            Execution::ThrowSystemErrNo (::WSAGetLastError ());
         }
         if (pollResult != 0 or Time::GetTickCount () >= timeoutAt) {
             break;

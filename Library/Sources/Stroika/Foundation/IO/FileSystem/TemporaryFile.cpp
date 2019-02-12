@@ -51,7 +51,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
 
 #if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 /*
@@ -82,10 +82,10 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
     }
 
 /*
-     ********************************************************************************
-     **************** FileSystem::Private::FileUtilsModuleData_ *********************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ **************** FileSystem::Private::FileUtilsModuleData_ *********************
+ ********************************************************************************
+ */
 IO::FileSystem::Private::FileUtilsModuleData_::FileUtilsModuleData_ ()
     : fAppTempFileManager ()
 {
@@ -96,10 +96,10 @@ IO::FileSystem::Private::FileUtilsModuleData_::~FileUtilsModuleData_ ()
 }
 
 /*
-     ********************************************************************************
-     *********************** FileSystem::AppTempFileManager *************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ *********************** FileSystem::AppTempFileManager *************************
+ ********************************************************************************
+ */
 AppTempFileManager::AppTempFileManager ()
     : fTmpDir ()
 {
@@ -147,7 +147,7 @@ AppTempFileManager::AppTempFileManager ()
             }
             else {
                 DbgTrace ("bad news if we cannot create AppTempFileManager::fTmpDir: %d", error);
-                Execution::Throw (Execution::Platform::Windows::Exception (error));
+                Execution::ThrowSystemErrNo (error);
             }
         }
         // we succeeded - good! Done...
@@ -347,10 +347,10 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
 #endif
 
 /*
-     ********************************************************************************
-     **************************** FileSystem::ScopedTmpDir **************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ **************************** FileSystem::ScopedTmpDir **************************
+ ********************************************************************************
+ */
 ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
     : fTmpDir (AppTempFileManager::Get ().GetTempDir (fileNameBase))
 {
@@ -369,10 +369,10 @@ ScopedTmpDir::~ScopedTmpDir ()
 }
 
 /*
-     ********************************************************************************
-     *********************** FileSystem::ScopedTmpFile ******************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ *********************** FileSystem::ScopedTmpFile ******************************
+ ********************************************************************************
+ */
 ScopedTmpFile::ScopedTmpFile (const String& fileNameBase)
     : fTmpFile (AppTempFileManager::Get ().GetTempFile (fileNameBase))
 {
@@ -383,7 +383,7 @@ ScopedTmpFile::~ScopedTmpFile ()
     try {
         DbgTrace (L"ScopedTmpFile::~ScopedTmpFile - removing '%s'", fTmpFile.c_str ());
 #if qPlatform_Windows
-        ThrowIfFalseGetLastError (::DeleteFileW (fTmpFile.c_str ()));
+        ThrowIfZeroGetLastError (::DeleteFileW (fTmpFile.c_str ()));
 #else
         AssertNotImplemented ();
 #endif

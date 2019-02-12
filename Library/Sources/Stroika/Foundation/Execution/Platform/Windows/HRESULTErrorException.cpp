@@ -68,7 +68,9 @@ SDKString HRESULTErrorException::LookupMessage (HRESULT hr)
             return SDKSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
     }
     if (HRESULT_FACILITY (hr) == FACILITY_WIN32) {
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         return Execution::Platform::Windows::Exception::LookupMessage (HRESULT_CODE (hr));
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
     if (HRESULT_FACILITY (hr) == FACILITY_INTERNET) {
         unsigned int wCode = HRESULT_CODE (hr);
@@ -76,7 +78,9 @@ SDKString HRESULTErrorException::LookupMessage (HRESULT hr)
             wCode += INTERNET_ERROR_BASE; // because the HRESULT_CODE doesn't (at least sometimes) include the INTERNET_ERROR_BASE
             // included in the constants below...
         }
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         return Execution::Platform::Windows::Exception::LookupMessage (wCode);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
     TCHAR buf[1024];
     (void)::_stprintf_s (buf, SDKSTR ("HRESULT error code: 0x%x"), hr);

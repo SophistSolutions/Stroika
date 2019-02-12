@@ -61,7 +61,7 @@ namespace {
 #if qPlatform_Windows
                     int nresults;
                     if ((nresults = ::WSAPoll (&pollData, 1, timeout_msecs)) == SOCKET_ERROR) {
-                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+                        Execution::ThrowSystemErrNo (::WSAGetLastError ());
                     }
 #else
                     int nresults = Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, timeout_msecs); });

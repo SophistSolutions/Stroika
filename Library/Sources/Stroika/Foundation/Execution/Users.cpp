@@ -38,13 +38,13 @@ String Execution::GetCurrentUserName ([[maybe_unused]] UserNameFormat format)
     ULONG                sz        = 0;
     ::GetUserNameEx (useFormat, nullptr, &sz);
     SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, sz + 1);
-    Execution::ThrowIfFalseGetLastError (::GetUserNameEx (useFormat, buf, &sz));
+    Execution::ThrowIfZeroGetLastError (::GetUserNameEx (useFormat, buf, &sz));
     return String::FromSDKString (buf);
 #elif qPlatform_Windows
     ULONG sz = 0;
     ::GetUserName (nullptr, &sz);
     SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, sz + 1);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetUserName (buf, &sz));
     return String::FromSDKString (buf);
 #elif qPlatform_POSIX
     return Platform::POSIX::uid_t2UserName (Platform::POSIX::GetUID ());

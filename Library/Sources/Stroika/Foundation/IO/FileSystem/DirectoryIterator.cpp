@@ -33,9 +33,6 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Traversal;
 
-#if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
-#endif
 using Execution::ThrowPOSIXErrNo;
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -

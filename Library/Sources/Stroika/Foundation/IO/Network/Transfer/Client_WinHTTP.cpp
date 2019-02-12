@@ -19,6 +19,7 @@
 #include "../../../Containers/STL/Utilities.h"
 #include "../../../Execution/Finally.h"
 #include "../../../Execution/Throw.h"
+#include "../../../Execution/TimeOutException.h"
 #include "../../../Time/Date.h"
 #include "../../../Time/DateTime.h"
 #if qPlatform_Windows
@@ -40,7 +41,7 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
 #if qPlatform_Windows
-using Stroika::Foundation::Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using Stroika::Foundation::Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 using Stroika::Foundation::Memory::SmallStackBuffer;
 using Stroika::Foundation::Memory::SmallStackBufferCommon;
@@ -65,7 +66,7 @@ namespace {
         explicit AutoWinHINTERNET_ (HINTERNET handle)
             : fHandle (handle)
         {
-            ThrowIfFalseGetLastError (fHandle != nullptr);
+            ThrowIfZeroGetLastError (fHandle);
         }
         AutoWinHINTERNET_ (const AutoWinHINTERNET_&) = delete;
         ~AutoWinHINTERNET_ ()
@@ -126,11 +127,11 @@ namespace {
         if (error == ERROR_INSUFFICIENT_BUFFER) {
             SmallStackBuffer<wchar_t> buf (SmallStackBuffer<wchar_t>::eUninitialized, size + 1);
             (void)::memset (buf, 0, buf.GetSize ());
-            ThrowIfFalseGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
+            ThrowIfZeroGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
             return buf.begin ();
         }
         else {
-            Execution::Platform::Windows::Exception::Throw (error);
+            Execution::ThrowSystemErrNo (error);
             return wstring ();
         }
     }
@@ -276,7 +277,7 @@ RetryWithAuth:
             Throw (Execution::Exception (L"Too large a message to send using WinHTTP"sv));
         }
         DISABLE_COMPILER_MSC_WARNING_START (4267)
-        ThrowIfFalseGetLastError (::WinHttpSendRequest (
+        ThrowIfZeroGetLastError (::WinHttpSendRequest (
             hRequest,
             useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
             const_cast<byte*> (request.fData.begin ()), request.fData.size (),
@@ -285,13 +286,13 @@ RetryWithAuth:
         DISABLE_COMPILER_MSC_WARNING_END (4267)
 
         // this must be called before the 'body' goes out of scope!
-        ThrowIfFalseGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
+        ThrowIfZeroGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
     }
-    catch (const Execution::Platform::Windows::Exception& e) {
+    catch (const system_error& e) {
         if (fOptions_.fReturnSSLInfo) {
-            bool looksLikeSSLError = (e == ERROR_WINHTTP_SECURE_FAILURE);
+            bool looksLikeSSLError = (e.code () == error_code (ERROR_WINHTTP_SECURE_FAILURE, system_category ()));
             if (looksLikeSSLError and not sslExceptionProblem) {
-                DbgTrace ("Got %d ssl error so retrying with flags to disable cert checking", (DWORD)e);
+                DbgTrace ("Got %d ssl error so retrying with flags to disable cert checking", e.code ().value ());
                 sslExceptionProblem = true;
                 goto RetryWithNoCERTCheck;
             }
@@ -308,17 +309,16 @@ RetryWithAuth:
             if (Time::GetTickCount () > endBy)
                 [[UNLIKELY_ATTR]]
                 {
-                    DbgTrace (_T ("throwing Timeout"));
-                    Execution::Throw (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
+                    Execution::Throw (Execution::TimeOutException::kThe);
                 }
 
             // Check for available data.
             dwSize = 0;
-            ThrowIfFalseGetLastError (::WinHttpQueryDataAvailable (hRequest, &dwSize));
+            ThrowIfZeroGetLastError (::WinHttpQueryDataAvailable (hRequest, &dwSize));
             SmallStackBuffer<byte> outBuffer (SmallStackBufferCommon::eUninitialized, dwSize);
             memset (outBuffer, 0, dwSize);
             DWORD dwDownloaded = 0;
-            ThrowIfFalseGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
+            ThrowIfZeroGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
             Assert (dwDownloaded <= dwSize);
             totalBytes += dwDownloaded;
             bytesRead.push_back (vector<byte> (outBuffer.begin (), outBuffer.begin () + dwDownloaded));
@@ -393,7 +393,7 @@ RetryWithAuth:
         WINHTTP_CERTIFICATE_INFO certInfo{};
         DWORD                    dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize                      = sizeof (certInfo);
-        ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
+        ThrowIfZeroGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
         [[maybe_unused]] auto&& cleanup = Execution::Finally (
             [certInfo]() noexcept {
                 if (certInfo.lpszSubjectInfo != nullptr) {

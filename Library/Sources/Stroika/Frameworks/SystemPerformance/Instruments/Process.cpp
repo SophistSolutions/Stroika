@@ -131,7 +131,7 @@ namespace {
         {
             try {
                 setupToken_ ();
-                Execution::Platform::Windows::ThrowIfFalseGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
+                Execution::Platform::Windows::ThrowIfZeroGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
             }
             catch (...) {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
@@ -145,7 +145,7 @@ namespace {
         {
             try {
                 setupToken_ ();
-                Execution::Platform::Windows::ThrowIfFalseGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
+                Execution::Platform::Windows::ThrowIfZeroGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
             }
             catch (...) {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
@@ -169,11 +169,11 @@ namespace {
         {
             if (not::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
                 if (::GetLastError () == ERROR_NO_TOKEN) {
-                    Execution::Platform::Windows::ThrowIfFalseGetLastError (::ImpersonateSelf (SecurityImpersonation));
-                    Execution::Platform::Windows::ThrowIfFalseGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
+                    Execution::Platform::Windows::ThrowIfZeroGetLastError (::ImpersonateSelf (SecurityImpersonation));
+                    Execution::Platform::Windows::ThrowIfZeroGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
                 }
                 else {
-                    Execution::Platform::Windows::Exception::Throw (::GetLastError ());
+                    Execution::ThrowSystemErrNo ();
                 }
             }
         }

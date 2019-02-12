@@ -49,7 +49,6 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 #if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
@@ -403,7 +402,7 @@ FileOffset_t IO::FileSystem::Ptr::GetFileSize (const String& fileName)
         return s.st_size;
 #elif qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
-        Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
         return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
 #else
         AssertNotImplemented ();
@@ -423,7 +422,7 @@ DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const String& fileNam
         return DateTime (s.st_mtime);
 #elif qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
-        ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+        ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
         return DateTime (fileAttrData.ftLastWriteTime);
 #else
         AssertNotImplemented ();
@@ -443,7 +442,7 @@ DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const String& fileName)
         return DateTime (s.st_atime);
 #elif qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
-        ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+        ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
         return DateTime (fileAttrData.ftLastAccessTime);
 #else
         AssertNotImplemented ();

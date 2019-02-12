@@ -250,7 +250,7 @@ namespace {
                     alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.value_or (1) * 1000.0);
                     DWORD dwBytesRet{};
                     if (::WSAIoctl (fSD_, SIO_KEEPALIVE_VALS, &alive, sizeof (alive), NULL, 0, &dwBytesRet, NULL, NULL) == SOCKET_ERROR) {
-                        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+                        Execution::ThrowSystemErrNo (::WSAGetLastError ());
                     }
                 }
 #endif

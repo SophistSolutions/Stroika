@@ -33,9 +33,10 @@ using namespace Stroika::Foundation::IO::FileSystem;
 
 using Execution::ThrowPOSIXErrNo;
 using Execution::ThrowPOSIXErrNoIfNegative;
+using Execution::ThrowSystemErrNo;
 
 #if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 /*
@@ -59,7 +60,9 @@ public:
             if (e != 0) {
                 ThrowPOSIXErrNo (e);
             }
-            ThrowIfFalseGetLastError (fFD_ != -1);
+            if (fFD_ == -1) {
+                ThrowSystemErrNo ();
+            }
 #else
             int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
             const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
@@ -137,7 +140,7 @@ public:
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             try {
 #if qPlatform_Windows
-                ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
+                ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #elif qPlatform_POSIX
                 ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
 #else

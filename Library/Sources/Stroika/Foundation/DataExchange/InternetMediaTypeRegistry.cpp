@@ -74,7 +74,7 @@ namespace {
             if (hkey == INVALID_HANDLE_VALUE or hkey == nullptr)
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_HANDLE), "OptionsFileHelper::CTOR - bad handle");
+                    Execution::Throw (SystemErrorException<> (ERROR_INVALID_HANDLE, system_category ()), "OptionsFileHelper::CTOR - bad handle");
                 }
         }
         OptionsFileHelper_ (HKEY parentKey, const String& path, REGSAM samDesired = KEY_READ | KEY_WRITE)
@@ -83,7 +83,7 @@ namespace {
             if (parentKey == INVALID_HANDLE_VALUE or parentKey == nullptr)
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_HANDLE), "OptionsFileHelper::CTOR - bad handle");
+                    Execution::Throw (SystemErrorException<> (ERROR_INVALID_HANDLE, system_category ()), "OptionsFileHelper::CTOR - bad handle");
                 }
         }
         OptionsFileHelper_ ()                          = delete;

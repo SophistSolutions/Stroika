@@ -850,7 +850,7 @@ namespace {
             DbgTrace ("There are no network adapters enabled on the local system");
         }
         else {
-            Execution::Platform::Windows::Exception::Throw (dwRetVal);
+            Execution::ThrowSystemErrNo (dwRetVal);
         }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -989,7 +989,7 @@ namespace {
                 bool  bInheritHandles = true;
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
-                Execution::Platform::Windows::ThrowIfFalseGetLastError (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
+                Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
             }
 
             if (runningPID != nullptr) {
@@ -1079,7 +1079,7 @@ namespace {
                                         lastErr != ERROR_PIPE_BUSY and
                                         lastErr != ERROR_NO_DATA) {
                                         DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", lastErr);
-                                        Execution::Platform::Windows::Exception::Throw (lastErr);
+                                        Execution::ThrowSystemErrNo (lastErr);
                                     }
                                 }
                                 Assert (written <= static_cast<size_t> (e - p));
@@ -1382,7 +1382,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
             }
             Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
-        Execution::Platform::Windows::ThrowIfFalseGetLastError (
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (
             ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
         Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
         Verify (::CloseHandle (processInfo.hThread));

@@ -13,6 +13,9 @@
 #endif
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/String.h"
+#if qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include "../Config.h"
 
@@ -41,6 +44,10 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
+
+#if qPlatform_Windows
+using Execution::Platform::Windows::ThrowIfZeroGetLastError;
+#endif
 
 namespace {
     inline int ConvertReadSingleHexDigit_ (char digit)
@@ -3708,8 +3715,8 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point show
     Led_Bitmap  memoryBitmap;
 
     {
-        Led_ThrowIfFalseGetLastError (memDC.CreateCompatibleDC (&screenDC));
-        Led_ThrowIfFalseGetLastError (memoryBitmap.CreateCompatibleBitmap (screenDC, hSize, vSize));
+        ThrowIfZeroGetLastError (memDC.CreateCompatibleDC (&screenDC));
+        ThrowIfZeroGetLastError (memoryBitmap.CreateCompatibleBitmap (screenDC, hSize, vSize));
         HBITMAP oldBitmapInDC = memDC.SelectObject (memoryBitmap);
 
         // Erase the background of the image

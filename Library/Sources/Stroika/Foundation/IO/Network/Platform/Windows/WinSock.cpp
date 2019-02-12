@@ -39,7 +39,7 @@ void WinSock::ForceStartup ()
     WSADATA wsaData; // Initialize Winsock
     int     iResult = ::WSAStartup (MAKEWORD (2, 2), &wsaData);
     if (iResult != 0) {
-        Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
+        Execution::ThrowSystemErrNo (::WSAGetLastError ());
     }
     sStarted_ = true;
 }

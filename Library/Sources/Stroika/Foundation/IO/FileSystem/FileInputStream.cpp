@@ -33,17 +33,12 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-using Execution::ThrowPOSIXErrNo;
-using Execution::ThrowPOSIXErrNoIfNegative;
 using Streams::InputStream;
 using Streams::SeekOffsetType;
-
-#if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
-#endif
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -68,7 +63,9 @@ public:
             if (e != 0) {
                 ThrowPOSIXErrNo (e);
             }
-            ThrowIfFalseGetLastError (fFD_ != -1);
+            if (fFD_ == -1) {
+                ThrowSystemErrNo ();
+            }
 #else
             ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif

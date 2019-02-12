@@ -56,7 +56,8 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     // @todo DO overlaod with no args, so we can CACHE - like we do for POSIX!
 
     wchar_t fileBuf[MAX_PATH]{};
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
+    // note - https://docs.microsoft.com/en-us/windows/desktop/api/shlobj_core/nf-shlobj_core-shgetspecialfolderpathw not clear this properly sets GetLastError ()
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
     String result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {

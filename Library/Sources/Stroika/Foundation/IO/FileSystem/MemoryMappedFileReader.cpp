@@ -37,7 +37,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
 
 #if qPlatform_Windows
-using Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 /*
@@ -66,14 +66,16 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
         fFileHandle_ = ::CreateFile (fileName.AsSDKString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-        ThrowIfFalseGetLastError (fFileHandle_ != INVALID_HANDLE_VALUE);
+        if (fFileHandle_ == INVALID_HANDLE_VALUE) {
+            Execution::ThrowSystemErrNo ();
+        }
         DWORD fileSize = ::GetFileSize (fFileHandle_, nullptr);
         if (fileSize != 0) {
             fFileMapping_ = ::CreateFileMapping (fFileHandle_, nullptr, PAGE_READONLY, 0, fileSize, 0);
-            ThrowIfFalseGetLastError (fFileMapping_ != nullptr);
+            ThrowIfZeroGetLastError (fFileMapping_);
             AssertNotNull (fFileMapping_);
             fFileDataStart_ = reinterpret_cast<const byte*> (::MapViewOfFile (fFileMapping_, FILE_MAP_READ, 0, 0, 0));
-            ThrowIfFalseGetLastError (fFileDataStart_ != nullptr);
+            ThrowIfZeroGetLastError (fFileDataStart_);
             fFileDataEnd_ = fFileDataStart_ + fileSize;
         }
     }

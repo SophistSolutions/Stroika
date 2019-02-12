@@ -12,50 +12,45 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Characters/SDKString.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Execution/Exceptions.h"
-
-namespace Stroika::Foundation::Execution {
-    using Characters::SDKString;
-}
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
     /**
+     *  Most Windows (Win32) APIs return a BOOL (or sometimes int) - which if zero (false) means an error. Kinda the opposite of
+     *  POSIX APIs.
+     *
+     *  These APIS retrieve their underlying error number (when the return value is zero) from ::GetLastError ().
+     *
+     *
+     *  This function simplifies use of such functions, trnaslating their results into the appropriate exception (call to Execution::ThrowSystemErrNo)
      */
-    class Exception : public Execution::SystemErrorException<> {
-    public:
-        explicit Exception (DWORD error);
+    template <typename WINDOWS_API_RESULT = int>
+    void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test);
 
-        operator DWORD () const;
-
-    public:
-        // throw Platform::Windows::Exception () - if error is a real error, and map SOME (like #8 to bad_alloc) - but ALWAYS throw
-        // someting, regardless of error#
-        [[noreturn]] static void Throw (DWORD error);
-
-    public:
-        static SDKString LookupMessage (DWORD hr);
-        nonvirtual SDKString LookupMessage () const;
-
-    private:
-        DWORD fError;
-
-    public:
-        static const DWORD kERROR_INTERNET_TIMEOUT             = 12002;
-        static const DWORD kERROR_INTERNET_INVALID_URL         = 12005;
-        static const DWORD kERROR_INTERNET_UNRECOGNIZED_SCHEME = 12006;
-        static const DWORD kERROR_INTERNET_NAME_NOT_RESOLVED   = 12007;
-        static const DWORD kERROR_INTERNET_PROTOCOL_NOT_FOUND  = 12008;
-        static const DWORD kERROR_INTERNET_CANNOT_CONNECT      = 12029;
-    };
-
-    void ThrowIfFalseGetLastError (bool test);
-    void ThrowIfFalseGetLastError (BOOL test);
-    void ThrowIfZeroGetLastError (int test);
+    /**
+     *  Some Windows APIs return ERROR_SUCCESSS (0) on success, and non-zero on failure (e.g https://docs.microsoft.com/en-us/windows/desktop/api/winreg/nf-winreg-regcreatekeyexa)
+     *
+     *  In that case, the function argument contains the Windows error code.
+     */
     void ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
+
+    /**
+     *  Some Windows APIs return NO_ERROR (0) on success, and non-zero on failure (e.g https://docs.microsoft.com/en-us/windows/desktop/api/iphlpapi/nf-iphlpapi-getipstatistics)
+     *
+     *  In that case, the function argument contains the Windows error code.
+     */
     void ThrowIfNot_NO_ERROR (DWORD win32ErrCode);
+
+    /**
+     *  ShellExecute () has weird idiosyncratic error results, handled by this function.
+     *
+     *  @see https://docs.microsoft.com/en-us/windows/desktop/api/shellapi/nf-shellapi-shellexecutea
+     *
+     *  \note @todo - this could possibly be reimplemented using a custom error category, but for now it translates its errors to Win32 standard error
+     *        numbers and calls ThrowSystemErrNo ()
+     */
     void ThrowIfShellExecError (HINSTANCE r);
 
     /**

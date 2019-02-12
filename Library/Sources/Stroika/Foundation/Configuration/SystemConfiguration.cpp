@@ -1028,7 +1028,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
     SmallStackBuffer<SDKChar> buf (SmallStackBufferCommon::eUninitialized, dwSize);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
     result.fHostname = String::FromSDKString (buf);
 #else
     AssertNotImplemented ();

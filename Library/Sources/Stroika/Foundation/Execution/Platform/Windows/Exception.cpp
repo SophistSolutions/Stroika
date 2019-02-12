@@ -107,6 +107,9 @@ namespace {
  *********************** Platform::Windows::Exception ***************************
  ********************************************************************************
  */
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_START (4996);
 Execution::Platform::Windows::Exception::Exception (DWORD error)
     : Execution::SystemErrorException<> (error_code (error, system_category ()), SDKString2Wide (Win32Error2String_ (error)))
     , fError (error)
@@ -200,6 +203,9 @@ SDKString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)
 {
     return Win32Error2String_ (dw);
 }
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_END (4996);
 
 /*
  ********************************************************************************
@@ -217,36 +223,36 @@ void Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
         DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
         switch (errCode) {
             case 0:
-                Platform::Windows::Exception::Throw (ERROR_NOT_ENOUGH_MEMORY); // The operating system is out of memory or resources.
+                Execution::ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); // The operating system is out of memory or resources.
             case ERROR_FILE_NOT_FOUND:
-                Platform::Windows::Exception::Throw (ERROR_FILE_NOT_FOUND); // The specified file was not found.
+                Execution::ThrowSystemErrNo (ERROR_FILE_NOT_FOUND); // The specified file was not found.
             case ERROR_PATH_NOT_FOUND:
-                Platform::Windows::Exception::Throw (ERROR_PATH_NOT_FOUND); //  The specified path was not found.
+                Execution::ThrowSystemErrNo (ERROR_PATH_NOT_FOUND); //  The specified path was not found.
             case ERROR_BAD_FORMAT:
-                Platform::Windows::Exception::Throw (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image).
+                Execution::ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image).
             case SE_ERR_ACCESSDENIED:
                 throw (Platform::Windows::HRESULTErrorException (E_ACCESSDENIED)); //  The operating system denied access to the specified file.
             case SE_ERR_ASSOCINCOMPLETE:
-                Platform::Windows::Exception::Throw (ERROR_NO_ASSOCIATION); //  The file name association is incomplete or invalid.
+                Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  The file name association is incomplete or invalid.
             case SE_ERR_DDEBUSY:
-                Platform::Windows::Exception::Throw (ERROR_DDE_FAIL); //  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed.
+                Execution::ThrowSystemErrNo (ERROR_DDE_FAIL); //  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed.
             case SE_ERR_DDEFAIL:
-                Platform::Windows::Exception::Throw (ERROR_DDE_FAIL); //  The DDE transaction failed.
+                Execution::ThrowSystemErrNo (ERROR_DDE_FAIL); //  The DDE transaction failed.
             case SE_ERR_DDETIMEOUT:
-                Platform::Windows::Exception::Throw (ERROR_DDE_FAIL); //  The DDE transaction could not be completed because the request timed out.
+                Execution::ThrowSystemErrNo (ERROR_DDE_FAIL); //  The DDE transaction could not be completed because the request timed out.
             case SE_ERR_DLLNOTFOUND:
-                Platform::Windows::Exception::Throw (ERROR_DLL_NOT_FOUND); //  The specified dynamic-link library (DLL) was not found.
+                Execution::ThrowSystemErrNo (ERROR_DLL_NOT_FOUND); //  The specified dynamic-link library (DLL) was not found.
             //case  SE_ERR_FNF:             throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));        //  The specified file was not found.
             case SE_ERR_NOASSOC:
-                Platform::Windows::Exception::Throw (ERROR_NO_ASSOCIATION); //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
+                Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
             case SE_ERR_OOM:
-                Platform::Windows::Exception::Throw (ERROR_NOT_ENOUGH_MEMORY); //  There was not enough memory to complete the operation.
+                Execution::ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY); //  There was not enough memory to complete the operation.
             //case  SE_ERR_PNF:             throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));        //  The specified path was not found.
             case SE_ERR_SHARE:
-                Platform::Windows::Exception::Throw (ERROR_INVALID_SHARENAME); //
+                Execution::ThrowSystemErrNo (ERROR_INVALID_SHARENAME); //
             default: {
                 // Not sure what error to report here...
-                Platform::Windows::Exception::Throw (ERROR_NO_ASSOCIATION);
+                Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION);
             }
         }
     }
@@ -267,7 +273,7 @@ namespace {
     {
         TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"invalid_parameter_handler", L"Func='%s', expr='%s', file='%s', line=%d.", function, expression, file, line)};
         Assert (false);
-        Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));
+        Execution::ThrowSystemErrNo (ERROR_INVALID_PARAMETER);
     }
 }
 void Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ()
