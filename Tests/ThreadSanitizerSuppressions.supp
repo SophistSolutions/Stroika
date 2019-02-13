@@ -6,7 +6,17 @@ race:pipe
 #workaround https://stroika.atlassian.net/browse/STK-677 - sem_post() called from inside signal handler, and can spoil errno	- rare and only seen so far on Ubunt1804 but should affect anything
 # REMOVED workaround when I added code that should eliminate the problem in SemWaitableEvent::Set(). Not sure tsan will see
 # this as a fix, so must test quite a few times (this was hard to reproduce) -- LGP 2018-12-13
-#signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
+#
+# re-added the signal suppression since I got the error again in TSAN on Ubuntu 1810:
+#   WARNING: ThreadSanitizer: signal handler spoils errno (pid=25253)
+#       #0 Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1810_x86_64/Library/Sources/Stroika/Foundation/Execution/SignalHandlers.cpp:497 (Test38+0xa545b6)
+#       #1 __gnu_debug::_Safe_sequence_base::_M_detach(__gnu_debug::_Safe_iterator_base*) <null> (Test38+0xe63a3b)
+#       #2 __gnu_debug::_Safe_iterator<std::_Rb_tree_const_iterator<std::thread::id>, std::__debug::multiset<std::thread::id, std::less<std::thread::id>, std::allocator<std::thread::id> > >::~_Safe_iterator() /usr/include/c++/8/debug/safe_iterator.h:86 (Test38+0xa36d80)
+#       #3 Stroika::Foundation::Debug::AssertExternallySynchronizedLock::unlock_shared_() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1810_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedLock.cpp:82 (Test38+0xa35c99)
+#       #4 Stroika::Foundation::Debug::AssertExternallySynchronizedLock::unlock_shared() const ../Characters/../Containers/../Traversal/../Debug/AssertExternallySynchronizedLock.inl:88 (Test38+0x8554a0)
+# not 100% clear this is right thing, but FirstPassSignalHandler_ does indirect call sem_post which could spoil though I wrote code to unspoil iterators
+# may not look that way to tsan -- LGP 2018-02-13
+signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
 
 #https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
 #since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedLock (in one stacktrace)
