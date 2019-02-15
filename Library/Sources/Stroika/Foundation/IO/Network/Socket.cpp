@@ -53,7 +53,7 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
     ThrowPOSIXErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); }));
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
-    ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
+    ThrowWSASystemErrorIfSOCKET_ERROR (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
     DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
     AssertNotImplemented ();
@@ -118,7 +118,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
 #if qPlatform_Windows
     try {
-        ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
+        ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
     }
     catch (const system_error& e) {
         if (e.code ().category () == system_category () and e.code ().value () == WSAEACCES) {
@@ -169,22 +169,3 @@ String Socket::Ptr::ToString () const
     }
     return sb.str ();
 }
-
-/*
- ********************************************************************************
- ******************** Execution::ThrowPOSIXErrNoIfNegative **********************
- ********************************************************************************
- */
-#if qPlatform_Windows
-namespace Stroika::Foundation::Execution {
-    // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
-    template <>
-    IO::Network::Socket::PlatformNativeHandle ThrowPOSIXErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
-    {
-        if (returnCode == kINVALID_NATIVE_HANDLE_) {
-            Execution::ThrowSystemErrNo (::WSAGetLastError ());
-        }
-        return returnCode;
-    }
-}
-#endif

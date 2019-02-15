@@ -167,6 +167,31 @@ namespace Stroika::Foundation::IO::Network {
         return lhs.Compare (rhs) > 0;
     }
 
+#if qPlatform_Windows
+    /*
+     ********************************************************************************
+     ******************* ThrowWSASystemErrorIfNegative ******************************
+     ********************************************************************************
+     */
+    template <typename INT_TYPE, enable_if_t<is_signed_v<INT_TYPE>>*>
+    inline INT_TYPE ThrowWSASystemErrorIfSOCKET_ERROR (INT_TYPE returnCode)
+    {
+        if (returnCode == SOCKET_ERROR) {
+            Execution::ThrowSystemErrNo (::WSAGetLastError ());
+        }
+        return returnCode;
+    }
+    // this overload is needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
+    inline IO::Network::Socket::PlatformNativeHandle ThrowWSASystemErrorIfSOCKET_ERROR (IO::Network::Socket::PlatformNativeHandle returnCode)
+    {
+        // see docs for https://docs.microsoft.com/en-us/windows/desktop/api/winsock2/nf-winsock2-accept
+        if (returnCode == INVALID_SOCKET) {
+            Execution::ThrowSystemErrNo (::WSAGetLastError ());
+        }
+        return returnCode;
+    }
+#endif
+
 }
 
 #endif /*_Stroika_Foundation_IO_Network_Socket_inl_*/

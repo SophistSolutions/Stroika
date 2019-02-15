@@ -59,9 +59,9 @@ namespace Stroika::Foundation::IO::Network {
 
 #if qPlatform_POSIX
         /*
-            *  Internally we use this -1 value to mean invalid socket, but keep that a private implementation
-            *  detail, since I'm not sure it will be good for all socket implementations?
-            */
+         *  Internally we use this -1 value to mean invalid socket, but keep that a private implementation
+         *  detail, since I'm not sure it will be good for all socket implementations?
+         */
         constexpr Socket::PlatformNativeHandle kINVALID_NATIVE_HANDLE_ = -1; // right value??
 #elif qPlatform_Windows
         constexpr Socket::PlatformNativeHandle kINVALID_NATIVE_HANDLE_ = INVALID_SOCKET;
@@ -207,7 +207,7 @@ namespace Stroika::Foundation::IO::Network {
 #if qPlatform_POSIX
                     ThrowPOSIXErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #elif qPlatform_Windows
-                    ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                    ThrowWSASystemErrorIfSOCKET_ERROR (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #else
                     AssertNotImplemented ();
 #endif
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::IO::Network {
 #if qPlatform_POSIX
                     ThrowPOSIXErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
 #elif qPlatform_Windows
-                    ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
+                    ThrowWSASystemErrorIfSOCKET_ERROR (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
 #else
                     AssertNotImplemented ();
 #endif

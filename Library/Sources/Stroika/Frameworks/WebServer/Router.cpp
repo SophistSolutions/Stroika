@@ -21,7 +21,7 @@ using namespace Stroika::Frameworks::WebServer;
 using IO::Network::HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -40,7 +40,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     virtual void HandleMessage (Message* m) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ()};
+        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->GetRequestHTTPMethod ().c_str (), Characters::ToString (m->GetRequestURL ()).c_str ()};
 #endif
         optional<RequestHandler> handler = Lookup_ (*m->PeekRequest ());
         if (handler) {

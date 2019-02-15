@@ -72,7 +72,7 @@ namespace {
 #if qPlatform_POSIX
                 ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
-                ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -91,7 +91,7 @@ namespace {
 #elif qPlatform_Windows
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-                return static_cast<size_t> (ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
+                return static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
 #else
                 AssertNotImplemented ();
 #endif
@@ -118,7 +118,7 @@ namespace {
 #if qPlatform_POSIX
                             int tmp = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
 #elif qPlatform_Windows
-                            int tmp = ThrowPOSIXErrNoIfNegative<int> (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
+                            int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else
                             AssertNotImplemented ();
 #endif
@@ -180,8 +180,7 @@ namespace {
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int len = static_cast<int> (end - start);
                         int flags = 0;
-                        int n = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
-                        ThrowPOSIXErrNoIfNegative<Socket::PlatformNativeHandle> (n);
+                        int n = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
                     });

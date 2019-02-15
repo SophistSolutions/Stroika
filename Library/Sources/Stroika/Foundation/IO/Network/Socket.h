@@ -442,10 +442,25 @@ namespace Stroika::Foundation::IO::Network {
         virtual void                                 setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
     };
 
+#if qPlatform_Windows
+    /**
+     * If the argument value (return code from some WSA API call) is SOCKET_ERROR (or if T = SOCKET we check for INVALID_SOCKET)
+     * This function throws a system error code given by WSAGetLastError ()
+     *
+     * see docs for https://docs.microsoft.com/en-us/windows/desktop/api/winsock2/nf-winsock2-accept
+     * or https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-bind
+     * for examples of functions this can be used to wrap.
+     */
+    template <typename INT_TYPE, enable_if_t<is_signed_v<INT_TYPE>>* = nullptr>
+    INT_TYPE                                  ThrowWSASystemErrorIfSOCKET_ERROR (INT_TYPE returnCode);
+    IO::Network::Socket::PlatformNativeHandle ThrowWSASystemErrorIfSOCKET_ERROR (IO::Network::Socket::PlatformNativeHandle returnCode);
+#endif
+
 }
 
 #if qPlatform_Windows
 namespace Stroika::Foundation::Execution {
+    // INTENTIONALLY UNDEFINED -     "wrong/super-deprecated in v2.1d18 - use ThrowWSASystemErrorIfSOCKET_ERROR");
     template <>
     IO::Network::Socket::PlatformNativeHandle ThrowPOSIXErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
 }
