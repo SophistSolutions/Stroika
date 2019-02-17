@@ -38,6 +38,5 @@ const InternetAddress Network::Private_::InternetAddressRangeTraits_::kUpperBoun
 
 InternetAddress IO::Network::Private_::InternetAddressRangeTraits_::GetNext (InternetAddress n)
 {
-    AssertNotImplemented ();
-    return n; //tmphack
+    return n.Offset (1);
 }
