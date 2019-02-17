@@ -95,12 +95,17 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *
          *  \note   Configuration::DefaultNames<> supported
+         *
+         *  Most of these types are obvious, but eDeviceVirtualInternalNetwork is for special internal networks, like for virtualbox, Docker, or other purposes.
+         *  They will generally (always) have private IP Addresses distinct from the main real external IP address of the machine in question. It may not always
+         *  be possible to identify such networks.
          */
         enum class Type {
             eLoopback,
             eWiredEthernet,
             eWIFI,
             eTunnel,
+            eDeviceVirtualInternalNetwork,
             eOther,
 
             Stroika_Define_Enum_Bounds (eLoopback, eOther)

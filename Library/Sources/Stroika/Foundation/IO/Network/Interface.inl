@@ -145,6 +145,7 @@ namespace Stroika::Foundation::Configuration {
                     {IO::Network::Interface::Type::eWiredEthernet, L"Wired-Ethernet"},
                     {IO::Network::Interface::Type::eWIFI, L"WIFI"},
                     {IO::Network::Interface::Type::eTunnel, L"Tunnel"},
+                    {IO::Network::Interface::Type::eDeviceVirtualInternalNetwork, L"Device-Virtual-Internal-Network"},
                     {IO::Network::Interface::Type::eOther, L"Other"},
                 }}};
         DefaultNames ()

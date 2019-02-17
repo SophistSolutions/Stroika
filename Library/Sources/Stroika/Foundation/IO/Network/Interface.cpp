@@ -747,7 +747,14 @@ namespace {
                         newInterface.fType = Interface::Type::eWIFI;
                         break;
                     case IF_TYPE_ETHERNET_CSMACD:
-                        newInterface.fType = Interface::Type::eWiredEthernet;
+                        if (newInterface.fDescription->Contains (L"VirtualBox Host-Only Ethernet Adapter"sv) or
+                            newInterface.fDescription->Contains (L"Hyper-V Virtual Ethernet Adapter"sv)) {
+                            // a fairly good guess - not sure how to tell for sure
+                            newInterface.fType = Interface::Type::eDeviceVirtualInternalNetwork;
+                        }
+                        else {
+                            newInterface.fType = Interface::Type::eWiredEthernet;
+                        }
                         break;
                     default:
                         newInterface.fType = Interface::Type::eOther;
