@@ -373,13 +373,13 @@ InternetAddress InternetAddress::Offset (unsigned int o) const
         o -= bytePart;
         unsigned int sum           = addressAsArrayOfBytes[idx] + bytePart;
         addressAsArrayOfBytes[idx] = sum % 256;
-        o += sum / 256;
+        o += (sum / 256) * 256; // carry
         if (idx == 0) {
             break;
         }
         else {
             idx--;
-            o <<= 8;
+            o >>= 8;
         }
     }
     return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
