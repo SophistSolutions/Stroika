@@ -88,7 +88,8 @@ String Network::CIDR::ToString () const
 
 IO::Network::InternetAddressRange Network::CIDR::GetRange () const
 {
-    AssertNotImplemented (); // @todo
-    InternetAddressRange result{};
+    Require (fBaseAddress_.GetAddressSize ().has_value ());
+    size_t               offset = *fBaseAddress_.GetAddressSize () * 8 - fSignificantBits_;
+    InternetAddressRange result{fBaseAddress_, fBaseAddress_.Offset ((1 << offset) - 1ul)};
     return result;
 }

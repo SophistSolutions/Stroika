@@ -62,13 +62,13 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \par Example Usage
          *      \code
-         *      CIDR cidr { L"192.168.243.0/24" };
-         *      InternetAddress lb = cidr.GetRange ().GetLowerBound ();
-         *      InternetAddress ub = cidr.GetRange ().GetUpperBound ();
-         *      unsigned int    nAddresses = cird.GetRange ().GetNumberOfContainedPoints ();
-         *      for (InternetAddress ia : cidr.GetRange ()) {
-         *          print (ia);
-         *      }
+         *          CIDR cidr { L"192.168.243.0/24" };
+         *          InternetAddress lb = cidr.GetRange ().GetLowerBound ();
+         *          InternetAddress ub = cidr.GetRange ().GetUpperBound ();
+         *          unsigned int    nAddresses = cird.GetRange ().GetNumberOfContainedPoints ();
+         *          for (InternetAddress ia : cidr.GetRange ()) {
+         *              print (ia);
+         *          }
          *      \endcode
          */
         nonvirtual InternetAddressRange GetRange () const;
