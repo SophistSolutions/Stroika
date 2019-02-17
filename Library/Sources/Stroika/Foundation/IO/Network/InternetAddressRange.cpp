@@ -17,7 +17,24 @@ using namespace Stroika::Foundation::IO::Network;
  ********************************************************************************
  */
 const InternetAddress Network::Private_::InternetAddressRangeTraits_::kLowerBound;
-const InternetAddress Network::Private_::InternetAddressRangeTraits_::kUpperBound;
+const InternetAddress Network::Private_::InternetAddressRangeTraits_::kUpperBound = InternetAddress{array<uint8_t, 16>{
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+}};
 
 InternetAddress IO::Network::Private_::InternetAddressRangeTraits_::GetNext (InternetAddress n)
 {
