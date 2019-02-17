@@ -260,6 +260,15 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  \brief offset this IP Address by 'o' discrete addresses (positive only).
+         *
+         * @todo support different kinds of offsets
+         * @todo document/follow appropriate overflow behavior
+         */
+        nonvirtual InternetAddress Offset (unsigned int o) const;
+
+    public:
+        /**
          *  \req not empty ()
          *
          *  Return true iff the given address is a localhost IP address (typically 127.0.0.1, but can be anything

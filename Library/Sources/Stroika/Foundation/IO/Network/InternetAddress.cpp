@@ -362,6 +362,29 @@ String InternetAddress::ToString () const
     return As<String> ();
 }
 
+InternetAddress InternetAddress::Offset (unsigned int o) const
+{
+    // rough draft - NEEDS TESTING - LGP 2019-02-17
+    vector<uint8_t> addressAsArrayOfBytes = As<vector<uint8_t>> ();
+    Require (addressAsArrayOfBytes.size () >= 4);
+    size_t idx = addressAsArrayOfBytes.size () - 1;
+    while (o != 0) {
+        unsigned int bytePart = o % 256;
+        o -= bytePart;
+        unsigned int sum           = addressAsArrayOfBytes[idx] + bytePart;
+        addressAsArrayOfBytes[idx] = sum % 256;
+        o += sum / 256;
+        if (idx == 0) {
+            break;
+        }
+        else {
+            idx--;
+            o <<= 8;
+        }
+    }
+    return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
+}
+
 int InternetAddress::Compare (const InternetAddress& rhs) const
 {
     if (fAddressFamily_ != rhs.fAddressFamily_) {
