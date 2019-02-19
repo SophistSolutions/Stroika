@@ -80,7 +80,10 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 #if defined(AI_CANONIDN)
     hints.ai_flags |= AI_CANONIDN;
 #endif
-    string                  tmp     = hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
+    string tmp = hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what... - I think need to map to Punycode
+    if (not tmp.empty () and tmp[0] == '[' and tmp[tmp.size () - 1] == ']') {
+        tmp = tmp.substr (1, tmp.size () - 2);
+    }
     addrinfo*               res     = nullptr;
     int                     errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });

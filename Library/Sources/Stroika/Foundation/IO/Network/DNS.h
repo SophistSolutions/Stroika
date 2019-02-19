@@ -60,6 +60,9 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  The argument can be either a hostname (following DNS name restrictions - see https://tools.ietf.org/html/rfc1123#page-13)
+         *  Or an IP address (e.g. 192.168.2.2, or fe80::3d83:d6d5:3823:33ea). Note - IP addresses (numeric) maybe wrapped in [] (required by SMTP)
+         *  and if so, those names are automatically interpretted correctly (as numeric IP addresses).
          */
         nonvirtual HostEntry GetHostEntry (const String& hostNameOrAddress) const;
 
@@ -79,11 +82,14 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  \brief simple wrapper on GetHostEntry - looking up the hostname/ip address and returning the list of associated ip addresses (or the argument ip address).
          */
         nonvirtual Sequence<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
 
     public:
         /**
+         *  \brief simple wrapper on GetHostEntry.
+         *
          *  Return the primary host address for the given argument hostnameOrAddress. Throws exception if
          *  it somehow cannot (e.g. if there are zero addresses associated with the given argument or a network
          *  error retrieving the information).
