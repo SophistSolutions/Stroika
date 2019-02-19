@@ -81,7 +81,8 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     hints.ai_flags |= AI_CANONIDN;
 #endif
     string tmp = hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what... - I think need to map to Punycode
-    if (not tmp.empty () and tmp[0] == '[' and tmp[tmp.size () - 1] == ']') {
+    if (not tmp.empty () and tmp[0] == '[' and tmp[tmp.size () - 1] == ']' and isdigit (tmp[1])) {
+        // only allowed [] around numeric ip addresses
         tmp = tmp.substr (1, tmp.size () - 2);
     }
     addrinfo*               res     = nullptr;

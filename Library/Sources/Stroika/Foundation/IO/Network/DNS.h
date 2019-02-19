@@ -60,7 +60,8 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  The argument can be either a hostname (following DNS name restrictions - see https://tools.ietf.org/html/rfc1123#page-13)
+         *  The argument can be either a hostname (following DNS name restrictions - see https://tools.ietf.org/html/rfc1123#page-13.
+         *  Also, see https://tools.ietf.org/html/rfc2732 for 'Literal IPv6 Address Format in URL's Syntax'
          *  Or an IP address (e.g. 192.168.2.2, or fe80::3d83:d6d5:3823:33ea). Note - IP addresses (numeric) maybe wrapped in [] (required by SMTP)
          *  and if so, those names are automatically interpretted correctly (as numeric IP addresses).
          */
