@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Containers {
         return r.has_value () ? *r : defaultValue;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] (ArgByValueType<key_type> key) const
+    inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] (ArgByValueType<key_type> key) const -> add_const_t<mapped_type>
     {
         return *Lookup (key);
     }

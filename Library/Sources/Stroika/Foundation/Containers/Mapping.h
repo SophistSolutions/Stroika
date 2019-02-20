@@ -77,12 +77,6 @@ namespace Stroika::Foundation::Containers {
      *
      *      Similarly for std::initalizer_list.
      *
-     *  \note   Design Note:
-     *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
-     *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
-     *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
-     *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
-     *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      *
      *  \note Note About Iterators
@@ -289,8 +283,24 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \req ContainsKey (key);
+         *
+         *  \note   Design Note:
+         *      Defined operator[](KEY_TYPE) const - to return const MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
+         *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
+         *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
+         *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
+         *
+         *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE instead of MAPPED_VALUE_TYPE& because we then couldn't control
+         *      the lifetime of that reference, and it would be unsafe as the underlying object was changed.
+         *
+         *      And therefore we return CONST of that type so that code like m["xx"].a = 3 won't compile (and wont just assign to a temporary that disappears
+         *      leading to confusion).
+         *
+         *  \note In the future, it may make sense to have operator[] return a PROXY OBJECT, so that it MIGHT be assignable. But that wouldn't work with
+         *        cases like Mapping<String,OBJ> where you wnated to access OBJs fields as in m["xx"].a = 3
+         *
          */
-        nonvirtual mapped_type operator[] (ArgByValueType<key_type> key) const;
+        nonvirtual add_const_t<mapped_type> operator[] (ArgByValueType<key_type> key) const;
 
     public:
         /**
