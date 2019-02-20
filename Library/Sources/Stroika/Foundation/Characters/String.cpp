@@ -798,6 +798,37 @@ bool String::Match (const RegularExpression& regEx) const
     return regex_match (tmp.begin (), tmp.end (), regEx.GetCompiled ());
 }
 
+bool String::Match (const RegularExpression& regEx, optional<String>* subMatch1) const
+{
+    RequireNotNull (subMatch1);
+    wstring      tmp{As<wstring> ()};
+    std::wsmatch base_match;
+    if (regex_match (tmp, base_match, regEx.GetCompiled ())) {
+        if (base_match.size () >= 2) {
+            *subMatch1 = base_match[1].str ();
+        }
+        return true;
+    }
+    return false;
+}
+
+bool String::Match (const RegularExpression& regEx, optional<String>* subMatch1, optional<String>* subMatch2) const
+{
+    RequireNotNull (subMatch1);
+    wstring      tmp{As<wstring> ()};
+    std::wsmatch base_match;
+    if (regex_match (tmp, base_match, regEx.GetCompiled ())) {
+        if (base_match.size () >= 2) {
+            *subMatch1 = base_match[1].str ();
+        }
+        if (base_match.size () >= 3) {
+            *subMatch2 = base_match[2].str ();
+        }
+        return true;
+    }
+    return false;
+}
+
 String String::ReplaceAll (const RegularExpression& regEx, const String& with) const
 {
     return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));

@@ -699,6 +699,16 @@ namespace {
                     VerifyTestResult (i.Match (RegularExpression::kAny));
                 }
             }
+            {
+                // Test from String::Match () docs
+                static const RegularExpression kSonosRE_{L"([0-9.:]*)( - .*)"_RegEx};
+                static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
+                VerifyTestResult (kTestStr_.Match (kSonosRE_));
+                optional<String> match1;
+                VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1) and match1 == L"192.168.244.104");
+                optional<String> match2;
+                VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+            }
         }
         void Test17_RegExp_Search_ ()
         {

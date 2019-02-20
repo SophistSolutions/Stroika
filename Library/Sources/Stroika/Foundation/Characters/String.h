@@ -713,6 +713,15 @@ namespace Stroika::Foundation::Characters {
          *          Assert (not String (L"abc").Match (L"b.*c"));
          *      \endcode
          *
+         *  \par Example Usage
+         *      \code
+         *          static const RegularExpression kSonosRE_{L"([0-9.:]*)( - .*)"_RegEx};
+         *          static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
+         *          optional< String> match1;
+         *          optional< String> match2;
+         *          VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+         *      \endcode
+         *
          *  Details on the regular expression language/format can be found at:
          *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
          *
@@ -721,8 +730,12 @@ namespace Stroika::Foundation::Characters {
          *  @see EndsWith
          *  @see Find
          *  @see FindEach
+         *
+         *  \todo redo overloads with variadic template
          */
         nonvirtual bool Match (const RegularExpression& regEx) const;
+        nonvirtual bool Match (const RegularExpression& regEx, optional<String>* subMatch1) const;
+        nonvirtual bool Match (const RegularExpression& regEx, optional<String>* subMatch1, optional<String>* subMatch2) const;
 
     public:
         /**
