@@ -812,16 +812,16 @@ namespace Stroika::Foundation::Memory {
      *
      *  \par Example Usage
      *      \code
-     *      int curValue = 3;
-     *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
-     *      oVal.CopyToIf (&curValue);
+     *          int curValue = 3;
+     *          optional<long>  oVal = someMap.Lookup (KEY_VALUE);
+     *          oVal.CopyToIf (&curValue);
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      Optional<int> curValue;
-     *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
-     *      oVal.CopyToIf (&curValue);      // curValue retains its value from before CopyToIf if oVal was missing
+     *          optional<int> curValue;
+     *          optional<long>  oVal = someMap.Lookup (KEY_VALUE);
+     *          oVal.CopyToIf (&curValue);      // curValue retains its value from before CopyToIf if oVal was missing
      *      \endcode
      *
      *  @see Value
@@ -829,11 +829,11 @@ namespace Stroika::Foundation::Memory {
      *  \note - the overload with the second arg optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE> is just to silence an msvc compiler warning.
      */
     template <typename T, typename CONVERTABLE_TO_TYPE>
-    void CopyToIf (const optional<T>& lhs, CONVERTABLE_TO_TYPE* to);
+    void CopyToIf (const optional<T>& copyFromIfHasValue, CONVERTABLE_TO_TYPE* to);
     template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
-    void CopyToIf (const optional<T>& lhs, optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to);
+    void CopyToIf (const optional<T>& copyFromIfHasValue, optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to);
     template <typename T, typename CONVERTABLE_TO_TYPE>
-    void CopyToIf (const Optional<T>& lhs, CONVERTABLE_TO_TYPE* to);
+    void CopyToIf (const Optional<T>& copyFromIfHasValue, CONVERTABLE_TO_TYPE* to);
 
     /**
      *  Always safe to call. If has_value returns it, else returns argument 'default'. Like value_or () but has default value for default value.
