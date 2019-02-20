@@ -37,10 +37,10 @@ String Advertisement::ToString () const
     if (fAlive) {
         sb += L"Alive : " + Characters::ToString (fAlive) + L", ";
     }
-    sb += L"USN : '" + Characters::ToString (fUSN) + L"', ";
-    sb += L"Location : '" + Characters::ToString (fLocation) + L"', ";
-    sb += L"Server : '" + Characters::ToString (fServer) + L"', ";
-    sb += L"Target : '" + Characters::ToString (fTarget) + L"', ";
+    sb += L"USN : " + Characters::ToString (fUSN) + L", ";
+    sb += L"Location : " + Characters::ToString (fLocation) + L", ";
+    sb += L"Server : " + Characters::ToString (fServer) + L", ";
+    sb += L"Target : " + Characters::ToString (fTarget) + L", ";
     sb += L"Raw-Headers : " + Characters::ToString (fRawHeaders) + L", ";
     sb += L"}";
     return sb.str ();
