@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Containers {
          *      leading to confusion).
          *
          *  \note In the future, it may make sense to have operator[] return a PROXY OBJECT, so that it MIGHT be assignable. But that wouldn't work with
-         *        cases like Mapping<String,OBJ> where you wnated to access OBJs fields as in m["xx"].a = 3
+         *        cases like Mapping<String,OBJ> where you wanted to access OBJs fields as in m["xx"].a = 3
          *
          */
         nonvirtual add_const_t<mapped_type> operator[] (ArgByValueType<key_type> key) const;
