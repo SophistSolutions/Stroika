@@ -16,6 +16,7 @@
 #include "../../../Characters/CString/Utilities.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String_Constant.h"
+#include "../../../Characters/ToString.h"
 #include "../../../Containers/STL/Utilities.h"
 #include "../../../Execution/Finally.h"
 #include "../../../Execution/Throw.h"
@@ -47,6 +48,9 @@ using Stroika::Foundation::Memory::SmallStackBuffer;
 using Stroika::Foundation::Memory::SmallStackBufferCommon;
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 /*
  *  TODO:
@@ -181,6 +185,9 @@ void Connection_WinHTTP::Rep_::Close ()
 
 Response Connection_WinHTTP::Rep_::Send (const Request& request)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s", Characters::ToString (request).c_str ())};
+#endif
     BLOB                              data; // usually empty, but provided for some methods like POST
     Mapping<String, String>           headers;
     HTTP::Status                      status{};
@@ -349,7 +356,9 @@ RetryWithAuth:
         wstring statusStr  = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         wstring statusText = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         status             = static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (_T ("Status = %d"), status);
+#endif
     }
 
     if (status == 401 and not got401 and fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {

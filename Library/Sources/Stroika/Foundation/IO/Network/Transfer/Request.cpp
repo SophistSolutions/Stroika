@@ -3,6 +3,7 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/StringBuilder.h"
 #include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextReader.h"
 #include "../HTTP/Headers.h"
@@ -31,4 +32,15 @@ InternetMediaType Request::GetContentType () const
 void Request::SetContentType (const InternetMediaType& ct)
 {
     fOverrideHeaders.Add (String_Constant (HTTP::HeaderName::kContentType), ct.As<String> ());
+}
+
+String Request::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Method: " + Characters::ToString (fMethod) + L",";
+    sb += L"fOverrideHeaders: " + Characters::ToString (fOverrideHeaders) + L",";
+    sb += L"fData: " + Characters::ToString (fData) + L",";
+    sb += L"}";
+    return sb.str ();
 }

@@ -54,6 +54,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          * updates fOverrideHeaders
          */
         nonvirtual void SetContentType (const InternetMediaType& ct);
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
     };
 
 }
