@@ -127,6 +127,7 @@
 #define _MSC_VER_2k19_16Pt0_ 1920
 #define _MS_VS_2k19_16Pt0Pt0pre1_ 192027027
 #define _MS_VS_2k19_16Pt0Pt0pre2_ 192027305
+#define _MS_VS_2k19_16Pt0Pt0pre3_ 192027323
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -145,9 +146,9 @@
 #endif
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt0_
 // check which pointer-version of MSVC2k17 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre2_
+#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre3_
 // @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-pre2 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-pre3 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -588,6 +589,8 @@ lose those deprecated interfaces.
 // verified broken in _MSC_VER_2k17_15Pt9_
 // assume broken in _MSC_VER_2k19_16Pt0_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre2_
+// verified broken _MS_VS_2k19_16Pt0Pt0pre2_
+// verified broken _MS_VS_2k19_16Pt0Pt0pre3_
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
@@ -813,7 +816,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MSC_VER_2k17_15Pt9_
 // still broken in _MSC_VER_2k19_16Pt0_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
+// CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre3_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -861,6 +865,7 @@ WORKAROUND:
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0Pt0_ - preview1
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
@@ -1061,7 +1066,8 @@ NOTE:
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified FIXED in _MS_VS_2k19_16Pt0Pt0pre3_
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
 #endif
@@ -1082,6 +1088,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified BROKEN _MSC_VER_2k17_15Pt9_ (OK in debug build, but broken in Release-U-32)
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1) - not not sure anything more than warnings - no buggy behavior seen?
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 #define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
@@ -1180,6 +1187,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
  *  with formatPattern = "%c" - produces a numeric format date with C locale, compared to UNIX which produces 
  *  %a %b %e %T %Y - as is suggestged by code docs and https://en.cppreference.com/w/cpp/locale/time_put/put (example - not clear cuz not for all locales)
    ...
+FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp: 356
+   []  (0  seconds)  [48]  Foundation::Time  (../Builds/Release-U-64/Tests/Test48.exe)
  */
 #ifndef qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
 
@@ -1188,6 +1197,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
@@ -1302,6 +1312,7 @@ namespace {
 // VERIFIED broken IN _MSC_VER_2k17_15Pt9_  (NOTE - this no longer gives the above assertion error but instead just fails in the UTF8 code conversion)
 // VERIFIED still broken in _MSC_VER_2k19_16Pt0_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
+// VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
