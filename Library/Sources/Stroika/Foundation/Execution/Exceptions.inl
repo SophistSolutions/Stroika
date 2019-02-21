@@ -30,9 +30,13 @@ namespace Stroika::Foundation::Execution {
         : ExceptionStringHelper (reasonForError, CaptureCurrentActivities ())
     {
     }
-    inline Characters::String ExceptionStringHelper::GetRawErrorMessage () const
+    inline Characters::String ExceptionStringHelper::GetBasicErrorMessage () const
     {
         return fRawErrorMessage_;
+    }
+    inline Characters::String ExceptionStringHelper::GetFullErrorMessage () const
+    {
+        return fFullErrorMessage_;
     }
     inline Containers::Stack<Activity<>> ExceptionStringHelper::GetActivities () const
     {
@@ -41,12 +45,12 @@ namespace Stroika::Foundation::Execution {
     template <>
     inline wstring ExceptionStringHelper::As () const
     {
-        return fErrorMessage_.As<wstring> ();
+        return fFullErrorMessage_.As<wstring> ();
     }
     template <>
     inline Characters::String ExceptionStringHelper::As () const
     {
-        return fErrorMessage_;
+        return fFullErrorMessage_;
     }
     inline const char* ExceptionStringHelper::_PeekAtNarrowSDKString_ () const
     {

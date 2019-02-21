@@ -30,6 +30,30 @@ using Debug::TraceContextBumper;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+namespace {
+    // @todo this message needs lots of linguistic cleanup (punctuation, capitalization etc)
+    String mkMessage_ (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)
+    {
+        if (activities.empty ()) {
+            return reasonForError;
+        }
+        StringBuilder sb;
+        sb += reasonForError;
+        sb += L" while ";
+        for (auto i = activities.begin (); i != activities.end ();) {
+            sb += i->AsString ();
+            i++;
+            if (i == activities.end ()) {
+                sb += L".";
+            }
+            else {
+                sb += L", and ";
+            }
+        }
+        return sb.str ();
+    }
+}
+
 /*
  ********************************************************************************
  ******************************** ExceptionStringHelper *************************
@@ -38,8 +62,8 @@ using Debug::TraceContextBumper;
 ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)
     : fActivities_ (activities)
     , fRawErrorMessage_ (reasonForError)
-    , fErrorMessage_ (reasonForError)
-    , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
+    , fFullErrorMessage_ (mkMessage_ (reasonForError, activities))
+    , fSDKCharString_ (fFullErrorMessage_.AsNarrowSDKString ())
 {
 }
 

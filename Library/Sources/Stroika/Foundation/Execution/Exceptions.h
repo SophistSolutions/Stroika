@@ -73,7 +73,13 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Return error message without added 'activities'.
          */
-        nonvirtual Characters::String GetRawErrorMessage () const;
+        nonvirtual Characters::String GetBasicErrorMessage () const;
+
+    public:
+        /**
+         *  Return error message with added 'activities'
+         */
+        nonvirtual Characters::String GetFullErrorMessage () const;
 
     public:
         /**
@@ -87,18 +93,27 @@ namespace Stroika::Foundation::Execution {
          * Only implemented for
          *      o   wstring
          *      o   String
+         *
+         * This returns the message callers should display to represent the error (e.g. in exception::c_str ()).
+         * For now, it returns GetFullErrorMessage () - but may someday change.
          */
         template <typename T>
         nonvirtual T As () const;
 
     protected:
+        /**
+         *  In order for subclasses to support the c++ exception::c_str () API, we need to convert
+         *  the string/message to an SDKChar string, and have that lifetime be very long. So we store it
+         *  in a std::string. And this function returns the pointer to that string. This object is
+         *  immutable, so that the lifetime of the underlying return const char* is as long as this object.
+         */
         nonvirtual const char* _PeekAtNarrowSDKString_ () const;
 
     private:
         Containers::Stack<Activity<>> fActivities_;
         Characters::String            fRawErrorMessage_;
-        Characters::String            fErrorMessage_;
-        string                        fSDKCharString_;
+        Characters::String            fFullErrorMessage_;
+        string                        fSDKCharString_; // important declared after others cuz mem-initializer refers back
     };
     template <>
     wstring ExceptionStringHelper::As () const;
