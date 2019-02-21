@@ -46,6 +46,7 @@ namespace Stroika::Foundation::Execution {
     namespace Private_ {
         namespace Activities_ {
             struct AsStringObj_ {
+                virtual ~AsStringObj_ ()                     = default;
                 virtual Characters::String AsString () const = 0;
             };
             struct StackElt_ {
@@ -90,7 +91,7 @@ namespace Stroika::Foundation::Execution {
         LazyEvalActivity (const CTOR_ARG& arg);
 
     public:
-		virtual Characters::String AsString () const override;
+        virtual Characters::String AsString () const override;
 
     private:
         CTOR_ARG fArg_;
