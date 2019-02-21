@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Execution {
         LazyEvalActivity (const CTOR_ARG& arg);
 
     public:
-        virtual explicit operator Characters::String () const override;
+		virtual Characters::String AsString () const override;
 
     private:
         CTOR_ARG fArg_;
