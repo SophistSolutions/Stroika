@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/String.h"
-#include "../Containers/Sequence.h"
+#include "../Containers/Stack.h"
 
 /*
  *
@@ -24,25 +24,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    /**
-     */
-#if 1
-    template <typename CTOR_ARG = Characters::String>
-    class Activity;
-#else
-    template <typename CTOR_ARG = Characters::String>
-    class Activity : Activity<Characters::String> {
-    public:
-        Activity (const CTOR_ARG& arg);
-
-    public:
-        nonvirtual explicit operator Characters::String () const;
-
-    private:
-        CTOR_ARG fArg_;
-    };
-#endif
-
     namespace Private_ {
         namespace Activities_ {
             struct AsStringObj_ {
@@ -57,6 +38,22 @@ namespace Stroika::Foundation::Execution {
         }
     }
 
+    /**
+     *  An Activity is typically a static const or sometimes even constexpr object which contains a description of
+     *  an ongoing activity. They are generally not meant to be stored or copied, but REFERENCED with DeclareActivity
+     *  to form a 'current activity stack'.
+	 *
+	 *  \code
+	 *      static constexpr Activity   kBuildingThingy_ {L"Building thingy"sv };
+	 *		static const Activity kOtherActivity = String { L"abc" };
+	 *		Activity otherActivity = String { L"abc" + argument };		// activities can be stack based, but these cost more to define
+	 *		LazyEvalActivity lazyEvalActivity { [&] ()  { return args.something_expensive () + L"x"; });
+	 *		// then for how to use activiy - see DeclareActivity
+	 *  \endcode
+	 */
+    template <typename CTOR_ARG = Characters::String>
+    class Activity;
+
     template <>
     class Activity<Characters::String> : public Private_::Activities_::AsStringObj_ {
     public:
@@ -68,7 +65,6 @@ namespace Stroika::Foundation::Execution {
     private:
         Characters::String fArg_;
     };
-
     template <>
     class Activity<wstring_view> : public Private_::Activities_::AsStringObj_ {
     public:
@@ -83,28 +79,52 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  When creating the activity would be expensive, just capture it in a lambda, and only convert that lambda to
-     *  an actual string if/when CaptureCurrentActivities is called
+     *  an actual string if/when CaptureCurrentActivities is called.
+     *
+     *  \note would LIKE to know how to do this as a template specialization of Activity, but haven't figured that out yet.
      */
     template <typename CTOR_ARG, enable_if_t<is_invocable_r_v<Characters::String, CTOR_ARG>>* = nullptr>
     class LazyEvalActivity : public Private_::Activities_::AsStringObj_ {
     public:
-        LazyEvalActivity (const CTOR_ARG& arg);
+        LazyEvalActivity (const CTOR_ARG& arg)
+            : fArg_ (arg)
+        {
+        }
 
     public:
-        virtual Characters::String AsString () const override;
+        virtual Characters::String AsString () const override
+        {
+            return fArg_ (); // what makes this more efficient is that we can just capture data in a lambda (by reference)
+                             // and just invoke that logic during exception processing when we need to convert the activity to a string rep
+        }
 
     private:
         CTOR_ARG fArg_;
     };
 
     /**
+     *  \brief Returns a copyable preservable version of the current activities stack.
+     *
      *  'render' each current activity on the current threads activity stack as a Activity<> (so String based), and return the full
-     *  list as a copyable sequence.
+     *  list as a copyable stack of activities.
      */
-    Containers::Sequence<Activity<>> CaptureCurrentActivities ();
+    Containers::Stack<Activity<>> CaptureCurrentActivities ();
 
     /**
      *  Push the argument Activty onto the current threads Activity stack in the constructor, and pop it off in the destructor.
+     *
+     *  \code
+     *      static constexpr Activity   kBuildingThingy_ {L"Building thingy"sv };
+     *      try {
+     *          DeclareActivity declareActivity { &kBuildingThingy_ }
+     *          doBuildThing  ();   // throw any exception (that inherits from Exception<>)
+     *      }
+     *      catch (...) {
+     *          String exceptionMsg = Characters::ToString (current_exception ());
+     *          Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());
+     *      }
+     *
+     *  \endcode
      */
     template <typename ACTIVITY>
     class DeclareActivity {
@@ -116,6 +136,9 @@ namespace Stroika::Foundation::Execution {
         DeclareActivity (const DeclareActivity&) = delete;
         DeclareActivity (const ACTIVITY* arg);
         ~DeclareActivity ();
+
+    private:
+        Private_::Activities_::StackElt_ fNewTopOfStackElt_;
     };
 
 }

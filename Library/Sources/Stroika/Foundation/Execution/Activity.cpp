@@ -34,12 +34,16 @@ Characters::String Activity<wstring_view>::AsString () const
  ****************** Execution::CaptureCurrentActivities *************************
  ********************************************************************************
  */
-Containers::Sequence<Activity<>> Execution::CaptureCurrentActivities ()
+Containers::Stack<Activity<>> Execution::CaptureCurrentActivities ()
 {
-    Containers::Sequence<Activity<>> result;
+    vector<Activity<>> rv;
     // no locks needed because thread local
     for (Private_::Activities_::StackElt_* s = Private_::Activities_::sTop_; s != nullptr; s = s->fPrev) {
-        result += Activity<>{s->fActivity->AsString ()};
+        rv.push_back (Activity<>{s->fActivity->AsString ()});
+    }
+    Containers::Stack<Activity<>> result;
+    for (auto i = rv.rbegin (); i != rv.rend (); ++i) {
+        result.Push (*i);
     }
     return result;
 }

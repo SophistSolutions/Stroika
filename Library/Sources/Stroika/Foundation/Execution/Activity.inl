@@ -34,22 +34,29 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
+     ************* LazyEvalActivity<CTOR_ARG,enable_if_t<>> *************************
+     ********************************************************************************
+     */
+    // Cannot figure out how to move here cuz of enable_if_t stuff
+
+    /*
+     ********************************************************************************
      *************************** DeclareActivity<ACTIVITY> **************************
      ********************************************************************************
      */
     template <typename ACTIVITY>
     inline DeclareActivity<ACTIVITY>::DeclareActivity (const ACTIVITY* arg)
+        : fNewTopOfStackElt_{arg, Private_::Activities_::sTop_}
     {
         // no locks needed because the variables are thread local
-        Private_::Activities_::sTop_ = new Private_::Activities_::StackElt_{arg, Private_::Activities_::sTop_};
+        Private_::Activities_::sTop_ = &fNewTopOfStackElt_;
     }
     template <typename ACTIVITY>
     inline DeclareActivity<ACTIVITY>::~DeclareActivity ()
     {
         // no locks needed because the variables are thread local
-        auto deleteMe                = Private_::Activities_::sTop_;
+        Assert (Private_::Activities_::sTop_ == &fNewTopOfStackElt_);
         Private_::Activities_::sTop_ = Private_::Activities_::sTop_->fPrev;
-        delete deleteMe;
     }
 
 }
