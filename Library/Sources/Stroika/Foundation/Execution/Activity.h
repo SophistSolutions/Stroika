@@ -42,15 +42,15 @@ namespace Stroika::Foundation::Execution {
      *  An Activity is typically a static const or sometimes even constexpr object which contains a description of
      *  an ongoing activity. They are generally not meant to be stored or copied, but REFERENCED with DeclareActivity
      *  to form a 'current activity stack'.
-	 *
-	 *  \code
-	 *      static constexpr Activity   kBuildingThingy_ {L"Building thingy"sv };
-	 *		static const Activity kOtherActivity = String { L"abc" };
-	 *		Activity otherActivity = String { L"abc" + argument };		// activities can be stack based, but these cost more to define
-	 *		LazyEvalActivity lazyEvalActivity { [&] ()  { return args.something_expensive () + L"x"; });
-	 *		// then for how to use activiy - see DeclareActivity
-	 *  \endcode
-	 */
+     *
+     *  \code
+     *      static constexpr Activity   kBuildingThingy_ {L"Building thingy"sv };
+     *      static const Activity kOtherActivity = String { L"abc" };
+     *      Activity otherActivity = String { L"abc" + argument };      // activities can be stack based, but these cost more to define
+     *      LazyEvalActivity lazyEvalActivity { [&] ()  { return args.something_expensive () + L"x"; });
+     *      // then for how to use activiy - see DeclareActivity
+     *  \endcode
+     */
     template <typename CTOR_ARG = Characters::String>
     class Activity;
 
