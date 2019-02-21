@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
     inline DeclareActivity<ACTIVITY>::DeclareActivity (const ACTIVITY* arg)
     {
         // no locks needed because the variables are thread local
-        Private_::Activities_::sTop_ = new StackElt_{arg, Private_::Activities_::sTop_};
+        Private_::Activities_::sTop_ = new Private_::Activities_::StackElt_{arg, Private_::Activities_::sTop_};
     }
     template <typename ACTIVITY>
     inline DeclareActivity<ACTIVITY>::~DeclareActivity ()
