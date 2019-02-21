@@ -21,6 +21,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AbortableMutex${OBJ_SUFFIX}\
+	$(ObjDir)Activity${OBJ_SUFFIX}\
 	$(ObjDir)CommandLine${OBJ_SUFFIX}\
 	$(ObjDir)DLLSupport${OBJ_SUFFIX}\
 	$(ObjDir)ErrNoException${OBJ_SUFFIX}\

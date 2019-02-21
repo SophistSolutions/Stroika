@@ -744,6 +744,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Activity.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
@@ -1429,6 +1430,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Activity.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h" />
@@ -1880,6 +1882,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Activity.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
