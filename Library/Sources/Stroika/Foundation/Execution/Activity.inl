@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Execution {
     {
         // no locks needed because the variables are thread local
         auto deleteMe                = Private_::Activities_::sTop_;
-        Private_::Activities_::sTop_ = Private_::Activities_::sTop_->fNext;
+        Private_::Activities_::sTop_ = Private_::Activities_::sTop_->fPrev;
         delete deleteMe;
     }
 
