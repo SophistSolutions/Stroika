@@ -32,6 +32,19 @@ using Debug::TraceContextBumper;
 
 /*
  ********************************************************************************
+ ******************************** ExceptionStringHelper *************************
+ ********************************************************************************
+ */
+ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)
+    : fActivities_ (activities)
+	, fRawErrorMessage_ (reasonForError)
+    , fErrorMessage_ (reasonForError)
+    , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
+{
+}
+
+/*
+ ********************************************************************************
  ***************** Private_::SystemErrorExceptionPrivate_ ***********************
  ********************************************************************************
  */

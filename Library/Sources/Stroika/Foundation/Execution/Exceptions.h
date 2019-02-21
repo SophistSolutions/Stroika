@@ -14,6 +14,7 @@
 
 #include "../Characters/String.h"
 
+#include "Activity.h"
 #include "Throw.h"
 
 /**
@@ -31,6 +32,11 @@
  *      will use the current SDK characters (@see SDKString). But - its best to use Characters::ToString () on the
  *      caught exception, since this uses ExceptionStringHelper to properly handle characters the SDK characterset might not
  *      allow representing some unicode characters.
+ *
+ *  TODO:
+ *      @todo   COULD MAYBE add 'suppress-activities' object you can declare and while it exists (it sets private thread local storage flag)
+ *              activities are not merged into message. But this can be done other ways too and doesn't address other stages of message
+ *              formation so I'm not sure that's worth while.
  */
 
 namespace Stroika::Foundation::Execution {
@@ -55,9 +61,26 @@ namespace Stroika::Foundation::Execution {
      */
     class ExceptionStringHelper {
     public:
+        /**
+         *  If the current activities are NOT provided explicitly, they are copied from Execution::CaptureCurrentActivities ().
+         */
         ExceptionStringHelper ()                             = delete;
         ExceptionStringHelper (const ExceptionStringHelper&) = default;
         ExceptionStringHelper (const Characters::String& reasonForError);
+        ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities);
+
+    public:
+        /**
+         *  Return error message without added 'activities'.
+         */
+        nonvirtual Characters::String GetRawErrorMessage () const;
+
+    public:
+        /**
+         *  Return the activity stack from when the exception was thrown. NOTE - see @Activity<>. This has little
+         *  todo with the thread runtime stack. It refers to a logical stack of declared Activity<> objects.
+         */
+        nonvirtual Containers::Stack<Activity<>> GetActivities () const;
 
     public:
         /**
@@ -72,8 +95,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const char* _PeekAtNarrowSDKString_ () const;
 
     private:
-        Characters::String fErrorMessage_;
-        string             fSDKCharString_;
+        Containers::Stack<Activity<>> fActivities_;
+        Characters::String            fRawErrorMessage_;
+        Characters::String            fErrorMessage_;
+        string                        fSDKCharString_;
     };
     template <>
     wstring ExceptionStringHelper::As () const;
@@ -139,7 +164,7 @@ namespace Stroika::Foundation::Execution {
      *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
      *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-     *              Assert (Characters::ToString (e); == L"bad address {errno: 14}"sv);
+     *              Assert (Characters::ToString (e) == L"bad address {errno: 14}"sv);
      *          }
      *      \endcode
      *

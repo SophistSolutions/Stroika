@@ -27,9 +27,16 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError)
-        : fErrorMessage_ (reasonForError)
-        , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
+        : ExceptionStringHelper (reasonForError, CaptureCurrentActivities ())
     {
+    }
+    inline Characters::String ExceptionStringHelper::GetRawErrorMessage () const
+    {
+        return fRawErrorMessage_;
+    }
+    inline Containers::Stack<Activity<>> ExceptionStringHelper::GetActivities () const
+    {
+        return fActivities_;
     }
     template <>
     inline wstring ExceptionStringHelper::As () const
