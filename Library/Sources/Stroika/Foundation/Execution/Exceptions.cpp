@@ -47,7 +47,8 @@ namespace {
                 sb += L".";
             }
             else {
-                sb += L", and ";
+                // not clear yet what message will work here
+                sb += L", while ";
             }
         }
         return sb.str ();

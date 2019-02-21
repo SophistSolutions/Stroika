@@ -38,8 +38,9 @@ Containers::Stack<Activity<>> Execution::CaptureCurrentActivities ()
 {
     vector<Activity<>> rv;
     // no locks needed because thread local
-    for (Private_::Activities_::StackElt_* s = Private_::Activities_::sTop_; s != nullptr; s = s->fPrev) {
-        rv.push_back (Activity<>{s->fActivity->AsString ()});
+    for (const Private_::Activities_::StackElt_* si = Private_::Activities_::sTop_; si != nullptr; si = si->fPrev) {
+        AssertNotNull (si->fActivity);
+        rv.push_back (Activity<>{si->fActivity->AsString ()});
     }
     Containers::Stack<Activity<>> result;
     for (auto i = rv.rbegin (); i != rv.rend (); ++i) {

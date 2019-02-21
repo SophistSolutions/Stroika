@@ -64,7 +64,7 @@ namespace {
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Equals (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
+                    VerifyTestResult (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
@@ -134,11 +134,57 @@ namespace {
 }
 
 namespace {
+    namespace Test4_Activities_ {
+        namespace Private {
+
+            void T1_Basics_ ()
+            {
+                using Characters::String;
+                String argument;
+
+                // constexpr only works if we lose the virtual in ~AsStringObj_ ()
+                static /*constexpr*/ const auto kA1_{Activity<wstring_view>{L"a1"sv}};
+
+                static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
+
+                // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
+                auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
+
+                auto lazyEvalActivity = LazyEvalActivity ([&]() -> String { return argument.Repeat (5) + L"xxx"; });
+
+                DeclareActivity active1{&kA1_};
+                DeclareActivity active2{&kOtherActivity};
+                DeclareActivity active3{&otherActivity};
+                DeclareActivity active4{&lazyEvalActivity};
+
+                try {
+                    // something that will throw
+                    Execution::Throw (Exception<> (L"testing 123"));
+                }
+                catch (...) {
+                    String msg = Characters::ToString (current_exception ());
+                    VerifyTestResult (msg.Contains (L"testing 123"));
+                    VerifyTestResult (msg.Contains (L"a1"));
+                    VerifyTestResult (msg.Contains (L"kOtherActivity"));
+                    VerifyTestResult (msg.Contains (L"otherActivity"));
+                    VerifyTestResult (msg.Contains (L"xxx"));
+                }
+            }
+        }
+        void TestAll_ ()
+        {
+            Private::T1_Basics_ ();
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
         Test2_ThrowCatchStringException_ ();
         Test3_SystemErrorException_::TestAll_ ();
+        Test4_Activities_::TestAll_ ();
     }
 }
 

@@ -27,14 +27,15 @@ namespace Stroika::Foundation::Execution {
     namespace Private_ {
         namespace Activities_ {
             struct AsStringObj_ {
+                constexpr AsStringObj_ () noexcept           = default;
                 virtual ~AsStringObj_ ()                     = default;
                 virtual Characters::String AsString () const = 0;
             };
             struct StackElt_ {
-                AsStringObj_* fActivity{};
-                StackElt_*    fPrev{};
+                const AsStringObj_* fActivity{};
+                const StackElt_*    fPrev{};
             };
-            static thread_local inline StackElt_* sTop_;
+            thread_local inline const StackElt_* sTop_;
         }
     }
 
@@ -44,12 +45,20 @@ namespace Stroika::Foundation::Execution {
      *  to form a 'current activity stack'.
      *
      *  \code
-     *      static constexpr Activity   kBuildingThingy_ {L"Building thingy"sv };
-     *      static const Activity kOtherActivity = String { L"abc" };
-     *      Activity otherActivity = String { L"abc" + argument };      // activities can be stack based, but these cost more to define
-     *      LazyEvalActivity lazyEvalActivity { [&] ()  { return args.something_expensive () + L"x"; });
+     *      static constexpr/const Activity   kBuildingThingy_ {L"Building thingy"sv };
+     *      static const auto kOtherActivity = Activity<String>{  L"abc" };
+     *                                                                      // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
+     *      auto otherActivity = Activity<String> { L"abc" + argument };    // activities can be stack based, but these cost more to define
+     *      auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"x"; });
      *      // then for how to use activiy - see DeclareActivity
      *  \endcode
+     *
+     *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
+     *          This is because AsStringObj_ has a virtual destructor (necesary for other types). Thats crazy
+     *          becuse constexpr objects are never destroyed, so its crazy to care that they have a virtual DTOR.
+     *          Still, g++ and msvc both agree on this; I think this MAYBE fixed in C++20 (not yet tested) - because
+     *          there they at least allow virtual constexpr methods. That might impact (indirecly) whether an object
+     *          can be constexpr (having a virtual dtor).
      */
     template <typename CTOR_ARG = Characters::String>
     class Activity;
@@ -68,7 +77,7 @@ namespace Stroika::Foundation::Execution {
     template <>
     class Activity<wstring_view> : public Private_::Activities_::AsStringObj_ {
     public:
-        constexpr Activity (const wstring_view& arg);
+        constexpr Activity (const wstring_view& arg) noexcept;
 
     public:
         virtual Characters::String AsString () const override;

@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Execution {
      *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
      *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-     *              Assert (Characters::ToString (e) == L"bad address {errno: 14}"sv);
+     *              Assert (Characters::ToString (e).Contains (L"bad address {errno: 14}"));
      *          }
      *      \endcode
      *

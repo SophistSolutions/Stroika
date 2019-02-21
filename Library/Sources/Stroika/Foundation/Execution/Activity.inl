@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution {
      *************************** Activity<wstring_view> *****************************
      ********************************************************************************
      */
-    constexpr Activity<wstring_view>::Activity (const wstring_view& arg)
+    constexpr Activity<wstring_view>::Activity (const wstring_view& arg) noexcept
         : fArg_ (arg)
     {
     }
