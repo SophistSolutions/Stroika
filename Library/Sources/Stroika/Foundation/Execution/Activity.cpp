@@ -3,6 +3,10 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <list>
+
+#include "../Debug/Trace.h"
+
 #include "Activity.h"
 
 using namespace Stroika::Foundation;
@@ -36,11 +40,11 @@ Characters::String Activity<wstring_view>::AsString () const
  */
 Containers::Stack<Activity<>> Execution::CaptureCurrentActivities ()
 {
-    vector<Activity<>> rv;
+    list<Activity<>>          rv;
     // no locks needed because thread local
     for (const Private_::Activities_::StackElt_* si = Private_::Activities_::sTop_; si != nullptr; si = si->fPrev) {
         AssertNotNull (si->fActivity);
-        rv.push_back (Activity<>{si->fActivity->AsString ()});
+        rv.push_front (Activity<>{si->fActivity->AsString ()});
     }
     Containers::Stack<Activity<>> result;
     for (auto i = rv.rbegin (); i != rv.rend (); ++i) {
