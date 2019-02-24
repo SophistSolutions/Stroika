@@ -2043,6 +2043,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Activity.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3320,6 +3323,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Activity.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

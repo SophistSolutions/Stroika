@@ -1240,6 +1240,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
@@ -1695,6 +1696,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\GUID.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Makefile" />
