@@ -5,6 +5,7 @@
 
 #include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
+#include "../../Execution/Activity.h"
 #include "../../IO/FileAccessException.h"
 
 #include "Socket-Private_.h"
@@ -108,6 +109,9 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
+    auto                    bindingActivity = Execution::LazyEvalActivity{[&]() -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
+    [[maybe_unused]] auto&& declareActivity = Execution::DeclareActivity{&bindingActivity};
+
     // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
     // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
     // there is an active listening socket bound to the address. When the listening socket is bound
@@ -122,6 +126,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const system_error& e) {
         if (e.code ().category () == system_category () and e.code ().value () == WSAEACCES) {
+            // @todo adjust message to reflect activity ... stuff - redo - this double adds
             Throw (SystemErrorException<> (e.code (), Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
         }
         else {
@@ -135,11 +140,13 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
     }
     catch (const IO::FileAccessException&) {
+        // @todo adjust message to reflect activity ... stuff - redo - this double adds
         Throw (Exception (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
     }
 #endif
     catch (...) {
-        Throw (Exception (Characters::Format (L"Cannot Bind to %s: %s", Characters::ToString (sockAddr).c_str (), Characters::ToString (current_exception ()).c_str ())));
+        ReThrow ();
+        // Throw (Exception (Characters::Format (L"Cannot Bind to %s: %s", Characters::ToString (sockAddr).c_str (), Characters::ToString (current_exception ()).c_str ())));
     }
 }
 
