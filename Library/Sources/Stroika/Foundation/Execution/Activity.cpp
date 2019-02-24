@@ -40,7 +40,7 @@ Characters::String Activity<wstring_view>::AsString () const
  */
 Containers::Stack<Activity<>> Execution::CaptureCurrentActivities ()
 {
-    list<Activity<>>          rv;
+    list<Activity<>> rv;
     // no locks needed because thread local
     for (const Private_::Activities_::StackElt_* si = Private_::Activities_::sTop_; si != nullptr; si = si->fPrev) {
         AssertNotNull (si->fActivity);
