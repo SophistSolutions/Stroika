@@ -10,18 +10,20 @@ namespace Stroika::Foundation::Common {
 
     /**
      */
-    struct EmptyObjectForConstructorSideEffect {
+    class EmptyObjectForConstructorSideEffect {
     public:
         /**
-        [[no_unique_address]]
-
-        use example from Declare
+         *  \par Example Usage
+         *      \code
+         *          static const Activity<>                                        kContructing_WSAPI_WebServer_{L"constructing WSAPI webserver"};
+         *          optional<DeclareActivity<Activity<>>>                          fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
+         *          ConnectionManager                                              fWSConnectionMgr_;
+         *          [[NO_UNIQUE_ADDRESS_ATTR]] EmptyObjectForConstructorSideEffect fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
+         *      \endcode
          */
         template <typename CALL>
-        inline EmptyObjectForConstructorSideEffect (const CALL& c)
-        {
-            c ();
-        }
+        EmptyObjectForConstructorSideEffect (const CALL& c);
+
     };
 
 }
