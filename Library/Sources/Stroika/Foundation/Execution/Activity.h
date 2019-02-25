@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Execution {
      *      }
      *      catch (...) {
      *          String exceptionMsg = Characters::ToString (current_exception ());
-     *          Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());		// exception e while building thingy...
+     *          Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
      *      }
      *
      *  \endcode

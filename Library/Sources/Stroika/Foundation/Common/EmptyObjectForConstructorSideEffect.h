@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Common {
          *          struct foo { ...
          *              // Mark the activity 'constructing WSAPI webserver' as surrounding the construction of the ConnectionManager object
          *              static constexpr Activity                                      kContructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
-         *              optional<DeclareActivity<Activity<>>>                          fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
+         *              optional<DeclareActivity<Activity<wstring_view>>>              fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
          *              ConnectionManager                                              fWSConnectionMgr_;
          *              [[NO_UNIQUE_ADDRESS_ATTR]] EmptyObjectForConstructorSideEffect fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
          *              ...

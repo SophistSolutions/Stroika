@@ -14,6 +14,7 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
+	$(ObjDir)MessageUtilities${OBJ_SUFFIX}\
 	$(ObjDir)Words${OBJ_SUFFIX}\
 
 

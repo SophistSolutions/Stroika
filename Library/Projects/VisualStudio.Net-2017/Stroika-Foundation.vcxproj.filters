@@ -819,6 +819,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Activity.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp">
+      <Filter>Sources\Linguistics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2045,6 +2048,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.h">
       <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.h">
+      <Filter>Sources\Linguistics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3326,6 +3332,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.inl">
       <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.inl">
+      <Filter>Sources\Linguistics</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

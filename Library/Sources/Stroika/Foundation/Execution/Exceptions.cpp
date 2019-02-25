@@ -13,6 +13,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../IO/FileAccessException.h"
+#include "../Linguistics/MessageUtilities.h"
 
 #include "Throw.h"
 #include "TimeOutException.h"
@@ -38,13 +39,14 @@ namespace {
             return reasonForError;
         }
         StringBuilder sb;
-        sb += reasonForError;
+        auto          tmp = Linguistics::CurrentLocaleMessageUtilities::RemoveTrailingSentencePunctuation (reasonForError);
+        sb += tmp.first;
         sb += L" while ";
         for (auto i = activities.begin (); i != activities.end ();) {
             sb += i->AsString ();
             i++;
             if (i == activities.end ()) {
-                sb += L".";
+                sb += tmp.second.value_or (L".");
             }
             else {
                 // not clear yet what message will work here
