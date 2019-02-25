@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename ACTIVITY>
-    inline DeclareActivity<ACTIVITY>::DeclareActivity (const ACTIVITY* arg)
+    inline DeclareActivity<ACTIVITY>::DeclareActivity (const ACTIVITY* arg) noexcept
         : fNewTopOfStackElt_{arg, Private_::Activities_::sTop_}
     {
         // no locks needed because the variables are thread local

@@ -48,12 +48,12 @@ namespace Stroika::Foundation::Execution {
      *  to form a 'current activity stack'.
      *
      *  \code
-     *      static constexpr Activity<wstring_view>   kBuildingThingy_ {L"Building thingy"sv };
+     *      static constexpr Activity  kBuildingThingy_{ L"building thingy"sv };
      *      static const auto kOtherActivity = Activity<String>{  L"abc" };
      *                                                                      // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
      *      auto otherActivity = Activity<String> { L"abc" + argument };    // activities can be stack based, but these cost more to define
      *      auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"x"; });
-     *      // then for how to use activiy - see DeclareActivity
+     *      // then for how to use activity object - see DeclareActivity
      *  \endcode
      *
      *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
@@ -70,6 +70,7 @@ namespace Stroika::Foundation::Execution {
     class Activity<Characters::String> final : public Private_::Activities_::AsStringObj_ {
     public:
         Activity (const Characters::String& arg);
+        Activity (const Activity& src) = default;
 
     public:
         virtual Characters::String AsString () const override;
@@ -81,6 +82,7 @@ namespace Stroika::Foundation::Execution {
     class Activity<wstring_view> final : public Private_::Activities_::AsStringObj_ {
     public:
         constexpr Activity (const wstring_view& arg) noexcept;
+        constexpr Activity (const Activity& src) = default;
 
     public:
         virtual Characters::String AsString () const override;
@@ -88,6 +90,11 @@ namespace Stroika::Foundation::Execution {
     private:
         wstring_view fArg_;
     };
+
+    /**
+     */
+    template <typename CTOR_ARG>
+    Activity (const CTOR_ARG& b)->Activity<CTOR_ARG>;
 
     /**
      *  When creating the activity would be expensive, just capture it in a lambda, and only convert that lambda to
@@ -123,17 +130,17 @@ namespace Stroika::Foundation::Execution {
     Containers::Stack<Activity<>> CaptureCurrentActivities ();
 
     /**
-     *  Push the argument Activty onto the current threads Activity stack in the constructor, and pop it off in the destructor.
+     *  Push the argument Activty onto the current thread's Activity stack in the constructor, and pop it off in the destructor.
      *
      *  \code
-     *      static constexpr Activity   kBuildingThingy_ {L"Building thingy"sv };
+     *      static constexpr Activity   kBuildingThingy_ {L"building thingy"sv };
      *      try {
-     *          DeclareActivity declareActivity { &kBuildingThingy_ }
+     *          DeclareActivity declareActivity { &kBuildingThingy_ };
      *          doBuildThing  ();   // throw any exception (that inherits from Exception<>)
      *      }
      *      catch (...) {
      *          String exceptionMsg = Characters::ToString (current_exception ());
-     *          Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());
+     *          Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());		// exception e while building thingy...
      *      }
      *
      *  \endcode
@@ -146,7 +153,7 @@ namespace Stroika::Foundation::Execution {
          */
         DeclareActivity ()                       = delete;
         DeclareActivity (const DeclareActivity&) = delete;
-        DeclareActivity (const ACTIVITY* arg);
+        DeclareActivity (const ACTIVITY* arg) noexcept;
         ~DeclareActivity ();
 
     private:

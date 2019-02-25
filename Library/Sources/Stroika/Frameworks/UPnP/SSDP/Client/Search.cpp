@@ -8,6 +8,7 @@
 #include "../../../../Foundation/Characters/String_Constant.h"
 #include "../../../../Foundation/Containers/Collection.h"
 #include "../../../../Foundation/Debug/Trace.h"
+#include "../../../../Foundation/Execution/Activity.h"
 #include "../../../../Foundation/Execution/Exceptions.h"
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
@@ -39,6 +40,8 @@ class Search::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
+        static constexpr Execution::Activity kConstructingSSDPSearcher_{L"constucting SSDP searcher"sv};
+        Execution::DeclareActivity           activity{&kConstructingSSDPSearcher_};
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             fSockets_.Add (s);
