@@ -23,7 +23,6 @@ namespace Stroika::Foundation::Common {
          */
         template <typename CALL>
         EmptyObjectForConstructorSideEffect (const CALL& c);
-
     };
 
 }
