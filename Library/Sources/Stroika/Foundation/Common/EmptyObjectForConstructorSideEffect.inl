@@ -12,16 +12,16 @@
 
 namespace Stroika::Foundation::Common {
 
-	/*
-	 ********************************************************************************
-	 ******************** Common::EmptyObjectForConstructorSideEffect ***************
-	 ********************************************************************************
-	 */
-	template <typename CALL>
-	inline EmptyObjectForConstructorSideEffect::EmptyObjectForConstructorSideEffect (const CALL& c)
-	{
-		c ();
-	}
+    /*
+     ********************************************************************************
+     ******************** Common::EmptyObjectForConstructorSideEffect ***************
+     ********************************************************************************
+     */
+    template <typename CALL>
+    inline EmptyObjectForConstructorSideEffect::EmptyObjectForConstructorSideEffect (const CALL& c)
+    {
+        c ();
+    }
 
 }
 
