@@ -142,8 +142,10 @@ namespace {
                 using Characters::String;
                 String argument;
 
+                static constexpr Activity<wstring_view> kBuildingThingy_{L"Building thingy"sv};
+
                 // constexpr only works if we lose the virtual in ~AsStringObj_ ()
-                static /*constexpr*/ const auto kA1_{Activity<wstring_view>{L"a1"sv}};
+                static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
 
                 static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
 

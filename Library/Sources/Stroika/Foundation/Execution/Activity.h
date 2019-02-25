@@ -26,9 +26,12 @@ namespace Stroika::Foundation::Execution {
 
     namespace Private_ {
         namespace Activities_ {
+            /**
+             *  \note intentionally ommit virtual DTOR because then the subclasses cannot be constexpr (at least it appears so in c++17).
+             *        And they are never destroyed by ptr to a baseclass type, so this isn't needed.
+             */
             struct AsStringObj_ {
                 constexpr AsStringObj_ () noexcept           = default;
-                virtual ~AsStringObj_ ()                     = default;
                 virtual Characters::String AsString () const = 0;
             };
             struct StackElt_ {
@@ -45,7 +48,7 @@ namespace Stroika::Foundation::Execution {
      *  to form a 'current activity stack'.
      *
      *  \code
-     *      static constexpr/const Activity   kBuildingThingy_ {L"Building thingy"sv };
+     *      static constexpr Activity<wstring_view>   kBuildingThingy_ {L"Building thingy"sv };
      *      static const auto kOtherActivity = Activity<String>{  L"abc" };
      *                                                                      // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
      *      auto otherActivity = Activity<String> { L"abc" + argument };    // activities can be stack based, but these cost more to define
