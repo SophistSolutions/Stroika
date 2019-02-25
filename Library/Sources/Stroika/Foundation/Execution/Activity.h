@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Execution {
     class Activity;
 
     template <>
-    class Activity<Characters::String> : public Private_::Activities_::AsStringObj_ {
+    class Activity<Characters::String> final : public Private_::Activities_::AsStringObj_ {
     public:
         Activity (const Characters::String& arg);
 
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Execution {
         Characters::String fArg_;
     };
     template <>
-    class Activity<wstring_view> : public Private_::Activities_::AsStringObj_ {
+    class Activity<wstring_view> final : public Private_::Activities_::AsStringObj_ {
     public:
         constexpr Activity (const wstring_view& arg) noexcept;
 
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Execution {
      *  \note would LIKE to know how to do this as a template specialization of Activity, but haven't figured that out yet.
      */
     template <typename CTOR_ARG, enable_if_t<is_invocable_r_v<Characters::String, CTOR_ARG>>* = nullptr>
-    class LazyEvalActivity : public Private_::Activities_::AsStringObj_ {
+    class LazyEvalActivity final : public Private_::Activities_::AsStringObj_ {
     public:
         LazyEvalActivity (const CTOR_ARG& arg)
             : fArg_ (arg)
