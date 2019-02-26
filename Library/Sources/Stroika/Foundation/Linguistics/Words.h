@@ -31,12 +31,12 @@ namespace Stroika::Foundation::Linguistics {
      *
      *  The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero
      */
-    String PluralizeNoun (const String& s, int count = 1000);
-    String PluralizeNoun (const String& s, const String& sPlural, int count = 1000);
+    [[deprecated ("Use CurrentLocaleMessageUtilities::PluralizeNoun or MessageUtilities_en::PluralizeNoun instead - as of v2.1d18")]] String PluralizeNoun (const String& s, int count = 1000);
+    [[deprecated ("Use CurrentLocaleMessageUtilities::PluralizeNoun or MessageUtilities_en::PluralizeNoun instead - as of v2.1d18")]] String PluralizeNoun (const String& s, const String& sPlural, int count = 1000);
 
     /**
      */
-    String MungeStringSoSingular (const String& s);
+    [[deprecated ("Use CurrentLocaleMessageUtilities::MakeNounSingular or MessageUtilities_en::MakeNounSingular instead - as of v2.1d18")]] String MungeStringSoSingular (const String& s);
 
     /**
      * e.g. 'joe smith' becomes 'Joe Smith'

@@ -32,9 +32,12 @@ using Debug::TraceContextBumper;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    // @todo this message needs lots of linguistic cleanup (punctuation, capitalization etc)
+    // @todo this message needs lots of linguistic cleanup (punctuation, capitalization etc) - started but quite incomplete
     String mkMessage_ (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)
     {
+        //
+        // @todo rewrite this using Linguistics::CurrentLocaleMessageUtilities so we capture the 'while' crap there too
+        //
         if (activities.empty ()) {
             return reasonForError;
         }
@@ -46,7 +49,7 @@ namespace {
             sb += i->AsString ();
             i++;
             if (i == activities.end ()) {
-                sb += tmp.second.value_or (L".");
+                sb += tmp.second.value_or (L"."sv);
             }
             else {
                 // not clear yet what message will work here
@@ -59,7 +62,7 @@ namespace {
 
 /*
  ********************************************************************************
- ******************************** ExceptionStringHelper *************************
+ ****************************** ExceptionStringHelper ***************************
  ********************************************************************************
  */
 ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)

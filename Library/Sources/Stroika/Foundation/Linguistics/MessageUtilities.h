@@ -14,6 +14,8 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   Very VERY primitive linguistic support, but this could easily evolve over time. Led has a bunch of
+ *              lingusitic code I could move here, and I'm sure I could dig up more...
  */
 
 namespace Stroika::Foundation::Linguistics {
@@ -21,12 +23,16 @@ namespace Stroika::Foundation::Linguistics {
     using Characters::String;
 
     struct MessageUtilities {
-        virtual bool                           AppliesToThisLocale (const String& localeName) const        = 0;
-        virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const = 0;
+        virtual bool                           AppliesToThisLocale (const String& localeName) const                              = 0;
+        virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const                       = 0;
+        virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const = 0;
+        virtual String                         MakeNounSingular (const String& s) const                                          = 0;
     };
     struct MessageUtilities_en : MessageUtilities {
         virtual bool                           AppliesToThisLocale (const String& localeName) const override;
         virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const override;
+        virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const override;
+        virtual String                         MakeNounSingular (const String& s) const override;
     };
 
     /**
@@ -54,6 +60,22 @@ namespace Stroika::Foundation::Linguistics {
          *  otherwise uses an arbitrary one.
          */
         pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg);
+
+        /**
+         *  Implement current-ui-language-specific noun-pluralization logic for the given noun string (assuming the count of that noun
+         *  is given (english rules - if count != 1 - append s, but we don't wnat that logic to proliferate through the app, so
+         *  its easier to localize.
+         *
+         *  The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero
+         */
+        String PluralizeNoun (const String& s, int count = 1000);
+        String PluralizeNoun (const String& s, const String& sPlural, int count);
+
+        /**
+         * Take argument string (assumed noun) munge it so its singular (if it happened to have been plural).
+         */
+        String MakeNounSingular (const String& s);
+
     };
 
 }
