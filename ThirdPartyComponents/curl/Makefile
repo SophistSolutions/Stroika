@@ -18,7 +18,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 
-VERSION=7.63.0
+VERSION=7.64.0
+#VERSION=7.63.0
 #VERSION=7.62.0
 #VERSION=7.61.1
 BASENAME=curl-$(VERSION)

@@ -178,6 +178,8 @@ namespace {
                     }
 #endif
                     if (lce.GetCode () == CURLE_RECV_ERROR) {
+                        // Not sure why, but we sporadically get this error in regression tests, so try to eliminate it. Probably has todo with overloaded
+                        // machine we are targetting.
                         DbgTrace ("Warning - ignored  failed since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
