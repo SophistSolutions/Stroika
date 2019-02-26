@@ -379,7 +379,9 @@ namespace {
             edata.cmd      = ETHTOOL_GSET;
             int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
             if (r != 0) {
-                DbgTrace ("No speed for interface %s, errno=%d", name, errno);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("No speed for interface %s, errno=%d", name, errno); // typicall errno=22{EINVAL} on linux
+#endif
                 return nullopt;
             }
             constexpr uint64_t kMegabit_ = 1000 * 1000;
