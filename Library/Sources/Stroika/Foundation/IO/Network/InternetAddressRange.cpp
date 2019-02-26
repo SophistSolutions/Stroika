@@ -38,5 +38,5 @@ const InternetAddress Network::Private_::InternetAddressRangeTraits_::kUpperBoun
 
 InternetAddress IO::Network::Private_::InternetAddressRangeTraits_::GetNext (InternetAddress n)
 {
-    return n.Offset (1);
+    return n == kUpperBound ? n : n.Offset (1);
 }
