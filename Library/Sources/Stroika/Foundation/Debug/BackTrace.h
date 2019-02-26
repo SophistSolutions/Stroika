@@ -36,18 +36,19 @@ namespace Stroika::Foundation::Debug {
      *        info symbol 0x1b974
      *      ... etc for each symbol returned in []
      *
-     *  \note   to get symbols working on Linux, it may be necessary to link with -rdynamic
+     *  \note   to get symbols working on Linux (GNU linker), it may be necessary to link with -rdynamic
      *          This can be done with the Stroika configure flags:
      *              --extra-linker-args -rdynamic
      *          OR
      *              --apply-default-debug-flags
-     *
      *
      *  \note   BackTrace () Uses no Stroika classes internally (like String, SmallStackBuffer) etc, since
      *          doing so could create deadlocks in the likely use cases where one would want to call this, from
      *          a low level place where you might have locks.
      *
      *          This DOES - however - however, call STL routines and C-library routines, like string::CTOR {}
+     *
+     *  \note in C++20 we will transition to http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0881r3.html
      */
     wstring BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
 

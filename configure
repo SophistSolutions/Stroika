@@ -724,6 +724,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 
 		#helpful to print stack traces in log (not critical, and has performance overhead)
+		#see Debug::BackTrace ()
 		$EXTRA_PREFIX_LINKER_ARGS .= " -rdynamic";
 	}
 	elsif ($ApplyReleaseFlags == true) {

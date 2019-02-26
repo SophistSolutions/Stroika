@@ -32,12 +32,18 @@ using namespace Stroika::Foundation::Characters;
 wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
 {
 #if qPlatform_Linux
-    // @see http://man7.org/linux/man-pages/man3/backtrace.3.html
+    /*
+     *  @see http://man7.org/linux/man-pages/man3/backtrace.3.html
+     */
     constexpr size_t kMaxStackSize_ = 100; // could look at return size and re-run if equals exactly...
     // @todo combine maxFrames with trial and error on backtrace() calls
-    void*  stackTraceBuf[kMaxStackSize_]{};
-    int    nptrs = ::backtrace (stackTraceBuf, NEltsOf (stackTraceBuf));
-    char** syms  = ::backtrace_symbols (stackTraceBuf, nptrs);
+    void* stackTraceBuf[kMaxStackSize_]{};
+    int   nptrs = ::backtrace (stackTraceBuf, NEltsOf (stackTraceBuf));
+    if (nptrs == NULL) {
+        //DbgTrace ("%d errno", errno); // perror("backtrace");
+        return wstring{};
+    }
+    char** syms = ::backtrace_symbols (stackTraceBuf, nptrs);
     if (syms == NULL) {
         //DbgTrace ("%d errno", errno); // perror("backtrace_symbols");
         return wstring{};
