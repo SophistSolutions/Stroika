@@ -227,8 +227,8 @@ namespace Stroika::Foundation::Execution {
          */
         SystemErrorException (error_code errCode);
         SystemErrorException (error_code errCode, const Characters::String& message);
-        SystemErrorException (int ev, const std::error_category& ecat);
-        SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message);
+        SystemErrorException (int ev, const error_category& ecat);
+        SystemErrorException (int ev, const error_category& ecat, const Characters::String& message);
 
     protected:
         /**
