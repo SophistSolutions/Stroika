@@ -17,7 +17,7 @@
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../Linguistics/Words.h"
+#include "../Linguistics/MessageUtilities.h"
 #include "../Memory/SmallStackBuffer.h"
 #include "DateTime.h"
 
@@ -793,11 +793,11 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
             float   yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
             int     months    = int(yearDiffF * 12.0f + 0.4999f);
             wstring unitBase  = abbrevUnit ? L"mo" : L"month";
-            return Format (L"%d %s", months, Linguistics::PluralizeNoun (unitBase, months).c_str ());
+            return Format (L"%d %s", months, Linguistics::CurrentLocaleMessageUtilities::PluralizeNoun (unitBase, months).c_str ());
         }
         else {
             wstring unitBase = abbrevUnit ? L"yr" : L"year";
-            return Format (L"%d %s", yearDiff, Linguistics::PluralizeNoun (unitBase, yearDiff).c_str ());
+            return Format (L"%d %s", yearDiff, Linguistics::CurrentLocaleMessageUtilities::PluralizeNoun (unitBase, yearDiff).c_str ());
         }
     }
     else {
