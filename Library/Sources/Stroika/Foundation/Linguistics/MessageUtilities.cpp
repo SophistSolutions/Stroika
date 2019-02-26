@@ -109,9 +109,9 @@ namespace {
         locale                       fLocale;
         shared_ptr<MessageUtilities> fHandler;
     };
-     RWSynchronized<optional<Info_>>                        sCached_;
-     Synchronized<Collection<shared_ptr<MessageUtilities>>> sHandlers_;
-    Synchronized<bool>                                            sUseFakeHandler_ = true; // for calls before start of or after end of main ()
+    RWSynchronized<optional<Info_>>                        sCached_;
+    Synchronized<Collection<shared_ptr<MessageUtilities>>> sHandlers_;
+    Synchronized<bool>                                     sUseFakeHandler_ = true; // for calls before start of or after end of main ()
 }
 
 CurrentLocaleMessageUtilities::Configuration CurrentLocaleMessageUtilities::Configuration::sThe;
