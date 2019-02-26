@@ -78,7 +78,7 @@ int TestHarness::PrintPassOrFail (void (*regressionTest) ())
     }
     catch (...) {
         auto exc = current_exception ();
-        cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc).AsNarrowSDKString () << endl;
+        cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc).AsNarrowSDKString () << "'" << endl;
         cout << "Failed" << endl;
         DbgTrace (L"FAILED: REGRESSION TEST (Exception): '%s", Characters::ToString (exc).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
