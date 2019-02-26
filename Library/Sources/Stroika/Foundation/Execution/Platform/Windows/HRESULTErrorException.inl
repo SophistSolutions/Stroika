@@ -16,14 +16,30 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      **************** Platform::Windows::HRESULTErrorException **********************
      ********************************************************************************
      */
-    inline HRESULTErrorException::operator HRESULT () const
+    class HRESULTErrorException [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, HRESULT_error_category () }")]] : public Execution::Exception<>
     {
-        return fHResult;
-    }
-    inline SDKString HRESULTErrorException::LookupMessage () const
-    {
-        return LookupMessage (fHResult);
-    }
+    private:
+        using inherited = Execution::Exception<>;
+
+    public:
+        HRESULTErrorException (HRESULT hresult);
+
+    public:
+        operator HRESULT () const
+        {
+            return fHResult;
+        }
+
+    public:
+        static SDKString LookupMessage (HRESULT hr);
+        nonvirtual SDKString LookupMessage () const
+        {
+            return LookupMessage (fHResult);
+        }
+
+    private:
+        HRESULT fHResult;
+    };
 
     /*
      ********************************************************************************
@@ -33,7 +49,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     inline void ThrowIfErrorHRESULT (HRESULT hr)
     {
         if (not SUCCEEDED (hr)) {
-            Throw (Platform::Windows::HRESULTErrorException{hr});
+            Throw (SystemErrorException{hr, HRESULT_error_category ()});
         }
     }
 
@@ -43,7 +59,7 @@ namespace Stroika::Foundation::Execution {
     template <>
     inline void ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
     {
-        ThrowIfNull (p, Platform::Windows::HRESULTErrorException{hr});
+        ThrowIfNull (p, SystemErrorException{hr, Platform::Windows::HRESULT_error_category ()});
     }
 }
 

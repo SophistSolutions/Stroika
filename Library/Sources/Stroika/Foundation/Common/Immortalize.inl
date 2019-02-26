@@ -23,8 +23,8 @@ namespace Stroika::Foundation::Common {
     {
         static once_flag             sFlag_{};
         static aligned_union_t<1, T> sStorage_{};
-        std::call_once (sFlag_, []() { ::new (sStorage_) T (); return 1; });
-        return reinterpret_cast<_Ty&> (sStorage_);
+        std::call_once (sFlag_, []() { ::new (&sStorage_) T (); });
+        return reinterpret_cast<T&> (sStorage_);
     }
 
 }

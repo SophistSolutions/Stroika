@@ -16,6 +16,7 @@
 #endif
 
 #include "../../Characters/Format.h"
+#include "../../Common/Immortalize.h"
 #include "../../Containers/Collection.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Finally.h"
@@ -76,7 +77,10 @@ namespace {
             return ::gai_strerror (_Errval);
         }
     };
-    const getaddrinfo_error_category_ sgetaddrinfo_error_category_;
+    const error_category& DNS_error_category () noexcept
+    {
+        return Common::Immortalize<getaddrinfo_error_category_> ();
+    }
 }
 
 /*
@@ -124,7 +128,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
         // @todo - I think we need to capture erron as well if errCode == EAI_SYSTEM (see http://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
-        Throw (SystemErrorException (errCode, sgetaddrinfo_error_category_));
+        Throw (SystemErrorException (errCode, DNS_error_category ()));
     }
     AssertNotNull (res); // else would have thrown
 

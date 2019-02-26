@@ -231,7 +231,7 @@ void Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
             case ERROR_BAD_FORMAT:
                 Execution::ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image).
             case SE_ERR_ACCESSDENIED:
-                throw (Platform::Windows::HRESULTErrorException (E_ACCESSDENIED)); //  The operating system denied access to the specified file.
+                Execution::Throw (SystemErrorException{E_ACCESSDENIED, HRESULT_error_category ()}); //  The operating system denied access to the specified file.
             case SE_ERR_ASSOCINCOMPLETE:
                 Execution::ThrowSystemErrNo (ERROR_NO_ASSOCIATION); //  The file name association is incomplete or invalid.
             case SE_ERR_DDEBUSY:
