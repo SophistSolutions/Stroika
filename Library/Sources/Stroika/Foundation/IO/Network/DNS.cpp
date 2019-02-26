@@ -51,14 +51,18 @@ namespace {
     public:
         virtual const char* name () const noexcept override
         {
-            return "getaddrinfo";
+            return "DNS error"; // used to return return "getaddrinfo"; - but the name DNS is more widely recognized, and even though this could be from another source, this name is more clear
         }
         virtual error_condition default_error_condition (int ev) const noexcept override
         {
             switch (ev) {
 #if EAI_ADDRFAMILY
                 case EAI_ADDRFAMILY:
-                    return std::error_condition (errc::address_family_not_supported);
+                    return std::error_condition (errc::address_family_not_supported); // best approximartion I can find
+#endif
+#if EAI_NONAME
+                case EAI_NONAME:
+                    return error_condition (errc::no_such_device); // best approximartion I can find
 #endif
 #if EAI_MEMORY
                 case EAI_MEMORY:
@@ -82,8 +86,8 @@ namespace {
  */
 DNS DNS::Default ()
 {
-    static DNS sDefaultDNS_;
-    return sDefaultDNS_;
+    static const DNS kDefaultDNS_;
+    return kDefaultDNS_;
 }
 
 DNS::DNS ()
@@ -121,8 +125,6 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     if (errCode != 0) {
         // @todo - I think we need to capture erron as well if errCode == EAI_SYSTEM (see http://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
         Throw (SystemErrorException (errCode, sgetaddrinfo_error_category_));
-        // @todo get rid of the below - OBSOLETE CODE - LGP 2019-02-25
-        //Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
     AssertNotNull (res); // else would have thrown
 
