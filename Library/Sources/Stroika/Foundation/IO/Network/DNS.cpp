@@ -45,6 +45,20 @@ using namespace Stroika::Foundation::IO::Network;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+namespace {
+    class getaddrinfo_error_category_ : public error_category { // categorize an error
+    public:
+        virtual const char* name () const noexcept override
+        {
+            return "getaddrinfo";
+        }
+        virtual string message (int _Errval) const override
+        {
+            return ::gai_strerror (_Errval);
+        }
+    };
+}
+
 /*
  ********************************************************************************
  ************************** Network::GetInterfaces ******************************
@@ -89,7 +103,8 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     int                     errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
-        Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
+        Throw (SystemErrorException (errCode, getaddrinfo_error_category_ ()));
+        //Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
     AssertNotNull (res); // else would have thrown
 
