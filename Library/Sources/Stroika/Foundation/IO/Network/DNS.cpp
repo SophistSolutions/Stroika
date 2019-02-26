@@ -46,17 +46,33 @@ using namespace Stroika::Foundation::IO::Network;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
+    // @todo - somewhat rough draft - not sure if we need better default_error_condition, or equivilant() overrides
     class getaddrinfo_error_category_ : public error_category { // categorize an error
     public:
         virtual const char* name () const noexcept override
         {
             return "getaddrinfo";
         }
+        virtual error_condition default_error_condition (int ev) const noexcept override
+        {
+            switch (ev) {
+#if EAI_ADDRFAMILY
+                case EAI_ADDRFAMILY:
+                    return std::error_condition (errc::address_family_not_supported);
+#endif
+#if EAI_MEMORY
+                case EAI_MEMORY:
+                    return error_condition (errc::not_enough_memory);
+#endif
+            }
+            return error_condition (errc::bad_message); // no idea what to return here
+        }
         virtual string message (int _Errval) const override
         {
             return ::gai_strerror (_Errval);
         }
     };
+    const getaddrinfo_error_category_ sgetaddrinfo_error_category_;
 }
 
 /*
@@ -103,7 +119,9 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     int                     errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
-        Throw (SystemErrorException (errCode, getaddrinfo_error_category_ ()));
+        // @todo - I think we need to capture erron as well if errCode == EAI_SYSTEM (see http://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
+        Throw (SystemErrorException (errCode, sgetaddrinfo_error_category_));
+        // @todo get rid of the below - OBSOLETE CODE - LGP 2019-02-25
         //Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
     AssertNotNull (res); // else would have thrown
