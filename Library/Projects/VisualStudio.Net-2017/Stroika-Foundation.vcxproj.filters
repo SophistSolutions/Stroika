@@ -2052,6 +2052,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.h">
       <Filter>Sources\Linguistics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3335,6 +3338,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.inl">
       <Filter>Sources\Linguistics</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
