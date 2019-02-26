@@ -104,17 +104,17 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
  ************ CurrentLocaleMessageUtilities::Configure **************************
  ********************************************************************************
  */
-CurrentLocaleMessageUtilities::Configuration CurrentLocaleMessageUtilities::Configuration::sThe;
-
 namespace {
     struct Info_ {
         locale                       fLocale;
         shared_ptr<MessageUtilities> fHandler;
     };
-    static RWSynchronized<optional<Info_>>                        sCached_;
-    static Synchronized<Collection<shared_ptr<MessageUtilities>>> sHandlers_;
+     RWSynchronized<optional<Info_>>                        sCached_;
+     Synchronized<Collection<shared_ptr<MessageUtilities>>> sHandlers_;
     Synchronized<bool>                                            sUseFakeHandler_ = true; // for calls before start of or after end of main ()
 }
+
+CurrentLocaleMessageUtilities::Configuration CurrentLocaleMessageUtilities::Configuration::sThe;
 
 CurrentLocaleMessageUtilities::Configuration::Configuration ()
 {
