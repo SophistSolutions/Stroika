@@ -1642,6 +1642,10 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
 		if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 			push @flags, $dashFlag . "qTraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
+			#override the default (true iff qDebug) - if set the trace2file option set 
+			if ($ENABLE_TRACE2FILE == 1) {
+				push @flags, $dashFlag . "qDefaultTracingOn=1";
+			}
 		}
 
 		foreach my $var (@useExtraCDefines)
