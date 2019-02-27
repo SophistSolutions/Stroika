@@ -69,14 +69,14 @@ namespace {
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_UNSUPPORTED_PROTOCOL) {
+                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
 #endif
                     //https://stroika.atlassian.net/browse/STK-679
                     // MAYBE RELATED TO/SAME AS qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_RECV_ERROR and Debug::IsRunningUnderValgrind ()) {
+                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()} and Debug::IsRunningUnderValgrind ()) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see https://stroika.atlassian.net/browse/STK-679");
                         return;
                     }
@@ -167,7 +167,7 @@ namespace {
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if qHasFeature_OpenSSL
-                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_SEND_FAIL_REWIND) {
+                    if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored  failed since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - try again ssl link");
                         c.SetURL (URL::Parse (L"https://httpbin.org/post"));
                         if (tryCount < kMaxTryCount_) {
@@ -177,7 +177,7 @@ namespace {
                         Execution::ReThrow ();
                     }
 #endif
-                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_RECV_ERROR) {
+                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()}) {
                         // Not sure why, but we sporadically get this error in regression tests, so try to eliminate it. Probably has todo with overloaded
                         // machine we are targetting.
                         DbgTrace ("Warning - ignored  failed since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
@@ -280,7 +280,7 @@ namespace {
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_UNSUPPORTED_PROTOCOL) {
+                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
@@ -417,7 +417,7 @@ namespace {
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_UNSUPPORTED_PROTOCOL) {
+                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
