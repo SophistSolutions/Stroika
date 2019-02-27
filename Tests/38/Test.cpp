@@ -224,12 +224,12 @@ namespace {
             // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
             // So we wait a shorter time for it, and that should fail
             {
-                Debug::TraceContextBumper       ctx1{L"expect-failed-wait"};
-                const Time::DurationSecondsType kMarginOfErrorLo_ = .5;
-                const Time::DurationSecondsType kMarginOfErrorHi_ = 6.0; // if sys busy, thread could be put to sleep almost any amount of time
-                const Time::DurationSecondsType kWaitOnAbortFor   = 1.0;
-                Time::DurationSecondsType       startTestAt       = Time::GetTickCount ();
-                Time::DurationSecondsType       caughtExceptAt    = 0;
+                Debug::TraceContextBumper           ctx1{L"expect-failed-wait"};
+                constexpr Time::DurationSecondsType kMarginOfErrorLo_ = .5;
+                constexpr Time::DurationSecondsType kMarginOfErrorHi_ = 7.0; // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSecondsType kWaitOnAbortFor   = 1.0;
+                Time::DurationSecondsType           startTestAt       = Time::GetTickCount ();
+                Time::DurationSecondsType           caughtExceptAt    = 0;
 
                 try {
                     t.WaitForDone (kWaitOnAbortFor);
@@ -250,6 +250,10 @@ namespace {
                 // FAILURE:
                 //      2.0a222x release (raspberrypi-gcc-6 config (a debug build), failed with (caughtExceptAt - expectedEndAt) about 5.1
                 //      so set kMarginOfErrorHi_ to 6.0 -- LGP 2017-11-13
+                //
+                // FAILURE:
+                //      2.1d18x release (raspberrypi-g++-8-debug-sanitize_undefined config (a debug/sanitize build), failed with (caughtExceptAt - expectedEndAt) about 6.2
+                //      so set kMarginOfErrorHi_ to 7.0 -- LGP 2019-02-27
                 VerifyTestResult (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_);
             }
 
