@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      **************** Platform::Windows::HRESULTErrorException **********************
      ********************************************************************************
      */
-    class HRESULTErrorException [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, HRESULT_error_category () }")]] : public Execution::Exception<>
+    class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, HRESULT_error_category () }")]]  HRESULTErrorException : public Execution::Exception<>
     {
     private:
         using inherited = Execution::Exception<>;
