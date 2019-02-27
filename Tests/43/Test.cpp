@@ -168,7 +168,7 @@ namespace {
                 catch (const system_error& lce) {
 #if qHasFeature_OpenSSL
                     if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl_error_category ()}) {
-                        DbgTrace ("Warning - ignored  failed since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - try again ssl link");
+                        DbgTrace ("Warning - ignored failure since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - try again ssl link");
                         c.SetURL (URL::Parse (L"https://httpbin.org/post"));
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
@@ -180,7 +180,7 @@ namespace {
                     if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()}) {
                         // Not sure why, but we sporadically get this error in regression tests, so try to eliminate it. Probably has todo with overloaded
                         // machine we are targetting.
-                        DbgTrace ("Warning - ignored  failed since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
+                        DbgTrace ("Warning - ignored failure since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
                             goto again;
