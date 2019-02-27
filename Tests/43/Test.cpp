@@ -158,7 +158,7 @@ namespace {
                     return BLOB (buf.begin (), buf.end ());
                 }();
                 optional<Response>   optResp;
-                static constexpr int kMaxTryCount_{5}; // for some reason, this fails occasionally, due to network issues or overload of target machine
+                static constexpr int kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
                 unsigned int         tryCount{1};
             again:
                 try {
@@ -172,6 +172,7 @@ namespace {
                         c.SetURL (URL::Parse (L"https://httpbin.org/post"));
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
+                            Execution::Sleep (tryCount * 1ms);
                             goto again;
                         }
                         Execution::ReThrow ();
@@ -180,9 +181,10 @@ namespace {
                     if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()}) {
                         // Not sure why, but we sporadically get this error in regression tests, so try to eliminate it. Probably has todo with overloaded
                         // machine we are targetting.
-                        DbgTrace ("Warning - ignored failure since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
+                        DbgTrace ("Warning - ignored  since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
+                            Execution::Sleep (tryCount * 1ms);
                             goto again;
                         }
                     }
