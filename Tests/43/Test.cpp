@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Client.h"
 #if qHasFeature_LibCurl
 #include "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
