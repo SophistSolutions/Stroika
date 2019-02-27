@@ -14,7 +14,7 @@ CompileTimeFlagChecker_HEADER (Stroika::Foundation::IO::Network::Transfer, qHasF
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
-    class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, LibCurl_error_category () }")]]  LibCurlException : public Execution::SystemErrorException<>
+    class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, LibCurl_error_category () }")]] LibCurlException : public Execution::SystemErrorException<>
     {
     public:
         using CURLcode = int; // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08

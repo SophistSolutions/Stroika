@@ -86,7 +86,7 @@ namespace {
  ************************ Transfer::LibCurl_error_category **********************
  ********************************************************************************
  */
-const std::error_category& LibCurl_error_category () noexcept
+const std::error_category& Transfer::LibCurl_error_category () noexcept
 {
     return Common::Immortalize<LibCurl_error_category_> ();
 }

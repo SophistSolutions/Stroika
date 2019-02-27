@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      **************** Platform::Windows::StructuredException ************************
      ********************************************************************************
      */
-    class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, StructuredException_error_category () }")]] StructuredException  : public Execution::Exception<>
+    class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, StructuredException_error_category () }")]] StructuredException : public Execution::Exception<>
     {
     private:
         using inherited = Execution::Exception<>;
