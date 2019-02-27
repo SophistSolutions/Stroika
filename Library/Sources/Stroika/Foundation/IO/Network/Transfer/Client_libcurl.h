@@ -33,13 +33,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      */
     const std::error_category& LibCurl_error_category () noexcept;
 
-	/**
-	 * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
-	 * but MAY map to any other exception type
-	 */
-	void ThrowIfError (CURLcode status);
-	
-	/**
+    /**
+     * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
+     * but MAY map to any other exception type
+     */
+    void ThrowIfError (CURLcode status);
+
+    /**
      *  Just object-slice the smart pointer to get a regular connection object - this is just a factory for
      *  LibCurl connection rep objects
      */
