@@ -6,6 +6,8 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include <system_error>
+
 #include "../../../Execution/Exceptions.h"
 
 #include "Client.h"
@@ -26,23 +28,12 @@
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
-    class LibCurlException : public Execution::Exception<> {
-    public:
-        using CURLcode = int; // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
-    public:
-        LibCurlException (CURLcode ccode);
 
-    public:
-        // throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
-        // but MAY map to any other exception type
-        static void ThrowIfError (CURLcode status);
+    /**
+     *  Return a reference the the LibCurl error category object. This object lives forever (like other error categories).
+     */
+    const std::error_category& LibCurl_error_category () noexcept;
 
-    public:
-        nonvirtual CURLcode GetCode () const;
-
-    private:
-        CURLcode fCurlCode_;
-    };
 #endif
 
 #if qHasFeature_LibCurl

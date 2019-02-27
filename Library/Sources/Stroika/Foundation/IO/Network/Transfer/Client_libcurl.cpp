@@ -11,6 +11,7 @@
 
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String_Constant.h"
+#include "../../../Common/Immortalize.h"
 #include "../../../Debug/Trace.h"
 #include "../../../Execution/Throw.h"
 
@@ -55,6 +56,39 @@ namespace {
         }
     };
     ModuleInit_ sIniter_;
+}
+#endif
+
+#if qHasFeature_LibCurl
+namespace {
+    class LibCurl_error_category_ : public error_category {
+    public:
+        virtual const char* name () const noexcept override
+        {
+            return "LibCurl error";
+        }
+        virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
+        {
+            // @todo - not sure how todo this - except by defining new conditions
+            //switch (ev) {
+            //}
+            return error_condition (errc::bad_message); // no idea what to return here
+        }
+        virtual string message (int ccode) const override
+        {
+            return ::curl_easy_strerror (static_cast<CURLcode> (ccode));
+        }
+    };
+}
+
+/*
+ ********************************************************************************
+ ************************ Transfer::LibCurl_error_category **********************
+ ********************************************************************************
+ */
+const std::error_category& LibCurl_error_category () noexcept
+{
+    return Common::Immortalize<LibCurl_error_category_> ();
 }
 #endif
 
@@ -122,8 +156,11 @@ namespace {
  ************************ Transfer::LibCurlException ****************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 LibCurlException::LibCurlException (CURLcode ccode)
-    : Execution::Exception<> (mkExceptMsg_ (ccode))
+    : Execution::SystemErrorException<> (ccode, LibCurl_error_category ())
     , fCurlCode_ (ccode)
 {
 }
@@ -137,6 +174,9 @@ void LibCurlException::ThrowIfError (CURLcode status)
             Execution::Throw (LibCurlException (status));
         }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #endif
 
 #if qHasFeature_LibCurl
