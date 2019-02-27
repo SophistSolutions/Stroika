@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
         *  Note - you can override the underlying factory dynamically by calling Association_Factory<T,TRAITS>::Register (), or
         *  replace it statically by template-specializing Association_Factory<T,TRAITS>::New () - though the later is trickier.
         *
-        *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+        *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
         */
         template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
         class Association_Factory {

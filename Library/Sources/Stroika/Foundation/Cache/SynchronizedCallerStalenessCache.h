@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  @see CallerStalenessCache<> - for unsynchonized base version
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
     class SynchronizedCallerStalenessCache : private CallerStalenessCache<KEY, VALUE, TIME_TRAITS> {

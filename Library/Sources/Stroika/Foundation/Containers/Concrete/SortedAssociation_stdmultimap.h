@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   SortedAssociation_stdmultimap<Key,T> is an std::map-based concrete implementation of the SortedAssociation<Key,T> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

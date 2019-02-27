@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Database::SQLite {
     /**
      *  Connection provides an API for accessing an SQLite database.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database is
      *          threadsafe (even if accessed across processes)
      *

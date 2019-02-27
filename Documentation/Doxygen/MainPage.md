@@ -12,5 +12,5 @@
 
 	<h2>Thread Safety</h2>
 	<div>
-		<a href="thread_safety.html">Details</a>
+		<a href="Thread-Safety.md">Details</a>
 	</div>

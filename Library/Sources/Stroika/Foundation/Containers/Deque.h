@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers {
      *  unpredictable costs for an Add operation. DoubleLinkList is usually
      *  slower, but has very predictable costs.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.

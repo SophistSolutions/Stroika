@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Cache {
      *  \note   This cache assumes one timeout for all items. To have timeouts vary by item,
      *          @see CallerStalenessCache.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
      *
      *  @see SynchronizedTimedCache<> - for internally ynchonized implementation
      *

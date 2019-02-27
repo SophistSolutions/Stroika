@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Containers {
      *      Items inserted at the current index remain undefined if they will
      *      be encountered or not.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Design Note - TRAITS for equals versus COMPARER template param to methods that need it
      *      We experimented (until Stroika 2.0a20 apx) with using TRAITS that were optional

@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Memory {
      *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
      *  change (except by assignement - being assigned over).
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */

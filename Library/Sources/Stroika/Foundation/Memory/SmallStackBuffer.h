@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   @todo - CONSIDER RENAME to InlineStorage or InlineBuffer, or maybe SmallBuffer? Or InPlaceBuffer
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   SmallStackBuffer<T> can roughly be used as a replacement for vector<> - behiing similarly, except that its optimized
      *          for the case where its used as an automatic variable with a template specifying the right size on the stack for the buffer.

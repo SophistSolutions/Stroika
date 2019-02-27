@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Streams {
      *      \note   BufferedOutputStream aggregates its owned substream, so that a Close () on BufferedOutputStream
      *              will Close that substream.
      *
-     *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *      \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
     class BufferedOutputStream : public OutputStream<ELEMENT_TYPE> {

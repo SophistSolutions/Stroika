@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers {
      *  @see SortedMapping<Key,T>
      *  @see SortedSet<T, TRAITS>
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
      *
      */
     template <typename KEY_TYPE, typename T, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>

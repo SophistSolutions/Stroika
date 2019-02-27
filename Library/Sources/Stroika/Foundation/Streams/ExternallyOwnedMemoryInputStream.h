@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  @see MemoryStream
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
     class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {

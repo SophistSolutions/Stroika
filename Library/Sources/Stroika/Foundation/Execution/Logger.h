@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Execution {
      *      Some future version MIGHT handle this through some static configuration mechanism,
      *  which might then allow this (such as environment variables, linked variables etc).
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  \par Example Usage
      *      \code

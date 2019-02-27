@@ -60,7 +60,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *          tw.PrintF (L"Hello %s\n", L"World");
      *      \endcode
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     class FileOutputStream : public Streams::OutputStream<byte>, public FileStream {
     public:

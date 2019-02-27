@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  @see SynchronizedLRUCache<> - internally synchronized version
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
      *
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>

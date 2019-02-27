@@ -22,7 +22,7 @@
  *
  *  TODO:
  *
- *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+ *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
  *
  */
 

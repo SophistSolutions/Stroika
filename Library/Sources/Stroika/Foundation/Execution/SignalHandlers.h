@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Execution {
      *  To use 'safe' signal handlers, be sure to read about and use
      *      @see SignalHandlerRegistry::SafeSignalsManager
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      */
     class SignalHandlerRegistry {

@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Streams {
      *          This is useful if calls to the underling stream source can be expensive. This class
      *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
     class BufferedInputStream : public InputStream<ELEMENT_TYPE> {

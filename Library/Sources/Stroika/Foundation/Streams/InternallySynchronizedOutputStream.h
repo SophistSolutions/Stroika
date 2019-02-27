@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Streams {
          *          Streams::OutputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedOutputStream<byte>::New (otherOutputStreamToBeSharedAcrossThread);
          *      \endcode
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
          */
         template <typename... ARGS>
         static Ptr New (ARGS&&... args);

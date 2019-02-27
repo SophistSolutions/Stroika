@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Memory {
      *      -   Plus, one must carefully check each use of a variable of type T, being converted
      *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
      *          Const methods can be used by multiple readers at a time.
      *
      *  \note   Tried using Configuration::ArgByValueType<T>, but for reasons I don't fully understand, this doesn't

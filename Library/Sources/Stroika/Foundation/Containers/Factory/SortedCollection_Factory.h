@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Factory {
      *  replace it statically by template-specializing SortedCollection_Factory<T,INORDER_COMPARER>::New () - though the later is trickier.
      *
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename INORDER_COMPARER = less<T>>
     class SortedCollection_Factory {

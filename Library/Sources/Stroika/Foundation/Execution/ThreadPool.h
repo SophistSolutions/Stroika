@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Execution {
      *  Also - where you want to CONTROL the level of thread creation (possibly to avoid
      *  DOS attacks or just accidental overloading).
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *          all methods can be freely used from any thread, and they will block internally as needed.
      */
     class ThreadPool {

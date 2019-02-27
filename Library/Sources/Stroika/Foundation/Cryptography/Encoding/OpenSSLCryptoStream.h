@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  @see OpenSSLOutputStream
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     class OpenSSLInputStream : public Streams::InputStream<std::byte> {
     public:
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *  \note   OpenSSLOutputStream aggregates its owned substream, so that a Close () on OpenSSLOutputStream
      *          will Close that substream.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     class OpenSSLOutputStream : public Streams::OutputStream<std::byte> {
     public:

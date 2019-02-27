@@ -83,7 +83,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
     /**
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Pinger {
     public:

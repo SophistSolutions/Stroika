@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Cache {
      *  performs better, due to not write locking until the last minute needed (you expect a cache to mostly be read
      *  from and have writes - cache misses - expensive/slow but not slow the rest of the cache (hits).
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  @see TimedCache<> - for unsynchonized implementation
      *

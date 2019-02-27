@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
      *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  TODO:
      *      @todo - INCOMPLETE wrapping of Execution::WaitForIOReady - but enough to start testing...

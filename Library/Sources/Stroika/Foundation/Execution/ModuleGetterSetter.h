@@ -84,7 +84,7 @@ namespace Stroika::Foundation ::Execution {
      *          }
      *      \endcode
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      */
     template <typename T, typename IMPL>

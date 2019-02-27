@@ -29,7 +29,7 @@ namespace Stroika::Foundation::IO::Network {
      *          ConnectionOrientedStreamSocket::Ptr      newConnection = ms.Accept ();
      *      \endcode
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
      */
     class ConnectionOrientedStreamSocket : public Socket {
     private:
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note Since ConnectionOrientedStreamSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
      *          Note that we make Read, ReadNonBlocking, Connect, and Write () all const, so that they can be each called at the same time from different threads as other methods
      *          like GetPeerAddress ().
      *

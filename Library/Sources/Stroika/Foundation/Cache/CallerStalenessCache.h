@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Cache {
      *          VerifyTestResult (MapValue_ (2) == 2);  // ''
      *      \endcode
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  @see TimedCache
      */

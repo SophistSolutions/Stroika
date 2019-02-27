@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
      *  \note   To have code which preflights or cleanps up after the PIDLoop, create your own subclass of PIDLoop<>, and do your
      *          initialization in the CTOR, and cleanup in the DTOR, so leverage and respects the RAII.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *                              except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction
      *
      */

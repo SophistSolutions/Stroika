@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Memory {
      *  Low-level tool to allocate and free memory from a fixed size/element pool. Very high performance since
      *  no searching or coalescing ever needed, but at the cost of creating some amount of fragmentation.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
      *

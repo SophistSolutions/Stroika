@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Linguistics {
          *  But if you have to make many calls in a row, caching the 'MessageUtilties' - locale specific object - can improve
          *  performance.
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
          */
         shared_ptr<MessageUtilities> LookupHandler ();
 

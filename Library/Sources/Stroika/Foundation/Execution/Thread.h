@@ -503,7 +503,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \see    Thread::CleanupPtr
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized/a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized/a>
      */
     class Thread::Ptr : private Debug::AssertExternallySynchronizedLock {
     public:

@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>

@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers {
      *      and put them into a new stack. A special copy API (private to stack) would have limited
      *      the ease of interoperating the Stack<T> container with other sorts of containers.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      *

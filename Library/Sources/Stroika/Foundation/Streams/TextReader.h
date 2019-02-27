@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Streams {
      *      Assert (TextReader { String (L"hello world") }.ReadAll () == L"hello world");
      *      \endcode
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     class TextReader : public InputStream<Character> {
     public:

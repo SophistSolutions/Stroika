@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Queue_Array<T> is an Array-based concrete implementation of the Queue<T> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
     template <typename T>

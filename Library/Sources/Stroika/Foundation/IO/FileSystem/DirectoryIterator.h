@@ -31,7 +31,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class DirectoryIterator : public Traversal::Iterator<String> {
     public:

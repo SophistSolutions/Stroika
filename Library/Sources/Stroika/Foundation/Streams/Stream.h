@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  @see Stream<ELEMENT_TYPE>
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
     class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedLock {
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Streams {
     bool operator!= (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
 
     /**
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>
     class Stream<ELEMENT_TYPE>::_IRep {

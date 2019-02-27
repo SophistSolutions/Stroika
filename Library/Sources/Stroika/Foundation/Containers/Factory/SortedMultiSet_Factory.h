@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Factory {
      *  Note - you can override the underlying factory dynamically by calling SortedMultiSet_Factory<T,TRAITS>::Register (), or
      *  replace it statically by template-specializing SortedMultiSet_Factory<T,TRAITS>::New () - though the later is trickier.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     class SortedMultiSet_Factory {

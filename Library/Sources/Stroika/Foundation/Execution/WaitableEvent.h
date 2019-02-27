@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  AutoReset Waitable Event (like Windows' CreateEvent (resetType==eManualReset, false)).
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  \note   \em async-signal-safety - this is NOT safe to use from signals (from http://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_cond_broadcast.html - It is not safe to use the pthread_cond_signal() function in a signal handler that is invoked asynchronously
      *          Use POSIX sem_init/sem_post () 

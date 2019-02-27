@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Cache {
      *          it does NOT work with CallerStalenessCache, because that cache requires the caller to specify an allowed staleness on each
      *          call.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html>Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache. Used with SynchronizedLRUCache and a typical function, for example, this is fully re-entrant</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md">Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache. Used with SynchronizedLRUCache and a typical function, for example, this is fully re-entrant</a>
      */
     template <typename RESULT, template <typename, typename> class CACHE = LRUCache, typename... ARGS>
     class Memoizer {

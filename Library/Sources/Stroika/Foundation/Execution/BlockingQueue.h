@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Execution {
      *  Remove              remove()            poll()              take()              poll(time, unit)
      *  Examine             Front()             peek()              not applicable      not applicable
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  \par Example Usage (RegressionTest10_BlockingQueue_)
      *      \code

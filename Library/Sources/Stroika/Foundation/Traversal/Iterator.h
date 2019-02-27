@@ -269,7 +269,7 @@ namespace Stroika::Foundation::Traversal {
      *          They can be safely transfered across threads, and the underlying things being iterated over
      *          can be safely and transparently read/written from other threads
      *
-     *          <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *          <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<forward_iterator_tag, T>>
     class Iterator : public IteratorBase {

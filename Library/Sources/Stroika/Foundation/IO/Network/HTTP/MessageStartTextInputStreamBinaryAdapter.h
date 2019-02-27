@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *      @todo   Must rewrite this to properly handle other than ASCII characterset on incoming headers
      *              and URL lines.
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
     class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
     public:

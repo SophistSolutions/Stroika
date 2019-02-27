@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
      *      The basic idea here is that you cannot have multiple copies of the same
      *      thing into the set (like a mathematical set).
      *
-     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *
      *  \em Concrete Implementations:
