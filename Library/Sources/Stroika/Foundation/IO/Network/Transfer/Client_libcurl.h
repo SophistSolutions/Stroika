@@ -28,17 +28,15 @@
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
-
     /**
      *  Return a reference the the LibCurl error category object. This object lives forever (like other error categories).
      */
     const std::error_category& LibCurl_error_category () noexcept;
 
-#endif
-
-#if qHasFeature_LibCurl
-    // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
-    // LibCurl connection rep objects
+    /**
+     *  Just object-slice the smart pointer to get a regular connection object - this is just a factory for
+     *  LibCurl connection rep objects
+     */
     class Connection_LibCurl : public Connection {
     public:
         Connection_LibCurl (const Options& options = Options ());

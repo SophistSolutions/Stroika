@@ -67,16 +67,16 @@ namespace {
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
 #if qHasFeature_LibCurl
-                catch (const LibCurlException& lce) {
+                catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
+                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_UNSUPPORTED_PROTOCOL) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
 #endif
                     //https://stroika.atlassian.net/browse/STK-679
                     // MAYBE RELATED TO/SAME AS qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                    if (lce.GetCode () == CURLE_RECV_ERROR and Debug::IsRunningUnderValgrind ()) {
+                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_RECV_ERROR and Debug::IsRunningUnderValgrind ()) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see https://stroika.atlassian.net/browse/STK-679");
                         return;
                     }
@@ -165,9 +165,9 @@ namespace {
                     optResp = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
                 }
 #if qHasFeature_LibCurl
-                catch (const LibCurlException& lce) {
+                catch (const system_error& lce) {
 #if qHasFeature_OpenSSL
-                    if (lce.GetCode () == CURLE_SEND_FAIL_REWIND) {
+                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_SEND_FAIL_REWIND) {
                         DbgTrace ("Warning - ignored  failed since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - try again ssl link");
                         c.SetURL (URL::Parse (L"https://httpbin.org/post"));
                         if (tryCount < kMaxTryCount_) {
@@ -177,7 +177,7 @@ namespace {
                         Execution::ReThrow ();
                     }
 #endif
-                    if (lce.GetCode () == CURLE_RECV_ERROR) {
+                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_RECV_ERROR) {
                         // Not sure why, but we sporadically get this error in regression tests, so try to eliminate it. Probably has todo with overloaded
                         // machine we are targetting.
                         DbgTrace ("Warning - ignored  failed since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
@@ -278,9 +278,9 @@ namespace {
                 }
 #if qHasFeature_LibCurl
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
-                catch (const LibCurlException& lce) {
+                catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
+                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_UNSUPPORTED_PROTOCOL) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
@@ -415,9 +415,9 @@ namespace {
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
 #if qHasFeature_LibCurl
-                catch (const LibCurlException& lce) {
+                catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
+                    if (lce.code ().category () == LibCurl_error_category () and lce.code ().value () == CURLE_UNSUPPORTED_PROTOCOL) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
