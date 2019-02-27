@@ -6,49 +6,28 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include <system_error>
+
 #if qPlatform_Windows
 #include <Windows.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include "../../../Configuration/Common.h"
-
-#include "../../Exceptions.h"
-
-namespace Stroika::Foundation::Execution {
-    using Characters::SDKString;
-}
-
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
-    class StructuredException : public Execution::Exception<> {
-    private:
-        using inherited = Execution::Exception<>;
+    /**
+     *  Return a reference the the HRESULT error category object (windows only). This object lives forever (like other error categories).
+     */
+    const std::error_category& StructuredException_error_category () noexcept;
 
-    private:
-        unsigned int fSECode;
-
-    public:
-        explicit StructuredException (unsigned int n);
-        operator unsigned int () const;
-
-    public:
-        static SDKString LookupMessage (unsigned int n);
-        nonvirtual SDKString LookupMessage () const;
-
-    public:
-        /**
-         *  Windows generally defaults to having 'structured exceptions' cause the application to crash.
-         *  This allows translating those exceptions into C++ exceptions (whe
-         *
-         *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
-         */
-        static void RegisterHandler ();
-
-    private:
-        static void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
-    };
+    /**
+     *  Windows generally defaults to having 'structured exceptions' cause the application to crash.
+     *  This allows translating those exceptions into C++ exceptions.
+     *
+     *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
+     */
+    void RegisterStructuredExceptionHandler ();
 
 }
 
