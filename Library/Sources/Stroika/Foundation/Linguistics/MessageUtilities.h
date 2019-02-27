@@ -61,6 +61,10 @@ namespace Stroika::Foundation::Linguistics {
          *  Return a legal handler to use - even if before or after main. But prefer picking one based on the current
          *  locale and what is installed with Configuration if its available.
          *
+         *  This is generally unneeded, as you can call MakeNounSingular, RemoveTrailingSentencePunctuation directly (below).
+         *  But if you have to make many calls in a row, caching the 'MessageUtilties' - locale specific object - can improve
+         *  performance.
+         *
          *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
          */
         shared_ptr<MessageUtilities> LookupHandler ();
