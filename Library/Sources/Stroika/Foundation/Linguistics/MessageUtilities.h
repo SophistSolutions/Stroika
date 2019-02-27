@@ -23,6 +23,7 @@ namespace Stroika::Foundation::Linguistics {
     using Characters::String;
 
     struct MessageUtilities {
+        virtual ~MessageUtilities ()                                                                                             = default;
         virtual bool                           AppliesToThisLocale (const String& localeName) const                              = 0;
         virtual pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg) const                       = 0;
         virtual String                         PluralizeNoun (const String& s, const optional<String>& sPlural, int count) const = 0;

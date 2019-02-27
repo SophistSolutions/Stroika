@@ -64,9 +64,10 @@ String MessageUtilities_en::PluralizeNoun (const String& s, const optional<Strin
 String MessageUtilities_en::MakeNounSingular (const String& s) const
 {
     String r = s;
-    // take an ENGLISH string (assume English) - and munge it so its singular (if it happened to have been plural)
+    // take an ENGLISH string and munge it so its singular (if it happened to have been plural)
 
     // hande special case of 'wives' -> 'wife' as in 'midwives'
+	// @todo there are more like thief, and theives
     if (r.length () >= 5) {
         size_t l = r.length ();
         if (s[l - 5] == 'w' and s[l - 4] == 'i' and s[l - 3] == 'v' and s[l - 2] == 'e' and s[l - 1] == 's') {
