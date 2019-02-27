@@ -173,7 +173,7 @@ namespace {
                         c.SetURL (URL::Parse (L"https://httpbin.org/post"));
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
-                            Execution::Sleep (tryCount * 1ms);
+                            Execution::Sleep (0.5 * tryCount);
                             goto again;
                         }
                         Execution::ReThrow ();
@@ -185,7 +185,7 @@ namespace {
                         DbgTrace ("Warning - ignored  since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
-                            Execution::Sleep (tryCount * 1ms);
+                            Execution::Sleep (0.5 * tryCount);
                             goto again;
                         }
                     }
