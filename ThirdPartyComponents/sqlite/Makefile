@@ -13,7 +13,8 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-VERSION=3260000
+VERSION=3270200
+#VERSION=3260000
 #VERSION=3250200
 #VERSION=3240000
 
