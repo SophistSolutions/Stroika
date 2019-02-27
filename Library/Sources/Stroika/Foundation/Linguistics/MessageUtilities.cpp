@@ -167,7 +167,6 @@ namespace {
             return co->fHandler;
         }
     }
-
 }
 
 pair<String, optional<String>> CurrentLocaleMessageUtilities::RemoveTrailingSentencePunctuation (const String& msg)
