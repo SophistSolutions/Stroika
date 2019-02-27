@@ -140,8 +140,7 @@ void CurrentLocaleMessageUtilities::Configuration::AddHandler (const shared_ptr<
 ******************* CurrentLocaleMessageUtilities ******************************
 ********************************************************************************
 */
-namespace {
-    shared_ptr<MessageUtilities> LookupHandler_ ()
+    shared_ptr<MessageUtilities> CurrentLocaleMessageUtilities::LookupHandler ()
     {
         // If not after start and before end of main () - use fake / MessageUtilities_en handler.
         if (sUseFakeHandler_) {
@@ -167,24 +166,23 @@ namespace {
             return co->fHandler;
         }
     }
-}
 
 pair<String, optional<String>> CurrentLocaleMessageUtilities::RemoveTrailingSentencePunctuation (const String& msg)
 {
-    return LookupHandler_ ()->RemoveTrailingSentencePunctuation (msg);
+    return LookupHandler ()->RemoveTrailingSentencePunctuation (msg);
 }
 
 String CurrentLocaleMessageUtilities::PluralizeNoun (const String& s, int count)
 {
-    return LookupHandler_ ()->PluralizeNoun (s, nullopt, count);
+    return LookupHandler ()->PluralizeNoun (s, nullopt, count);
 }
 
 String CurrentLocaleMessageUtilities::PluralizeNoun (const String& s, const String& sPlural, int count)
 {
-    return LookupHandler_ ()->PluralizeNoun (s, sPlural, count);
+    return LookupHandler ()->PluralizeNoun (s, sPlural, count);
 }
 
 String CurrentLocaleMessageUtilities::MakeNounSingular (const String& s)
 {
-    return LookupHandler_ ()->MakeNounSingular (s);
+    return LookupHandler ()->MakeNounSingular (s);
 }

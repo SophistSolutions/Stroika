@@ -56,6 +56,15 @@ namespace Stroika::Foundation::Linguistics {
         public:
             void AddHandler (const shared_ptr<MessageUtilities>& handler);
         };
+
+        /**
+         *  Return a legal handler to use - even if before or after main. But prefer picking one based on the current
+         *  locale and what is installed with Configuration if its available.
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+         */
+        shared_ptr<MessageUtilities> LookupHandler ();
+
         /**
          *  Uses a MessageUtilities based on the current thread's locale, if called between the start and end of main, and
          *  otherwise uses an arbitrary one.
@@ -77,7 +86,7 @@ namespace Stroika::Foundation::Linguistics {
          */
         String MakeNounSingular (const String& s);
 
-    };
+    }
 
 }
 
