@@ -144,12 +144,6 @@ private:
 #endif
 
 #if qHasFeature_LibCurl
-namespace {
-    wstring mkExceptMsg_ (LibCurlException::CURLcode ccode)
-    {
-        return String::FromUTF8 (::curl_easy_strerror (static_cast<CURLcode> (ccode))).As<wstring> ();
-    }
-}
 
 /*
  ********************************************************************************
@@ -170,7 +164,6 @@ void LibCurlException::ThrowIfError (CURLcode status)
     if (status != CURLE_OK)
         [[UNLIKELY_ATTR]]
         {
-            DbgTrace (L"In LibCurlException::ThrowIfError: throwing '%s' (status %d)", LibCurlException (status).As<String> ().c_str (), status);
             Execution::Throw (LibCurlException (status));
         }
 }
@@ -205,8 +198,8 @@ DurationSecondsType Connection_LibCurl::Rep_::GetTimeout () const
 void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
 {
     MakeHandleIfNeeded_ ();
-    LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
-    LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
+    ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
+    ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
 URL Connection_LibCurl::Rep_::GetURL () const
@@ -220,7 +213,7 @@ void Connection_LibCurl::Rep_::SetURL (const URL& url)
     DbgTrace (L"Connection_LibCurl::Rep_::SetURL ('%s')", Characters::ToString (url).c_str ());
 #endif
     if (fCurlHandle_ != nullptr) {
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.GetFullURL ().AsUTF8 ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.GetFullURL ().AsUTF8 ().c_str ()));
     }
     fURL_ = url;
 }
@@ -301,11 +294,11 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
 
-    LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fOptions_.fUserAgent.AsUTF8 ().c_str ()));
+    ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fOptions_.fUserAgent.AsUTF8 ().c_str ()));
 
     if (fOptions_.fSupportSessionCookies) {
         //@todo horrible kludge, but I couldnt find a better way. Will need to use soemthing else for windows, probably!
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
     }
 
     Mapping<String, String> overrideHeaders = request.fOverrideHeaders;
@@ -327,40 +320,40 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 
     if (request.fMethod == HTTP::Methods::kGet) {
         if (fDidCustomMethod_) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fDidCustomMethod_ = false;
         }
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 1));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 1));
     }
     else if (request.fMethod == HTTP::Methods::kPost) {
         if (fDidCustomMethod_) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fDidCustomMethod_ = false;
         }
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
     }
     else if (request.fMethod == HTTP::Methods::kPut) {
         if (fDidCustomMethod_) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fDidCustomMethod_ = false;
         }
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 1));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 1));
     }
     else {
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 0));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 0));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, request.fMethod.AsUTF8 ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 0));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 0));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, request.fMethod.AsUTF8 ().c_str ()));
     }
 
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY)); // tell libcurl we can use "any" auth, which lets the lib pick one, but it also costs one extra round-trip and possibly sending of all the PUT data twice!
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY)); // tell libcurl we can use "any" auth, which lets the lib pick one, but it also costs one extra round-trip and possibly sending of all the PUT data twice!
         auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();                             // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERNAME, nameAndPassword.first.AsUTF8 ().c_str ()));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PASSWORD, nameAndPassword.second.AsUTF8 ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERNAME, nameAndPassword.first.AsUTF8 ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PASSWORD, nameAndPassword.second.AsUTF8 ().c_str ()));
     }
 
     // grab initial headers and do POST/etc based on args in request...
@@ -369,17 +362,17 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         tmpH = ::curl_slist_append (tmpH, (i.fKey + String_Constant (L": ") + i.fValue).AsUTF8 ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
-    LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));
+    ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));
     if (fSavedHeaders_ != nullptr) {
         ::curl_slist_free_all (fSavedHeaders_);
         fSavedHeaders_ = nullptr;
     }
     fSavedHeaders_ = tmpH;
 
-    LibCurlException::ThrowIfError (::curl_easy_perform (fCurlHandle_));
+    ThrowIfError (::curl_easy_perform (fCurlHandle_));
 
     long resultCode = 0;
-    LibCurlException::ThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
+    ThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"returning status = %d, dataLen = %d", resultCode, fResponseData_.size ());
 #endif
@@ -394,10 +387,10 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         /*
          * Now setup COMMON options we ALWAYS set.
          */
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fURL_.GetFullURL ().AsUTF8 ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fURL_.GetFullURL ().AsUTF8 ().c_str ()));
 
 #if USE_LIBCURL_VERBOSE_
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_VERBOSE, 1));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_VERBOSE, 1));
 #endif
 
         /*
@@ -405,7 +398,7 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
          *  But for now, this is most likely to avoid untoward interactions with other libraries (guess)
          *      --LGP 2015-11-12
          */
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL, 1));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL, 1));
 
 #if qDebug && qPlatform_POSIX
         {
@@ -418,31 +411,31 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
 #endif
 
         if (fOptions_.fMaxAutomaticRedirects == 0) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 0L));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 0L));
         }
         else {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 1L));
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_MAXREDIRS, fOptions_.fMaxAutomaticRedirects));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 1L));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_MAXREDIRS, fOptions_.fMaxAutomaticRedirects));
             // violate dejure standard but follow defacto standard and only senisble behavior
             // https://curl.haxx.se/libcurl/c/CURLOPT_POSTREDIR.html
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTREDIR, CURL_REDIR_POST_301)); // could have used CURL_REDIR_POST_ALL?
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTREDIR, CURL_REDIR_POST_301)); // could have used CURL_REDIR_POST_ALL?
         }
 
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, s_ResponseHeaderWriteHandler_));
-        LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, s_ResponseHeaderWriteHandler_));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
 
         if (fOptions_.fTCPKeepAlives) {
-            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPALIVE, fOptions_.fTCPKeepAlives->fEnabled));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPALIVE, fOptions_.fTCPKeepAlives->fEnabled));
 #if qPlatform_Linux
             if (fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives) {
-                LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPIDLE, *fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPIDLE, *fOptions_.fTCPKeepAlives->fTimeIdleBeforeSendingKeepalives));
             }
             if (fOptions_.fTCPKeepAlives->fTimeBetweenIndividualKeepaliveProbes) {
-                LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPINTVL, *fOptions_.fTCPKeepAlives->fTimeBetweenIndividualKeepaliveProbes));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPINTVL, *fOptions_.fTCPKeepAlives->fTimeBetweenIndividualKeepaliveProbes));
             }
 #endif
         }

@@ -14,6 +14,16 @@ CompileTimeFlagChecker_HEADER (Stroika::Foundation::IO::Network::Transfer, qHasF
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
+
+	inline void ThrowIfError (CURLcode status)
+	{
+		if (status != CURLE_OK)
+			[[UNLIKELY_ATTR]]
+		{
+			Execution::Throw (Execution::SystemErrorException<> (status, LibCurl_error_category ()));
+		}
+	}
+
     class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, LibCurl_error_category () }")]] LibCurlException : public Execution::SystemErrorException<>
     {
     public:
