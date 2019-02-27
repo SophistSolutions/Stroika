@@ -351,7 +351,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY)); // tell libcurl we can use "any" auth, which lets the lib pick one, but it also costs one extra round-trip and possibly sending of all the PUT data twice!
-        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();                             // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
+        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();           // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERNAME, nameAndPassword.first.AsUTF8 ().c_str ()));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PASSWORD, nameAndPassword.second.AsUTF8 ().c_str ()));
     }

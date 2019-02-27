@@ -8,6 +8,11 @@
 
 #include <system_error>
 
+#if qHasFeature_LibCurl
+// For CurlCode
+#include <curl/curl.h>
+#endif
+
 #include "../../../Execution/Exceptions.h"
 
 #include "Client.h"
