@@ -9,7 +9,7 @@
 #include <system_error>
 
 #if qHasFeature_LibCurl
-// For CurlCode
+// For CURLCode define
 #include <curl/curl.h>
 #endif
 
