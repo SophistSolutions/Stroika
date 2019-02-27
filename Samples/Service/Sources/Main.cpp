@@ -137,7 +137,7 @@ int main (int argc, const char* argv[])
      */
 #if qPlatform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
-    Execution::Platform::Windows::StructuredException::RegisterHandler ();
+    Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (FatalErorrHandler_); // override the default handler to emit message via Logger
 
