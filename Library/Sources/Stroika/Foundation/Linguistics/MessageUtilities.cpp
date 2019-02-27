@@ -140,32 +140,32 @@ void CurrentLocaleMessageUtilities::Configuration::AddHandler (const shared_ptr<
 ******************* CurrentLocaleMessageUtilities ******************************
 ********************************************************************************
 */
-    shared_ptr<MessageUtilities> CurrentLocaleMessageUtilities::LookupHandler ()
-    {
-        // If not after start and before end of main () - use fake / MessageUtilities_en handler.
-        if (sUseFakeHandler_) {
-            return make_shared<MessageUtilities_en> ();
-        }
-        else {
-            // If else use cached per-locale handler.
-            optional<Info_> co = sCached_.cget ().load ();
-            locale          currentLocale{};
-            if (not co.has_value () or co->fLocale != currentLocale) {
-                // create the appropriate handler for the current locale
-                co = [&]() {
-                    //  search here user installed ones with AddHandler ()
-                    for (shared_ptr<MessageUtilities> h : sHandlers_.load ()) {
-                        if (h->AppliesToThisLocale (String::FromNarrowSDKString (currentLocale.name ()))) {
-                            return Info_{currentLocale, h};
-                        }
-                    }
-                    return Info_{currentLocale, make_shared<MessageUtilities_en> ()};
-                }();
-                sCached_.rwget ().store (*co);
-            }
-            return co->fHandler;
-        }
+shared_ptr<MessageUtilities> CurrentLocaleMessageUtilities::LookupHandler ()
+{
+    // If not after start and before end of main () - use fake / MessageUtilities_en handler.
+    if (sUseFakeHandler_) {
+        return make_shared<MessageUtilities_en> ();
     }
+    else {
+        // If else use cached per-locale handler.
+        optional<Info_> co = sCached_.cget ().load ();
+        locale          currentLocale{};
+        if (not co.has_value () or co->fLocale != currentLocale) {
+            // create the appropriate handler for the current locale
+            co = [&]() {
+                //  search here user installed ones with AddHandler ()
+                for (shared_ptr<MessageUtilities> h : sHandlers_.load ()) {
+                    if (h->AppliesToThisLocale (String::FromNarrowSDKString (currentLocale.name ()))) {
+                        return Info_{currentLocale, h};
+                    }
+                }
+                return Info_{currentLocale, make_shared<MessageUtilities_en> ()};
+            }();
+            sCached_.rwget ().store (*co);
+        }
+        return co->fHandler;
+    }
+}
 
 pair<String, optional<String>> CurrentLocaleMessageUtilities::RemoveTrailingSentencePunctuation (const String& msg)
 {
