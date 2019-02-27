@@ -161,7 +161,9 @@ namespace {
                 optional<Response>   optResp;
                 static constexpr int kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
                 unsigned int         tryCount{1};
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"")
             again:
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"")
                 try {
                     optResp = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
                 }
