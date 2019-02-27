@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
          *
          *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
          */
-        [[deprecated ("Since v2.1d18, use RegisterStructuredExceptionHandler")]] static void RegisterHandler ();
+        [[deprecated ("Since v2.1d18, use RegisterDefaultHandler_StructuredException")]] static void RegisterHandler ();
 
     private:
         static void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);

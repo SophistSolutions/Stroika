@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      *
      *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
      */
-    void RegisterStructuredExceptionHandler ();
+    void RegisterDefaultHandler_StructuredException ();
 
 }
 

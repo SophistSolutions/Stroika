@@ -136,10 +136,10 @@ namespace {
 
 /*
 ********************************************************************************
-************** Platform::Windows::RegisterStructuredExceptionHandler ***********
+****** Platform::Windows::RegisterDefaultHandler_StructuredException ***********
 ********************************************************************************
 */
-void Execution::Platform::Windows::RegisterStructuredExceptionHandler ()
+void Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ()
 {
     _set_se_translator (trans_func_);
 }
