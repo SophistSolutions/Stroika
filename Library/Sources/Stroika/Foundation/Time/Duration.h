@@ -120,6 +120,7 @@ namespace Stroika::Foundation::Time {
          */
         constexpr Duration ();
         Duration (const Duration& src);
+        Duration (Duration&& src);
         explicit Duration (const string& durationStr);
         explicit Duration (const Characters::String& durationStr);
         constexpr explicit Duration (int duration);
@@ -136,6 +137,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         nonvirtual Duration& operator= (const Duration& rhs);
+        nonvirtual Duration& operator= (Duration&& rhs);
 
     public:
         /**
@@ -334,6 +336,7 @@ namespace Stroika::Foundation::Time {
         InternalNumericFormatType_ fNumericRepOrCache_{kValueWhenEmptyRenderedAsNumber_}; // we ALWAYS compute this (even if string rep) since frequently used
         void                       destroy_ ();                                           // allow call if already empty
         void                       construct_ (const string& s);
+        void                       construct_ (string&& s);
     };
     template <>
     int Duration::As () const;

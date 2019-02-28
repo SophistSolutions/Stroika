@@ -28,8 +28,8 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *      string tmpMaybeGoodUTF8FromFile;
-     *      String s = CheckedConverter<String, UTF8> (tmpMaybeGoodUTF8FromFile);   // throws if invalid UTF8
+     *          string tmpMaybeGoodUTF8FromFile;
+     *          String s = CheckedConverter<String, UTF8> (tmpMaybeGoodUTF8FromFile);   // throws if invalid UTF8
      *      \endcode
      */
     template <typename TO, typename EXTRA_DATA, typename FROM>

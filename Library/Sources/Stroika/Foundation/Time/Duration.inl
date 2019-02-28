@@ -38,6 +38,15 @@ namespace Stroika::Foundation::Time {
         }
         fRepType_ = src.fRepType_; // must assign after and not mem-initialize because of checks in construct_
     }
+    inline Duration::Duration (Duration&& src)
+        : fRepType_ (src.fRepType_)
+        , fNumericRepOrCache_ (src.fNumericRepOrCache_)
+    {
+        if (src.fRepType_ == eString_) {
+            new (&fStringRep_) string (move (src.fStringRep_));
+        }
+        src.fRepType_ = eEmpty_;
+    }
     inline Duration::Duration (const string& durationStr)
         : Duration ()
     {
@@ -125,6 +134,30 @@ namespace Stroika::Foundation::Time {
         }
         return *this;
     }
+    inline Duration& Duration::operator= (Duration&& rhs)
+    {
+        if (this != &rhs) {
+            if (fRepType_ == rhs.fRepType_) {
+                switch (fRepType_) {
+                    case eString_:
+                        fStringRep_ = move (rhs.fStringRep_);
+                        break;
+                }
+            }
+            else {
+                destroy_ ();
+                switch (fRepType_) {
+                    case eString_:
+                        construct_ (move (rhs.fStringRep_));
+                        break;
+                }
+            }
+            rhs.fRepType_       = eEmpty_;
+            fNumericRepOrCache_ = rhs.fNumericRepOrCache_;
+            fRepType_           = rhs.fRepType_;
+        }
+        return *this;
+    }
     inline void Duration::destroy_ ()
     {
         if (fRepType_ == eString_) {
@@ -137,6 +170,13 @@ namespace Stroika::Foundation::Time {
         Require (fRepType_ == eEmpty_);
         Require (not s.empty ());
         new (&fStringRep_) string (s);
+        fRepType_ = eString_;
+    }
+    inline void Duration::construct_ (string&& s)
+    {
+        Require (fRepType_ == eEmpty_);
+        Require (not s.empty ());
+        new (&fStringRep_) string (move (s));
         fRepType_ = eString_;
     }
     template <>
