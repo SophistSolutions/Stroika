@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Time {
     template <typename DURATION_REP, typename DURATION_PERIOD>
     constexpr Duration::Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d)
         : fRepType_ (eNumeric_)
-        , fNumericRepOrCache_ (static_cast<InternalNumericFormatType_> (chrono::duration<InternalNumericFormatType_> (d).count ()))
+        , fNumericRepOrCache_ (chrono::duration<InternalNumericFormatType_> (d).count ())
     {
     }
     constexpr Duration::Duration ()
@@ -39,11 +39,14 @@ namespace Stroika::Foundation::Time {
         fRepType_ = src.fRepType_;
     }
     inline Duration::Duration (const string& durationStr)
-        : fRepType_ (eString_)
-        , fStringRep_ (durationStr)
     {
-        // call for the side-effect of throw if bad format src string AND cuz likely used
-        fNumericRepOrCache_ = ParseTime_ (fStringRep_);
+        if (durationStr.empty ()) {
+            fRepType_ = eEmpty_;
+        }
+        else {
+            fNumericRepOrCache_ = ParseTime_ (durationStr);
+            construct_ (durationStr);
+        }
     }
     inline Duration::Duration (const Characters::String& durationStr)
         : Duration (durationStr.AsASCII ()) // buggy - must throw bad format if not ascii

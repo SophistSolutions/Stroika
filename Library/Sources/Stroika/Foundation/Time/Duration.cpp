@@ -97,6 +97,11 @@ const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
     12 * 60 /*fNowThreshold*/
 };
 
+Duration::Duration (const Characters::String& durationStr)
+	: Duration (durationStr.AsASCII ()) // buggy - must throw bad format if not ascii
+{
+}
+
 Duration& Duration::operator+= (const Duration& rhs)
 {
     *this = *this + rhs;
