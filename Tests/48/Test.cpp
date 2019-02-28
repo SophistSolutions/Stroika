@@ -595,9 +595,20 @@ namespace {
             const Duration kD = Duration (L"PT0.000045S");
             VerifyTestResult (kD.PrettyPrint () == L"45 µs");
         }
-        {
-            const Duration kD = Duration (1.6e-6);
-            VerifyTestResult (kD.PrettyPrint () == L"1.6 µs");
+		{
+			// todo use constexpr
+			const Duration kD = Duration{};
+			VerifyTestResult (kD.empty ());
+		}
+		{
+			// todo use constexpr
+			const Duration kD = Duration (1.6e-6);
+			VerifyTestResult (kD.PrettyPrint () == L"1.6 µs");
+		}
+		{
+			// todo use constexpr
+			const Duration kD{33us};
+            VerifyTestResult (kD.PrettyPrint () == L"33 µs");
         }
         {
             const Duration kD = Duration (L"PT0.000045S");

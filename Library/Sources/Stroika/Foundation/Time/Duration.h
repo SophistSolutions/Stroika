@@ -26,17 +26,8 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   virtualize REP - so we can store natively the original FLOAT or duration object, without
- *              loss of precision.
- *
- *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
- *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
- *              Maybe Float2StringOptions is optional param to As<String> ()???
- *
- *      @todo   Probably need to do DIFFERENNT BACKEND IMPL - NOT STRINGS - BUT float - maybe combo of the two
- *              so possible to implemnt constexrp CTORS etc.
- *
- *              WAS: debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *      @todo   now that we have constexpr Duration
+ *              debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
  *              stuff for kMin/kMax
  *
  *              For now using ModuleInit<> code to assure proper construction order.
@@ -44,26 +35,21 @@
  *              After I get this working, consider fixing derivitate classes like DurationRange
  *              to also use constexpr - but this one must work first!
  *
+ *      @todo   Consider possibly storing chrono::duration<> as the representation for 'numeric' type instead of double/float. This might
+ *              produce less overflow problems.
+ *
+ *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
+ *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
+ *              Maybe Float2StringOptions is optional param to As<String> ()???
+ *
  *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
  *              handles either form of decimal separator! Add to regression tests, and make sure
  *              it works.
  *
- *      @todo   Do better job converting to/from std::duration<>. Unclear if I should just use
- *              templated CTOR to map all the types or overload the predefined milliseconds/microseconds
- *              etc.
- *
- *              One issue with the template stuff is that when it goes wrong, its a horrid mess to understand
- *              the error. But thats probably a temporary issue.
- *
- *      @todo   Consider storing BOTH numeric and string representations - as a performance hack (both optionally).
- *              If we are handled a 'chrono' time, and convert to double, there is no reason to go through
- *              a string representation! (or the other way around).
- *
  *      @todo   Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
  *
- *      @todo   Add support for long double (and perhaps others?). And consider using long double for
- *              InternalNumericFormatType_;
+ *      @todo   Consider using long double for InternalNumericFormatType_;
  *
  *      @todo   Consider adding 'precision' property to PrettyPrintInfo. Think about precision support/design of
  *              boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
@@ -107,8 +93,8 @@ namespace Stroika::Foundation::Time {
      *
      *  Note that a Duration may be negative.
      *
-     *  It is best to logically think of Duration as a number of seconds (at least lossly) �
-     *  since for comparisons � that�s how things are normalized. #days etc are dumbed down
+     *  It is best to logically think of Duration as a number of seconds (perhaps lossily) �
+     *  since for comparisons that's how things are normalized. #days etc are dumbed down
      *  to number of seconds for comparison sakes.
      *
      *  \note Design Note - why no c_str () method
@@ -123,24 +109,33 @@ namespace Stroika::Foundation::Time {
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */
-    class Duration {
+    class Duration final {
     public:
         /**
          *  The characterset of the std::string CTOR is expected to be all ascii, or the code throws FormatException
          *
          *  Throws (FormatException) if bad format
+         *
+         *  \note for numeric overloads, require (not isnan (src)) - but allow isinf()
          */
-        Duration ();
+        constexpr Duration ();
+        Duration (const Duration& src);
         explicit Duration (const string& durationStr);
         explicit Duration (const Characters::String& durationStr);
-        explicit Duration (int duration);
-        explicit Duration (long duration);
-        explicit Duration (long long duration);
-        explicit Duration (float duration);
-        explicit Duration (double duration);
-        explicit Duration (long double duration);
+        constexpr explicit Duration (int duration);
+        constexpr explicit Duration (long duration);
+        constexpr explicit Duration (long long duration);
+        constexpr explicit Duration (float duration);
+        constexpr explicit Duration (double duration);
+        constexpr explicit Duration (long double duration);
         template <typename DURATION_REP, typename DURATION_PERIOD>
-        Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
+        constexpr Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
+
+    public:
+        ~Duration ();
+
+    public:
+        nonvirtual Duration& operator= (const Duration& rhs);
 
     public:
         /**
@@ -318,7 +313,28 @@ namespace Stroika::Foundation::Time {
         friend Stroika::Foundation::Time::Private_::Duration_ModuleData_;
 
     private:
-        string fDurationRep_;
+        /**
+         *  3 types - 'empty' (possibly we can lose this due to presence of optional) - and 
+         *  string, and numeric.
+         *
+         *  We ALWAYS store the numeric value. We OPTIONALLY store the string value. So fNumericRepOrCache_
+         *  is ALWAYS valid (unless fRepType==eEmpty_).
+         */
+        static constexpr InternalNumericFormatType_ kValueWhenEmptyRenderedAsNumber_{0};
+        enum RepType_ {
+            eEmpty_,
+            eString_,
+            eNumeric_
+        };
+        RepType_ fRepType_{eEmpty_};
+        union {
+            char   fNonStringRep_{}; // unused except to allow constexpr initialization (allow selecting non fStringRep_ to initialize since union must be initialized)
+            string fStringRep_;
+        };
+        InternalNumericFormatType_ fNumericRepOrCache_{kValueWhenEmptyRenderedAsNumber_}; // we ALWAYS compute this (even if string rep) since frequently used
+        void                       destroy_ ();                                           // allow call if already empty
+        void                       construct_ (const string& s);
+        void                       construct_ (InternalNumericFormatType_ n);
     };
     template <>
     int Duration::As () const;

@@ -97,53 +97,6 @@ const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
     12 * 60 /*fNowThreshold*/
 };
 
-Duration::Duration ()
-    : fDurationRep_ ()
-{
-}
-
-Duration::Duration (const string& durationStr)
-    : fDurationRep_ (durationStr)
-{
-    (void)ParseTime_ (fDurationRep_); // call for the side-effect of throw if bad format src string
-}
-
-Duration::Duration (const String& durationStr)
-    : fDurationRep_ (durationStr.AsASCII ())
-{
-    (void)ParseTime_ (fDurationRep_); // call for the side-effect of throw if bad format src string
-}
-
-Duration::Duration (int duration)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
-{
-}
-
-Duration::Duration (long duration)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
-{
-}
-
-Duration::Duration (long long duration)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
-{
-}
-
-Duration::Duration (float duration)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
-{
-}
-
-Duration::Duration (double duration)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
-{
-}
-
-Duration::Duration (long double duration)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
-{
-}
-
 Duration& Duration::operator+= (const Duration& rhs)
 {
     *this = *this + rhs;
@@ -156,87 +109,19 @@ Duration& Duration::operator-= (const Duration& rhs)
     return *this;
 }
 
-void Duration::clear ()
-{
-    fDurationRep_.clear ();
-}
-
-bool Duration::empty () const
-{
-    return fDurationRep_.empty ();
-}
-
-template <>
-int Duration::As () const
-{
-    return static_cast<int> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
-
-template <>
-long int Duration::As () const
-{
-    return static_cast<long int> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
-
-template <>
-long long int Duration::As () const
-{
-    return static_cast<long long int> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
-
-template <>
-float Duration::As () const
-{
-    return static_cast<float> (ParseTime_ (fDurationRep_)); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
-
-template <>
-double Duration::As () const
-{
-    return ParseTime_ (fDurationRep_); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
-
-template <>
-long double Duration::As () const
-{
-    return ParseTime_ (fDurationRep_); // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
-}
-
-template <>
-chrono::duration<double> Duration::As () const
-{
-    return chrono::duration<double> (ParseTime_ (fDurationRep_));
-}
-template <>
-chrono::seconds Duration::As () const
-{
-    return chrono::seconds (static_cast<chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
-}
-template <>
-chrono::milliseconds Duration::As () const
-{
-    return chrono::milliseconds (static_cast<chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
-}
-template <>
-chrono::microseconds Duration::As () const
-{
-    return chrono::microseconds (static_cast<chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
-}
-template <>
-chrono::nanoseconds Duration::As () const
-{
-    return chrono::nanoseconds (static_cast<chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
-}
-template <>
-String Duration::As () const
-{
-    return ASCIIStringToWide (fDurationRep_);
-}
-
 template <>
 wstring Duration::As () const
 {
-    return ASCIIStringToWide (fDurationRep_);
+	switch (fRepType_) {
+	case eEmpty_:
+		return wstring{};
+	case eString_:
+		 return ASCIIStringToWide (fStringRep_);
+	case eNumeric_:
+		return ASCIIStringToWide (UnParseTime_ (fNumericRepOrCache_));
+	}
+	AssertNotReached ();
+	return wstring{};
 }
 
 namespace {
@@ -253,25 +138,25 @@ namespace {
 template <>
 chrono::seconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::seconds> (ParseTime_ (fDurationRep_), 1);
+    return DoPin_<chrono::seconds> (ParseTime_ (fStringRep_), 1);
 }
 
 template <>
 chrono::milliseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::milliseconds> (ParseTime_ (fDurationRep_), 1000.0);
+    return DoPin_<chrono::milliseconds> (ParseTime_ (fStringRep_), 1000.0);
 }
 
 template <>
 chrono::microseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::microseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0);
+    return DoPin_<chrono::microseconds> (ParseTime_ (fStringRep_), 1000.0 * 1000.0);
 }
 
 template <>
 chrono::nanoseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::nanoseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0 * 1000.0);
+    return DoPin_<chrono::nanoseconds> (ParseTime_ (fStringRep_), 1000.0 * 1000.0 * 1000.0);
 }
 
 namespace {
@@ -307,7 +192,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     using namespace Linguistics::CurrentLocaleMessageUtilities;
     static const String_Constant kCommaSpace_{L", "};
     if (empty ()) {
-        return String ();
+        return String{};
     }
     /*
      *  From http://physics.nist.gov/cuu/Units/checklist.html
@@ -465,16 +350,6 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     return result;
 }
 
-Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
-{
-    return PrettyPrint (prettyPrintInfo);
-}
-
-Characters::String Duration::ToString () const
-{
-    return Format ();
-}
-
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
 {
     InternalNumericFormatType_ t     = As<InternalNumericFormatType_> ();
@@ -529,18 +404,6 @@ Duration Duration::operator- () const
     }
 }
 
-int Duration::Compare (const Duration& rhs) const
-{
-    Duration::InternalNumericFormatType_ n = As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
-    if (n < 0) {
-        return -1;
-    }
-    if (n > 0) {
-        return 1;
-    }
-    return 0;
-}
-
 Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -548,7 +411,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
     DbgTrace ("(s = %s)", s.c_str ());
 #endif
     if (s.empty ()) {
-        return 0;
+        return kValueWhenEmptyRenderedAsNumber_;
     }
     InternalNumericFormatType_ curVal = 0;
     bool                       isNeg  = false;
@@ -768,32 +631,6 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
     return result;
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
-
-/*
- ********************************************************************************
- *************************** Time operators *************************************
- ********************************************************************************
- */
-Duration Time::operator+ (const Duration& lhs, const Duration& rhs)
-{
-    // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
-    return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
-}
-
-Duration Time::operator- (const Duration& lhs, const Duration& rhs)
-{
-    return Duration (lhs.As<Time::DurationSecondsType> () - rhs.As<DurationSecondsType> ());
-}
-
-Duration Time::operator* (const Duration& lhs, long double rhs)
-{
-    return Duration (lhs.As<Time::DurationSecondsType> () * rhs);
-}
-
-Duration Time::operator* (long double lhs, const Duration& rhs)
-{
-    return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
-}
 
 /*
  ********************************************************************************
