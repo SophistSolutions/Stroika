@@ -30,12 +30,12 @@ namespace Stroika::Foundation::Time {
     {
     }
     inline Duration::Duration (const Duration& src)
-		: fRepType_ (src.fRepType_)
-		, fNumericRepOrCache_ (src.fNumericRepOrCache_)
+        : fRepType_ (src.fRepType_)
+        , fNumericRepOrCache_ (src.fNumericRepOrCache_)
     {
         if (fRepType_ == eString_) {
-			Assert (not src.fStringRep_.empty ());
-			new (&fStringRep_) string (src.fStringRep_);
+            Assert (not src.fStringRep_.empty ());
+            new (&fStringRep_) string (src.fStringRep_);
         }
     }
     inline Duration::Duration (Duration&& src)
@@ -49,13 +49,13 @@ namespace Stroika::Foundation::Time {
         src.fRepType_ = eEmpty_;
     }
     inline Duration::Duration (const string& durationStr)
-		: fNonStringRep_{}
+        : fNonStringRep_{}
     {
-		Assert (fRepType_ == eEmpty_);
+        Assert (fRepType_ == eEmpty_);
         if (not durationStr.empty ()) {
             fNumericRepOrCache_ = ParseTime_ (durationStr);
-			new (&fStringRep_) string (durationStr);
-			fRepType_ = eString_;
+            new (&fStringRep_) string (durationStr);
+            fRepType_ = eString_;
         }
     }
     constexpr Duration::Duration (int duration)
@@ -119,17 +119,17 @@ namespace Stroika::Foundation::Time {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
                 if (rhs.fRepType_ == eString_) {
-					// if both unions have string active - just assign
+                    // if both unions have string active - just assign
                     fStringRep_ = rhs.fStringRep_;
                 }
             }
             else {
-				// if reps differnt, destroy any strings
+                // if reps different, destroy in case this is string type
                 destroy_ ();
                 if (rhs.fRepType_ == eString_) {
-					new (&fStringRep_) string (rhs.fStringRep_);
-					// fRepType_ = eString_;	done at end of procedure
-				}
+                    new (&fStringRep_) string (rhs.fStringRep_);
+                    // fRepType_ = eString_;    done at end of procedure
+                }
             }
             fNumericRepOrCache_ = rhs.fNumericRepOrCache_;
             fRepType_           = rhs.fRepType_;
@@ -140,22 +140,23 @@ namespace Stroika::Foundation::Time {
     {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
-				// if both unions have string active - just move assign
-				if (rhs.fRepType_ == eString_) {
+                // if both unions have string active - just move assign
+                if (rhs.fRepType_ == eString_) {
                     fStringRep_ = move (rhs.fStringRep_);
-					// setting our type, and STEALING type of rhs at bottom of procedure
+                    // setting our type, and STEALING type of rhs at bottom of procedure
                 }
             }
             else {
+                // if reps different, destroy in case this is string type
                 destroy_ ();
                 if (rhs.fRepType_ == eString_) {
-					new (&fStringRep_) string (move (rhs.fStringRep_));
+                    new (&fStringRep_) string (move (rhs.fStringRep_));
                 }
             }
             fNumericRepOrCache_ = rhs.fNumericRepOrCache_;
             fRepType_           = rhs.fRepType_;
-			rhs.fRepType_ = eEmpty_;
-		}
+            rhs.fRepType_       = eEmpty_;
+        }
         return *this;
     }
     inline void Duration::destroy_ ()
