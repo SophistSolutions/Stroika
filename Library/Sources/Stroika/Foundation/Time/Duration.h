@@ -32,6 +32,14 @@
  *              the string, and ALWAYS convert to float (or chron::duration) representation. Or I could make
  *              the class into a template class (but thats too close to hte existing chron::duration - so whats the point).
  *
+ *              Even with this restriction, I COULD store the string elsewhere to eliminate the DTOR. A kludge, but akin
+ *              to garbage collection. Keep a list (std::map) of all allocated Duration objects which were given a string.
+ *              Store the PTR as key, and the actual string pointer as value; We cannot always (maybe not even often) catch
+ *              the leaked objects, but we can check each time a new Duration is constructed. If its constructed, that address
+ *              was once destructed, so the associated string can be removed. OR - use a BLOB-BUFFER (stringpool) thing. Each time
+ *              we get constructed, look for that string, and re-use the address (readonly afterall). If fail to find, append.
+ *              For some cases, this grows indefinitely and could be bad. But for most common cases, it would probably work out fine.
+ *
  *              Then debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
  *              stuff for kMin/kMax
  *
