@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Time {
                 construct_ (src.fStringRep_);
                 break;
         }
-        fRepType_ = src.fRepType_;	// must assign after and not mem-initialize because of checks in construct_
+        fRepType_ = src.fRepType_; // must assign after and not mem-initialize because of checks in construct_
     }
     inline Duration::Duration (const string& durationStr)
         : Duration ()
