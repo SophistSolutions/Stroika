@@ -28,6 +28,7 @@
 #include "Stroika/Foundation/IO/Network/Transfer/Client_WinHTTP.h"
 #endif
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "../TestHarness/TestHarness.h"
 
@@ -175,7 +176,7 @@ namespace {
                         c.SetURL (URL::Parse (L"https://httpbin.org/post"));
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
-                            Execution::Sleep (0.5 * tryCount);
+                            Execution::Sleep (500ms * tryCount);
                             goto again;
                         }
                         Execution::ReThrow ();
@@ -187,7 +188,7 @@ namespace {
                         DbgTrace ("Warning - ignored  since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
-                            Execution::Sleep (0.5 * tryCount);
+                            Execution::Sleep (500ms * tryCount);
                             goto again;
                         }
                     }
