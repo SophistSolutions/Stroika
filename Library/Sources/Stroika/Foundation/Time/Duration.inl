@@ -20,6 +20,7 @@ namespace Stroika::Foundation::Time {
     template <typename DURATION_REP, typename DURATION_PERIOD>
     constexpr Duration::Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d)
         : fRepType_ (eNumeric_)
+        , fNonStringRep_{}
         , fNumericRepOrCache_ (chrono::duration<InternalNumericFormatType_> (d).count ())
     {
     }
@@ -115,7 +116,7 @@ namespace Stroika::Foundation::Time {
     {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
-                switch (fRepType_) {
+                switch (rhs.fRepType_) {
                     case eString_:
                         fStringRep_ = rhs.fStringRep_;
                         break;
@@ -123,7 +124,7 @@ namespace Stroika::Foundation::Time {
             }
             else {
                 destroy_ ();
-                switch (fRepType_) {
+                switch (rhs.fRepType_) {
                     case eString_:
                         construct_ (rhs.fStringRep_);
                         break;
@@ -138,7 +139,7 @@ namespace Stroika::Foundation::Time {
     {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
-                switch (fRepType_) {
+                switch (rhs.fRepType_) {
                     case eString_:
                         fStringRep_ = move (rhs.fStringRep_);
                         break;
@@ -146,7 +147,7 @@ namespace Stroika::Foundation::Time {
             }
             else {
                 destroy_ ();
-                switch (fRepType_) {
+                switch (rhs.fRepType_) {
                     case eString_:
                         construct_ (move (rhs.fStringRep_));
                         break;
