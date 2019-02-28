@@ -143,6 +143,8 @@ namespace {
                     VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get" or vv[L"url"] == L"https://httpbin.org/get");
                 }
             }
+            DISABLE_COMPILER_MSC_WARNING_START (4102);
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"")
             void T2_httpbin_SimplePOST_ (Connection c)
             {
                 Debug::TraceContextBumper ctx ("T2_httpbin_SimplePOST_");
@@ -161,9 +163,7 @@ namespace {
                 optional<Response>            optResp;
                 static constexpr int          kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
                 [[maybe_unused]] unsigned int tryCount{1};
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"")
             again:
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"")
                 try {
                     optResp = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
                 }
@@ -217,6 +217,8 @@ namespace {
                     VerifyTestResult (resultBLOB == roundTripTestData);
                 }
             }
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4102);
             void T3_httpbin_SimplePUT_ (Connection c)
             {
                 Debug::TraceContextBumper ctx ("T3_httpbin_SimplePUT_");
