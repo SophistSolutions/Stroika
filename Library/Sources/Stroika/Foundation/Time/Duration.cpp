@@ -98,7 +98,7 @@ const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
 };
 
 Duration::Duration (const Characters::String& durationStr)
-	: Duration (durationStr.AsASCII ()) // buggy - must throw bad format if not ascii
+    : Duration (durationStr.AsASCII ()) // buggy - must throw bad format if not ascii
 {
 }
 

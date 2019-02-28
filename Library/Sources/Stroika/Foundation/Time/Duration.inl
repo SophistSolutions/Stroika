@@ -39,18 +39,12 @@ namespace Stroika::Foundation::Time {
         fRepType_ = src.fRepType_;
     }
     inline Duration::Duration (const string& durationStr)
+		: Duration ()
     {
-        if (durationStr.empty ()) {
-            fRepType_ = eEmpty_;
-        }
-        else {
+        if (not durationStr.empty ()) {
             fNumericRepOrCache_ = ParseTime_ (durationStr);
             construct_ (durationStr);
         }
-    }
-    inline Duration::Duration (const Characters::String& durationStr)
-        : Duration (durationStr.AsASCII ()) // buggy - must throw bad format if not ascii
-    {
     }
     constexpr Duration::Duration (int duration)
         : fRepType_ (eNumeric_)
@@ -103,7 +97,7 @@ namespace Stroika::Foundation::Time {
     {
         destroy_ ();
     }
-    inline bool Duration::empty () const
+	constexpr bool Duration::empty () const
     {
         // on construction with an empty string, this produces type eEmpty_
         return fRepType_ == eEmpty_;
@@ -141,6 +135,7 @@ namespace Stroika::Foundation::Time {
     inline void Duration::construct_ (const string& s)
     {
         Require (fRepType_ == eEmpty_);
+		Require (not s.empty ());
         new (&fStringRep_) string (s);
         fRepType_ = eString_;
     }

@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual bool empty () const;
+		constexpr bool empty () const;
 
     public:
         /**
