@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
-    class OperationNotSupportedException : public Execution::Exception<> {
+    class OperationNotSupportedException : public Execution::RuntimeErrorException<> {
     public:
         OperationNotSupportedException ();
         OperationNotSupportedException (const String& operationName);

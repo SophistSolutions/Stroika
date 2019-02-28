@@ -66,9 +66,9 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
         /**
          * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
          */
-        class DestinationUnreachableException : public Execution::Exception<> {
+        class DestinationUnreachableException : public Execution::RuntimeErrorException<> {
         private:
-            using inherited = Execution::Exception<>;
+            using inherited = Execution::RuntimeErrorException<>;
 
         public:
             /**
@@ -90,9 +90,9 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
 
         /**
          */
-        class UnknownICMPPacket : public Execution::Exception<> {
+        class UnknownICMPPacket : public Execution::RuntimeErrorException<> {
         private:
-            using inherited = Execution::Exception<>;
+            using inherited = Execution::RuntimeErrorException<>;
 
         public:
             /**
@@ -114,9 +114,9 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
          *
          *  'ReachedIP' is the address reached by the packet when the TTL expired.
          */
-        class TTLExpiredException : public Execution::Exception<> {
+        class TTLExpiredException : public Execution::RuntimeErrorException<> {
         private:
-            using inherited = Execution::Exception<>;
+            using inherited = Execution::RuntimeErrorException<>;
 
         public:
             /**

@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Time {
         uint32_t fTime_;
     };
 
-    class TimeOfDay::FormatException : public Execution::Exception<> {
+    class TimeOfDay::FormatException : public Execution::RuntimeErrorException<> {
     public:
         FormatException ();
 

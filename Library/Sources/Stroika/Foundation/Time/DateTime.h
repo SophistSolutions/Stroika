@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Time {
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
     };
 
-    class DateTime::FormatException : public Execution::Exception<> {
+    class DateTime::FormatException : public Execution::RuntimeErrorException<> {
     public:
         FormatException ();
 

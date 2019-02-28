@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
-    class RequiredComponentMissingException : public Execution::Exception<> {
+    class RequiredComponentMissingException : public Execution::RuntimeErrorException<> {
     public:
         static constexpr wchar_t kJava[]                   = L"Java";
         static constexpr wchar_t kPDFViewer[]              = L"PDFViewer";

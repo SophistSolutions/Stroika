@@ -158,8 +158,21 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  A wrapper on std::runtime_error, which adds Stroika UNICODE string support.
+     *
+     *  According to https://en.cppreference.com/w/cpp/error/runtime_error
+     *      It reports errors that are due to events beyond the scope of the
+     *      program and can not be easily predicted.
+     *
+     *  This isn't super clear, but Stroika interprets this to mean external conditions - files, networks, memory etc - essentially
+     *  ALL the things Stroika treats as exceptions.
      */
-    using RuntimeErrorException = Exception<runtime_error>;
+    template <typename BASE_EXCEPTION = runtime_error>
+    class RuntimeErrorException : public Exception<BASE_EXCEPTION> {
+    public:
+        /**
+         */
+        RuntimeErrorException (const Characters::String& msg);
+    };
 
     /**
      *  Simple wrapper on std::system_error, but adding support for Stroika String, and other utility methods.

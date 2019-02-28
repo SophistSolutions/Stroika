@@ -269,9 +269,9 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    class ProcessRunner::Exception : public Execution::Exception<> {
+    class ProcessRunner::Exception : public Execution::RuntimeErrorException<> {
     private:
-        using inherited = Execution::Exception<>;
+        using inherited = Execution::RuntimeErrorException<>;
 
     public:
         /**

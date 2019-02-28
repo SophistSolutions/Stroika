@@ -17,7 +17,7 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 namespace {
-    wstring mkMsg (const wstring& component)
+    wstring mkMsg_ (const wstring& component)
     {
         wstring cName = component;
         if (cName == RequiredComponentMissingException::kPDFViewer) {
@@ -31,7 +31,7 @@ namespace {
     }
 }
 RequiredComponentMissingException::RequiredComponentMissingException (const wstring& component)
-    : Execution::Exception<> (mkMsg (component))
+    : Execution::RuntimeErrorException<> (mkMsg_ (component))
     , fComponent (component)
 {
 }

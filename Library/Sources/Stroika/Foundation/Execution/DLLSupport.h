@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
 #if !qPlatform_Windows
-    class DLLException : public Execution::Exception<> {
+    class DLLException : public Execution::RuntimeErrorException<> {
     public:
         DLLException (const char* message);
     };

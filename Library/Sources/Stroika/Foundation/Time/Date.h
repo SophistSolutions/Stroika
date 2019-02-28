@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Time {
         JulianRepType fJulianDateRep_;
     };
 
-    class Date::FormatException : public Execution::Exception<> {
+    class Date::FormatException : public Execution::RuntimeErrorException<> {
     public:
         FormatException ();
 

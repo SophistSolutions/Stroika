@@ -208,7 +208,7 @@ namespace {
  ********************************************************************************
  */
 TimeOfDay::FormatException::FormatException ()
-    : Execution::Exception<> (L"Invalid Time Format"sv)
+    : Execution::RuntimeErrorException<> (L"Invalid Time Format"sv)
 {
 }
 const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;

@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
-    class ResourceNotFoundException : public Execution::Exception<> {
+    class ResourceNotFoundException : public Execution::RuntimeErrorException<> {
     public:
         ResourceNotFoundException ();
 

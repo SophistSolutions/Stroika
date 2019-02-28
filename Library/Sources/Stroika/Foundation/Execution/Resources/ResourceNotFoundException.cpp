@@ -19,6 +19,6 @@ using namespace Stroika::Foundation::Execution;
 const ResourceNotFoundException ResourceNotFoundException::kThe;
 
 ResourceNotFoundException::ResourceNotFoundException ()
-    : Execution::Exception<> (L"Resource Not Found"sv)
+    : Execution::RuntimeErrorException<> (L"Resource Not Found"sv)
 {
 }

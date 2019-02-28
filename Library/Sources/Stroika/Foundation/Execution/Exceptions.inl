@@ -83,6 +83,17 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
+     **************************** RuntimeErrorException *****************************
+     ********************************************************************************
+     */
+    template <typename BASE_EXCEPTION>
+    inline RuntimeErrorException<BASE_EXCEPTION>::RuntimeErrorException (const Characters::String& msg)
+        : Exception<BASE_EXCEPTION>{msg, ""}
+    {
+    }
+
+    /*
+     ********************************************************************************
      ***************************** SystemErrorException *****************************
      ********************************************************************************
      */

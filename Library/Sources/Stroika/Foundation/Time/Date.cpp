@@ -132,7 +132,7 @@ namespace {
 const Date::FormatException Date::FormatException::kThe;
 
 Date::FormatException::FormatException ()
-    : Execution::Exception<> (L"Invalid Date Format"sv)
+    : Execution::RuntimeErrorException<> (L"Invalid Date Format"sv)
 {
 }
 

@@ -164,7 +164,7 @@ namespace {
 const DateTime::FormatException DateTime::FormatException::kThe;
 
 DateTime::FormatException::FormatException ()
-    : Exception<> (L"Invalid DateTime Format"sv)
+    : RuntimeErrorException<> (L"Invalid DateTime Format"sv)
 {
 }
 

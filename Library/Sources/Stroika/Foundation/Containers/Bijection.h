@@ -55,9 +55,9 @@ namespace Stroika::Foundation::Containers {
         };
 
     public:
-        class InjectivityViolation : public Execution::Exception<> {
+        class InjectivityViolation : public Execution::RuntimeErrorException<> {
         private:
-            using inherited = Execution::Exception<>;
+            using inherited = Execution::RuntimeErrorException<>;
 
         public:
             InjectivityViolation ();
