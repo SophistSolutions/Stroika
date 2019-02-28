@@ -271,19 +271,19 @@ namespace Stroika::Foundation::Time {
         Require (rhs != 0);
         return lhs * (1 / rhs);
     }
-    inline Duration Time::operator+ (const Duration& lhs, const Duration& rhs)
+    inline Duration operator+ (const Duration& lhs, const Duration& rhs)
     {
         return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
     }
-    inline Duration Time::operator- (const Duration& lhs, const Duration& rhs)
+    inline Duration operator- (const Duration& lhs, const Duration& rhs)
     {
         return Duration (lhs.As<Time::DurationSecondsType> () - rhs.As<DurationSecondsType> ());
     }
-    inline Duration Time::operator* (const Duration& lhs, long double rhs)
+    inline Duration operator* (const Duration& lhs, long double rhs)
     {
         return Duration (lhs.As<Time::DurationSecondsType> () * rhs);
     }
-    inline Duration Time::operator* (long double lhs, const Duration& rhs)
+    inline Duration operator* (long double lhs, const Duration& rhs)
     {
         return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
     }

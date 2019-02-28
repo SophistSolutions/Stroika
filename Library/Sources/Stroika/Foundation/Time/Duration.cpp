@@ -112,16 +112,16 @@ Duration& Duration::operator-= (const Duration& rhs)
 template <>
 wstring Duration::As () const
 {
-	switch (fRepType_) {
-	case eEmpty_:
-		return wstring{};
-	case eString_:
-		 return ASCIIStringToWide (fStringRep_);
-	case eNumeric_:
-		return ASCIIStringToWide (UnParseTime_ (fNumericRepOrCache_));
-	}
-	AssertNotReached ();
-	return wstring{};
+    switch (fRepType_) {
+        case eEmpty_:
+            return wstring{};
+        case eString_:
+            return ASCIIStringToWide (fStringRep_);
+        case eNumeric_:
+            return ASCIIStringToWide (UnParseTime_ (fNumericRepOrCache_));
+    }
+    AssertNotReached ();
+    return wstring{};
 }
 
 namespace {
