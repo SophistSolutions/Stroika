@@ -26,8 +26,13 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   now that we have constexpr Duration
- *              debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *      @todo   See if I can get constexpr Duration working.
+ *              This appears tricky because we need a DESTRUCTOR, and this cannot be constexpr which prevents
+ *              you from having a constexpr object of that type. The closest I can get is that I could lose
+ *              the string, and ALWAYS convert to float (or chron::duration) representation. Or I could make
+ *              the class into a template class (but thats too close to hte existing chron::duration - so whats the point).
+ *
+ *              Then debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
  *              stuff for kMin/kMax
  *
  *              For now using ModuleInit<> code to assure proper construction order.
@@ -97,6 +102,8 @@ namespace Stroika::Foundation::Time {
      *  since for comparisons that's how things are normalized. #days etc are dumbed down
      *  to number of seconds for comparison sakes.
      *
+     *  \note constexpr not really working (though declared) - see @todo above
+     *
      *  \note Design Note - why no c_str () method
      *      In order to implement c_str () - we would need to return an internal pointer. That would
      *      constrain the internal implementation, and would need careful definition of lifetime. The
@@ -115,6 +122,8 @@ namespace Stroika::Foundation::Time {
          *  The characterset of the std::string CTOR is expected to be all ascii, or the code throws FormatException
          *
          *  Throws (FormatException) if bad format
+         *
+         *  \note constexpr not really working (though declared) - see @todo above
          *
          *  \note for numeric overloads, require (not isnan (src)) - but allow isinf()
          */
@@ -335,8 +344,6 @@ namespace Stroika::Foundation::Time {
         };
         InternalNumericFormatType_ fNumericRepOrCache_{kValueWhenEmptyRenderedAsNumber_}; // we ALWAYS compute this (even if string rep) since frequently used
         void                       destroy_ ();                                           // allow call if already empty
-        void                       construct_ (const string& s);
-        void                       construct_ (string&& s);
     };
     template <>
     int Duration::As () const;
