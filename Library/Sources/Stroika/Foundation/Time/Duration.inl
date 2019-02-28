@@ -32,10 +32,8 @@ namespace Stroika::Foundation::Time {
     inline Duration::Duration (const Duration& src)
         : fNumericRepOrCache_ (src.fNumericRepOrCache_)
     {
-        switch (src.fRepType_) {
-            case eString_:
-                construct_ (src.fStringRep_);
-                break;
+        if (src.fRepType_ == eString_) {
+            construct_ (src.fStringRep_);
         }
         fRepType_ = src.fRepType_; // must assign after and not mem-initialize because of checks in construct_
     }
@@ -44,6 +42,7 @@ namespace Stroika::Foundation::Time {
         , fNumericRepOrCache_ (src.fNumericRepOrCache_)
     {
         if (src.fRepType_ == eString_) {
+            Assert (fRepType_ == eString_);
             new (&fStringRep_) string (move (src.fStringRep_));
         }
         src.fRepType_ = eEmpty_;
@@ -116,18 +115,14 @@ namespace Stroika::Foundation::Time {
     {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
-                switch (rhs.fRepType_) {
-                    case eString_:
-                        fStringRep_ = rhs.fStringRep_;
-                        break;
+                if (rhs.fRepType_ == eString_) {
+                    fStringRep_ = rhs.fStringRep_;
                 }
             }
             else {
                 destroy_ ();
-                switch (rhs.fRepType_) {
-                    case eString_:
-                        construct_ (rhs.fStringRep_);
-                        break;
+                if (rhs.fRepType_ == eString_) {
+                    construct_ (rhs.fStringRep_);
                 }
             }
             fNumericRepOrCache_ = rhs.fNumericRepOrCache_;
@@ -139,18 +134,14 @@ namespace Stroika::Foundation::Time {
     {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
-                switch (rhs.fRepType_) {
-                    case eString_:
-                        fStringRep_ = move (rhs.fStringRep_);
-                        break;
+                if (rhs.fRepType_ == eString_) {
+                    fStringRep_ = move (rhs.fStringRep_);
                 }
             }
             else {
                 destroy_ ();
-                switch (rhs.fRepType_) {
-                    case eString_:
-                        construct_ (move (rhs.fStringRep_));
-                        break;
+                if (rhs.fRepType_ == eString_) {
+                    construct_ (move (rhs.fStringRep_));
                 }
             }
             rhs.fRepType_       = eEmpty_;
