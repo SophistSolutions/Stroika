@@ -36,10 +36,10 @@ namespace Stroika::Foundation::Time {
                 construct_ (src.fStringRep_);
                 break;
         }
-        fRepType_ = src.fRepType_;
+        fRepType_ = src.fRepType_;	// must assign after and not mem-initialize because of checks in construct_
     }
     inline Duration::Duration (const string& durationStr)
-		: Duration ()
+        : Duration ()
     {
         if (not durationStr.empty ()) {
             fNumericRepOrCache_ = ParseTime_ (durationStr);
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Time {
     {
         destroy_ ();
     }
-	constexpr bool Duration::empty () const
+    constexpr bool Duration::empty () const
     {
         // on construction with an empty string, this produces type eEmpty_
         return fRepType_ == eEmpty_;
@@ -135,15 +135,9 @@ namespace Stroika::Foundation::Time {
     inline void Duration::construct_ (const string& s)
     {
         Require (fRepType_ == eEmpty_);
-		Require (not s.empty ());
+        Require (not s.empty ());
         new (&fStringRep_) string (s);
         fRepType_ = eString_;
-    }
-    inline void Duration::construct_ (InternalNumericFormatType_ n)
-    {
-        Require (fRepType_ == eEmpty_);
-        fNumericRepOrCache_ = n;
-        fRepType_           = eNumeric_;
     }
     template <>
     inline int Duration::As () const

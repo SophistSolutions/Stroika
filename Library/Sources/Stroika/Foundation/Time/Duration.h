@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-		constexpr bool empty () const;
+        constexpr bool empty () const;
 
     public:
         /**
@@ -334,7 +334,6 @@ namespace Stroika::Foundation::Time {
         InternalNumericFormatType_ fNumericRepOrCache_{kValueWhenEmptyRenderedAsNumber_}; // we ALWAYS compute this (even if string rep) since frequently used
         void                       destroy_ ();                                           // allow call if already empty
         void                       construct_ (const string& s);
-        void                       construct_ (InternalNumericFormatType_ n);
     };
     template <>
     int Duration::As () const;

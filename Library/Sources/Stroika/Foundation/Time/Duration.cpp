@@ -143,25 +143,25 @@ namespace {
 template <>
 chrono::seconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::seconds> (ParseTime_ (fStringRep_), 1);
+    return DoPin_<chrono::seconds> (fNumericRepOrCache_, 1);
 }
 
 template <>
 chrono::milliseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::milliseconds> (ParseTime_ (fStringRep_), 1000.0);
+    return DoPin_<chrono::milliseconds> (fNumericRepOrCache_, 1000.0);
 }
 
 template <>
 chrono::microseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::microseconds> (ParseTime_ (fStringRep_), 1000.0 * 1000.0);
+    return DoPin_<chrono::microseconds> (fNumericRepOrCache_, 1000.0 * 1000.0);
 }
 
 template <>
 chrono::nanoseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::nanoseconds> (ParseTime_ (fStringRep_), 1000.0 * 1000.0 * 1000.0);
+    return DoPin_<chrono::nanoseconds> (fNumericRepOrCache_, 1000.0 * 1000.0 * 1000.0);
 }
 
 namespace {
