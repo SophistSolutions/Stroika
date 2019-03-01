@@ -73,6 +73,10 @@ sub	ReadConfigFile_ {
 	my @data = <FILE>;
 	close(FILE);
 	foreach $line (@data) {
+		my $pps = ReadValue_($line, "<Configure-Command-Line>");
+		if (defined $pps) {
+			$configuration {'Configure-Command-Line'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<ProjectPlatformSubdir>");
 		if (defined $pps) {
 			$configuration {'ProjectPlatformSubdir'} = $pps;

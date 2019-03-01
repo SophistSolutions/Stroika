@@ -315,6 +315,29 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
+#
+# The configuration file contains a command-line used to generate it, and a bunch of variables
+# used for the build process. This reconfigure target re-runs the configure program using the same
+# arguments that were used to originally build the makefile
+#
+reconfigure:
+ifeq ($(CONFIGURATION),)
+	@for i in $(APPLY_CONFIGS) ; do\
+		$(MAKE) --no-print-directory reconfigure CONFIGURATION=$$i;\
+	done
+else
+	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Reconfiguring $(CONFIGURATION):"
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && PATH=.:$$PATH && `./ScriptsLib/GetConfigurationParameter $(CONFIGURATION) Configure-Command-Line`
+endif
+
+#
+# Each time we release a new version, its probbaly  good idea to regenerate your configuration files.
+#
+ifneq ($(CONFIGURATION),)
+ConfigurationFiles/$(CONFIGURATION).xml:	STROIKA_VERSION
+	@$(MAKE) reconfigure
+endif
+
 
 apply-configurations:
 	@for i in $(APPLY_CONFIGS) ; do\
