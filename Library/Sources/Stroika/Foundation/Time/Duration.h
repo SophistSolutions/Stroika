@@ -40,7 +40,16 @@
  *              we get constructed, look for that string, and re-use the address (readonly afterall). If fail to find, append.
  *              For some cases, this grows indefinitely and could be bad. But for most common cases, it would probably work out fine.
  *
- *              Then debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *              Maybe even better, create a base class 'DurationLite' - that doesn't own a string (could make DurationLite just be
+ *              Duration). Just always convert to numbers. THEN - THAT can be constexpr. And subclass Duration inherits all the functionality
+ *              except overrides/replaces all the functions that return the underlying string (essentially faking the virtual part).
+ *
+ *              That gets us 95% of what we want - the same API we have no for Duration, and something just like and interoperable with
+ *              Duration that is constexpr. Though - why not just call that chrono::duration? That maybe good enuf (esp since we typically
+ *              use stuff like 2ms, etc). Maybe that's good enuf. Making conversion from 3ms to Duration 'super fast' (which I've largely
+ *              done in 2.1d18
+ *
+ *     @todo    Then, when constexpr works, debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
  *              stuff for kMin/kMax
  *
  *              For now using ModuleInit<> code to assure proper construction order.
