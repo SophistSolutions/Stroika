@@ -17,6 +17,10 @@
 namespace Stroika::Foundation::Streams {
 
     /**
+     *  \brief - the stream ended prematurely, so that the requested operation could not be completed.
+     *
+     *  This is NOT thrown when the data is not just available yet. This is thrown when the data is known to
+     *  never be available.
      */
     class EOFException : public Execution::RuntimeErrorException<> {
     private:
