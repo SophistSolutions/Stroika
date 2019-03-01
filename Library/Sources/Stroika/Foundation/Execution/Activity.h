@@ -47,14 +47,15 @@ namespace Stroika::Foundation::Execution {
      *  an ongoing activity. They are generally not meant to be stored or copied, but REFERENCED with DeclareActivity
      *  to form a 'current activity stack'.
      *
-     *  \code
-     *      static constexpr Activity  kBuildingThingy_{ L"building thingy"sv };
-     *      static const auto kOtherActivity = Activity<String>{  L"abc" };
-     *                                                                      // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
-     *      auto otherActivity = Activity<String> { L"abc" + argument };    // activities can be stack based, but these cost more to define
-     *      auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"x"; });
-     *      // then for how to use activity object - see DeclareActivity
-     *  \endcode
+     *  \par Example Usage
+     *      \code
+     *          static constexpr Activity  kBuildingThingy_{ L"building thingy"sv };
+     *          static const auto kOtherActivity = Activity<String>{  L"abc" };
+     *                                                                          // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
+     *          auto otherActivity = Activity<String> { L"abc" + argument };    // activities can be stack based, but these cost more to define
+     *          auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"x"; });
+     *          // then for how to use activity object - see DeclareActivity
+     *      \endcode
      *
      *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
      *          This is because AsStringObj_ has a virtual destructor (necesary for other types). Thats crazy
@@ -130,20 +131,20 @@ namespace Stroika::Foundation::Execution {
     Containers::Stack<Activity<>> CaptureCurrentActivities ();
 
     /**
-     *  Push the argument Activty onto the current thread's Activity stack in the constructor, and pop it off in the destructor.
+     *  Push the argument Activity onto the current thread's Activity stack in the constructor, and pop it off in the destructor.
      *
-     *  \code
-     *      static constexpr Activity   kBuildingThingy_ {L"building thingy"sv };
-     *      try {
-     *          DeclareActivity declareActivity { &kBuildingThingy_ };
-     *          doBuildThing  ();   // throw any exception (that inherits from Exception<>)
-     *      }
-     *      catch (...) {
-     *          String exceptionMsg = Characters::ToString (current_exception ());
-     *          Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
-     *      }
-     *
-     *  \endcode
+     *  \par Example Usage
+     *      \code
+     *          static constexpr Activity   kBuildingThingy_ {L"building thingy"sv };
+     *          try {
+     *              DeclareActivity declareActivity { &kBuildingThingy_ };
+     *              doBuildThing  ();   // throw any exception (that inherits from Exception<>)
+     *          }
+     *          catch (...) {
+     *              String exceptionMsg = Characters::ToString (current_exception ());
+     *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
+     *          }
+     *      \endcode
      */
     template <typename ACTIVITY>
     class DeclareActivity {

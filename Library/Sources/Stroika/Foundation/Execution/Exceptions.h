@@ -22,9 +22,9 @@
  *
  *  \note \em Design Note
  *      (essentially) All exceptions thrown by Stroika (except where needed by quirks of underlying library
- *      integrated with) inherit from std::exception, or Stroika::Foundation::Execution::SilentException, or bad_alloc.
+ *      integrated with) inherit from std::exception, or are Stroika::Foundation::Execution::SilentException.
  *
- *      This means that any code which wishes to report an exception can catch these three types, and use
+ *      This means that any code which wishes to report an exception can catch these two types, and use
  *      the 'what()' method to report the text of the exception message.
  *
  *      Sadly, there is no documentation (I'm aware of) or specification of the characterset/code page reported
@@ -123,6 +123,35 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief Exception<> is a replacement (subclass) for any std c++ exception class (e.g. the default 'std::exception'), 
      *         which adds UNICODE String support.
+     *
+     *  Stroika's Exception<> class is fully interoperable with the normal C++ exeption classes, but its use offers two
+     *  benefits:
+     *      o   It guarantees that UNICODE messages (including things like filenames) are properly preserved in the exception
+     *          message, even if the system default code page (locale) does not allow representing those characters.
+     *
+     *      o   It integrates neatly with the Stroika 'Activity' mechanism, whereby you declare current 'activities' on the stack
+     *          and these are automatically integrated into exceptions to provide clearer messages (e.g. instead of
+     *          getting the error message 
+     *              o   "(errno: 13)" OR 
+     *              o   "Permission denied"
+     *          Stroika returns something like:
+     *              o   "Permission denied {errno: 13} while binding to INADDR_ANY:80, while constructing static content webserver."
+     *
+     *          @see Activity<>
+     *          @see DeclareActivity
+     *
+     *  \par Example Usage
+     *      \code
+     *          static constexpr Activity   kBuildingThingy_ {L"building thingy"sv };
+     *          try {
+     *              DeclareActivity declareActivity { &kBuildingThingy_ };
+     *              doBuildThing  ();   // throw any exception (that inherits from Exception<>)
+     *          }
+     *          catch (...) {
+     *              String exceptionMsg = Characters::ToString (current_exception ());
+     *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
+     *          }
+     *      \endcode
      */
     template <typename BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {
