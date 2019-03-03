@@ -14,8 +14,10 @@
 #include <unistd.h>
 #endif
 
+#include "../../Characters/Format.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Debug/Trace.h"
+#include "../../Execution/Activity.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
@@ -57,23 +59,22 @@ public:
         , fSeekable_ (seekable)
         , fFileName_ (fileName)
     {
-        try {
+        auto            ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity currentActivity{&ativity};
 #if qPlatform_Windows
-            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
-            if (e != 0) {
-                ThrowPOSIXErrNo (e);
-            }
-            if (fFD_ == -1) {
-                ThrowSystemErrNo ();
-            }
+        errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
+        if (e != 0) {
+            ThrowPOSIXErrNo (e);
+        }
+        if (fFD_ == -1) {
+            ThrowSystemErrNo ();
+        }
 #else
-            ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+        ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"opened fd: %d", fFD_);
+        DbgTrace (L"opened fd: %d", fFD_);
 #endif
-        }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
         : fFD_ (fd)
@@ -132,14 +133,13 @@ public:
         Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested));
 #endif
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        try {
+        auto                                               readingFromFileActivity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity                                    currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
-            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+        return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
-            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+        return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif
-        }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eRead);
     }
     virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
@@ -164,7 +164,7 @@ public:
         return Read (intoStart, intoEnd);
 #elif qPlatform_POSIX
         pollfd pollData{fFD_, POLLIN, 0};
-        int pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+        int    pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
         Assert (pollResult >= 0);
         if (pollResult == 0) {
             return {}; // if no data available, return {}

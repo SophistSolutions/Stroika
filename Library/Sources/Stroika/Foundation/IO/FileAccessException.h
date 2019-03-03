@@ -79,6 +79,8 @@ namespace Stroika::Foundation::IO {
      *      and look better in the TraceLog when we throw, but at the runtime cost of lots of extra runtime
      *      assignments to the thread_local string variable.
      */
+
+    /// &&& @todo replace with use of DeclareActivity
 #define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME, USEACCESSMODE) \
     catch (const Stroika::Foundation::IO::FileAccessException& e)                                                  \
     {                                                                                                              \

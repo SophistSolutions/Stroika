@@ -645,18 +645,13 @@ namespace {
              *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
              */
             if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
+                errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
-                if (commandLine.empty ()) {
-                    ThrowPOSIXErrNo ();
-                }
-                else {
-                    try {
-                        ThrowPOSIXErrNo ();
-                    }
-                    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (commandLine[0], IO::FileAccessMode::eRead);
-                }
+                auto            ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ()); });
+                DeclareActivity currentActivity{&ativity};
+                ThrowPOSIXErrNo (e);
             }
         }
 

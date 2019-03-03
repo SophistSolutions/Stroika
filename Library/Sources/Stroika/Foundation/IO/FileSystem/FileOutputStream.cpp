@@ -13,7 +13,9 @@
 #include <unistd.h>
 #endif
 
+#include "../../Characters/Format.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Execution/Activity.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
@@ -28,6 +30,7 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
@@ -53,23 +56,22 @@ public:
         , fFlushFlag (flushFlag)
         , fFileName_ (fileName)
     {
-        try {
+        auto            ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity currentActivity{&ativity};
 #if qPlatform_Windows
-            int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
-            errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
-            if (e != 0) {
-                ThrowPOSIXErrNo (e);
-            }
-            if (fFD_ == -1) {
-                ThrowSystemErrNo ();
-            }
-#else
-            int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
-            const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-            ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_));
-#endif
+        int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
+        errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+        if (e != 0) {
+            ThrowPOSIXErrNo (e);
         }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
+        if (fFD_ == -1) {
+            ThrowSystemErrNo ();
+        }
+#else
+        int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
+        const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+        ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_));
+#endif
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
         : fFD_ (fd)
@@ -117,19 +119,17 @@ public:
 
         if (start != end) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-
-            const byte* i = start;
+            auto                                               ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                                    currentActivity{&ativity};
+            const byte*                                        i = start;
             while (i < end) {
-                try {
 #if qPlatform_Windows
-                    int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
+                int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
 #else
-                    int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
+                int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
 #endif
-                    Assert (n <= (end - i));
-                    i += n;
-                }
-                Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eWrite);
+                Assert (n <= (end - i));
+                i += n;
             }
         }
     }
@@ -138,16 +138,15 @@ public:
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            try {
+            auto                                               ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                                    currentActivity{&ativity};
 #if qPlatform_Windows
-                ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
+            ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #elif qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
+            ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
 #else
-                AssertNotImplemented ();
+            AssertNotImplemented ();
 #endif
-            }
-            Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eWrite);
         }
     }
     virtual Streams::SeekOffsetType GetWriteOffset () const override
