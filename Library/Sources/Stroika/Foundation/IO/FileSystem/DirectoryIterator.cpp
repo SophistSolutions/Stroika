@@ -18,6 +18,7 @@
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
 #include "../../IO/FileAccessException.h"
+#include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 
 #include "PathName.h"
@@ -66,33 +67,28 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s'", dir.c_str ()};
 #endif
-        try {
 #if qPlatform_POSIX
-            if (fDirIt_ == nullptr) {
-                Execution::ThrowPOSIXErrNo ();
-            }
-            else {
-                errno = 0;
-                if ((fCur_ = ::readdir (fDirIt_)) == nullptr) {
-                    // readdir if errno==0 just means EOF
-                    if (errno == 0) {
-                        Execution::ThrowPOSIXErrNo ();
-                    }
-                }
-            }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-                optional<String> tmphack;
-                More (&tmphack, true);
-            }
-#elif qPlatform_Windows
-            fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-            while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-                optional<String> tmphack;
-                More (&tmphack, true);
-            }
-#endif
+        if (fDirIt_ == nullptr) {
+            Execution::ThrowPOSIXErrNo ();
         }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER (dir);
+        else {
+            errno = 0;
+            if ((fCur_ = ::readdir (fDirIt_)) == nullptr) {
+                // readdir if errno==0 just means EOF
+                FileSystem::Exception::ThrowPOSIXErrNo (errno, path (dir.As<wstring> ()));
+            }
+        }
+        if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
+            optional<String> tmphack;
+            More (&tmphack, true);
+        }
+#elif qPlatform_Windows
+        fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
+        while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
+            optional<String> tmphack;
+            More (&tmphack, true);
+        }
+#endif
     }
 #if qPlatform_POSIX
     Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)

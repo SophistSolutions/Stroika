@@ -12,6 +12,24 @@
 
 namespace Stroika::Foundation::IO {
 
+    /**
+     *  ** DEPRECATED - use DeclareActivity or IO::FileSystem::Exception::Throw....if with pathname args
+     */
+#define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME, USEACCESSMODE) \
+    catch (const Stroika::Foundation::IO::FileAccessException& e)                                                  \
+    {                                                                                                              \
+        Stroika::Foundation::Execution::Throw (                                                                    \
+            Stroika::Foundation::IO::FileAccessException (                                                         \
+                (Memory::OptionalValue (optional<Characters::String>{USEFILENAME}, e.GetFileName ())),             \
+                (Memory::OptionalValue (optional<IO::FileAccessMode>{USEACCESSMODE}, e.GetFileAccessMode ()))));   \
+    }
+
+    /**
+     *  ** DEPRECATED - use DeclareActivity or IO::FileSystem::Exception::Throw....if with pathname args
+      */
+#define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME) \
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (USEFILENAME, e.GetFileAccessMode ())
+
     /*
      ********************************************************************************
      ***************************** IO::FileAccessException **************************

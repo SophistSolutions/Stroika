@@ -58,54 +58,6 @@ namespace Stroika::Foundation::IO {
         optional<FileAccessMode> fFileAccessMode_;
     };
 
-    /**
-     *  It often happens that you know a filename in one context, but call something that throws
-     *  a file access exception. This helpful macro can rebild the filename, so its captured in the
-     *  exception.
-     *
-     *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER
-     *
-     *  \par Example Usage
-     *      \code
-     *      try {
-     *          Execution::ThrowPOSIXErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
-     *      }
-     *      Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
-     *      \endcode
-     *
-     *  \note   Design Note:
-     *      We chose to use this try/catch approach rather than setting a thread_local variable with the filename
-     *      in a stack-based context for performance reasons. The thread_local approach would be more econmical
-     *      and look better in the TraceLog when we throw, but at the runtime cost of lots of extra runtime
-     *      assignments to the thread_local string variable.
-     */
-
-    /// &&& @todo replace with use of DeclareActivity
-#define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME, USEACCESSMODE) \
-    catch (const Stroika::Foundation::IO::FileAccessException& e)                                                  \
-    {                                                                                                              \
-        Stroika::Foundation::Execution::Throw (                                                                    \
-            Stroika::Foundation::IO::FileAccessException (                                                         \
-                (Memory::OptionalValue (optional<Characters::String>{USEFILENAME}, e.GetFileName ())),             \
-                (Memory::OptionalValue (optional<IO::FileAccessMode>{USEACCESSMODE}, e.GetFileAccessMode ()))));   \
-    }
-
-    /**
-     *  Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER()
-     *
-     *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER
-     *
-     *  \par Example Usage
-     *      \code
-     *      try {
-     *          Execution::ThrowPOSIXErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
-     *      }
-     *      Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(fileName);
-     *      \endcode
-     */
-#define Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME) \
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (USEFILENAME, e.GetFileAccessMode ())
-
 }
 
 /*

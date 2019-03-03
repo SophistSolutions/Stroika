@@ -145,100 +145,82 @@ optional<String> IO::FileSystem::Ptr::FindExecutableInPath (const String& /*file
 
 String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
 {
-    try {
 #if qPlatform_POSIX
-        SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, 1024);
-        ssize_t                               n;
-        while ((n = ::readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
-            buf.GrowToSize_uninitialized (buf.GetSize () * 2);
-        }
-        if (n < 0) {
-            auto e = errno;
-            if (e == EINVAL) {
-                // According to http://linux.die.net/man/2/readlink - this means the target is not a shortcut which is OK
-                return path2FileOrShortcut;
-            }
-            else {
-                FileSystem::Exception::ThrowPOSIXErrNo (e, path (path2FileOrShortcut.As<wstring> ()));
-            }
-        }
-        Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
-        constexpr bool kWorkaroundBuggyCentos5ReturnsNulBytesInBuf_ = true;
-        if (kWorkaroundBuggyCentos5ReturnsNulBytesInBuf_) {
-            const Characters::SDKChar* b = buf.begin ();
-            const Characters::SDKChar* e = b + n;
-            const Characters::SDKChar* i = find (b, e, '\0');
-            if (i != e) {
-                size_t newN = i - buf.begin ();
-                Assert (newN < n);
-                n = newN;
-            }
-        }
-        return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
-#elif qPlatform_Windows
-        // @todo WRONG semantics if file doesn't exist. Wed should raise an exception here.
-        // But OK if not a shortcut. THEN just rutn the givne file
-        //
-        //
-        // NB: this requires COM, and for now - I don't want the support module depending on the COM module,
-        // so just allow this to fail if COM isn't initialized.
-        //      -- LGP 2007-09-23
-        //
-        {
-            SHFILEINFO info{};
-            if (::SHGetFileInfo (path2FileOrShortcut.AsSDKString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
-                return path2FileOrShortcut;
-            }
-            // not a shortcut?
-            if (not(info.dwAttributes & SFGAO_LINK)) {
-                return path2FileOrShortcut;
-            }
-        }
-
-        // obtain the IShellLink interface
-        IShellLink*   psl = nullptr;
-        IPersistFile* ppf = nullptr;
-        try {
-            if (FAILED (::CoCreateInstance (CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl))) {
-                return path2FileOrShortcut;
-            }
-            if (SUCCEEDED (psl->QueryInterface (IID_IPersistFile, (LPVOID*)&ppf))) {
-                if (SUCCEEDED (ppf->Load (path2FileOrShortcut.c_str (), STGM_READ))) {
-                    // Resolve the link, this may post UI to find the link
-                    if (SUCCEEDED (psl->Resolve (0, SLR_NO_UI))) {
-                        TCHAR path[MAX_PATH + 1]{};
-                        DISABLE_COMPILER_MSC_WARNING_START (4267)
-                        if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), nullptr, 0))) {
-                            ppf->Release ();
-                            ppf = nullptr;
-                            psl->Release ();
-                            psl = nullptr;
-                            return String::FromSDKString (path);
-                        }
-                        DISABLE_COMPILER_MSC_WARNING_END (4267)
-                    }
-                }
-            }
-        }
-        catch (...) {
-            if (ppf != nullptr) {
-                ppf->Release ();
-            }
-            if (psl != nullptr) {
-                psl->Release ();
-            }
-            Execution::ReThrow ();
-        }
-        if (ppf != nullptr) {
-            ppf->Release ();
-        }
-        if (psl != nullptr) {
-            psl->Release ();
-        }
-        return path2FileOrShortcut;
-#endif
+    SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, 1024);
+    ssize_t                               n;
+    while ((n = ::readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
+        buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
+    if (n < 0) {
+        auto e = errno;
+        if (e == EINVAL) {
+            // According to http://linux.die.net/man/2/readlink - this means the target is not a shortcut which is OK
+            return path2FileOrShortcut;
+        }
+        else {
+            FileSystem::Exception::ThrowPOSIXErrNo (e, path (path2FileOrShortcut.As<wstring> ()));
+        }
+    }
+    Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
+    constexpr bool kWorkaroundBuggyCentos5ReturnsNulBytesInBuf_ = true;
+    if (kWorkaroundBuggyCentos5ReturnsNulBytesInBuf_) {
+        const Characters::SDKChar* b = buf.begin ();
+        const Characters::SDKChar* e = b + n;
+        const Characters::SDKChar* i = find (b, e, '\0');
+        if (i != e) {
+            size_t newN = i - buf.begin ();
+            Assert (newN < n);
+            n = newN;
+        }
+    }
+    return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
+#elif qPlatform_Windows
+    // @todo WRONG semantics if file doesn't exist. Wed should raise an exception here.
+    // But OK if not a shortcut. THEN just rutn the givne file
+    //
+    //
+    // NB: this requires COM, and for now - I don't want the support module depending on the COM module,
+    // so just allow this to fail if COM isn't initialized.
+    //      -- LGP 2007-09-23
+    //
+    {
+        SHFILEINFO info{};
+        if (::SHGetFileInfo (path2FileOrShortcut.AsSDKString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
+            return path2FileOrShortcut;
+        }
+        // not a shortcut?
+        if (not(info.dwAttributes & SFGAO_LINK)) {
+            return path2FileOrShortcut;
+        }
+    }
+
+    // obtain the IShellLink interface
+    IShellLink*             psl     = nullptr;
+    IPersistFile*           ppf     = nullptr;
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept {
+        ppf->Release ();
+        ppf = nullptr;
+        psl->Release ();
+        psl = nullptr;
+    });
+    if (FAILED (::CoCreateInstance (CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl))) {
+        return path2FileOrShortcut;
+    }
+    if (SUCCEEDED (psl->QueryInterface (IID_IPersistFile, (LPVOID*)&ppf))) {
+        if (SUCCEEDED (ppf->Load (path2FileOrShortcut.c_str (), STGM_READ))) {
+            // Resolve the link, this may post UI to find the link
+            if (SUCCEEDED (psl->Resolve (0, SLR_NO_UI))) {
+                TCHAR path[MAX_PATH + 1]{};
+                DISABLE_COMPILER_MSC_WARNING_START (4267)
+                if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), nullptr, 0))) {
+                    return String::FromSDKString (path);
+                }
+                DISABLE_COMPILER_MSC_WARNING_END (4267)
+            }
+        }
+    }
+    return path2FileOrShortcut;
+#endif
 }
 
 String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, [[maybe_unused]] bool throwIfComponentsNotFound)
@@ -246,65 +228,62 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::CanonicalizeName", L"path2FileOrShortcut='%s', throwIfComponentsNotFound=%s", path2FileOrShortcut.c_str (), Characters::ToString (throwIfComponentsNotFound).c_str ());
 #endif
-    try {
 #if qPlatform_POSIX
-        //  We used to call canonicalize_file_name() - but this doesn't work with AIX 7.1/g++4.9.2, and
-        //  according to http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html:
-        //  The call canonicalize_file_name(path) is equivalent to the call:
-        //      realpath(path, NULL)
-        char* tmp{::realpath (path2FileOrShortcut.AsSDKString ().c_str (), nullptr)};
-        if (tmp == nullptr) {
-            FileSystem::Exception::ThrowPOSIXErrNo (errno, path (path2FileOrShortcut.As<wstring> ()));
-        }
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
-        return String::FromNarrowSDKString (tmp);
+    //  We used to call canonicalize_file_name() - but this doesn't work with AIX 7.1/g++4.9.2, and
+    //  according to http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html:
+    //  The call canonicalize_file_name(path) is equivalent to the call:
+    //      realpath(path, NULL)
+    char* tmp{::realpath (path2FileOrShortcut.AsSDKString ().c_str (), nullptr)};
+    if (tmp == nullptr) {
+        FileSystem::Exception::ThrowPOSIXErrNo (errno, path (path2FileOrShortcut.As<wstring> ()));
+    }
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
+    return String::FromNarrowSDKString (tmp);
 #elif qPlatform_Windows
-        // @todo MaYBE USE GetFinalPathNameByHandle
-        //          https://msdn.microsoft.com/en-us/library/windows/desktop/aa364962(v=vs.85).aspx
-        //  EXCEPT REQUIRES OPEN?
+    // @todo MaYBE USE GetFinalPathNameByHandle
+    //          https://msdn.microsoft.com/en-us/library/windows/desktop/aa364962(v=vs.85).aspx
+    //  EXCEPT REQUIRES OPEN?
 
-        // @todo LARGELY UNSTED ROUGH DRAFT - 2015-05-11
-        /*
+    // @todo LARGELY UNSTED ROUGH DRAFT - 2015-05-11
+    /*
          *  Note:   PathCanonicalize has lots of problems, PathCanonicalizeCh, and
          *  PathCchCanonicalizeEx is better, but only works with windows 8 or later.
          */
-        using Characters::StringBuilder;
-        String        tmp = ResolveShortcut (path2FileOrShortcut);
-        StringBuilder sb;
-        Components    c = GetPathComponents (path2FileOrShortcut);
-        if (c.fAbsolutePath == Components::eAbsolutePath) {
-            // use UNC notation
-            sb += L"\\\\?";
-            if (c.fDriveLetter) {
-                sb += *c.fDriveLetter;
-            }
-            else if (c.fServerAndShare) {
-                sb += c.fServerAndShare->fServer + L"\\" + c.fServerAndShare->fShare;
-            }
-            else {
-                Execution::Throw (Execution::Exception (L"for absolute path need drive letter or server/share"sv));
-            }
+    using Characters::StringBuilder;
+    String        tmp = ResolveShortcut (path2FileOrShortcut);
+    StringBuilder sb;
+    Components    c = GetPathComponents (path2FileOrShortcut);
+    if (c.fAbsolutePath == Components::eAbsolutePath) {
+        // use UNC notation
+        sb += L"\\\\?";
+        if (c.fDriveLetter) {
+            sb += *c.fDriveLetter;
+        }
+        else if (c.fServerAndShare) {
+            sb += c.fServerAndShare->fServer + L"\\" + c.fServerAndShare->fShare;
         }
         else {
-            if (c.fDriveLetter) {
-                sb += *c.fDriveLetter + L":";
-            }
+            Execution::Throw (FileSystem::Exception{make_error_code (errc::no_such_file_or_directory), L"for absolute path need drive letter or server/share"_k, path (path2FileOrShortcut.As<wstring> ())});
         }
-        bool prefixWIthSlash = false;
-        for (String i : c.fPath) {
-            if (prefixWIthSlash) {
-                sb += L"\\";
-            }
-            sb += i;
-            prefixWIthSlash = true;
-        }
-        return sb.str ();
-#else
-        AssertNotImplemented ();
-        return path2FileOrShortcut;
-#endif
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
+    else {
+        if (c.fDriveLetter) {
+            sb += *c.fDriveLetter + L":";
+        }
+    }
+    bool prefixWIthSlash = false;
+    for (String i : c.fPath) {
+        if (prefixWIthSlash) {
+            sb += L"\\";
+        }
+        sb += i;
+        prefixWIthSlash = true;
+    }
+    return sb.str ();
+#else
+    AssertNotImplemented ();
+    return path2FileOrShortcut;
+#endif
 }
 
 String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, const String& /*relativeToDirectory*/, bool /*throwIfComponentsNotFound*/)
@@ -376,7 +355,7 @@ C:
 #if qPlatform_Windows
     const Set<Character> kSlashChars_ = {'\\', '/'};
 #else
-    const Set<Character> kSlashChars_ = {'/'};
+    const Set<Character>      kSlashChars_ = {'/'};
 #endif
     Sequence<String> rawComponents = fileName.Tokenize (kSlashChars_, false);
     Iterator<String> i             = rawComponents.begin ();
@@ -394,62 +373,53 @@ C:
 
 FileOffset_t IO::FileSystem::Ptr::GetFileSize (const String& fileName)
 {
-    try {
 #if qPlatform_POSIX
-        struct stat s {
-        };
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
-        return s.st_size;
+    struct stat s {
+    };
+    FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
+    return s.st_size;
 #elif qPlatform_Windows
-        WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
-        Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
-        return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
+    WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
+    FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
+    return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
 #else
-        AssertNotImplemented ();
-        return 0;
+    AssertNotImplemented ();
+    return 0;
 #endif
-    }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
 }
 
 DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const String& fileName)
 {
-    try {
 #if qPlatform_POSIX
-        struct stat s {
-        };
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
-        return DateTime (s.st_mtime);
+    struct stat s {
+    };
+    FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
+    return DateTime (s.st_mtime);
 #elif qPlatform_Windows
-        WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
-        ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
-        return DateTime (fileAttrData.ftLastWriteTime);
+    WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
+    FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
+    return DateTime (fileAttrData.ftLastWriteTime);
 #else
-        AssertNotImplemented ();
-        return DateTime ();
+    AssertNotImplemented ();
+    return DateTime ();
 #endif
-    }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
 }
 
 DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const String& fileName)
 {
-    try {
 #if qPlatform_POSIX
-        struct stat s {
-        };
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
-        return DateTime (s.st_atime);
+    struct stat s {
+    };
+    FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s), path (fileName.As<wstring> ()));
+    return DateTime (s.st_atime);
 #elif qPlatform_Windows
-        WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
-        ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
-        return DateTime (fileAttrData.ftLastAccessTime);
+    WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
+    FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
+    return DateTime (fileAttrData.ftLastAccessTime);
 #else
-        AssertNotImplemented ();
-        return DateTime ();
+    AssertNotImplemented ();
+    return DateTime ();
 #endif
-    }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
 }
 
 void IO::FileSystem::Ptr::RemoveFile (const String& fileName)
@@ -457,14 +427,11 @@ void IO::FileSystem::Ptr::RemoveFile (const String& fileName)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveFile", L"fileName='%s'", fileName.c_str ());
 #endif
-    try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
-        Execution::ThrowPOSIXErrNoIfNegative (::_wunlink (fileName.c_str ()));
+    FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::_wunlink (fileName.c_str ()), path (fileName.As<wstring> ()));
 #else
-        Execution::ThrowPOSIXErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()));
+    FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()), path (fileName.As<wstring> ()));
 #endif
-    }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
 }
 
 bool IO::FileSystem::Ptr::RemoveFileIf (const String& fileName)
@@ -472,20 +439,17 @@ bool IO::FileSystem::Ptr::RemoveFileIf (const String& fileName)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveFileIf", L"fileName='%s'", fileName.c_str ());
 #endif
-    try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
-        int r = ::_wunlink (fileName.c_str ());
+    int r = ::_wunlink (fileName.c_str ());
 #else
-        int r = ::unlink (fileName.AsNarrowSDKString ().c_str ());
+    int r = ::unlink (fileName.AsNarrowSDKString ().c_str ());
 #endif
-        if (r < 0) {
-            if (errno != ENOENT) {
-                FileSystem::Exception::ThrowPOSIXErrNo (errno, path (fileName.As<wstring> ()));
-            }
+    if (r < 0) {
+        if (errno != ENOENT) {
+            FileSystem::Exception::ThrowPOSIXErrNo (errno, path (fileName.As<wstring> ()));
         }
-        return r == 0;
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
+    return r == 0;
 }
 
 void IO::FileSystem::Ptr::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
@@ -495,31 +459,28 @@ void IO::FileSystem::Ptr::RemoveDirectory (const String& directory, RemoveDirect
 #endif
     bool triedRMRF{false};
 Again:
-    try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
-        int r = ::_wrmdir (directory.c_str ());
+    int r = ::_wrmdir (directory.c_str ());
 #else
-        int r = ::rmdir (directory.AsNarrowSDKString ().c_str ());
+    int r = ::rmdir (directory.AsNarrowSDKString ().c_str ());
 #endif
-        if (r < 0) {
-            if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we don't care about order, and we do care that we
-                // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
-                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
-                    if (Directory{i}.Exists ()) {
-                        RemoveDirectory (i, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
-                    }
-                    else {
-                        RemoveFile (i);
-                    }
+    if (r < 0) {
+        if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
+            // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we don't care about order, and we do care that we
+            // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
+            for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
+                if (Directory{i}.Exists ()) {
+                    RemoveDirectory (i, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
                 }
-                triedRMRF = true;
-                goto Again;
+                else {
+                    RemoveFile (i);
+                }
             }
-            FileSystem::Exception::ThrowPOSIXErrNo (errno, path (directory.As<wstring> ()));
+            triedRMRF = true;
+            goto Again;
         }
+        FileSystem::Exception::ThrowPOSIXErrNo (errno, path (directory.As<wstring> ()));
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
 }
 
 bool IO::FileSystem::Ptr::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
@@ -529,34 +490,31 @@ bool IO::FileSystem::Ptr::RemoveDirectoryIf (const String& directory, RemoveDire
 #endif
     bool triedRMRF{false};
 Again:
-    try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
-        int r = ::_wrmdir (directory.c_str ());
+    int r = ::_wrmdir (directory.c_str ());
 #else
-        int r = ::rmdir (directory.AsNarrowSDKString ().c_str ());
+    int r = ::rmdir (directory.AsNarrowSDKString ().c_str ());
 #endif
-        if (r < 0) {
-            if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
-                // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we don't care about order, and we do care that we
-                // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
-                for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
-                    if (Directory{i}.Exists ()) {
-                        RemoveDirectoryIf (i, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
-                    }
-                    else {
-                        RemoveFileIf (i);
-                    }
+    if (r < 0) {
+        if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
+            // Note: Subtle - we convert DirectoryIterable to Collection<String> - because we don't care about order, and we do care that we
+            // don't lose track of where we are in iteration, just because we delete files in the directory, which can invalidate our cursor
+            for (String i : DirectoryIterable (directory, DirectoryIterable::IteratorReturnType::eFullPathName).As<Collection<String>> ()) {
+                if (Directory{i}.Exists ()) {
+                    RemoveDirectoryIf (i, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
                 }
-                triedRMRF = true;
-                goto Again;
+                else {
+                    RemoveFileIf (i);
+                }
             }
-            if (errno != ENOENT) {
-                FileSystem::Exception::ThrowPOSIXErrNo (errno, path (directory.As<wstring> ()));
-            }
+            triedRMRF = true;
+            goto Again;
         }
-        return r == 0;
+        if (errno != ENOENT) {
+            FileSystem::Exception::ThrowPOSIXErrNo (errno, path (directory.As<wstring> ()));
+        }
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
+    return r == 0;
 }
 
 void IO::FileSystem::Ptr::CreateSymbolicLink ([[maybe_unused]] const String& linkName, [[maybe_unused]] const String& target)

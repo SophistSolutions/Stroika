@@ -134,8 +134,28 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  See:
          *      @see SystemErrorException<>::ThrowSystemErrNo ();
          *      @see ThrowPOSIXErrNo ();
+         *
          */
         [[noreturn]] static void ThrowSystemErrNo (int sysErr, const path& p1 = {}, const path& p2 = {});
+
+#if qPlatform_Windows
+    public:
+        template <typename WINDOWS_API_RESULT>
+        inline static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1 = {}, const path& p2 = {})
+        {
+            if (test == 0) {
+                ThrowSystemErrNo (GetLastError (), p1, p2);
+            }
+        }
+        //tmphack overload til we switch APIs for FS to all using path
+        template <typename WINDOWS_API_RESULT>
+        inline static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2 = {})
+        {
+            if (test == 0) {
+                ThrowSystemErrNo (GetLastError (), path (p1.As<wstring> ()), path (p2.As<wstring> ()));
+            }
+        }
+#endif
 
 #if qHasFeature_boost
     public:
