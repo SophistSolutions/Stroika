@@ -29,7 +29,6 @@
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Finally.h"
 
-#include "../../IO/FileAccessException.h"
 #include "../../IO/FileBusyException.h"
 #include "../../IO/FileFormatException.h"
 #include "../../IO/FileSystem/Exception.h"
@@ -114,9 +113,9 @@ bool IO::FileSystem::Ptr::Access (const String& fileFullPath, FileAccessMode acc
 void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, FileAccessMode accessMode)
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
-
     if (not Access (fileFullPath, accessMode)) {
-        Execution::Throw (FileAccessException (fileFullPath, accessMode));
+        // @todo take into account 'accessMode' in the resulting message
+        Execution::Throw (IO::FileSystem::Exception{make_error_code (errc::permission_denied), path (fileFullPath.As<wstring> ())});
     }
 }
 

@@ -30,9 +30,9 @@
 #endif
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
-#include "../../IO/FileAccessException.h"
 #include "../../IO/FileBusyException.h"
 #include "../../IO/FileFormatException.h"
+#include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 #include "../../Memory/SmallStackBuffer.h"
 #include "PathName.h"
@@ -57,27 +57,20 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
  * Other exceptions just ignore (so they auto-propagate)
  */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)                                       \
-    catch (const FileBusyException& e)                                                    \
-    {                                                                                     \
-        if (e.GetFileName ().empty ()) {                                                  \
-            Execution::Throw (FileBusyException (USEFILENAME));                           \
-        }                                                                                 \
-        Execution::ReThrow ();                                                            \
-    }                                                                                     \
-    catch (const FileAccessException& e)                                                  \
-    {                                                                                     \
-        if (not e.GetFileName ().has_value ()) {                                          \
-            Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ())); \
-        }                                                                                 \
-        Execution::ReThrow ();                                                            \
-    }                                                                                     \
-    catch (const FileFormatException& e)                                                  \
-    {                                                                                     \
-        if (e.GetFileName ().empty ()) {                                                  \
-            Execution::Throw (FileFormatException (USEFILENAME));                         \
-        }                                                                                 \
-        Execution::ReThrow ();                                                            \
+#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)               \
+    catch (const FileBusyException& e)                            \
+    {                                                             \
+        if (e.GetFileName ().empty ()) {                          \
+            Execution::Throw (FileBusyException (USEFILENAME));   \
+        }                                                         \
+        Execution::ReThrow ();                                    \
+    }                                                             \
+    catch (const FileFormatException& e)                          \
+    {                                                             \
+        if (e.GetFileName ().empty ()) {                          \
+            Execution::Throw (FileFormatException (USEFILENAME)); \
+        }                                                         \
+        Execution::ReThrow ();                                    \
     }
 
 /*
@@ -156,7 +149,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
         if (filePathName.empty ())
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Exception (L"bad filename"sv));
+                Execution::Throw (Exception (make_error_code (errc::no_such_file_or_directory), L"bad filename"_k));
             }
         struct stat s;
         ThrowPOSIXErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
@@ -267,7 +260,7 @@ void IO::FileSystem::CreateDirectoryForFile (const String& filePath)
         [[UNLIKELY_ATTR]]
         {
             // NOT sure this is the best exception to throw here?
-            Execution::Throw (IO::FileAccessException ());
+            Execution::Throw (IO::FileSystem::Exception (make_error_code (errc::no_such_file_or_directory), path (filePath.As<wstring> ())));
         }
     if (IO::FileSystem::Default ().Access (filePath)) {
         // were done

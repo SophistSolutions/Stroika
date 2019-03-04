@@ -6,7 +6,6 @@
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "../../Foundation/IO/FileAccessException.h"
 #include "../../Foundation/IO/FileSystem/Common.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/PathName.h"
@@ -63,8 +62,13 @@ namespace {
 #endif
                 }
             }
-            catch (const IO::FileAccessException&) {
-                Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
+            catch (const system_error& e) {
+                if (e.code () == errc::no_such_file_or_directory) {
+                    Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
+                }
+                else {
+                    Execution::ReThrow ();
+                }
             }
         }
         String ExtractFileName_ (const Message* m) const
