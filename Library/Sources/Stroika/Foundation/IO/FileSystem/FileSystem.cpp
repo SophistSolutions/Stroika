@@ -29,8 +29,6 @@
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Finally.h"
 
-#include "../../IO/FileBusyException.h"
-#include "../../IO/FileFormatException.h"
 #include "../../IO/FileSystem/Exception.h"
 #include "../../Memory/SmallStackBuffer.h"
 

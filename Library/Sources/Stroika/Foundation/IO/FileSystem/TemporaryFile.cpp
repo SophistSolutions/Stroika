@@ -31,8 +31,6 @@
 #endif
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
-#include "../../IO/FileBusyException.h"
-#include "../../IO/FileFormatException.h"
 #include "../../IO/FileSystem/FileSystem.h"
 #include "../../Memory/SmallStackBuffer.h"
 #include "FileUtils.h"
