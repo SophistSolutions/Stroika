@@ -16,10 +16,23 @@ namespace Stroika::Foundation::IO {
       ******************************** FileFormatException ***************************
       ********************************************************************************
       */
-    inline String FileFormatException::GetFileName () const
+    class [[deprecated ("deprecated because never used, and probably best to use DataExchange::BadFormatException (or subclass) - use Activities to capture the file information Since Stroika v2.1d18")]] FileFormatException : public Execution::Exception<>
     {
-        return fFileName_;
-    }
+    private:
+        using inherited = Execution::Exception<>;
+
+    public:
+        FileFormatException (const String& fileName);
+
+    public:
+        nonvirtual String GetFileName () const
+        {
+            return fFileName_;
+        }
+
+    private:
+        String fFileName_;
+    };
 
 }
 #endif /*_Stroika_Foundation_IO_FileFormatException_inl_*/

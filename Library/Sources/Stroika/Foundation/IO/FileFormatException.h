@@ -13,22 +13,6 @@ namespace Stroika::Foundation::IO {
 
     using Characters::String;
 
-    /**
-     */
-    class FileFormatException : public Execution::Exception<> {
-    private:
-        using inherited = Execution::Exception<>;
-
-    public:
-        FileFormatException (const String& fileName);
-
-    public:
-        nonvirtual String GetFileName () const;
-
-    private:
-        String fFileName_;
-    };
-
 }
 
 /*

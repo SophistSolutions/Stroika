@@ -9,7 +9,6 @@
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
 #include "../../IO/FileBusyException.h"
-#include "../../IO/FileFormatException.h"
 
 #include "FStreamSupport.h"
 
@@ -22,20 +21,13 @@ using namespace Stroika::Foundation::IO;
  * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
  * Other exceptions just ignore (so they auto-propagate)
  */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)               \
-    catch (const FileBusyException& e)                            \
-    {                                                             \
-        if (e.GetFileName ().empty ()) {                          \
-            Execution::Throw (FileBusyException (USEFILENAME));   \
-        }                                                         \
-        Execution::ReThrow ();                                    \
-    }                                                             \
-    catch (const FileFormatException& e)                          \
-    {                                                             \
-        if (e.GetFileName ().empty ()) {                          \
-            Execution::Throw (FileFormatException (USEFILENAME)); \
-        }                                                         \
-        Execution::ReThrow ();                                    \
+#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)             \
+    catch (const FileBusyException& e)                          \
+    {                                                           \
+        if (e.GetFileName ().empty ()) {                        \
+            Execution::Throw (FileBusyException (USEFILENAME)); \
+        }                                                       \
+        Execution::ReThrow ();                                  \
     }
 
 /*

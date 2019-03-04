@@ -31,7 +31,6 @@
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 #include "../../IO/FileBusyException.h"
-#include "../../IO/FileFormatException.h"
 #include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 #include "../../Memory/SmallStackBuffer.h"
@@ -57,20 +56,13 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
  * Other exceptions just ignore (so they auto-propagate)
  */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)               \
-    catch (const FileBusyException& e)                            \
-    {                                                             \
-        if (e.GetFileName ().empty ()) {                          \
-            Execution::Throw (FileBusyException (USEFILENAME));   \
-        }                                                         \
-        Execution::ReThrow ();                                    \
-    }                                                             \
-    catch (const FileFormatException& e)                          \
-    {                                                             \
-        if (e.GetFileName ().empty ()) {                          \
-            Execution::Throw (FileFormatException (USEFILENAME)); \
-        }                                                         \
-        Execution::ReThrow ();                                    \
+#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)             \
+    catch (const FileBusyException& e)                          \
+    {                                                           \
+        if (e.GetFileName ().empty ()) {                        \
+            Execution::Throw (FileBusyException (USEFILENAME)); \
+        }                                                       \
+        Execution::ReThrow ();                                  \
     }
 
 /*
