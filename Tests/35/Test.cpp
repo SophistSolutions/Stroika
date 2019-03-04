@@ -181,12 +181,38 @@ namespace {
 }
 
 namespace {
+    namespace Test5_error_code_condition_compares_ {
+        namespace Private {
+            void Bug1_ ()
+            {
+                try {
+                    throw std::system_error (ENOENT, std::system_category ());
+                }
+                catch (std::system_error const& e) {
+#if !qCompilerAndStdLib_error_code_compare_condition_Buggy
+                    VerifyTestResult (e.code () == std::errc::no_such_file_or_directory); // <- FAILS!?
+#endif
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+            }
+        }
+        void TestAll_ ()
+        {
+            Private::Bug1_ ();
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
         Test2_ThrowCatchStringException_ ();
         Test3_SystemErrorException_::TestAll_ ();
         Test4_Activities_::TestAll_ ();
+        Test5_error_code_condition_compares_::TestAll_ ();
     }
 }
 

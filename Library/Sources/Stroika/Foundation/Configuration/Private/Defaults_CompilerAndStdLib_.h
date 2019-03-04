@@ -387,6 +387,24 @@ ABORTING...
 
 #endif
 
+#ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
+
+#if defined(__GNUC__)
+// https://stackoverflow.com/questions/44405394/how-to-portably-compare-stdsystem-error-exceptions-to-stderrc-values
+#if __GNUC__ <= 7
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 3)
+#elif __GNUC__ <= 8
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 2)
+#elif __GNUC__ <= 9
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 0)
+#else
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
+#endif
+#else
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
+#endif
+#endif
+
 /*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *

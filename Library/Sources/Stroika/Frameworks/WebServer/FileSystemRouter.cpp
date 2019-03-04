@@ -63,6 +63,9 @@ namespace {
                 }
             }
             catch (const system_error& e) {
+#if qCompilerAndStdLib_error_code_compare_condition_Buggy
+                // not sure how to workaround this, but fixed in latest gcc's
+#endif
                 if (e.code () == errc::no_such_file_or_directory) {
                     Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
                 }
