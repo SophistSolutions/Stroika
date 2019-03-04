@@ -6,7 +6,6 @@
 #include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
 #include "../../Execution/Activity.h"
-#include "../../IO/FileAccessException.h"
 
 #include "Socket-Private_.h"
 
