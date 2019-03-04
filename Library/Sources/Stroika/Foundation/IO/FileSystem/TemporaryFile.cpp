@@ -55,33 +55,6 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 /*
- * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
- * Other exceptions just ignore (so they auto-propagate)
- */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)                                       \
-    catch (const FileBusyException& e)                                                    \
-    {                                                                                     \
-        if (e.GetFileName ().empty ()) {                                                  \
-            Execution::Throw (FileBusyException (USEFILENAME));                           \
-        }                                                                                 \
-        Execution::ReThrow ();                                                            \
-    }                                                                                     \
-    catch (const FileAccessException& e)                                                  \
-    {                                                                                     \
-        if (e.GetFileName ().empty ()) {                                                  \
-            Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ())); \
-        }                                                                                 \
-        Execution::ReThrow ();                                                            \
-    }                                                                                     \
-    catch (const FileFormatException& e)                                                  \
-    {                                                                                     \
-        if (e.GetFileName ().empty ()) {                                                  \
-            Execution::Throw (FileFormatException (USEFILENAME));                         \
-        }                                                                                 \
-        Execution::ReThrow ();                                                            \
-    }
-
-/*
  ********************************************************************************
  **************** FileSystem::Private::FileUtilsModuleData_ *********************
  ********************************************************************************
