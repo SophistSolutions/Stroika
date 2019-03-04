@@ -120,33 +120,28 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
-#if qPlatform_Windows
     try {
+#if qPlatform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
+#else
+        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+#endif
     }
-    catch (const system_error& e) {
-        if (e.code ().category () == system_category () and e.code ().value () == WSAEACCES) {
-            // @todo adjust message to reflect activity ... stuff - redo - this double adds
-            Throw (SystemErrorException<> (e.code (), Characters::Format (L"Cannot Bind to %s: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
+    catch (const Execution::SystemErrorException<>& e) {
+        if (e.code () == errc::permission_denied) {
+            Throw (SystemErrorException<> (e.code (), e.GetBasicErrorMessage () + L"(probably already bound with SO_EXCLUSIVEADDRUSE)"_k));
         }
         else {
             ReThrow ();
         }
     }
-#else
-    // EACCESS reproted as FileAccessException - which is crazy confusing.
-    // @todo - find a better way, but for now remap this...
-    try {
-        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
-    }
-    catch (const IO::FileAccessException&) {
-        // @todo adjust message to reflect activity ... stuff - redo - this double adds
-        Throw (Exception (Characters::Format (L"Cannot Bind to %s: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", Characters::ToString (sockAddr).c_str ())));
-    }
-#endif
-    catch (...) {
-        ReThrow ();
-        // Throw (Exception (Characters::Format (L"Cannot Bind to %s: %s", Characters::ToString (sockAddr).c_str (), Characters::ToString (current_exception ()).c_str ())));
+    catch (const system_error& e) {
+        if (e.code () == errc::permission_denied) {
+            Throw (SystemErrorException<> (e.code (), L"(probably already bound with SO_EXCLUSIVEADDRUSE)"sv));
+        }
+        else {
+            ReThrow ();
+        }
     }
 }
 
