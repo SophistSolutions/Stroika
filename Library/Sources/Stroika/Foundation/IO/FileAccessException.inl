@@ -15,14 +15,8 @@ namespace Stroika::Foundation::IO {
     using Characters::String;
 
     /**
-     * This exception is thrown when a given file is opened, or creation attempted, etc. It is a failure due to
-     * file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
-     * on a given file (which is usually given in the object). It also is the result of a perticular operation/access
-     * failure (like read, write, or list).
-     *
      *  // @todo - this should subclass from Execution::Exception<filesystem::filesystem_error> - but needs some work...
      */
-
     class [[deprecated ("use IO::FileSystem::Exception instead (with make_error_code (errc::permission_denied) )- Since Stroika v2.1d18")]] FileAccessException : public Execution::SystemErrorException<>
     {
     private:
