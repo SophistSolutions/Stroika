@@ -27,7 +27,6 @@
 #endif
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
-#include "../../IO/FileAccessException.h"
 #include "../../Memory/SmallStackBuffer.h"
 #include "FileSystem.h"
 #include "FileUtils.h"

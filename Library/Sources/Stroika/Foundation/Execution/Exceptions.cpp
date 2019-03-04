@@ -12,7 +12,6 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
-#include "../IO/FileAccessException.h"
 #include "../Linguistics/MessageUtilities.h"
 
 #include "Throw.h"

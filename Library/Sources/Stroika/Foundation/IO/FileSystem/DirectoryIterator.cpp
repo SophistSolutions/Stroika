@@ -17,7 +17,6 @@
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../IO/FileAccessException.h"
 #include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 

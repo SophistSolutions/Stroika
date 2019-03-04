@@ -10,8 +10,6 @@
 #include "../../Streams/InternallySynchronizedOutputStream.h"
 #include "../../Streams/OutputStream.h"
 
-#include "../FileAccessMode.h"
-
 #include "FileStream.h"
 
 /**

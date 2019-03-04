@@ -14,6 +14,7 @@
 #endif
 
 #include "../../Characters/Format.h"
+#include "../../Characters/ToString.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Execution/Activity.h"
 #include "../../Execution/Common.h"
@@ -22,7 +23,6 @@
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../IO/FileAccessException.h"
 
 #include "FileOutputStream.h"
 
@@ -56,8 +56,8 @@ public:
         , fFlushFlag (flushFlag)
         , fFileName_ (fileName)
     {
-        auto            ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
-        DeclareActivity currentActivity{&ativity};
+        auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
         errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
@@ -119,8 +119,8 @@ public:
 
         if (start != end) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            auto                                               ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                    currentActivity{&ativity};
+            auto                                               activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                                    currentActivity{&activity};
             const byte*                                        i = start;
             while (i < end) {
 #if qPlatform_Windows
@@ -138,8 +138,8 @@ public:
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            auto                                               ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                    currentActivity{&ativity};
+            auto                                               activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                                    currentActivity{&activity};
 #if qPlatform_Windows
             ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #elif qPlatform_POSIX

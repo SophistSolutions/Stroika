@@ -29,7 +29,6 @@
 #include "../Execution/Exceptions.h"
 #include "../Execution/Finally.h"
 #include "../Execution/WaitForIOReady.h"
-#include "../IO/FileAccessException.h"
 #include "../IO/FileSystem/FileSystem.h"
 #include "../IO/FileSystem/FileUtils.h"
 #include "../IO/FileSystem/PathName.h"
@@ -649,8 +648,8 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
-                auto            ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ()); });
-                DeclareActivity currentActivity{&ativity};
+                auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ()); });
+                DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);
             }
         }

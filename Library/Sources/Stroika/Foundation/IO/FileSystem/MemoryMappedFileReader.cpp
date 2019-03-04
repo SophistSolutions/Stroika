@@ -20,7 +20,6 @@
 #include "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "../../Debug/Trace.h"
-#include "../../IO/FileAccessException.h"
 #include "../../IO/FileBusyException.h"
 #include "../../IO/FileFormatException.h"
 #include "FileSystem.h"

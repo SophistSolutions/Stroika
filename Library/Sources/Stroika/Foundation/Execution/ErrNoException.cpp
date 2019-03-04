@@ -5,8 +5,6 @@
 
 #include <cstdio>
 
-#include "../IO/FileAccessException.h"
-
 #include "Throw.h"
 #include "TimeOutException.h"
 

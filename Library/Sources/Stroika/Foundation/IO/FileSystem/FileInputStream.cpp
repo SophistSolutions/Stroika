@@ -15,6 +15,7 @@
 #endif
 
 #include "../../Characters/Format.h"
+#include "../../Characters/ToString.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Activity.h"
@@ -26,7 +27,6 @@
 #elif qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../IO/FileAccessException.h"
 #include "../../Streams/BufferedInputStream.h"
 
 #include "FileInputStream.h"
@@ -59,8 +59,8 @@ public:
         , fSeekable_ (seekable)
         , fFileName_ (fileName)
     {
-        auto            ativity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
-        DeclareActivity currentActivity{&ativity};
+        auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
         if (e != 0) {
