@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::IO;
  * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
  * Other exceptions just ignore (so they auto-propagate)
  */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)             \
+#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)
 
 /*
  ********************************************************************************
@@ -30,10 +30,10 @@ using namespace Stroika::Foundation::IO;
 ifstream& Streams::iostream::OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ifStream);
-	ifStream->exceptions (ifstream::badbit);	// so throws on failed open
-	ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
-	Assert (ifStream->is_open ());
-	    return *ifStream;
+    ifStream->exceptions (ifstream::badbit); // so throws on failed open
+    ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
+    Assert (ifStream->is_open ());
+    return *ifStream;
 }
 
 ifstream& Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode mode)
@@ -50,10 +50,10 @@ ifstream& Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const S
 ofstream& Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ofStream);
-	ofStream->exceptions (ifstream::badbit);	// so throws on failed open
-        ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
-		Assert (ofStream->is_open ());
-        return *ofStream;
+    ofStream->exceptions (ifstream::badbit); // so throws on failed open
+    ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
+    Assert (ofStream->is_open ());
+    return *ofStream;
 }
 
 ofstream& Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode mode)

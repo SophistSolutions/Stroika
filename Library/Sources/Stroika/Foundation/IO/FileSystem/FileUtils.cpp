@@ -141,7 +141,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
     if ((s.st_mode & desiredMode) != desiredMode) {
         result = ::chmod (filePathName.AsSDKString ().c_str (), desiredMode);
     }
-	IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (result, path (filePathName.As<wstring> ()));
+    IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (result, path (filePathName.As<wstring> ()));
 #else
     AssertNotImplemented ();
 #endif
