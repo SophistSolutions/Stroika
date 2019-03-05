@@ -15,11 +15,13 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
 
-/*
- * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
- * Other exceptions just ignore (so they auto-propagate)
- */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)
+namespace {
+    /**
+     *  fstream::open () sets failbit on failed open. But most other operations set 'badbit' when things
+     *  go wrong (like failed writes).
+     */
+    constexpr auto kErrBitsToTreatAsExceptions_ = ifstream::badbit | ifstream::failbit;
+}
 
 /*
  ********************************************************************************
@@ -29,7 +31,7 @@ using namespace Stroika::Foundation::Streams::iostream;
 ifstream& Streams::iostream::OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ifStream);
-    ifStream->exceptions (ifstream::badbit); // so throws on failed open
+    ifStream->exceptions (kErrBitsToTreatAsExceptions_); // so throws on failed open
     ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
     Assert (ifStream->is_open ());
     return *ifStream;
@@ -49,7 +51,7 @@ ifstream& Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const S
 ofstream& Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ofStream);
-    ofStream->exceptions (ifstream::badbit); // so throws on failed open
+    ofStream->exceptions (kErrBitsToTreatAsExceptions_); // so throws on failed open
     ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
     Assert (ofStream->is_open ());
     return *ofStream;
