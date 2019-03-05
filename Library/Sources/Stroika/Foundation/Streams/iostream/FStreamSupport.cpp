@@ -8,7 +8,6 @@
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../IO/FileBusyException.h"
 
 #include "FStreamSupport.h"
 
@@ -22,13 +21,6 @@ using namespace Stroika::Foundation::IO;
  * Other exceptions just ignore (so they auto-propagate)
  */
 #define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)             \
-    catch (const FileBusyException& e)                          \
-    {                                                           \
-        if (e.GetFileName ().empty ()) {                        \
-            Execution::Throw (FileBusyException (USEFILENAME)); \
-        }                                                       \
-        Execution::ReThrow ();                                  \
-    }
 
 /*
  ********************************************************************************
@@ -38,21 +30,10 @@ using namespace Stroika::Foundation::IO;
 ifstream& Streams::iostream::OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ifStream);
-    try {
-        ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
-        if (!(*ifStream)) {
-#if qPlatform_Windows
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
-#elif qPlatform_POSIX
-            Execution::ThrowPOSIXErrNo ();
-            AssertNotReached (); // errno sb set but not documented so not sure how best to handle?
-#else
-            AssertNotImplemented ();
-#endif
-        }
-        return *ifStream;
-    }
-    CATCH_REBIND_FILENAMES_HELPER_ (fileName);
+	ifStream->exceptions (ifstream::badbit);	// so throws on failed open
+	ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
+	Assert (ifStream->is_open ());
+	    return *ifStream;
 }
 
 ifstream& Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode mode)
@@ -69,21 +50,10 @@ ifstream& Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const S
 ofstream& Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode mode)
 {
     RequireNotNull (ofStream);
-    try {
+	ofStream->exceptions (ifstream::badbit);	// so throws on failed open
         ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
-        if (!(*ofStream)) {
-#if qPlatform_Windows
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
-#elif qPlatform_POSIX
-            Execution::ThrowPOSIXErrNo ();
-            AssertNotReached (); // errno sb set, but not documented to be guaranteed so not sure how best to handle this?
-#else
-            AssertNotImplemented ();
-#endif
-        }
+		Assert (ofStream->is_open ());
         return *ofStream;
-    }
-    CATCH_REBIND_FILENAMES_HELPER_ (fileName);
 }
 
 ofstream& Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode mode)

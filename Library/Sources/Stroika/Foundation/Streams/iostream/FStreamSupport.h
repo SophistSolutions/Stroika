@@ -22,6 +22,8 @@ namespace Stroika::Foundation::Streams::iostream {
      * A very common thing to include would be ios_base::binary (DEFAULT ON), if you want to assure no CR/LF transformations done, or pass '0'
      * to remove the 'ios_base::binary' default.
      *
+     *  \note This calls https://en.cppreference.com/w/cpp/io/basic_ios/exceptions to force any future failed operations to throw (including open)
+     *
      */
     ifstream& OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
     ifstream& OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
@@ -34,6 +36,8 @@ namespace Stroika::Foundation::Streams::iostream {
      * A very common thing to include would be ios_base::binary (DEFAULT ON), if you want to assure no CR/LF transformations done.
      *
      * Another very common thing to include would be ios_base::trunc (DEFAULT ON).
+     *
+     *  \note This calls https://en.cppreference.com/w/cpp/io/basic_ios/exceptions to force any future failed operations to throw (including open)
      *
      */
     ofstream& OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);

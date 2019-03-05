@@ -30,7 +30,6 @@
 #endif
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
-#include "../../IO/FileBusyException.h"
 #include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 #include "../../Memory/SmallStackBuffer.h"
@@ -51,19 +50,6 @@ using namespace Stroika::Foundation::Memory;
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
-
-/*
- * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
- * Other exceptions just ignore (so they auto-propagate)
- */
-#define CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME)             \
-    catch (const FileBusyException& e)                          \
-    {                                                           \
-        if (e.GetFileName ().empty ()) {                        \
-            Execution::Throw (FileBusyException (USEFILENAME)); \
-        }                                                       \
-        Execution::ReThrow ();                                  \
-    }
 
 /*
      ********************************************************************************
@@ -96,72 +82,69 @@ String IO::FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
  */
 void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
 {
-    try {
 #if qPlatform_Windows
-        static PACL pACL = nullptr; // Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
-        if (pACL == nullptr) {
-            PSID pSIDEveryone = nullptr;
+    static PACL pACL = nullptr; // Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
+    if (pACL == nullptr) {
+        PSID pSIDEveryone = nullptr;
 
-            {
-                // Specify the DACL to use.
-                // Create a SID for the Everyone group.
-                SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
-                if (!::AllocateAndInitializeSid (&SIDAuthWorld, 1, SECURITY_WORLD_RID, 0, 0, 0, 0, 0, 0, 0, &pSIDEveryone)) {
-                    return; // if this fails - perhaps old OS with no security - just fail silently...
-                }
+        {
+            // Specify the DACL to use.
+            // Create a SID for the Everyone group.
+            SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
+            if (!::AllocateAndInitializeSid (&SIDAuthWorld, 1, SECURITY_WORLD_RID, 0, 0, 0, 0, 0, 0, 0, &pSIDEveryone)) {
+                return; // if this fails - perhaps old OS with no security - just fail silently...
             }
+        }
 
-            EXPLICIT_ACCESS ea[1]{};
-            // Set FULL access for Everyone.
-            ea[0].grfAccessPermissions = GENERIC_ALL;
-            ea[0].grfAccessMode        = SET_ACCESS;
-            ea[0].grfInheritance       = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
-            ea[0].Trustee.TrusteeForm  = TRUSTEE_IS_SID;
-            ea[0].Trustee.TrusteeType  = TRUSTEE_IS_WELL_KNOWN_GROUP;
-            ea[0].Trustee.ptstrName    = (LPTSTR)pSIDEveryone;
+        EXPLICIT_ACCESS ea[1]{};
+        // Set FULL access for Everyone.
+        ea[0].grfAccessPermissions = GENERIC_ALL;
+        ea[0].grfAccessMode        = SET_ACCESS;
+        ea[0].grfInheritance       = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
+        ea[0].Trustee.TrusteeForm  = TRUSTEE_IS_SID;
+        ea[0].Trustee.TrusteeType  = TRUSTEE_IS_WELL_KNOWN_GROUP;
+        ea[0].Trustee.ptstrName    = (LPTSTR)pSIDEveryone;
 
-            if (ERROR_SUCCESS != ::SetEntriesInAcl (static_cast<DWORD> (NEltsOf (ea)), ea, nullptr, &pACL)) {
-                ::FreeSid (pSIDEveryone);
-                return; // silently ignore errors - probably just old OS etc....
-            }
+        if (ERROR_SUCCESS != ::SetEntriesInAcl (static_cast<DWORD> (NEltsOf (ea)), ea, nullptr, &pACL)) {
             ::FreeSid (pSIDEveryone);
+            return; // silently ignore errors - probably just old OS etc....
         }
-
-        // Try to modify the object's DACL.
-        [[maybe_unused]] DWORD dwRes = SetNamedSecurityInfo (
-            const_cast<SDKChar*> (filePathName.AsSDKString ().c_str ()), // name of the object
-            SE_FILE_OBJECT,                                              // type of object
-            DACL_SECURITY_INFORMATION,                                   // change only the object's DACL
-            nullptr, nullptr,                                            // don't change owner or group
-            pACL,                                                        // DACL specified
-            nullptr);                                                    // don't change SACL
-                                                                         // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
-#elif qPlatform_POSIX
-        ////TODO: Somewhat PRIMITIVE - TMPHACK
-        if (filePathName.empty ())
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Exception (make_error_code (errc::no_such_file_or_directory), L"bad filename"_k));
-            }
-        struct stat s;
-        ThrowPOSIXErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
-
-        mode_t desiredMode = (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH);
-        if (S_ISDIR (s.st_mode)) {
-            desiredMode |= (S_IXUSR | S_IXGRP | S_IXOTH);
-        }
-
-        int result = 0;
-        // Don't call chmod if mode is already open (because doing so could fail even though we already have what we wnat if were not the owner)
-        if ((s.st_mode & desiredMode) != desiredMode) {
-            result = chmod (filePathName.AsSDKString ().c_str (), desiredMode);
-        }
-        ThrowPOSIXErrNoIfNegative (result);
-#else
-        AssertNotImplemented ();
-#endif
+        ::FreeSid (pSIDEveryone);
     }
-    CATCH_REBIND_FILENAMES_HELPER_ (filePathName);
+
+    // Try to modify the object's DACL.
+    [[maybe_unused]] DWORD dwRes = ::SetNamedSecurityInfo (
+        const_cast<SDKChar*> (filePathName.AsSDKString ().c_str ()), // name of the object
+        SE_FILE_OBJECT,                                              // type of object
+        DACL_SECURITY_INFORMATION,                                   // change only the object's DACL
+        nullptr, nullptr,                                            // don't change owner or group
+        pACL,                                                        // DACL specified
+        nullptr);                                                    // don't change SACL
+                                                                     // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
+#elif qPlatform_POSIX
+    ////TODO: Somewhat PRIMITIVE - TMPHACK
+    if (filePathName.empty ())
+        [[UNLIKELY_ATTR]]
+        {
+            Execution::Throw (Exception (make_error_code (errc::no_such_file_or_directory), L"bad filename"_k));
+        }
+    struct stat s;
+    IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s), path (filePathName.As<wstring> ()));
+
+    mode_t desiredMode = (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH);
+    if (S_ISDIR (s.st_mode)) {
+        desiredMode |= (S_IXUSR | S_IXGRP | S_IXOTH);
+    }
+
+    int result = 0;
+    // Don't call chmod if mode is already open (because doing so could fail even though we already have what we wnat if were not the owner)
+    if ((s.st_mode & desiredMode) != desiredMode) {
+        result = ::chmod (filePathName.AsSDKString ().c_str (), desiredMode);
+    }
+	IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (result, path (filePathName.As<wstring> ()));
+#else
+    AssertNotImplemented ();
+#endif
 }
 
 /*
@@ -175,70 +158,67 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
      * TODO:
      *      (o)     This implementation is HORRIBLE!!!! Major cleanup required!
      */
-    try {
 #if qPlatform_Windows
-        if (createParentComponentsIfNeeded) {
-            // walk path and break into parts, and from top down - try to create parent directory structure.
-            // Ignore any failures - and just let the report of failure (if any must result) come from original basic
-            // CreateDirectory call.
-            size_t index = directoryPath.find ('\\');
-            while (index != -1 and index + 1 < directoryPath.length ()) {
-                String parentPath = directoryPath.substr (0, index);
-                IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
-                index = directoryPath.find ('\\', index + 1);
-            }
+    if (createParentComponentsIfNeeded) {
+        // walk path and break into parts, and from top down - try to create parent directory structure.
+        // Ignore any failures - and just let the report of failure (if any must result) come from original basic
+        // CreateDirectory call.
+        size_t index = directoryPath.find ('\\');
+        while (index != -1 and index + 1 < directoryPath.length ()) {
+            String parentPath = directoryPath.substr (0, index);
+            IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
+            index = directoryPath.find ('\\', index + 1);
         }
-
-        if (not::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
-            DWORD error = ::GetLastError ();
-            if (error != ERROR_ALREADY_EXISTS) {
-                Execution::ThrowSystemErrNo (error);
-            }
-        }
-#elif qPlatform_POSIX
-        if (createParentComponentsIfNeeded) {
-            // walk path and break into parts, and from top down - try to create parent directory structure.
-            // Ignore any failures - and just let the report of failure (if any must result) come from original basic
-            // CreateDirectory call.
-            vector<String> paths;
-            size_t         index = directoryPath.find ('/');
-            while (index != -1 and index + 1 < directoryPath.length ()) {
-                if (index != 0) {
-                    String parentPath = directoryPath.substr (0, index);
-                    //IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
-                    paths.push_back (parentPath);
-                }
-                index = directoryPath.find ('/', index + 1);
-            }
-
-            // Now go in reverse order - checking if the exist - and if so - stop going back
-            for (auto i = paths.rbegin (); i != paths.rend (); ++i) {
-                //NB: this avoids matching files - we know dir - cuz name ends in /
-                if (access (i->AsSDKString ().c_str (), R_OK) == 0) {
-                    // ignore this one
-                }
-                else {
-                    // THEN - starting at the one that doesn't exist - go from top-down again
-                    int skipThisMany = (i - paths.rbegin ());
-                    Assert (skipThisMany < paths.size ());
-                    for (auto ii = paths.begin () + skipThisMany; ii != paths.end (); ++ii) {
-                        CreateDirectory (*ii, false);
-                    }
-                    break;
-                }
-            }
-        }
-        // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
-        if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
-            if (errno != EEXIST) {
-                Execution::ThrowPOSIXErrNo (errno);
-            }
-        }
-#else
-        AssertNotImplemented ();
-#endif
     }
-    CATCH_REBIND_FILENAMES_HELPER_ (directoryPath);
+
+    if (not::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
+        DWORD error = ::GetLastError ();
+        if (error != ERROR_ALREADY_EXISTS) {
+            IO::FileSystem::Exception::ThrowSystemErrNo (error, path{directoryPath.As<wstring> ()});
+        }
+    }
+#elif qPlatform_POSIX
+    if (createParentComponentsIfNeeded) {
+        // walk path and break into parts, and from top down - try to create parent directory structure.
+        // Ignore any failures - and just let the report of failure (if any must result) come from original basic
+        // CreateDirectory call.
+        vector<String> paths;
+        size_t         index = directoryPath.find ('/');
+        while (index != -1 and index + 1 < directoryPath.length ()) {
+            if (index != 0) {
+                String parentPath = directoryPath.substr (0, index);
+                //IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
+                paths.push_back (parentPath);
+            }
+            index = directoryPath.find ('/', index + 1);
+        }
+
+        // Now go in reverse order - checking if the exist - and if so - stop going back
+        for (auto i = paths.rbegin (); i != paths.rend (); ++i) {
+            //NB: this avoids matching files - we know dir - cuz name ends in /
+            if (access (i->AsSDKString ().c_str (), R_OK) == 0) {
+                // ignore this one
+            }
+            else {
+                // THEN - starting at the one that doesn't exist - go from top-down again
+                int skipThisMany = (i - paths.rbegin ());
+                Assert (skipThisMany < paths.size ());
+                for (auto ii = paths.begin () + skipThisMany; ii != paths.end (); ++ii) {
+                    CreateDirectory (*ii, false);
+                }
+                break;
+            }
+        }
+    }
+    // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
+    if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
+        if (errno != EEXIST) {
+            IO::FileSystem::Exception::ThrowPOSIXErrNo (errno, path{directoryPath.As<wstring> ()});
+        }
+    }
+#else
+    AssertNotImplemented ();
+#endif
 }
 
 /*

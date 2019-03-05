@@ -15,6 +15,7 @@
 #include "FileAccessMode.h"
 
 namespace Stroika::Foundation::IO {
+    //////////////// **** DEPRECATED ************
 
 }
 

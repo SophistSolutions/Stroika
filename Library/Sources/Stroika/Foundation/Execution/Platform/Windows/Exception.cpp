@@ -22,7 +22,6 @@
 #if qPlatform_Windows
 #include "HRESULTErrorException.h"
 #endif
-#include "../../../IO/FileBusyException.h"
 #include "../../../Time/Realtime.h"
 
 #include "Exception.h"

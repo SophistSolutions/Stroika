@@ -13,21 +13,7 @@ namespace Stroika::Foundation::IO {
 
     using Characters::String;
 
-    /**
-     */
-    class FileBusyException : public Execution::RuntimeErrorException<> {
-    private:
-        using inherited = Execution::RuntimeErrorException<>;
-
-    public:
-        FileBusyException (const String& fileName = String ());
-
-    public:
-        nonvirtual String GetFileName () const;
-
-    private:
-        String fFileName_;
-    };
+    //////////////// **** DEPRECATED ************
 
 }
 
