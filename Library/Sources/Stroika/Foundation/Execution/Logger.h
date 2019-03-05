@@ -259,8 +259,8 @@ namespace Stroika::Foundation::Execution {
          *  \par Example Usage
          *      \code
          *          Logger::Get ().SetSuppressDuplicates (nullopt);         // disable the feature
-         *          Logger::Get ().SetSuppressDuplicates ("PT5M"_ISO8601);  // anything within 5 minutes suppress
-         *          Logger::Get ().SetSuppressDuplicates (45s);             // anything within 45 seconds suppress
+         *          Logger::Get ().SetSuppressDuplicates ("PT5M"_duration); // anything within 5 minutes suppress
+         *          Logger::Get ().SetSuppressDuplicates (5min);            // ""
          *      \endcode
          */
         nonvirtual void SetSuppressDuplicates (const optional<Time::Duration>& suppressDuplicatesThreshold);
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Execution {
          *      \code
          *          // same as Log, but don't emit this error if we've seen the message in the last 60 seconds
          *          Logger::Get ().LogIfNew (Logger::Priority::eError, Duration {60.0}, L"Failed to correct something important in file %s", fileName.c_str ());
-         *          Logger::Get ().LogIfNew (Logger::Priority::eError, "PT1M"_ISO8601, L"Failed to correct something important in file %s", fileName.c_str ());
+         *          Logger::Get ().LogIfNew (Logger::Priority::eError, "PT1M"_duration, L"Failed to correct something important in file %s", fileName.c_str ());
          *          Logger::Get ().LogIfNew (Logger::Priority::eError, 60s, L"Failed to correct something important in file %s", fileName.c_str ());
          *      \endcode
          */
