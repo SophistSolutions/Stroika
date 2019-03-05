@@ -55,6 +55,12 @@
  *              o   String_AsciiOnlyOptimized
  *
  * TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-684 - 
+ *              Change internal format / rep for String class to UTF8
+ *              so strings generally represented more compactly. Adds cost for computing length (maybe cache). And for
+ *              indexing (must be index in terms of characters but that doesnt work right now on windows due to
+ *              using utf16 and not handling surrogates).
+ *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
  *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
