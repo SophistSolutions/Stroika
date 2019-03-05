@@ -15,7 +15,7 @@
  *  \file
  *
  *
- *      @todo   Should probably AMMEND (though dangerous at this stage) behavior of Sleep and esp SleepUntil - so if interutped (not throwing)
+ *      @todo   Should probably AMMEND (though dangerous at this stage) behavior of Sleep and esp SleepUntil - so if interrupted (not throwing)
  *              with no 'sleep more seconds' arg- we re-sleep the balance. So interupots don't mess up how long we sleep.
  *
  */
