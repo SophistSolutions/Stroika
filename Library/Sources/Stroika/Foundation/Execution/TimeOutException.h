@@ -18,6 +18,40 @@ namespace Stroika::Foundation::Execution {
      *  Throw this when something (typically a waitable event, but could  be anything code is waiting for) times out.
      *
      *  \note - Many low level functions map OS / platform exceptions to this type as appropriate (via @see ThrowPOSIXErrNo and @see ThrowSystemErrNo)
+     *
+     *  \note Though you can use
+     *      \code
+     *          catch (const TimeOutException&) {
+     *              ...
+     *          }
+     *      \endcode
+     *
+     *      and that will work for catching nearly any timeout exception thrown by Stroika, it is often
+     *      better to use:
+     *
+     *      \code
+     *          catch (const system_error& e) {
+     *              if (e.code () == errc::timed_out) {
+     *                  ...
+     *              }
+     *          }
+     *      \endcode
+     *
+     *      since that will catch timeout exceptions thrown by non-Stroika-based components, and this form
+     *      will still work with Activities and UNICODE exception message handling, if you use
+     *      Characters::ToString (e); alternatively you can use:
+     *          catch (const SystemErrorException& e) {
+     *              if (e.code () == errc::timed_out) {
+     *                  ...
+     *              }
+     *              // now directly look at String message and Activies etc...
+     *          }
+     *          catch (const system_error& e) {
+     *              if (e.code () == errc::timed_out) {
+     *                  ...
+     *              }
+     *          }
+     *
      */
     class TimeOutException : public Execution::SystemErrorException<> {
     public:
@@ -56,6 +90,7 @@ namespace Stroika::Foundation::Execution {
     void TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount);
 
     /**
+     *  \note - this function may not be called outside the context of a running main.
      */
     template <typename EXCEPTION>
     void ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw = EXCEPTION ());

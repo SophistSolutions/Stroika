@@ -69,7 +69,7 @@ namespace {
                     if (nresults == 0)
                         [[UNLIKELY_ATTR]]
                         {
-                            Execution::Throw (Execution::TimeOutException ());
+                            Execution::Throw (Execution::TimeOutException::kThe);
                         }
                 }
 

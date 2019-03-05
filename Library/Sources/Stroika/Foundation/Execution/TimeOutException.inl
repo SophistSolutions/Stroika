@@ -60,8 +60,7 @@ namespace Stroika::Foundation::Execution {
     template <typename TIMED_MUTEX>
     void TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount)
     {
-        static const TimeOutException kTO_ = TimeOutException ();
-        TryLockUntil (m, afterTickCount, kTO_);
+        TryLockUntil (m, afterTickCount, TimeOutException::kThe);
     }
 
     /*
@@ -78,8 +77,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ThrowIfTimeout (cv_status conditionVariableStatus)
     {
-        static const TimeOutException kTO_ = TimeOutException ();
-        ThrowIfTimeout (conditionVariableStatus, kTO_);
+        ThrowIfTimeout (conditionVariableStatus, TimeOutException::kThe);
     }
 
 }
