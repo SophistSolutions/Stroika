@@ -640,6 +640,7 @@ namespace {
         {
             using Time::DurationSecondsType;
             Duration d = Duration (L"PT0.1S");
+            VerifyTestResult (d == "PT0.1S"_ISO8601);
             d += chrono::milliseconds (30);
             VerifyTestResult (Math::NearlyEquals (d.As<DurationSecondsType> (), static_cast<DurationSecondsType> (.130)));
         }
