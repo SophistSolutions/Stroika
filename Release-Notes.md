@@ -14,37 +14,6 @@ History
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d17...v2.1d18
 
-- Foundation::Characters
-  - String_Constant and  String_ExternalMemoryOwnership_ApplicationLifetime now accept
-    basic_string_view<wchar_t> CTOR args - meaning String_Constant sc = Lxxsv should work
-  - String (and StringBuilder and String_Constant) support for basic_string_view<wchar_t> -
-    which means we can use Lblahsv to create String_Constant objects (better to use C++ standard notation since amounts to same thing);
-    but still keep _k around for few cases (overload ambiguity) where its handy
-  - ToString support std::filesystem::path
-
-- Samples
-  - Readme and TODO docs improvements
-  - WebService
-    -  Much improved WebService sample - now arithmatic all works and formatting complex numbers/
-       parsing. Still alot of work todo to improve, but now a good palce to experiemnt!
-
-- Documentation
-  - convert docs Coding Conventions and Design Overview docs from docx/pdf to .md
-
-- IO::Network::HTTP
-  - new class: IO::Network::HTTP::ClientErrorException
-
-    Use that in samples, and document its how you wrap what should be treated as client exceptions
-    as such so the right message is propagated
-
-    - new ClientErrorException::TreatExceptionsAsClientError () helper; and GUID CTOR throws DataExchange::BadFormatException{L"Badly formatted GUID" - better more specific failure
-
-- Frameworks::WebServer:
-
-  - deprecate Frameworks::WebServer::ClientErrorException use and replace with use of new IO::Network::HTTP::ClientErrorException (and use it in a few more places we used the wrong exception)
-
-  - used ClientErrorException::TreatExceptionsAsClientError in Frameworks/WebService/Server/VariantValue module - so it treats errors parsing arguments as CLIENT ERROR - not 500 error
-
 - **Major refactoring of Stroika Exception classes (and exception handling)**
   - https://stroika.atlassian.net/browse/STK-361 (New exception system_error and error_category code)
   - This was a HUGE change - but done so mostly backward compatible (deprecated not removed most things
@@ -71,17 +40,64 @@ History
     - renamed old Execution/Exception.h to Throw.h;
   -  ThrowPOSIXErrNo () and ThrowSystemErrNo () - corresponding to std::generic_category, std::system_category
      and for IO::FileSystem::Exception use  FileSystem::Exception::ThrowPOSIXErrNo () overload which takes paths as arguments etc
-  -  Lower priority excpetion related changes
-    - renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint ->  
-      qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
-    - qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy XCode 10 workaround attempts
-    - Exception::TranslateBoostFilesystemException2StandardExceptions () helper (for boost)
+  -  Lower priority excepetion related changes
+     -  renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint ->  
+        qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
+     -  qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy XCode 10 workaround attempts
+     -  Exception::TranslateBoostFilesystemException2StandardExceptions () helper (for boost)
+     -  ThrowErrNoIfNegative (INT_TYPE returnCode) now deprecated
+     -  deprecated Execution::Platform::Windows::ThrowIfFalseGetLastError
+     -  deorecated Execution::Platform::Windows::Exception
+     -  simplified ThrowIfFalseGetLastError (now takes anyting arg can be compared to zero).
+     -  use Execution::ThrowSystemErrNo intead of Execution::Platform::Windows::Exception::Throw (dwRetVal);
+     -  new ThrowWSASystemErrorIfSOCKET_ERROR () and use that to replace use of template spcializzation
+        ThrowPOSIXErrNoIfNegative<IO::Network::Socket::PlatformNativeHandle>
+
+- Foundation::Characters
+  - String_Constant and  String_ExternalMemoryOwnership_ApplicationLifetime now accept
+    basic_string_view<wchar_t> CTOR args - meaning String_Constant sc = Lxxsv should work
+  - String (and StringBuilder and String_Constant) support for basic_string_view<wchar_t> -
+    which means we can use Lblahsv to create String_Constant objects (better to use C++ standard notation since amounts to same thing);
+    but still keep _k around for few cases (overload ambiguity) where its handy
+  - ToString support std::filesystem::path
+
+- Samples
+  - Readme and TODO docs improvements
+  - WebService
+    -  Much improved WebService sample - now arithmatic all works and formatting complex numbers/
+       parsing. Still alot of work todo to improve, but now a good palce to experiemnt!
+
+- Documentation
+  - convert docs Coding Conventions and Design Overview docs from docx/pdf to .md
+
+- IO::Network::HTTP
+  - new class: IO::Network::HTTP::ClientErrorException
+
+    Use that in samples, and document its how you wrap what should be treated as client exceptions
+    as such so the right message is propagated
+
+    - new ClientErrorException::TreatExceptionsAsClientError () helper; and GUID CTOR throws DataExchange::BadFormatException{L"Badly formatted GUID" - better more specific failure
+
+- Frameworks::WebServer:
+  - deprecate Frameworks::WebServer::ClientErrorException use and replace with use of new IO::Network::HTTP::ClientErrorException (and use it in a few more places we used the wrong exception)
+
+  - used ClientErrorException::TreatExceptionsAsClientError in Frameworks/WebService/Server/VariantValue module - so it treats errors parsing arguments as CLIENT ERROR - not 500 error
 
 - IO::FileSystem
   - IO::FileSystem::Common with fewer #includes to avoid circular includes (they were unneeded)
 
+- IO::Network
+  - new InternetAddress::Offset ()
+  - InternetAddressRangeTraits_::kUpperBound now set to largest ipv6 address
+  - CIDR::GetRange () fixed
+  - added new networking Interface::Type::eDeviceVirtualInternalNetwork; and returned that for virtualbox and
+    hyperv special adapters
+
 - Build System
   -  fixed toplevel make clean
+  -  configure support --shared-symbol-visibility to hopefully silence warnings conflict with boost on MacOSX
+  -  Moved #defines from Stroika-Config.h to being included as -DXXX args through Makefile; FULLY SWITCHED OVER for PLATFROMSUBDIR=Unix, but for visualstdio - still cannot because not using makefiles for running C++ compiler yet. So JUST THERE we write both
+  -  re-enabled tsan workaround for https://stroika.atlassian.net/browse/STK-677
 
 - Execution::DLLLoader
   - dllsupport - UNIX - NOT BACKWARD COMPAT - changed default for LoadDLL to not say RTLD_GLOBAL
@@ -95,151 +111,19 @@ History
     - better default output level for boost build - on unix no noticable slowdown and can see actual compile lines if I need to debug build
     - boost makefile cleanups
     - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible workaround now needed for boost
+  - sqlite
+    - slight parallel make issue fixed with sqlite - too many references to CURRENT
 
+- Configuration / Supported Compilers and Bug Defines
+  - fixed https://stroika.atlassian.net/browse/STK-663 #define BOOST_NO_CXX14_CONSTEXPR
+  - major cleanup of CompileTimeFlagChecker_HEADER: used it to delete (replace) old
+    qLedCheckCompilerFlagsConsistency code; and used for many more variables to check for inconisitent builds
+  - Support vs2k17 15.9.7, vs2k17 15.9.8
+  - Support vs2k19 - up to preview 4.1
 
 
 #if 0
-
-
-
-commit 26c86fb9929a41079c7d1a2ef0b986bd64518a67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 8 13:41:03 2019 -0500
-
-    cannot call _PeekAtNarrowSDKString_ () from FileSystem::Exception CTOR - though unclear why. It consistently crashes on several unix compiles when I try this. Worked around, in leiu of complicated debugging
-
-commit 5ab22fd3732332e3d956779c34275b8dab419aa4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 9 10:23:48 2019 -0500
-
-    configure support --shared-symbol-visibility to hopefully silence warnings conflict with boost on MacOSX
-
-commit 2b15e06ee6935eb4710e651b8c3f59a9d2b64c3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 10 18:00:04 2019 -0500
-
-    Moved #defines from Stroika-Config.h to being included as -DXXX args through Makefile; FULLY SWITCHED OVER for PLATFROMSUBDIR=Unix, but for visualstdio - still cannot because not using makefiles for running C++ compiler yet. So JUST THERE we write both; stil untested
-
-commit b9eb021b6a460320c0de84b9046cb6d564dda056
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 10 19:12:08 2019 -0500
-
-    fixed https://stroika.atlassian.net/browse/STK-663
-
-commit c747aac67dbfd45dda05027fdad325a15fdcacc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 10 19:50:52 2019 -0500
-
-    slight parallel make issue fixed with sqlite - too many references to CURRENT
-
-
-commit 5a557d4243d67667ac3567b6cb5211393bda77c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 10 21:08:22 2019 -0500
-
-    major cleanup of CompileTimeFlagChecker_HEADER: used it to delete (replace) old qLedCheckCompilerFlagsConsistency code; and used for many more variables to check for inconisitent builds
-
-commit bae0cc86821f618c374636c6d192a51138f4e49d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 10 21:33:07 2019 -0500
-
-    fixed a couple minor regressions with CompileTimeFlagChecker code
-
-commit 61d7ffcfb7f04466844297c2eca370ca9c05cab7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 10 21:33:47 2019 -0500
-
-    ThrowErrNoIfNegative (INT_TYPE returnCode) now deprecated
-
-commit 629a1b59b238f95ecd35eb9e2c12d6c7cc7deb0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 11 09:24:46 2019 -0500
-
-    docs on limitations of CompileTimeFlagChecker_HEADER () and woirkaround one such limitaiton"
-
-commit 9b8e80b0c31c1f128cb65c2570ece959515e1a85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 11 09:58:56 2019 -0500
-
-    moved ThrowPOSIXErrNoIfNegative, ThrowPOSIXErrNoIfNegative, ThrowSystemErrNo etc out of SystemErrorException<> and put them at top level of Execution namespace
-
-commit bb38b7b96a2f2ac7bc84a5150a1a5b6efcb78dba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 11 10:19:39 2019 -0500
-
-    more clenaups of Execution::ThrowErrNoIfNegative () deprecation (use Execution::ThrowPOSIXErrNoIfNegative)
-
-
-commit 6fe7891e98ad99a5cefebb1ba2cc901ea5a6ee11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 12 11:39:11 2019 -0500
-
-    major cleanup of Foundation/Execution/Platform/Windows/Exception
-            -       deprecated Execution::Platform::Windows::ThrowIfFalseGetLastError
-            - deorecated Execution::Platform::Windows::Exception
-            - simplified ThrowIfFalseGetLastError (now takes anyting arg can be compared to zero).
-            - use Execution::ThrowSystemErrNo intead of Execution::Platform::Windows::Exception::Throw (dwRetVal);
-            - tons of related cleanups
-
-commit 8b493e4750b58eb99609c29cf131e8997a5c2101
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 12 18:47:41 2019 -0500
-
-    lose obsolete references to Platform::Windows::Exception from regtests
-
-commit 088c1c122555c43c1ace934c83e61b2c3e54f5e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 12 18:48:20 2019 -0500
-
-    Support vs2k17 15.9.7
-
-commit 7c282e43f805811efb4016ce40e4f2a8cce91217
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 13 09:12:40 2019 -0500
-
-    re-enabled tsan workaround for https://stroika.atlassian.net/browse/STK-677
-
-commit 4e8eb1c4a5a11a7bf6bbc800aa2db5bda8d0d61a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 14 21:28:56 2019 -0500
-
-    new ThrowWSASystemErrorIfSOCKET_ERROR () and use that to replace use of template spcializzation ThrowPOSIXErrNoIfNegative<IO::Network::Socket::PlatformNativeHandle>
-
-commit 327002e116ab0b9d2d6114985c9c16d1ec32b732
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 17 09:08:35 2019 -0500
-
-    InternetAddress::Offset () first draft
-
-commit 690ad74e6246560e514e9253e209d9d4d0a58d5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 17 09:10:01 2019 -0500
-
-    InternetAddressRangeTraits_::kUpperBound now set to largest ipv6 address
-
-commit 9dbeaef99ec96ab81330a595b1ec6aa540f97f20
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 17 09:17:36 2019 -0500
-
-    CIDR::GetRange () fixed
-
-commit b8b262bda78b2d2bd1e4f8f1f38430740da3e376
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 17 09:40:59 2019 -0500
-
-    IO::Network::Private_::InternetAddressRangeTraits_::GetNext ()
-
-commit 13247b296944ce3866cf83decb6dffbc87b8ae7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 17 16:07:28 2019 -0500
-
-    added new networking Interface::Type::eDeviceVirtualInternalNetwork; and returned that for virtualbox and hyperv special adapters
-
-commit 329bf86cffdd2f583ef4e03ec8bfc3539f250340
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 17 16:09:57 2019 -0500
-
-    fixed bugs with new InternetAddress::Offset ()
+    
 
 commit 5c795533db2ed7075233ebc37b437c2d0207791f
 Author: Lewis Pringle <lewis@sophists.com>
