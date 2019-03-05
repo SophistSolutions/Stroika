@@ -191,6 +191,15 @@ namespace Stroika::Foundation::Characters {
     {
         return FromASCII (from.c_str (), from.c_str () + from.length ());
     }
+    inline String String::FromASCII (const wchar_t* from)
+    {
+        RequireNotNull (from);
+        return FromASCII (from, from + ::wcslen (from));
+    }
+    inline String String::FromASCII (const wstring& from)
+    {
+        return FromASCII (from.c_str (), from.c_str () + from.length ());
+    }
     inline String String::FromUTF8 (const char* from)
     {
         RequireNotNull (from);
@@ -643,6 +652,18 @@ namespace Stroika::Foundation::Characters {
     inline bool String::LessCI::operator() (const String& lhs, const String& rhs) const
     {
         return lhs.Compare (rhs, CompareOptions::eCaseInsensitive) < 0;
+    }
+
+    /*
+     ********************************************************************************
+     *********************************** operator< **********************************
+     ********************************************************************************
+     */
+    inline String operator"" _ASCII (const char* str, size_t len)
+    {
+        // a future verison of this API may do something like String_Constant, which is why this API requires its arg is a
+        // forever-lifetime C++ constant.
+        return String::FromASCII (str, str + len);
     }
 
     /*

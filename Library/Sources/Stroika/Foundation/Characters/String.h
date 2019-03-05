@@ -418,6 +418,9 @@ namespace Stroika::Foundation::Characters {
         static String FromASCII (const char* from);
         static String FromASCII (const char* from, const char* to);
         static String FromASCII (const string& from);
+        static String FromASCII (const wchar_t* from);
+        static String FromASCII (const wchar_t* from, const wchar_t* to);
+        static String FromASCII (const wstring& from);
 
     public:
         /**
@@ -1368,6 +1371,14 @@ namespace Stroika::Foundation::Characters {
     private:
         friend class String;
     };
+
+    /**
+     *  \brief user defined literal for ASCII string. Equivilent to String::FromASCII () - except this REQUIRES its argument
+     *         be a forever-lived nul-terminated C string.
+     *
+     *  \req each character isascii()
+     */
+    String operator"" _ASCII (const char* str, size_t len);
 
     /**
      *  Use Stroika String more easily with std::ostream.

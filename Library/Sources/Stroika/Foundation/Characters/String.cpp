@@ -354,6 +354,16 @@ String String::FromASCII (const char* from, const char* to)
     return String{buf.begin (), pOut};
 }
 
+String String::FromASCII (const wchar_t* from, const wchar_t* to)
+{
+    RequireNotNull (from);
+    Require (from <= to);
+    for (const wchar_t* i = from; i != to; ++i) {
+        Require (isascii (*i));
+    }
+    return String{from, to};
+}
+
 String String::FromISOLatin1 (const char* start, const char* end)
 {
     /*
