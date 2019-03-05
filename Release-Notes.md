@@ -69,6 +69,8 @@ History
     - StringException.h now deprecated - include Exception.h
     - renamed old Execution/Exception.h to Throw.h;
   -  ThrowPOSIXErrNo () and ThrowSystemErrNo () - corresponding to std::generic_category, std::system_category
+  -  renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint ->  
+     qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
 
 - Build System
   -  fixed toplevel make clean
@@ -76,81 +78,13 @@ History
 - Execution::DLLLoader
   - dllsupport - UNIX - NOT BACKWARD COMPAT - changed default for LoadDLL to not say RTLD_GLOBAL
 
+
   - 
 #if 0
 
 
     TimeOutException now inherits from SystemException; and errc::timed_out mapped to TimedOutException in  SystemException::ThrowPOSIXErrNo () and SystemException::ThrowSystemErrNo ()
 
-
-commit 3e06c0cdf71fb27958b7233688ca411c3c54e04b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 2 20:43:32 2019 -0500
-
-    renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint -> qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
-
-commit 72a6193b285345d53ecdb1f13ab1d3d9ca393d9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 2 20:58:42 2019 -0500
-
-    FileAccessException now uses SystemError - and document we need to redo using  Execution::Exception<filesystem::filesystem_error>
-
-
-
-commit 837732628b50e453221381ef04d8d3dae6093fc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 2 21:06:10 2019 -0500
-
-    typo in qStroika_Foundation_Exection_Throw_TraceThrowpoint fix
-
-commit 4aef1d36c4485eb4e5145680af56227c5a9ba404
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 3 12:16:49 2019 -0500
-
-    docs/notes; and on POSIX systems, SystemException::ThrowPOSIXErrNo () indirects to ThrowSystemErrNo ()
-
-commit 734c7cb535d190aab8cb5d50da22c3c3f44faff4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 4 10:57:16 2019 -0500
-
-    lose most references to Execution::errno_ErrorException& and replace with Execution::SystemException
-
-commit 2ca3ae133ab4e443ec7a383c00a8b436329e66cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 4 11:29:47 2019 -0500
-
-    use Execution::SystemException in place of Execution::Platform::Windows::Exception in one spot
-
-commit 93162baec615ed2d2dd86076ea02e0522991dff9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 4 11:30:50 2019 -0500
-
-    Execution/Platform/Windows/Exception now using Execution::SystemException (somewhat)
-
-commit efd28d46ef08598ff3bfe787ebeb64ae967e6e6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 4 12:10:24 2019 -0500
-
-    regression test: Test3_SystemException_::TestAll_;  and small cleanusp to message formatting in SystemError class
-
-commit f2438b7ba9f54fb30cdd6c82e3171689a1f9f499
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 4 12:30:22 2019 -0500
-
-    use std::system_error catch code not Execution::SystemException for simplicty/clarity for C++ stadnards uses and doc such usage
-
-commit c7bd90487cc7ae836f0de7dd16c35a524ae3e328
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 4 13:54:36 2019 -0500
-
-    fixed display of unicode characters for ToString(exception) class - by dynamic casting down to Helper; and use that to add tests and docs for using SystemExceotpon throw along with catch (system_error& ) and still getting the right UNICODE strings out (or just erro codes)
-
-
-commit 8f3202b4849c6548f8dde1c6229ebdaf14b85fa3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 5 11:11:30 2019 -0500
-
-    StringBuilder (String) CTOR no longer explicit - not sure why that was done to begin with
 
 commit 055c72595189150035227c71f1766ca698bfc5d8
 Author: Lewis Pringle <lewis@sophists.com>
