@@ -28,14 +28,14 @@ namespace Stroika::Foundation::IO::FileSystem {
     }
 #if qPlatform_Windows
     template <typename WINDOWS_API_RESULT>
-    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1 = {}, const path& p2 = {})
+    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1, const path& p2)
     {
         if (test == 0) {
             ThrowSystemErrNo (::GetLastError (), p1, p2);
         }
     }
     template <typename WINDOWS_API_RESULT>
-    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2 = {})
+    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2)
     {
         if (test == 0) {
             ThrowSystemErrNo (::GetLastError (), path (p1.As<wstring> ()), path (p2.As<wstring> ()));
