@@ -410,6 +410,17 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
+     *  \brief user defined literal for Duration, specified in ISO8601 format.
+     */
+    Duration operator"" _ISO8601 (const char* str, size_t len) noexcept;
+    Duration operator"" _ISO8601 (const wchar_t* str, size_t len) noexcept;
+#if __cpp_char8_t >= 201811L
+    Duration operator"" _ISO8601 (const char8_t* str, size_t len) noexcept;
+#endif
+    Duration operator"" _ISO8601 (const char16_t* str, size_t len) noexcept;
+    Duration operator"" _ISO8601 (const char32_t* str, size_t len) noexcept;
+
+    /**
      *  operator indirects to Duration::Compare()
      */
     bool operator< (const Duration& lhs, const Duration& rhs);

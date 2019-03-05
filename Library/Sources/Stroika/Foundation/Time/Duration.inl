@@ -258,6 +258,34 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
+     ************************** operator "" _ISO8601 ********************************
+     ********************************************************************************
+     */
+    inline Duration operator"" _ISO8601 (const char* str, size_t len) noexcept
+    {
+        return Duration{string (str, str + len)};
+    }
+    inline Duration operator"" _ISO8601 (const wchar_t* str, size_t len) noexcept
+    {
+        return Duration{Characters::String{str, str + len}};
+    }
+#if __cpp_char8_t >= 201811L
+    inline Duration operator"" _ISO8601 (const char8_t* str, size_t len) noexcept
+    {
+        return Duration{Characters::String{str, str + len}};
+    }
+#endif
+    inline Duration operator"" _ISO8601 (const char16_t* str, size_t len) noexcept
+    {
+        return Duration{Characters::String{str, str + len}};
+    }
+    inline Duration operator"" _ISO8601 (const char32_t* str, size_t len) noexcept
+    {
+        return Duration{Characters::String{str, str + len}};
+    }
+
+    /*
+     ********************************************************************************
      ***************************** Duration operators *******************************
      ********************************************************************************
      */
