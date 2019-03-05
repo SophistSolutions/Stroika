@@ -7,6 +7,28 @@ to be aware of when upgrading.
 History
 =======
 
+
+
+https://stroika.atlassian.net/browse/STK-361
+
+New exception system_error and error_category code
+
+his was a major change - mostly backward compatible (with deprecation of most of the older classes).
+
+Replace use of Execution::StringException with Execution::Exception.
+Now use new feature Activity/DeclareActivity
+
+Use SystemErrorException in place of errnoException or Platform::Windows::Exception (or any other the other similar - HRESULTException etc).
+
+Created erorr 'categoryies' as appropriate (e.g. Platform::Windows:;HRESULT_error_category)
+
+Deprecated all the exceptions at the top level of IO (e.g. IO::FileBusyException). Use IO::SystemErrorException or new IO::FileSystem::Exception (same as SystemErrorException but adding pathname attributes).
+
+
+
+
+
+
 ## 2.1d17 {2019-01-28}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d16...v2.1d17
