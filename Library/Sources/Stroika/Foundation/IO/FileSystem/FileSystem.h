@@ -23,9 +23,9 @@
  * TODO:
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-685 - 
- *				MAJOR CHANGES required to accomodate std::filesystem 
- *				- maybe losing this alltogether, or at least big changes 
- *				(like using path class instead of String) - force use of ToPath ()
+ *              MAJOR CHANGES required to accomodate std::filesystem 
+ *              - maybe losing this alltogether, or at least big changes 
+ *              (like using path class instead of String) - force use of ToPath ()
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-612
  *              Probably rename class IO::FileSystem::FileSystem to IO::FileSystem::Ptr (or FileSystemPtr)
