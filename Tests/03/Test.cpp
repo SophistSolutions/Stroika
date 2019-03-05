@@ -21,6 +21,7 @@ using namespace Stroika::Foundation;
 namespace {
     void Test1_Version_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test1_Version_"};
         using namespace Configuration;
         {
             constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
@@ -80,6 +81,7 @@ namespace Stroika::Foundation::Configuration {
 namespace {
     void Test2_EnumNames_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test2_EnumNames_"};
         using namespace Test2_EnumNames_Private_;
         VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>::k.GetName (fooEnum::eOne));
         VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>::k.GetName (fooEnum::eTwo));
@@ -93,6 +95,7 @@ namespace {
 namespace {
     void Test3_Endian_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test3_Endian_"};
         using namespace Configuration;
         VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
         VerifyTestResult (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle) == 0xDDCCBBAA);
@@ -103,6 +106,7 @@ namespace {
     namespace Test4_SystemConfigruation_ {
         void DoAll ()
         {
+            Debug::TraceContextBumper ctx{L"{}::Test4_SystemConfigruation_"};
             using namespace Configuration;
             SystemConfiguration sc = GetSystemConfiguration ();
             DbgTrace (L"systemConfig=%s", Characters::ToString (sc).c_str ());
