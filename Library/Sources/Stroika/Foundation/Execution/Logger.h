@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
     using Characters::String;
 
     /**
-     *  \brief A simple/portable wrapper on syslog/log4j/WindowsEventlog, with features like throttling, de-dupping, varargs, etc.
+     *  \brief A simple/portable wrapper on syslog/log4j/WindowsEventlog, with features like throttling, de-duping, varargs, etc.
      *
      *  OVERVIEW:
      *      The point of the Logging Module is to provide a simple, portable wrapper on end-user-targetted
