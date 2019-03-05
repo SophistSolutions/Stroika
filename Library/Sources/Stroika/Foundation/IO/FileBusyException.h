@@ -10,6 +10,7 @@
 #include "../Execution/Exceptions.h"
 
 namespace Stroika::Foundation::IO {
+    /*** FILE DEPRECATED ****/
 
     using Characters::String;
 

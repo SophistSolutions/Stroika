@@ -11,6 +11,7 @@
 
 namespace Stroika::Foundation::IO {
     //////////////// **** DEPRECATED ************
+    /*** FILE DEPRECATED ****/
 
     using Characters::String;
 

@@ -519,9 +519,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp">
-      <Filter>Sources\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -824,6 +821,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp">
       <Filter>Sources\Linguistics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.cpp">
+      <Filter>Sources\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2055,6 +2055,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h">
+      <Filter>Sources\IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2684,9 +2687,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.inl">
       <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl">
-      <Filter>Sources\IO</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl">
       <Filter>Sources\Configuration</Filter>
@@ -3341,6 +3341,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.inl">
       <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl">
+      <Filter>Sources\IO</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

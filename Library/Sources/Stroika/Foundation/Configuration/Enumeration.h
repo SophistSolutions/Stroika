@@ -21,8 +21,8 @@
  * TODO:
  *
  *      @todo   Figure out why we need todo
- *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer arg to CTOR - see
- *                  constexpr   ....EnumNames<IO::FileAccessMode>::BasicArrayInitializer
+ *              Configuration::EnumNames<AccessMode>::BasicArrayInitializer arg to CTOR - see
+ *                  constexpr   ....EnumNames<IO::AccessMode>::BasicArrayInitializer
  *
  *              This is needlessly baroque/confusing how we create...
  *
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Configuration {
      *      namespace Stroika::Foundation::Configuration {
      *          template<>
      *          const EnumNames<Priority>   DefaultNames<Priority>::k {
-     *              initializer_list<EnumName<FileAccessMode>> {
+     *              initializer_list<EnumName<AccessMode>> {
      *                  { Priority::a, L"a" },
      *                  { Priority::b, L"b" },
      *                  { Priority::c, L"c" },
@@ -275,12 +275,12 @@ namespace Stroika::Foundation::Configuration {
      *      \code
      *      namespace Stroika::Foundation::Configuration {
      *          template<>
-     *          const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k {
-     *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {{
-     *                  { FileAccessMode::eNoAccess, L"No-Access" },
-     *                  { FileAccessMode::eRead, L"Read" },
-     *                  { FileAccessMode::eWrite, L"Write" },
-     *                  { FileAccessMode::eReadWrite, L"Read-Write" },
+     *          const EnumNames<AccessMode>   DefaultNames<AccessMode>::k {
+     *              Configuration::EnumNames<AccessMode>::BasicArrayInitializer {{
+     *                  { AccessMode::eNoAccess, L"No-Access" },
+     *                  { AccessMode::eRead, L"Read" },
+     *                  { AccessMode::eWrite, L"Write" },
+     *                  { AccessMode::eReadWrite, L"Read-Write" },
      *              }}
      *          };
      *      }

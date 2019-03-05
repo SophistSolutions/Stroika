@@ -27,8 +27,8 @@ namespace Stroika::Foundation::IO {
          *  This is almost equally likely to be errc::permission_denied or errc::no_such_file_or_directory. So best to call
          *  with explicit error_code, but if not we can guess.
          */
-        FileAccessException (const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
-        FileAccessException (error_code ec, const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
+        FileAccessException (const optional<String>& fileName = nullopt, const optional<AccessMode>& fileAccessMode = nullopt);
+        FileAccessException (error_code ec, const optional<String>& fileName = nullopt, const optional<AccessMode>& fileAccessMode = nullopt);
 
     public:
         /**
@@ -40,14 +40,14 @@ namespace Stroika::Foundation::IO {
         /**
          *  If fileAccessMode not specified, FileAccessMode::eReadWrite returned (backwards compat)
          */
-        nonvirtual optional<FileAccessMode> GetFileAccessMode () const;
+        nonvirtual optional<AccessMode> GetFileAccessMode () const;
 
     public:
-        nonvirtual FileAccessMode GetFileAccessModeValue (FileAccessMode defaultVal = FileAccessMode::eReadWrite) const { return fFileAccessMode_.value_or (defaultVal); }
+        nonvirtual AccessMode GetFileAccessModeValue (AccessMode defaultVal = AccessMode::eReadWrite) const { return fFileAccessMode_.value_or (defaultVal); }
 
     private:
-        optional<String>         fFileName_;
-        optional<FileAccessMode> fFileAccessMode_;
+        optional<String>     fFileName_;
+        optional<AccessMode> fFileAccessMode_;
     };
 
         /**
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::IO {
         Stroika::Foundation::Execution::Throw (                                                                    \
             Stroika::Foundation::IO::FileAccessException (                                                         \
                 (Memory::OptionalValue (optional<Characters::String>{USEFILENAME}, e.GetFileName ())),             \
-                (Memory::OptionalValue (optional<IO::FileAccessMode>{USEACCESSMODE}, e.GetFileAccessMode ()))));   \
+                (Memory::OptionalValue (optional<IO::AccessMode>{USEACCESSMODE}, e.GetFileAccessMode ()))));       \
     }
 
         /**
@@ -77,11 +77,11 @@ namespace Stroika::Foundation::IO {
     {
         return fFileName_;
     }
-    inline optional<FileAccessMode> FileAccessException::GetFileAccessMode () const
+    inline optional<AccessMode> FileAccessException::GetFileAccessMode () const
     {
         return fFileAccessMode_;
     }
-    inline FileAccessException::FileAccessException (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
+    inline FileAccessException::FileAccessException (const optional<String>& fileName, const optional<AccessMode>& fileAccessMode)
         : FileAccessException (make_error_code (errc::permission_denied), fileName, fileAccessMode)
     {
     }

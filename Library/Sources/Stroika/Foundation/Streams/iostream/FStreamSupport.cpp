@@ -14,7 +14,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
-using namespace Stroika::Foundation::IO;
 
 /*
  * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).

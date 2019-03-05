@@ -17,17 +17,17 @@ using namespace Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace {
-    wstring mkMessage_ (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
+    wstring mkMessage_ (const optional<String>& fileName, const optional<AccessMode>& fileAccessMode)
     {
         DISABLE_COMPILER_MSC_WARNING_START (4800)
         wstring message;
-        if (fileAccessMode and static_cast<bool> (*fileAccessMode & FileAccessMode::eRead) and static_cast<bool> (*fileAccessMode & FileAccessMode::eWrite)) {
+        if (fileAccessMode and static_cast<bool> (*fileAccessMode & AccessMode::eRead) and static_cast<bool> (*fileAccessMode & AccessMode::eWrite)) {
             message = L"Cannot read from or write to file";
         }
-        else if (fileAccessMode and static_cast<bool> (*fileAccessMode & FileAccessMode::eRead)) {
+        else if (fileAccessMode and static_cast<bool> (*fileAccessMode & AccessMode::eRead)) {
             message = L"Cannot read from file";
         }
-        else if (fileAccessMode and static_cast<bool> (*fileAccessMode & FileAccessMode::eWrite)) {
+        else if (fileAccessMode and static_cast<bool> (*fileAccessMode & AccessMode::eWrite)) {
             message = L"Cannot write to file";
         }
         else {
@@ -40,7 +40,7 @@ namespace {
         return message;
     }
 }
-FileAccessException::FileAccessException (error_code ec, const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
+FileAccessException::FileAccessException (error_code ec, const optional<String>& fileName, const optional<AccessMode>& fileAccessMode)
     : inherited (ec, mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
     , fFileAccessMode_ (fileAccessMode)

@@ -11,7 +11,7 @@
 #include "../../Containers/Sequence.h"
 #include "../../Time/DateTime.h"
 
-#include "../FileAccessMode.h"
+#include "../AccessMode.h"
 #include "Common.h"
 #include "Directory.h"
 
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \note   Similar to IO.File.Exists () in .net https://msdn.microsoft.com/en-us/library/system.io.file.exists(v=vs.110).aspx
          *  \note   Similar to POSIX access () - https://linux.die.net/man/2/access
          */
-        nonvirtual bool Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const noexcept;
+        nonvirtual bool Access (const String& fileFullPath, AccessMode accessMode = AccessMode::eRead) const noexcept;
 
     public:
         /**
@@ -107,13 +107,13 @@ namespace Stroika::Foundation::IO::FileSystem {
          *      \code
          *          void CopyFile (String srcPath, String desPath)
          *          {
-         *              IO::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
+         *              IO::FileSystem::Default ().CheckAccess (srcFile, IO::AccessMode::eRead);
          *              CreateDirectoryForFile (destPath);
          *              .. do actual copy ..
          *          }
          *      \endcode
          */
-        nonvirtual void CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
+        nonvirtual void CheckAccess (const String& fileFullPath, AccessMode accessMode = AccessMode::eRead);
         nonvirtual void CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
 
     public:

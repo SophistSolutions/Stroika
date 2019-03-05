@@ -919,8 +919,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
@@ -1530,6 +1530,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
@@ -1956,8 +1957,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />

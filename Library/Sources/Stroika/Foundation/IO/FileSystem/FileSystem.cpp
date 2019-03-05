@@ -71,17 +71,17 @@ namespace Stroika::Foundation::Configuration {
  ********************************** FileSystem::Ptr *****************************
  ********************************************************************************
  */
-bool IO::FileSystem::Ptr::Access (const String& fileFullPath, FileAccessMode accessMode) const noexcept
+bool IO::FileSystem::Ptr::Access (const String& fileFullPath, AccessMode accessMode) const noexcept
 {
 // @todo FIX to only do ONE system call, not two!!!
 #if qPlatform_Windows
-    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eRead) {
+    if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
         if (attribs == INVALID_FILE_ATTRIBUTES) {
             return false;
         }
     }
-    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eWrite) {
+    if ((accessMode & AccessMode::eWrite) == AccessMode::eWrite) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
         if ((attribs == INVALID_FILE_ATTRIBUTES) or (attribs & FILE_ATTRIBUTE_READONLY)) {
             return false;
@@ -91,12 +91,12 @@ bool IO::FileSystem::Ptr::Access (const String& fileFullPath, FileAccessMode acc
 #elif qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eRead) {
+    if ((accessMode & AccessMode::eRead) == AccessMode::eRead) {
         if (access (fileFullPath.AsSDKString ().c_str (), R_OK) != 0) {
             return false;
         }
     }
-    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eWrite) {
+    if ((accessMode & AccessMode::eWrite) == AccessMode::eWrite) {
         if (access (fileFullPath.AsSDKString ().c_str (), W_OK) != 0) {
             return false;
         }
@@ -108,7 +108,7 @@ bool IO::FileSystem::Ptr::Access (const String& fileFullPath, FileAccessMode acc
 #endif
 }
 
-void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, FileAccessMode accessMode)
+void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, AccessMode accessMode)
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
     if (not Access (fileFullPath, accessMode)) {
@@ -120,13 +120,13 @@ void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, FileAccessMod
 void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
     if (checkCanRead and checkCanWrite) {
-        CheckAccess (fileFullPath, IO::FileAccessMode::eReadWrite);
+        CheckAccess (fileFullPath, IO::AccessMode::eReadWrite);
     }
     else if (checkCanRead) {
-        CheckAccess (fileFullPath, IO::FileAccessMode::eRead);
+        CheckAccess (fileFullPath, IO::AccessMode::eRead);
     }
     else if (checkCanWrite) {
-        CheckAccess (fileFullPath, IO::FileAccessMode::eWrite);
+        CheckAccess (fileFullPath, IO::AccessMode::eWrite);
     }
 }
 

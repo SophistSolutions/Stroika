@@ -21,8 +21,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
+	$(ObjDir)AccessMode${OBJ_SUFFIX}\
 	$(ObjDir)FileAccessException${OBJ_SUFFIX}\
-	$(ObjDir)FileAccessMode${OBJ_SUFFIX}\
 	$(ObjDir)FileBusyException${OBJ_SUFFIX}\
 	$(ObjDir)FileFormatException${OBJ_SUFFIX}\
 
