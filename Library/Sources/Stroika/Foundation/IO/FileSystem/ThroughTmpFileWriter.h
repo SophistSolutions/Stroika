@@ -20,7 +20,6 @@
 #include "../../Execution/Thread.h"
 #include "../../Time/DateTime.h"
 
-#include "../FileAccessMode.h"
 #include "Directory.h"
 
 /**
@@ -54,22 +53,22 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \par Example Usage
      *      \code
-     *      ThroughTmpFileWriter    tmpFile (targetFileName);
-     *      IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
-     *      YourCodeToWriteDataToStream (your_data, out);
-     *      out.clear();        // close like this so we can throw exception - cannot throw if we count on DTOR
-     *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+     *          ThroughTmpFileWriter    tmpFile (targetFileName);
+     *          IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
+     *          YourCodeToWriteDataToStream (your_data, out);
+     *          out.clear();        // close like this so we can throw exception - cannot throw if we count on DTOR
+     *          tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      ThroughTmpFileWriter    tmpFile (targetFileName);
-     *      {
-     *          FileOutputStream  out (tmpFile.GetTmpFilePath ());
-     *          YourCodeToWriteDataToStream (your_data, out);
-     *          // use scope (braces) to force close before commit (or call out.clear())
-     *      }
-     *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+     *          ThroughTmpFileWriter    tmpFile (targetFileName);
+     *          {
+     *              FileOutputStream  out (tmpFile.GetTmpFilePath ());
+     *              YourCodeToWriteDataToStream (your_data, out);
+     *              // use scope (braces) to force close before commit (or call out.clear())
+     *          }
+     *          tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
      *      \endcode
      *
      */
