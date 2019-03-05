@@ -32,6 +32,7 @@
 #include "../../Debug/Trace.h"
 #include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
+#include "../../IO/FileSystem/PathName.h"
 #include "../../Memory/SmallStackBuffer.h"
 #include "PathName.h"
 #include "WellKnownLocations.h"
@@ -174,7 +175,7 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
     if (not::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
         DWORD error = ::GetLastError ();
         if (error != ERROR_ALREADY_EXISTS) {
-            IO::FileSystem::Exception::ThrowSystemErrNo (error, path{directoryPath.As<wstring> ()});
+            IO::FileSystem::Exception::ThrowSystemErrNo (error, ToPath (directoryPath));
         }
     }
 #elif qPlatform_POSIX
@@ -213,7 +214,7 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
     // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
     if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
         if (errno != EEXIST) {
-            IO::FileSystem::Exception::ThrowPOSIXErrNo (errno, path{directoryPath.As<wstring> ()});
+            IO::FileSystem::Exception::ThrowPOSIXErrNo (errno, ToPath (directoryPath));
         }
     }
 #else

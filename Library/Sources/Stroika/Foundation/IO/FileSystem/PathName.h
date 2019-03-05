@@ -8,6 +8,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
+#include "Common.h"
 
 /**
  *  \file
@@ -144,6 +145,18 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  \req argument not empty string
      */
     bool IsDirectoryName (const String& pathName);
+
+    /**
+     *  Convert Stroika String to std::filesystem::path
+     */
+    path ToPath (const String& p);
+
+    /**
+     *  Convert  std::filesystem::path to String Stroika String
+     *  \note like Characters::ToString () - but is for formatting display purposes, so may
+     *        surround the name with quotes - this does a straight conversion.
+     */
+    String FromPath (const path& p);
 
 }
 
