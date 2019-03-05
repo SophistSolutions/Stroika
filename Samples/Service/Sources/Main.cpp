@@ -170,7 +170,7 @@ int main (int argc, const char* argv[])
      *  Optional - use suppress duplicates in a 15 second window
      */
     Logger::Get ().SetBufferingEnabled (true);
-    Logger::Get ().SetSuppressDuplicates (15);
+    Logger::Get ().SetSuppressDuplicates (15s);
 #endif
 
     /*

@@ -13,7 +13,8 @@
 #include "../Configuration/Enumeration.h"
 #include "../Debug/Assertions.h"
 #include "../Streams/OutputStream.h"
-#include "../Time/Realtime.h"
+#include "../Time/Duration.h"
+//#include "../Time/Realtime.h"
 #include "Synchronized.h"
 
 /**
@@ -244,19 +245,26 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *      If true, then a sequence of N (N > 1) identical messages will be replaced with two messages,
+         *      If GetSuppressDuplicates ().has_value (), then a sequence of N (N > 1) identical messages will be replaced with two messages,
          *      the second of which appears with the added label [N-2 suppressed].
          *
          *      The duration is the window of time after the last message we wait before emitting the
          *      last message. A good default for this might be 5 or 10 seconds.
          */
-        nonvirtual optional<Time::DurationSecondsType> GetSuppressDuplicates () const;
+        nonvirtual optional<Time::Duration> GetSuppressDuplicates () const;
 
     public:
         /**
          *      @see GetSuppressDuplicates ()
+         *
+         *  \par Example Usage
+         *      \code
+         *          Logger::Get ().SetSuppressDuplicates (nullopt);         // disable the feature
+         *          Logger::Get ().SetSuppressDuplicates ("PT5M"_ISO8601);  // anything within 5 minutes suppress
+         *          Logger::Get ().SetSuppressDuplicates (45s);             // anything within 45 seconds suppress
+         *      \endcode
          */
-        nonvirtual void SetSuppressDuplicates (const optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
+        nonvirtual void SetSuppressDuplicates (const optional<Time::Duration>& suppressDuplicatesThreshold);
 
     public:
         /**
@@ -293,10 +301,12 @@ namespace Stroika::Foundation::Execution {
          *  \par Example Usage
          *      \code
          *          // same as Log, but don't emit this error if we've seen the message in the last 60 seconds
-         *          Logger::Get ().LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
+         *          Logger::Get ().LogIfNew (Logger::Priority::eError, Duration {60.0}, L"Failed to correct something important in file %s", fileName.c_str ());
+         *          Logger::Get ().LogIfNew (Logger::Priority::eError, "PT1M"_ISO8601, L"Failed to correct something important in file %s", fileName.c_str ());
+         *          Logger::Get ().LogIfNew (Logger::Priority::eError, 60s, L"Failed to correct something important in file %s", fileName.c_str ());
          *      \endcode
          */
-        nonvirtual void LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, const wchar_t* format, ...);
+        nonvirtual void LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...);
 
     private:
         nonvirtual void Log_ (Priority logLevel, const String& msg);

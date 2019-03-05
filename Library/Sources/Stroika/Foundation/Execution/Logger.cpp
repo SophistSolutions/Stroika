@@ -10,7 +10,6 @@
 #include "../Cache/SynchronizedCallerStalenessCache.h"
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #include "../Debug/Trace.h"
 #include "../IO/FileSystem/FileOutputStream.h"
@@ -31,7 +30,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
 
-using Characters::String_Constant;
+using Time::Duration;
 using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -61,8 +60,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     BlockingQueue<pair<Logger::Priority, String>> fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
-    bool                                        fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
-    Synchronized<optional<DurationSecondsType>> fSuppressDuplicatesThreshold_;
+    bool                             fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
+    Synchronized<optional<Duration>> fSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         pair<Logger::Priority, String> fLastMsgSent_{};
@@ -134,9 +133,9 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             }
         }
 
-        Time::DurationSecondsType    suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0);
-        bool                         suppressDuplicates          = suppressDuplicatesThreshold > 0;
-        static const String_Constant kThreadName_{L"Logger Bookkeeping"};
+        Time::Duration      suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
+        bool                suppressDuplicates          = suppressDuplicatesThreshold > 0s;
+        static const String kThreadName_{L"Logger Bookkeeping"sv};
         if (suppressDuplicates or fBufferingEnabled_) {
             Thread::Ptr      newBookKeepThread;
             shared_ptr<Rep_> useRepInThread = shared_from_this (); // capture by value the shared_ptr
@@ -145,8 +144,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                     [suppressDuplicatesThreshold, useRepInThread]() {
                         Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
                         while (true) {
-                            DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold); // never wait less than this
-                            if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
+                            Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
+                            if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait.As<DurationSecondsType> ())) {
                                 shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
                                 if (tmp != nullptr) {
                                     IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
@@ -154,7 +153,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             }
                             {
                                 auto lastMsgLocked = useRepInThread->fLastMsg_.cget ();
-                                if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
+                                if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold.As<DurationSecondsType> () < Time::GetTickCount ()) {
                                     IgnoreExceptionsExceptThreadAbortForCall (useRepInThread->FlushDupsWarning_ ());
                                 }
                             }
@@ -222,7 +221,7 @@ void Logger::Shutdown ()
     Debug::TraceContextBumper ctx ("Logger::Shutdown");
     // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
-    SetSuppressDuplicates (optional<DurationSecondsType>{});
+    SetSuppressDuplicates (nullopt);
     SetBufferingEnabled (false);
     Flush ();
 }
@@ -297,16 +296,16 @@ bool Logger::GetBufferingEnabled () const
     return fRep_->fBufferingEnabled_;
 }
 
-optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () const
+optional<Time::Duration> Logger::GetSuppressDuplicates () const
 {
     RequireNotNull (fRep_);
     return fRep_->fSuppressDuplicatesThreshold_.load ();
 }
 
-void Logger::SetSuppressDuplicates (const optional<DurationSecondsType>& suppressDuplicatesThreshold)
+void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicatesThreshold)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.value_or (-1))};
-    Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0);
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%s", Characters::ToString (suppressDuplicatesThreshold).c_str ())};
+    Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0s);
     RequireNotNull (fRep_); // not destroyed
     [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};
     if (fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
@@ -332,19 +331,19 @@ void Logger::Log (Priority logLevel, const wchar_t* format, ...)
 }
 #endif
 
-void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, const wchar_t* format, ...)
+void Logger::LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...)
 {
-    Require (suppressionTimeWindow > 0);
+    Require (suppressionTimeWindow > Duration{0});
     RequireNotNull (fRep_);
     using CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_);
-    fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ())); // doesn't need to be synchronized
+    fRep_->fMaxWindow_.store (max (suppressionTimeWindow.As<DurationSecondsType> (), fRep_->fMaxWindow_.load ())); // doesn't need to be synchronized
     va_list argsList;
     va_start (argsList, format);
     String msg = Characters::FormatV (format, argsList);
     va_end (argsList);
-    DbgTrace (L"Logger::LogIfNew (%s, %e, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
+    DbgTrace (L"Logger::LogIfNew (%s, %s, \"%s\")", Characters::ToString (logLevel).c_str (), Characters::ToString (suppressionTimeWindow).c_str (), msg.c_str ());
     if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_.LookupValue (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow), false)) {
+        if (fRep_->fMsgSentMaybeSuppressed_.LookupValue (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow.As<DurationSecondsType> ()), false)) {
             DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
         }
         else {

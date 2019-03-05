@@ -25,6 +25,11 @@ Created erorr 'categoryies' as appropriate (e.g. Platform::Windows:;HRESULT_erro
 Deprecated all the exceptions at the top level of IO (e.g. IO::FileBusyException). Use IO::SystemErrorException or new IO::FileSystem::Exception (same as SystemErrorException but adding pathname attributes).
 
 
+Logger::LogIfNew and SetSuppressedDuplicates now use Duration (instead of DurationSecondsType). So callers must change (not backward compatible)
+Logger::Get ().SetSuppressDuplicates (15);
+TO
+Logger::Get ().SetSuppressDuplicates (15s); (similarly for LogIfNew: append an s)
+
 
 
 
