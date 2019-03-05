@@ -9,27 +9,1374 @@ History
 
 
 
-https://stroika.atlassian.net/browse/STK-361
 
-New exception system_error and error_category code
+## 2.1d18 {2019-03-06}
 
-his was a major change - mostly backward compatible (with deprecation of most of the older classes).
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d17...v2.1d18
 
-Replace use of Execution::StringException with Execution::Exception.
-Now use new feature Activity/DeclareActivity
+- Foundation::Characters
+  - String_Constant and  String_ExternalMemoryOwnership_ApplicationLifetime now accept
+    basic_string_view<wchar_t> CTOR args - meaning String_Constant sc = Lxxsv should work
+  - String (and StringBuilder and String_Constant) support for basic_string_view<wchar_t> -
+    which means we can use Lblahsv to create String_Constant objects (better to use C++ standard notation since amounts to same thing);
+    but still keep _k around for few cases (overload ambiguity) where its handy
 
-Use SystemErrorException in place of errnoException or Platform::Windows::Exception (or any other the other similar - HRESULTException etc).
+- Samples
+  - Readme and TODO docs improvements
+  - WebService
+    -  Much improved WebService sample - now arithmatic all works and formatting complex numbers/
+       parsing. Still alot of work todo to improve, but now a good palce to experiemnt!
 
-Created erorr 'categoryies' as appropriate (e.g. Platform::Windows:;HRESULT_error_category)
+- Documentation
+  - convert docs Coding Conventions and Design Overview docs from docx/pdf to .md
 
-Deprecated all the exceptions at the top level of IO (e.g. IO::FileBusyException). Use IO::SystemErrorException or new IO::FileSystem::Exception (same as SystemErrorException but adding pathname attributes).
+- IO::Network::HTTP
+  - new class: IO::Network::HTTP::ClientErrorException
+
+    Use that in samples, and document its how you wrap what should be treated as client exceptions
+    as such so the right message is propagated
+
+    - new ClientErrorException::TreatExceptionsAsClientError () helper; and GUID CTOR throws DataExchange::BadFormatException{L"Badly formatted GUID" - better more specific failure
+
+- Frameworks::WebServer:
+
+  - deprecate Frameworks::WebServer::ClientErrorException use and replace with use of new IO::Network::HTTP::ClientErrorException (and use it in a few more places we used the wrong exception)
+
+  - used ClientErrorException::TreatExceptionsAsClientError in Frameworks/WebService/Server/VariantValue module - so it treats errors parsing arguments as CLIENT ERROR - not 500 error
+
+- **Major refactoring of Stroika Exception classes (and exception handling)**
+  - https://stroika.atlassian.net/browse/STK-361 (New exception system_error and error_category code)
+  - This was a HUGE change - but done so mostly backward compatible (deprecated not removed most things
+    likely used).
+  - Overview of change:
+    - New Execution class hierarchy to mimic std::runtime_exception, std::system_error, and std::filesystem::filesystem_error
+    - Stroika variants done as templates inheriting from C++ corresponding classes (so you can throw
+      std exceptions or catch them, and they work interoperably)
+    - Stroika exception classes add two important features:
+      - proper Stroika/UNICODE handling
+      - Activity support (delcare activity and nested by thread and incorporated in message)
+  - Old code changes implied:
+    - old code should still compile with hopefully clear deprecation warnings about what to change
+    - StringException -> Exception<> (or maybe RuntimeErrorException<>)
+    - replace catch (FileBusyException etc) with catch (const std::system_error&) typically
+      and look at e.code () (erorr_code)
+
+      Note - can also do catch (SystemErrorException<>) which is about the same thing but gives
+      access to some details like Activities
+    - HRESULTException -> SystemErrorException<> (with HRESULT_error_category())
+    - use IO::FileSystem::Exception (subclasses from std::filesystem::filesystem_error) to access
+      paths associated with exceptions.
+    - StringException.h now deprecated - include Exception.h
+    - renamed old Execution/Exception.h to Throw.h;
+  -  ThrowPOSIXErrNo () and ThrowSystemErrNo () - corresponding to std::generic_category, std::system_category
+
+- Build System
+  -  fixed toplevel make clean
+
+- Execution::DLLLoader
+  - dllsupport - UNIX - NOT BACKWARD COMPAT - changed default for LoadDLL to not say RTLD_GLOBAL
+
+  - 
+#if 0
+
+
+    TimeOutException now inherits from SystemException; and errc::timed_out mapped to TimedOutException in  SystemException::ThrowPOSIXErrNo () and SystemException::ThrowSystemErrNo ()
+
+
+commit 3e06c0cdf71fb27958b7233688ca411c3c54e04b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 2 20:43:32 2019 -0500
+
+    renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint -> qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
+
+commit 72a6193b285345d53ecdb1f13ab1d3d9ca393d9e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 2 20:58:42 2019 -0500
+
+    FileAccessException now uses SystemError - and document we need to redo using  Execution::Exception<filesystem::filesystem_error>
+
+
+
+commit 837732628b50e453221381ef04d8d3dae6093fc8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 2 21:06:10 2019 -0500
+
+    typo in qStroika_Foundation_Exection_Throw_TraceThrowpoint fix
+
+commit 4aef1d36c4485eb4e5145680af56227c5a9ba404
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 3 12:16:49 2019 -0500
+
+    docs/notes; and on POSIX systems, SystemException::ThrowPOSIXErrNo () indirects to ThrowSystemErrNo ()
+
+commit 734c7cb535d190aab8cb5d50da22c3c3f44faff4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 4 10:57:16 2019 -0500
+
+    lose most references to Execution::errno_ErrorException& and replace with Execution::SystemException
+
+commit 2ca3ae133ab4e443ec7a383c00a8b436329e66cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 4 11:29:47 2019 -0500
+
+    use Execution::SystemException in place of Execution::Platform::Windows::Exception in one spot
+
+commit 93162baec615ed2d2dd86076ea02e0522991dff9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 4 11:30:50 2019 -0500
+
+    Execution/Platform/Windows/Exception now using Execution::SystemException (somewhat)
+
+commit efd28d46ef08598ff3bfe787ebeb64ae967e6e6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 4 12:10:24 2019 -0500
+
+    regression test: Test3_SystemException_::TestAll_;  and small cleanusp to message formatting in SystemError class
+
+commit f2438b7ba9f54fb30cdd6c82e3171689a1f9f499
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 4 12:30:22 2019 -0500
+
+    use std::system_error catch code not Execution::SystemException for simplicty/clarity for C++ stadnards uses and doc such usage
+
+commit c7bd90487cc7ae836f0de7dd16c35a524ae3e328
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 4 13:54:36 2019 -0500
+
+    fixed display of unicode characters for ToString(exception) class - by dynamic casting down to Helper; and use that to add tests and docs for using SystemExceotpon throw along with catch (system_error& ) and still getting the right UNICODE strings out (or just erro codes)
+
+
+commit 8f3202b4849c6548f8dde1c6229ebdaf14b85fa3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 5 11:11:30 2019 -0500
+
+    StringBuilder (String) CTOR no longer explicit - not sure why that was done to begin with
+
+commit 055c72595189150035227c71f1766ca698bfc5d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 5 11:12:38 2019 -0500
+
+    new excpetion code cleanups - especially to ... base to base class CTOR overload(s)"
+
+commit 174fb745cf8351fff0e9055f5a193fdf5da2a85b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 5 11:19:21 2019 -0500
+
+    new draft IO::FileSystem::Exception (SystemErrorException + based on filesystem_error with path properties
+
+
+commit df550d28de89b2ff0d46b7a1728bf07adccff658
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 10:07:40 2019 -0500
+
+    fixed using std::filesystem to work on macos where std::filesytem missing but using boost
+
+commit d443494c6cd8726484c31c38326d45c0f66c102a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 10:24:41 2019 -0500
+
+    fixups to IO::FileSystem::Common - cleanups and fix for macos xcode
+
+commit 43b287d6af400e9bace69f468cea9e43d2a53742
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 11:42:46 2019 -0500
+
+    dont static assert about is_base_of_v<system_error, BASE_EXCEPTION> exclseively cuz need to support boost filesytem for a bit
+
+commit de172106f13fa5e21fc7c46ee64c181c3fd694a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 15:05:18 2019 -0500
+
+    qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy XCode 10 workaround attempts
+
+commit b7d4fe5e49d709d9240c6181fa000362cabaa27e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 15:05:31 2019 -0500
+
+    comsetic
+
+commit 15d2f1be8b721bb32c41f243b75644f9d6ae29d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 17:20:58 2019 -0500
+
+    Exception::TranslateBoostFilesystemException2StandardExceptions () helper (for boost)
+
+commit 584e31bf219aa9575b7218a7aae6d6fd8d87c4f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 17:33:57 2019 -0500
+
+    start using FileSystem::Exception::ThrowPOSIXErrNo () overload which takes paths as arguments
+
+commit 0e657c425f8d573bcc9a35533d225e942c5062fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 6 17:52:11 2019 -0500
+
+    # if boost is available, Stroika adds utilities that depend on parts of it
+
+commit d8b8a0213524de8d99a23c264aaef3b5f7527fe7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 16:17:49 2019 -0500
+
+    patch include/boost/config/user.hpp and vs2k project files to load Builds/$(Configuration)/ThirdPartyComponents/lib; so that apps now work right with boost automatically (now that stroika pulls in more boost code)
+
+commit f60e63fa3b14c71eff205201c924dde2291854a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 17:34:27 2019 -0500
+
+    tweak boost makefile output
+
+commit 24c903bc052883995da8c31ee0d5858e98f2fb8b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 20:29:16 2019 -0500
+
+    boost makefile: try using user-config.jam instead of project-config.jam; and include more properties
+
+commit 6e34dc6d7c1f3f4ea48c5ba78c8b69ea3b6b10d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 21:02:15 2019 -0500
+
+    apply same user-config.jam simplification to mac side of boost makefile
+
+commit 5b84a343e2403a941650ee03d5ef6e8aafd16923
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 21:11:52 2019 -0500
+
+    refactoring but no real change to boost makefile
+
+commit 935eb5cee863b42de1e380bcebac2998d7be83e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 21:16:09 2019 -0500
+
+    docs
+
+commit 9907ff722a903a857771023183e384d2494b0397
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 21:21:46 2019 -0500
+
+    better default output level for boost build - on unix no noticable slowdown and can see actual compile lines if I need to debug build
+
+commit ddcff82d4aa0e0f290696dd66e022125523f330b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 21:50:31 2019 -0500
+
+    boost makefile cleanups (attemt at factoring TOOLSET_NAME code better)
+
+commit 4004e09305246cb9ceda60a7eaa6167a23659875
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 21:56:34 2019 -0500
+
+    HasMakefileBugWorkaround_lto_skipping_undefined_incompatible workaround now needed for boost
+
+commit 87919f99ffcb8c70f1b1ce7f48c3e8b04f8f26b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 22:07:13 2019 -0500
+
+    typo and lose --without-filesystem (must have been ignored - anyhow we dont want that in boost makefile)
+
+commit d860cc47b7ca4554167daf5c6be04e77f131557f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 7 22:08:31 2019 -0500
+
+    makefile cleanup
+
+commit 93ecb82049a5382e357283b27abc909ab4eeb30b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 08:08:21 2019 -0500
+
+    fixed boost makefile typo
+
+commit a770ad025300d38db77566aacae60dec850aaa58
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 11:50:07 2019 -0500
+
+    clenaup debug trace calls in FileSystem/Exception
+
+commit e5b5c05d43d5bb2c49d8bd4a0b001990b897d3c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 11:56:47 2019 -0500
+
+    ToString support std::filesystem::path
+
+commit be2e728903949b635bec1ad085311b0585bf6d1b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 12:00:32 2019 -0500
+
+    cosmetic
+
+commit 092656c508ecfdb8fc7fb92470523cc3489be76b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 12:06:07 2019 -0500
+
+    IO::FileSystem::Common with fewer #includes to avoid circular includes (they were unneeded)
+
+commit 8b17aba8321086f54aef73afa7cd6ed2645af336
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 12:14:42 2019 -0500
+
+    cosmetic; and fixed a few typos/missing includes
+
+commit 46c4c201c11f89d5922a2e32617e8acaf6f5fdca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 13:24:46 2019 -0500
+
+    fixed typo
+
+commit 26c86fb9929a41079c7d1a2ef0b986bd64518a67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 8 13:41:03 2019 -0500
+
+    cannot call _PeekAtNarrowSDKString_ () from FileSystem::Exception CTOR - though unclear why. It consistently crashes on several unix compiles when I try this. Worked around, in leiu of complicated debugging
+
+commit 5ab22fd3732332e3d956779c34275b8dab419aa4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 9 10:23:48 2019 -0500
+
+    configure support --shared-symbol-visibility to hopefully silence warnings conflict with boost on MacOSX
+
+commit 2b15e06ee6935eb4710e651b8c3f59a9d2b64c3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 18:00:04 2019 -0500
+
+    Moved #defines from Stroika-Config.h to being included as -DXXX args through Makefile; FULLY SWITCHED OVER for PLATFROMSUBDIR=Unix, but for visualstdio - still cannot because not using makefiles for running C++ compiler yet. So JUST THERE we write both; stil untested
+
+commit b9eb021b6a460320c0de84b9046cb6d564dda056
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 19:12:08 2019 -0500
+
+    fixed https://stroika.atlassian.net/browse/STK-663
+
+commit c747aac67dbfd45dda05027fdad325a15fdcacc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 19:50:52 2019 -0500
+
+    slight parallel make issue fixed with sqlite - too many references to CURRENT
+
+commit caf25f74fc1b9d65fc83cfd7070e7416733b3915
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 19:54:27 2019 -0500
+
+    fixed typo
+
+commit 5a557d4243d67667ac3567b6cb5211393bda77c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 21:08:22 2019 -0500
+
+    major cleanup of CompileTimeFlagChecker_HEADER: used it to delete (replace) old qLedCheckCompilerFlagsConsistency code; and used for many more variables to check for inconisitent builds
+
+commit bae0cc86821f618c374636c6d192a51138f4e49d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 21:33:07 2019 -0500
+
+    fixed a couple minor regressions with CompileTimeFlagChecker code
+
+commit 61d7ffcfb7f04466844297c2eca370ca9c05cab7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 10 21:33:47 2019 -0500
+
+    ThrowErrNoIfNegative (INT_TYPE returnCode) now deprecated
+
+commit 629a1b59b238f95ecd35eb9e2c12d6c7cc7deb0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 09:24:46 2019 -0500
+
+    docs on limitations of CompileTimeFlagChecker_HEADER () and woirkaround one such limitaiton"
+
+commit 9b8e80b0c31c1f128cb65c2570ece959515e1a85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 09:58:56 2019 -0500
+
+    moved ThrowPOSIXErrNoIfNegative, ThrowPOSIXErrNoIfNegative, ThrowSystemErrNo etc out of SystemErrorException<> and put them at top level of Execution namespace
+
+commit bb38b7b96a2f2ac7bc84a5150a1a5b6efcb78dba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 10:19:39 2019 -0500
+
+    more clenaups of Execution::ThrowErrNoIfNegative () deprecation (use Execution::ThrowPOSIXErrNoIfNegative)
+
+commit d8245c9ae918b115215246e03c9697eef2f71ee6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 10:21:42 2019 -0500
+
+    more ThrowIf... cleanups
+
+commit 512fc99a280169388ddc3d6192170fe897e6055d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 10:23:50 2019 -0500
+
+    more Execution::ThrowPOSIXErrNo cleanups
+
+commit 92c6219853f07b879a6b81cc49f78a477b1b92a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 10:24:37 2019 -0500
+
+    cosmetic
+
+commit a01193925060aebec379b95a149101174cba1f91
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 10:29:07 2019 -0500
+
+    cosmetic and minor errno cleanups
+
+commit 26588612498ade263b5c45d207cec4041eb9218c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 11:10:08 2019 -0500
+
+    more lceanups / deprecation of ErrNoException (use Exceptions.h)
+
+commit ad2c4193979ad75f9a0ac8603a9b4741d32873c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 11:18:12 2019 -0500
+
+    cosmetic cleanup of recent exception changes
+
+commit b9a98d394cc3ae3c7fb7e8b03073e417d38618f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 19:07:24 2019 -0500
+
+    fix string usage (perl compare) in configure script
+
+commit 6d9a84579b20f14f3c063676472274dbb00afa8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 11 22:36:38 2019 -0500
+
+    embellish configure error message
+
+commit fffdb11161ebf40356eaffeedd9c021fedf1341a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 12 09:33:43 2019 -0500
+
+    fixed typo in recent extraCDefine code in configure
+
+commit 6fe7891e98ad99a5cefebb1ba2cc901ea5a6ee11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 12 11:39:11 2019 -0500
+
+    major cleanup of Foundation/Execution/Platform/Windows/Exception
+            -       deprecated Execution::Platform::Windows::ThrowIfFalseGetLastError
+            - deorecated Execution::Platform::Windows::Exception
+            - simplified ThrowIfFalseGetLastError (now takes anyting arg can be compared to zero).
+            - use Execution::ThrowSystemErrNo intead of Execution::Platform::Windows::Exception::Throw (dwRetVal);
+            - tons of related cleanups
+
+commit 8b493e4750b58eb99609c29cf131e8997a5c2101
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 12 18:47:41 2019 -0500
+
+    lose obsolete references to Platform::Windows::Exception from regtests
+
+commit 088c1c122555c43c1ace934c83e61b2c3e54f5e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 12 18:48:20 2019 -0500
+
+    Support vs2k17 15.9.7
+
+commit 7c282e43f805811efb4016ce40e4f2a8cce91217
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 13 09:12:40 2019 -0500
+
+    re-enabled tsan workaround for https://stroika.atlassian.net/browse/STK-677
+
+commit 4e8eb1c4a5a11a7bf6bbc800aa2db5bda8d0d61a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 14 21:28:56 2019 -0500
+
+    new ThrowWSASystemErrorIfSOCKET_ERROR () and use that to replace use of template spcializzation ThrowPOSIXErrNoIfNegative<IO::Network::Socket::PlatformNativeHandle>
+
+commit 327002e116ab0b9d2d6114985c9c16d1ec32b732
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 17 09:08:35 2019 -0500
+
+    InternetAddress::Offset () first draft
+
+commit 690ad74e6246560e514e9253e209d9d4d0a58d5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 17 09:10:01 2019 -0500
+
+    InternetAddressRangeTraits_::kUpperBound now set to largest ipv6 address
+
+commit 9dbeaef99ec96ab81330a595b1ec6aa540f97f20
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 17 09:17:36 2019 -0500
+
+    CIDR::GetRange () fixed
+
+commit b8b262bda78b2d2bd1e4f8f1f38430740da3e376
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 17 09:40:59 2019 -0500
+
+    IO::Network::Private_::InternetAddressRangeTraits_::GetNext ()
+
+commit 13247b296944ce3866cf83decb6dffbc87b8ae7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 17 16:07:28 2019 -0500
+
+    added new networking Interface::Type::eDeviceVirtualInternalNetwork; and returned that for virtualbox and hyperv special adapters
+
+commit 329bf86cffdd2f583ef4e03ec8bfc3539f250340
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 17 16:09:57 2019 -0500
+
+    fixed bugs with new InternetAddress::Offset ()
+
+commit 5c795533db2ed7075233ebc37b437c2d0207791f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 19 10:47:17 2019 -0500
+
+    Better docs on DNS::GetHostEntry () and related APIs, and support [] around numeric IP addresses
+
+commit 18aa37deccf7fd192708257b52b3108e63afb344
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 19 13:12:56 2019 -0500
+
+    more cleanups of DNS::GetHostEntry and docs
+
+commit 2c4c90ccf7bb5b175c3712de1596e70f30eb10bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 19 14:13:21 2019 -0500
+
+    cosmetic
+
+commit e92570c85759942215e8ed9fba0455b0429f5b47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 19 21:53:24 2019 -0500
+
+    lose extra no longer needd quotes on strings in Advertisement::ToString ()
+
+commit fb7761896a62e7878816bf7781936f85e0ac6c83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 10:26:04 2019 -0500
+
+    comsetic clenaup of Memory::CopyToIf ()
+
+commit 6d40af68bcc6bb4a283909824feacee671a8277e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 10:38:00 2019 -0500
+
+    support _MS_VS_2k19_16Pt0Pt0pre3_ (one fix)
+
+commit a656e4e86812940653f3fd8a55f5aa30b816b6f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 10:58:38 2019 -0500
+
+    (primitive version of) String::Match overload taking multiple match/capture arguments (must redo with variadic templates but this will play for now)
+
+commit 5024177e52baa9c5df5b86e9810b3e18ad81a322
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 11:08:39 2019 -0500
+
+    fixed typo with qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+
+commit d327966b7d7bd76691810e6907c510afd9d29ccb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 11:47:26 2019 -0500
+
+    Mapping operator[] returns const object, and docs improvements on this
+
+commit ed9c4327dc240e8c56e8ed8a50028a08f366794e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 13:19:25 2019 -0500
+
+    cosmetic
+
+commit 657ba53903a838eb2340f2e273e336b820046d71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 16:05:19 2019 -0500
+
+    cosmetic
+
+commit c1174983ad7358e43d8c404e2e58da2a1b41b393
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 16:22:32 2019 -0500
+
+    minor ToString () cleanusp/use DbgTrace in WinHTTP Connection code
+
+commit a05a9d88a28c4a503bc4afd827a17fb0e2deb8e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 17:49:30 2019 -0500
+
+    SSDP client Search is movable
+
+commit 79a0a5e10928869e4d06d67d591cae10282bfb6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 21:52:29 2019 -0500
+
+    first draft of Execution::Activity code
+
+commit b1af9e5b68e2cab7e9d0da8cf7d3ec5cec93440f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 21:54:45 2019 -0500
+
+    first draft of new Execution::Activity
+
+commit 574d9d1421b0b3b09645207a238a139c22752eb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 21:56:10 2019 -0500
+
+    tweaks Activity code
+
+commit 41d3130fe667d60c913a233a6638e3a2eb9f493e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 21:56:52 2019 -0500
+
+    fixed typo
+
+commit 2b08dcf661b422fba0f36e55dfc009d414bee3a3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 21:57:40 2019 -0500
+
+    fixed typo
+
+commit 17fdc273c760d67d4723b3b39e75b4d47ceb0038
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 20 22:03:11 2019 -0500
+
+    fixed missing ToString.h incl;ude
+
+commit 5b9a3463bb9b14f4da367aaa3c2e82578e349bb2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 09:02:54 2019 -0500
+
+    activity objects internally need virtual DTOR
+
+commit 986587ed9dfafce57cae1b0e90f4f9c6796d2f01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 09:39:27 2019 -0500
+
+    several enhancements to Activity code - returning stack; no new call in DeclareActivity , draft LazyEvalActivity impl and docs
+
+commit 4f297a7e76f4be85515747e55f96a1d684c1b744
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 09:40:25 2019 -0500
+
+    cosmetic
+
+commit 85e0b5228ea8a2ce8b455eee180d61a70abf65b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 10:12:52 2019 -0500
+
+    Started integrating Activity support into ExceptionStringHelper
+
+commit 7b05ae4611ff74c2747701c3ab9e4afc5ef6acfe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 10:13:29 2019 -0500
+
+    make format-code
+
+commit d04bcf87ad83e01ae1b1e56c7fce974dc96ec698
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 10:32:17 2019 -0500
+
+    more progress on activities on excpetion messages
+
+commit d4e8be92938c2923ba8b4f1b44c112ebc632c2fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 21 12:59:51 2019 -0500
+
+    cleanups and bugfixes to new Activity code (now seems working with Exception throw and decent messages) and regtests
+
+commit 87689783eafed50a71dc242faf782361833ba69f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 23 22:55:40 2019 -0500
+
+    fixed Execution::CaptureCurrentActivities ()
+
+commit 8a667c7e1dd8c99df5d077339376f68bac981b10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 23 22:59:17 2019 -0500
+
+    start using 'activity' exception code in IO::Network::Socket..::Bind () - still needs work but better
+
+commit 0b11a363a676263ae910c82bcf1bde084a23fefe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 24 12:11:48 2019 -0500
+
+    new EmptyObjectForConstructorSideEffect utility
+
+commit 466a616ce405b3a4b12f381087fb29e4a660482a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 24 12:12:05 2019 -0500
+
+    make format
+
+commit f780d421e0665ba10ab42fea7a83240387a29012
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 24 21:03:28 2019 -0500
+
+    minor cleanups to Common::EmptyObjectForConstructorSideEffect
+
+commit ad91ab9c1dcfb377a86a34df8a61cfa17ccfda24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 24 22:09:36 2019 -0500
+
+    cosmetic
+
+commit 23c2e2fffd6f8498e498b75397664421156cd690
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 24 22:16:53 2019 -0500
+
+    fixed constexpr for Activity<wstring_view>
+
+commit 56e1c5557f3646f78d404e9c877aeea4b0dd91c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 09:36:54 2019 -0500
+
+    make Activity<Characters::String> classes final to avoid warnings about no virtual DTOR
+
+commit 5322f60b9706e915fd95b8e26ab42cac4b1e32d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 09:37:42 2019 -0500
+
+    make format-code
+
+commit a771909d2b9b712fb0349fbf422d1c3c031d4d61
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 10:46:30 2019 -0500
+
+    activity code/docs cleanups (esp deduction guide)
+
+commit f711803876d19a6e853fed86a48356c8e994afa6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 18:26:45 2019 -0500
+
+    new draft Linguistics_MessageUtilities and used it (RemoveTrailingSentencePunctuation) in /Execution/Exceptions.cpp
+
+commit ef43f549718640cfb5386541b74a88f91a806092
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 19:10:30 2019 -0500
+
+    more transition from Linguistics::PluralizeNoun (DEPRECATED) to Linguistics::CurrentLocaleMessageUtilities::PluralizeNoun
+
+commit c7b81bde4a1d16e4262ec3125b78aa6426258991
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 21:20:16 2019 -0500
+
+    CurrentLocaleMessageUtilities::Configuration::sThe must be declared after stuff the CTOR depends on cuz must be initialized after
+
+commit 906c373f201d1a611abc846b612c2eb3fbac405f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 21:28:34 2019 -0500
+
+    cosmetic
+
+commit 2aeee9d348568055ee228b9ea6b3a0666fee8cd2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 21:36:55 2019 -0500
+
+    use Linguistics::CurrentLocaleMessageUtilities::PluralizeNoun in place of now deprecated Linguistics::PluralizeNoun
+
+commit 3b47bb6905c43844580337e946ef6f532288ca81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 22:49:11 2019 -0500
+
+    cosmetic
+
+commit 556a67596aaa9a7ce0d9dd2fb3da43f6a7e71ba6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 22:49:49 2019 -0500
+
+    defined private getaddrinfo_error_category_; and use that to change throw of plain Exception to Throw (SystemErrorException (errCode, getaddrinfo_error_category_ ())); for ::getaddrinfo results
+
+commit 1bfe193b1c27c28045b87bb2ffa8af3ea667e3f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 25 23:26:08 2019 -0500
+
+    more small cleanups to getaddrinfo_error_category_
+
+commit 7507f532134fd8aec699e17b10b3529d2f0349cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 10:43:52 2019 -0500
+
+    slight cleanup of comments on Debug::Backtrace code and slight error handling improvement
+
+commit 31bb17ba34804fd0e770fc0f47a12b1eeb0d644e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 10:57:41 2019 -0500
+
+    small cleanups to DNS error handling code
+
+commit fc2294a506b19e54f96ab5c79f663fc726fdbe74
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 11:08:10 2019 -0500
+
+    tried extra if test in backtrace code to avoid crash in call to backtrace () under gdb under WSL, but it didnt help and from teh docs didnt appear needed do removed it
+
+commit f021fa95e3039ff7c96a539e8914864847405c02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 11:40:55 2019 -0500
+
+    wrap in USE_NOISY_TRACE_IN_THIS_MODULE_ boring DbgTrace
+
+commit 0240ceedc636373b08751ed0afa5c73401df735d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 11:58:33 2019 -0500
+
+    cosmetic
+
+commit 89a28df3ba13080d284fb21ab92a6c028e785ac9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 11:58:52 2019 -0500
+
+    fixed IO::Network::Private_::InternetAddressRangeTraits_::GetNext () for edge condition
+
+commit e2e294bc90b7e49851189e5dd3234cfa38e7216c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 16:22:26 2019 -0500
+
+    Added utility Common::Immortalize ()
+
+commit 3ce99d41f60e861042367701940be53ba57e6b14
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 16:52:35 2019 -0500
+
+    cleanup recent Immortalize() and DNS_Error_Category code - and deprecated HRESULTErrorException and switched it to using SystemErrorException with new HRESULT_error_category ()
+
+commit 99e0fdd8722bf28265c4ce7e8fd7721b5653ee05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 18:41:51 2019 -0500
+
+    fixed typo in print exceptio result from catch i regtests
+
+commit 8158fba3b8cdfc93183d449b825afccfb80c47a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 18:56:21 2019 -0500
+
+    tweaks for IO/network/transfer regtest to wrokaround sproradic failures from curl
+
+commit 12336ef38d904156ce7fb71e5e8a602d13b3d4f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 18:59:26 2019 -0500
+
+    libcurl 7.64.0
+
+commit 1b74ec7ca3ff42f555bfea1e1cfb294a7832de51
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 19:00:45 2019 -0500
+
+    sqlite 3.27.2
+
+commit deea7f4c8148c3be7f3b5a6e82e936a071de69f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 22:03:11 2019 -0500
+
+    tweak sqlite download dir
+
+commit 8d2d64880e4476f1cd6e2078ea106828c307c610
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 22:31:18 2019 -0500
+
+    deprecated Platform::Windows::StructuredException () and replaced it with use of SystemErrorException and StructuredException_error_category, and  RegisterStructuredExceptionHandler ()
+
+commit 99023c07d58381275712a3e1d30adbeb7029bf9e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 22:46:21 2019 -0500
+
+    LibCurlException now deprecated - use SystemErrorException{ hr, LibCurl_error_category () } instead
+
+commit 95d0ac59e5a3c2a63d4cceb2e75327e5eec7b19a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:00:13 2019 -0500
+
+    fix use of LibCurlExecption to use system_error and LibCurl_error_category ()
+
+commit f05eee5f3a66e56d621cb26e74854c7e1badf688
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:12:33 2019 -0500
+
+    cleanup libcurl exception catch usage
+
+commit 9926ec29b248038f6fa1301936c5b8f418376bc0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:39:40 2019 -0500
+
+    deprecated class typo
+
+commit 44d6fc0611fe94732ef31975d27e4e7d85914e1c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:43:13 2019 -0500
+
+    fixed typo on deprecated code
+
+commit 6d6e0df8ab801410dd5af596f6d25e2d4cbf18d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:44:11 2019 -0500
+
+    cosmetic; and Transfer::LibCurl_error_category typo
+
+commit 22b4c08cf4d98208877d35ba3b3f90b65ca16ff5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:55:36 2019 -0500
+
+    got rid of use of LibCurlException::ThrowIfError () and replaced with ThrowIfError (CURLCode)
+
+commit 55a5182a161ef8c4b2f6656357c92ce2589cea06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 26 23:56:04 2019 -0500
+
+    cosmetic
+
+commit 256ecf4f17a1481ab256f05d3b0d3195b1cc76fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:00:09 2019 -0500
+
+    include curl.h in Client_libcurl.h for CURLCode
+
+commit 441050323486559edf0502b0165f74997d57bf01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:02:37 2019 -0500
+
+    Cosmetic
+
+commit 60ceaf0e859c9ba10841241b5ab7127bef7ae23c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:14:09 2019 -0500
+
+    comment
+
+commit 749f5baa0d299248d41520e8370f8ba91c025eef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:17:22 2019 -0500
+
+    libcurl increase retry count and add sleep in regtest
+
+commit a4d12950ba27a09ea9150fad3be9714c0651e068
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:18:06 2019 -0500
+
+    fixed missing include
+
+commit 198a510641f1856b6e670d86c7385ec306445af4
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Feb 27 00:23:59 2019 -0500
+
+    tweak sleep
+
+commit 8a7f1048878bb0ca6018ea22ab5797602886e749
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:30:31 2019 -0500
+
+    docs/notes and fixed missing virtual dtor in new ~MessageUtilities code
+
+commit 168090306164af05561406be3c98fb606364bc05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:32:16 2019 -0500
+
+    cosmetic
+
+commit 8285455c7d1f35a57159790d405e8ca0ba9b1ea8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 00:34:36 2019 -0500
+
+    comsetic
+
+commit 57906947a7ae9412f1443eb46ad596f017877572
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 08:41:40 2019 -0500
+
+    renamed RegisterStructuredExceptionHandler to RegisterDefaultHandler_StructuredException
+
+commit 0254f5ac5bba93355993cbd5659e612ba7548e43
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 09:55:17 2019 -0500
+
+    ran into another raspberry pi regtest timeout, so tweaked timeout kMarginOfErrorHi_ again
+
+commit 0723750231826d30c8e7e91dab00b9d5d759b721
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 09:56:26 2019 -0500
+
+    suppress warning in regtest
+
+commit cbb8de7a95bb9ea3578964793d7acda613717cfc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 10:11:03 2019 -0500
+
+    made CurrentLocaleMessageUtilities::LookupHandler () public
+
+commit 45aa87df01f59823d5ce86a10e25b26f61f461ce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 10:14:10 2019 -0500
+
+    cosmetic
+
+commit 5bb3085616a5578349e64d61a07ff00584a49b3b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 10:34:46 2019 -0500
+
+    updated thread safety docs link from thread_safety.html to Thread-Safety.md
+
+commit 4d3b976d0c02659b2f2d972c228a3895d9dd7627
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 10:35:14 2019 -0500
+
+    cosmetic
+
+commit f700f7549ee4ab063345bdc93e706002d29b6231
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 10:35:40 2019 -0500
+
+    fixed regresion with configure --trace2file - must also set qDefaultTracingOn=1 if true
+
+commit 8f4fc3d1de4e1d302f6cf6bb0725bff1d8a94f67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 11:01:31 2019 -0500
+
+    silence a couple of (regression) warnings
+
+commit 1fc0a524692e0193fcf5ba98ff49b765084d4dc5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 27 21:07:04 2019 -0500
+
+    _MS_VS_2k19_16Pt0Pt0pre4_ support
+
+commit 4edca0ff5b957dc2f4accea9cb9ae152ea638480
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 00:07:53 2019 -0500
+
+    improved class RuntimeErrorException<> and used in many places instead of Exception<> as base class for stuff like FormatExceptions etc
+
+commit 91b8831dcd9134abf2f8f83f91296061844d954d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 09:45:54 2019 -0500
+
+    cleanup warning suppression on test
+
+commit 54a5b87a64064ede96acb90a0587dd70726514ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 09:58:18 2019 -0500
+
+    cosmetic
+
+commit 38bc9721f59105f50e1efb27bdd44d48164b2897
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 14:52:21 2019 -0500
+
+    big refactoring of Duration class: now caches fNumericRepOrCache_; may never construct string rep (depending on args); SHOOULD be much faster (untested); and SHOULD now be able to use constexpr with Duration - but that doesnt appear to work yet
+
+commit 859683c12850412a9d9f885b9021e0b3e24693f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 14:54:44 2019 -0500
+
+    format/typos
+
+commit 455b4b44dd884fd060a2dc1a93ab601bffff6d3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 14:55:30 2019 -0500
+
+    cosmetic
+
+commit c8e50194717f5586badc712d06f86e1e878ef79c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 15:05:57 2019 -0500
+
+    a few Duration code clenaups
+
+commit 77bdf1efe00ac2f8cd2597ed8cd2c8dbb0a36019
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 15:12:55 2019 -0500
+
+    made Duration::empty () constexpr and a few ohter minro cleanups
+
+commit 81dcb52aea0746e56f4744556d9c42ec0f2ae8eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 15:18:32 2019 -0500
+
+    Duration cleanup and one big bugfix(regression fix)
+
+commit 477a816b83005efe17a3ccdc13f5a9400ef8011f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 15:30:27 2019 -0500
+
+    cosmetic
+
+commit 769842ab0cf6dc2d5d1d2205270d143359904d84
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 15:44:11 2019 -0500
+
+    Duration move support
+
+commit 1860a17bcda603a131efd4c9aab40ac8ae63d04e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 16:36:26 2019 -0500
+
+    cosmetic debug regressiontest tracing
+
+commit b1a61825af1f4e41ec63b8fe9bf4d012ce007317
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 17:00:33 2019 -0500
+
+    fixed bug (regression) in new Duration code but still not passing asan on UNIX
+
+commit e6eb4dd80515d111ec1891e523c4c67a80ff3e06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 17:18:45 2019 -0500
+
+    small Duration cleanups
+
+commit 983d10cc1ed71318927614f6d9d393cae0ee7438
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 17:54:11 2019 -0500
+
+    more cleanups of Duration code - and hopefully fixed last regrssion
+
+commit b073283f104f7aa3744b072cfbfacbbed8f751f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 18:08:50 2019 -0500
+
+    cosmetic/docs
+
+commit f9b195ab05463cde46151befa373533dadded67f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 18:28:08 2019 -0500
+
+    Comments
+
+commit 3784352b86b894e9ab957c187424e723ab4b482c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 19:01:14 2019 -0500
+
+    documentation
+
+commit 4e72acff9b5090288fa06b3332964b2fc7c20301
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 28 22:18:27 2019 -0500
+
+    doc comments
+
+commit f8f252ebf1d27ef5c9281275990735ee9b4cb3de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 1 00:30:42 2019 -0500
+
+    todo docs
+
+commit e1c6956bbe71427b4a6f5b491f82c6ea01b3f88e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 1 15:13:39 2019 -0500
+
+    Allow reading Configure-Command-Line from ScriptsLib/GetConfigurationParmeter and then used that in makefile to support make reconfigure and automatic make reconfigure when STROIKA_VERSION file changes
+
+commit 2158d40d93ad3cc2aec9e6906bf3d21b837dee9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 1 16:38:25 2019 -0500
+
+    GetConfigurations now takes an optional --quiet flag which suppressing warning about no matching tags; this is then used in ./ScriptsLib/RegressionTest to suppress a pointless warning (about no rasperrypi configurations etc)
+
+commit 0c5bd449c7cc298cd8f43af181913565e5d4b9f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 2 22:28:45 2019 -0500
+
+    replace many uses of soon-to-be-deprecated Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER () with use of new LazyEvalActivity /DeclareActivity
+
+commit 5652cb182cf52c43c31b53ce75b945682aa60330
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 15:24:04 2019 -0500
+
+    deprecated Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER and Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME)
+
+commit 5d9bf905e42d14a09133c79298a9cb3ab7b2cf3d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 21:04:31 2019 -0500
+
+    remove ifdefed comemnted out excpetion code
+
+commit b4de64cd2e1272dd6edd41a983f9ad90fba4bf60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 21:27:21 2019 -0500
+
+    FileAccessException use removed in a few places
+
+commit 22c72b7deb0941b3c36820bfee58e83c6d7fb5b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 21:55:28 2019 -0500
+
+    lose unused CATCH_REBIND_FILENAMES_HELPER_()
+
+commit de62811c9ce12fb99a019139aa33b4075c1732a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 22:00:40 2019 -0500
+
+    cleanup/simplify Socket::Ptr::Bind () exception handling code to use condition comparison
+
+commit 331018e125d2e4461a163cf4be3a83baac398d58
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 22:03:19 2019 -0500
+
+    lose FileAccessException.h
+
+commit 71a97201e410e74ef17ed2cd1483e0458d0f2860
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 3 22:03:36 2019 -0500
+
+    lose FileAccessException.h
+
+commit 8fbc1e7a682fc45c9614ddfed5f85d7df8d67cc7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 09:54:54 2019 -0500
+
+    more cleanups of FileAccessException code - replacing it with  if (e.code () == errc::no_such_file_or_directory) {
+
+commit 61fee572c20d773bf45270ea29aabff86e6253a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 10:13:03 2019 -0500
+
+    !qCompilerAndStdLib_error_code_compare_condition_Buggy define and tests
+
+commit 8545df09baa020674ef459800cf2a3d45a978589
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 11:57:17 2019 -0500
+
+    test 'my gcc' builds 7.4 and 8.3
+
+commit cbb0855f166a2c34bf1d0f8cefe0a2d1e2483d8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 12:02:56 2019 -0500
+
+    cosmetic
+
+commit 263d5633059fc8495893d841c71d7bbf03c35591
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 16:22:27 2019 -0500
+
+    lose unneeded include:
+
+commit e7f33959e7b27a9175ffdd9195806f88344587a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 18:49:52 2019 -0500
+
+    deprecated FileFormatException
+
+commit b75477624d8422867f32e64cfcbd7cebe1411dce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:09:03 2019 -0500
+
+    FileBusyException marked deprecated; and OpenInputFileStream OpenOutputFileStream now also set flag in iostream so it throws exceptions on failures
+
+commit 83828738f4ee1e6f68864559128700f8e503898e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:09:24 2019 -0500
+
+    cosmetic
+
+commit d8c287e9e61e8b0762528022f64335661a73560d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:10:58 2019 -0500
+
+    cosmetic
+
+commit a6bf2365d76eef4a23eda75fd3fbaf99de66a951
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:18:47 2019 -0500
+
+    Cosmetic
+
+commit aefe71ad86425615a1ddad71f63d0b42ccdf5432
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:33:04 2019 -0500
+
+    renamed IO::FileAccessMode to IO::AccessMode and deprecated old FileAccessMode name
+
+commit c1e5f820795000ff8514e7c8d494f64ebcdde8d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:34:15 2019 -0500
+
+    fixed missing checkin of AccessMode
+
+commit 472f7aa7431cbb2dfac78a930c0c420a74b96c62
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:42:38 2019 -0500
+
+    cosmetic
+
+commit bb3205b93c64e8833fae862ea05395de37d658b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 4 20:47:01 2019 -0500
+
+    typo/cosmetic
+
+commit 5e1f8c5230c85d00fc4ee09726d32411d55c5177
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 09:19:16 2019 -0500
+
+    fixed iostream::OpenInputFileStream and iostream::OpenOutputFileStream to also exception on failbit
+
+commit cff7a6cb05620a6f3299a26ada5208f3feca136a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 09:19:52 2019 -0500
+
+    dbgtraces in regressiontests
+
+commit 555a84a4055d0fbd423f373f0801507f2930516e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 09:20:34 2019 -0500
+
+    Added  operator" _ISO8601 -> Duration support
+
+commit d57e5de92272dc56e570f9dcfb0e406bac0d0fa8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 09:20:58 2019 -0500
+
+    regressiontest for _ISO8601 feature
+
+commit ac2898667f72b339ef5187d24ea27c5e64bb97cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 09:34:06 2019 -0500
+
+    release notes
+
+commit 998dfc98bf4d3d86c31e2569808f6439087b9e13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 10:05:44 2019 -0500
+
+    Logger::LogIfNew and SetSuppressedDuplicates now use Duration (instead of DurationSecondsType). So callers must change (not backward compatible)
+    Logger::Get ().SetSuppressDuplicates (15);
+    TO
+    Logger::Get ().SetSuppressDuplicates (15s); (similarly for LogIfNew: append an s)
+
+commit 507b6226a736b04c708f2a05e0b3ca5fab953c4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 10:14:20 2019 -0500
+
+    cosmetic
+
+commit eb34d418950efb91fadd0419ca506581329d4280
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 10:17:22 2019 -0500
+
+    cosmetic
+
+commit 95c6c34ccbf0f3f04eda2979de2fbbc0ed2b6114
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 10:41:42 2019 -0500
+
+     String operator" _ASCII
+
+commit f6c61b60f55117042baa6435d7a5acfad7e93731
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 10:56:10 2019 -0500
+
+    @todo comments
+
+commit aa461d094b7317dc1921e78f8e048a69971a6da5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 11:27:01 2019 -0500
+
+    new FromPath/ToPath filesystem path helper functions (early step towards addressing https://stroika.atlassian.net/browse/STK-685)
+
+commit 45d7fefd0f3ca419dd5c217a37fe10c3dc8e6558
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 5 11:31:02 2019 -0500
+
+    cosmetic
+
+
+
+
 
 
 Logger::LogIfNew and SetSuppressedDuplicates now use Duration (instead of DurationSecondsType). So callers must change (not backward compatible)
 Logger::Get ().SetSuppressDuplicates (15);
 TO
 Logger::Get ().SetSuppressDuplicates (15s); (similarly for LogIfNew: append an s)
-
+#endif
 
 
 
