@@ -140,27 +140,21 @@ namespace Stroika::Foundation::IO::FileSystem {
 
 #if qPlatform_Windows
     public:
+		/**
+		 */
         template <typename WINDOWS_API_RESULT>
-        inline static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1 = {}, const path& p2 = {})
-        {
-            if (test == 0) {
-                ThrowSystemErrNo (GetLastError (), p1, p2);
-            }
-        }
+		 static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1 = {}, const path& p2 = {});
         //tmphack overload til we switch APIs for FS to all using path
         template <typename WINDOWS_API_RESULT>
-        inline static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2 = {})
-        {
-            if (test == 0) {
-                ThrowSystemErrNo (GetLastError (), path (p1.As<wstring> ()), path (p2.As<wstring> ()));
-            }
-        }
+		 static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2 = {});
 #endif
 
 #if qHasFeature_boost
     public:
         /**
-         *  If using boost filesystem, you may wisht to map some boost filesystem_error exceptions to ones compatible with the rest of the runtime library.
+         *  If using boost filesystem, you may wish to map some boost filesystem_error exceptions to ones 
+		 *	more compatible with the rest of the runtime library (boost exceptions only merge back to the 
+		 *	std c++ exceptions at std::runtime_error so do to see error_code).
          */
         static Exception TranslateBoostFilesystemException2StandardExceptions (const boost::filesystem::filesystem_error& e);
         template <typename FUNCTION, enable_if_t<is_invocable_v<FUNCTION>>* = nullptr>

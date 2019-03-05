@@ -26,6 +26,22 @@ namespace Stroika::Foundation::IO::FileSystem {
     {
         Require (not p1.empty () or p2.empty ()); // if only one path provided, provide it first
     }
+#if qPlatform_Windows
+    template <typename WINDOWS_API_RESULT>
+    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1 = {}, const path& p2 = {})
+    {
+        if (test == 0) {
+            ThrowSystemErrNo (::GetLastError (), p1, p2);
+        }
+    }
+    template <typename WINDOWS_API_RESULT>
+    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2 = {})
+    {
+        if (test == 0) {
+            ThrowSystemErrNo (::GetLastError (), path (p1.As<wstring> ()), path (p2.As<wstring> ()));
+        }
+    }
+#endif
 #if qHasFeature_boost
     template <typename FUNCTION, enable_if_t<is_invocable_v<FUNCTION>>*>
     auto Exception::TranslateBoostFilesystemException2StandardExceptions (const FUNCTION& f)
