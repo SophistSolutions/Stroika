@@ -7,7 +7,7 @@ to be aware of when upgrading.
 History
 =======
 
-## 2.1d18x {2019-03-06}
+## 2.1d18 {2019-03-06}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d17...v2.1d18
 
@@ -197,7 +197,8 @@ History
     (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
     cuz too slow
   - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
-  - Windows vsk217 and Ubuntu 1804 regtests had failures due to temporary DNS resolution problems - not real issues.
+  - Windows vsk217 and vsk219 regtests had failures due to temporary DNS resolution problems - not real issues
+    (though bad error messages are slight issue to be fixed for next release).
 
 ----
 
