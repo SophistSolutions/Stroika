@@ -38,26 +38,26 @@ History
     - renamed old Execution/Exception.h to Throw.h;
   -  ThrowPOSIXErrNo () and ThrowSystemErrNo () - corresponding to std::generic_category, std::system_category
      and for IO::FileSystem::Exception use  FileSystem::Exception::ThrowPOSIXErrNo () overload which takes paths as arguments etc
-  -  Lower priority excepetion related changes
-     -  renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint ->  
-        qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
-     -  qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy XCode 10 workaround attempts
-     -  Exception::TranslateBoostFilesystemException2StandardExceptions () helper (for boost)
-     -  ThrowErrNoIfNegative (INT_TYPE returnCode) now deprecated
-     -  deprecated Execution::Platform::Windows::ThrowIfFalseGetLastError
-     -  deorecated Execution::Platform::Windows::Exception
-     -  simplified ThrowIfFalseGetLastError (now takes anyting arg can be compared to zero).
-     -  use Execution::ThrowSystemErrNo intead of Execution::Platform::Windows::Exception::Throw (dwRetVal);
-     -  new ThrowWSASystemErrorIfSOCKET_ERROR () and use that to replace use of template spcialization
-        ThrowPOSIXErrNoIfNegative<IO::Network::Socket::PlatformNativeHandle>
-     - defined private getaddrinfo_error_category_; and use that to change throw of plain Exception to Throw (SystemErrorException (errCode, getaddrinfo_error_category_ ())); for ::getaddrinfo results
-     - deprecated Platform::Windows::StructuredException () and replaced it with use of   SystemErrorException and StructuredException_error_category, and  RegisterStructuredExceptionHandler ()
-     - LibCurlException now deprecated - use SystemErrorException{ hr, LibCurl_error_category () } instead
-     - renamed RegisterStructuredExceptionHandler to RegisterDefaultHandler_StructuredException
-     - cleanup/simplify Socket::Ptr::Bind () exception handling code to use condition comparison and new Exception code, and activities
-     - deprecated Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER and Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME)
-     - FileBusyException marked deprecated; 
-     - OpenInputFileStream OpenOutputFileStream now also set flag in iostream so it throws exceptions on failures
+  - Lower priority excepetion related changes
+    - renamed qStroika_Foundation_Exection_Exceptions_TraceThrowpoint ->  
+      qStroika_Foundation_Exection_Throw_TraceThrowpoint (cuz define moved files)
+    - qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy XCode 10 workaround attempts
+    - Exception::TranslateBoostFilesystemException2StandardExceptions () helper (for boost)
+    - ThrowErrNoIfNegative (INT_TYPE returnCode) now deprecated
+    - deprecated Execution::Platform::Windows::ThrowIfFalseGetLastError
+    - deorecated Execution::Platform::Windows::Exception
+    - simplified ThrowIfFalseGetLastError (now takes anyting arg can be compared to zero).
+    - use Execution::ThrowSystemErrNo intead of Execution::Platform::Windows::Exception::Throw (dwRetVal);
+    - new ThrowWSASystemErrorIfSOCKET_ERROR () and use that to replace use of template spcialization
+      ThrowPOSIXErrNoIfNegative<IO::Network::Socket::PlatformNativeHandle>
+    - defined private getaddrinfo_error_category_; and use that to change throw of plain Exception to Throw (SystemErrorException (errCode, getaddrinfo_error_category_ ())); for ::getaddrinfo results
+    - deprecated Platform::Windows::StructuredException () and replaced it with use of   SystemErrorException and StructuredException_error_category, and  RegisterStructuredExceptionHandler ()
+    - LibCurlException now deprecated - use SystemErrorException{ hr, LibCurl_error_category () } instead
+    - renamed RegisterStructuredExceptionHandler to RegisterDefaultHandler_StructuredException
+    - cleanup/simplify Socket::Ptr::Bind () exception handling code to use condition comparison and new Exception code, and activities
+    - deprecated Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER and Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME)
+    - FileBusyException marked deprecated; 
+    - OpenInputFileStream OpenOutputFileStream now also set flag in iostream so it throws exceptions on failures
 
 - Foundation::Characters
   - String::Match overload taking multiple match/capture arguments (must redo with variadic templates but this will play for now)
@@ -173,14 +173,14 @@ History
 
 - HistoricalPerformanceRegressionTestResults/
 
-  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, MacOS_XCode10}-2.1d17.txt
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, MacOS_XCode10}-2.1d18.txt
 
 - Tested (passed regtests)
   - OUTPUT FILES:
 
         Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
         Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
-        Ubuntu1810-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d17-OUT.txt
+        Ubuntu1810-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d18-OUT.txt
   - vc++2k17 (15.9.8)
   - vc++2k19 (16.0.0-preview4.1)
   - MacOS, XCode 10
@@ -197,6 +197,7 @@ History
     (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
     cuz too slow
   - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+  - Windows vsk217 and Ubuntu 1804 regtests had failures due to temporary DNS resolution problems - not real issues.
 
 ----
 
