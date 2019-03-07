@@ -12,6 +12,8 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
+#include "Stroika-Current-Version.h"
+
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
@@ -49,6 +51,19 @@ namespace {
         verifier (Version (1, 2, VersionStage::Beta, 4, true), L"1.2b4", L"1.2.96.9");
         verifier (Version (3, 0, VersionStage::Release, 0, true), L"3.0", L"3.0.160.1");
         verifier (Version (3, 0, VersionStage::Release, 1, true), L"3.0.1", L"3.0.160.3");
+        {
+            auto testRoundTrip = [](uint32_t fullVer, uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild) {
+                Version sv{fullVer};
+                VerifyTestResult (sv.fMajorVer == majorVer);
+                VerifyTestResult (sv.fMinorVer == minorVer);
+                VerifyTestResult (sv.fVerStage == verStage);
+                VerifyTestResult (sv.fVerSubStage == verSubStage);
+                VerifyTestResult (sv.fFinalBuild == finalBuild);
+                VerifyTestResult (sv.AsFullVersionNum () == fullVer);
+            };
+            // Could try a variety of these versions, but this should be enough...
+            testRoundTrip (kStroika_Version_FullVersion, kStroika_Version_Major, kStroika_Version_Minor, static_cast<VersionStage> (kStroika_Version_Stage), kStroika_Version_SubStage, kStroika_Version_FinalBuild);
+        }
     }
 }
 
