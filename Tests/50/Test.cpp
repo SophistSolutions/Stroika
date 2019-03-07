@@ -1317,7 +1317,7 @@ namespace {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1350000,
-            2.8,
+            2.9,
             &failedTests);
         Tester (
             L"Simple String append test (+=wchar_t[]) 10x",
