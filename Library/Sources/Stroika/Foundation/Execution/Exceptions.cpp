@@ -77,8 +77,62 @@ ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonFo
  ***************** Private_::SystemErrorExceptionPrivate_ ***********************
  ********************************************************************************
  */
+#if qPlatform_Windows
+
+// for InternetGetConnectedState
+#if _MSC_VER
+#pragma comment(lib, "Wininet.lib")
+#endif
+
+optional<String> TryToOverrideDefaultWindowsSystemCategoryMessage_ (error_code errCode)
+{
+    if (errCode.category () == system_category ()) {
+        switch (errCode.value ()) {
+            case ERROR_NOT_ENOUGH_MEMORY:
+                return L"Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)"sv;
+            case ERROR_OUTOFMEMORY:
+                return L"Not enough memory to complete that operation (ERROR_OUTOFMEMORY)"sv;
+            case WSAEADDRNOTAVAIL:
+                return L"Socket address not available (WSAEADDRNOTAVAIL)"sv;
+            case ERROR_INTERNET_INVALID_URL:
+                return L"ERROR_INTERNET_INVALID_URL"sv;
+            case ERROR_INTERNET_CANNOT_CONNECT:
+                return L"Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)"sv;
+            case ERROR_INTERNET_NAME_NOT_RESOLVED:
+                return L"ERROR_INTERNET_NAME_NOT_RESOLVED"sv;
+            case ERROR_INTERNET_INCORRECT_HANDLE_STATE:
+                return L"ERROR_INTERNET_INCORRECT_HANDLE_STATE"sv;
+            case ERROR_INTERNET_TIMEOUT:
+                return L"Operation timed out (ERROR_INTERNET_TIMEOUT)"sv;
+            case ERROR_INTERNET_CONNECTION_ABORTED:
+                return L"ERROR_INTERNET_CONNECTION_ABORTED"sv;
+            case ERROR_INTERNET_CONNECTION_RESET:
+                return L"ERROR_INTERNET_CONNECTION_RESET"sv;
+            case ERROR_HTTP_INVALID_SERVER_RESPONSE:
+                return L"Invalid Server Response (ERROR_HTTP_INVALID_SERVER_RESPONSE)"sv;
+            case ERROR_INTERNET_PROTOCOL_NOT_FOUND: {
+                DWORD r = 0;
+                if (::InternetGetConnectedState (&r, 0) and (r & INTERNET_CONNECTION_OFFLINE) == 0) {
+                    return L"ERROR_INTERNET_PROTOCOL_NOT_FOUND"sv;
+                }
+                else {
+                    return L"ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)"sv;
+                }
+            }
+        }
+    }
+    return {};
+}
+#endif
 Characters::String Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code errCode)
 {
+#if qPlatform_Windows
+    // for some messages, the default windows implemation does poorly generating messages
+    if (optional<String> o = TryToOverrideDefaultWindowsSystemCategoryMessage_ (errCode)) {
+        return *o;
+    }
+#endif
+    // Let the standard C++ library generate the default error message for the given error code - from the category object
     return Characters::String::FromNarrowSDKString (errCode.message ());
 }
 
