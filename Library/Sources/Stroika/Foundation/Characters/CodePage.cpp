@@ -3641,11 +3641,11 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     namespace Private_ {
         void DoThrowBadSourceString_ThrowSourceExhausted_ ()
         {
-            Execution::Throw (Execution::Exception (L"Invalid UNICODE source string (incomplete UTF character)"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"Invalid UNICODE source string (incomplete UTF character)"sv));
         }
         void DoThrowBadSourceString_ThrowSourceIllegal_ ()
         {
-            Execution::Throw (Execution::Exception (L"Invalid UNICODE source string"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"Invalid UNICODE source string"sv));
         }
     }
 }

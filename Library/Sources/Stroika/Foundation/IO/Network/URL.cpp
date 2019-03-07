@@ -36,7 +36,7 @@ namespace {
             if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+'))
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::Exception (L"bad character in scheme"sv));
+                    Execution::Throw (Execution::RuntimeErrorException (L"bad character in scheme"sv));
                 }
         }
     }
@@ -133,7 +133,7 @@ URL URL::Parse (const String& w, ParseOptions po)
     if (w.empty ())
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::Exception (L"Cannot parse empty URL"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"Cannot parse empty URL"sv));
             //return result;
         }
 
@@ -159,7 +159,7 @@ URL URL::Parse (const String& w, ParseOptions po)
             // result.fScheme_ = String_Constant (L"http");
         }
         else {
-            Execution::Throw (Execution::Exception (L"URL missing scheme"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"URL missing scheme"sv));
         }
         if (result.fScheme_) {
             ValidateScheme_ (*result.fScheme_);

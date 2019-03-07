@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Streams::iostream {
             if (not fOriginalStream_.eof () and fOriginalStream_.fail ())
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::Exception (L"Failed to read from istream"sv));
+                    Execution::Throw (Execution::RuntimeErrorException (L"Failed to read from istream"sv));
                 }
             return n;
         }

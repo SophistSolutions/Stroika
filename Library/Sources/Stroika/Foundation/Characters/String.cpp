@@ -335,7 +335,7 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
     if (result != codecvt_base::ok)
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::Exception (L"Error converting locale multibyte string to UNICODE"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"Error converting locale multibyte string to UNICODE"sv));
         }
     resultWStr.resize (to_next - &resultWStr[0]);
     return resultWStr;
@@ -1199,7 +1199,7 @@ void String::AsNarrowString (const locale& l, string* into) const
     if (result != codecvt_base::ok)
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::Exception (L"Error converting locale multibyte string to UNICODE"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"Error converting locale multibyte string to UNICODE"sv));
         }
     into->resize (to_next - &(*into)[0]);
 }

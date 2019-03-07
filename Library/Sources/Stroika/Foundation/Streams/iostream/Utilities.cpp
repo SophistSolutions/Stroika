@@ -39,7 +39,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ())))
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::Exception (L"stream too large"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"stream too large"sv));
         }
     size_t                         bufLen = static_cast<size_t> (end - start);
     Memory::SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
@@ -64,7 +64,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ())))
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Execution::Exception (L"stream too large"sv));
+            Execution::Throw (Execution::RuntimeErrorException (L"stream too large"sv));
         }
     size_t                            bufLen = static_cast<size_t> (end - start);
     Memory::SmallStackBuffer<wchar_t> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
@@ -94,7 +94,7 @@ vector<byte> Streams::iostream::ReadBytes (istream& in)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ())))
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Exception (L"stream too large"sv));
+            Execution::Throw (RuntimeErrorException (L"stream too large"sv));
         }
     size_t                 len = static_cast<size_t> (end - start);
     SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, len);

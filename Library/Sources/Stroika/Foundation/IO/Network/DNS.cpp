@@ -248,7 +248,7 @@ InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
 #endif
     auto h = GetHostEntry (hostNameOrAddress).fAddressList;
     if (h.empty ()) {
-        Execution::Throw (Exception (L"No associated addresses"sv));
+        Execution::Throw (RuntimeErrorException (L"No associated addresses"sv));
     }
     return h[0];
 }

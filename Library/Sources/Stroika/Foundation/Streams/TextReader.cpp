@@ -111,7 +111,7 @@ protected:
 #endif
                 } break;
                 case codecvt_utf8<wchar_t>::error: {
-                    Execution::Throw (Execution::Exception (L"Error converting characters codepage"sv));
+                    Execution::Throw (Execution::RuntimeErrorException (L"Error converting characters codepage"sv));
                 }
             }
             Assert (end (outBuf) - outCursor <= (intoEnd - intoStart)); // no overflow of output buffer - must be able to store all the results into arguments
@@ -496,7 +496,7 @@ protected:
         while (fOffset_ < newOffset) {
             if (fSrcIter_.Done ()) {
                 AssertNotReached (); // because we checked within maxlen above
-                //Execution::Throw (Execution::Exception (L"Seek past end of input"sv)); // @todo clarify - docuemnt - not sure if/how to handle this
+                //Execution::Throw (Execution::RuntimeErrorException (L"Seek past end of input"sv)); // @todo clarify - docuemnt - not sure if/how to handle this
             }
             fSrcIter_++;
             fOffset_++;
