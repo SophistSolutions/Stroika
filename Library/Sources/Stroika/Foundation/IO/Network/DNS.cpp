@@ -74,7 +74,18 @@ namespace {
         }
         virtual string message (int _Errval) const override
         {
-            return ::gai_strerror (_Errval);
+            // On visual studio - vs2k17 - we get a spurrious space at the end of the message. This
+            // isn't called for by the spec - http://pubs.opengroup.org/onlinepubs/007904875/functions/gai_strerror.html
+            // but isn't prohibited either. Strip it.
+            const char* result = ::gai_strerror (_Errval);
+            while (isspace (*result)) {
+                ++result;
+            }
+            const char* e = result + ::strlen (result);
+            while (result < e and isspace (*(e - 1))) {
+                e--;
+            }
+            return string (result, e);
         }
     };
     const error_category& DNS_error_category () noexcept
@@ -193,7 +204,7 @@ optional<String> DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return {};
         default:
-            Throw (Exception (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
+            Throw (SystemErrorException (errCode, DNS_error_category ()));
     }
 }
 
