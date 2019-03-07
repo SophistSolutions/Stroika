@@ -7,6 +7,45 @@ to be aware of when upgrading.
 History
 =======
 
+## 2.1d19x {2019-03-08}
+
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d18...v2.19
+
+- fixed Version::Version (Binary32BitFullVersionType fullVersionNumber) CTOR and added regtest to verify/validte
+- More Exceptions cleanups
+  - TryToOverrideDefaultWindowsSystemCategoryMessage_ () tweak to windows system_category () messages since they frequently suck for common cases (unknown) - so use this to lookup better
+  -  change many cases of throw Execution::Exception () to throw RuntimeErrorException (); and a few more converts of String_Constant {..} tp ...sv for brevity
+  - DNS code: fix one more place was using 'stringexception' to use (SystemErrorException (... DNS_error_category); and fixed DNS_error_category message report to look a little better on widnows
+
+- HistoricalPerformanceRegressionTestResults/
+
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, MacOS_XCode10}-2.1d19.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d19-OUT.txt
+  - vc++2k17 (15.9.8)
+  - vc++2k19 (16.0.0-preview4.1)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10
+  - gcc 7, gcc 8
+  - clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
+    cuz too slow
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+
+----
+
 ## 2.1d18 {2019-03-06}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d17...v2.1d18
