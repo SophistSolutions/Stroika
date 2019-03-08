@@ -7,7 +7,7 @@ to be aware of when upgrading.
 History
 =======
 
-## 2.1d19x {2019-03-08}
+## 2.1d19 {2019-03-08}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d18...v2.19
 
