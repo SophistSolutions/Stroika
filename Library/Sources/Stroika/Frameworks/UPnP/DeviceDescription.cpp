@@ -180,14 +180,10 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
         registry.AddCommonType<uint16_t> ();
+        registry.AddCommonType<URL> ();
+        registry.AddCommonType<optional<URL>> ();
 
-// @todo  INCOMPLETE - URL, optional<URL> InternetMediaType and two 'list' types incomplete
-#if 0
-        optional<URL> fPresentationURL;
-#endif
-#if 0
-        URL               fURL; // url to the icon image file
-#endif
+// @todo  INCOMPLETE - InternetMediaType and two 'list' types incomplete
 //  InternetMediaType fMimeType;
 #if 0
         Collection<Icon> fIcons;
@@ -201,7 +197,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{L"width"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fHorizontalPixels)},
             {Name{L"height"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fVerticalPixels)},
             {Name{L"depth"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fColorDepth)},
-            //      { Name{ L"url" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fURL) },
+            {Name{L"url"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fURL)},
         });
         registry.AddClass<DeviceDescription::Service> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"serviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceType)},
@@ -211,7 +207,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             //{ Name{ L"eventSubURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fEventSubURL) },
         });
         registry.AddClass<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
-            //          {Name{ L"presentationURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
+            {Name{L"presentationURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
             {Name{L"deviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
             {Name{L"manufacturer"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
             {Name{L"friendlyName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
