@@ -1303,7 +1303,7 @@ namespace {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             65000,
-            0.45,
+            0.48,
             &failedTests);
         Tester (
             L"Simple Struct With Strings Filling And Copying2",
