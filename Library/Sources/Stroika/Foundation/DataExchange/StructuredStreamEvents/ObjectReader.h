@@ -24,6 +24,7 @@
 #include "../../Containers/SortedMapping.h"
 #include "../../Containers/SortedSet.h"
 #include "../../Execution/Synchronized.h"
+#include "../../IO/Network/URL.h"
 #include "../../Memory/Common.h"
 #include "../../Memory/Optional.h"
 #include "../../Streams/InputStream.h"
@@ -370,6 +371,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     private:
         static ReaderFromVoidStarFactory MakeCommonReader_ (const String*);
+        static ReaderFromVoidStarFactory MakeCommonReader_ (const IO::Network::URL*);
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::DateTime*);
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::Duration*);
         template <typename T>

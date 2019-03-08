@@ -91,6 +91,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <>
     void Registry::SimpleReader_<long double>::Deactivating ();
     template <>
+    void Registry::SimpleReader_<IO::Network::URL>::Deactivating ();
+    template <>
     void Registry::SimpleReader_<Time::DateTime>::Deactivating ();
     template <>
     void Registry::SimpleReader_<Time::Duration>::Deactivating ();
@@ -866,6 +868,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*)
     {
         return MakeCommonReader_SimpleReader_<String> ();
+    }
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const IO::Network::URL*)
+    {
+        return MakeCommonReader_SimpleReader_<IO::Network::URL> ();
     }
     template <typename T>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>*)

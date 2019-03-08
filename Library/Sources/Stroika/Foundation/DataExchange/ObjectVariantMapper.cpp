@@ -274,6 +274,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
+
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions)
 {
     using T                                  = IO::Network::URL;

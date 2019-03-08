@@ -152,6 +152,14 @@ void Registry::SimpleReader_<long double>::Deactivating ()
 }
 
 template <>
+void Registry::SimpleReader_<IO::Network::URL>::Deactivating ()
+{
+    IO::Network::URL::ParseOptions parseOptions{};
+    // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
+    IgnoreExceptionsForCall (*fValue_ = IO::Network::URL (fBuf_.str (), parseOptions));
+}
+
+template <>
 void Registry::SimpleReader_<Time::DateTime>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
