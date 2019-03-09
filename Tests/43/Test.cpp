@@ -475,7 +475,11 @@ namespace {
 #endif
             }
             catch (const system_error& lce) {
-                if (lce.code () == errc::timed_out) {
+                if (lce.code () == errc::timed_out
+#if qHasFeature_LibCurl
+                    or (lce.code () == error_code{CURLE_COULDNT_CONNECT, LibCurl_error_category ()})
+#endif
+                ) {
                     DbgTrace (L"Ignored '%s' on Test_5_SSLCertCheckTests_", Characters::ToString (current_exception ()).c_str ());
                     cerr << endl
                          << "WARNING: Ignored '" << Characters::ToString (current_exception ()).AsNarrowSDKString () << "' on Test_5_SSLCertCheckTests_"
