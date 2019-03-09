@@ -171,7 +171,8 @@ void Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code err
         switch (errCode.value ()) {
             case WAIT_TIMEOUT:           // errc::timed_out
             case ERROR_INTERNET_TIMEOUT: // ""
-                Throw (TimeOutException (errCode));
+                // NOT a good idea becuase then code saying if (errCode==errc::timed_out) will still fail --- Throw (TimeOutException (errCode));
+                Throw (TimeOutException ()); // sad to have to lose the original error, but kind of useful so if test against errc::timeout works
         }
     }
 #endif
