@@ -11,7 +11,9 @@ History
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d20...v2.1d21
 
-- xxxx
+- qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy bug define and workaround (in SystemErrorExceptionPrivate_::TranslateException_); and related minor docs changes on TimeoutExcpetion
+- in Test_5_SSLCertCheckTests_ translate errc::timeout and libcurl cannot connect web communication test with WARNING output - not test failure (may want to do that more)
+- Added a few mapped errors in LibCurl_error_category_
 
 - HistoricalPerformanceRegressionTestResults/
 
