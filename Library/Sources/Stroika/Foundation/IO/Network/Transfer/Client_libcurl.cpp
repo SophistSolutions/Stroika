@@ -69,6 +69,18 @@ namespace {
         }
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
+            switch (ev) {
+                case CURLE_OUT_OF_MEMORY:
+                    return errc::not_enough_memory;
+                case CURLE_OPERATION_TIMEDOUT:
+                    return errc::timed_out;
+                case CURLE_LOGIN_DENIED:
+                    return errc::permission_denied;
+                case CURLE_SEND_ERROR:
+                    return errc::io_error;
+                case CURLE_RECV_ERROR:
+                    return errc::io_error;
+            }
             // @todo - not sure how todo this - except by defining new conditions
             //switch (ev) {
             //}
