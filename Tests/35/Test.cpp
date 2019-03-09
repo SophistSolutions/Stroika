@@ -197,10 +197,68 @@ namespace {
                     VerifyTestResult (false);
                 }
             }
+#if qPlatform_Windows
+            void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
+            {
+                VerifyTestResult ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
+                VerifyTestResult ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
+#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
+                if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
+                    DbgTrace (L"FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy");
+                }
+                if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
+                    DbgTrace (L"FIXED");
+                }
+#else
+                VerifyTestResult ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
+                VerifyTestResult ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
+#endif
+
+                try {
+                    ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY);
+                }
+                catch (const bad_alloc&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+                try {
+                    ThrowSystemErrNo (ERROR_OUTOFMEMORY);
+                }
+                catch (const bad_alloc&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+                try {
+                    ThrowSystemErrNo (WAIT_TIMEOUT);
+                }
+                catch (const TimeOutException&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+                try {
+                    ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT);
+                }
+                catch (const TimeOutException&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+            }
+#endif
         }
         void TestAll_ ()
         {
             Private::Bug1_ ();
+#if qPlatform_Windows
+            Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
+#endif
         }
     }
 }

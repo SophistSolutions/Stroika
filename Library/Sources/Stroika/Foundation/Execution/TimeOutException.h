@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Execution {
      *
      *      \code
      *          catch (const system_error& e) {
-     *              if (e.code () == errc::timed_out) {
+     *              if (e.code () == errc::timed_out) { // and maybe check errc::stream_timeout
      *                  ...
      *              }
      *          }
@@ -55,6 +55,9 @@ namespace Stroika::Foundation::Execution {
      */
     class TimeOutException : public Execution::SystemErrorException<> {
     public:
+        /**
+         *  when not specified, the error_code defaults to make_error_code (errc::timed_out)
+         */
         TimeOutException ();
         TimeOutException (error_code ec);
         TimeOutException (const Characters::String& message);

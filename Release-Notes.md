@@ -7,9 +7,45 @@ to be aware of when upgrading.
 History
 =======
 
+## 2.1d21x {2019-03-10}
+
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d20...v2.1d21
+
+- xxxx
+
+- HistoricalPerformanceRegressionTestResults/
+
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, MacOS_XCode10}-2.1d21.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d21-OUT.txt
+  - vc++2k17 (15.9.8)
+  - vc++2k19 (16.0.0-preview4.1)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10
+  - gcc 7, gcc 8
+  - clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
+    cuz too slow
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+  - Failure in Visual Studio.net 2k19 regression tests due to network timeout plus (mostly innocuous windows specific) bug to be fixed in next release.
+
+----
+
 ## 2.1d20 {2019-03-09}
 
-- https://github.com/SophistSolutions/Stroika/compare/v2.1d19...v2.20
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d19...v2.1d20
 
 - Add URL support to DataExchange/StructuredStreamEvents/ObjectReader (AddCommonType)
 - Slight improvement to SSDP reader - reading presenation url and icon url
@@ -46,7 +82,7 @@ History
 
 ## 2.1d19 {2019-03-08}
 
-- https://github.com/SophistSolutions/Stroika/compare/v2.1d18...v2.19
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d18...v2.1d19
 
 - fixed Version::Version (Binary32BitFullVersionType fullVersionNumber) CTOR and added regtest to validate
 - More Exceptions cleanups

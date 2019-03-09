@@ -163,16 +163,23 @@ void Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code err
     if (errCode == errc::not_enough_memory) {
         Throw (bad_alloc ());
     }
-    if (errCode == errc::timed_out) {
+    if (errCode == errc::timed_out or errCode == errc::stream_timeout) {
         Throw (TimeOutException (errCode));
     }
+#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
+    if (errCode.category () == system_category ()) {
+        switch (errCode.value ()) {
+            case WAIT_TIMEOUT:           // errc::timed_out
+            case ERROR_INTERNET_TIMEOUT: // ""
+                Throw (TimeOutException (errCode));
+        }
+    }
+#endif
+
     // double check the compare-with-conditions code working the way I think its supposed to...  matching multiple error codes -- LGP 2019-02-04
 #if qPlatform_Windows && qDebug
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
-                // \note - I think the design of error_category is such that the windows system_category class should override equivilent to match multiple
-                // error codes to a single error_condition. But I've yet to verify this actually works that way...
-                // But got the idea from the first answer to https://stackoverflow.com/questions/32232295/use-cases-for-stderror-code
             case ERROR_NOT_ENOUGH_MEMORY: // errc::not_enough_memory
             case ERROR_OUTOFMEMORY:       // ""
             case WAIT_TIMEOUT:            // errc::timed_out
