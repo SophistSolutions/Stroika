@@ -474,6 +474,17 @@ namespace {
                 Execution::ReThrow ();
 #endif
             }
+            catch (const system_error& lce) {
+                if (lce.code () == errc::timed_out) {
+                    DbgTrace (L"Ignored '%s' on Test_5_SSLCertCheckTests_", Characters::ToString (current_exception ()).c_str ());
+                    cerr << endl
+                         << "WARNING: Ignored '" << Characters::ToString (current_exception ()).AsNarrowSDKString () << "' on Test_5_SSLCertCheckTests_"
+                         << endl;
+                }
+                else {
+                    Execution::ReThrow ();
+                }
+            }
             catch (...) {
                 DbgTrace (L"e=%s", Characters::ToString (current_exception ()).c_str ());
                 VerifyTestResult (false);
