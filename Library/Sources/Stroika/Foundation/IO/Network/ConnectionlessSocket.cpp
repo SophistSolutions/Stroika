@@ -4,6 +4,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/ToString.h"
+#include "../../Execution/Activity.h"
 #include "../../Execution/TimeOutException.h"
 
 #include "Socket-Private_.h"
@@ -97,6 +98,8 @@ namespace {
                 Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
+                auto                       activity = Execution::LazyEvalActivity{[&]() -> Characters::String { return L"joining multicast group " + Characters::ToString (iaddr) + L" on interface " + Characters::ToString (onInterface); }};
+                Execution::DeclareActivity activityDeclare{&activity};
                 switch (iaddr.GetAddressFamily ()) {
                     case InternetAddress::AddressFamily::V4: {
                         ip_mreq m{};
