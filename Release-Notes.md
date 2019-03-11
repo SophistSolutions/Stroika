@@ -7,7 +7,7 @@ to be aware of when upgrading.
 History
 =======
 
-## 2.1d21x {2019-03-10}
+## 2.1d21 {2019-03-10}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d20...v2.1d21
 
@@ -41,7 +41,6 @@ History
     (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind
     cuz too slow
   - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
-  - Failure in Visual Studio.net 2k19 regression tests due to network timeout plus (mostly innocuous windows specific) bug to be fixed in next release.
 
 ----
 
