@@ -227,8 +227,17 @@ namespace Stroika::Foundation::DataExchange {
          *  other types are empty iff their native type (e.g. basic_string) is 'empty'.
          *  A FLOAT is empty iff its std::isnan().
          *  Booleans and integer types are never empty (even if zero/false).
+         *  Maps and arrays are empty iff they contain no elements;
          */
         nonvirtual bool empty () const;
+
+    public:
+        /**
+         *  \brief return true iff value GetType () != null;
+         *
+         *  \note - this is NOT the same as not empty ()!
+         */
+        nonvirtual explicit operator bool () const;
 
     public:
         /**
