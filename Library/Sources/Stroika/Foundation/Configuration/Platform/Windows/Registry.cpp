@@ -20,15 +20,14 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 
-
 /*
  ********************************************************************************
  ********************************* RegistryKey **********************************
  ********************************************************************************
  */
 RegistryKey::RegistryKey (HKEY parentKey, const String& path, REGSAM samDesired)
-	: fKey_ (OpenWithCreateAlongPath_ (parentKey, path, samDesired))
-	, fOwned_{ true }
+    : fKey_ (OpenPath_ (parentKey, path, samDesired))
+    , fOwned_{true}
 {
 }
 
@@ -36,48 +35,64 @@ RegistryKey::RegistryKey (HKEY parentKey, const String& path, REGSAM samDesired)
  * Walk the given path (in segments) - and make sure each exists, and create each segment if it doesn't
  * exist.Finally - do a regular registry open with access permissions 'samDesired'.< / p>
  */
- HKEY RegistryKey::OpenWithCreateAlongPath_ (HKEY parentKey, const String& path, REGSAM samDesired)
+HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesired)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-	Debug::TraceContextBumper trcCtx{ Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::OptionsFileHelper_::OpenWithCreateAlongPath", L"parentKey=%p, path='%s'", parentKey, path.c_str ()) };
+    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", L"parentKey=%p, path='%s'", parentKey, path.c_str ())};
 #endif
-	Require (parentKey != nullptr);
-	Require (parentKey != INVALID_HANDLE_VALUE);
-	Require (samDesired == KEY_READ);			// for now - later allow others so long as they are non-destructive/readonly
-	HKEY   result{  };
-	ThrowIfNotERROR_SUCCESS (::RegOpenKeyEx (parentKey, path.AsSDKString ().c_str (), 0, samDesired, &result));
-	Ensure (result != nullptr and result != INVALID_HANDLE_VALUE);
-	return result;
+    Require (parentKey != nullptr);
+    Require (parentKey != INVALID_HANDLE_VALUE);
+    Require (samDesired == KEY_READ); // for now - later allow others so long as they are non-destructive/readonly
+    HKEY result{};
+    ThrowIfNotERROR_SUCCESS (::RegOpenKeyEx (parentKey, path.AsSDKString ().c_str (), 0, samDesired, &result));
+    Ensure (result != nullptr and result != INVALID_HANDLE_VALUE);
+    return result;
 }
 
- VariantValue RegistryKey::LookupPref (const String& prefName) const
+VariantValue RegistryKey::LookupPref (const String& prefName) const
 {
-	Assert (fKey_ != INVALID_HANDLE_VALUE);
-	wstring strValue;
-	DWORD   dwType = 0;
-	DWORD   dwCount = 0;
-	LONG    lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, nullptr, &dwCount);
-	if (lResult == ERROR_SUCCESS) {
-		if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-			if (dwCount != 0) {
-				strValue.resize (dwCount);
-				lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCount);
-			}
-		}
-		else {
-			lResult = !ERROR_SUCCESS;
-		}
-	}
-	if (lResult == ERROR_SUCCESS) {
-		switch (dwType) {
-		case REG_SZ:
-		case REG_EXPAND_SZ:
-			return VariantValue{ strValue };
-		case REG_DWORD:
-			// todo - and more cases...
-			;
-		}
-		AssertNotImplemented ();	// must support reading other types!!!
-	}
-	return VariantValue{};
+    Assert (fKey_ != INVALID_HANDLE_VALUE);
+
+    {
+        // RegQueryValueExW doesn't support this directly, but its quite handled, and we document we support this
+        size_t lastBackSlash = prefName.rfind ('\\');
+        if (lastBackSlash != SDKString::npos) {
+            // @todo - check on TYPE of exception and if cuz not there, return empty, and if cuz of permissions (etc)
+            // pass along exception
+            try {
+                return RegistryKey{fKey_, prefName.substr (0, lastBackSlash)}.LookupPref (prefName.substr (lastBackSlash + 1));
+            }
+            catch (...) {
+                return VariantValue{};
+            }
+        }
+    }
+
+    wstring strValue;
+    DWORD   dwType  = 0;
+    DWORD   dwCount = 0;
+    LONG    lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, nullptr, &dwCount);
+    if (lResult == ERROR_SUCCESS) {
+        if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
+            if (dwCount != 0) {
+                strValue.resize (dwCount);
+                lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCount);
+            }
+        }
+        else {
+            lResult = !ERROR_SUCCESS;
+        }
+    }
+    if (lResult == ERROR_SUCCESS) {
+        switch (dwType) {
+            case REG_SZ:
+            case REG_EXPAND_SZ:
+                return VariantValue{strValue};
+            case REG_DWORD:
+                // todo - and more cases...
+                ;
+        }
+        AssertNotImplemented (); // must support reading other types!!!
+    }
+    return VariantValue{};
 }
