@@ -125,6 +125,8 @@ namespace {
             using namespace Configuration;
             SystemConfiguration sc = GetSystemConfiguration ();
             DbgTrace (L"systemConfig=%s", Characters::ToString (sc).c_str ());
+            DbgTrace (L"systemConfig.actualOS=%s", Characters::ToString (sc.fActualOperatingSystem).c_str ());
+            DbgTrace (L"systemConfig.apparentOS=%s", Characters::ToString (sc.fApparentOperatingSystem).c_str ());
         }
     }
 }

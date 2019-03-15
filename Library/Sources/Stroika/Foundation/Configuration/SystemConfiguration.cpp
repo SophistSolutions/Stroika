@@ -14,6 +14,8 @@
 #include <utmpx.h>
 #elif qPlatform_Windows
 #include <Windows.h>
+
+#include <VersionHelpers.h>
 #include <intrin.h>
 #endif
 
@@ -24,6 +26,9 @@
 #include "../Characters/StringBuilder.h"
 #include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
+#if qPlatform_Windows
+#include "../Configuration/Platform/Windows/Registry.h"
+#endif
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
 #include "../Execution/Exceptions.h"
@@ -156,6 +161,7 @@ String SystemConfiguration::OperatingSystem::ToString () const
     sb += L"Token-Name: " + Characters::ToString (fTokenName) + L", ";
     sb += L"Short-Pretty-Name: " + Characters::ToString (fShortPrettyName) + L", ";
     sb += L"Pretty-Name-With-Major-Version: " + Characters::ToString (fPrettyNameWithMajorVersion) + L", ";
+    sb += L"Pretty-Name-With-Details: " + Characters::ToString (fPrettyNameWithVersionDetails) + L", ";
     sb += L"Major-Minor-Version-String: " + Characters::ToString (fMajorMinorVersionString) + L", ";
     sb += L"RFC1945-Compat-Product-Token-With-Version: " + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + L", ";
     sb += L"Bits: " + Characters::ToString (fBits) + L", ";
@@ -553,259 +559,6 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
  ******** Configuration::GetSystemConfiguration_OperatingSystem *****************
  ********************************************************************************
  */
-#if qPlatform_Windows
-namespace {
-    /*
-     *  Someday it would be nice to find a better way, but as of 2015-10-19, I've not been able to find one (without using WMI).
-     */
-    String GetWinOSDisplayString_ ()
-    {
-        OSVERSIONINFOEX osvi{};
-        {
-            osvi.dwOSVersionInfoSize = sizeof (osvi);
-            // MSFT is crazy. They deprecate GetVersionEx, but then still require it for GetProductInfo, and provide no
-            // other way to find the product description string?
-            // I spent over an hour looking. Give up for now. Sigh...
-            //      --LGP 2015-10-19
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_MSC_WARNING_START (28159)
-            if (not::GetVersionEx ((OSVERSIONINFO*)&osvi)) {
-                return String ();
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (28159)
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-        }
-
-        HMODULE kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
-        AssertNotNull (kernel32);
-
-        if (osvi.dwPlatformId != VER_PLATFORM_WIN32_NT) {
-            return Characters::Format (L"Unknown Windows Version %d %d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        }
-        if (osvi.dwMajorVersion <= 4) {
-            return Characters::Format (L"Unknown Ancient Windows Version %d %d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        }
-
-        SYSTEM_INFO si{};
-        {
-            // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-            using PGNSI = void(WINAPI*) (LPSYSTEM_INFO);
-            PGNSI pGNSI = (PGNSI)::GetProcAddress (kernel32, "GetNativeSystemInfo");
-            if (pGNSI == nullptr) {
-                ::GetSystemInfo (&si);
-            }
-            else {
-                (*pGNSI) (&si);
-            }
-        }
-
-        String goodName;
-        switch (osvi.dwMajorVersion) {
-            case 10: {
-                if (osvi.dwMinorVersion == 0) {
-                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 10 " : L"Windows Server 2016 ";
-                }
-            } break;
-            case 6: {
-                if (osvi.dwMinorVersion == 0) {
-                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows Vista " : L"Windows Server 2008 ";
-                }
-                else if (osvi.dwMinorVersion == 1) {
-                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 7 " : L"Windows Server 2008 R2 ";
-                }
-                else if (osvi.dwMinorVersion == 2) {
-                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8 " : L"Windows Server 2012 ";
-                }
-                else if (osvi.dwMinorVersion == 3) {
-                    goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8.1 " : L"Windows Server 2012 R2 ";
-                }
-            } break;
-            case 5: {
-                if (osvi.dwMinorVersion == 0) {
-                    goodName = L"Windows 2000 ";
-                    if (osvi.wProductType == VER_NT_WORKSTATION) {
-                        goodName += L"Professional";
-                    }
-                    else {
-                        if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                            goodName += L"Datacenter Server";
-                        }
-                        else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                            goodName += L"Advanced Server";
-                        }
-                        else {
-                            goodName += L"Server";
-                        }
-                    }
-                }
-                else if (osvi.dwMinorVersion == 1) {
-                    goodName = L"Windows XP ";
-                    goodName += (osvi.wSuiteMask & VER_SUITE_PERSONAL) ? L"Home Edition" : L"Professional";
-                }
-                else if (osvi.dwMinorVersion == 2) {
-                    if (::GetSystemMetrics (SM_SERVERR2)) {
-                        goodName = L"Windows Server 2003 R2, ";
-                    }
-                    else if (osvi.wSuiteMask & VER_SUITE_STORAGE_SERVER) {
-                        goodName = L"Windows Storage Server 2003";
-                    }
-                    else if (osvi.wSuiteMask & VER_SUITE_WH_SERVER) {
-                        goodName = L"Windows Home Server";
-                    }
-                    else if (osvi.wProductType == VER_NT_WORKSTATION and si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-                        goodName = L"Windows XP Professional x64 Edition";
-                    }
-                    else {
-                        goodName = L"Windows Server 2003, ";
-                    }
-
-                    // Test for the server type.
-                    if (osvi.wProductType != VER_NT_WORKSTATION) {
-                        if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64) {
-                            if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter Edition for Itanium-based Systems"sv;
-                            }
-                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Enterprise Edition for Itanium-based Systems"sv;
-                            }
-                        }
-                        else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-                            if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter x64 Edition"sv;
-                            }
-                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Enterprise x64 Edition"sv;
-                            }
-                            else {
-                                goodName += L"Standard x64 Edition"sv;
-                            }
-                        }
-                        else {
-                            if (osvi.wSuiteMask & VER_SUITE_COMPUTE_SERVER) {
-                                goodName += L"Compute Cluster Edition"sv;
-                            }
-                            else if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
-                                goodName += L"Datacenter Edition"sv;
-                            }
-                            else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
-                                goodName += L"Enterprise Edition"sv;
-                            }
-                            else if (osvi.wSuiteMask & VER_SUITE_BLADE) {
-                                goodName += L"Web Edition"sv;
-                            }
-                            else {
-                                goodName += L"Standard Edition"sv;
-                            }
-                        }
-                    }
-                }
-            } break;
-            default: {
-                Assert (osvi.dwMajorVersion > 10); //. or we should have hit a case... (or msft went back in time???)
-                // no need to fill in name, cuz just lik eother cases with no goodName
-            } break;
-        }
-
-        Characters::StringBuilder result;
-        result += L"Microsoft ";
-        if (goodName.empty ()) {
-            result += Characters::Format (L"Windows Version %d %d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        }
-        else {
-            result += goodName;
-        }
-
-        if (osvi.dwMajorVersion >= 6) {
-            DWORD dwType = PRODUCT_UNDEFINED;
-            {
-                typedef BOOL (WINAPI * PGPI) (DWORD, DWORD, DWORD, DWORD, PDWORD);
-                // OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
-                PGPI pGPI = (PGPI)::GetProcAddress (kernel32, "GetProductInfo");
-                AssertNotNull (pGPI);
-                (*pGPI) (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
-            }
-            switch (dwType) {
-                case PRODUCT_CORE:
-                    result += L"Home"sv;
-                    break;
-                case PRODUCT_CORE_N:
-                    result += L"Home N"sv;
-                    break;
-                case PRODUCT_ULTIMATE:
-                    result += L"Ultimate Edition"sv;
-                    break;
-                case PRODUCT_PROFESSIONAL:
-                    result += L"Professional"sv;
-                    break;
-                case PRODUCT_HOME_PREMIUM:
-                    result += L"Home Premium Edition"sv;
-                    break;
-                case PRODUCT_HOME_BASIC:
-                    result += L"Home Basic Edition"sv;
-                    break;
-                case PRODUCT_ENTERPRISE:
-                    result += L"Enterprise Edition"sv;
-                    break;
-                case PRODUCT_BUSINESS:
-                    result += L"Business Edition"sv;
-                    break;
-                case PRODUCT_STARTER:
-                    result += L"Starter Edition"sv;
-                    break;
-                case PRODUCT_CLUSTER_SERVER:
-                    result += L"Cluster Server Edition"sv;
-                    break;
-                case PRODUCT_DATACENTER_SERVER:
-                    result += L"Datacenter Edition"sv;
-                    break;
-                case PRODUCT_DATACENTER_SERVER_CORE:
-                    result += L"Datacenter Edition (core installation)"sv;
-                    break;
-                case PRODUCT_ENTERPRISE_SERVER:
-                    result += L"Enterprise Edition"sv;
-                    break;
-                case PRODUCT_ENTERPRISE_SERVER_CORE:
-                    result += L"Enterprise Edition (core installation)"sv;
-                    break;
-                case PRODUCT_ENTERPRISE_SERVER_IA64:
-                    result += L"Enterprise Edition for Itanium-based Systems"sv;
-                    break;
-                case PRODUCT_SMALLBUSINESS_SERVER:
-                    result += L"Small Business Server"sv;
-                    break;
-                case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
-                    result += L"Small Business Server Premium Edition"sv;
-                    break;
-                case PRODUCT_STANDARD_SERVER:
-                    result += L"Standard Edition"sv;
-                    break;
-                case PRODUCT_STANDARD_SERVER_CORE:
-                    result += L"Standard Edition (core installation)"sv;
-                    break;
-                case PRODUCT_WEB_SERVER:
-                    result += L"Web Server Edition"sv;
-                    break;
-                default:
-                    result += Characters::Format (L"Unknown Edition %d", dwType);
-                    break;
-            }
-        }
-
-        result += Characters::Format (L" (build %d)", osvi.dwBuildNumber);
-
-        if (osvi.dwMajorVersion >= 6) {
-            if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-                result += L", 64-bit"sv;
-            }
-            else if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
-                result += L", 32-bit"sv;
-            }
-        }
-        return result.str ();
-    }
-}
-#endif
-
 SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ActualOperatingSystem ()
 {
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
@@ -864,6 +617,9 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         if (tmp.fPrettyNameWithMajorVersion.empty ()) {
             tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
         }
+        if (tmp.fPrettyNameWithVersionDetails.empty ()) {
+            tmp.fPrettyNameWithVersionDetails = tmp.fPrettyNameWithMajorVersion;
+        }
         if (tmp.fRFC1945CompatProductTokenWithVersion.empty ()) {
             tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
             if (not tmp.fMajorMinorVersionString.empty ()) {
@@ -920,6 +676,121 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
 #elif qPlatform_Windows
         tmp.fTokenName = L"Windows"sv;
+
+        String kernelOSBuildVersion;
+        String kernelVersion;
+        {
+            const auto        system = L"kernel32.dll";
+            DWORD             dummy;
+            const auto        cbInfo = ::GetFileVersionInfoSizeExW (FILE_VER_GET_NEUTRAL, system, &dummy);
+            std::vector<char> buffer (cbInfo);
+            ::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, system, dummy, buffer.size (), &buffer[0]);
+            void* p    = nullptr;
+            UINT  size = 0;
+            ::VerQueryValueW (buffer.data (), L"\\", &p, &size);
+            //assert (size >= sizeof (VS_FIXEDFILEINFO));
+            //assert (p != nullptr);
+            auto pFixed          = static_cast<const VS_FIXEDFILEINFO*> (p);
+            int  breakhere       = 1;
+            kernelVersion        = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionMS), LOWORD (pFixed->dwFileVersionMS));
+            kernelOSBuildVersion = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionLS), LOWORD (pFixed->dwFileVersionLS));
+        }
+
+        optional<String> platformVersion;
+        optional<String> productName;
+        optional<String> currentVersion; // windows major-minor version
+        {
+            const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
+            if (auto o = kWinVersionInfo_.LookupPref (L"ReleaseId"sv)) {
+                platformVersion = o.As<String> ();
+            }
+            if (auto o = kWinVersionInfo_.LookupPref (L"ProductName"sv)) {
+                productName = o.As<String> ();
+            }
+            if (auto o = kWinVersionInfo_.LookupPref (L"CurrentVersion"sv)) {
+                currentVersion = o.As<String> ();
+            }
+        }
+
+        if (tmp.fShortPrettyName.empty ()) {
+            tmp.fShortPrettyName = productName.value_or (L"Windows"sv);
+        }
+        tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
+
+        {
+            StringBuilder sb = tmp.fShortPrettyName;
+            if (platformVersion) {
+                sb += L" Version "_k + *platformVersion;
+            }
+            if (not kernelVersion.empty ()) {
+                sb += L" (OS Build " + kernelOSBuildVersion + L")"sv;
+            }
+            tmp.fPrettyNameWithVersionDetails = sb.str ();
+        }
+
+        //tmp.fPrettyNameWithMajorVersion           = GetWinOSDisplayString_ (); // Cleanup - see above
+        tmp.fMajorMinorVersionString              = currentVersion.value_or (L"unknown"sv);
+        tmp.fRFC1945CompatProductTokenWithVersion = L"Windows/"sv + tmp.fMajorMinorVersionString;
+        if constexpr (sizeof (void*) == 4) {
+            tmp.fBits = 32;
+            //IsWow64Process is not available on all supported versions of Windows.
+            //Use GetModuleHandle to get a handle to the DLL that contains the function
+            //and GetProcAddress to get a pointer to the function if available.
+            typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+            DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
+            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
+            DISABLE_COMPILER_MSC_WARNING_END (6387)
+            if (nullptr != fnIsWow64Process) {
+                BOOL isWOW64 = false;
+                (void)fnIsWow64Process (::GetCurrentProcess (), &isWOW64);
+                if (isWOW64) {
+                    tmp.fBits = 64;
+                }
+            }
+        }
+        else {
+            // In windows, a 64 bit app cannot run on 32-bit windows
+            Assert (sizeof (void*) == 8);
+            tmp.fBits = 64;
+        }
+        tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
+#else
+        AssertNotImplemented ();
+#endif
+        return tmp;
+    }();
+    return kCachedResult_;
+}
+
+#if qPlatform_Windows
+#pragma comment(lib, "Mincore.lib") // for stuff like IsWindows10OrGreater
+#endif
+SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ApparentOperatingSystem ()
+{
+    using OperatingSystem                       = SystemConfiguration::OperatingSystem;
+    static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
+        OperatingSystem tmp{GetSystemConfiguration_ActualOperatingSystem ()};
+        // not sure if/how to do this differently on linux? Probably pay MORE attention to stuff from uname and less to stuff like /etc/os-release
+#if qPlatform_Windows
+        optional<String> winCompatabilityVersion;
+        {
+            if (not winCompatabilityVersion and IsWindows10OrGreater ()) {
+                winCompatabilityVersion = L"10"sv;
+            }
+            if (not winCompatabilityVersion and IsWindows8Point1OrGreater ()) {
+                winCompatabilityVersion = L"8.1"sv;
+            }
+            if (not winCompatabilityVersion and IsWindows8OrGreater ()) {
+                winCompatabilityVersion = L"8.0sv";
+            }
+            if (not winCompatabilityVersion and IsWindows7SP1OrGreater ()) {
+                winCompatabilityVersion = L"7.1"sv;
+            }
+            if (not winCompatabilityVersion and IsWindows7OrGreater ()) {
+                winCompatabilityVersion = L"7.0"sv;
+            }
+        }
+
         /*
          *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
          *
@@ -954,46 +825,10 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fShortPrettyName = Characters::Format (L"Windows %d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         }
         tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
-        tmp.fPrettyNameWithMajorVersion           = GetWinOSDisplayString_ (); // Cleanup - see above
+        tmp.fPrettyNameWithVersionDetails         = tmp.fShortPrettyName;
         tmp.fMajorMinorVersionString              = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        if constexpr (sizeof (void*) == 4) {
-            tmp.fBits = 32;
-            //IsWow64Process is not available on all supported versions of Windows.
-            //Use GetModuleHandle to get a handle to the DLL that contains the function
-            //and GetProcAddress to get a pointer to the function if available.
-            typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
-            DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
-            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
-            DISABLE_COMPILER_MSC_WARNING_END (6387)
-            if (NULL != fnIsWow64Process) {
-                BOOL isWOW64 = false;
-                (void)fnIsWow64Process (::GetCurrentProcess (), &isWOW64);
-                if (isWOW64) {
-                    tmp.fBits = 64;
-                }
-            }
-        }
-        else {
-            // In windows, a 64 bit app cannot run on 32-bit windows
-            Assert (sizeof (void*) == 8);
-            tmp.fBits = 64;
-        }
-        tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
-#else
-        AssertNotImplemented ();
 #endif
-        return tmp;
-    }();
-    return kCachedResult_;
-}
-
-SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ApparentOperatingSystem ()
-{
-    using OperatingSystem                       = SystemConfiguration::OperatingSystem;
-    static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
-        OperatingSystem tmp;
-        tmp = GetSystemConfiguration_ActualOperatingSystem (); //tmphack
         return tmp;
     }();
     return kCachedResult_;

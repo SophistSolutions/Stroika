@@ -157,9 +157,16 @@ namespace Stroika::Foundation::Configuration {
             String fShortPrettyName;
 
             /**
-             *  e.g. RedHat 3.5, Ubuntu 11, Windows XP, Windows 8, Windows 8.1
+             *  e.g. RedHat 3.5, Ubuntu 11, Windows XP, Windows 8, Windows 8.1, Windows 10
              */
             String fPrettyNameWithMajorVersion;
+
+            /**
+             *  Similar level of detail to what is printed by 'winver' application.
+             *
+             *  e.g. Windows 10 Version 1809 (OS Build 17763.379)
+             */
+            String fPrettyNameWithVersionDetails;
 
             /**
              *  e.g. 1.0, 3.5, etc. Note - this refers to the overall os (distribution -
