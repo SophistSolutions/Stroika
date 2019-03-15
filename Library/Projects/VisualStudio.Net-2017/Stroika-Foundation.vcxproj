@@ -168,6 +168,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
@@ -1251,6 +1252,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_StringUtils_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_TChar_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_CompilerAndStdLib_.h" />
@@ -1713,6 +1715,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl" />

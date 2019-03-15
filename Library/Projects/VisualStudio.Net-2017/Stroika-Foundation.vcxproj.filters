@@ -208,6 +208,12 @@
     <Filter Include="Sources\IO\Network\InternetProtocol">
       <UniqueIdentifier>{69225b1e-d4ab-4e12-a7d9-c8fa6b7e396d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Configuration\Platform">
+      <UniqueIdentifier>{e200558e-2771-4307-b9a7-72475aa5d66b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Configuration\Platform\Windows">
+      <UniqueIdentifier>{add5777b-f22d-44fd-aaf2-72d3e82f7cdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -821,6 +827,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.cpp">
       <Filter>Sources\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.cpp">
+      <Filter>Sources\Configuration\Platform\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2057,6 +2066,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h">
       <Filter>Sources\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.h">
+      <Filter>Sources\Configuration\Platform\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3344,6 +3356,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl">
       <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.inl">
+      <Filter>Sources\Configuration\Platform\Windows</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
