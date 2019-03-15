@@ -16,6 +16,25 @@ namespace Stroika::Foundation::Configuration {
      **************** SystemConfiguration::CPU::CoreDetails *************************
      ********************************************************************************
      */
+    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn)
+        : SystemConfiguration (bi, ci, mi, oi, oi, cn)
+    {
+    }
+    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn)
+        : fBootInformation{bi}
+        , fCPU{ci}
+        , fMemory{mi}
+        , fActualOperatingSystem{actualOS}
+        , fApparentOperatingSystem{apparentOS}
+        , fComputerNames{cn}
+    {
+    }
+
+    /*
+     ********************************************************************************
+     **************** SystemConfiguration::CPU::CoreDetails *************************
+     ********************************************************************************
+     */
     inline SystemConfiguration::CPU::CoreDetails::CoreDetails (unsigned int socketID, const String& modelName)
         : fSocketID (socketID)
         , fModelName (modelName)
@@ -34,6 +53,11 @@ namespace Stroika::Foundation::Configuration {
     inline String SystemConfiguration::CPU::GetCPUModelPrintName () const
     {
         return fCores.empty () ? String () : fCores[0].fModelName;
+    }
+
+    inline [[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] SystemConfiguration::OperatingSystem GetSystemConfiguration_OperatingSystem ()
+    {
+        return GetSystemConfiguration_ActualOperatingSystem ();
     }
 
 }

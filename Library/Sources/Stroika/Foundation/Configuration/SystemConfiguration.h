@@ -226,11 +226,18 @@ namespace Stroika::Foundation::Configuration {
             nonvirtual String ToString () const;
         };
 
-        BootInformation fBootInformation;
-        CPU             fCPU;
-        Memory          fMemory;
-        OperatingSystem fOperatingSystem;
-        ComputerNames   fComputerNames;
+        BootInformation                                                                                                  fBootInformation;
+        CPU                                                                                                              fCPU;
+        Memory                                                                                                           fMemory;
+        OperatingSystem                                                                                                  fActualOperatingSystem;
+        OperatingSystem                                                                                                  fApparentOperatingSystem;
+        [[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] OperatingSystem& fOperatingSystem = fApparentOperatingSystem;
+        ComputerNames                                                                                                    fComputerNames;
+
+        /**
+         */
+        SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn);
+        SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn);
 
         /**
          *  @see Characters::ToString ();
@@ -256,7 +263,10 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      */
-    SystemConfiguration::OperatingSystem GetSystemConfiguration_OperatingSystem ();
+    SystemConfiguration::OperatingSystem GetSystemConfiguration_ActualOperatingSystem ();
+    /**
+     */
+    SystemConfiguration::OperatingSystem GetSystemConfiguration_ApparentOperatingSystem ();
 
     /**
      */

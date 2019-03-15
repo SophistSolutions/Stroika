@@ -178,7 +178,8 @@ String SystemConfiguration::ToString () const
     sb += L"Boot-Information: " + Characters::ToString (fBootInformation) + L", ";
     sb += L"CPU: " + Characters::ToString (fCPU) + L", ";
     sb += L"Memory: " + Characters::ToString (fMemory) + L", ";
-    sb += L"Operating-System: " + Characters::ToString (fOperatingSystem) + L", ";
+    sb += L"Actual-Operating-System: " + Characters::ToString (fActualOperatingSystem) + L", ";
+    sb += L"Apparent-Operating-System: " + Characters::ToString (fApparentOperatingSystem) + L", ";
     sb += L"Computer-Names: " + Characters::ToString (fComputerNames) + L", ";
     sb += L"}";
     return sb.str ();
@@ -805,7 +806,7 @@ namespace {
 }
 #endif
 
-SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_OperatingSystem ()
+SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ActualOperatingSystem ()
 {
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
     static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
@@ -987,6 +988,17 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
     return kCachedResult_;
 }
 
+SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ApparentOperatingSystem ()
+{
+	using OperatingSystem = SystemConfiguration::OperatingSystem;
+	static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
+		OperatingSystem tmp;
+		tmp = GetSystemConfiguration_ActualOperatingSystem ();	//tmphack
+		return tmp;
+	}();
+	return kCachedResult_;
+}
+
 /*
  ********************************************************************************
  ***************** GetSystemConfiguration_ComputerNames *************************
@@ -1047,6 +1059,7 @@ SystemConfiguration Configuration::GetSystemConfiguration ()
         GetSystemConfiguration_BootInformation (),
         GetSystemConfiguration_CPU (),
         GetSystemConfiguration_Memory (),
-        GetSystemConfiguration_OperatingSystem (),
-        GetSystemConfiguration_ComputerNames ()};
+		GetSystemConfiguration_ActualOperatingSystem (),
+				GetSystemConfiguration_ApparentOperatingSystem (),
+GetSystemConfiguration_ComputerNames ()};
 }
