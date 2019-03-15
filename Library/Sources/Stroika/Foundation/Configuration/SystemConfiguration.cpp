@@ -990,13 +990,13 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 
 SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ApparentOperatingSystem ()
 {
-	using OperatingSystem = SystemConfiguration::OperatingSystem;
-	static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
-		OperatingSystem tmp;
-		tmp = GetSystemConfiguration_ActualOperatingSystem ();	//tmphack
-		return tmp;
-	}();
-	return kCachedResult_;
+    using OperatingSystem                       = SystemConfiguration::OperatingSystem;
+    static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
+        OperatingSystem tmp;
+        tmp = GetSystemConfiguration_ActualOperatingSystem (); //tmphack
+        return tmp;
+    }();
+    return kCachedResult_;
 }
 
 /*
@@ -1059,7 +1059,7 @@ SystemConfiguration Configuration::GetSystemConfiguration ()
         GetSystemConfiguration_BootInformation (),
         GetSystemConfiguration_CPU (),
         GetSystemConfiguration_Memory (),
-		GetSystemConfiguration_ActualOperatingSystem (),
-				GetSystemConfiguration_ApparentOperatingSystem (),
-GetSystemConfiguration_ComputerNames ()};
+        GetSystemConfiguration_ActualOperatingSystem (),
+        GetSystemConfiguration_ApparentOperatingSystem (),
+        GetSystemConfiguration_ComputerNames ()};
 }

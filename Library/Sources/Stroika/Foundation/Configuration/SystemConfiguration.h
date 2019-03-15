@@ -226,10 +226,24 @@ namespace Stroika::Foundation::Configuration {
             nonvirtual String ToString () const;
         };
 
-        BootInformation                                                                                                  fBootInformation;
-        CPU                                                                                                              fCPU;
-        Memory                                                                                                           fMemory;
-        OperatingSystem                                                                                                  fActualOperatingSystem;
+        BootInformation fBootInformation;
+        CPU             fCPU;
+        Memory          fMemory;
+
+        /**
+         *  Info about the actual operating system this software is running on (if possible to tell, it could be well hidden)
+         *
+         *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
+         *  operating system different than the one you are actually running on).
+         */
+        OperatingSystem fActualOperatingSystem;
+
+        /**
+         *  Return info about the apparent operating system this software is running on.
+         *
+         *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
+         *  operating system different than the one you are actually running on).
+         */
         OperatingSystem                                                                                                  fApparentOperatingSystem;
         [[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] OperatingSystem& fOperatingSystem = fApparentOperatingSystem;
         ComputerNames                                                                                                    fComputerNames;
@@ -262,9 +276,18 @@ namespace Stroika::Foundation::Configuration {
     SystemConfiguration::Memory GetSystemConfiguration_Memory ();
 
     /**
+     *  Return info about the actual operating system this software is running on (if possible to tell, it could be well hidden)
+     *
+     *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
+     *  operating system different than the one you are actually running on).
      */
     SystemConfiguration::OperatingSystem GetSystemConfiguration_ActualOperatingSystem ();
+
     /**
+     *  Return info about the apparent operating system this software is running on.
+     *
+     *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
+     *  operating system different than the one you are actually running on).
      */
     SystemConfiguration::OperatingSystem GetSystemConfiguration_ApparentOperatingSystem ();
 

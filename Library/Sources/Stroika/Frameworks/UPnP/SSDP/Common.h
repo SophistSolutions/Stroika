@@ -39,7 +39,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     /**
      *  MakeServerHeaderValue
      */
-    String MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion = Foundation::Configuration::GetSystemConfiguration_OperatingSystem ().fRFC1945CompatProductTokenWithVersion, const String& useUPNPVersion = String_Constant (L"UPnP/1.0"));
+    String MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion = Foundation::Configuration::GetSystemConfiguration_ActualOperatingSystem ().fRFC1945CompatProductTokenWithVersion, const String& useUPNPVersion = L"UPnP/1.0"sv);
 
 }
 
