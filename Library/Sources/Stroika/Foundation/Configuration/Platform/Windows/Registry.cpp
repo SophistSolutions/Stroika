@@ -69,14 +69,17 @@ VariantValue RegistryKey::LookupPref (const String& prefName) const
     }
 
     wstring strValue;
-    DWORD   dwType  = 0;
-    DWORD   dwCount = 0;
-    LONG    lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, nullptr, &dwCount);
+    DWORD   dwType         = 0;
+    DWORD   dwCountInBytes = 0;
+    LONG    lResult        = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, nullptr, &dwCountInBytes);
     if (lResult == ERROR_SUCCESS) {
         if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-            if (dwCount != 0) {
-                strValue.resize (dwCount);
-                lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCount);
+            if (dwCountInBytes != 0) {
+                Assert (dwCountInBytes % sizeof (wchar_t) == 0); // we should bullet proof this code more but for now, assert if an issue
+                size_t nChars = dwCountInBytes / 2 - 1;          // includes NUL-byte
+                strValue.resize (nChars);
+                lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCountInBytes);
+                Assert (strValue[nChars] == '\0');
             }
         }
         else {
