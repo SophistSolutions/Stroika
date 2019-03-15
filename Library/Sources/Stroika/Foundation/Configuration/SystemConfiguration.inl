@@ -20,7 +20,9 @@ namespace Stroika::Foundation::Configuration {
         : SystemConfiguration (bi, ci, mi, oi, oi, cn)
     {
     }
-    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn)
+	DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+	DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+	inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn)
         : fBootInformation{bi}
         , fCPU{ci}
         , fMemory{mi}
@@ -29,6 +31,8 @@ namespace Stroika::Foundation::Configuration {
         , fComputerNames{cn}
     {
     }
+	DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+	DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
     /*
      ********************************************************************************
@@ -55,7 +59,7 @@ namespace Stroika::Foundation::Configuration {
         return fCores.empty () ? String () : fCores[0].fModelName;
     }
 
-    inline [[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] SystemConfiguration::OperatingSystem GetSystemConfiguration_OperatingSystem ()
+	[[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] inline SystemConfiguration::OperatingSystem GetSystemConfiguration_OperatingSystem ()
     {
         return GetSystemConfiguration_ActualOperatingSystem ();
     }
