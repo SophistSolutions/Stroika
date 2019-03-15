@@ -8,6 +8,9 @@
 #include "../Characters/ToString.h"
 #include "../Containers/Bijection.h"
 #include "../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#if qPlatform_Windows
+#include "../Configuration/Platform/Windows/Registry.h"
+#endif
 #include "../Debug/Trace.h"
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/Exception.h"
@@ -62,168 +65,6 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows
-namespace {
-    // Based on code from HealthFrame. MAYBE someday do more generic version of this - as helper
-    // @see https://stroika.atlassian.net/browse/STK-575
-    struct OptionsFileHelper_ {
-        OptionsFileHelper_ (HKEY hkey)
-            : fKey (hkey)
-        {
-            Assert (nullptr != INVALID_HANDLE_VALUE);
-            if (hkey == INVALID_HANDLE_VALUE or hkey == nullptr)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (SystemErrorException<> (ERROR_INVALID_HANDLE, system_category ()), "OptionsFileHelper::CTOR - bad handle");
-                }
-        }
-        OptionsFileHelper_ (HKEY parentKey, const String& path, REGSAM samDesired = KEY_READ | KEY_WRITE)
-            : fKey (OpenWithCreateAlongPath (parentKey, path, samDesired))
-        {
-            if (parentKey == INVALID_HANDLE_VALUE or parentKey == nullptr)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (SystemErrorException<> (ERROR_INVALID_HANDLE, system_category ()), "OptionsFileHelper::CTOR - bad handle");
-                }
-        }
-        OptionsFileHelper_ ()                          = delete;
-        OptionsFileHelper_ (const OptionsFileHelper_&) = delete;
-        const OptionsFileHelper_& operator= (const OptionsFileHelper_&) const = delete;
-        ~OptionsFileHelper_ ()
-        {
-            Assert (nullptr != INVALID_HANDLE_VALUE);
-            Assert (fKey != nullptr);
-            Assert (fKey != INVALID_HANDLE_VALUE);
-            ::RegCloseKey (fKey);
-        }
-        /*
-         * Walk the given path (in segments) - and make sure each exists, and create each segment if it doesn't
-         * exist.Finally - do a regular registry open with access permissions 'samDesired'.< / p>
-         */
-        static HKEY OpenWithCreateAlongPath (HKEY parentKey, const String& path, REGSAM samDesired = KEY_READ | KEY_WRITE)
-        {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::OptionsFileHelper_::OpenWithCreateAlongPath", L"parentKey=%p, path='%s'", parentKey, path.c_str ())};
-#endif
-            Require (parentKey != nullptr);
-            size_t prevPos = 0;
-            HKEY   curPar  = parentKey;
-            for (;;) {
-                size_t    endPos    = path.find ('\\', prevPos);
-                SDKString segName   = path.AsSDKString ().substr (prevPos, endPos == SDKString::npos ? endPos : (endPos - prevPos));
-                REGSAM    createSAM = (endPos == SDKString::npos) ? samDesired : KEY_READ;
-                HKEY      newKey    = static_cast<HKEY> (INVALID_HANDLE_VALUE);
-
-                ThrowIfNotERROR_SUCCESS (::RegCreateKeyEx (curPar, segName.c_str (), 0, REG_NONE, REG_OPTION_NON_VOLATILE, createSAM, nullptr, &newKey, nullptr));
-                if (curPar != parentKey) {
-                    ::RegCloseKey (curPar);
-                }
-                curPar = newKey;
-                if (endPos == SDKString::npos) {
-                    return newKey;
-                }
-                prevPos = endPos + 1;
-            }
-        }
-
-        nonvirtual bool LookupPref (const String& prefName, string* value, DWORD* regStrType = nullptr) const
-        {
-            RequireNotNull (value);
-            Assert (fKey != INVALID_HANDLE_VALUE);
-            string strValue;
-            DWORD  dwType  = 0;
-            DWORD  dwCount = 0;
-            LONG   lResult = ::RegQueryValueExA (fKey, prefName.AsNarrowSDKString ().c_str (), nullptr, &dwType, nullptr, &dwCount);
-            if (lResult == ERROR_SUCCESS) {
-                if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-                    if (dwCount != 0) {
-                        strValue.resize (dwCount);
-                        lResult = ::RegQueryValueExA (fKey, prefName.AsNarrowSDKString ().c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCount);
-                    }
-                }
-                else {
-                    lResult = !ERROR_SUCCESS;
-                }
-            }
-            if (lResult == ERROR_SUCCESS) {
-                if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-                    *value = strValue.c_str (); // copying like this loses xtra NUL-byte if there is one from read...
-                    if (regStrType != nullptr) {
-                        *regStrType = dwType;
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-        nonvirtual bool LookupPref (const String& prefName, wstring* value, DWORD* regStrType = nullptr) const
-        {
-            RequireNotNull (value);
-            Assert (fKey != INVALID_HANDLE_VALUE);
-            wstring strValue;
-            DWORD   dwType  = 0;
-            DWORD   dwCount = 0;
-            LONG    lResult = ::RegQueryValueExW (fKey, prefName.c_str (), nullptr, &dwType, nullptr, &dwCount);
-            if (lResult == ERROR_SUCCESS) {
-                if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-                    if (dwCount != 0) {
-                        strValue.resize (dwCount);
-                        lResult = ::RegQueryValueExW (fKey, prefName.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCount);
-                    }
-                }
-                else {
-                    lResult = !ERROR_SUCCESS;
-                }
-            }
-            if (lResult == ERROR_SUCCESS) {
-                if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-                    *value = strValue.c_str (); // copying like this loses xtra NUL-byte if there is one from read...
-                    if (regStrType != nullptr) {
-                        *regStrType = dwType;
-                    }
-                    return true;
-                }
-            }
-            // If not success - then maybe cuz non-UNICODE functions not available - so try to read a non-UNICODE string
-            {
-                string tmp;
-                if (LookupPref (prefName, &tmp, regStrType)) {
-                    *value = NarrowSDKStringToWide (tmp);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-    private:
-        HKEY fKey;
-    };
-    optional<String> GrabRegistryStringValue_ (HKEY parentKey, const String& path)
-    {
-        try {
-            String eltPath = path;
-            String parentPath;
-            {
-                size_t i = path.rfind ('\\');
-                if (i != SDKString::npos) {
-                    parentPath = path.substr (0, i);
-                    eltPath    = path.substr (i + 1);
-                }
-            }
-            OptionsFileHelper_ ofh (parentKey, parentPath, KEY_READ);
-            wstring            result;
-            if (ofh.LookupPref (eltPath, &result)) {
-                return result;
-            }
-        }
-        catch (...) {
-            // ignore
-        }
-        return {};
-    }
-}
-#endif
-
 /*
  ********************************************************************************
  *************************** InternetMediaTypeRegistry **************************
@@ -232,11 +73,13 @@ namespace {
 optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
 {
 #if qPlatform_Windows
-    return GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()));
+    if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
+        return fs.As<String> ();
+    }
 #else
     AssertNotImplemented ();
-    return {};
 #endif
+    return nullopt;
 }
 
 Sequence<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct, bool includeMoreGeneralTypes) const
@@ -258,14 +101,16 @@ optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const Inter
 {
 #if qPlatform_Windows
     if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
-        if (optional<String> fileTypeID = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, *fileSuffix)) {
-            return GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, *fileTypeID);
+        if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (*fileSuffix)) {
+            if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (fileTypeID.As<String> ())) {
+                return prettyName.As<String> ();
+            }
         }
     }
 #else
     AssertNotImplemented ();
 #endif
-    return {};
+    return nullopt;
 }
 
 optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const
@@ -274,8 +119,10 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
 #if qPlatform_Linux
     return GetGlobsFile_ ().Lookup (suffix);
 #elif qPlatform_Windows
-    if (optional<String> oct = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"%s\\Content Type", suffix.c_str ()))) {
-        return InternetMediaType{*oct};
+    using Characters::Format;
+    using Configuration::Platform::Windows::RegistryKey;
+    if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (Format (L"%s\\Content Type", suffix.c_str ()))) {
+        return InternetMediaType{oct.As<String> ()};
     }
 #else
     AssertNotImplemented ();
