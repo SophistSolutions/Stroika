@@ -340,7 +340,7 @@ namespace {
             {
                 c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response r = c.GET ();
-                VerifyTestResult (r.GetSucceeded ());
+                VerifyTestResultWarning (r.GetSucceeded ());
                 for (auto i : r.GetHeaders ()) {
                     DbgTrace (L"%s=%s", i.fKey.c_str (), i.fValue.c_str ());
                 }
@@ -388,8 +388,8 @@ namespace {
                 Connection c = IO::Network::Transfer::CreateConnection (kDefaultTestOptions_);
                 c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response r = c.GET ();
-                VerifyTestResult (r.GetSucceeded ());
-                VerifyTestResult (r.GetData ().size () > 1);
+                VerifyTestResultWarning (r.GetSucceeded ());
+                VerifyTestResultWarning (r.GetData ().size () > 1);
             }
         }
         void DoTests_ ()
@@ -419,8 +419,8 @@ namespace {
                 try {
                     c.SetURL (URL::Parse (L"https://testssl-valid.disig.sk/index.en.html"));
                     Response r = c.GET ();
-                    VerifyTestResult (r.GetSucceeded ());
-                    VerifyTestResult (r.GetData ().size () > 1);
+                    VerifyTestResultWarning (r.GetSucceeded ());
+                    VerifyTestResultWarning (r.GetData ().size () > 1);
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
@@ -491,7 +491,7 @@ namespace {
             }
             catch (...) {
                 DbgTrace (L"e=%s", Characters::ToString (current_exception ()).c_str ());
-                VerifyTestResult (false);
+                VerifyTestResultWarning (false);
             }
         }
     }

@@ -1487,12 +1487,10 @@ namespace {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg](String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-                Execution::Throw (Exception (L"At least one test failed expected time constaint (see above): " + listAsMsg));
-#endif
+                Stroika::TestHarness::WarnTestIssue ((L"At least one test failed expected time constaint (see above): " + listAsMsg).AsNarrowSDKString ().c_str ());
             }
             else {
-                Execution::Throw (Exception (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())));
+                Stroika::TestHarness::WarnTestIssue ((Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())).AsNarrowSDKString ().c_str ());
             }
         }
     }

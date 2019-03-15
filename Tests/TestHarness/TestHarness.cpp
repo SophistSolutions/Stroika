@@ -87,9 +87,22 @@ int TestHarness::PrintPassOrFail (void (*regressionTest) ())
     return EXIT_SUCCESS;
 }
 
-void TestHarness::Test_ (bool failIfFalse, const char* regressionTestText, const char* fileName, int lineNum)
+void TestHarness::Test_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum)
 {
     if (not failIfFalse) {
-        ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
+        if (isFailureElseWarning) {
+            ASSERT_HANDLER_ ("RegressionTestFailure", regressionTestText, fileName, lineNum, "");
+        }
+        else {
+            cerr << "WARNING: REGRESSION TEST ISSUE: " << regressionTestText << ";" << fileName << ": " << lineNum << endl;
+            DbgTrace ("WARNING: REGRESSION TEST ISSUE: ; %s; %s; %d", regressionTestText, fileName, lineNum);
+            // OK to continue
+        }
     }
+}
+
+void TestHarness::WarnTestIssue (const char* issue)
+{
+    cerr << "WARNING: REGRESSION TEST ISSUE: '" << issue << "'" << endl;
+    DbgTrace ("WARNING: REGRESSION TEST ISSUE: '%s", issue);
 }
