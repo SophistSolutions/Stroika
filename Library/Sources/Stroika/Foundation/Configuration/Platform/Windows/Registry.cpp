@@ -49,56 +49,64 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
     return result;
 }
 
-VariantValue RegistryKey::Lookup (const String& prefName) const
+VariantValue RegistryKey::Lookup (const String& valuePath) const
 {
     Assert (fKey_ != INVALID_HANDLE_VALUE);
 
     {
         // RegQueryValueExW doesn't support this directly, but its quite handy, and we document we support this
-        size_t lastBackSlash = prefName.rfind ('\\');
+        // (allowing path syntax in the valuePath to lookup)
+        size_t lastBackSlash = valuePath.rfind ('\\');
         if (lastBackSlash != SDKString::npos) {
             // @todo - check on TYPE of exception and if cuz not there, return empty, and if cuz of permissions (etc)
             // pass along exception (note https://docs.microsoft.com/en-us/windows/desktop/api/winreg/nf-winreg-regopenkeyexa doesnt document returned error codes for not found)
             try {
-                return RegistryKey{fKey_, prefName.substr (0, lastBackSlash)}.Lookup (prefName.substr (lastBackSlash + 1));
+                return RegistryKey{fKey_, valuePath.substr (0, lastBackSlash)}.Lookup (valuePath.substr (lastBackSlash + 1));
             }
-            catch (...) {
-                return VariantValue{};
+            catch (const system_error& e) {
+                // catch/translate because the part not found could be in the PATH and then RegistryKey would throw
+                if (e.code () == errc::no_such_file_or_directory) { // windows error ERROR_FILE_NOT_FOUND
+                    return VariantValue{};
+                }
+                Execution::ReThrow ();
             }
         }
     }
 
-    wstring strValue;
-    DWORD   dwType         = 0;
-    DWORD   dwCountInBytes = 0;
-    LONG    lResult        = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, nullptr, &dwCountInBytes);
-    if (lResult == ERROR_SUCCESS) {
-        if (dwType == REG_SZ or dwType == REG_EXPAND_SZ) {
-            if (dwCountInBytes != 0) {
-                Assert (dwCountInBytes % sizeof (wchar_t) == 0); // @todo - we should bullet proof this code more but for now, assert if an issue
-                size_t nChars = dwCountInBytes / 2 - 1;          // includes NUL-byte
-                strValue.resize (nChars);
-                lResult = ::RegQueryValueExW (fKey_, prefName.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCountInBytes);
-                Assert (strValue[nChars] == '\0');
-            }
-        }
-        else {
-            lResult = !ERROR_SUCCESS;
-        }
-    }
+    DWORD dwType         = 0;
+    DWORD dwCountInBytes = 0;
+    LONG  lResult        = ::RegQueryValueExW (fKey_, valuePath.c_str (), nullptr, &dwType, nullptr, &dwCountInBytes);
     if (lResult == ERROR_SUCCESS) {
         switch (dwType) {
             case REG_SZ:
-            case REG_EXPAND_SZ:
+            case REG_EXPAND_SZ: {
+                wstring strValue;
+                if (dwCountInBytes != 0) {
+                    Assert (dwCountInBytes % sizeof (wchar_t) == 0); // @todo - we should bullet proof this code more but for now, assert if an issue
+                    size_t nChars = dwCountInBytes / 2 - 1;          // includes NUL-byte
+                    strValue.resize (nChars);
+                    ThrowIfNotERROR_SUCCESS (::RegQueryValueExW (fKey_, valuePath.c_str (), nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCountInBytes));
+                    Assert (strValue[nChars] == '\0');
+                }
                 return VariantValue{strValue};
-            case REG_DWORD:
-                // todo - and more cases...
-                ;
+            } break;
+            case REG_DWORD: {
+                DWORD result{};
+                Assert (dwCountInBytes == sizeof (DWORD));
+                ThrowIfNotERROR_SUCCESS (::RegQueryValueExW (fKey_, valuePath.c_str (), nullptr, &dwType, (LPBYTE)&result, &dwCountInBytes));
+                Assert (dwCountInBytes == sizeof (DWORD));
+                return VariantValue{result};
+            } break;
+            default: {
+                WeakAssert (false); // NYI
+                Execution::Throw (Execution::Exception<> (L"Unsupported registry format"sv));
+            } break;
         }
-        AssertNotImplemented (); // must support reading other types!!!
     }
     else if (lResult == ERROR_FILE_NOT_FOUND) {
         return VariantValue{};
     }
-    Execution::Throw (Execution::SystemErrorException<> (lResult, system_category ()));
+    else {
+        Execution::Throw (Execution::SystemErrorException<> (lResult, system_category ()));
+    }
 }

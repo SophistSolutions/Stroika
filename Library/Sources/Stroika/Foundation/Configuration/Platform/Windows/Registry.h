@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
          *  \note Unlike the underlying Windows registry APIs, you can pass in a prefName with backslashes, and it will be
          *        interpretted as lookup relative to 'this' registry key
          */
-        nonvirtual DataExchange::VariantValue Lookup (const Characters::String& prefName) const;
+        nonvirtual DataExchange::VariantValue Lookup (const Characters::String& valuePath) const;
 
     private:
         /*
