@@ -677,17 +677,36 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 #elif qPlatform_Windows
         tmp.fTokenName = L"Windows"sv;
 
+        /*
+         *  Best (of a bad bunch) official reference from Microsoft on finding version#s
+         *      https://docs.microsoft.com/en-us/windows/desktop/SysInfo/operating-system-version
+         */
+
+        /*
+         *  note
+         *      Could consider using RtlGetVersion from https://stackoverflow.com/questions/36543301/detecting-windows-10-version
+         *      except this only returns a #, and not the pretty name we get from the registry.
+         */
+
         String kernelOSBuildVersion;
         String kernelVersion;
         {
-            const wchar_t*    system = L"kernel32.dll";
-            DWORD             dummy;
-            const auto        cbInfo = ::GetFileVersionInfoSizeExW (FILE_VER_GET_NEUTRAL, system, &dummy);
-            std::vector<char> buffer (cbInfo);
-            Verify (::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, system, dummy, buffer.size (), &buffer[0]));
+            /*
+             *  How you do this seems to change alot. But as of 2019-03-16:
+             *      from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/getting-the-system-version
+             *          To obtain the full version number for the operating system, 
+             *          call the GetFileVersionInfo function on one of the system DLLs,
+             *          such as Kernel32.dll, then call VerQueryValue to obtain the 
+             *          \\StringFileInfo\\\\ProductVersion subblock of the file version information
+             */
+            const wchar_t*         kkernel32_ = L"kernel32.dll";
+            DWORD                  dummy;
+            const auto             cbInfo = ::GetFileVersionInfoSizeExW (FILE_VER_GET_NEUTRAL, kkernel32_, &dummy);
+            SmallStackBuffer<char> buffer (cbInfo);
+            Verify (::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, kkernel32_, dummy, static_cast<DWORD> (buffer.size ()), &buffer[0]));
             void* p    = nullptr;
             UINT  size = 0;
-            Verify (::VerQueryValueW (buffer.data (), L"\\", &p, &size));
+            Verify (::VerQueryValueW (buffer, L"\\", &p, &size));
             Assert (size >= sizeof (VS_FIXEDFILEINFO));
             Assert (p != nullptr);
             auto pFixed          = static_cast<const VS_FIXEDFILEINFO*> (p);
@@ -695,10 +714,17 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             kernelOSBuildVersion = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionLS), LOWORD (pFixed->dwFileVersionLS));
         }
 
+        /*
+         *  This trick is widely referenced on the internet, but does NOT appear in any official Microsoft documentaiton
+         *  I can find, so is likely an implementation detail subject to change.
+         *
+         *  However, it is referenced  here for example:
+         *      https://stackoverflow.com/questions/31072543/reliable-way-to-get-windows-version-from-registry
+         */
         optional<String> platformVersion;
         optional<String> productName;
         optional<String> currentVersion; // windows major-minor version
-        {
+        try {
             const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
             if (auto o = kWinVersionInfo_.Lookup (L"ReleaseId"sv)) {
                 platformVersion = o.As<String> ();
@@ -706,9 +732,26 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             if (auto o = kWinVersionInfo_.Lookup (L"ProductName"sv)) {
                 productName = o.As<String> ();
             }
-            if (auto o = kWinVersionInfo_.Lookup (L"CurrentVersion"sv)) {
-                currentVersion = o.As<String> ();
+            // try to get current version from CurrentMajorVersionNumber/CurrentMinorVersionNumber which appears
+            // to be the new way
+            try {
+                if (auto oMajor = kWinVersionInfo_.Lookup (L"CurrentMajorVersionNumber"sv)) {
+                    if (auto oMinor = kWinVersionInfo_.Lookup (L"CurrentMinorVersionNumber"sv)) {
+                        currentVersion = oMajor.As<String> () + L"." + oMinor.As<String> ();
+                    }
+                }
             }
+            catch (...) {
+                // ignore - older OS may not have this so fallthrough (though that shouldn't cause exception but in case)
+            }
+            if (not currentVersion) {
+                if (auto o = kWinVersionInfo_.Lookup (L"CurrentVersion"sv)) {
+                    currentVersion = o.As<String> ();
+                }
+            }
+        }
+        catch (...) {
+            DbgTrace (L"Exception suppressed looking up windows version in registry: %s", Characters::ToString (current_exception ()).c_str ());
         }
 
         if (tmp.fShortPrettyName.empty ()) {
@@ -770,62 +813,39 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Appar
         OperatingSystem tmp{GetSystemConfiguration_ActualOperatingSystem ()};
         // not sure if/how to do this differently on linux? Probably pay MORE attention to stuff from uname and less to stuff like /etc/os-release
 #if qPlatform_Windows
-        optional<String> winCompatabilityVersion;
-        {
-            if (not winCompatabilityVersion and IsWindows10OrGreater ()) {
-                winCompatabilityVersion = L"10"sv;
-            }
-            if (not winCompatabilityVersion and IsWindows8Point1OrGreater ()) {
-                winCompatabilityVersion = L"8.1"sv;
-            }
-            if (not winCompatabilityVersion and IsWindows8OrGreater ()) {
-                winCompatabilityVersion = L"8.0sv";
-            }
-            if (not winCompatabilityVersion and IsWindows7SP1OrGreater ()) {
-                winCompatabilityVersion = L"7.1"sv;
-            }
-            if (not winCompatabilityVersion and IsWindows7OrGreater ()) {
-                winCompatabilityVersion = L"7.0"sv;
-            }
+		// Dizzy numbering - from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/operating-system-version
+		optional<String> winCompatabilityVersionName;
+		optional<String> winCompatabilityVersionNumber;
+		{
+            if (not winCompatabilityVersionName and IsWindows10OrGreater ()) {
+				winCompatabilityVersionName = L"10.0"sv;
+				winCompatabilityVersionNumber = L"10.0"sv;
+			}
+            if (not winCompatabilityVersionName and IsWindows8Point1OrGreater ()) {
+				winCompatabilityVersionName = L"8.1"sv;
+				winCompatabilityVersionNumber = L"6.3"sv;
+			}
+            if (not winCompatabilityVersionName and IsWindows8OrGreater ()) {
+				winCompatabilityVersionName = L"8.0"sv;
+				winCompatabilityVersionNumber = L"6.2"sv;
+			}
+            if (not winCompatabilityVersionName and IsWindows7SP1OrGreater ()) {
+				// unclear cuz 7.1 not listed as operating system on that page???
+				winCompatabilityVersionName = L"7.1"sv;
+				winCompatabilityVersionNumber = L"6.2"sv;
+			}
+            if (not winCompatabilityVersionName and IsWindows7OrGreater ()) {
+				winCompatabilityVersionName = L"7.0"sv;
+				winCompatabilityVersionNumber = L"6.1"sv;
+			}
         }
-
-        /*
-         *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
-         *
-         *  Sigh.
-         *
-         *  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724429(v=vs.85).aspx -  GetFileVersionInfo (kernel32.dll)
-         *  is a painful, and stupid alternative.
-         */
-        OSVERSIONINFOEX osvi{};
-        osvi.dwOSVersionInfoSize = sizeof (osvi);
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_MSC_WARNING_START (28159)
-        Verify (::GetVersionEx (reinterpret_cast<LPOSVERSIONINFO> (&osvi)));
-        DISABLE_COMPILER_MSC_WARNING_END (28159)
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        if (osvi.dwMajorVersion == 6) {
-            if (osvi.dwMinorVersion == 0) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows Vista"sv : L"Windows Server 2008"sv;
-            }
-            else if (osvi.dwMinorVersion == 1) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 7"sv : L"Windows Server 2008 R2"sv;
-            }
-            else if (osvi.dwMinorVersion == 2) {
-                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? L"Windows 8"sv : L"Windows Server 2012"sv;
-            }
-            else if (osvi.dwMinorVersion == 3) {
-                if (osvi.wProductType == VER_NT_WORKSTATION)
-                    tmp.fShortPrettyName = L"Windows 8.1"sv;
-            }
-        }
-        if (tmp.fShortPrettyName.empty ()) {
-            tmp.fShortPrettyName = Characters::Format (L"Windows %d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        }
+		String useWinMajorMinorVersionNameStr = winCompatabilityVersionName.value_or (L"unknown"sv);
+		String useWinMajorMinorVersionNumberStr = winCompatabilityVersionNumber.value_or (L"unknown"sv);
+        tmp.fShortPrettyName                      = L"Windows "_k + useWinMajorMinorVersionNameStr;
         tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
         tmp.fPrettyNameWithVersionDetails         = tmp.fShortPrettyName;
-        tmp.fMajorMinorVersionString              = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+        tmp.fMajorMinorVersionString              = useWinMajorMinorVersionNumberStr;
+        tmp.fRFC1945CompatProductTokenWithVersion = L"Windows/"sv + useWinMajorMinorVersionNumberStr;
 #endif
         return tmp;
     }();
