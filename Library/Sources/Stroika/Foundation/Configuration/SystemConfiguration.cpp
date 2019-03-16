@@ -680,18 +680,17 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         String kernelOSBuildVersion;
         String kernelVersion;
         {
-            const auto        system = L"kernel32.dll";
+            const wchar_t*    system = L"kernel32.dll";
             DWORD             dummy;
             const auto        cbInfo = ::GetFileVersionInfoSizeExW (FILE_VER_GET_NEUTRAL, system, &dummy);
             std::vector<char> buffer (cbInfo);
-            ::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, system, dummy, buffer.size (), &buffer[0]);
+            Verify (::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, system, dummy, buffer.size (), &buffer[0]));
             void* p    = nullptr;
             UINT  size = 0;
-            ::VerQueryValueW (buffer.data (), L"\\", &p, &size);
-            //assert (size >= sizeof (VS_FIXEDFILEINFO));
-            //assert (p != nullptr);
+            Verify (::VerQueryValueW (buffer.data (), L"\\", &p, &size));
+            Assert (size >= sizeof (VS_FIXEDFILEINFO));
+            Assert (p != nullptr);
             auto pFixed          = static_cast<const VS_FIXEDFILEINFO*> (p);
-            int  breakhere       = 1;
             kernelVersion        = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionMS), LOWORD (pFixed->dwFileVersionMS));
             kernelOSBuildVersion = Characters::Format (L"%d.%d", HIWORD (pFixed->dwFileVersionLS), LOWORD (pFixed->dwFileVersionLS));
         }
@@ -720,15 +719,14 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         {
             StringBuilder sb = tmp.fShortPrettyName;
             if (platformVersion) {
-                sb += L" Version "_k + *platformVersion;
+                sb += L" Version "sv + *platformVersion;
             }
             if (not kernelVersion.empty ()) {
-                sb += L" (OS Build " + kernelOSBuildVersion + L")"sv;
+                sb += L" (OS Build "sv + kernelOSBuildVersion + L")"sv;
             }
             tmp.fPrettyNameWithVersionDetails = sb.str ();
         }
 
-        //tmp.fPrettyNameWithMajorVersion           = GetWinOSDisplayString_ (); // Cleanup - see above
         tmp.fMajorMinorVersionString              = currentVersion.value_or (L"unknown"sv);
         tmp.fRFC1945CompatProductTokenWithVersion = L"Windows/"sv + tmp.fMajorMinorVersionString;
         if constexpr (sizeof (void*) == 4) {
@@ -738,11 +736,11 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             //and GetProcAddress to get a pointer to the function if available.
             typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
             DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
-            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
+            LPFN_ISWOW64PROCESS isWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
             DISABLE_COMPILER_MSC_WARNING_END (6387)
-            if (nullptr != fnIsWow64Process) {
+            if (nullptr != isWow64Process) {
                 BOOL isWOW64 = false;
-                (void)fnIsWow64Process (::GetCurrentProcess (), &isWOW64);
+                (void)isWow64Process (::GetCurrentProcess (), &isWOW64);
                 if (isWOW64) {
                     tmp.fBits = 64;
                 }
