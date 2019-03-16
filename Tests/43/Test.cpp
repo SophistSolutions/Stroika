@@ -296,6 +296,14 @@ namespace {
                     Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
                 }
 #endif
+                catch (const Execution::RequiredComponentMissingException&) {
+#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+                    // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                    // This is more like the absence of a feature beacuse of the missing component.
+#else
+                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
+#endif
+                }
                 catch (...) {
                     Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
                 }
