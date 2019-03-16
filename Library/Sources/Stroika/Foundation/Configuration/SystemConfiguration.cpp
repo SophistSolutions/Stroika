@@ -813,34 +813,34 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Appar
         OperatingSystem tmp{GetSystemConfiguration_ActualOperatingSystem ()};
         // not sure if/how to do this differently on linux? Probably pay MORE attention to stuff from uname and less to stuff like /etc/os-release
 #if qPlatform_Windows
-		// Dizzy numbering - from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/operating-system-version
-		optional<String> winCompatabilityVersionName;
-		optional<String> winCompatabilityVersionNumber;
-		{
+        // Dizzy numbering - from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/operating-system-version
+        optional<String> winCompatabilityVersionName;
+        optional<String> winCompatabilityVersionNumber;
+        {
             if (not winCompatabilityVersionName and IsWindows10OrGreater ()) {
-				winCompatabilityVersionName = L"10.0"sv;
-				winCompatabilityVersionNumber = L"10.0"sv;
-			}
+                winCompatabilityVersionName   = L"10.0"sv;
+                winCompatabilityVersionNumber = L"10.0"sv;
+            }
             if (not winCompatabilityVersionName and IsWindows8Point1OrGreater ()) {
-				winCompatabilityVersionName = L"8.1"sv;
-				winCompatabilityVersionNumber = L"6.3"sv;
-			}
+                winCompatabilityVersionName   = L"8.1"sv;
+                winCompatabilityVersionNumber = L"6.3"sv;
+            }
             if (not winCompatabilityVersionName and IsWindows8OrGreater ()) {
-				winCompatabilityVersionName = L"8.0"sv;
-				winCompatabilityVersionNumber = L"6.2"sv;
-			}
+                winCompatabilityVersionName   = L"8.0"sv;
+                winCompatabilityVersionNumber = L"6.2"sv;
+            }
             if (not winCompatabilityVersionName and IsWindows7SP1OrGreater ()) {
-				// unclear cuz 7.1 not listed as operating system on that page???
-				winCompatabilityVersionName = L"7.1"sv;
-				winCompatabilityVersionNumber = L"6.2"sv;
-			}
+                // unclear cuz 7.1 not listed as operating system on that page???
+                winCompatabilityVersionName   = L"7.1"sv;
+                winCompatabilityVersionNumber = L"6.2"sv;
+            }
             if (not winCompatabilityVersionName and IsWindows7OrGreater ()) {
-				winCompatabilityVersionName = L"7.0"sv;
-				winCompatabilityVersionNumber = L"6.1"sv;
-			}
+                winCompatabilityVersionName   = L"7.0"sv;
+                winCompatabilityVersionNumber = L"6.1"sv;
+            }
         }
-		String useWinMajorMinorVersionNameStr = winCompatabilityVersionName.value_or (L"unknown"sv);
-		String useWinMajorMinorVersionNumberStr = winCompatabilityVersionNumber.value_or (L"unknown"sv);
+        String useWinMajorMinorVersionNameStr     = winCompatabilityVersionName.value_or (L"unknown"sv);
+        String useWinMajorMinorVersionNumberStr   = winCompatabilityVersionNumber.value_or (L"unknown"sv);
         tmp.fShortPrettyName                      = L"Windows "_k + useWinMajorMinorVersionNameStr;
         tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
         tmp.fPrettyNameWithVersionDetails         = tmp.fShortPrettyName;
