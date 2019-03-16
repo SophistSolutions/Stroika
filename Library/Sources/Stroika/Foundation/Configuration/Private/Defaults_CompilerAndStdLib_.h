@@ -83,7 +83,7 @@
 #if __GNUC__ < 7
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 7 (v2.0 supports g++5 and g++6)"
 #endif
-#if __GNUC__ > 8 || (__GNUC__ == 8 && (__GNUC_MINOR__ > 2))
+#if __GNUC__ > 8 || (__GNUC__ == 8 && (__GNUC_MINOR__ > 3))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -394,7 +394,7 @@ ABORTING...
 #if __GNUC__ <= 7
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 3)
 #elif __GNUC__ <= 8
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 2)
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 3)
 #elif __GNUC__ <= 9
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 0)
 #else
