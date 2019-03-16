@@ -700,13 +700,13 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         optional<String> currentVersion; // windows major-minor version
         {
             const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
-            if (auto o = kWinVersionInfo_.LookupPref (L"ReleaseId"sv)) {
+            if (auto o = kWinVersionInfo_.Lookup (L"ReleaseId"sv)) {
                 platformVersion = o.As<String> ();
             }
-            if (auto o = kWinVersionInfo_.LookupPref (L"ProductName"sv)) {
+            if (auto o = kWinVersionInfo_.Lookup (L"ProductName"sv)) {
                 productName = o.As<String> ();
             }
-            if (auto o = kWinVersionInfo_.LookupPref (L"CurrentVersion"sv)) {
+            if (auto o = kWinVersionInfo_.Lookup (L"CurrentVersion"sv)) {
                 currentVersion = o.As<String> ();
             }
         }

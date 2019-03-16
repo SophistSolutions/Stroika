@@ -73,7 +73,7 @@ namespace {
 optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
 {
 #if qPlatform_Windows
-    if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
+    if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
         return fs.As<String> ();
     }
 #else
@@ -101,8 +101,8 @@ optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const Inter
 {
 #if qPlatform_Windows
     if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
-        if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (*fileSuffix)) {
-            if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (fileTypeID.As<String> ())) {
+        if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (*fileSuffix)) {
+            if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> ())) {
                 return prettyName.As<String> ();
             }
         }
@@ -121,7 +121,7 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
 #elif qPlatform_Windows
     using Characters::Format;
     using Configuration::Platform::Windows::RegistryKey;
-    if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (Format (L"%s\\Content Type", suffix.c_str ()))) {
+    if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", suffix.c_str ()))) {
         return InternetMediaType{oct.As<String> ()};
     }
 #else

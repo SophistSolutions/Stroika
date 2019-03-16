@@ -42,25 +42,25 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
 #endif
     Require (parentKey != nullptr);
     Require (parentKey != INVALID_HANDLE_VALUE);
-    Require (samDesired == KEY_READ); // for now - later allow others so long as they are non-destructive/readonly
+    Require (samDesired == KEY_READ); // @todo - for now - later allow others so long as they are non-destructive/readonly
     HKEY result{};
     ThrowIfNotERROR_SUCCESS (::RegOpenKeyEx (parentKey, path.AsSDKString ().c_str (), 0, samDesired, &result));
     Ensure (result != nullptr and result != INVALID_HANDLE_VALUE);
     return result;
 }
 
-VariantValue RegistryKey::LookupPref (const String& prefName) const
+VariantValue RegistryKey::Lookup (const String& prefName) const
 {
     Assert (fKey_ != INVALID_HANDLE_VALUE);
 
     {
-        // RegQueryValueExW doesn't support this directly, but its quite handled, and we document we support this
+        // RegQueryValueExW doesn't support this directly, but its quite handy, and we document we support this
         size_t lastBackSlash = prefName.rfind ('\\');
         if (lastBackSlash != SDKString::npos) {
             // @todo - check on TYPE of exception and if cuz not there, return empty, and if cuz of permissions (etc)
-            // pass along exception
+            // pass along exception (note https://docs.microsoft.com/en-us/windows/desktop/api/winreg/nf-winreg-regopenkeyexa doesnt document returned error codes for not found)
             try {
-                return RegistryKey{fKey_, prefName.substr (0, lastBackSlash)}.LookupPref (prefName.substr (lastBackSlash + 1));
+                return RegistryKey{fKey_, prefName.substr (0, lastBackSlash)}.Lookup (prefName.substr (lastBackSlash + 1));
             }
             catch (...) {
                 return VariantValue{};
@@ -97,5 +97,8 @@ VariantValue RegistryKey::LookupPref (const String& prefName) const
         }
         AssertNotImplemented (); // must support reading other types!!!
     }
-    return VariantValue{};
+    else if (lResult == ERROR_FILE_NOT_FOUND) {
+        return VariantValue{};
+    }
+    Execution::Throw (Execution::SystemErrorException<> (lResult, system_category ()));
 }

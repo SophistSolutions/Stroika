@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
      *
      *  \par Example Usage
      *      \code
-     *          if (auto tmp = RegistryKey{HKEY_CLASSES_ROOT}.LookupPref (Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.c_str ()))) {
+     *          if (auto tmp = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.c_str ()))) {
      *              return tmp.As<String> ();
      *          }
      *      \endcode
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
          *  \note Unlike the underlying Windows registry APIs, you can pass in a prefName with backslashes, and it will be
          *        interpretted as lookup relative to 'this' registry key
          */
-        nonvirtual DataExchange::VariantValue LookupPref (const Characters::String& prefName) const;
+        nonvirtual DataExchange::VariantValue Lookup (const Characters::String& prefName) const;
 
     private:
         /*

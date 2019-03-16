@@ -12,6 +12,11 @@
 
 namespace Stroika::Foundation::Configuration::Platform::Windows {
 
+    /*
+     ********************************************************************************
+     ********************************* RegistryKey **********************************
+     ********************************************************************************
+     */
     constexpr RegistryKey::RegistryKey (HKEY hkey, bool owned)
         : fKey_ (hkey)
         , fOwned_{owned}
