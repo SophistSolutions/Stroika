@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Execution {
         static constexpr wchar_t kPDFViewer[]              = L"PDFViewer";
         static constexpr wchar_t kPDFOCXViewer[]           = L"PDFOCXViewer";
         static constexpr wchar_t kSAXFactory[]             = L"SAXFactory";
-        static constexpr wchar_t kIONetworkClientFactory[] = L"IO-Network-Client-Factory";
+        static constexpr wchar_t kIONetworkClientFactory[] = L"IO-Network-Transer-Client-Factory";
         static constexpr wchar_t kOpenSSL[]                = L"OpenSSL";
 
     public:
