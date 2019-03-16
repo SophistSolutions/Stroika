@@ -293,17 +293,11 @@ namespace {
                         return;
                     }
 #endif
-                    Execution::ReThrow ();
+                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
                 }
 #endif
-                catch (const HTTP::Exception& e) {
-                    if (e.GetStatus () == HTTP::StatusCodes::kServiceUnavailable or e.GetStatus () == HTTP::StatusCodes::kGatewayTimeout or e.GetStatus () == HTTP::StatusCodes::kRequestTimeout) {
-                        // Ignore/Eat
-                        DbgTrace (L"Ignored error HTTP status %d", e.GetStatus ());
-                    }
-                    else {
-                        Execution::ReThrow ();
-                    }
+                catch (...) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
                 }
             }
         }
