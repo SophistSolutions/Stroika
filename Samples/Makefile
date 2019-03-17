@@ -22,6 +22,7 @@ SUBPROJECTS=
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	ActiveLedIt
 endif
+SUBPROJECTS+=	AppSettings
 SUBPROJECTS+=	ArchiveUtility
 SUBPROJECTS+=	Containers
 ifeq ($(qFeatureFlag_ATLMFC), use-system)

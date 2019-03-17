@@ -4,6 +4,12 @@
   is a word-processor activeX control. This works only for Windows.
   ActiveLedIt is based on the Stroika Led WordProcessor framework
 
+* [AppSettings](AppSettings/)
+  is a simple example of using ObjectVariantMapper to map objects to/from JSON, 
+  combined with OptionsFile utility class to store JSON content in the file system (managing version/format upgrades etc),
+  along with ModuleGetterSetter to manage all this on a per-module basis (so settings can be defined/saved per module or globally)
+  and accessed automatically in a threadsafe manner (automatically synchronized).
+
 * [ArchiveUtility](ArchiveUtility/)
   is a simple command-line tool to create/update/list/etc archives, like zip files, or 7z files.
   This demonstrates use of the Stroika DataExchange/Archive classes.
