@@ -91,7 +91,7 @@ namespace {
 
                   OptionsFile::kDefaultUpgrader,
 
-                  OptionsFile::mkFilenameMapper (L"LedIt")}
+                  OptionsFile::mkFilenameMapper (L"LedIt"sv)}
             , fActualCurrentConfigData_ (fOptionsFile_.Read<Options_> (Options_{}))
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
