@@ -92,6 +92,10 @@ namespace Stroika::Foundation ::Execution {
     public:
         /**
          *  Grab the global value, performing any necessary read-locks automatically.
+         *
+         *  \note - this returns a copy of T, not a reference, in order to properly manage locking, though
+         *          since its inlined, for most cases, much of that case may be optimized away (the most expensive
+         *          unavoidable peice being the readlock).
          */
         nonvirtual T Get ();
 
@@ -106,7 +110,8 @@ namespace Stroika::Foundation ::Execution {
          *  \brief Call this with a lambda that will update the associated value (INSIDE a lock (synchronized))
          *
          *  Call this with a lambda that will update the associated value. The update will happen INSIDE
-         *  a lock (synchronized). 
+         *  a lock (synchronized). {{ reconsider if we should make that explicit promise or upgradelock
+         *  so we can do update and check for change inside a shared_lock and never write lock if no change}}
          *
          *  updaterFunction should return nullopt if no change, or the new value if changed.
          *
@@ -129,11 +134,11 @@ namespace Stroika::Foundation ::Execution {
         nonvirtual optional<T> Update (const function<optional<T> (const T&)>& updaterFunction);
 
     private:
-        Synchronized<optional<IMPL>> fIndirect_;
+        RWSynchronized<optional<IMPL>> fIndirect_;
 
     private:
         // separate this method out so the callers can be inlined, this more rarely executed, and longer segment of code is not
-        nonvirtual void DoInitOutOfLine_ (typename Synchronized<optional<IMPL>>::WritableReference* ref);
+        nonvirtual void DoInitOutOfLine_ (typename RWSynchronized<optional<IMPL>>::WritableReference* ref);
     };
 
 }
