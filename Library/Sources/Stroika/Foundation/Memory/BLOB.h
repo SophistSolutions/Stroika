@@ -125,6 +125,8 @@ namespace Stroika::Foundation::Memory {
          *  This does little more than a cast (taking into account sizeof T)
          *
          *  Overloads taking const char*, or const wchar_t* only, are assumed to be C-Strings (NUL-terminated).
+         *
+         *  The overload taking an OBJECT as argument requires it be 'trivially_copyable' - just like memcpy()
          */
         template <typename T>
         static BLOB Raw (const T* s, const T* e);
@@ -132,8 +134,8 @@ namespace Stroika::Foundation::Memory {
         static BLOB Raw (const T* s, size_t sz);
         static BLOB Raw (const char* s);
         static BLOB Raw (const wchar_t* s);
-        template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_POD_T> and is_pod_v<typename CONTAINER_OF_POD_T::value_type>>* = nullptr>
-        static BLOB Raw (const CONTAINER_OF_POD_T& s);
+        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<Configuration::IsIterable_v<TRIVIALLY_COPYABLE_T> and is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T::value_type>>* = nullptr>
+        static BLOB Raw (const TRIVIALLY_COPYABLE_T& s);
 
     protected:
         struct _IRep;

@@ -161,8 +161,8 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (s);
         return Raw (s, s + ::wcslen (s));
     }
-    template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_POD_T> and is_pod_v<typename CONTAINER_OF_POD_T::value_type>>*>
-    inline BLOB BLOB::Raw (const CONTAINER_OF_POD_T& s)
+    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<Configuration::IsIterable_v<TRIVIALLY_COPYABLE_T> and is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T::value_type>>*>
+    inline BLOB BLOB::Raw (const TRIVIALLY_COPYABLE_T& s)
     {
         // note we use .size () instead of s.end () because this funtion requires argument CONTAINER to be contiguous, and thats more likely checked by this (really need some concept check)
         // also - Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1
