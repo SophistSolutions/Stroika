@@ -217,17 +217,17 @@ namespace Stroika::Foundation::Memory {
          *  Convert BLOB losslessly into a standard C++ type.
          *      Supported Types for 'T' include:
          *          o   vector<byte>
-         *          o   Streams::InputStream<byte>::Ptr
+         *          o   vector<uint8_t>
          *          o   pair<const byte*, const byte*>
+         *          o   pair<const uint8_t*, const uint8_t*>
+         *          o   Streams::InputStream<byte>::Ptr
+         *          o   any T where is_trivially_copyable
          */
         template <typename T>
         nonvirtual T As () const;
         /**
          *  Convert BLOB losslessly into a standard C++ type.
-         *      Supported Types for 'T' include:
-         *          o   vector<byte>
-         *          o   Streams::InputStream<byte>::Ptr
-         *          o   pair<const byte*, const byte*>
+         *      Supported Types for 'T' include (@see same as As/0)
          */
         template <typename T>
         nonvirtual void As (T* into) const;
@@ -333,13 +333,26 @@ namespace Stroika::Foundation::Memory {
     };
 
     template <>
+    vector<byte> BLOB::As () const;
+    template <>
+    vector<uint8_t> BLOB::As () const;
+    template <>
+    pair<const byte*, const byte*> BLOB::As () const;
+    template <>
+    pair<const uint8_t*, const uint8_t*> BLOB::As () const;
+    template <>
+    Streams::InputStream<byte>::Ptr BLOB::As () const;
+
+    template <>
     void BLOB::As (vector<byte>* into) const;
     template <>
     void BLOB::As (vector<uint8_t>* into) const;
     template <>
-    vector<byte> BLOB::As () const;
+    void BLOB::As (pair<const byte*, const byte*>* into) const;
     template <>
-    vector<uint8_t> BLOB::As () const;
+    void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const;
+    template <>
+    void BLOB::As (Streams::InputStream<byte>::Ptr* into) const;
 
     /**
      * This abstract interface defines the behavior of a BLOB.
@@ -354,9 +367,6 @@ namespace Stroika::Foundation::Memory {
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
     };
-
-    template <>
-    Streams::InputStream<byte>::Ptr BLOB::As () const;
 
     /**
      *  operator indirects to BLOB::Compare()

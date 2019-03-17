@@ -184,6 +184,43 @@ namespace Stroika::Foundation::Memory {
         return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
     }
     template <>
+    inline vector<byte> BLOB::As () const
+    {
+        vector<byte> result;
+        As<vector<byte>> (&result);
+        return result;
+    }
+    template <>
+    inline vector<uint8_t> BLOB::As () const
+    {
+        vector<uint8_t> result;
+        As<vector<uint8_t>> (&result);
+        return result;
+    }
+    template <>
+    inline pair<const byte*, const byte*> BLOB::As () const
+    {
+        pair<const byte*, const byte*>                      result;
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        As<pair<const byte*, const byte*>> (&result);
+        return result;
+    }
+    template <>
+    inline pair<const uint8_t*, const uint8_t*> BLOB::As () const
+    {
+        pair<const uint8_t*, const uint8_t*>                result;
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        As<pair<const uint8_t*, const uint8_t*>> (&result);
+        return result;
+    }
+    template <typename T>
+    inline T BLOB::As () const
+    {
+        static_assert (is_trivially_copyable_v<T>);
+        Require (size () >= sizeof (T)); // allow object slicing, but not reading garbage data
+        return *(reinterpret_cast<const T*> (begin ()));
+    }
+    template <>
     inline void BLOB::As (vector<byte>* into) const
     {
         RequireNotNull (into);
@@ -202,20 +239,6 @@ namespace Stroika::Foundation::Memory {
         into->assign (reinterpret_cast<const uint8_t*> (tmp.first), reinterpret_cast<const uint8_t*> (tmp.second));
     }
     template <>
-    inline vector<byte> BLOB::As () const
-    {
-        vector<byte> result;
-        As<vector<byte>> (&result);
-        return result;
-    }
-    template <>
-    inline vector<uint8_t> BLOB::As () const
-    {
-        vector<uint8_t> result;
-        As<vector<uint8_t>> (&result);
-        return result;
-    }
-    template <>
     inline void BLOB::As (pair<const byte*, const byte*>* into) const
     {
         RequireNotNull (into);
@@ -223,12 +246,20 @@ namespace Stroika::Foundation::Memory {
         *into = fRep_->GetBounds ();
     }
     template <>
-    inline pair<const byte*, const byte*> BLOB::As () const
+    inline void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const
     {
-        pair<const byte*, const byte*>                      result;
+        RequireNotNull (into);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        As<pair<const byte*, const byte*>> (&result);
-        return result;
+        auto                                                t = fRep_->GetBounds ();
+        into->first                                           = reinterpret_cast<const uint8_t*> (t.first);
+        into->second                                          = reinterpret_cast<const uint8_t*> (t.second);
+    }
+    template <typename T>
+    inline void BLOB::As (T* into) const
+    {
+        static_assert (is_trivially_copyable_v<T>);
+        Require (size () >= sizeof (T)); // allow object slicing, but not reading garbage data
+        (void)::memccpy (into, begin (), sizeof (T));
     }
     inline byte BLOB::operator[] (const size_t i) const
     {
