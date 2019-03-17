@@ -112,20 +112,25 @@ namespace {
     };
     RWSynchronized<optional<Info_>>                        sCached_;
     Synchronized<Collection<shared_ptr<MessageUtilities>>> sHandlers_;
-    Synchronized<bool>                                     sUseFakeHandler_ = true; // for calls before start of or after end of main ()
+#if qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy
+    // just hope for this best - this isn't super critical here, so maybe can get away with it. could also use explict atomic_loads on bool value if mattered
+    bool sUseFakeHandler_{true}; // for calls before start of or after end of main ()
+#else
+    atomic<bool> sUseFakeHandler_{true}; // for calls before start of or after end of main ()
+#endif
 }
 
 CurrentLocaleMessageUtilities::Configuration CurrentLocaleMessageUtilities::Configuration::sThe;
 
 CurrentLocaleMessageUtilities::Configuration::Configuration ()
 {
-    Require (sUseFakeHandler_.load ());
+    Require (sUseFakeHandler_);
     sUseFakeHandler_ = false;
 }
 
 CurrentLocaleMessageUtilities::Configuration::~Configuration ()
 {
-    Require (not sUseFakeHandler_.load ());
+    Require (not sUseFakeHandler_);
     sUseFakeHandler_ = true;
 }
 

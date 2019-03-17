@@ -805,6 +805,17 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 #endif
 
+#ifndef qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy
+
+#if defined(_MSC_VER)
+
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
+#endif
+
+#endif
+
 /*
  * Crazy man!  - https://connect.microsoft.com/VisualStudio/feedback/details/763051/a-value-of-predefined-macro-cplusplus-is-still-199711l
  *

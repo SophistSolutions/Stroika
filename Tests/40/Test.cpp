@@ -25,6 +25,25 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 
+// must be tested before main, so cannot call directly below
+namespace {
+    int        TestAtomicInitializedCoorectly_ ();
+    static int sIgnoredTestValue_ = TestAtomicInitializedCoorectly_ (); // if using static constructors, this will be called before sAtomicBoolNotInitializedTilAfterStaticInitizers_
+
+    atomic<bool> sAtomicBoolNotInitializedTilAfterStaticInitizers_{true}; // for calls before start of or after end of main ()
+    int          TestAtomicInitializedCoorectly_ ()
+    {
+#if qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy
+        if (sAtomicBoolNotInitializedTilAfterStaticInitizers_) {
+            Stroika::TestHarness::WarnTestIssue ("qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy appears fixed");
+        }
+#else
+        VerifyTestResult (sAtomicBoolNotInitializedTilAfterStaticInitizers_);
+#endif
+        return 1;
+    }
+}
+
 namespace {
     void Test1_Function_ ()
     {
