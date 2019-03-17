@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (s);
         return Raw (s, s + ::wcslen (s));
     }
-    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T>>*>
+    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>*>
     inline BLOB BLOB::Raw (const TRIVIALLY_COPYABLE_T& s)
     {
         return BLOB (reinterpret_cast<const byte*> (&s), reinterpret_cast<const byte*> (&s + 1));
