@@ -161,16 +161,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (s);
         return Raw (s, s + ::wcslen (s));
     }
-#if 0
-    template <typename TRIVIALLY_COPYABLE_ITERATOR_OF_T, enable_if_t<Configuration::IsIterable_v<TRIVIALLY_COPYABLE_ITERATOR_OF_T> and is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_ITERATOR_OF_T::value_type>>*>
-    inline BLOB BLOB::Raw (const TRIVIALLY_COPYABLE_ITERATOR_OF_T& s)
-    {
-        // note we use .size () instead of s.end () because this funtion requires argument CONTAINER to be contiguous, and thats more likely checked by this (really need some concept check)
-        // also - Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1
-        return s.empty () ? BLOB{} : Raw (Traversal::Iterator2Pointer (s.begin ()), Traversal::Iterator2Pointer (s.begin ()) + s.size ());
-    }
-#endif
-    template <typename TRIVIALLY_COPYABLE_T, enable_if_t</*not Configuration::IsIterable_v<TRIVIALLY_COPYABLE_T> and*/ is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T>>*>
+    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T>>*>
     inline BLOB BLOB::Raw (const TRIVIALLY_COPYABLE_T& s)
     {
         return BLOB (reinterpret_cast<const byte*> (&s), reinterpret_cast<const byte*> (&s + 1));

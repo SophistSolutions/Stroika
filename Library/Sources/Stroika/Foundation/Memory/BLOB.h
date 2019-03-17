@@ -134,13 +134,7 @@ namespace Stroika::Foundation::Memory {
         static BLOB Raw (const T* s, size_t sz);
         static BLOB Raw (const char* s);
         static BLOB Raw (const wchar_t* s);
-#if 0
-        // @todo - FIX/REVISE/CLEANUP - LGP 2019-03-17
-        // we used to support this (iterator) case. But maybe too risky. At least the why imlmented now assumes array is continguous but not check for that
-        template <typename TRIVIALLY_COPYABLE_ITERATOR_OF_T, enable_if_t<Configuration::IsIterable_v<TRIVIALLY_COPYABLE_ITERATOR_OF_T> and is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_ITERATOR_OF_T::value_type>>* = nullptr>
-        static BLOB Raw (const TRIVIALLY_COPYABLE_ITERATOR_OF_T& s);
-#endif
-        template <typename TRIVIALLY_COPYABLE_T, enable_if_t</*not Configuration::IsIterable_v<TRIVIALLY_COPYABLE_T> and */ is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T>>* = nullptr>
+        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<typename TRIVIALLY_COPYABLE_T>>* = nullptr>
         static BLOB Raw (const TRIVIALLY_COPYABLE_T& s);
 
     protected:
