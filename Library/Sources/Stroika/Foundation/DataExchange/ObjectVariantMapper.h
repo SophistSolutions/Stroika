@@ -113,6 +113,9 @@
  *              Anyhow - this is a long-term todo item, so no need to work out details now.
  */
 
+namespace Stroika::Foundation::Memory {
+    class BLOB;
+}
 namespace Stroika::Foundation::DataExchange {
 
     using Characters::String;
@@ -691,6 +694,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedSet<T>*);
         template <typename T, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
+        static TypeMappingDetails MakeCommonSerializer_ (const Memory::BLOB*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
         template <typename T>

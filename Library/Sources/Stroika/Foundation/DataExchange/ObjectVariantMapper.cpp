@@ -7,6 +7,7 @@
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
 #include "../Containers/MultiSet.h"
+#include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../Debug/Trace.h"
 #include "../Time/Date.h"
 #include "../Time/DateRange.h"
@@ -261,6 +262,20 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
         *intoObjOfTypeT = d.As<Mapping<String, VariantValue>> ();
     };
     return TypeMappingDetails{typeid (ACTUAL_ELEMENT_TYPE), fromObjectMapper, toObjectMapper};
+}
+
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLOB*)
+{
+    // No super obvious way to convert BLOB to/from JSON, but base64 encoding appears the best default
+    // Note - callers can easily replace this converter
+    using T                                  = Memory::BLOB;
+    FromObjectMapperType<T> fromObjectMapper = [](const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+        return VariantValue (String::FromASCII (Cryptography::Encoding::Algorithm::EncodeBase64 (*fromObjOfTypeT)));
+    };
+    ToObjectMapperType<T> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = Cryptography::Encoding::Algorithm::DecodeBase64 (d.As<String> ());
+    };
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::InternetAddress*)
