@@ -42,7 +42,12 @@ namespace Stroika::Foundation::Debug {
         try {
             lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
             lock_guard<mutex>                                  sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (fLocks_ == 0 and fSharedLockThreads_->empty ()); // We must not have any locks going to replace this
+            if (this == &rhs) {
+                Require (fLocks_ == 1 and fSharedLockThreads_->empty ()); // we locked ourselves above
+            }
+            else {
+                Require (fLocks_ == 0 and fSharedLockThreads_->empty ()); // We must not have any locks going to replace this
+            }
         }
         catch (...) {
             AssertNotReached ();

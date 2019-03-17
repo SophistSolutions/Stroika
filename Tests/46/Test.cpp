@@ -285,6 +285,12 @@ namespace {
             VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
         }
         {
+            Memory::BLOB bl{1, 2, 3, 4, 5};
+            bl = bl; // assure self-assign OK
+            bl = move (bl);
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
+        }
+        {
             const char kSrc1_[] = "This is a very good test of a very good test";
             const char kSrc2_[] = "";
             const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
