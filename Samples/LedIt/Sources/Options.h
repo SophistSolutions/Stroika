@@ -19,8 +19,8 @@
 
 class Options {
 public:
-    Options ();
-    ~Options ();
+    Options ()  = default;
+    ~Options () = default;
 
 public:
     using SearchParameters = TextInteractor::SearchParameters;
