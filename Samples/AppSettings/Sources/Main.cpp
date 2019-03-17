@@ -78,17 +78,17 @@ namespace {
                    *  and this module configuration file would be:
                    *      L"/var/opt/Put-Your-App-Name-Here/MyModule.json" OR
                    *      L"C:/ProgramData/Put-Your-App-Name-Here/MyModule.json" OR
-				   *
-				   *	\note - this function does NOT create the 'Put-Your-App-Name-Here' folder first, and will NOT persist
-				   *		    files if this folder does not exist.
-				   *
-				   *		    Callers can easily repalce the default function provided in OptionsFile::mkFilenameMapper - just
-				   *			dont call that and provide your own lambda - to create the folder.
-				   *
-				   *			But a better pattern is to create the folder in your application installer, typically.
+                   *
+                   *    \note - this function does NOT create the 'Put-Your-App-Name-Here' folder first, and will NOT persist
+                   *            files if this folder does not exist.
+                   *
+                   *            Callers can easily repalce the default function provided in OptionsFile::mkFilenameMapper - just
+                   *            dont call that and provide your own lambda - to create the folder.
+                   *
+                   *            But a better pattern is to create the folder in your application installer, typically.
                    */
                   OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
-			, fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_{}))
+            , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_{}))
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
