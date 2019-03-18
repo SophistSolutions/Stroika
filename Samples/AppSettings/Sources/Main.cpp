@@ -18,13 +18,13 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
 namespace {
-    struct MyData_ {
+    struct OptionsData_ {
         bool               fEnabled = false;
         optional<DateTime> fLastSynchronizedAt;
     };
     /*
-     *  MyData_Storage_IMPL_ is a 'traits' object, defining a GET and SET method to save/restore
-     *  MyData_.
+     *  OptionsData_Storage_IMPL_ is a 'traits' object, defining a GET and SET method to save/restore
+     *  OptionsData_.
      *
      *  This need not worry about thread safety:
      *      o   in the constructor because C++ guarantees this for statically constructed objects
@@ -36,8 +36,8 @@ namespace {
      *  But this example shows using OptionsFile to persist the data to a local JSON file, using
      *  the ObjectVariantMapper to serialize/deserialize C++ data structures.
      */
-    struct MyData_Storage_IMPL_ {
-        MyData_Storage_IMPL_ ()
+    struct OptionsData_Storage_IMPL_ {
+        OptionsData_Storage_IMPL_ ()
             : fOptionsFile_{
                   /*
                    * Any module name will do. This will map (by default) to a MyModule.json file in XXX.
@@ -56,9 +56,9 @@ namespace {
                    */
                   []() -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
-                      mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
-                          {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
+                      mapper.AddClass<OptionsData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                          {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (OptionsData_, fEnabled)},
+                          {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (OptionsData_, fLastSynchronizedAt)},
                       });
                       return mapper;
                   }(),
@@ -88,17 +88,17 @@ namespace {
                    *            But a better pattern is to create the folder in your application installer, typically.
                    */
                   OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
-            , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_{}))
+            , fActualCurrentConfigData_ (fOptionsFile_.Read<OptionsData_> (OptionsData_{}))
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        MyData_ Get () const
+        OptionsData_ Get () const
         {
             // no locking required here for thread safety.
             // This is always done inside of a read or a full lock by ModuleGetterSetter
             return fActualCurrentConfigData_;
         }
-        void Set (const MyData_& v)
+        void Set (const OptionsData_& v)
         {
             // no locking required here for thread safety.
             // This is always done inside of a write lock by ModuleGetterSetter
@@ -107,15 +107,15 @@ namespace {
         }
 
     private:
-        OptionsFile fOptionsFile_;
-        MyData_     fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
+        OptionsFile  fOptionsFile_;
+        OptionsData_ fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
     };
 
 }
 
 namespace {
-    ModuleGetterSetter<MyData_, MyData_Storage_IMPL_> sModuleConfiguration_;
-    WaitableEvent                                     sWaitableEvent_; // some thread could be waiting on this, and perform some reactive task when the module settings change
+    ModuleGetterSetter<OptionsData_, OptionsData_Storage_IMPL_> sModuleConfiguration_;
+    WaitableEvent                                               sWaitableEvent_; // some thread could be waiting on this, and perform some reactive task when the module settings change
 
     void TestUse1_ ()
     {
@@ -136,7 +136,7 @@ namespace {
     void TestUse3_ ()
     {
         if (sModuleConfiguration_.Get ().fEnabled) {
-            // a non-atomic update of the entire MyData_ object
+            // a non-atomic update of the entire OptionsData_ object
             auto n     = sModuleConfiguration_.Get ();
             n.fEnabled = false; // change something in 'n' here
             sModuleConfiguration_.Set (n);
@@ -147,7 +147,7 @@ namespace {
         // Use Update () to atomically update data
         // Use the return value to tell if a real change was made (so you can invoke some sort of notication/action)
         static const Duration kMinTime_ = 2min;
-        if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+        if (sModuleConfiguration_.Update ([](const OptionsData_& data) -> optional<OptionsData_> {  if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { OptionsData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
             sWaitableEvent_.Set (); // e.g. trigger someone to wakeup and used changes? - no global lock held here...
         }
     }
