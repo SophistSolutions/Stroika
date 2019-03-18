@@ -35,7 +35,10 @@ namespace {
     {
 #if qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy
         if (sAtomicBoolNotInitializedTilAfterStaticInitizers_) {
-            Stroika::TestHarness::WarnTestIssue ("qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy appears fixed");
+#if qDebug
+            // bug seems to happen just with DEBUG builds - haven't dug into why
+            Stroika::TestHarness::WarnTestIssue ("qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy MAYBE fixed");
+#endif
         }
 #else
         VerifyTestResult (sAtomicBoolNotInitializedTilAfterStaticInitizers_);
