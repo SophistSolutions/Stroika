@@ -36,7 +36,7 @@
 
 * [Service](Service/)
   is a simple demonstration of how to use the Stroika Service Framework. Makes it easy to create
-  services that integrate with UNIX service systems (init/systemd etc) or windows service manager.
+  services that integrate with UNIX service systems (init/systemd etc) or windows service manager. Contains source for installers in WIX (MSI), RPM, and DEB.
 
 * [SimpleLedText](SimpleLedText/)
   tests the simple-to-use Led library wrapper code. This can easily
