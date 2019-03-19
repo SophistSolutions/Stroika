@@ -142,6 +142,11 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ENUM_TYPE>
     class EnumNames {
+    public:
+        static_assert (is_enum_v<decltype (ENUM_TYPE::eCOUNT)>, "Missing eCOUNT - typically Use Stroika_Define_Enum_Bounds inside the enum");
+        static_assert (is_enum_v<decltype (ENUM_TYPE::eSTART)>, "Missing eSTART - typically Use Stroika_Define_Enum_Bounds inside the enum");
+        static_assert (is_enum_v<decltype (ENUM_TYPE::eEND)>, "Missing eEND - typically Use Stroika_Define_Enum_Bounds inside the enum");
+
     private:
         using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
 
