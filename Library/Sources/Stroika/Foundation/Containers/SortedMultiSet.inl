@@ -106,9 +106,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline void SortedMultiSet<T, TRAITS>::_AssertRepValidType () const
     {
-        if constexpr (qDebug) {
-            _SafeReadRepAccessor<_IRep>{this};
-        }
+#if qDebug
+        _SafeReadRepAccessor<_IRep>{this};
+#endif
     }
 
 }

@@ -108,9 +108,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void LinkedList<T>::Invariant () const
     {
-        if constexpr (qDebug) {
-            Invariant_ ();
-        }
+#if qDebug
+        Invariant_ ();
+#endif
     }
     template <typename T>
     inline void LinkedList<T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T>* movedFrom)

@@ -407,7 +407,7 @@ String Date::Format (const locale& l, const String& formatPattern) const
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_END (4996);
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
-    TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (Date2TM_ (*this)), l);
+    TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
 
     // http://new.cplusplus.com/reference/std/locale/time_put/put/

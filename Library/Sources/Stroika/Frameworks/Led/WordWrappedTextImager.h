@@ -164,11 +164,11 @@ namespace Stroika::Frameworks::Led {
         if (rhs != nullptr) {
             *rhs = GetWindowRect ().GetWidth ();
         }
-        if constexpr (qDebug) {
-            if (lhs != nullptr and rhs != nullptr) {
-                Ensure (*rhs > *lhs);
-            }
+#if qDebug
+        if (lhs != nullptr and rhs != nullptr) {
+            Ensure (*rhs > *lhs);
         }
+#endif
     }
     template <typename TEXTSTORE, typename IMAGER>
     /*

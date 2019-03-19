@@ -388,15 +388,15 @@ namespace {
             StdIStream_InputStream (InputStream<byte>::Ptr in)
                 : fSource (in)
             {
-                if constexpr (qDebug) {
-                    sStdIStream_InputStream_COUNT_++;
-                }
+#if qDebug
+                sStdIStream_InputStream_COUNT_++;
+#endif
             }
             ~StdIStream_InputStream ()
             {
-                if constexpr (qDebug) {
-                    sStdIStream_InputStream_COUNT_--;
-                }
+#if qDebug
+                sStdIStream_InputStream_COUNT_--;
+#endif
             }
 
         public:

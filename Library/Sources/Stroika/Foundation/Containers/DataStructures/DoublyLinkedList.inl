@@ -590,9 +590,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::Invariant () const
     {
-        if constexpr (qDebug) {
-            Invariant_ ();
-        }
+#if qDebug
+        Invariant_ ();
+#endif
     }
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::Done () const

@@ -109,9 +109,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
     {
-        if constexpr (qDebug) {
-            _Invariant ();
-        }
+#if qDebug
+        _Invariant ();
+#endif
     }
 #if qDebug
     template <typename STL_CONTAINER_OF_T>
@@ -170,9 +170,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Invariant () const
     {
-        if constexpr (qDebug) {
-            _Invariant ();
-        }
+#if qDebug
+        _Invariant ();
+#endif
     }
 #if qDebug
     template <typename STL_CONTAINER_OF_T>

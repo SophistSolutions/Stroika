@@ -4816,12 +4816,12 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
 
 void WordProcessorTextIOSinkStream::EndTableCell ()
 {
-    if constexpr (qDebug) {
-        Require (fTableOpenLevel >= 1);
-        Require (fTableRowOpen);
-        Require (fTableCellOpen);
-        fTableCellOpen = false;
-    }
+#if qDebug
+    Require (fTableOpenLevel >= 1);
+    Require (fTableRowOpen);
+    Require (fTableCellOpen);
+    fTableCellOpen = false;
+#endif
 #if !qNestedTablesSupported
     if (GetNoTablesAllowed ()) {
         return;
@@ -5908,7 +5908,8 @@ vector<Led_Rect> Table::GetRowHilightRects () const
         }
     }
 
-    if constexpr (qDebug) {
+#if qDebug
+    {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
         for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
@@ -5921,6 +5922,7 @@ vector<Led_Rect> Table::GetRowHilightRects () const
             }
         }
     }
+#endif
 
     return result;
 }

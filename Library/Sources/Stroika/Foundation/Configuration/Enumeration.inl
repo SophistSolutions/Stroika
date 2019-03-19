@@ -137,18 +137,18 @@ namespace Stroika::Foundation::Configuration {
         if (e == ENUM_TYPE::eEND) {
             return nullptr;
         }
-        if constexpr (qDebug) {
-            Require (OffsetFromStart<ENUM_TYPE> (e) < fEnumNames_.size ());
-            auto refImpl = [this](ENUM_TYPE e) -> const wchar_t* {
-                for (auto i : fEnumNames_) {
-                    if (i.first == e) {
-                        return i.second;
-                    }
+#if qDebug
+        Require (OffsetFromStart<ENUM_TYPE> (e) < fEnumNames_.size ());
+        auto refImpl = [this](ENUM_TYPE e) -> const wchar_t* {
+            for (auto i : fEnumNames_) {
+                if (i.first == e) {
+                    return i.second;
                 }
-                return nullptr;
-            };
-            Ensure (refImpl (e) == fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second);
-        }
+            }
+            return nullptr;
+        };
+        Ensure (refImpl (e) == fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second);
+#endif
         return fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
     }
     template <typename ENUM_TYPE>

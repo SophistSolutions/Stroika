@@ -801,9 +801,9 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
         size_t    bytesWritten = 0;
         while ((bytesWritten = GetSrcStream ().readNTChars (buf, NEltsOf (buf))) != 0) {
             write (buf, bytesWritten);
-            if constexpr (qDebug) {
-                checkTotalWritten += bytesWritten;
-            }
+#if qDebug
+            checkTotalWritten += bytesWritten;
+#endif
         }
         Assert (checkTotalWritten == totalTextLength);
     }

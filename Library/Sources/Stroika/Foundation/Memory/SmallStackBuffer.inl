@@ -28,10 +28,10 @@ namespace Stroika::Foundation::Memory {
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
         : fLiveData_ (BufferAsT_ ())
     {
-        if constexpr (qDebug) {
-            (void)::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
-            (void)::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
-        }
+#if qDebug
+        (void)::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
+        (void)::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
+#endif
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
@@ -319,9 +319,9 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::Invariant () const
     {
-        if constexpr (qDebug) {
-            Invariant_ ();
-        }
+#if qDebug
+        Invariant_ ();
+#endif
     }
 #if qDebug
     template <typename T, size_t BUF_SIZE>

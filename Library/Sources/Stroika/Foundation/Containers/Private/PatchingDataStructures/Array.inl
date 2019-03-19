@@ -170,9 +170,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename T>
     inline void Array<T>::Invariant () const
     {
-        if constexpr (qDebug) {
-            _Invariant ();
-        }
+#if qDebug
+        _Invariant ();
+#endif
     }
 #if qDebug
     template <typename T>

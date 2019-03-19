@@ -91,9 +91,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void SortedSet<T>::_AssertRepValidType () const
     {
-        if constexpr (qDebug) {
-            _SafeReadRepAccessor<_IRep>{this};
-        }
+#if qDebug
+        _SafeReadRepAccessor<_IRep>{this};
+#endif
     }
     template <typename T>
     inline auto SortedSet<T>::GetInOrderComparer () const -> InOrderComparerType
