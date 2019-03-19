@@ -429,9 +429,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
                         *patchNodes[patchIndex] = node;
                         patchNodes[patchIndex]  = &node->fNext[patchIndex];
                     }
-#if qDebug
-                    patched = true;
-#endif
+                    if constexpr (qDebug) {
+                        patched = true;
+                    }
                     break;
                 }
             }

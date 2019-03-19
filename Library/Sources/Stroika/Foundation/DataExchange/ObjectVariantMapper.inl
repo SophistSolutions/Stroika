@@ -157,25 +157,25 @@ namespace Stroika::Foundation::DataExchange {
     template <typename CLASS>
     inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
     {
-#if qDebug
-        for (const auto&& f : fieldDescriptions) {
-            if (not f.fOverrideTypeMapper.has_value ()) {
-                (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+        if constexpr (qDebug) {
+            for (const auto&& f : fieldDescriptions) {
+                if (not f.fOverrideTypeMapper.has_value ()) {
+                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                }
             }
         }
-#endif
         Add (MakeCommonSerializer_ForClassObject_<CLASS> (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
     }
     template <typename CLASS, typename BASE_CLASS>
     inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
     {
-#if qDebug
-        for (const auto&& f : fieldDescriptions) {
-            if (not f.fOverrideTypeMapper.has_value ()) {
-                (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+        if constexpr (qDebug) {
+            for (const auto&& f : fieldDescriptions) {
+                if (not f.fOverrideTypeMapper.has_value ()) {
+                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                }
             }
         }
-#endif
         Add (MakeCommonSerializer_ForClassObject_<CLASS, BASE_CLASS> (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, type_index{typeid (BASE_CLASS)}));
     }
     template <typename T>
@@ -241,135 +241,135 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (optional<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (DOMAIN_TYPE)); // just for side-effect of assert check
-        (void)Lookup_ (typeid (RANGE_TYPE));  // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (DOMAIN_TYPE)); // just for side-effect of assert check
+            (void)Lookup_ (typeid (RANGE_TYPE));  // just for side-effect of assert check
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::Collection<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Traversal::DiscreteRange<T, TRAITS>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
-        (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
+            (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
+        }
     }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Traversal::Range<T, TRAITS>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Sequence<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Set<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
-        (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
+            (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedSet<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const vector<T>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const pair<T1, T2>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
-        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+            (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+        }
     }
     template <typename T1>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+        }
     }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
-        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+            (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+        }
     }
     template <typename T1, typename T2, typename T3>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1, T2, T3>*)
     {
-#if qDebug
-        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
-        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
-        (void)Lookup_ (typeid (T3)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+            (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+            (void)Lookup_ (typeid (T3)); // just for side-effect of assert check
+        }
     }
     template <typename T, size_t SZ>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const T (*)[SZ])
     {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
+        if constexpr (qDebug) {
+            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+        }
     }
 
     template <typename ACTUAL_CONTAINER_TYPE>
@@ -875,33 +875,33 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const
     {
         Lambda_Arg_Unused_BWA (n);
-#if qDebug
-        for (auto i : fields) {
-            Require (i.fFieldMetaInfo.fOffset < n);
-        }
-        {
-            // assure each field unique
-            Containers::MultiSet<size_t> t;
+        if constexpr (qDebug) {
             for (auto i : fields) {
-                t.Add (i.fFieldMetaInfo.fOffset);
+                Require (i.fFieldMetaInfo.fOffset < n);
             }
-            for (auto i : t) {
-                bool alreadyInListOfFields = not(i.fCount == 1);
-                Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
+            {
+                // assure each field unique
+                Containers::MultiSet<size_t> t;
+                for (auto i : fields) {
+                    t.Add (i.fFieldMetaInfo.fOffset);
+                }
+                for (auto i : t) {
+                    bool alreadyInListOfFields = not(i.fCount == 1);
+                    Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
+                }
             }
-        }
-        {
-            // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
-            // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
-            // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
-            for (auto i : fields) {
-                // don't need to register the type mapper if its specified as a field
-                if (not i.fOverrideTypeMapper.has_value ()) {
-                    (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
+            {
+                // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
+                // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
+                // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
+                for (auto i : fields) {
+                    // don't need to register the type mapper if its specified as a field
+                    if (not i.fOverrideTypeMapper.has_value ()) {
+                        (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
+                    }
                 }
             }
         }
-#endif
         /*
          *  @see qCompiler_SanitizerFunctionPtrConversionSuppressionBug
          *
@@ -972,36 +972,36 @@ namespace Stroika::Foundation::DataExchange {
     template <typename CLASS, typename BASE_CLASS>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const
     {
-#if qDebug
-        for (auto i : fields) {
-            Require (i.fFieldMetaInfo.fOffset < n);
-        }
-        {
-            // assure each field unique
-            Containers::MultiSet<size_t> t;
+        if constexpr (qDebug) {
             for (auto i : fields) {
-                t.Add (i.fFieldMetaInfo.fOffset);
+                Require (i.fFieldMetaInfo.fOffset < n);
             }
-            for (auto i : t) {
-                bool alreadyInListOfFields = not(i.fCount == 1);
-                Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
-            }
-        }
-        {
-            // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
-            // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
-            // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
-            for (auto i : fields) {
-                // don't need to register the type mapper if its specified as a field
-                if (not i.fOverrideTypeMapper.has_value ()) {
-                    (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
+            {
+                // assure each field unique
+                Containers::MultiSet<size_t> t;
+                for (auto i : fields) {
+                    t.Add (i.fFieldMetaInfo.fOffset);
+                }
+                for (auto i : t) {
+                    bool alreadyInListOfFields = not(i.fCount == 1);
+                    Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
                 }
             }
-            if (baseClassTypeInfo) {
-                (void)Lookup_ (*baseClassTypeInfo);
+            {
+                // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
+                // If you ever need to avoid it (I don't see how because this mapper doesn't work with circular data structures)
+                // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
+                for (auto i : fields) {
+                    // don't need to register the type mapper if its specified as a field
+                    if (not i.fOverrideTypeMapper.has_value ()) {
+                        (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
+                    }
+                }
+                if (baseClassTypeInfo) {
+                    (void)Lookup_ (*baseClassTypeInfo);
+                }
             }
         }
-#endif
         FromObjectMapperType<CLASS> fromObjectMapper = [fields, baseClassTypeInfo](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");

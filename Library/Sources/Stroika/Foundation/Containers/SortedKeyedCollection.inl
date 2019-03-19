@@ -15,61 +15,61 @@ namespace Stroika::Foundation::Containers {
             ********************************************************************************
             */
 #if 0
-        template    <typename T, typename TRAITS>
-        inline  SortedKeyedCollection<T, TRAITS>::SortedKeyedCollection ()
-            : inherited (Concrete::SortedCollection_Factory<T, TRAITS> () ())
-        {
-            _AssertRepValidType ();
-        }
-        template    <typename T, typename TRAITS>
-        inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& src)
-            : inherited (src)
-        {
-            _AssertRepValidType ();
-        }
-        template    <typename T, typename TRAITS>
-        inline  SortedCollection<T, TRAITS>::SortedCollection (const _SharedPtrIRep& src)
-            : inherited (src)
-        {
-            RequireNotNull (src);
-            _AssertRepValidType ();
-        }
-        template    <typename T, typename TRAITS>
-        inline  SortedCollection<T, TRAITS>::SortedCollection (_SharedPtrIRep&& src)
-            : inherited (move (src))
-        {
-            //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
-            _AssertRepValidType ();
-        }
-        template    <typename T, typename TRAITS>
-        inline  SortedCollection<T, TRAITS>::SortedCollection (const initializer_list<T>& src)
-            : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS>::New ()))
-        {
-            _AssertRepValidType ();
-            this->AddAll (src);
-            _AssertRepValidType ();
-        }
-        template    <typename T, typename TRAITS>
-        template    <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
-        inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_ADDABLE& src)
-            : inherited (Concrete::SortedCollection_Factory<T, TRAITS>::New ())
-        {
-            _AssertRepValidType ();
-        }
-        template    <typename T, typename TRAITS>
-        inline  SortedCollection<T, TRAITS>&   SortedCollection<T, TRAITS>::operator= (const SortedCollection<T, TRAITS>& rhs)
-        {
-            _AssertRepValidType ();
-            inherited::operator= (static_cast<const inherited&> (rhs));
-            _AssertRepValidType ();
-            return *this;
-        }
-        template    <typename T, typename TRAITS>
-        inline  void    SortedCollection <T, TRAITS>::_AssertRepValidType () const
-        {
-#if qDebug
+    template    <typename T, typename TRAITS>
+    inline  SortedKeyedCollection<T, TRAITS>::SortedKeyedCollection ()
+        : inherited (Concrete::SortedCollection_Factory<T, TRAITS> () ())
+    {
+        _AssertRepValidType ();
+    }
+    template    <typename T, typename TRAITS>
+    inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& src)
+        : inherited (src)
+    {
+        _AssertRepValidType ();
+    }
+    template    <typename T, typename TRAITS>
+    inline  SortedCollection<T, TRAITS>::SortedCollection (const _SharedPtrIRep& src)
+        : inherited (src)
+    {
+        RequireNotNull (src);
+        _AssertRepValidType ();
+    }
+    template    <typename T, typename TRAITS>
+    inline  SortedCollection<T, TRAITS>::SortedCollection (_SharedPtrIRep&& src)
+        : inherited (move (src))
+    {
+        //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
+        _AssertRepValidType ();
+    }
+    template    <typename T, typename TRAITS>
+    inline  SortedCollection<T, TRAITS>::SortedCollection (const initializer_list<T>& src)
+        : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS>::New ()))
+    {
+        _AssertRepValidType ();
+        this->AddAll (src);
+        _AssertRepValidType ();
+    }
+    template    <typename T, typename TRAITS>
+    template    <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+    inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_ADDABLE& src)
+        : inherited (Concrete::SortedCollection_Factory<T, TRAITS>::New ())
+    {
+        _AssertRepValidType ();
+    }
+    template    <typename T, typename TRAITS>
+    inline  SortedCollection<T, TRAITS>&   SortedCollection<T, TRAITS>::operator= (const SortedCollection<T, TRAITS>& rhs)
+    {
+        _AssertRepValidType ();
+        inherited::operator= (static_cast<const inherited&> (rhs));
+        _AssertRepValidType ();
+        return *this;
+    }
+    template    <typename T, typename TRAITS>
+    inline  void    SortedCollection <T, TRAITS>::_AssertRepValidType () const
+    {
+        if constexpr (qDebug) {
             AssertMember (&inherited::_ConstGetRep (), _IRep);
-#endif
+}
         }
 #endif
 

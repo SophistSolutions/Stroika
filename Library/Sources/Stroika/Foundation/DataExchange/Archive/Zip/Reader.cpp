@@ -2601,10 +2601,10 @@ private:
         {
             this->zopen64_file = [](voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-#if qDebug
-                Assert (not myThis->fOpened_);
-                myThis->fOpened_ = true;
-#endif
+                if constexpr (qDebug) {
+                    Assert (not myThis->fOpened_);
+                    myThis->fOpened_ = true;
+                }
                 return myThis;
             };
             this->zread_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
@@ -2651,12 +2651,12 @@ private:
             this->zclose_file = []([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
                 Lambda_Arg_Unused_BWA (opaqueStream);
                 Lambda_Arg_Unused_BWA (stream);
-#if qDebug
-                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-                Assert (myThis->fOpened_);
-                myThis->fOpened_ = false;
-#endif
+                if constexpr (qDebug) {
+                    Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+                    MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+                    Assert (myThis->fOpened_);
+                    myThis->fOpened_ = false;
+                }
                 return UNZ_OK;
             };
             this->zerror_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {

@@ -23,9 +23,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Invariant () const
     {
-#if qDebug
-        _Invariant ();
-#endif
+        if constexpr (qDebug) {
+            _Invariant ();
+        }
     }
     template <typename T>
     inline Array<T>::Array ()
@@ -488,9 +488,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         , _fSuppressMore (true) // first time thru - cuz of how used in for loops...
     {
         RequireNotNull (data);
-#if qDebug
-        _fCurrent = nullptr; // more likely to cause bugs...
-#endif
+        if constexpr (qDebug) {
+            _fCurrent = nullptr; // more likely to cause bugs...
+        }
         /*
          * Cannot call invariant () here since _fCurrent not yet setup.
          */
@@ -572,9 +572,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::_ArrayIteratorBase::Invariant () const
     {
-#if qDebug
-        _Invariant ();
-#endif
+        if constexpr (qDebug) {
+            _Invariant ();
+        }
     }
 #if qDebug
     template <typename T>

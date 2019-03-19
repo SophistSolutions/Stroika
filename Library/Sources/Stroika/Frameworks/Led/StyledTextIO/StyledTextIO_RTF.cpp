@@ -4609,9 +4609,9 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
                 WriteBody (wc);
                 fStyleRunSummary = x;
                 WriteTag ("cell");
-#if qDebug
-                nCellsWritten++;
-#endif
+                if constexpr (qDebug) {
+                    nCellsWritten++;
+                }
             }
         }
         Assert (nCellsWritten == cellInfos.size ()); //  must write same number of cells as celldefs

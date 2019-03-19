@@ -412,12 +412,12 @@ void ObjectVariantMapper::ResetToDefaultTypeRegistry ()
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
     auto i = fTypeMappingRegistry_.Lookup (forTypeInfo);
-#if qDebug
-    if (not i.has_value ()) {
-        Debug::TraceContextBumper ctx ("ObjectVariantMapper::Lookup_");
-        DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (forTypeInfo).c_str ());
+    if constexpr (qDebug) {
+        if (not i.has_value ()) {
+            Debug::TraceContextBumper ctx ("ObjectVariantMapper::Lookup_");
+            DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (forTypeInfo).c_str ());
+        }
     }
-#endif
     Require (i.has_value ()); // if not present, this is a usage error - only use types which are registered
     return *i;
 }

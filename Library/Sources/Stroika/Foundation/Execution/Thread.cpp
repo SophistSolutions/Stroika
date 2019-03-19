@@ -111,12 +111,12 @@ namespace {
         }
         ~AllThreadsDeadDetector_ ()
         {
-#if qDebug
-            if (not sRunningThreads_.empty ()) {
-                DbgTrace (L"Threads %s running", Characters::ToString (Thread::GetStatistics ().fRunningThreads).c_str ());
-                Require (sRunningThreads_.empty ());
+            if constexpr (qDebug) {
+                if (not sRunningThreads_.empty ()) {
+                    DbgTrace (L"Threads %s running", Characters::ToString (Thread::GetStatistics ().fRunningThreads).c_str ());
+                    Require (sRunningThreads_.empty ());
+                }
             }
-#endif
         }
     };
     AllThreadsDeadDetector_ sAllThreadsDeadDetector_;

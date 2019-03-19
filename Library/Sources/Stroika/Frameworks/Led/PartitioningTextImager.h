@@ -399,9 +399,9 @@ namespace Stroika::Frameworks::Led {
     }
     inline void Partition::Invariant () const
     {
-#if qDebug && qHeavyDebugging
-        Invariant_ ();
-#endif
+        if constexpr (qDebug && qHeavyDebugging) {
+            Invariant_ ();
+        }
     }
 
     //  class   Partition;
@@ -527,9 +527,9 @@ namespace Stroika::Frameworks::Led {
     }
     inline void PartitioningTextImager::Invariant () const
     {
-#if qDebug && qHeavyDebugging
-        Invariant_ ();
-#endif
+        if constexpr (qDebug && qHeavyDebugging) {
+            Invariant_ ();
+        }
     }
 
 #if qCacheTextMeasurementsForPM

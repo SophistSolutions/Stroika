@@ -144,9 +144,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Queue<T>::_AssertRepValidType () const noexcept
     {
-#if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
-#endif
+        if constexpr (qDebug) {
+            _SafeReadRepAccessor<_IRep>{this};
+        }
     }
 
     /*

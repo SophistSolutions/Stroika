@@ -40,11 +40,10 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
     {
-#if qDebug
-        return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
-#else
+        if constexpr (qDebug) {
+            return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
+        }
         return Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)};
-#endif
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::GetLength () const
@@ -125,11 +124,10 @@ namespace Stroika::Foundation::Traversal {
                 }
                 virtual Iterator<T> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
-#if qDebug
-                    return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
-#else
+                    if constexpr (qDebug) {
+                        return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
+                    }
                     return fOriginalIterator;
-#endif
                 }
                 virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
                 {

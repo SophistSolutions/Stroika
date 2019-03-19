@@ -65,9 +65,9 @@ Partition::~Partition ()
             markersToRemoveAtATime[i] = cur;
         }
         fTextStore.RemoveMarkers (markersToRemoveAtATime, i);
-#if qDebug
-        fPartitionMarkerCount -= i;
-#endif
+        if constexpr (qDebug) {
+            fPartitionMarkerCount -= i;
+        }
         for (; i != 0; i--) {
             delete (markersToRemoveAtATime[i - 1]);
         }
@@ -86,16 +86,16 @@ Partition::~Partition ()
  */
 void Partition::FinalConstruct ()
 {
-#if qDebug
-    Require (not fFinalConstructCalled);
-    fFinalConstructCalled = true;
-#endif
+    if constexpr (qDebug) {
+        Require (not fFinalConstructCalled);
+        fFinalConstructCalled = true;
+    }
     Assert (fPartitionMarkerCount == 0);
     Assert (fPartitionMarkerFirst == nullptr);
     PartitionMarker* pm = MakeNewPartitionMarker (nullptr);
-#if qDebug
-    fPartitionMarkerCount++;
-#endif
+    if constexpr (qDebug) {
+        fPartitionMarkerCount++;
+    }
     fTextStore.AddMarker (pm, 0, fTextStore.GetLength () + 1, this); // include ALL text
     Assert (fPartitionMarkerFirst == pm);
     Assert (fPartitionMarkerLast == pm);
@@ -227,9 +227,9 @@ void Partition::Split (PartitionMarker* pm, size_t at)
 
         throw;
     }
-#if qDebug
-    fPartitionMarkerCount++;
-#endif
+    if constexpr (qDebug) {
+        fPartitionMarkerCount++;
+    }
     DoDidSplitCalls (watcherInfos);
 }
 
@@ -274,9 +274,9 @@ void Partition::Coalece (PartitionMarker* pm)
             Assert (fPartitionMarkerLast == pm);
             fPartitionMarkerLast = pm->fPrevious;
         }
-#if qDebug
-        fPartitionMarkerCount--;
-#endif
+        if constexpr (qDebug) {
+            fPartitionMarkerCount--;
+        }
         AccumulateMarkerForDeletion (pm);
     }
     DoDidCoaleceCalls (watcherInfos);

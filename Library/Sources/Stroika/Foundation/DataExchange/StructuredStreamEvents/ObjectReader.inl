@@ -338,12 +338,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
                 else {
                     optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.fTypeInfo);
-#if qDebug
-                    if (not o.has_value ()) {
-                        DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (i.fFieldMetaInfo).c_str ());
-                        AssertNotReached ();
+                    if constexpr (qDebug) {
+                        if (not o.has_value ()) {
+                            DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (i.fFieldMetaInfo).c_str ());
+                            AssertNotReached ();
+                        }
                     }
-#endif
                     return *o;
                 }
             }
@@ -730,11 +730,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     inline shared_ptr<IElementConsumer> Registry::MakeContextReader (type_index ti, void* destinationObject) const
     {
-#if qDebug
-        if (not fFactories_.ContainsKey (ti)) {
-            Debug::TraceContextBumper ctx (L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!", Characters::ToString (ti).c_str ());
+        if constexpr (qDebug) {
+            if (not fFactories_.ContainsKey (ti)) {
+                Debug::TraceContextBumper ctx (L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!", Characters::ToString (ti).c_str ());
+            }
         }
-#endif
         ReaderFromVoidStarFactory factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
         return factory (destinationObject);
     }
@@ -755,14 +755,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename CLASS>
     void Registry::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
-#if qDebug
-        for (auto kv : fieldDescriptions) {
-            if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
-                Debug::TraceContextBumper ctx (L"Registry::AddClass", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
-                RequireNotReached ();
+        if constexpr (qDebug) {
+            for (auto kv : fieldDescriptions) {
+                if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
+                    Debug::TraceContextBumper ctx (L"Registry::AddClass", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
+                    RequireNotReached ();
+                }
             }
         }
-#endif
         Add<CLASS> (MakeClassReader<CLASS> (fieldDescriptions));
     }
     template <typename CLASS>

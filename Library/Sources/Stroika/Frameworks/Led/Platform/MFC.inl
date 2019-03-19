@@ -817,13 +817,11 @@ namespace Stroika::Frameworks::Led::Platform {
                 dropResult |= DROPEFFECT_MOVE;
             }
             dropResult = dataSrc.DoDragDrop (dropResult);
-#if qDebug
-            {
+            if constexpr (qDebug) {
                 if (GetStyle () & ES_READONLY) {
                     Assert (not(dropResult & DROPEFFECT_MOVE));
                 }
             }
-#endif
             switch (dropResult) {
                 case DROPEFFECT_NONE: {
                     AssertNotNull (sCurrentDragInfo);

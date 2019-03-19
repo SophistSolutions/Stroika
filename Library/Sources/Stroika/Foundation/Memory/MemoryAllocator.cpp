@@ -38,13 +38,14 @@ namespace {
 #if qSuperAssertChecks_MemAllocator
     inline void SUPER_ASSERT_ (bool t)
     {
-#if qDebug
-        Assert (t);
-#else
-        if (not t) {
-            DebugBreak ();
+        if constexpr (qDebug) {
+            Assert (t);
         }
-#endif
+        else {
+            if (not t) {
+                DebugBreak ();
+            }
+        }
     }
 #else
 #define SUPER_ASSERT_(x)
