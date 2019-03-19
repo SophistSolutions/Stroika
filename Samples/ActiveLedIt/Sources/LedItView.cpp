@@ -5,6 +5,11 @@
 
 #include <afxwin.h>
 
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
+
 #include "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
 #include "Stroika/Frameworks/Led/OptionsSupport.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
@@ -20,24 +25,77 @@
 #include "Stroika/Frameworks/Led/HandySimple.h"
 #endif
 
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
+
+using SearchParameters = LedItView::SearchParameters;
+
 namespace {
-    static const TCHAR kSearchParamsMatchString[]         = _T ("MatchString");
-    static const TCHAR kSearchParamsRecentMatchStrings[]  = _T ("RecentMatchStrings");
-    static const TCHAR kSearchParamsWrapSearch[]          = _T ("WrapSearch");
-    static const TCHAR kSearchParamsWholeWordSearch[]     = _T ("WholeWordSearch");
-    static const TCHAR kSearchParamsCaseSensativeSearch[] = _T ("CaseSensativeSearch");
-
-    class MyPrefs : public OptionsFileHelper {
-    private:
-        using inherited = OptionsFileHelper;
-
-    public:
-        MyPrefs ()
-            : inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\ActiveLedIt!\\Settings")))
-        {
-        }
+    struct Options_ {
+        SearchParameters fSearchParameters{};
     };
-    MyPrefs gMyPrefsFile;
+
+    struct Options_Storage_IMPL_ {
+        Options_Storage_IMPL_ ()
+            : fOptionsFile_{
+                  L"AppSettings"sv,
+                  []() -> ObjectVariantMapper {
+                      ObjectVariantMapper mapper;
+
+                      // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
+                      mapper.Add<Led_tString> (
+                          [](const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
+                              return String{*obj};
+                          },
+                          [](const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
+                              *intoObj = d.As<String> ().As<Led_tString> ();
+                          });
+                      mapper.AddCommonType<vector<Led_tString>> ();
+
+                      mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                          {L"MatchString", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fMatchString)},
+                          {L"WrapSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWrapSearch)},
+                          {L"WholeWordSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWholeWordSearch)},
+                          {L"CaseSensativeSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fCaseSensativeSearch)},
+                          {L"RecentMatchStrings", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fRecentFindStrings)},
+                      });
+
+                      mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                          {L"Search-Parameters", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSearchParameters)},
+                      });
+                      return mapper;
+                  }(),
+
+                  OptionsFile::kDefaultUpgrader,
+
+                  // override the default name mapper to assure folder created, since no installer for activex controls
+                  [](const String& moduleName, const String& fileSuffix) {
+                      static const auto kDefaultMapper_ = OptionsFile::mkFilenameMapper (L"ActiveLedIt"sv);
+                      String            fileName        = kDefaultMapper_ (moduleName, fileSuffix);
+                      IO::FileSystem::CreateDirectoryForFile (fileName);
+                      return fileName;
+                  }}
+            , fActualCurrentConfigData_ (fOptionsFile_.Read<Options_> (Options_{}))
+        {
+            Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+        }
+        Options_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const Options_& v)
+        {
+            fActualCurrentConfigData_ = v;
+            fOptionsFile_.Write (v);
+        }
+
+    private:
+        OptionsFile fOptionsFile_;
+        Options_    fActualCurrentConfigData_;
+    };
+
+    ModuleGetterSetter<Options_, Options_Storage_IMPL_> sOptions_;
 }
 
 class My_CMDNUM_MAPPING : public MFC_CommandNumberMapping {
@@ -818,22 +876,12 @@ void LedItView::OnUpdateOLEUserCommand (CCmdUI* pCmdUI)
 
 LedItView::SearchParameters LedItView::GetSearchParameters () const
 {
-    SearchParameters sp;
-    sp.fMatchString         = gMyPrefsFile.GetPref (kSearchParamsMatchString, sp.fMatchString);
-    sp.fRecentFindStrings   = gMyPrefsFile.GetPref (kSearchParamsRecentMatchStrings, sp.fRecentFindStrings);
-    sp.fWrapSearch          = gMyPrefsFile.GetPref (kSearchParamsWrapSearch, sp.fWrapSearch);
-    sp.fWholeWordSearch     = gMyPrefsFile.GetPref (kSearchParamsWholeWordSearch, sp.fWholeWordSearch);
-    sp.fCaseSensativeSearch = gMyPrefsFile.GetPref (kSearchParamsCaseSensativeSearch, sp.fCaseSensativeSearch);
-    return sp;
+    return sOptions_.Get ().fSearchParameters;
 }
 
 void LedItView::SetSearchParameters (const SearchParameters& sp)
 {
-    gMyPrefsFile.StorePref (kSearchParamsMatchString, sp.fMatchString);
-    gMyPrefsFile.StorePref (kSearchParamsRecentMatchStrings, sp.fRecentFindStrings);
-    gMyPrefsFile.StorePref (kSearchParamsWrapSearch, sp.fWrapSearch);
-    gMyPrefsFile.StorePref (kSearchParamsWholeWordSearch, sp.fWholeWordSearch);
-    gMyPrefsFile.StorePref (kSearchParamsCaseSensativeSearch, sp.fCaseSensativeSearch);
+    sOptions_.Update ([=](Options_ d) { d.fSearchParameters = sp; return d; });
 }
 
 void LedItView::SetSelection (size_t start, size_t end)
