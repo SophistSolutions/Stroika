@@ -8,6 +8,8 @@
 
 #include "OptionsSupport.h"
 
+//////&&&& FILE DEPRECATED &&&& SINCE STROIKA v2.1d22
+
 using std::byte;
 
 using namespace Stroika::Foundation;

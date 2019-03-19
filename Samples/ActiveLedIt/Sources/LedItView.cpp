@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
 
 #include "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
-#include "Stroika/Frameworks/Led/OptionsSupport.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
 
 #include "DispIDs.h"

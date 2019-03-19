@@ -11,7 +11,6 @@
 #include <atlbase.h>
 
 #include "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
-#include "Stroika/Frameworks/Led/OptionsSupport.h"
 #include "Stroika/Frameworks/Led/Platform/MFC_WordProcessor.h"
 #include "Stroika/Frameworks/Led/WordProcessor.h"
 

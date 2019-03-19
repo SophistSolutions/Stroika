@@ -4,6 +4,8 @@
 #ifndef _Stroika_Frameworks_Led_OptionsSupport_h_
 #define _Stroika_Frameworks_Led_OptionsSupport_h_ 1
 
+
+//////&&&& FILE DEPRECATED &&&& SINCE STROIKA v2.1d22
 /*
 @MODULE:    LedOptionsSupport
 @DESCRIPTION:
@@ -22,7 +24,9 @@ namespace Stroika::Frameworks::Led {
      *  
      *  NB: only Windows is implemented so far (2003-12-30).
      */
-    class OptionsFileHelper {
+
+    class [[deprecated ("Use OptionsFile to store options, and use Configuration::Platform::Windows::RegistryKey to read the registry - since Stroika v2.1d22")]] OptionsFileHelper
+    {
     public:
 #if qPlatform_MacOS
         OptionsFileHelper (int resFile);
@@ -37,28 +41,8 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-#if qDefaultValueInTemplateParemeterUsingTemplatedTypeBug
-        template <typename T>
-        nonvirtual T GetPref (const Led_SDK_Char* prefName, T defaultValue);
-        template <typename T>
-        nonvirtual T GetPref (const Led_SDK_Char* prefName)
-        {
-            T defValue;
-            return GetPref (prefName, defValue);
-        }
-#else
         template <typename T>
         nonvirtual T GetPref (const Led_SDK_Char* prefName, T defaultValue = T{});
-#endif
-
-#if qMemberTemplateNeedsExplicitDeclarationForEachTypeBug
-    public:
-        nonvirtual bool GetPref (const Led_SDK_Char* prefName, bool defaultValue);
-        nonvirtual string GetPref (const Led_SDK_Char* prefName, string defaultValue);
-        nonvirtual wstring GetPref (const Led_SDK_Char* prefName, wstring defaultValue);
-        nonvirtual vector<string> GetPref (const Led_SDK_Char* prefName, vector<string> defaultValue);
-        nonvirtual vector<wstring> GetPref (const Led_SDK_Char* prefName, vector<wstring> defaultValue);
-#endif
 
     public:
         nonvirtual bool LookupPref (const Led_SDK_Char* prefName, string* value);
@@ -82,7 +66,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         int fResFile;
 #elif qPlatform_Windows
-        HKEY         fKey;
+        HKEY fKey;
 #endif
     };
 
@@ -103,58 +87,6 @@ namespace Stroika::Frameworks::Led {
         }
     }
 
-#if qMemberTemplateNeedsExplicitDeclarationForEachTypeBug
-    inline bool OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, bool defaultValue)
-    {
-        bool result;
-        if (LookupPref (prefName, &result)) {
-            return result;
-        }
-        else {
-            return defaultValue;
-        }
-    }
-    inline string OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, string defaultValue)
-    {
-        string result;
-        if (LookupPref (prefName, &result)) {
-            return result;
-        }
-        else {
-            return defaultValue;
-        }
-    }
-    inline wstring OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, wstring defaultValue)
-    {
-        wstring result;
-        if (LookupPref (prefName, &result)) {
-            return result;
-        }
-        else {
-            return defaultValue;
-        }
-    }
-    inline vector<string> OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, vector<string> defaultValue)
-    {
-        vector<string> result;
-        if (LookupPref (prefName, &result)) {
-            return result;
-        }
-        else {
-            return defaultValue;
-        }
-    }
-    inline vector<wstring> OptionsFileHelper::GetPref (const Led_SDK_Char* prefName, vector<wstring> defaultValue)
-    {
-        vector<wstring> result;
-        if (LookupPref (prefName, &result)) {
-            return result;
-        }
-        else {
-            return defaultValue;
-        }
-    }
-#endif
 }
 
 #endif /*_Stroika_Frameworks_Led_OptionsSupport_h_*/
