@@ -809,7 +809,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 #if defined(_MSC_VER)
 
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+// verified broken in _MSC_VER_2k19_16Pt0_ (debug builds only)
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
 #endif
