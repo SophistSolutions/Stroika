@@ -4,7 +4,6 @@
 #ifndef _Stroika_Frameworks_Led_OptionsSupport_h_
 #define _Stroika_Frameworks_Led_OptionsSupport_h_ 1
 
-
 //////&&&& FILE DEPRECATED &&&& SINCE STROIKA v2.1d22
 /*
 @MODULE:    LedOptionsSupport
