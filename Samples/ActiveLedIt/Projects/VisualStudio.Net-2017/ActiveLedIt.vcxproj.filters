@@ -27,12 +27,6 @@
     <None Include="..\..\Sources\AboutBoxImage.vsd">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\Sources\AboutBoxImage_Demo.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\Sources\AboutBoxImage_Demo.vsd">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\Sources\ActiveLedIt.ico">
       <Filter>Resource Files</Filter>
     </None>
@@ -140,13 +134,11 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="..\..\checkall_vs.pl" />
-    <None Include="..\..\Demo ReadMe.rtf">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\ReadMe.rtf">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\Makefile" />
+    <None Include="..\..\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ActiveLedIt.cpp">

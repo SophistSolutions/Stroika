@@ -1190,7 +1190,6 @@ ReRead:
 
 void ActiveLedItControl::SaveFile (LPCTSTR filename)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     WordProcessor::WordProcessorTextIOSrcStream source (&fEditor);
     StyledTextIOWriterSinkStream_Memory         sink;
     switch (GuessFormatFromName (filename)) {
@@ -1224,7 +1223,6 @@ void ActiveLedItControl::SaveFile (LPCTSTR filename)
 
 void ActiveLedItControl::SaveFileCRLF (LPCTSTR filename)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     WordProcessor::WordProcessorTextIOSrcStream source (&fEditor);
     StyledTextIOWriterSinkStream_Memory         sink;
     StyledTextIOWriter_PlainText                textWriter (&source, &sink);
@@ -1234,7 +1232,6 @@ void ActiveLedItControl::SaveFileCRLF (LPCTSTR filename)
 
 void ActiveLedItControl::SaveFileRTF (LPCTSTR filename)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     WordProcessor::WordProcessorTextIOSrcStream source (&fEditor);
     StyledTextIOWriterSinkStream_Memory         sink;
     StyledTextIOWriter_RTF                      textWriter (&source, &sink);
@@ -1244,7 +1241,6 @@ void ActiveLedItControl::SaveFileRTF (LPCTSTR filename)
 
 void ActiveLedItControl::SaveFileHTML (LPCTSTR filename)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     WordProcessor::WordProcessorTextIOSrcStream source (&fEditor);
     StyledTextIOWriterSinkStream_Memory         sink;
     StyledTextIOWriter_HTML                     textWriter (&source, &sink);
@@ -1287,7 +1283,6 @@ BOOL ActiveLedItControl::OLE_GetCanRedo ()
 
 void ActiveLedItControl::OLE_Undo ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     if (fCommandHandler.CanUndo ()) {
         fCommandHandler.DoUndo (fEditor);
     }
@@ -1301,7 +1296,6 @@ void ActiveLedItControl::OLE_Undo ()
 
 void ActiveLedItControl::OLE_Redo ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     if (fCommandHandler.CanRedo ()) {
         fCommandHandler.DoRedo (fEditor);
     }
@@ -1317,19 +1311,16 @@ void ActiveLedItControl::OLE_CommitUndo ()
 
 void ActiveLedItControl::OLE_LaunchFontSettingsDialog ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnChooseFontCommand ();
 }
 
 void ActiveLedItControl::OLE_LaunchParagraphSettingsDialog ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnParagraphSpacingChangeCommand ();
 }
 
 void ActiveLedItControl::OLE_LaunchFindDialog ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnFindCommand ();
 }
 
@@ -1365,7 +1356,6 @@ long ActiveLedItControl::OLE_Find (long searchFrom, const VARIANT& findText, BOO
 
 void ActiveLedItControl::OLE_LaunchReplaceDialog ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnReplaceCommand ();
 }
 
@@ -1400,19 +1390,16 @@ long ActiveLedItControl::OLE_FindReplace (long searchFrom, const VARIANT& findTe
 
 void ActiveLedItControl::OLE_PrinterSetupDialog ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnFilePrintSetup ();
 }
 
 void ActiveLedItControl::OLE_PrintDialog ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnFilePrint ();
 }
 
 void ActiveLedItControl::OLE_PrintOnce ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     fEditor.OnFilePrintOnce ();
 }
 
@@ -1454,7 +1441,7 @@ void ActiveLedItControl::OLE_SetDirty (BOOL dirty)
 
 void ActiveLedItControl::OnBrowseHelpCommand ()
 {
-    Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/UserDocs.asp", kAppName, kURLDemoFlag));
+    Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/UserDocs.asp", kAppName, ""));
 }
 
 void ActiveLedItControl::OnAboutBoxCommand ()
@@ -1476,15 +1463,11 @@ void ActiveLedItControl::OnAboutBoxCommand ()
 
             // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
             // we must resize our dlog on the fly based on pict resource size...
-            const int kPictWidth = 437; // must agree with ACTUAL bitmap size
-            const int kButHSluff = 17;
-#if qDemoMode
-            const int kButVSluff  = 136;
-            const int kPictHeight = 393;
-#else
+            const int kPictWidth  = 437; // must agree with ACTUAL bitmap size
+            const int kButHSluff  = 17;
             const int kButVSluff  = 61;
             const int kPictHeight = 318;
-#endif
+
             {
                 RECT windowRect;
                 ::GetWindowRect (GetHWND (), &windowRect);
@@ -1505,11 +1488,7 @@ void ActiveLedItControl::OnAboutBoxCommand ()
                 HWND w = ::GetDlgItem (GetHWND (), kLedStdDlg_AboutBox_VersionFieldID);
                 AssertNotNull (w);
                 const int kVERWidth = 230;
-#if qDemoMode
-                ::MoveWindow (w, kPictWidth / 2 - kVERWidth / 2, 35, 230, 2 * 14, false);
-#else
                 ::MoveWindow (w, kPictWidth / 2 - kVERWidth / 2, 35, 230, 14, false);
-#endif
 #if _UNICODE
 #define kUNICODE_NAME_ADORNER L" [UNICODE]"
 #elif qWideCharacters
@@ -1517,17 +1496,9 @@ void ActiveLedItControl::OnAboutBoxCommand ()
 #else
 #define kUNICODE_NAME_ADORNER
 #endif
-#if qDemoMode
-                TCHAR nDaysString[1024];
-                (void)::_stprintf (nDaysString, _T("%d"), DemoPrefs ().GetDemoDaysLeft ());
-#endif
                 ::SetWindowText (w,
                                  (
-                                     Led_SDK_String (_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"))
-#if qDemoMode
-                                     + Led_SDK_String (_T("\r\nDemo expires in ")) + nDaysString + _T(" days.")
-#endif
-                                     )
+                                     Led_SDK_String (_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")")))
                                      .c_str ());
             }
 
@@ -1570,7 +1541,7 @@ void ActiveLedItControl::OnAboutBoxCommand ()
         virtual void OnClickInLedWebPageField () override
         {
             try {
-                Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/", kAppName, kURLDemoFlag));
+                Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/", kAppName, ""));
             }
             catch (...) {
                 // ignore for now - since errors here prent dialog from dismissing (on MacOSX)
@@ -1790,7 +1761,7 @@ UINT ActiveLedItControl::OLE_VersionNumber ()
 BSTR ActiveLedItControl::OLE_ShortVersionString ()
 {
     try {
-        string result = qLed_ShortVersionString + string (kDemoString);
+        string result = qLed_ShortVersionString;
         return CString (result.c_str ()).AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -1880,7 +1851,6 @@ BOOL ActiveLedItControl::OLE_GetEnableAutoChangesBackgroundColor ()
 
 void ActiveLedItControl::OLE_SetEnableAutoChangesBackgroundColor (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fEditor.fEnableAutoChangesBackgroundColor = !!bNewValue;
@@ -2092,7 +2062,6 @@ BSTR ActiveLedItControl::GetBufferText ()
 
 void ActiveLedItControl::SetBufferText (LPCTSTR text)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -2133,7 +2102,6 @@ BSTR ActiveLedItControl::GetBufferTextCRLF ()
 
 void ActiveLedItControl::SetBufferTextCRLF (LPCTSTR text)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     SetBufferText (text);
 }
 
@@ -2162,7 +2130,6 @@ string ActiveLedItControl::GetBufferTextAsRTF_ ()
 
 void ActiveLedItControl::SetBufferTextAsRTF (LPCTSTR text)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     try {
         IdleManager::NonIdleContext              nonIdleContext;
         TextInteractor::TemporarilySetUpdateMode tsum (fEditor, m_hWnd == NULL ? TextInteractor::eNoUpdate : TextInteractor::eDefaultUpdate);
@@ -2199,7 +2166,6 @@ BSTR ActiveLedItControl::GetBufferTextAsHTML ()
 
 void ActiveLedItControl::SetBufferTextAsHTML (LPCTSTR text)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -2344,7 +2310,6 @@ long ActiveLedItControl::GetMaxLength ()
 
 void ActiveLedItControl::SetMaxLength (long maxLength)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     fEditor.SetMaxLength (maxLength < 0 ? -1 : maxLength);
 }
 
@@ -2355,7 +2320,6 @@ BOOL ActiveLedItControl::GetSupportContextMenu ()
 
 void ActiveLedItControl::SetSupportContextMenu (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != GetSupportContextMenu ()) {
         fEditor.SetSupportContextMenu (!!bNewValue);
     }
@@ -2368,7 +2332,6 @@ BOOL ActiveLedItControl::OLE_GetHideDisabledContextMenuItems ()
 
 void ActiveLedItControl::OLE_SetHideDisabledContextMenuItems (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != OLE_GetHideDisabledContextMenuItems ()) {
         fEditor.SetHideDisabledContextMenuItems (!!bNewValue);
     }
@@ -2381,7 +2344,6 @@ BOOL ActiveLedItControl::GetSmartCutAndPaste ()
 
 void ActiveLedItControl::SetSmartCutAndPaste (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != GetSmartCutAndPaste ()) {
         fEditor.SetSmartCutAndPasteMode (!!bNewValue);
     }
@@ -2398,7 +2360,6 @@ BOOL ActiveLedItControl::OLE_GetSmartQuoteMode ()
 
 void ActiveLedItControl::OLE_SetSmartQuoteMode (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
 #if qWideCharacters
     if (bNewValue != OLE_GetSmartQuoteMode ()) {
         fEditor.SetSmartQuoteMode (!!bNewValue);
@@ -2413,7 +2374,6 @@ BOOL ActiveLedItControl::GetWrapToWindow ()
 
 void ActiveLedItControl::SetWrapToWindow (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != GetWrapToWindow ()) {
         fEditor.SetWrapToWindow (!!bNewValue);
     }
@@ -2426,7 +2386,6 @@ BOOL ActiveLedItControl::GetShowParagraphGlyphs ()
 
 void ActiveLedItControl::SetShowParagraphGlyphs (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != GetShowParagraphGlyphs ()) {
         fEditor.SetShowParagraphGlyphs (!!bNewValue);
     }
@@ -2439,7 +2398,6 @@ BOOL ActiveLedItControl::GetShowTabGlyphs ()
 
 void ActiveLedItControl::SetShowTabGlyphs (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != GetShowTabGlyphs ()) {
         fEditor.SetShowTabGlyphs (!!bNewValue);
     }
@@ -2452,7 +2410,6 @@ BOOL ActiveLedItControl::GetShowSpaceGlyphs ()
 
 void ActiveLedItControl::SetShowSpaceGlyphs (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != GetShowSpaceGlyphs ()) {
         fEditor.SetShowSpaceGlyphs (!!bNewValue);
     }
@@ -2465,7 +2422,6 @@ BOOL ActiveLedItControl::OLE_GetUseSelectEOLBOLRowHilightStyle ()
 
 void ActiveLedItControl::OLE_SetUseSelectEOLBOLRowHilightStyle (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != OLE_GetUseSelectEOLBOLRowHilightStyle ()) {
         fEditor.SetUseSelectEOLBOLRowHilightStyle (!!bNewValue);
         fEditor.Refresh ();
@@ -2479,7 +2435,6 @@ BOOL ActiveLedItControl::OLE_GetShowSecondaryHilight ()
 
 void ActiveLedItControl::OLE_SetShowSecondaryHilight (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (bNewValue != OLE_GetShowSecondaryHilight ()) {
         fEditor.SetUseSecondaryHilight (!!bNewValue);
         fEditor.Refresh ();
@@ -2495,7 +2450,6 @@ BOOL ActiveLedItControl::OLE_GetShowHidableText ()
 
 void ActiveLedItControl::OLE_SetShowHidableText (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     IdleManager::NonIdleContext nonIdleContext;
     if (bNewValue) {
         fEditor.GetHidableTextDatabase ()->ShowAll ();
@@ -2519,7 +2473,6 @@ OLE_COLOR ActiveLedItControl::OLE_GetHidableTextColor ()
 
 void ActiveLedItControl::OLE_SetHidableTextColor (OLE_COLOR color)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         ColoredUniformHidableTextMarkerOwner* uhtmo = dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
         AssertNotNull (uhtmo);
@@ -2543,7 +2496,6 @@ BOOL ActiveLedItControl::OLE_GetHidableTextColored ()
 
 void ActiveLedItControl::OLE_SetHidableTextColored (BOOL bNewValue)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         ColoredUniformHidableTextMarkerOwner* uhtmo = dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
         AssertNotNull (uhtmo);
@@ -2573,7 +2525,6 @@ void ActiveLedItControl::OLE_SetSpellChecker (VARIANT& newValue)
     // Note: the MSVC Class wizard for OLE / MFC in MSVC.Net 2003 creates the property setter as taking a 'VARIANT' argument. However
     // empirically - thats NOT what gets passed! This reference crap (or pointer) is necessary to get the right value assigned to
     // us - LGP 2003-06-11
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         if (fSpellChecker != NULL) {
@@ -2644,7 +2595,6 @@ void ActiveLedItControl::OLE_SetContextMenu (VARIANT& newValue)
     // Note: the MSVC Class wizard for OLE / MFC in MSVC.Net 2003 creates the property setter as taking a 'VARIANT' argument. However
     // empirically - thats NOT what gets passed! This reference crap (or pointer) is necessary to get the right value assigned to
     // us - LGP 2003-06-11 (originally - but now copied for SetContextMenu - LGP 2004-01-14)
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         fConextMenu.Release ();
         VARIANT tmpV;
@@ -3009,7 +2959,6 @@ void ActiveLedItControl::OLE_SetAcceleratorTable (VARIANT& newValue)
     // Note: the MSVC Class wizard for OLE / MFC in MSVC.Net 2003 creates the property setter as taking a 'VARIANT' argument. However
     // empirically - thats NOT what gets passed! This reference crap (or pointer) is necessary to get the right value assigned to
     // us - LGP 2003-06-11 (originally - but now copied for SetContextMenu - LGP 2004-01-14)
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         fAcceleratorTable.Release ();
         VARIANT tmpV;
@@ -3602,7 +3551,6 @@ long ActiveLedItControl::GetSelStart ()
 
 void ActiveLedItControl::SetSelStart (long start)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     size_t s;
     size_t e;
     fEditor.GetSelection (&s, &e);
@@ -3623,7 +3571,6 @@ long ActiveLedItControl::GetSelLength ()
 
 void ActiveLedItControl::SetSelLength (long length)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     if (length == -1) {
         length = INT_MAX;
     }
@@ -3657,7 +3604,6 @@ BSTR ActiveLedItControl::GetSelText ()
 
 void ActiveLedItControl::SetSelText (LPCTSTR text)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     try {
         size_t                              len = ::_tcslen (text);
         Memory::SmallStackBuffer<Led_tChar> buf (len + 1);
@@ -3693,7 +3639,6 @@ BSTR ActiveLedItControl::GetSelTextAsRTF ()
 
 void ActiveLedItControl::SetSelTextAsRTF (LPCTSTR text)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3729,7 +3674,6 @@ BSTR ActiveLedItControl::GetSelTextAsHTML ()
 
 void ActiveLedItControl::SetSelTextAsHTML (LPCTSTR text)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (fEditor.GetHWND ());
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3765,7 +3709,6 @@ OLE_COLOR ActiveLedItControl::GetSelColor ()
 
 void ActiveLedItControl::SetSelColor (OLE_COLOR color)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3794,7 +3737,6 @@ BSTR ActiveLedItControl::GetSelFontFace ()
 
 void ActiveLedItControl::SetSelFontFace (LPCTSTR fontFace)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3823,7 +3765,6 @@ long ActiveLedItControl::GetSelFontSize ()
 
 void ActiveLedItControl::SetSelFontSize (long size)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3861,7 +3802,6 @@ long ActiveLedItControl::GetSelBold ()
 
 void ActiveLedItControl::SetSelBold (long bold)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3893,7 +3833,6 @@ long ActiveLedItControl::GetSelItalic ()
 
 void ActiveLedItControl::SetSelItalic (long italic)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3925,7 +3864,6 @@ long ActiveLedItControl::GetSelStrikeThru ()
 
 void ActiveLedItControl::SetSelStrikeThru (long strikeThru)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -3957,7 +3895,6 @@ long ActiveLedItControl::GetSelUnderline ()
 
 void ActiveLedItControl::SetSelUnderline (long underline)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
@@ -4001,7 +3938,6 @@ UINT ActiveLedItControl::OLE_GetSelJustification ()
 
 void ActiveLedItControl::OLE_SetSelJustification (UINT justification)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         Led_Justification           lh = eLeftJustify;
@@ -4051,7 +3987,6 @@ UINT ActiveLedItControl::OLE_GetSelListStyle ()
 
 void ActiveLedItControl::OLE_SetSelListStyle (UINT listStyle)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         ::ListStyle                 ls1 = static_cast<::ListStyle> (listStyle);
@@ -4082,7 +4017,6 @@ UINT ActiveLedItControl::OLE_GetSelHidable ()
 
 void ActiveLedItControl::OLE_SetSelHidable (UINT hidable)
 {
-    CHECK_DEMO_AND_BEEP_AND_RETURN ();
     try {
         IdleManager::NonIdleContext nonIdleContext;
         size_t                      selStart;

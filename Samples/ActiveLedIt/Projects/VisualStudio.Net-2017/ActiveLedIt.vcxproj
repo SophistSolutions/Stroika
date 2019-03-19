@@ -178,13 +178,11 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <None Include="..\..\ActiveLedItTemplate.inf" />
     <None Include="..\..\BuildCAB.bat" />
     <None Include="..\..\checkall_vs.pl" />
-    <None Include="..\..\Demo ReadMe.rtf" />
     <None Include="..\..\Makefile" />
+    <None Include="..\..\ReadMe.md" />
     <None Include="..\..\ReadMe.rtf" />
     <None Include="..\..\Sources\AboutBoxImage.bmp" />
     <None Include="..\..\Sources\AboutBoxImage.vsd" />
-    <None Include="..\..\Sources\AboutBoxImage_Demo.bmp" />
-    <None Include="..\..\Sources\AboutBoxImage_Demo.vsd" />
     <None Include="..\..\Sources\ActiveLedIt.def" />
     <None Include="..\..\Sources\ActiveLedIt.ico" />
     <None Include="..\..\Sources\ActiveLedIt.manifest.xml">

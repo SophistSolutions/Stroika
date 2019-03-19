@@ -16,7 +16,7 @@
 
 #include "LedItView.h"
 
-#if qDemoMode || qFunnyDisplayInDesignMode
+#if qFunnyDisplayInDesignMode
 #include "Stroika/Frameworks/Led/HandySimple.h"
 #endif
 
@@ -257,7 +257,6 @@ public:
 #if qSupportOtherFontSizeDlg
     virtual Led_Distance PickOtherFontHeight (Led_Distance origHeight) override
     {
-        CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif qPlatform_Windows
@@ -275,7 +274,6 @@ public:
 #if qSupportParagraphSpacingDlg
     virtual bool PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
-        CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
 #elif qPlatform_Windows
@@ -306,7 +304,6 @@ public:
 #if qSupportParagraphIndentsDlg
     virtual bool PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override
     {
-        CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
 #elif qPlatform_Windows
@@ -335,7 +332,6 @@ public:
 #endif
     virtual void ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override
     {
-        CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (::GetActiveWindow ());
         // unknown embedding...
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
@@ -343,7 +339,6 @@ public:
     }
     virtual bool ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
     {
-        CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
         infoDialog.fTitleText         = *urlTitle;
@@ -359,7 +354,6 @@ public:
     }
     virtual bool ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
     {
-        CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fTitleText = *urlTitle;
         infoDialog.fURLText   = *urlValue;
@@ -425,82 +419,6 @@ static BOOL CALLBACK _AfxAbortProc (HDC, int)
     }
     return !pWinState->m_bUserAbort;
 }
-
-#if qDemoMode
-/*
- ********************************************************************************
- ******************************* DemoModeAlerter ********************************
- ********************************************************************************
- */
-int         DemoModeAlerter::sNextWarningAfter    = 0;
-const float DemoModeAlerter::kTimeBetweenWarnings = 0.5 * 60; // at most every 1 minute(s) - but really less often - cuz only on draws...
-
-void DemoModeAlerter::ShowAlert (HWND parentWnd)
-{
-    class DemoExpiresDLG : public Led_StdDialogHelper {
-    private:
-        using inherited = Led_StdDialogHelper;
-
-    public:
-        DemoExpiresDLG (HINSTANCE hInstance, HWND parentWnd)
-            : inherited (hInstance, MAKEINTRESOURCE (kDemoExpired_DialogID), parentWnd)
-        {
-        }
-        virtual void OnOK () override
-        {
-            inherited::OnOK ();
-            Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/DemoExpired.asp", kAppName, string (kURLDemoFlag) + kDemoExpiredExtraArgs));
-            //Led_URLManager::Get ().Open (kLedItDemoExpiredURL);
-        }
-        virtual void OnCancel () override
-        {
-            // Ignore - force the bugger to hit a button!!!
-        }
-        virtual BOOL DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override
-        {
-            if (message == WM_COMMAND and wParam == kDemoExpired_Dialog_CancelFieldID) {
-                // OK - he did some work todo this - now let him cancel
-                inherited::OnCancel ();
-                return true;
-            }
-            else {
-                return inherited::DialogProc (message, wParam, lParam);
-            }
-        }
-    };
-
-    if (parentWnd == NULL) {
-        parentWnd = ::GetActiveWindow ();
-    }
-    // Only check if we are visible. Sometimes this gets called - somewhat inexplicably - during the close of the browser
-    // window. Avoid somewhat ugly/confusing display of alert.
-    if (::IsWindow (parentWnd) and ::IsWindowVisible (parentWnd)) {
-        sNextWarningAfter = INT_MAX; // disable warnings til after Dialog finishes display to prevent multiple dialogs from appearing
-        try {
-            DemoExpiresDLG dlg (::AfxGetResourceHandle (), parentWnd);
-            dlg.DoModal ();
-            int now           = time (NULL);
-            sNextWarningAfter = static_cast<int> (now + kTimeBetweenWarnings); // Set here so delay based on when dialog dismissed instead of when dialog comes up.
-        }
-        catch (...) {
-            // ignore any errors with this code...
-            int now           = time (NULL);
-            sNextWarningAfter = static_cast<int> (now + kTimeBetweenWarnings); // even on failure - reset timer for next call
-        }
-    }
-}
-
-void DemoModeAlerter::ShowAlertIfItsBeenAWhile (HWND parentWnd)
-{
-    int now = time (NULL);
-    if (now > sNextWarningAfter) {
-        ShowAlert (parentWnd);
-    }
-    else {
-        Led_BeepNotify ();
-    }
-}
-#endif
 
 /*
  ********************************************************************************
@@ -571,9 +489,9 @@ LedItView::LedItView ()
 {
     SetScrollBarType (v, eScrollBarAsNeeded);
     SetScrollBarType (h, eScrollBarAsNeeded);
-#if qDemoMode
-    SetUseBitmapScrollingOptimization (false);
-#endif
+    if (qFunnyDisplayInDesignMode) {
+        SetUseBitmapScrollingOptimization (false);
+    }
     SetUseSecondaryHilight (true); // default to TRUE since I think this looks better and maybe a differentiator with other controls
     const Led_TWIPS kLedItViewTopMargin    = Led_TWIPS (120);
     const Led_TWIPS kLedItViewBottomMargin = Led_TWIPS (0);
@@ -929,8 +847,6 @@ void LedItView::SetSelection (size_t start, size_t end)
 
 void LedItView::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN (GetHWND ());
-
     if (GetMaxLength () != -1) {
         long textAdded = long(updateInfo.fTextLength) - (updateInfo.fReplaceTo - updateInfo.fReplaceFrom);
         if (textAdded + long(GetLength ()) > GetMaxLength ()) {
@@ -949,13 +865,6 @@ void LedItView::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw
     else {
         TextImager::EraseBackground (tablet, subsetToDraw, printing);
     }
-#if qDemoMode
-    static bool              demoExpired     = DemoPrefs ().GetDemoDaysLeft () <= 0;
-    Led_tString              demoModeMessage = demoExpired ? LED_TCHAR_OF ("Demo EXPIRED Mode") : LED_TCHAR_OF ("Demo Mode");
-    static WaterMarkHelper<> waterMarkerImager (demoModeMessage); // make this static - just as a performance hack. Also could be an instance variable of 'this'.
-    waterMarkerImager.SetWatermarkColor (demoExpired ? Led_Color::kRed : Led_Color::kYellow);
-    waterMarkerImager.DrawWatermark (tablet, GetWindowRect (), subsetToDraw);
-#endif
 
 #if qFunnyDisplayInDesignMode
     if (fController->IsInDesignMode ()) {
@@ -1043,7 +952,7 @@ void LedItView::OnBrowseHelpCommand ()
 
 void LedItView::OnCheckForUpdatesWebPageCommand ()
 {
-    Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/CheckForUpdates.asp", kAppName, kURLDemoFlag));
+    Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/CheckForUpdates.asp", kAppName, ""));
 }
 
 void LedItView::OnAboutBoxCommand ()
@@ -1055,19 +964,16 @@ void LedItView::OnAboutBoxCommand ()
 
 void LedItView::OnFilePrintOnce ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (GetHWND ());
     DoPrintHelper (false);
 }
 
 void LedItView::OnFilePrint ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (GetHWND ());
     DoPrintHelper (true);
 }
 
 void LedItView::OnFilePrintSetup ()
 {
-    CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (GetHWND ());
     CPrintDialog pd (TRUE);
     AfxGetApp ()->DoPrintDialog (&pd);
 }

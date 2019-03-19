@@ -39,14 +39,14 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE	"CompanyName",		"Sophist Solutions, Inc.\0"
-            VALUE	"FileDescription",	"ActiveLedIt! ActiveX Control" kDemoString "\0"
+            VALUE	"FileDescription",	"ActiveLedIt! ActiveX Control\0"
 			VALUE	"FileVersion",		qLed_ShortVersionString "\0"
-            VALUE	"InternalName",		"ActiveLedIt!" kDemoString "\0"
-			VALUE	"LegalCopyright",	"Copyright\251 Sophist Solutions 1994-1999\0"
+            VALUE	"InternalName",		"ActiveLedIt!\0"
+			VALUE	"LegalCopyright",	"Copyright\251 Sophist Solutions 1994-2019\0"
 //			VALUE	"LegalTrademarks",	"\0"
             VALUE	"OriginalFilename",	"ActiveLedIt.ocx\0"
             VALUE	"ProductName",		"ActiveLedIt ActiveX Control\0"
-			VALUE	"ProductVersion",	qLed_ShortVersionString  kDemoString "\0"
+			VALUE	"ProductVersion",	qLed_ShortVersionString "\0"
             VALUE	"OLESelfRegister",	"\0"
         END
     END
@@ -80,11 +80,7 @@ kUnsupportedPICTFormatPictID	BitMap	MOVEABLE PURE	"UnsupportedPictFormat.bmp"
 
 
 // Refered to by name from kLedStdDlg_AboutBoxID
-#if		qDemoMode
-AboutBoxImage		BITMAP    "AboutBoxImage_Demo.bmp"
-#else
 AboutBoxImage		BITMAP    "AboutBoxImage.bmp"
-#endif
 
 
 
@@ -142,20 +138,6 @@ STRINGTABLE DISCARDABLE
 BEGIN
     IDS_ACTIVELEDIT_PPG_CAPTION "General"
 END
-
-#if		qDemoMode
-kDemoExpired_DialogID	DIALOG DISCARDABLE  34, 22, 250, 66
-CAPTION "Demo Expired!"
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
-//STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-FONT 8, "MS Shell Dlg"
-Begin
-	DEFPUSHBUTTON   "Go Now",				IDOK,									73,44,40,14,		WS_TABSTOP
-	PUSHBUTTON		"Go Later",				kDemoExpired_Dialog_CancelFieldID,		130,44,40,14,		0
-	LText           "This is a demo version of ActiveLedIt! and it has expired.",	-1,								15,10,220,8
-	LText           "To get a more recent copy of the demo, or to purchase a licensed copy, goto http://www.sophists.com/Led/ActiveLedIt/",	-1,			15,20,220,20
-End
-#endif
 
 
 

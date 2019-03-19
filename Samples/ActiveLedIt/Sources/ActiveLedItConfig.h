@@ -115,18 +115,8 @@
 const unsigned int kMaxNumUndoLevels = 512;
 #endif
 
-#if qDemoMode
-#define kDemoString " - Demo Version"
-#else
-#define kDemoString ""
-#endif
-
 //TMP HACK - to workaround problem introduced by interum release with ActiveLedIt! 3.0b5 - get rid of after b5 release
 #define qMagicVersionExtra 0
-
-#ifndef qDemoMode
-#define qDemoMode 0
-#endif
 
 #define qActiveLedIt_MajorVersion qLed_Version_Major
 #define qActiveLedIt_MinorVersion qLed_Version_Minor
@@ -140,11 +130,7 @@ const unsigned int kMaxNumUndoLevels = 512;
 #error "OOOPS"
 #endif
 
-#if qDemoMode
-#define kVERSResourceVersionNumber qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 0 + qMagicVersionExtra
-#else
 #define kVERSResourceVersionNumber qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 1 + qMagicVersionExtra
-#endif
 #if defined(__cplusplus)
 static_assert (qHasFeature_ATLMFC, "Error: ActiveLedIt requires the ATLMFC feature to be set true when building Stroika");
 
@@ -159,17 +145,11 @@ inline unsigned long mkActiveLedItVersion_ (unsigned int majorMinor, unsigned in
            (static_cast<unsigned long> (subStage) << 8) |
            (static_cast<unsigned long> (nonDemoFlag) << 0);
 }
-const unsigned long kActiveLedItDWORDVersion = mkActiveLedItVersion_ (qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, !qDemoMode + qMagicVersionExtra);
+const unsigned long kActiveLedItDWORDVersion = mkActiveLedItVersion_ (qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 1 + qMagicVersionExtra);
 #endif
 
 #if defined(__cplusplus)
-const char kAppName[] = "ActiveLedIt";
-#if qDemoMode
-const char kURLDemoFlag[] = "&DemoMode=true";
-#else
-const char kURLDemoFlag[] = "";
-#endif
-const char kDemoExpiredExtraArgs[] = "&DemoExpired=true";
+constexpr char kAppName[] = "ActiveLedIt";
 #endif
 
 #ifndef qKeepListOfALInstancesForSPR_1599BWA
