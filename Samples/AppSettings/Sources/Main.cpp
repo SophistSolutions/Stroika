@@ -153,7 +153,7 @@ namespace {
     }
 }
 
-int main (int argc, const char* argv[])
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
     TestUse1_ ();
