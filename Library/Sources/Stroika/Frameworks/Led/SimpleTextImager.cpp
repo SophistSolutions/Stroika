@@ -872,10 +872,10 @@ void SimpleTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMark
     Assert (fromMarkerPos >= 0);
     Assert (fromMarkerPos <= toMarkerPos);
     Assert (toMarkerPos <= GetEnd ());
-    if constexpr (qMultiByteCharacters && qDebug) {
-        Assert_CharPosDoesNotSplitCharacter (fromMarkerPos);
-        Assert_CharPosDoesNotSplitCharacter (toMarkerPos);
-    }
+#if qMultiByteCharacters && qDebug
+    Assert_CharPosDoesNotSplitCharacter (fromMarkerPos);
+    Assert_CharPosDoesNotSplitCharacter (toMarkerPos);
+#endif
 
     size_t curTopRowRelativeRowNumber = 0;
 
@@ -1133,9 +1133,9 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelative (size_t afterPosition, Row
 
     Assert (afterPosition >= 0);
     Assert (afterPosition <= GetEnd ()); // does that ever make sense???
-    if constexpr (qMultiByteCharacters && qDebug) {
-        Assert_CharPosDoesNotSplitCharacter (afterPosition);
-    }
+#if qMultiByteCharacters && qDebug
+    Assert_CharPosDoesNotSplitCharacter (afterPosition);
+#endif
 
     if (afterPosition < GetStartOfRow (topRow)) {
         return (kMagicBeforeRect);

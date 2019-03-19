@@ -8,6 +8,7 @@
 #include <new>
 #include <set>
 
+#include "../Debug/Debugger.h"
 #include "../Execution/Common.h"
 #include "../Execution/ModuleInit.h"
 #include "../Execution/Throw.h"
@@ -43,7 +44,7 @@ namespace {
         }
         else {
             if (not t) {
-                DebugBreak ();
+                Debug::DropIntoDebuggerIfPresent ();
             }
         }
     }
