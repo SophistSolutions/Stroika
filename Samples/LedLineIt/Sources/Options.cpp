@@ -5,94 +5,150 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 #include <afxadv.h>
 
-#include "Stroika/Frameworks/Led/OptionsSupport.h"
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 #include "Options.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
+
 using namespace Stroika::Frameworks::Led;
 
-namespace {
-#if qPlatform_Windows
-    class MyPrefs : public OptionsFileHelper {
-    private:
-        using inherited = OptionsFileHelper;
-
-    public:
-        MyPrefs ()
-            : inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\LedLineIt!\\Settings")))
-        {
-        }
-    };
-    MyPrefs gMyPrefsFile;
-#endif
-}
+using Memory::BLOB;
 
 using SearchParameters = TextInteractor::SearchParameters;
+#if qSupportSyntaxColoring
+using SyntaxColoringOption = Options::SyntaxColoringOption;
+#endif
 
-static constexpr TCHAR kDockBarStateEntry[]               = _T ("DockBarState");
-static constexpr TCHAR kSearchParamsMatchString[]         = _T ("MatchString");
-static constexpr TCHAR kSearchParamsRecentMatchStrings[]  = _T ("RecentMatchStrings");
-static constexpr TCHAR kSearchParamsWrapSearch[]          = _T ("WrapSearch");
-static constexpr TCHAR kSearchParamsWholeWordSearch[]     = _T ("WholeWordSearch");
-static constexpr TCHAR kSearchParamsCaseSensativeSearch[] = _T ("CaseSensativeSearch");
-static constexpr TCHAR kSmartCutAndPaste[]                = _T ("SmartCutAndPaste");
-static constexpr TCHAR kAutoIndent[]                      = _T ("AutoIndent");
-static constexpr TCHAR kTabAutoShiftsText[]               = _T ("TabAutoShiftsText");
-static constexpr TCHAR kSyntaxColoring[]                  = _T ("kSyntaxColoring");
-static constexpr TCHAR kCheckFileAssocAtStartup[]         = _T ("CheckFileAssocAtStartup");
-static constexpr TCHAR kDefaultNewDocFont[]               = _T ("DefaultNewDocFont");
+namespace {
+    struct Options_ {
+        BLOB             fDockBarState;
+        SearchParameters fSearchParameters{};
+        bool             fSmartCutAndPaste{true};
+        bool             fAutoIndent{true};
+        bool             fTabsAutoShiftsText{true};
+#if qSupportSyntaxColoring
+        SyntaxColoringOption fSyntaxColoring{SyntaxColoringOption::eSyntaxColoringNone};
+#endif
+#if qPlatform_Windows
+        bool fCheckFileAssocAtStartup{true};
+        BLOB fDefaultNewDocFont;
+#endif
+    };
+
+    struct Options_Storage_IMPL_ {
+        Options_Storage_IMPL_ ()
+            : fOptionsFile_{
+                  L"AppSettings"sv,
+                  []() -> ObjectVariantMapper {
+                      ObjectVariantMapper mapper;
+
+                      // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
+                      mapper.Add<Led_tString> (
+                          [](const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
+                              return String{*obj};
+                          },
+                          [](const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
+                              *intoObj = d.As<String> ().As<Led_tString> ();
+                          });
+                      mapper.AddCommonType<vector<Led_tString>> ();
+                      mapper.AddCommonType<Memory::BLOB> ();
+
+#if qSupportSyntaxColoring
+                      mapper.AddCommonType<SyntaxColoringOption> ();
+#endif
+
+                      mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                          {L"Match-String", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fMatchString)},
+                          {L"Wrap-Search", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWrapSearch)},
+                          {L"Whole-Word-Search", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWholeWordSearch)},
+                          {L"Case-Sensative-Search", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fCaseSensativeSearch)},
+                          {L"Recent-Match-Strings", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fRecentFindStrings)},
+                      });
+
+                      mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                          {L"Dock-Bar-State", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fDockBarState)},
+                              {L"Search-Parameters", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSearchParameters)},
+                              {L"Smart-Cut-And-Paste", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSmartCutAndPaste)},
+                              {L"Auto-Indent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fAutoIndent)},
+                              {L"Tabs-Auto-Shifts-Text", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fTabsAutoShiftsText)},
+
+#if qSupportSyntaxColoring
+                              {L"Syntax-Coloring", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSyntaxColoring)},
+#endif
+
+#if qPlatform_Windows
+                              {L"Check-File-Assoc-At-Startup", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fCheckFileAssocAtStartup)},
+                              {L"Default-New-Doc-Font", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fDefaultNewDocFont)},
+#endif
+                      });
+                      return mapper;
+                  }(),
+
+                  OptionsFile::kDefaultUpgrader,
+
+                  OptionsFile::mkFilenameMapper (L"LedLineIt"sv)}
+            , fActualCurrentConfigData_ (fOptionsFile_.Read<Options_> (Options_{}))
+        {
+            Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+        }
+        Options_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const Options_& v)
+        {
+            fActualCurrentConfigData_ = v;
+            fOptionsFile_.Write (v);
+        }
+
+    private:
+        OptionsFile fOptionsFile_;
+        Options_    fActualCurrentConfigData_;
+    };
+
+    ModuleGetterSetter<Options_, Options_Storage_IMPL_> sOptions_;
+}
 
 /*
  ********************************************************************************
  *********************************** Options ************************************
  ********************************************************************************
  */
-
-Options::Options ()
-{
-}
-
-Options::~Options ()
-{
-}
-
 SearchParameters Options::GetSearchParameters () const
 {
-    SearchParameters sp;
-    sp.fMatchString         = gMyPrefsFile.GetPref (kSearchParamsMatchString, sp.fMatchString);
-    sp.fRecentFindStrings   = gMyPrefsFile.GetPref (kSearchParamsRecentMatchStrings, sp.fRecentFindStrings);
-    sp.fWrapSearch          = gMyPrefsFile.GetPref (kSearchParamsWrapSearch, sp.fWrapSearch);
-    sp.fWholeWordSearch     = gMyPrefsFile.GetPref (kSearchParamsWholeWordSearch, sp.fWholeWordSearch);
-    sp.fCaseSensativeSearch = gMyPrefsFile.GetPref (kSearchParamsCaseSensativeSearch, sp.fCaseSensativeSearch);
-    return sp;
+    return sOptions_.Get ().fSearchParameters;
 }
 
 void Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
-    gMyPrefsFile.StorePref (kSearchParamsMatchString, searchParameters.fMatchString);
-    gMyPrefsFile.StorePref (kSearchParamsRecentMatchStrings, searchParameters.fRecentFindStrings);
-    gMyPrefsFile.StorePref (kSearchParamsWrapSearch, searchParameters.fWrapSearch);
-    gMyPrefsFile.StorePref (kSearchParamsWholeWordSearch, searchParameters.fWholeWordSearch);
-    gMyPrefsFile.StorePref (kSearchParamsCaseSensativeSearch, searchParameters.fCaseSensativeSearch);
+    sOptions_.Update ([=](Options_ d) { d.fSearchParameters = searchParameters; return d; });
 }
 
 #if qPlatform_Windows
 const CDockState& Options::GetDocBarState () const
 {
-    static CDockState dockState; // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
-    dockState.Clear ();
-    vector<byte> bytes;
-    if (gMyPrefsFile.LookupPref (kDockBarStateEntry, &bytes)) {
-        CMemFile file;
-        file.Write (&*bytes.begin (), bytes.size ());
-        file.SeekToBegin ();
-        CArchive ar (&file, CArchive::load);
-        dockState.Serialize (ar);
-        ar.Close ();
-    }
+    static CDockState     dockState; // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
+    static std::once_flag sOnce_;
+    std::call_once (sOnce_, []() {
+        dockState.Clear ();
+        BLOB bytes = sOptions_.Get ().fDockBarState;
+        if (not bytes.empty ()) {
+            CMemFile file;
+            file.Write (&*bytes.begin (), bytes.size ());
+            file.SeekToBegin ();
+            CArchive ar (&file, CArchive::load);
+            dockState.Serialize (ar);
+            ar.Close ();
+        }
+    });
     return dockState;
 }
 
@@ -108,83 +164,77 @@ void Options::SetDocBarState (const CDockState& dockState)
     byte* p = new byte[nSize];
     file.SeekToBegin ();
     file.Read (p, nSize);
-    gMyPrefsFile.StorePref (kDockBarStateEntry, nSize, p);
+    sOptions_.Update ([=](Options_ d) { d.fDockBarState = BLOB{ p, p + nSize }; return d; });
     delete[] p;
 }
 #endif
 
 bool Options::GetSmartCutAndPaste () const
 {
-    return gMyPrefsFile.GetPref (kSmartCutAndPaste, true);
+    return sOptions_.Get ().fSmartCutAndPaste;
 }
 
 void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
-    gMyPrefsFile.StorePref (kSmartCutAndPaste, smartCutAndPaste);
+    sOptions_.Update ([=](Options_ d) { d.fSmartCutAndPaste = smartCutAndPaste; return d; });
 }
 
 bool Options::GetAutoIndent () const
 {
-    return gMyPrefsFile.GetPref (kAutoIndent, true);
+    return sOptions_.Get ().fAutoIndent;
 }
 
 void Options::SetAutoIndent (bool autoIndent)
 {
-    gMyPrefsFile.StorePref (kAutoIndent, autoIndent);
+    sOptions_.Update ([=](Options_ d) { d.fAutoIndent = autoIndent; return d; });
 }
 
 bool Options::GetTreatTabAsIndentChar () const
 {
-    return gMyPrefsFile.GetPref (kTabAutoShiftsText, true);
+    return sOptions_.Get ().fTabsAutoShiftsText;
 }
 
 void Options::SetTreatTabAsIndentChar (bool tabAsIndentChar)
 {
-    gMyPrefsFile.StorePref (kTabAutoShiftsText, tabAsIndentChar);
+    sOptions_.Update ([=](Options_ d) { d.fTabsAutoShiftsText = tabAsIndentChar; return d; });
 }
 
 #if qSupportSyntaxColoring
 Options::SyntaxColoringOption Options::GetSyntaxColoringOption () const
 {
-    const SyntaxColoringOption kDefault = eSyntaxColoringNone;
-    int                        result   = gMyPrefsFile.GetPref<int> (kSyntaxColoring, kDefault);
-    if (result >= 1 and result <= 3) {
-        return static_cast<Options::SyntaxColoringOption> (result);
-    }
-    else {
-        return kDefault;
-    }
+    return sOptions_.Get ().fSyntaxColoring;
 }
 
 void Options::SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption)
 {
-    gMyPrefsFile.StorePref (kSyntaxColoring, syntaxColoringOption);
+    sOptions_.Update ([=](Options_ d) { d.fSyntaxColoring = syntaxColoringOption; return d; });
 }
 #endif
 
 #if qPlatform_Windows
 bool Options::GetCheckFileAssocsAtStartup () const
 {
-    return gMyPrefsFile.GetPref (kCheckFileAssocAtStartup, true);
+    return sOptions_.Get ().fCheckFileAssocAtStartup;
 }
 
 void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 {
-    gMyPrefsFile.StorePref (kCheckFileAssocAtStartup, checkFileAssocsAtStartup);
+    sOptions_.Update ([=](Options_ d) { d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup; return d; });
 }
 #endif
 
 Led_FontSpecification Options::GetDefaultNewDocFont () const
 {
-    vector<byte> bytes;
-    if (gMyPrefsFile.LookupPref (kDefaultNewDocFont, &bytes)) {
+#if qPlatform_Windows
+    BLOB bytes = sOptions_.Get ().fDefaultNewDocFont;
+    if (not bytes.empty ()) {
         if (bytes.size () == sizeof (LOGFONT)) {
             Led_FontSpecification fsp;
-            fsp.SetOSRep (*reinterpret_cast<LOGFONT*> (&*bytes.begin ()));
+            fsp.SetOSRep (bytes.As<LOGFONT> ());
             return fsp;
         }
     }
-
+#endif
     // A good default font for LedLineIt - really just want something monospace,
     // but don't know how better to choose...
     // Not TOO important what we do here. Really we should get/save a user-chosen default in the
@@ -197,6 +247,9 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
 
 void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
 {
-    auto tmp = defaultNewDocFont.GetOSRep ();
-    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const byte*> (&tmp));
+#if qPlatform_Windows
+    sOptions_.Update ([&](Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });
+#else
+    Led_Arg_Unused (defaultNewDocFont);
+#endif
 }

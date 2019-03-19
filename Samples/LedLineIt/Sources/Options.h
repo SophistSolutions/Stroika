@@ -19,8 +19,8 @@ using namespace Stroika::Frameworks::Led;
 
 class Options {
 public:
-    Options ();
-    ~Options ();
+    Options ()  = default;
+    ~Options () = default;
 
 public:
     nonvirtual TextInteractor::SearchParameters GetSearchParameters () const;
@@ -46,7 +46,11 @@ public:
 public:
     enum SyntaxColoringOption { eSyntaxColoringNone      = 1,
                                 eSyntaxColoringCPlusPlus = 2,
-                                eSyntaxColoringVB        = 3 }; //NB CANNOT CHANGE VALUES LIGHTLY - WRITTEN TO REGISTRY!
+                                eSyntaxColoringVB        = 3,
+
+                                Stroika_Define_Enum_Bounds (eSyntaxColoringNone, eSyntaxColoringVB)
+
+    };
     nonvirtual SyntaxColoringOption GetSyntaxColoringOption () const;
     nonvirtual void                 SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);
 #endif
@@ -67,5 +71,16 @@ public:
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+//NB CANNOT CHANGE VALUES LIGHTLY - WRITTEN TO config files
+namespace Stroika::Foundation::Configuration {
+    template <>
+    const EnumNames<Options::SyntaxColoringOption> DefaultNames<Options::SyntaxColoringOption>::k{
+        Configuration::EnumNames<Options::SyntaxColoringOption>::BasicArrayInitializer{{
+            {Options::SyntaxColoringOption::eSyntaxColoringNone, L"None"},
+            {Options::SyntaxColoringOption::eSyntaxColoringCPlusPlus, L"C++"},
+            {Options::SyntaxColoringOption::eSyntaxColoringVB, L"Visual-Basic"},
+        }}};
+}
 
 #endif /*__Options_h__*/
