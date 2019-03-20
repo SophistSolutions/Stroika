@@ -89,6 +89,7 @@ namespace Stroika::Foundation::Memory {
     SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs)
     {
         Invariant ();
+        Assert (this != &rhs); // because if same address should be same type so operator=(const SmallStackBuffer&) should be called
         // @todo this simple implementation could be more efficient
         DestroyElts_ (this->begin (), this->end ());
         fSize_ = 0;
@@ -118,6 +119,14 @@ namespace Stroika::Foundation::Memory {
             fSize_ = rhs.size ();
             Invariant ();
         }
+        return *this;
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (SmallStackBuffer&& rhs)
+    {
+        Invariant ();
+        // @todo this simple implementation could be more efficient
+        operator= (rhs); // call copy assign for now
         return *this;
     }
     template <typename T, size_t BUF_SIZE>

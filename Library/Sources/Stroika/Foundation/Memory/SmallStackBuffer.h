@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Memory {
         template <size_t FROM_BUF_SIZE>
         nonvirtual SmallStackBuffer& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
         nonvirtual SmallStackBuffer& operator= (const SmallStackBuffer& rhs);
-        nonvirtual SmallStackBuffer& operator= (SmallStackBuffer&&) = delete;
+        nonvirtual SmallStackBuffer& operator= (SmallStackBuffer&& rhs);
 
     public:
         /**
