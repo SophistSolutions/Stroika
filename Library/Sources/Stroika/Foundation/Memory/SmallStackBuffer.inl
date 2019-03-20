@@ -115,6 +115,7 @@ namespace Stroika::Foundation::Memory {
 #else
             uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
 #endif
+            fSize_ = rhs.size ();
             Invariant ();
         }
         return *this;
