@@ -379,6 +379,12 @@ namespace {
                 SmallStackBuffer<String> buf2{buf1};
                 buf1.resize (0);
             }
+            {
+                SmallStackBuffer<int> x0{0};
+                SmallStackBuffer<int> assign2;
+                assign2 = x0;
+                VerifyTestResult (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
+            }
         }
     }
 }
