@@ -827,8 +827,8 @@ TextStore* PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
 void PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
     {
-        size_t       cacheSize   = 3;
-        size_t       bufLen      = GetTextStore ().GetLength ();
+        size_t       cacheSize    = 3;
+        size_t       bufLen       = GetTextStore ().GetLength ();
         const size_t kBigThresh1_ = 1024;
         const size_t kBigThresh2_ = 10 * 1024;
         const size_t kBigThresh3_ = 20 * 1024;
