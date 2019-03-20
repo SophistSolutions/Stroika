@@ -30,19 +30,21 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  SmallStackBuffer<> combines the performance of using a stack buffer to store arrays with
+     *  Typically, SmallStackBuffer<> combines the performance of using a stack buffer to store arrays with
      *  the safety and flexability of using the free store (malloc).
      *
      *  Think of it as a hybrid between std::vector<> and std::array - with functionality like
      *  std::vector, but performance more like std::array.
      *
      *  In steps <code>SmallStackBuffer&ltT&gt</code>. Just declare one of these, and it
-     *  automaticlly uses the stack for the buffer if it will fit, and silently allocates heap memory
-     *  and returns it to the free store on stack based destruction if needed. Use it just like you
-     *  would a stack-based array. You don't need to know about this to use any of Led's APIs, but its
-     *  a helpful class you may want to use elsewhere in your code.</p>
+     *  automaticlly uses the stack (really its own inline struct storage - typically stack) for the buffer if it will fit, 
+     *  and silently allocates heap memory and returns it to the free store when its instance is destroyed if needed. Use it just like you
+     *  would a stack-based array.
      *
      *  typically sizeof(SmallStackBuffer<T,BUF_SIZE>) will come to roughly 4K, and always at least something.
+     *
+     *  \note The class name a a slight misnomer, because these classes CAN be used as data members of heap objects.
+     *        But that is by far a less common usage. 99% of the time, this will be used on the stack.
      *
      *  \par Example Usage
      *      @see Samples/SimpleService project
