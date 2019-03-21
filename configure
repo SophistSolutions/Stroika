@@ -175,81 +175,82 @@ my $TOOLS_PATH_ADDITIONS = undef;
 
 sub	DoHelp_
 {
-    my $x = shift(@_);
-    print("Usage:\n");
-        print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
-        print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
-        print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
-        print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */\n");
-        print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
-        print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
-        print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
-        print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */\n");
-        print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
-        print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
-        print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
-        print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
-        print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
-        print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
-        print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
-        print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
-        print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
-        print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
-        print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
-        print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
-        print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
-        print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
-        print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
-        print("	    --cpp-optimize-flag  {FLAG}                     /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
-        print("	    --c-define {ARG}                                /* Define C++ pre-processor define for the given configuration: arg appears as a line in Stroika-Configuration.h\n");
-        print("	                                                       (e.g. --c-define '\\#define qCompilerAndStdLib_quick_exit_Buggy 1')\n");
-        print("	                                                       Functionally similar to --append-CPPFLAGS */\n");
-        print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
-        print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
-        print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
-        print("	    --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */\n");
-        print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
-        print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
-        print("	    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */\n");
-        print("	    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n");
-        print("	    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n");
-        print("	    --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */\n");
-        print("	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
-        print("	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
-        print("	    --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */\n");
-        print("	    --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */\n");
-        print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
-        print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
-        print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
-        print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
-        print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */\n");
-        print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
-        print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */\n");
-        print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
-        print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
-        print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */\n");
-        print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
-        print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
-        print("	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */\n");
-        print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
-        print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
-        print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
-        print("	    --apply-default-debug-flags                     /*  */\n");
-        print("	    --apply-default-release-flags                   /*  */\n");
-        print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
-        print("	    --debug-symbols {true|false}                    /* --debug-symbols-lib AND --debug-symbols-exe at the same time */\n");
-        print("	    --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
-        print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
-        print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
-        print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
-        print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n");
-        print("	                                                       any arg you can pass to -fsanitize=XXXX */\n");
-        print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
-        print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
-        print("\n");
-        print("Configure's behavior is also influenced by the following environment variables:\n");
-        print("	    CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
+	my $x = shift(@_);
+	print("Usage:\n");
+		print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
+		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
+		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
+		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */\n");
+		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
+		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
+		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
+		print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
+		print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */\n");
+		print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
+		print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
+		print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
+		print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
+		print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
+		print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
+		print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
+		print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
+		print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
+		print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
+		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
+		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
+		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
+		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
+		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
+		print("	    --cpp-optimize-flag  {FLAG}                     /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
+		print("	    --c-define {ARG}                                /* Define C++ pre-processor define for the given configuration: arg appears as a line in Stroika-Configuration.h\n");
+		print("	                                                       (e.g. --c-define '\\#define qCompilerAndStdLib_quick_exit_Buggy 1')\n");
+		print("	                                                       Functionally similar to --append-CPPFLAGS */\n");
+		print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
+		print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
+		print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
+		print("	    --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */\n");
+		print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
+		print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
+		print("	    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */\n");
+		print("	    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n");
+		print("	    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n");
+		print("	    --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */\n");
+		print("	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
+		print("	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
+		print("	    --append-CPPFLAGS {ARG}                         /* alias for append-CFLAGS AND append-CXXFLAGS */\n");
+		print("	    --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */\n");
+		print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
+		print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
+		print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
+		print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
+		print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */\n");
+		print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
+		print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */\n");
+		print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
+		print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
+		print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */\n");
+		print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
+		print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
+		print("	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */\n");
+		print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
+		print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+		print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
+		print("	    --apply-default-debug-flags                     /*  */\n");
+		print("	    --apply-default-release-flags                   /*  */\n");
+		print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
+		print("	    --debug-symbols {true|false}                    /* --debug-symbols-lib AND --debug-symbols-exe at the same time */\n");
+		print("	    --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+		print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+		print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
+		print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
+		print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n");
+		print("	                                                       any arg you can pass to -fsanitize=XXXX */\n");
+		print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
+		print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
+		print("\n");
+		print("Configure's behavior is also influenced by the following environment variables:\n");
+		print("	    CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
+		print("	    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command\n");
 		
 	exit ($x);
 }
@@ -260,7 +261,7 @@ sub	DoHelp_
 
 sub     ToBool_
 {
-    my $x = shift(@_);
+	my $x = shift(@_);
 	if ($x eq "true") {
 		return true;
 	}
@@ -275,19 +276,19 @@ sub     ToBool_
 
 sub     IsGCCOrGPlusPlus_
 {
-    my $x = shift(@_);
+	my $x = shift(@_);
 	return ($x =~ /gcc[!\/]*/) || (($x =~ /g\+\+[!\/]*/) && !($x =~ /clang\+\+/));
 }
 
 sub     IsClangOrClangPlusPlus_
 {
-    my $x = shift(@_);
+	my $x = shift(@_);
 	return ($x =~ /clang[!\/]*/);
 }
 
 sub     IsClangPlusPlus_
 {
-    my $x = shift(@_);
+	my $x = shift(@_);
 	return ($x =~ /clang\+\+[!\/]*/);
 }
 
@@ -295,7 +296,7 @@ sub     IsClangPlusPlus_
 sub     GetGCCVersion_
 {
 	no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
-    my $x = shift(@_);
+	my $x = shift(@_);
 	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/([^)]*)/x/' | awk '{print \$3;}'`) * 1;
 }
 
@@ -303,7 +304,7 @@ sub     GetGCCVersion_
 #return number
 sub     GetClangVersion_
 {
-    my $x = trim(shift(@_));
+	my $x = trim(shift(@_));
 	my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
 	if (not defined($firstLine)) {
 		return 0;
@@ -560,14 +561,14 @@ sub	SetInitialDefaults_
 
 sub     ReplaceLast_
 {
-    my $srcString = shift(@_);
-    my $replaceThis = shift(@_);
-    my $withThis = shift(@_);
+	my $srcString = shift(@_);
+	my $replaceThis = shift(@_);
+	my $withThis = shift(@_);
 
-    #@todo find a better way to safely substitute
-    my $rreplaceThis = trim (`echo $replaceThis | rev`);
-    my $rwithThis = trim (`echo $withThis | rev`);
-    return trim (`echo $srcString | rev | sed 's/$rreplaceThis/$rwithThis/' | rev`);
+	#@todo find a better way to safely substitute
+	my $rreplaceThis = trim (`echo $replaceThis | rev`);
+	my $rwithThis = trim (`echo $withThis | rev`);
+	return trim (`echo $srcString | rev | sed 's/$rreplaceThis/$rwithThis/' | rev`);
 }
 
 
@@ -883,6 +884,13 @@ sub	ParseEnvVarsToSetupInfluencedVariables_
 		push @EXTRA_ARGS, "--strip";
 		push @EXTRA_ARGS, $ENV{'STRIP'};
 	}
+
+	if (defined ($ENV{'EXTRA_CONFIGURE_ARGS'})) {
+		for my $i (split / /, $ENV{'EXTRA_CONFIGURE_ARGS'}) {
+			push @EXTRA_ARGS, "$i";
+		}
+	}
+
 }
 
 
@@ -970,8 +978,8 @@ sub	ParseCommandLine_Remaining_
 				$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 			}
 			else  {
-                print ("UNRECOGNIZED assertions ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED assertions ARG: $var\n");
+				DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-shared-symbol-visibility") or (lc ($var) eq "--shared-symbol-visibility")) {
@@ -991,8 +999,8 @@ sub	ParseCommandLine_Remaining_
 			elsif ($var eq "default") {
 			}
 			else  {
-                print ("UNRECOGNIZED block-allocation ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED block-allocation ARG: $var\n");
+				DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-valgrind") or (lc ($var) eq "--valgrind")) {
@@ -1007,8 +1015,8 @@ sub	ParseCommandLine_Remaining_
 			elsif ($var eq "default") {
 			}
 			else  {
-                print ("UNRECOGNIZED block-allocation ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED block-allocation ARG: $var\n");
+				DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-glibcxx_debug") or (lc ($var) eq "--glibcxx_debug")) {
@@ -1024,8 +1032,8 @@ sub	ParseCommandLine_Remaining_
 				$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 			}
 			else  {
-                print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
+				DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
@@ -1050,19 +1058,19 @@ sub	ParseCommandLine_Remaining_
 			}
 			$CPPSTD_VERSION_FLAG = "--std=" . $var;
 		}
-        elsif ((lc ($var) eq "-activeperl") or (lc ($var) eq "--activeperl")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_ActivePerl = $var;
-        }
-        elsif ((lc ($var) eq "-WIX") or (lc ($var) eq "--WIX")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_WIX = $var;
-        }
-        elsif ((lc ($var) eq "-config-tag") or (lc ($var) eq "--config-tag")) {
-            $i++;
-            $var = $args[$i];
+		elsif ((lc ($var) eq "-activeperl") or (lc ($var) eq "--activeperl")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_ActivePerl = $var;
+		}
+		elsif ((lc ($var) eq "-WIX") or (lc ($var) eq "--WIX")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_WIX = $var;
+		}
+		elsif ((lc ($var) eq "-config-tag") or (lc ($var) eq "--config-tag")) {
+			$i++;
+			$var = $args[$i];
 			if ($var=~/[\s+.]+/)  {
 				die "No spaces allowed in config-tag" 
 			}
@@ -1072,58 +1080,58 @@ sub	ParseCommandLine_Remaining_
 			else {
 				$Config_Tag .= " ";
 			}
-            $Config_Tag .= $var;
-        }
-        elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_LIBCURL = $var;
-        }
-        elsif ((lc ($var) eq "-boost") or (lc ($var) eq "--boost")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_boost = $var;
-        }
-        elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_OpenSSL = $var;
-        }
-        elsif ((lc ($var) eq "-openssl-extraargs") or (lc ($var) eq "--openssl-extraargs")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_OpenSSLExtraArgs = $var;
-        }
-        elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_WinHTTP = $var;
-        }
-        elsif ((lc ($var) eq "-atlmfc") or (lc ($var) eq "--atlmfc")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_ATLMFC = $var;
-        }
-        elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_Xerces = $var;
-        }
-        elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_ZLib = $var;
-        }
-        elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_sqlite = $var;
-        }
-        elsif ((lc ($var) eq "-lzma") or (lc ($var) eq "--lzma")) {
-            $i++;
-            $var = $args[$i];
-            $FEATUREFLAG_LZMA = $var;
-        }
+			$Config_Tag .= $var;
+		}
+		elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_LIBCURL = $var;
+		}
+		elsif ((lc ($var) eq "-boost") or (lc ($var) eq "--boost")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_boost = $var;
+		}
+		elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_OpenSSL = $var;
+		}
+		elsif ((lc ($var) eq "-openssl-extraargs") or (lc ($var) eq "--openssl-extraargs")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_OpenSSLExtraArgs = $var;
+		}
+		elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_WinHTTP = $var;
+		}
+		elsif ((lc ($var) eq "-atlmfc") or (lc ($var) eq "--atlmfc")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_ATLMFC = $var;
+		}
+		elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_Xerces = $var;
+		}
+		elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_ZLib = $var;
+		}
+		elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_sqlite = $var;
+		}
+		elsif ((lc ($var) eq "-lzma") or (lc ($var) eq "--lzma")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_LZMA = $var;
+		}
 		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
 			$i++;
 			$var = $args[$i];
@@ -1137,24 +1145,24 @@ sub	ParseCommandLine_Remaining_
 				$ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 			}
 			else  {
-                print ("UNRECOGNIZED ENABLE_TRACE2FILEG ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED ENABLE_TRACE2FILEG ARG: $var\n");
+				DoHelp_ (1);
 			}
 		}
-        elsif ((lc ($var) eq "-static-link-gccruntime") or (lc ($var) eq "--static-link-gccruntime")) {
-            $i++;
-            $var = $args[$i];
-            if ($var eq "enable") {
+		elsif ((lc ($var) eq "-static-link-gccruntime") or (lc ($var) eq "--static-link-gccruntime")) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "enable") {
 				$STATIC_LINK_GCCRUNTIME = 1;
 			}
-            elsif ($var eq "disable") {
+			elsif ($var eq "disable") {
 				$STATIC_LINK_GCCRUNTIME = 0;
 			}
 			else {
-                print ("UNRECOGNIZED static-link-gccruntime ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED static-link-gccruntime ARG: $var\n");
+				DoHelp_ (1);
 			}
-        }
+		}
 		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
 			$i++;
 			$var = $args[$i];
@@ -1344,8 +1352,8 @@ sub	ParseCommandLine_Remaining_
 				$ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
 			}
 			else  {
-                print ("UNRECOGNIZED assertions ARG: $var\n");
-                DoHelp_ (1);
+				print ("UNRECOGNIZED assertions ARG: $var\n");
+				DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-cross-compiling") or (lc ($var) eq "--cross-compiling")) {
@@ -1454,24 +1462,24 @@ sub	ParseCommandLine_Remaining_
 			$CWARNING_FLAGS = $var;
 			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
 		}
-        else {
-            if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
-                $i++;
-            }
-            elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
-                $i++;
-            }
-            else {
-                print ("UNRECOGNIZED ARG: $var\n");
-                DoHelp_ (1);
-            }
-        }
+		else {
+			if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
+				$i++;
+			}
+			elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
+				$i++;
+			}
+			else {
+				print ("UNRECOGNIZED ARG: $var\n");
+				DoHelp_ (1);
+			}
+		}
 	}
 }
 
 sub ZERO_OR_1_
 {
-    my $x = shift(@_);
+	my $x = shift(@_);
 	if ($x eq "") {
 		return 0;
 	}
@@ -1483,10 +1491,10 @@ sub ZERO_OR_1_
 
 sub     CHECK_FEATURE_OPTION
 {
-    my $x = shift(@_);
-    if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
-            die ("Cannot identify ProjectPlatformSubdir");
-    }
+	my $x = shift(@_);
+	if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
+			die ("Cannot identify ProjectPlatformSubdir");
+	}
 }
 
 sub	CHECK_OPTIONS_
@@ -1505,7 +1513,7 @@ sub	CHECK_OPTIONS_
 	if (not exists ($params{$PROJECTPLATFORMSUBDIR})) {
 		die ("Unrecognized --platfrom argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
 	}
-  	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
+	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
 
 sub	ParseCommandLine_
@@ -1527,15 +1535,15 @@ sub	ParseCommandLine_
 		$configurationName  = $ARGV[0];
 	}
 	else {
-        print ("Expected configuration name as first argument\n");
-        DoHelp_ (1);
+		print ("Expected configuration name as first argument\n");
+		DoHelp_ (1);
 	}
 	if ((lc ($configurationName) eq "-h") || (lc ($configurationName) eq "--h") || (lc ($configurationName) eq "-help")  || (lc ($configurationName) eq "--help")) { 
-        DoHelp_ (0);
+		DoHelp_ (0);
 	}
 	elsif ($configurationName =~ /^\-/) { 
-        print ("Expected configuration name (got $configurationName) as first argument\n");
-        DoHelp_ (1);
+		print ("Expected configuration name (got $configurationName) as first argument\n");
+		DoHelp_ (1);
 	}
 
 	ParseEnvVarsToSetupInfluencedVariables_();
@@ -1560,9 +1568,9 @@ my @GetDefaultCFLAGSorCXXFLAGS_flags;
 my @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
 sub GetDefaultCFLAGSorCXXFLAGS_
 {
-    my @flags  = @GetDefaultCFLAGSorCXXFLAGS_flags;
-    my @flagValues2Remove  = @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
-    my $doCFLAGS = shift(@_);
+	my @flags  = @GetDefaultCFLAGSorCXXFLAGS_flags;
+	my @flagValues2Remove  = @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
+	my $doCFLAGS = shift(@_);
 	#print "entering GetDefaultCFLAGSorCXXFLAGS_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
 
 	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
@@ -1967,7 +1975,7 @@ sub	WriteConfigFile_
 {
 	my @appArgs = GetAppArgs_ ();
 
-    my $configFileName = shift(@_);
+	my $configFileName = shift(@_);
 
 	open(OUT,">$configFileName");
 	print (OUT "<!--This file autogenerated by the configure command: see Configure-Command-Line, modify it, and re-run-->\n\n");
@@ -2023,7 +2031,7 @@ sub	WriteConfigFile_
 			print (OUT "    <qFeatureFlag_OpenSSL_ExtraArgs>$FEATUREFLAG_OpenSSLExtraArgs</qFeatureFlag_OpenSSL_ExtraArgs>\n");
 		}
 		else {
-            die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use");
+			die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use");
 		}
 	}
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
