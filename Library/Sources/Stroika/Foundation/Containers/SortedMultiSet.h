@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _SortedMultiSetRepSharedPtr = Memory::SharedPtr<_IRep>;
+        using _SortedMultiSetRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
         using _SortedMultiSetRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
