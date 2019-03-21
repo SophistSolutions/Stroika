@@ -16,55 +16,20 @@ namespace Stroika::Foundation::Traversal {
     template <typename SHARED_T, typename... ARGS_TYPE>
     inline auto IteratorBase::MakeSmartPtr (ARGS_TYPE&&... args) -> PtrImplementationTemplate<SHARED_T>
     {
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        if constexpr (kIteratorUsesStroikaSharedPtr) {
-            return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
-        }
-        else {
-            return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
-        }
-#else
         return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
-#endif
     }
-
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-    /*
-     ********************************************************************************
-     ****************** Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_ *******************
-     ********************************************************************************
-     */
-    template <typename T, typename ITERATOR_TRAITS>
-    inline typename IteratorBase::PtrImplementationTemplate<typename Iterator<T, ITERATOR_TRAITS>::IRep> Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_::operator() (const IRep& t) const
-    {
-        return Iterator<T, ITERATOR_TRAITS>::Clone_ (t);
-    }
-#endif
 
     /*
      ********************************************************************************
      *************************** Iterator<T, ITERATOR_TRAITS> ***********************
      ********************************************************************************
      */
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const RepSmartPtr& rep)
-        : fIterator_ (rep)
-        , fCurrent_ ()
-    {
-        RequireNotNull (rep.get ());
-        // Reason for cast stuff is to avoid Clone if unneeded.
-        const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
-    }
-#endif
-#if !qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-    template <typename T, typename ITERATOR_TRAITS>
-    Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
         : fIterator_ (src.fIterator_ == nullptr ? nullptr : Clone_ (*src.fIterator_))
         , fCurrent_ (src.fCurrent_)
     {
     }
-#endif
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep)
         : fIterator_ (move (rep))
@@ -86,7 +51,6 @@ namespace Stroika::Foundation::Traversal {
     {
         Assert (Done ());
     }
-#if !qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     template <typename T, typename ITERATOR_TRAITS>
     Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
     {
@@ -98,7 +62,6 @@ namespace Stroika::Foundation::Traversal {
             }
         return *this;
     }
-#endif
     template <typename T, typename ITERATOR_TRAITS>
     inline typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep ()
     {
@@ -211,13 +174,8 @@ namespace Stroika::Foundation::Traversal {
             return true;
         }
         Assert (not lDone and not rDone);
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = fIterator_.cget ();
-        const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.cget ();
-#else
         const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = fIterator_.get ();
         const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.get ();
-#endif
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
     }

@@ -83,22 +83,10 @@
  *                      and sets a flag, so the only cost when this doesn't work is checking that bool flag.
  *                      And the benefit in the more common case is you avoid the virtual function call! so the it++ can be
  *                      inlined (a big win oftne times).
+ *
  */
 
 namespace Stroika::Foundation::Traversal {
-
-#ifndef qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-//#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 1
-#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 0
-#endif
-
-    /**
-     *  You can configure this to always use shared_ptr using ./configure, but by default
-     *  kIteratorUsesStroikaSharedPtr uses whichever implementation is faster.
-     *
-     *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
-     */
-    constexpr bool kIteratorUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr and qStroika_Foundation_Traversal_Iterator_UseSharedByValue;
 
     /**
      *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
@@ -125,9 +113,10 @@ namespace Stroika::Foundation::Traversal {
     struct IteratorBase {
     public:
         /**
+         *  Historically, PtrImplementationTemplate has used a variety of different packaging types, like SharedByValue, or shared_ptr, or SharedPtr.
          */
         template <typename SHARED_T>
-        using PtrImplementationTemplate = conditional_t<qStroika_Foundation_Traversal_Iterator_UseSharedByValue, conditional_t<kIteratorUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>, unique_ptr<SHARED_T>>;
+        using PtrImplementationTemplate = unique_ptr<SHARED_T>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
@@ -256,6 +245,24 @@ namespace Stroika::Foundation::Traversal {
      *          and probabe virtual function calls, the current approach of freezing / copying
      *          on iteration seemed better.
      *
+     *  \note   Design Note
+     *          Until Stroika 2.1d6, Iterator<> used CopyOnWrite (COW) - SharedByValue, instead of unique_ptr.
+     *
+     *          SharedByValue costs a bit more when the iterators are never copied. But saves alot of cost when iterators
+     *          are copied (because of the machinery for tracking container iterators for 'safe iteration' patching mostly).
+     *
+     *          I never did adequate testing, so I'm not sure of this, but I think the situations where you copy iterators
+     *          are quite rare, and you can be careful to minimize them. And so this path - using unique_ptr - is probably better.
+     *          If in doubt, go back to 2.1d5/2.d6 and performance test!
+     *
+     *          But sadly somewhere between 2.1d5 and 2.1d22, I broke support for qStroika_Foundation_Traversal_Iterator_UseSharedByValue=1.
+     *          Not worth fixing, so I just removed the feature in 2.1d22.
+     *
+     *          I DID run some simple tests to see how often we even use the Clone method. It turns out - quite rarely.
+     *          And most can be eliminated by slightly better Move constructor support on the iterator class.
+     *
+     *          Created @todo https://stroika.atlassian.net/browse/STK-690 - Add / Improve MOVE constructor usage for Iterator class (now that copy always clones)
+     *
      *  @see Iterable<T>
      *
      *  \note   \em Thread-Safety
@@ -316,22 +323,6 @@ namespace Stroika::Foundation::Traversal {
          */
         [[deprecated ("use IteratorRepSmartPtr since version 2.1d6")]] typedef RepSmartPtr IteratorRepSharedPtr;
 
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-    private:
-        struct Rep_Cloner_ {
-            RepSmartPtr operator() (const IRep& t) const;
-        };
-#endif
-
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-    public:
-        /**
-         *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
-         *          by users).
-         */
-        using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, RepSmartPtr, Rep_Cloner_>>;
-#endif
-
     private:
         /*
          *  Mostly internal type to select a constructor for the special END iterator.
@@ -352,15 +343,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req RequireNotNull (rep.get ())
          */
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        explicit Iterator (const RepSmartPtr& rep);
-#endif
         explicit Iterator (RepSmartPtr&& rep);
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        Iterator (const Iterator& src) = default;
-#else
         Iterator (const Iterator& src);
-#endif
         constexpr Iterator (nullptr_t);
         Iterator () = delete;
 
@@ -371,11 +355,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Iterators are safely copyable, preserving their current position.
          */
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        nonvirtual Iterator& operator= (const Iterator& rhs) = default;
-#else
         nonvirtual Iterator& operator= (const Iterator& rhs);
-#endif
 
     public:
         /**
@@ -645,11 +625,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual const IRep& ConstGetRep () const;
 
     private:
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        SharedByValueRepType fIterator_;
-#else
-        unique_ptr<IRep>     fIterator_;
-#endif
+        unique_ptr<IRep> fIterator_;
 
     private:
         optional<T> fCurrent_;
