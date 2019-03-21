@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
         if constexpr (!kIterableUsesStroikaSharedPtr) {
-            Require (rep == nullptr); // after move
+            Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
         }
     }
     template <typename T>
