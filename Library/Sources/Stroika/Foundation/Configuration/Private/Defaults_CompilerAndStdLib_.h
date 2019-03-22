@@ -129,6 +129,7 @@
 #define _MS_VS_2k19_16Pt0Pt0pre2_ 192027305
 #define _MS_VS_2k19_16Pt0Pt0pre3_ 192027323
 #define _MS_VS_2k19_16Pt0Pt0pre4_ 192027404
+#define _MS_VS_2k19_16Pt0Pt0pre43_ 192027508
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -147,9 +148,9 @@
 #endif
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt0_
 // check which pointer-version of MSVC2k17 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre4_
+#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre43_
 // @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-pre4 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-preview4.3 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -380,13 +381,15 @@ ABORTING...
 #define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #elif defined(_MSC_VER)
 // verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// SEEMS to work or maybe I dont have well recorded the problem. But no obvious problems with: _MS_VS_2k19_16Pt0Pt0pre43_
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
 #else
 #define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy 0
 #endif
 
 #endif
 
+// Run regtest 35 (Foundation::Execution::Exceptions) to see if fails
 #ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
 
 #if defined(__GNUC__)
@@ -611,6 +614,7 @@ lose those deprecated interfaces.
 // verified broken _MS_VS_2k19_16Pt0Pt0pre2_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre3_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre4_
+// verified broken _MS_VS_2k19_16Pt0Pt0pre43_
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
@@ -849,8 +853,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MSC_VER_2k19_16Pt0_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
-// UNTESTED
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
+// still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (running from visual studio gui)
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre43_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -900,6 +904,7 @@ WORKAROUND:
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
@@ -1109,6 +1114,7 @@ NOTE:
 #endif
 
 /*
+ *  Release-U-32 BUILDS:
  *
  *  LINK : warning C4744: 'static struct std::atomic<void *> Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::sHeadLink_' has different type in 'c:\sandbox\stroika\devroot\library\sour
 ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\samples\ssdpclient\sources\ssdpclient.cpp': 'struct (4 bytes)' and '__declspec(align(4)) struct (4 bytes)
@@ -1124,6 +1130,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_
 #define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
@@ -1251,6 +1258,7 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
+// UNTESTED _MS_VS_2k19_16Pt0Pt0pre43_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
@@ -1367,6 +1375,7 @@ namespace {
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
+// UNTESTED _MS_VS_2k19_16Pt0Pt0pre43_
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
