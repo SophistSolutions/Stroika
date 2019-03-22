@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Valgrind.h"
+#include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -103,7 +104,9 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test_1_SimpleConnnectionTests_");
+            Debug::TraceContextBumper     ctx ("{}::Test_1_SimpleConnnectionTests_");
+            constexpr Execution::Activity kActivity_{L"Test_1_SimpleConnnectionTests_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
                 DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
@@ -311,7 +314,9 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test_2_SimpleFetch_httpbin_");
+            Debug::TraceContextBumper     ctx ("{}::Test_2_SimpleFetch_httpbin_");
+            constexpr Execution::Activity kActivity_{L"Test_2_SimpleFetch_httpbin_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
                 DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
@@ -358,7 +363,9 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test3_TextStreamResponse_");
+            Debug::TraceContextBumper     ctx ("{}::Test3_TextStreamResponse_");
+            constexpr Execution::Activity kActivity_{L"Test3_TextStreamResponse_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
                 DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
@@ -396,7 +403,9 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test_4_RefDocsTests_");
+            Debug::TraceContextBumper     ctx ("{}::Test_4_RefDocsTests_");
+            constexpr Execution::Activity kActivity_{L"Test_4_RefDocsTests_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
             try {
                 Private_::T1_get_ ();
             }
@@ -442,8 +451,10 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test_5_SSLCertCheckTests_");
-            Connection::Options       o = kDefaultTestOptions_;
+            Debug::TraceContextBumper     ctx ("{}::Test_5_SSLCertCheckTests_");
+            constexpr Execution::Activity kActivity_{L"Test_5_SSLCertCheckTests_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
+            Connection::Options           o = kDefaultTestOptions_;
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
                 Private_::T1_get_ (o);
