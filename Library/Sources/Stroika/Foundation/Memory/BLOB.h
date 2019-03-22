@@ -132,8 +132,10 @@ namespace Stroika::Foundation::Memory {
         static BLOB Raw (const T* s, const T* e);
         template <typename T>
         static BLOB Raw (const T* s, size_t sz);
-        static BLOB Raw (const char* s);
-        static BLOB Raw (const wchar_t* s);
+        template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>* = nullptr>
+        static BLOB Raw (const T* s);
+        template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>* = nullptr>
+        static BLOB Raw (const basic_string<T>& s);
         template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
         static BLOB Raw (const TRIVIALLY_COPYABLE_T& s);
 

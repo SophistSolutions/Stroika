@@ -151,15 +151,16 @@ namespace Stroika::Foundation::Memory {
     {
         return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (s + sz));
     }
-    inline BLOB BLOB::Raw (const char* s)
+    template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>*>
+    inline BLOB BLOB::Raw (const T* s)
     {
         RequireNotNull (s);
-        return Raw (s, s + strlen (s));
+        return Raw (s, s + char_traits<T>::length (s));
     }
-    inline BLOB BLOB::Raw (const wchar_t* s)
+    template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>*>
+    inline BLOB BLOB::Raw (const basic_string<T>& s)
     {
-        RequireNotNull (s);
-        return Raw (s, s + ::wcslen (s));
+        return Raw (s.c_str (), s.c_str () + s.length ());
     }
     template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>*>
     inline BLOB BLOB::Raw (const TRIVIALLY_COPYABLE_T& s)
