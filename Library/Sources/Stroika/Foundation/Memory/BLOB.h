@@ -122,22 +122,22 @@ namespace Stroika::Foundation::Memory {
          *  Like a constructor, but where you clearly name the intention of how to interpret the
          *  bytes.
          *
-         *  This does little more than a cast (taking into account sizeof T)
+         *  This does little more than a cast (taking into account sizeof T).
          *
-         *  Overloads taking const char*, or const wchar_t* only, are assumed to be C-Strings (NUL-terminated).
+         *  Overloads taking const char*, or const wchar_t* only (char_traits<T>), are assumed to be C-Strings (NUL-terminated).
          *
-         *  The overload taking an OBJECT as argument requires it be 'trivially_copyable' - just like memcpy()
+         *  \note ALL overloads require T is be 'trivially_copyable' - just like memcpy()
          */
-        template <typename T>
+        template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
         static BLOB Raw (const T* s, const T* e);
-        template <typename T>
+        template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
         static BLOB Raw (const T* s, size_t sz);
         template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>* = nullptr>
         static BLOB Raw (const T* s);
         template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>* = nullptr>
         static BLOB Raw (const basic_string<T>& s);
-        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
-        static BLOB Raw (const TRIVIALLY_COPYABLE_T& s);
+        template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
+        static BLOB Raw (const T& s);
 
     protected:
         struct _IRep;

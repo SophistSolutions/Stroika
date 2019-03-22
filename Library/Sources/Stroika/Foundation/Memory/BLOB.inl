@@ -141,13 +141,13 @@ namespace Stroika::Foundation::Memory {
     {
         return Hex (s.c_str ());
     }
-    template <typename T>
+    template <typename T, enable_if_t<is_trivially_copyable_v<T>>* >
     inline BLOB BLOB::Raw (const T* s, const T* e)
     {
         return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (e));
     }
-    template <typename T>
-    inline BLOB BLOB::Raw (const T* s, size_t sz)
+	template <typename T, enable_if_t<is_trivially_copyable_v<T>>* >
+	inline BLOB BLOB::Raw (const T* s, size_t sz)
     {
         return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (s + sz));
     }
@@ -162,10 +162,10 @@ namespace Stroika::Foundation::Memory {
     {
         return Raw (s.c_str (), s.c_str () + s.length ());
     }
-    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>*>
-    inline BLOB BLOB::Raw (const TRIVIALLY_COPYABLE_T& s)
+    template <typename T, enable_if_t<is_trivially_copyable_v<T>>*>
+    inline BLOB BLOB::Raw (const T& s)
     {
-        return BLOB (reinterpret_cast<const byte*> (&s), reinterpret_cast<const byte*> (&s + 1));
+        return Raw (&s, &s + 1);
     }
     inline BLOB BLOB::Attach (const byte* start, const byte* end)
     {
