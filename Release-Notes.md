@@ -7,6 +7,100 @@ to be aware of when upgrading.
 History
 =======
 
+## 2.1d22 {2019-03-23}
+
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d21...v2.1d22
+
+- Foundation::Configuration
+  - new Configuration::Platform::Windows::RegistryKey (readonly windows registry access api);
+    Redo various bits of code that had custom registry access to vector to this; redo
+    sample apps that used Led::OptionsFileXXX to use DataExchange::OptionsFile
+  - Deprecated fOperatingSystem and GetSystemConfiguration_OperatingSystem () functions: replaced wtih fActualOperatingSystem and fApparentOperatingSystem, and GetSystemConfiguration_ActualOperatingSystem () and GetSystemConfiguration_ApparentOperatingSystem ()
+  - added fPrettyNameWithVersionDetails to Configuraiton::OperatingSystem object; and print it in debug output; and decent cut at printing differnt os versions/info for actual versus apparent (on windows)
+  - static_assert on EnumNames to try and make for clearer compiler error messages
+
+- Foundation::DataExchange
+  - Added VariantValue::operator bool () - returns true if value is not null (not same as !empty()); because we define empty sensibly but broadly
+  - ObjectVarinatMapper::MakeCommonSerializer<> support for Memory::BLOB
+
+- Debug
+  - **fixed assert code in Debug/AssertExternallySynchronizedLock for case of self-assign**; and addred regtest for this
+
+- Foundation::Exceptions
+  - translate a few more exceptions into warnings in IO::Network::Transfer regtest
+
+- Execution
+  - ModuleGetterSetter now uses RWSyncrhonized, so for gets, will just use shared_lock
+    (except first time when initializing)
+
+- Foundation::Memory
+  - **fixed MAJOR bug with SmallStackBuffer** - copying operator= (const SmallStackBuffer& rhs) - neglected to set fSize!!!; triggered subtlie bug in LedIt of all places (with its caching code cuz LRUCache uses SmallStackBuffer); and added regtest
+  - BLOB::As ()/0/1 supports converting to T whwere T is trivially_copyable (and a few more) - documented
+  - BLOB::Raw() object overloads all check is_trivially_copyable, and better overloads of Raw (trivailly copyable object)
+    (not backward compatible change to BLOB::Raw() template overload - instead of taking iterator (T), take T itself and assume T is trivially_copyable (require it). Never worked right with actual iterator)
+  - allow operator= (MOVE) for SmallStackBuffer (still not optimized)
+
+- Traversal
+  - DELETED support for qStroika_Foundation_Traversal_Iterator_UseSharedByValue; kIteratorUsesStroikaSharedPtr: the former I broke accidentally and decdied no worth resurrecting. I improved docs on iterators; and opened jira ticket to track fixing MOVE ctors (slight performance improvement) - https://stroika.atlassian.net/browse/STK-690
+
+- Frameworks::Led
+  - Mark OptionsSupport.h (Led and  OptionsFileHelper as deprecated - was windows only using registry
+  - minor tweak to PartitioningTextImager cache size use (3 instead of 1 for small cuz we do grab a few different even on small buffer
+
+- RegressionTests
+  - new test harness TestHarness::WarnTestIssue and  VerifyTestResultWarning(); used these to just issue warning on network errors and timing result failures
+
+  - use activity code in IO::Network::Transfer regression test (43) - to make for better warning messages
+
+- Compilers & Components
+  - Versions
+    - gcc 8.3 support
+    - vs2k19-preview 4.3 support
+  - Bug workarounds
+    - qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy and workaround
+    - fixed qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy workarounds - still needed on VS2k19, but they bad workarounds preventing tested turning kSharedPtr_IsFasterThan_shared_ptr off
+
+- Samples
+  - new AppSettings sample
+  - rewrote Options support for LedIt, ActiveLedIt, LedLineIt samples to use OptionsFile/ModuleGetterSetter instead of soon to be deprecated OptionsFileHelper
+  - docs on ActiveLedIt (running under debugger)
+  - lose DemoMode support from ActiveLedIt - since its no longer commercial
+
+- Build System Scripts
+  - Add configure option EXTRA_CONFIGURE_ARGS, and tabified configure source
+  - lose top level makefile support for DEFAULT_CONFIGURATION_ARGS, and instead DOCUMENT that configure supports EXTRA_CONFIGURE_ARGS that does about the same thing
+
+- ThirdPartyComponents
+  - openssl 1.1.1b
+
+- HistoricalPerformanceRegressionTestResults/
+
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, MacOS_XCode10}-2.1d22.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d22-OUT.txt
+  - vc++2k17 (15.9.8)
+  - vc++2k19 (16.0.0-preview4.3)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10
+  - gcc 7, gcc 8
+  - clang++-6, clang++-7 (ubuntu) {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy)
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+
+----
+
 ## 2.1d21 {2019-03-10}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d20...v2.1d21
