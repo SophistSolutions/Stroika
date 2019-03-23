@@ -150,11 +150,22 @@ namespace Stroika::Foundation::Execution {
     class DeclareActivity {
     public:
         /**
-         *  The caller must always declare an Activity object whose address can be taken, and whose lifetime exceeds that of the DeclareActivity object.
+         *  The caller must always declare an Activity object whose address can be taken, 
+         *  and whose lifetime exceeds that of the DeclareActivity object.
+         *
+         *  \note   the Activity* argument MAY be nullptr, in which case this does nothing.
+         *
+         *          This is allowed to facilitate examples like:
+         *              \code
+         *                  DeclareActivity declareActivity { flag? &kSomeActivity_? nullptr }; // so we only conditionally declare the activity
+         *              \endcode
+         *
+         *          I considered using optional<ACTIVITY> - but tricky since we pass in pointer - and really not much point. This has practically zero
+         *          overhead, and is easy enough to understand and use.
          */
         DeclareActivity ()                       = delete;
         DeclareActivity (const DeclareActivity&) = delete;
-        DeclareActivity (const ACTIVITY* arg) noexcept;
+        DeclareActivity (const ACTIVITY* activity) noexcept;
         ~DeclareActivity ();
 
     private:

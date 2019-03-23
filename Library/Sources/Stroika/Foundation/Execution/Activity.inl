@@ -45,18 +45,22 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename ACTIVITY>
-    inline DeclareActivity<ACTIVITY>::DeclareActivity (const ACTIVITY* arg) noexcept
-        : fNewTopOfStackElt_{arg, Private_::Activities_::sTop_}
+    inline DeclareActivity<ACTIVITY>::DeclareActivity (const ACTIVITY* activity) noexcept
+        : fNewTopOfStackElt_{activity, Private_::Activities_::sTop_}
     {
         // no locks needed because the variables are thread local
-        Private_::Activities_::sTop_ = &fNewTopOfStackElt_;
+        if (activity != nullptr) {
+            Private_::Activities_::sTop_ = &fNewTopOfStackElt_;
+        }
     }
     template <typename ACTIVITY>
     inline DeclareActivity<ACTIVITY>::~DeclareActivity ()
     {
-        // no locks needed because the variables are thread local
-        Assert (Private_::Activities_::sTop_ == &fNewTopOfStackElt_);
-        Private_::Activities_::sTop_ = Private_::Activities_::sTop_->fPrev;
+        if (fNewTopOfStackElt_.fActivity != nullptr) {
+            // no locks needed because the variables are thread local
+            Assert (Private_::Activities_::sTop_ == &fNewTopOfStackElt_);
+            Private_::Activities_::sTop_ = Private_::Activities_::sTop_->fPrev;
+        }
     }
 
 }
