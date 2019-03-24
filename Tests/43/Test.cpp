@@ -105,7 +105,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx ("{}::Test_1_SimpleConnnectionTests_");
-            constexpr Execution::Activity kActivity_{L"Test_1_SimpleConnnectionTests_"sv};
+            constexpr Execution::Activity kActivity_{L"running Test_1_SimpleConnnectionTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
@@ -315,7 +315,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx ("{}::Test_2_SimpleFetch_httpbin_");
-            constexpr Execution::Activity kActivity_{L"Test_2_SimpleFetch_httpbin_"sv};
+            constexpr Execution::Activity kActivity_{L"running Test_2_SimpleFetch_httpbin_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
@@ -364,7 +364,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx ("{}::Test3_TextStreamResponse_");
-            constexpr Execution::Activity kActivity_{L"Test3_TextStreamResponse_"sv};
+            constexpr Execution::Activity kActivity_{L"running Test3_TextStreamResponse_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
@@ -404,7 +404,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx ("{}::Test_4_RefDocsTests_");
-            constexpr Execution::Activity kActivity_{L"Test_4_RefDocsTests_"sv};
+            constexpr Execution::Activity kActivity_{L"running Test_4_RefDocsTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             try {
                 Private_::T1_get_ ();
@@ -452,7 +452,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx ("{}::Test_5_SSLCertCheckTests_");
-            constexpr Execution::Activity kActivity_{L"Test_5_SSLCertCheckTests_"sv};
+            constexpr Execution::Activity kActivity_{L"running Test_5_SSLCertCheckTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             Connection::Options           o = kDefaultTestOptions_;
             try {
