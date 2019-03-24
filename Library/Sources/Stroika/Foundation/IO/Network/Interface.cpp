@@ -385,7 +385,6 @@ namespace {
                 return nullopt;
             }
             constexpr uint64_t kMegabit_ = 1000 * 1000;
-            DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
             switch (ethtool_cmd_speed (&edata)) {
                 case SPEED_10:
                     return 10 * kMegabit_;
