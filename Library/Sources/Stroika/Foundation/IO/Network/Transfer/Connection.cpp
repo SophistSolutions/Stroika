@@ -121,7 +121,7 @@ Response Connection::OPTIONS (const Mapping<String, String>& extraHeaders)
 }
 
 namespace {
-	constexpr bool kDeclareActivitiesFlag_Default_{ true }; //fDeclareActivities
+    constexpr bool kDeclareActivitiesFlag_Default_{true};
 }
 
 Response Connection::Send (const Request& r)
