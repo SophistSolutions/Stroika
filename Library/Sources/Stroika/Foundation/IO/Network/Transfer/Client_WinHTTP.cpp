@@ -100,6 +100,10 @@ public:
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
 public:
+    virtual Options GetOptions () const override
+    {
+        return fOptions_;
+    }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URL                 GetURL () const override;

@@ -86,6 +86,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         /**
          */
+        nonvirtual Options GetOptions () const;
+
+    public:
+        /**
+         */
         nonvirtual URL GetURL () const;
 
     public:
@@ -223,6 +228,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         bool fSupportSessionCookies{true};
 
         /**
+         *  If true, the Execution::DeclareActivity API will be used during some selected operations which will produce
+         *  more detailed exception messages (mostly include url) when exceptions happen.
+         */
+        optional<bool> fDeclareActivities{};
+
+        /**
          *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).
          *  Disabled by default because curl and WinHTTP disable by default (they must have thought this out better than me).
          */
@@ -325,6 +336,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual _IRep& operator= (const _IRep&) = delete;
 
     public:
+        virtual Options             GetOptions () const                      = 0;
         virtual URL                 GetURL () const                          = 0;
         virtual void                SetURL (const URL& url)                  = 0;
         virtual DurationSecondsType GetTimeout () const                      = 0;

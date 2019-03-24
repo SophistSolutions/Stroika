@@ -5,8 +5,8 @@
 
 #include "../../../Characters/Format.h"
 #include "../../../Characters/StringBuilder.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Cryptography/Encoding/Algorithm/Base64.h"
+#include "../../../Execution/Activity.h"
 #include "../../../Execution/RequiredComponentMissingException.h"
 #include "../../../Execution/Throw.h"
 #include "../../../Streams/TextReader.h"
@@ -17,6 +17,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
@@ -119,13 +120,19 @@ Response Connection::OPTIONS (const Mapping<String, String>& extraHeaders)
     return Send (r);
 }
 
+namespace {
+	constexpr bool kDeclareActivitiesFlag_Default_{ true }; //fDeclareActivities
+}
+
 Response Connection::Send (const Request& r)
 {
-    Response response = fRep_->Send (r);
+    const LazyEvalActivity activity{[&]() { return L"sending request to " + Characters::ToString (this->GetURL ()); }};
+    DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
+    Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ())
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Exception (response));
+            Throw (Exception (response));
         }
     return response;
 }

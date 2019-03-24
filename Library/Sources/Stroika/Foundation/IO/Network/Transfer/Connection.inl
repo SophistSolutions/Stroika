@@ -46,6 +46,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         : fRep_ (rep)
     {
     }
+    inline Connection::Options Connection::GetOptions () const
+    {
+        return fRep_->GetOptions ();
+    }
     inline URL Connection::GetURL () const
     {
         return fRep_->GetURL ();
