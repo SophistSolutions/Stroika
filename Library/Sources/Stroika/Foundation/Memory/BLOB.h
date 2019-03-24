@@ -315,6 +315,11 @@ namespace Stroika::Foundation::Memory {
         /**
          *  @see Characters::ToString()
          *  Return a debug-friendly, display version of the current BLOB. This is not guaranteed parseable or usable except for debugging.
+         *
+         *  \note this displays the BLOB as hex bytes. To interpret as a string, try 
+         *      \code
+         *          Assert (TextReader::New (blob).ReadAll () == L"hello world");
+         *      \endcode
          */
         nonvirtual Characters::String ToString (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
 
