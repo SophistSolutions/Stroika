@@ -52,13 +52,13 @@ namespace Stroika::Foundation::Streams {
      *
      *  \par Example Usage
      *      \code
-     *      for (String line : TextReader::New (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
-     *      }
+     *          for (String line : TextReader::New (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
+     *          }
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      Assert (TextReader { String (L"hello world") }.ReadAll () == L"hello world");
+     *          Assert (TextReader::New (String (L"hello world")).ReadAll () == L"hello world");
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
