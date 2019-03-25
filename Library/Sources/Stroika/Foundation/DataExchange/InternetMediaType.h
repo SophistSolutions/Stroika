@@ -25,7 +25,9 @@ namespace Stroika::Foundation::DataExchange {
      */
     class InternetMediaType {
     public:
-        explicit InternetMediaType (const String& ct = String ());
+        InternetMediaType ()                         = default;
+        InternetMediaType (const InternetMediaType&) = default;
+        explicit InternetMediaType (const String& ct);
 
     public:
         template <typename T>
