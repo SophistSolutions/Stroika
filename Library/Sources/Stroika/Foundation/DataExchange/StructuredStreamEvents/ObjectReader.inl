@@ -912,6 +912,16 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return ListOfObjectsReader<vector<T>>::AsFactory (name);
     }
     template <typename T>
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Collection<T>*)
+    {
+        return ListOfObjectsReader<Collection<T>>::AsFactory ();
+    }
+    template <typename T>
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Collection<T>*, const Name& name)
+    {
+        return ListOfObjectsReader<Collection<T>>::AsFactory (name);
+    }
+    template <typename T>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Sequence<T>*)
     {
         return ListOfObjectsReader<Sequence<T>>::AsFactory ();

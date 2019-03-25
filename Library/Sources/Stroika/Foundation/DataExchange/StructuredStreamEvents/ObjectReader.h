@@ -147,6 +147,7 @@
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader {
 
     using Characters::String;
+    using Containers::Collection;
     using Containers::Mapping;
     using Containers::Sequence;
     using Containers::Set;
@@ -278,6 +279,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *      o   Time::Duration
          *      o   Mapping<Key,Value>
          *      o   Optional<T>
+         *      o   Collection<T>
          *      o   Sequence<T>
          *      o   vector<T>
          *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
@@ -386,6 +388,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         static ReaderFromVoidStarFactory MakeCommonReader_ (const vector<T>*);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const vector<T>*, const Name& name);
+        template <typename T>
+        static ReaderFromVoidStarFactory MakeCommonReader_ (const Collection<T>*);
+        template <typename T>
+        static ReaderFromVoidStarFactory MakeCommonReader_ (const Collection<T>*, const Name& name);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Sequence<T>*);
         template <typename T>
