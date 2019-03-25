@@ -10,9 +10,13 @@
 #include "../../Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "../../Foundation/DataExchange/XML/SAXReader.h"
 #include "../../Foundation/DataExchange/XML/WriterUtils.h"
+#include "../../Foundation/Streams/TextReader.h"
 #include "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 #include "DeviceDescription.h"
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 using std::byte;
 
@@ -174,8 +178,6 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
     using namespace Stroika::Foundation::DataExchange::XML;
 
-    // @todo - Note - Based on UPnP::Serialize - so we should better source this data/info
-
     static const ObjectReader::Registry kTypesRegistry_ = []() {
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
@@ -183,14 +185,8 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<URL> ();
         registry.AddCommonType<optional<URL>> ();
 
-// @todo  INCOMPLETE - InternetMediaType and two 'list' types incomplete
-//  InternetMediaType fMimeType;
-#if 0
-        Collection<Icon> fIcons;
-#endif
-#if 0
-        Collection<Service> fServices;
-#endif
+        // @todo  INCOMPLETE - InternetMediaType and two 'list' types incomplete
+        //  InternetMediaType fMimeType;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         registry.AddClass<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
             //       {Name{L"mimetype"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fMimeType)},
@@ -202,24 +198,26 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddClass<DeviceDescription::Service> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"serviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceType)},
             {Name{L"serviceId"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceID)},
-            //{ Name{ L"SCPDURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fSCPDURL) },
-            //{ Name{ L"controlURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fControlURL) },
-            //{ Name{ L"eventSubURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fEventSubURL) },
+            {Name{L"SCPDURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fSCPDURL)},
+            {Name{L"controlURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fControlURL)},
+            {Name{L"eventSubURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fEventSubURL)},
         });
+        registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{L"icon"});
+        registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{L"service"});
         registry.AddClass<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"presentationURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
             {Name{L"deviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
             {Name{L"manufacturer"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
             {Name{L"friendlyName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
-            //          { Name{ L"manufacturerURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufacturingURL) },
+            {Name{L"manufacturerURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufacturingURL)},
             {Name{L"modelDescription"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelDescription)},
             {Name{L"modelName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelName)},
             {Name{L"modelNumber"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
-            //  { Name{ L"modelURL" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL) },
-            {Name{L"serialNumber"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
+            {Name{L"modelURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL)},
+            {Name{L"serialNum"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
             {Name{L"UPC"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUPC)},
-            //      { Name{ L"icons" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons) },
-            //      { Name{ L"serviceList" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices) },
+            {Name{L"iconList"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
+            {Name{L"serviceList"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return registry;
@@ -230,5 +228,9 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         ObjectReader::IConsumerDelegateToContext ctx{kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{L"device"})};
         XML::SAXParse (b, ctx);
     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"xml data: %s", Streams::TextReader::New (b).ReadAll ().c_str ());
+    DbgTrace (L"deviceDescription: %s", Characters::ToString (deviceDescription).c_str ());
+#endif
     return deviceDescription;
 }
