@@ -31,20 +31,34 @@ namespace Stroika::Frameworks::UPnP {
 
     /**
      * high level device description - from ssdp. This is the BASIC device info
-     * whcih appears to the XML file (poitned to by Device location field).
+     * whcih appears to the XML file (pointed to by Device location field).
+     *
+     *  This is based on http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf, page 43-46 apx
      */
     struct DeviceDescription {
-        optional<URL> fPresentationURL;
-        String        fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
-        String        fManufactureName;
-        String        fFriendlyName;
-        optional<URL> fManufacturingURL;
-        String        fModelDescription;
-        String        fModelName;
-        String        fModelNumber;
-        optional<URL> fModelURL;
-        String        fSerialNumber;
-        String        fUPC;
+        optional<URL>    fPresentationURL;
+        String           fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
+        String           fManufactureName;
+        String           fFriendlyName;
+        optional<URL>    fManufacturingURL;
+        optional<String> fModelDescription;
+        String           fModelName;
+        optional<String> fModelNumber;
+        optional<URL>    fModelURL;
+        optional<String> fSerialNumber;
+        /**
+         *  Unique Device Name. Universally-unique identifier for the device, whether root or embedded.
+         *  MUST be the same over time for a specific device instance (i.e., MUST survive reboots).MUST match the
+         *  field value of the NT header field in device discovery messages.MUST match the prefix of the USN
+         *  header field in all discovery messages.
+         */
+        String fUDN;
+
+        /*
+         * OPTIONAL. Universal Product Code. 12-digit, all-numeric code that identifies the consumer package.
+         * Managed by the Uniform Code Council. Specified by UPnP vendor. Single UPC.
+         */
+        optional<String> fUPC;
 
         /**
          */
@@ -90,7 +104,7 @@ namespace Stroika::Frameworks::UPnP {
 
     /*
     */
-    Memory::BLOB Serialize (const Device& d, const DeviceDescription& dd);
+    Memory::BLOB Serialize (const DeviceDescription& dd);
 
     /*
     */

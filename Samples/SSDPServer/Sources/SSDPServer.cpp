@@ -34,12 +34,12 @@ using Server::BasicServer;
 namespace {
     struct WebServerForDeviceDescription_ {
 
-        WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const Device& d, const DeviceDescription& dd)
+        WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const DeviceDescription& dd)
             : fListener ()
         {
             // @todo Consider simplifying this using WebServer Framework more fully - Router or Interceptor
-            auto onConnect = [d, dd](const ConnectionOrientedStreamSocket::Ptr& acceptedSocketConnection) {
-                Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, d, dd]() {
+            auto onConnect = [dd](const ConnectionOrientedStreamSocket::Ptr& acceptedSocketConnection) {
+                Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, dd]() {
                     // If the URLs are served locally, you may want to update the URL based on
                     // IO::Network::GetPrimaryInternetAddress ()
                     Connection conn{acceptedSocketConnection,
@@ -48,7 +48,7 @@ namespace {
                                             [=](Message* m) {
                                                 Response* response = m->PeekResponse ();
                                                 response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
-                                                response->write (Stroika::Frameworks::UPnP::Serialize (d, dd));
+                                                response->write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_XML);
                                             })}};
                     conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
@@ -76,7 +76,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         Device d;
         d.fLocation.SetPortNumber (portForOurWS);
         d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"_k);
-        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String_Constant (L"315CAAE0-1335-57BF-A178-24C9EE756627"));
+        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627"_k);
 
         DeviceDescription deviceInfo;
         deviceInfo.fPresentationURL  = URL::Parse (L"http://www.sophists.com/"_k);
@@ -89,9 +89,10 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         deviceInfo.fModelNumber      = L"model number"_k;
         deviceInfo.fModelURL         = URL::Parse (L"http://www.sophists.com/"_k);
         deviceInfo.fSerialNumber     = L"manufacturer's serial number"_k;
+        deviceInfo.fUDN              = L"uuid:" + d.fDeviceID;
 
-        WebServerForDeviceDescription_ deviceWS (portForOurWS, d, deviceInfo);
-        BasicServer                    b (d, deviceInfo, BasicServer::FrequencyInfo ());
+        WebServerForDeviceDescription_ deviceWS (portForOurWS, deviceInfo);
+        BasicServer                    b{d, deviceInfo, BasicServer::FrequencyInfo ()};
         Execution::WaitableEvent{}.Wait (); // wait forever - til user hits ctrl-c
     }
     catch (...) {

@@ -73,12 +73,26 @@ String DeviceDescription::ToString () const
     sb += L"Device-Type: " + Characters::ToString (fDeviceType) + L", ";
     sb += L"Manufacture-Name: " + Characters::ToString (fManufactureName) + L", ";
     sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
-    sb += L"Manufacturing-URL: " + Characters::ToString (fManufacturingURL) + L", ";
-    sb += L"Model-Description: " + Characters::ToString (fModelDescription) + L", ";
+    if (fManufacturingURL) {
+        sb += L"Manufacturing-URL: " + Characters::ToString (fManufacturingURL) + L", ";
+    }
+    if (fModelDescription) {
+        sb += L"Model-Description: " + Characters::ToString (fModelDescription) + L", ";
+    }
     sb += L"Model-Name: " + Characters::ToString (fModelName) + L", ";
-    sb += L"Model-Number: " + Characters::ToString (fModelNumber) + L", ";
-    sb += L"Serial-Number: " + Characters::ToString (fSerialNumber) + L", ";
-    sb += L"UPC: " + Characters::ToString (fUPC) + L", ";
+    if (fModelNumber) {
+        sb += L"Model-Number: " + Characters::ToString (fModelNumber) + L", ";
+    }
+    if (fModelURL) {
+        sb += L"Model-URL: " + Characters::ToString (*fModelURL) + L", ";
+    }
+    if (fSerialNumber) {
+        sb += L"Serial-Number: " + Characters::ToString (fSerialNumber) + L", ";
+    }
+    sb += L"UDN: " + Characters::ToString (fUDN) + L", ";
+    if (fUPC) {
+        sb += L"UPC: " + Characters::ToString (fUPC) + L", ";
+    }
     sb += L"Icons: " + Characters::ToString (fIcons) + L", ";
     sb += L"Services: " + Characters::ToString (fServices) + L", ";
     sb += L"}";
@@ -90,7 +104,7 @@ String DeviceDescription::ToString () const
  ********************************* UPnP::Serialize ******************************
  ********************************************************************************
  */
-Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
+Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
 {
     using namespace DataExchange::XML;
 
@@ -110,19 +124,25 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
     tmp << "            <deviceType>" << QuoteForXML (dd.fDeviceType) << "</deviceType>" << endl;
     tmp << "            <friendlyName>" << QuoteForXML (dd.fFriendlyName) << "</friendlyName>" << endl;
     tmp << "            <manufacturer>" << QuoteForXML (dd.fManufactureName) << "</manufacturer>" << endl;
-    if (dd.fManufacturingURL.has_value ()) {
+    if (dd.fManufacturingURL) {
         tmp << "                <manufacturerURL>" << QuoteForXML (dd.fManufacturingURL->GetFullURL ()) << "</manufacturerURL>" << endl;
     }
-    tmp << "            <modelDescription>" << QuoteForXML (dd.fModelDescription) << "</modelDescription>" << endl;
+    if (dd.fModelDescription) {
+        tmp << "            <modelDescription>" << QuoteForXML (dd.fModelDescription) << "</modelDescription>" << endl;
+    }
     tmp << "            <modelName>" << QuoteForXML (dd.fModelName) << "</modelName>" << endl;
-    tmp << "            <modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
-    if (dd.fModelURL.has_value ()) {
+    if (dd.fModelNumber) {
+        tmp << "            <modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
+    }
+    if (dd.fModelURL) {
         tmp << "                <modelURL>" << QuoteForXML (dd.fModelURL->GetFullURL ()) << "</modelURL>" << endl;
     }
-    tmp << "            <serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
-    tmp << "            <UDN>uuid:" << QuoteForXML (d.fDeviceID) << "</UDN>" << endl;
-    if (not dd.fUPC.empty ()) {
-        tmp << "                <UPC>" << QuoteForXML (dd.fUPC) << "</UPC>" << endl;
+    if (dd.fSerialNumber) {
+        tmp << "            <serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
+    }
+    tmp << "            <UDN>" << QuoteForXML (dd.fUDN) << "</UDN>" << endl;
+    if (dd.fUPC) {
+        tmp << "                <UPC>" << QuoteForXML (*dd.fUPC) << "</UPC>" << endl;
     }
     if (not dd.fIcons.empty ()) {
         tmp << "                <iconList>" << endl;
@@ -181,12 +201,14 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     static const ObjectReader::Registry kTypesRegistry_ = []() {
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
+        registry.AddCommonType<optional<String>> ();
         registry.AddCommonType<uint16_t> ();
         registry.AddCommonType<URL> ();
         registry.AddCommonType<optional<URL>> ();
 
-        // @todo  INCOMPLETE - InternetMediaType and two 'list' types incomplete
+        // @todo  INCOMPLETE - InternetMediaType
         //  InternetMediaType fMimeType;
+
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         registry.AddClass<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
             //       {Name{L"mimetype"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fMimeType)},
@@ -203,7 +225,9 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{L"eventSubURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fEventSubURL)},
         });
         registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{L"icon"});
+        registry.AddCommonType<optional<Collection<DeviceDescription::Icon>>> ();
         registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{L"service"});
+        registry.AddCommonType<optional<Collection<DeviceDescription::Service>>> ();
         registry.AddClass<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"presentationURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
             {Name{L"deviceType"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
@@ -215,6 +239,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{L"modelNumber"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
             {Name{L"modelURL"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL)},
             {Name{L"serialNum"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
+            {Name{L"UDN"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUDN)},
             {Name{L"UPC"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUPC)},
             {Name{L"iconList"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
             {Name{L"serviceList"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
