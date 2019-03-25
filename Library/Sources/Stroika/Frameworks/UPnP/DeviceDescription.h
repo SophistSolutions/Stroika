@@ -76,7 +76,7 @@ namespace Stroika::Frameworks::UPnP {
              */
             nonvirtual String ToString () const;
         };
-        Collection<Icon> fIcons;
+        optional<Collection<Icon>> fIcons;
 
         /**
          */
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::UPnP {
              */
             nonvirtual String ToString () const;
         };
-        Collection<Service> fServices;
+        optional<Collection<Service>> fServices;
 
         DeviceDescription () = default;
 
