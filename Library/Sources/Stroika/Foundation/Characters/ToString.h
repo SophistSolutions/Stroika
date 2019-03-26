@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Characters {
      *  \note   Other types automatically supported
      *      o   KeyValuePair
      *      o   CountedValue
-     *      o   String
+     *      o   String -- printed as 'the-string' (possibly length limited)
      *
      *  \note *Implementation Note*
      *      This implementation defaults to calling T().ToString ().
