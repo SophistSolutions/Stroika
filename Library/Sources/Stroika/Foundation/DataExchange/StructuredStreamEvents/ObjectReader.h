@@ -43,18 +43,14 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
-
-
- >>> cleanup regtest 30 (obejctreader) - with more using namespace ObjectReader to make more terse
- and update doc header examples similarly
-
- -----
-
- Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff –
- merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
-
- ---
-
+ *
+ *		@todo	The SimpleReader_ private classes could all be replaced with use of AddCommonReader_SimpleStringish()
+ *				But the simplereader_ is probably slightly more efficient. Decide if worht the difference or way to
+ *				combine these better.
+ *
+ *		@todo	Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff –
+ *				merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
+ *
  o   MixinEltTraits could have overload of Name instead of lambda returning bool,
      one for case = Name, and either one for case where != Name, or maybe ANY wlidvard
      with interuendeirng we do first one first.
@@ -99,7 +95,7 @@
 
 ----
 
- *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
+ *      @todo   Make AddCommonType() - when passed in an optional<T> - Require that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
  *      @todo   Review names: I don't think we use the term reader and readerfactory totally uniformly, and
@@ -240,8 +236,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     class Registry {
     public:
         /**
-         *  \note UNLIKE ObjectVariantReader - the constructor of Registry contains no default readers.
-         *
+         *  \note UNLIKE ObjectVariantReader - the constructor of Registry contains no readers by default.
          */
         Registry ()                = default;
         Registry (const Registry&) = default;
@@ -371,8 +366,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *
          *      \endcode
          */
-        template <typename T, typename... ARGS>
-        nonvirtual void AddCommonReader_SimpleStringish (ARGS&&... args);
+        template <typename T>
+        nonvirtual void AddCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T);
 
     public:
         /**

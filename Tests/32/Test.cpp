@@ -39,7 +39,6 @@ using Streams::InputStream;
 using Streams::iostream::InputStreamFromStdIStream;
 
 namespace {
-
     //
     // PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
     //  void    StreamUtils::WriteTextStream (const wstring& w, ostream& out)

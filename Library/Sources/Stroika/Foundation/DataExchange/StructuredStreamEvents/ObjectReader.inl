@@ -894,10 +894,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         };
         return cvtFactory_<T> ([converterFromString2T](T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
     };
-    template <typename T, typename... ARGS>
-    void Registry::AddCommonReader_SimpleStringish (ARGS&&... args)
+    template <typename T>
+    inline void Registry::AddCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T)
     {
-        Add<T> (MakeCommonReader_SimpleStringish<T> (forward<ARGS> (args)...));
+        Add<T> (MakeCommonReader_SimpleStringish<T> (converterFromString2T));
     }
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*)
     {
