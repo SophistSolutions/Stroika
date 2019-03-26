@@ -332,6 +332,50 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     public:
         /**
+         *  Used to create a reader which maps a string contained in an addressible element (element or attribute) to a value.
+         *  Used anywhere you could have used a 'String' reader.
+         *
+         *  \note This also ILLUSTATES how easy it is to create readers for more complex types. Just create your own function
+         *        like this (clone code) that contains a private class that accomulates data for the stages of SAX parsing and produces
+         *        the right type at the end
+         *
+         *  \par Example Usage
+         *      \code
+         *          ...
+         *          struct GenderType_ {
+         *              String fRep;
+         *          };
+         *          ...
+         *          registry.Add<GenderType_> (registry.MakeCommonReader_SimpleStringish< GenderType_> ([](String s) ->GenderType_ { GenderType_ result; result.fRep = s; return result; }));
+         *
+         *      \endcode
+         *
+         *  @see MakeCommonReader
+         *  @see MakeCommonReader_EnumAsInt
+         */
+        template <typename T>
+        static ReaderFromVoidStarFactory MakeCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T);
+
+    public:
+        /**
+         *  Simple wrapper on Add<> and MakeCommonReader_SimpleStringish<>
+         *
+         *  \par Example Usage
+         *      \code
+         *          ...
+         *          struct GenderType_ {
+         *              String fRep;
+         *          };
+         *          ...
+         *          registry.AddCommonReader_SimpleStringish<GenderType_> ([](String s) ->GenderType_ { GenderType_ result; result.fRep = s; return result; });
+         *
+         *      \endcode
+         */
+        template <typename T, typename... ARGS>
+        nonvirtual void AddCommonReader_SimpleStringish (ARGS&&... args);
+
+    public:
+        /**
          *  @see MakeCommonReader
          *  @see MakeCommonReader_NamedEnumerations
          */

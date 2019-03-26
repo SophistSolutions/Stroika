@@ -865,6 +865,40 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         };
         return cvtFactory_<ENUM_TYPE> ([](ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
     }
+    template <typename T>
+    auto Registry::MakeCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T) -> ReaderFromVoidStarFactory
+    {
+        using namespace Characters;
+        struct myReader_ : public IElementConsumer {
+            function<T (String)> fString2TMapper_;
+            myReader_ (const function<T (String)>& converterFromString2T, T* intoVal)
+                : fString2TMapper_ (converterFromString2T)
+                , fValue_ (intoVal)
+            {
+                RequireNotNull (intoVal);
+            }
+            Characters::StringBuilder            fBuf_{};
+            T*                                   fValue_{};
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+            {
+                ThrowUnRecognizedStartElt (name);
+            }
+            virtual void HandleTextInside (const String& text) override
+            {
+                fBuf_ += text;
+            }
+            virtual void Deactivating () override
+            {
+                *fValue_ = fString2TMapper_ (fBuf_.str ()); // its up to fString2TMapper_ to throw if this conversion cannot be done
+            }
+        };
+        return cvtFactory_<T> ([converterFromString2T](T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
+    };
+    template <typename T, typename... ARGS>
+    void Registry::AddCommonReader_SimpleStringish (ARGS&&... args)
+    {
+        Add<T> (MakeCommonReader_SimpleStringish<T> (forward<ARGS> (args)...));
+    }
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*)
     {
         return MakeCommonReader_SimpleReader_<String> ();
