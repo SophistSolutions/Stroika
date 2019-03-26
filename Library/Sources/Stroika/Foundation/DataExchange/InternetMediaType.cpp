@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/String_Constant.h"
+#include "../Characters/ToString.h"
 
 #include "InternetMediaType.h"
 
@@ -79,7 +80,7 @@ bool InternetMediaType::IsImageFormat () const
 
 String InternetMediaType::ToString () const
 {
-    return fType_;
+    return Characters::ToString (fType_); // format this string as any other normal string
 }
 
 /*
