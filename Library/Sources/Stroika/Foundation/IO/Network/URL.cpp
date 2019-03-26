@@ -6,7 +6,7 @@
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
 #include "../../Characters/String2Int.h"
-#include "../../Characters/String_Constant.h"
+#include "../../Characters/ToString.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 
@@ -20,8 +20,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
-
-using Characters::String_Constant;
 
 namespace {
     URL::SchemeType NormalizeScheme_ (const URL::SchemeType& s)
@@ -68,7 +66,7 @@ namespace {
 optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
-    static const pair<String_Constant, uint16_t> kPredefined_[] = {
+    static const pair<String, uint16_t> kPredefined_[] = {
         {L"http"sv, static_cast<uint16_t> (80)},
         {L"https"sv, static_cast<uint16_t> (443)},
         {L"ldap"sv, static_cast<uint16_t> (389)},
@@ -156,7 +154,7 @@ URL URL::Parse (const String& w, ParseOptions po)
         else if (flexibleURLParsingMode) {
             // NO - leave blank, so
             // caller parsing can see its missing.
-            // result.fScheme_ = String_Constant (L"http");
+            // result.fScheme_ = L"http"sv;
         }
         else {
             Execution::Throw (Execution::RuntimeErrorException (L"URL missing scheme"sv));
@@ -253,8 +251,8 @@ URL::URL (const SchemeType& scheme, const String& host, const optional<PortType>
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
-    Require (not relPath.StartsWith (String_Constant (L"/")));
-    Require (not query.StartsWith (String_Constant (L"?")));
+    Require (not relPath.StartsWith (L"/"sv));
+    Require (not query.StartsWith (L"?"sv));
     ValidateScheme_ (*fScheme_);
 }
 
@@ -266,8 +264,8 @@ URL::URL (const SchemeType& scheme, const String& host, const String& relPath, c
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
-    Require (not relPath.StartsWith (String_Constant (L"/")));
-    Require (not query.StartsWith (String_Constant (L"?")));
+    Require (not relPath.StartsWith (L"/"sv));
+    Require (not query.StartsWith (L"?"sv));
     ValidateScheme_ (*fScheme_);
 }
 
@@ -408,12 +406,12 @@ bool URL::IsSecure () const
 {
     SchemeType scheme = GetSchemeValue ();
     // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
-    return scheme == String_Constant (L"https") or scheme == String_Constant (L"ftps") or scheme == String_Constant (L"ldaps");
+    return scheme == L"https"sv or scheme == L"ftps"sv or scheme == L"ldaps"sv;
 }
 
 URL::SchemeType URL::GetSchemeValue () const
 {
-    static const String_Constant kHTTPScheme_{L"http"};
+    static const String kHTTPScheme_{L"http"sv};
     return fScheme_.value_or (kHTTPScheme_);
 }
 
@@ -423,10 +421,10 @@ String URL::GetFullURL () const
 
     SchemeType scheme = GetSchemeValue ();
 
-    result += scheme + String_Constant (L":");
+    result += scheme + L":"sv;
 
     if (not fHost_.empty ()) {
-        result += String_Constant (L"//") + fHost_;
+        result += L"//"sv + fHost_;
         if (fPort_.has_value () and fPort_ != GetDefaultPortForScheme (scheme)) {
             result += Format (L":%d", *fPort_);
         }
@@ -515,11 +513,11 @@ String URL::GetHostRelURLString () const
 {
     String result = GetHostRelativePath ();
     if (not fQuery_.empty ()) {
-        result += String_Constant (L"?") + fQuery_;
+        result += L"?"sv + fQuery_;
     }
 
     if (not fFragment_.empty ()) {
-        result += String_Constant (L"#") + fFragment_;
+        result += L"#"sv + fFragment_;
     }
     return result;
 }
@@ -528,7 +526,7 @@ String URL::GetHostRelativePathPlusQuery () const
 {
     String result = GetHostRelativePath ();
     if (not fQuery_.empty ()) {
-        result += String_Constant (L"?") + fQuery_;
+        result += L"?"sv + fQuery_;
     }
     return result;
 }
@@ -536,7 +534,7 @@ String URL::GetHostRelativePathPlusQuery () const
 String URL::ToString () const
 {
     // @todo not sure if this should include 'default scheme' or not. Probably no, but do for now
-    return GetFullURL ();
+    return Characters::ToString (GetFullURL ()); // format this string as any other normal string
 }
 
 #if 0
