@@ -753,12 +753,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return fFactories_.Lookup (t);
     }
     template <typename CLASS>
-    void Registry::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
+    void Registry::AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
 #if qDebug
         for (auto kv : fieldDescriptions) {
             if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
-                Debug::TraceContextBumper ctx (L"Registry::AddClass", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
+                Debug::TraceContextBumper ctx (L"Registry::AddCommonReader_Class", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
                 RequireNotReached ();
             }
         }
@@ -829,6 +829,16 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return MakeCommonReader_NamedEnumerations (Containers::Bijection<ENUM_TYPE, String> (nameMap));
     }
     template <typename ENUM_TYPE>
+    inline void Registry::AddCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
+    {
+        Add<ENUM_TYPE> (MakeCommonReader_NamedEnumerations<ENUM_TYPE> (nameMap));
+    }
+    template <typename ENUM_TYPE>
+    inline void Registry::AddCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap)
+    {
+        Add<ENUM_TYPE> (MakeCommonReader_NamedEnumerations<ENUM_TYPE> (nameMap));
+    }
+    template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_EnumAsInt () -> ReaderFromVoidStarFactory
     {
         using namespace Characters;
@@ -865,8 +875,13 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         };
         return cvtFactory_<ENUM_TYPE> ([](ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
     }
+    template <typename ENUM_TYPE>
+    inline void Registry::AddCommonReader_EnumAsInt ()
+    {
+        Add<ENUM_TYPE> (MakeCommonReader_EnumAsInt<ENUM_TYPE> ());
+    }
     template <typename T>
-    auto Registry::MakeCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T) -> ReaderFromVoidStarFactory
+    auto Registry::MakeCommonReader_Simple (const function<T (String)>& converterFromString2T) -> ReaderFromVoidStarFactory
     {
         using namespace Characters;
         struct myReader_ : public IElementConsumer {
@@ -895,9 +910,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return cvtFactory_<T> ([converterFromString2T](T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
     };
     template <typename T>
-    inline void Registry::AddCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T)
+    inline void Registry::AddCommonReader_Simple (const function<T (String)>& converterFromString2T)
     {
-        Add<T> (MakeCommonReader_SimpleStringish<T> (converterFromString2T));
+        Add<T> (MakeCommonReader_Simple<T> (converterFromString2T));
     }
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*)
     {

@@ -40,16 +40,16 @@
 /**
  *
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO:
  *
- *		@todo	The SimpleReader_ private classes could all be replaced with use of AddCommonReader_SimpleStringish()
- *				But the simplereader_ is probably slightly more efficient. Decide if worht the difference or way to
- *				combine these better.
+ *      @todo   The SimpleReader_ private classes could all be replaced with use of AddCommonReader_Simple()
+ *              But the simplereader_ is probably slightly more efficient. Decide if worht the difference or way to
+ *              combine these better.
  *
- *		@todo	Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff –
- *				merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
+ *      @todo   Extend ObjectReaderRegistry::StructIFNO – with function (like in mixin class) to read stuff –
+ *              merge it with mixinhelper – and then use that in all places – class reader, mixin reader, and RepeatedEltReader.
  *
  o   MixinEltTraits could have overload of Name instead of lambda returning bool,
      one for case = Name, and either one for case where != Name, or maybe ANY wlidvard
@@ -75,11 +75,6 @@
 
  Works for any type where the registry already has a reader for t.
 
- ---
-
- FIXUP DOCS for “mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));”
- Around like 210 – should include xml example to make sense – maybe same xml as down around line 610
-
  ----
  Includein headers example for using objectreaderresgiter
 
@@ -88,10 +83,6 @@
  bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
  nonvirtual  String TraceLeader_ () const;
  #endif
-
- ----
-
-> not sure we need MakeClassReader  - can just use ClassReader<T> {}.AsFactory ()
 
 ----
 
@@ -297,13 +288,20 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     public:
         /**
-         *  \req    AddClass<> requires that each field data type already be pre-loaded into the
+         *  \req    AddCommonReader_Class<> requires that each field data type already be pre-loaded into the
          *          ObjectReader::Registry. To avoid this requirement, you an use MakeClassReader
          *          directly, but if this type is absent when you call AddClass<> - its most likely
          *          a bug.
          */
         template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+        nonvirtual void AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+
+    public:
+        template <typename CLASS>
+        [[deprecated ("Since Stroika 2.1d23, use AddCommonReader_Class")]] inline void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
+        {
+            AddCommonReader_Class<CLASS> (fieldDescriptions);
+        }
 
     public:
         /**
@@ -327,6 +325,59 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     public:
         /**
+         *  \brief Add reader for any type that is stringish: provide convert function from string to T; Simple wrapper on Add<> and MakeCommonReader_Simple<>
+         *
+         *  \par Example Usage
+         *      \code
+         *          ...
+         *          enum class GenderType_ {
+         *              Male,
+         *              Female,
+         *              Stroika_Define_Enum_Bounds (Male, Female)
+         *          };
+         *          registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
+         *              pair<GenderType_, String>{GenderType_::Male, L"Male"},
+         *              pair<GenderType_, String>{GenderType_::Female, L"Female"},
+         *          });
+         *      \endcode
+         *
+         *  \note if cannot convert, 'converterFromString2T' can/must throw (typically some sort of format exception)
+         */
+        template <typename ENUM_TYPE>
+        nonvirtual void AddCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
+        template <typename ENUM_TYPE>
+        nonvirtual void AddCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+
+    public:
+        /**
+         *  @see MakeCommonReader
+         *  @see MakeCommonReader_NamedEnumerations
+         */
+        template <typename ENUM_TYPE>
+        static ReaderFromVoidStarFactory MakeCommonReader_EnumAsInt ();
+
+    public:
+        /**
+         *  \brief Add reader for any type that is stringish: provide convert function from string to T; Simple wrapper on Add<> and MakeCommonReader_Simple<>
+         *
+         *  \par Example Usage
+         *      \code
+         *  \par Example Usage
+         *      \code
+         *          ...
+         *          enum class GenderType_ {
+         *              Male,
+         *              Female,
+         *              Stroika_Define_Enum_Bounds (Male, Female)
+         *          };
+         *          registry.AddCommonReader_EnumAsInt<GenderType_> ();
+         *      \endcode
+         */
+        template <typename ENUM_TYPE>
+        nonvirtual void AddCommonReader_EnumAsInt ();
+
+    public:
+        /**
          *  Used to create a reader which maps a string contained in an addressible element (element or attribute) to a value.
          *  Used anywhere you could have used a 'String' reader.
          *
@@ -341,19 +392,21 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *              String fRep;
          *          };
          *          ...
-         *          registry.Add<GenderType_> (registry.MakeCommonReader_SimpleStringish< GenderType_> ([](String s) ->GenderType_ { GenderType_ result; result.fRep = s; return result; }));
+         *          registry.Add<GenderType_> (registry.MakeCommonReader_Simple< GenderType_> ([](String s) ->GenderType_ { GenderType_ result; result.fRep = s; return result; }));
          *
          *      \endcode
+         *
+         *  \note if cannot convert, 'converterFromString2T' can/must throw (typically some sort of format exception)
          *
          *  @see MakeCommonReader
          *  @see MakeCommonReader_EnumAsInt
          */
         template <typename T>
-        static ReaderFromVoidStarFactory MakeCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T);
+        static ReaderFromVoidStarFactory MakeCommonReader_Simple (const function<T (String)>& converterFromString2T);
 
     public:
         /**
-         *  Simple wrapper on Add<> and MakeCommonReader_SimpleStringish<>
+         *  \brief Add reader for any type that is stringish: provide convert function from string to T; Simple wrapper on Add<> and MakeCommonReader_Simple<>
          *
          *  \par Example Usage
          *      \code
@@ -362,20 +415,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *              String fRep;
          *          };
          *          ...
-         *          registry.AddCommonReader_SimpleStringish<GenderType_> ([](String s) ->GenderType_ { GenderType_ result; result.fRep = s; return result; });
+         *          registry.AddCommonReader_Simple<GenderType_> ([](String s) ->GenderType_ { GenderType_ result; result.fRep = s; return result; });
          *
          *      \endcode
+         *
+         *  \note if cannot convert, 'converterFromString2T' can/must throw (typically some sort of format exception)
          */
         template <typename T>
-        nonvirtual void AddCommonReader_SimpleStringish (const function<T (String)>& converterFromString2T);
-
-    public:
-        /**
-         *  @see MakeCommonReader
-         *  @see MakeCommonReader_NamedEnumerations
-         */
-        template <typename ENUM_TYPE>
-        static ReaderFromVoidStarFactory MakeCommonReader_EnumAsInt ();
+        nonvirtual void AddCommonReader_Simple (const function<T (String)>& converterFromString2T);
 
     public:
         /**

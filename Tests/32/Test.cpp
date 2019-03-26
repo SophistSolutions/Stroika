@@ -173,7 +173,7 @@ namespace {
                                                             L"</Calendar>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         void Test_2a_ObjectReader_viaRegistry_ ()
         {
@@ -188,12 +188,12 @@ namespace {
 
             // not sure if this is clearer or macro version
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
                 {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
                 {Name{L"MiddleName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, middleName)},
             });
-            registry.AddClass<Appointment_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Appointment_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"When"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, when)},
                 {Name{L"WithWhom"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, withWhom)},
             });
@@ -266,7 +266,7 @@ namespace {
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         void DoTest ()
         {
@@ -274,7 +274,7 @@ namespace {
             registry.AddCommonType<String> ();
 
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
                 {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
             });
@@ -360,7 +360,7 @@ namespace {
                 L"</soapenv:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
 
         void DoTest ()
@@ -371,10 +371,10 @@ namespace {
 
             mapper.AddCommonType<String> ();
 
-            mapper.AddClass<ManagedObjectReference> (initializer_list<ObjectReader::StructFieldInfo>{
+            mapper.AddCommonReader_Class<ManagedObjectReference> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"type", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, type)},
                 {Name{Name::eValue}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, value)}});
-            mapper.AddClass<ObjectContent> (initializer_list<ObjectReader::StructFieldInfo>{
+            mapper.AddCommonReader_Class<ObjectContent> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"obj"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ObjectContent, obj)}
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
             });
@@ -421,7 +421,7 @@ namespace {
             ObjectReader::Registry mapper;
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddCommonType<String> ();
-            mapper.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+            mapper.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
                 {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
             });
@@ -487,7 +487,7 @@ namespace {
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
 
         void DoTest ()
@@ -495,24 +495,24 @@ namespace {
             ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonType<String> ();
-            registry.Add<GenderType_> (ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
+            registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
                 pair<GenderType_, String>{GenderType_::Male, L"Male"},
                 pair<GenderType_, String>{GenderType_::Female, L"Female"},
-            }));
+            });
             registry.AddCommonType<optional<GenderType_>> ();
-            registry.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
                 {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
                 {Name{L"Gender"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender)},
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
-            registry.AddClass<Address_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Address_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"city"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city)},
                 {Name{L"state"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state)},
             });
             registry.Add<vector<Address_>> (ObjectReader::RepeatedElementReader<vector<Address_>>::AsFactory ());
-            registry.AddClass<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"person"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people)},
                 {Name{L"address"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses)},
             });
@@ -601,7 +601,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         /*
          *   <blk201605:LaserTemperature>\n"
@@ -641,12 +641,12 @@ namespace {
         {
             ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.Add<TunerNumberType_> (ObjectReader::Registry::MakeCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
+            registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
                 pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
-            }));
+            });
             registry.AddCommonType<optional<TunerNumberType_>> ();
             registry.AddCommonType<WaveNumberType_> ();
             registry.AddCommonType<optional<WaveNumberType_>> ();
@@ -657,7 +657,7 @@ namespace {
             registry.Add<Mapping<TunerNumberType_, CurrentType_>> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.AddCommonType<optional<TECPowerConsumptionStatsType_>> ();
-            registry.AddClass<SensorDataType_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<SensorDataType_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"ActiveLaser"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser)},
                 {Name{L"DetectorTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, DetectorTemperature)},
                 {Name{L"OpticsTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, OpticsTemperature)},
@@ -731,7 +731,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         void DoTest ()
         {
@@ -822,7 +822,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         namespace PRIVATE_ {
             struct SpectrumReader_ : public ObjectReader::IElementConsumer {
@@ -896,7 +896,7 @@ namespace {
             registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
             registry.AddCommonType<optional<SpectrumType_>> ();
             registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory ());
-            registry.AddClass<PersistentScanDetailsType_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<PersistentScanDetailsType_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"ScanID"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID)},
                 {Name{L"ScanStart"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart)},
                 {Name{L"ScanEnd"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanEnd)},
@@ -951,7 +951,7 @@ namespace {
                     L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
-                return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+                return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
             }
         }
         void DoTest ()
@@ -961,7 +961,7 @@ namespace {
             ObjectReader::Registry registry;
             registry.AddCommonType<double> ();
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"valueMissing"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueMissing)},
                 {Name{L"valueExplicitGood"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitGood)},
                 {Name{L"valueExplicitNAN1"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitNAN1)},
@@ -1036,7 +1036,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
 
         static const ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
@@ -1097,18 +1097,18 @@ namespace {
         {
             ObjectReader::Registry registry;
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.Add<TunerNumberType_> (ObjectReader::Registry::MakeCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
+            registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
                 pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
-            }));
+            });
             registry.AddCommonType<optional<TunerNumberType_>> ();
             registry.AddCommonType<FrequencyType_> ();
             registry.AddCommonType<optional<FrequencyType_>> ();
             registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
             registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>> (TunerMappingReader_::AsFactory ());
-            registry.AddClass<FactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<FactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"Tuners"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (FactorySettingsType_, Tuners)},
             });
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -1164,7 +1164,7 @@ namespace {
                     L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
-                return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+                return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
             }
         }
         void DoTest ()
@@ -1175,7 +1175,7 @@ namespace {
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
             registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            registry.AddClass<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"r"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, r)},
             });
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -1223,7 +1223,7 @@ namespace {
                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         void DoTest ()
         {
@@ -1234,14 +1234,14 @@ namespace {
                 pair<GenderType_, String>{GenderType_::Male, L"Male"},
                 pair<GenderType_, String>{GenderType_::Female, L"Female"},
             });
-            registry.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
                 {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
                 {Name{L"Gender"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender), kGenderType_Reader_},
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
-            registry.AddClass<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
+            registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"person"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people)},
             });
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -1295,22 +1295,22 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
             L"</envelope1>\n";
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
-        return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+        return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
     }
     void DoTest ()
     {
         ObjectReader::Registry registry;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         registry.AddCommonType<String> ();
-        registry.AddCommonReader_SimpleStringish<GenderType_> ([](String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
-        registry.AddClass<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+        registry.AddCommonReader_Simple<GenderType_> ([](String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
+        registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
             {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
             {Name{L"Gender"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender)},
         });
         registry.AddCommonType<vector<Person_>> ();
         registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
-        registry.AddClass<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
+        registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"person"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people)},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
