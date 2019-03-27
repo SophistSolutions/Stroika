@@ -108,7 +108,16 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  Class to help encode/decode the logical parts of an internet URL
      *
-     *  @see http://www.ietf.org/rfc/rfc1738.txt
+     *  \par Base RFC References
+     *       \note http://www.ietf.org/rfc/rfc1738.txt - Uniform Resource Locators (URL) - 1994
+     *             original FULL URL spec
+     *
+     *       \note http://tools.ietf.org/html/rfc1808 - Relative Uniform Resource Locators - 1995
+     *             original FULL URL spec
+     *
+     *       \note https://tools.ietf.org/html/rfc3986 - Uniform Resource Identifier (URI): Generic Syntax - 2005
+     *             Updates: 1738; Obsoletes 2732, 2396, 1808
+     *             (so combines relative and absolute)
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      *
@@ -146,14 +155,21 @@ namespace Stroika::Foundation::IO::Network {
          *              MAYBE FULL_OR_RELATIVE (as in webpage urls)
          *
          *      Maybe URL has method "IsRelative"?
+         &          &&^&but first decide how to handle URL TYPE
+          * MABYBE URLTYPE { enum  - eRelative, eFull, eEmpty }; PITA to lose empty ability. But can you set stuff on a URL that is empty? like port? Is it still empty?
+
+
+          Need API to COMBINE URLS (LHS must be not relative, and RHS must be RELATIVE)
          */
         enum ParseOptions {
             /*
-             *  Check for strict url conformance (scheme : data, or http://host/REL)
-             *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
+             *  Check for strict url conformance (URI not URI-Reference)
              *
-             *  (OR MAYBE USE https://tools.ietf.org/html/rfc3986
-             *      and see about whcih part - full url)
+             *  Throws if not an absolute URI (meaning it must have a scheme, and an authority (host).
+             *
+             *  Same as parsing (eNormal) - but throw if IsRelativeURL ()
+             *
+             *  probably should REANME to eThrowIfNotFullURL
              */
             eAsFullURL,
 
@@ -161,19 +177,32 @@ namespace Stroika::Foundation::IO::Network {
              *  ???http://tools.ietf.org/html/rfc1808
              *
              *  (MAYBE USE https://tools.ietf.org/html/rfc3986 and see about whcih part - full url)
+             *
+             *  @todo DEPRECATE THIS!!!!
+              * APPEARS SAFE TO DEPREACTE BUT DONT DO TIL I REDO ITS REGTESTS USING eNormal) and Verify (IsRelative ())
              */
             eAsRelativeURL,
 
             /**
+             *  @todo RENAME THIS TO
+             *      eNormally           - As rfc3986
+             *      THIS IS WHAT IS CALLED 'URI-reference' in https://tools.ietf.org/html/rfc3986#section-4.3
+             *      CAN produce URL which is relative or absoluete (new IsAbsolute () method checks for presence of schema, and authority/host)
+             &&& AND 
+             *  AND make it the DEFAULT when constructing URL from String
              */
             eFlexiblyAsUI,
 
             /**
+             *  @todo DEPRECATE THIS!!!!
+             *
              *  @todo CLEANUP/FIX
              *
              *  I THINK The only quirk of this node is that
              *      dyn:/foo.html gets parsed as HOST=EMPTY; relativeURL= foo.html; That makes sense
              *      but doesn't apper to conform to spec for urls (rfs) above. Research/analyze...
+             *
+             *  \note - this is is STILL used alot in HealthFrame - as of 2019-03-27
              */
             eStroikaPre20a50BackCompatMode,
         };
@@ -185,7 +214,8 @@ namespace Stroika::Foundation::IO::Network {
          *  See SetHostRelativePath for the 'relPath' restrictions.
          *  This Requires() its arguments are valid and in range. use
          *
-         *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
+         *  (except for the default constuctor) - these will raise exceptions if anything illegal in the URL specification.
+         *  \todo - maybe we shouldn't have an empty url constructor?"
          */
         URL ();
         URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber = nullopt, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
