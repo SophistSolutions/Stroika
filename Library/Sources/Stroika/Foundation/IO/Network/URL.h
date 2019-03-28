@@ -11,6 +11,7 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
+#include "InternetAddress.h"
 
 /**
  *  \file
@@ -66,44 +67,7 @@ namespace Stroika::Foundation::IO::Network {
 
     using Characters::String;
 
-    /**
-     *  Probably should define standard protos here - with named constants - like http/ftp/https etc
-     */
-    optional<uint16_t> GetDefaultPortForScheme (const String& proto);
-
-    /**
-     */
-    class URLQuery {
-    public:
-        URLQuery (const string& query);
-        URLQuery (const String& query);
-
-    public:
-        nonvirtual const Containers::Mapping<String, String>& GetMap () const;
-
-    public:
-        nonvirtual String operator() (const string& idx) const;
-        nonvirtual String operator() (const String& idx) const;
-
-    public:
-        nonvirtual bool HasField (const string& idx) const;
-        nonvirtual bool HasField (const String& idx) const;
-
-    public:
-        nonvirtual void AddField (const String& idx, const String& value);
-
-    public:
-        nonvirtual void RemoveFieldIfAny (const string& idx);
-        nonvirtual void RemoveFieldIfAny (const String& idx);
-
-    public:
-        // Return wide string, but all ascii characters
-        // http://tools.ietf.org/html/rfc3986
-        nonvirtual String ComputeQueryString () const;
-
-    private:
-        Containers::Mapping<String, String> fMap_;
-    };
+    class URLQuery;
 
     /**
      *  Class to help encode/decode the logical parts of an internet URL
@@ -119,7 +83,37 @@ namespace Stroika::Foundation::IO::Network {
      *             Updates: 1738; Obsoletes 2732, 2396, 1808
      *             (so combines relative and absolute)
      *
+     *  Each RFC uses its own terminology for the parts of a URL. We the most recent of these RFCs for our primary terminology:
+     *      https://tools.ietf.org/html/rfc3986#section-3.2
+     *
+     *          The generic URI syntax consists of a hierarchical sequence of
+     *          components referred to as the scheme, authority, path, query, and
+     *          fragment
+     *          ...
+     *         The following are two example URIs and their component parts:
+     *
+     *               foo://example.com:8042/over/there?name=ferret#nose
+     *               \_/   \______________/\_________/ \_________/ \__/
+     *                |           |            |            |        |
+     *             scheme     authority       path        query   fragment
+     *                |   _____________________|__
+     *               / \ /                        \
+     *               urn:example:animal:ferret:nose
+     *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *
+     *  Stroika's URL class comprises the concept URI Reference (https://tools.ietf.org/html/rfc3986#section-4.1):
+     *      URI-reference = URI / relative-ref
+     *
+     *  So a given URL object maybe a FullURI, or a RelativeURI () - 
+        &&& TBD but probabkly add
+         GetType () => URLType { eFullURI, eRelativeURI } based on ??? if it has authority?
+         NO - because many different subtypes. 
+         Just bool IsFullURL () (all parts all needed parts specified - scheme principally)
+         READ https://tools.ietf.org/html/rfc3986#section-4.2 more carefully
+
+         AND NEED API TO GLUE FULL_URI with RELATIVE_URI () to produce a new FULL_URI
+ 
      *
      * TODO:
      *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
@@ -129,15 +123,11 @@ namespace Stroika::Foundation::IO::Network {
     class URL {
     public:
         /**
-         *  From http://www.ietf.org/rfc/rfc1738.txt (section 2.1. The main parts of URLs)
-         *
-         *  Scheme names consist of a sequence of characters. The lower case
-         *  letters "a"--"z", digits, and the characters plus ("+"), period
-         *  ("."), and hyphen ("-") are allowed. For resiliency, programs
-         *  interpreting URLs should treat upper case letters as equivalent to
-         *  lower case in scheme names (e.g., allow "HTTP" as well as "http").
-         *
-         *  AKA PROTOCOL.
+         *  From https://tools.ietf.org/html/rfc3986#section-3.1
+         *      Scheme names consist of a sequence of characters beginning with a
+         *      letter and followed by any combination of letters, digits, plus
+         *      ("+"), period ("."), or hyphen ("-").  Although schemes are case-
+         *      insensitive, the canonical form is lowercase ...
          *
          *  \note schemes cannot include a ':' character
          */
@@ -147,6 +137,70 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         using PortType = uint16_t;
+
+    public:
+        /**
+         *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
+         */
+        struct Authority {
+            /**
+             * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
+             *      The userinfo subcomponent may consist of a user name and, optionally,
+             *      scheme-specific information about how to gain authorization to access
+             *      the resource
+             */
+            optional<String> fUserInfo;
+
+            /**
+             * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:
+             *      The host subcomponent of authority is identified by an IP literal
+             *      encapsulated within square brackets, an IPv4 address in dotted-
+             *      decimal form, or a registered name.  The host subcomponent is case-
+             *      insensitive.
+             */
+            class Host {
+            public:
+                /**
+                 */
+                Host (const String& registeredName);
+                Host (const InternetAddress& addr);
+
+            public:
+                /**
+                 *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
+                 *  This may throw if given an invalid raw URL hostname value.
+                 */
+                static Host Parse (const String& rawURLHostnameText);
+
+            public:
+                /*
+                 *  Returns missing if its nota  registered name (dnsname).
+                 */
+                nonvirtual optional<String> AsRegisteredName () const;
+
+            public:
+                /*
+                 *  Returns missing if its not an InternetAddress
+                 */
+                nonvirtual optional<InternetAddress> AsInternetAddress () const;
+
+            public:
+                /*
+                 *  Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
+                 */
+                nonvirtual String AsEncodedHostName () const;
+
+            private:
+                String fEncodedName_;
+            };
+            Host fHost;
+
+            optional<PortType> fPort;
+        };
+
+        ///// &&&&& @TODO
+        /// use https://tools.ietf.org/html/rfc3986#page-50 - Parsing a URI Reference with a Regular Expression
+        /// to redo the parsing logic
 
     public:
         /**
@@ -461,6 +515,45 @@ namespace Stroika::Foundation::IO::Network {
      *  operator indirects to URL::Compare()
      */
     bool operator>= (const URL& lhs, const URL& rhs);
+
+    /**
+     *  Probably should define standard protos here - with named constants - like http/ftp/https etc
+     */
+    optional<uint16_t> GetDefaultPortForScheme (const String& proto);
+
+    /**
+     */
+    class URLQuery {
+    public:
+        URLQuery (const string& query);
+        URLQuery (const String& query);
+
+    public:
+        nonvirtual const Containers::Mapping<String, String>& GetMap () const;
+
+    public:
+        nonvirtual String operator() (const string& idx) const;
+        nonvirtual String operator() (const String& idx) const;
+
+    public:
+        nonvirtual bool HasField (const string& idx) const;
+        nonvirtual bool HasField (const String& idx) const;
+
+    public:
+        nonvirtual void AddField (const String& idx, const String& value);
+
+    public:
+        nonvirtual void RemoveFieldIfAny (const string& idx);
+        nonvirtual void RemoveFieldIfAny (const String& idx);
+
+    public:
+        // Return wide string, but all ascii characters
+        // http://tools.ietf.org/html/rfc3986
+        nonvirtual String ComputeQueryString () const;
+
+    private:
+        Containers::Mapping<String, String> fMap_;
+    };
 
     /*
      *  See http://tools.ietf.org/html/rfc3986
