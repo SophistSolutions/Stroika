@@ -84,6 +84,101 @@ optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
 
 /*
  ********************************************************************************
+ *************************** URL::Authority::Host *******************************
+ ********************************************************************************
+ */
+pair<optional<String>, optional<InternetAddress>> URL::Authority::Host::ParseRaw_ (const String& raw)
+{
+    // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
+    if (raw.empty ()) {
+        Execution::Throw (Execution::RuntimeErrorException (L"Empty string cannot be parsed as a URL"sv));
+    }
+    if (raw[0].IsDigit ()) {
+        // must be ipv4 address
+        return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw, InternetAddress::AddressFamily::V4}};
+    }
+    else if (raw[0] == '[') {
+        // must be ipv6 address
+        // must be surrounded with []
+        if (raw.Last () != ']') {
+            Execution::Throw (Execution::RuntimeErrorException (L"IPV6 hostanme in URL must be surrounded with []"sv));
+        }
+        return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
+    }
+    else {
+        // must 'registeredname' - typically a DNS name
+        // Must decode %NN values, and ??? characterset???
+        string utf8ResultBuffer;
+
+        // @todo THROW IF INCOMING STRING NOT VALID ASCII - SO NO REAL UTF8 if I read spec right - use validator code (checked covnvert)
+
+        // pct encoding defined on characters as UTF8 so convert to utf8 string first before decoding
+        // @todo very unsure if I interpretted this correctly...
+
+        // See https://tools.ietf.org/html/rfc3986#section-2.1 Percent-Encoding
+        string tmp = raw.AsUTF8 ();
+        utf8ResultBuffer.reserve (tmp.length ());
+        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
+            switch (*i) {
+                case '%': {
+                    if (i + 2 < tmp.end ()) {
+                        unsigned char newC = (ConvertReadSingleHexDigit_ (*(i + 1)) << 4) + ConvertReadSingleHexDigit_ (*(i + 2));
+                        tmp.push_back (newC);
+                        i += 2;
+                    }
+                    else {
+                        Execution::Throw (Execution::RuntimeErrorException (L"illegal % character parsing URL hostname"sv));
+                    }
+                } break;
+                default: {
+                    tmp.push_back (*i);
+                } break;
+            }
+        }
+        return pair<optional<String>, optional<InternetAddress>>{String::FromUTF8 (utf8ResultBuffer), nullopt};
+    }
+}
+String URL::Authority::Host::EncodeAsRawURL_ (const String& registeredName)
+{
+	// See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
+	string utf8Query = registeredName.AsUTF8 ();
+    string result;
+    size_t sLength = utf8Query.length ();
+    result.reserve (sLength);
+    for (size_t i = 0; i < sLength; ++i) {
+        wchar_t ccode = utf8Query[i];
+        if (isascii (ccode) and (isalnum (ccode) or (ccode == '-') or (ccode == '.') or (ccode == '_') or (ccode == '~'))) {
+            result += static_cast<char> (utf8Query[i]);
+        }
+        else {
+            result += CString::Format ("%%%.2x", ccode);
+        }
+    }
+    return String::FromUTF8 (result);
+}
+
+String URL::Authority::Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
+{
+	// See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
+	switch (ipAddr.GetAddressFamily ()) {
+        case InternetAddress::AddressFamily::V4: {
+			return ipAddr.As<String> ();
+
+        } break;
+        case InternetAddress::AddressFamily::V6: {
+			return L"[" + ipAddr.As<String> () + L"]";
+
+        } break;
+        default: {
+            WeakAssertNotImplemented ();
+            // Probably need to use the V??? format - but this maybe the best we can do for now...
+			return ipAddr.As<String> ();
+        } break;
+    }
+}
+
+/*
+ ********************************************************************************
  ************************************** URL *************************************
  ********************************************************************************
  */

@@ -49,6 +49,43 @@ namespace Stroika::Foundation::IO::Network {
 
     /*
      ********************************************************************************
+     **************************** URL::Authority::Host ******************************
+     ********************************************************************************
+     */
+    inline URL::Authority::Host::Host (const String& registeredName)
+        : fEncodedName_{EncodeAsRawURL_ (registeredName)}
+        , fRegisteredName_{registeredName}
+    {
+    }
+    inline URL::Authority::Host::Host (const InternetAddress& addr)
+        : fEncodedName_{EncodeAsRawURL_ (addr)}
+        , fInternetAddress_{addr}
+    {
+    }
+    inline URL::Authority::Host URL::Authority::Host::Parse (const String& rawURLHostnameText)
+    {
+        auto                 tmp{ParseRaw_ (rawURLHostnameText)};
+        URL::Authority::Host h;
+        h.fEncodedName_     = rawURLHostnameText;
+        h.fRegisteredName_  = tmp.first;
+        h.fInternetAddress_ = tmp.second;
+        return h;
+    }
+    inline optional<String> URL::Authority::Host::AsRegisteredName () const
+    {
+        return fRegisteredName_;
+    }
+    inline optional<InternetAddress> URL::Authority::Host::AsInternetAddress () const
+    {
+        return fInternetAddress_;
+    }
+    inline String URL::Authority::Host::AsEncodedHostName () const
+    {
+        return fEncodedName_;
+    }
+
+    /*
+     ********************************************************************************
      *************************************** URL ************************************
      ********************************************************************************
      */

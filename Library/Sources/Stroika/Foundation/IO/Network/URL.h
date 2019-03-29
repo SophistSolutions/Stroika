@@ -165,6 +165,9 @@ namespace Stroika::Foundation::IO::Network {
                 Host (const String& registeredName);
                 Host (const InternetAddress& addr);
 
+            private:
+                Host () = default;
+
             public:
                 /**
                  *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
@@ -191,7 +194,17 @@ namespace Stroika::Foundation::IO::Network {
                 nonvirtual String AsEncodedHostName () const;
 
             private:
-                String fEncodedName_;
+                // Throws if cannot parse/illegal
+                static pair<optional<String>, optional<InternetAddress>> ParseRaw_ (const String& raw);
+
+            private:
+                static String EncodeAsRawURL_ (const String& registeredName);
+                static String EncodeAsRawURL_ (const InternetAddress& ipAddr);
+
+            private:
+                String                    fEncodedName_;
+                optional<String>          fRegisteredName_;
+                optional<InternetAddress> fInternetAddress_;
             };
             Host fHost;
 
