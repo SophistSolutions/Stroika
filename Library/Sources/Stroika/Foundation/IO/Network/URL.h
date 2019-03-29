@@ -205,6 +205,9 @@ namespace Stroika::Foundation::IO::Network {
                 String                    fEncodedName_;
                 optional<String>          fRegisteredName_;
                 optional<InternetAddress> fInternetAddress_;
+
+            private:
+                friend bool operator== (const Host& lhs, const Host& rhs);
             };
             Host fHost;
 
@@ -498,6 +501,10 @@ namespace Stroika::Foundation::IO::Network {
         String             fQuery_;
         String             fFragment_;
     };
+
+    /**
+     */
+    bool operator== (const URL::Authority::Host& lhs, const URL::Authority::Host& rhs);
 
     /**
      *  operator indirects to URL::Compare()

@@ -262,7 +262,34 @@ namespace {
     void TestHostParsing_ ()
     {
         using Host = URL::Authority::Host;
-        VerifyTestResult (Host{Network::V4::kLocalhost}.AsEncodedHostName () == L"127.0.0.1"sv);
+        VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncodedHostName () == L"127.0.0.1"sv));
+        VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncodedHostName () == L"169.254.0.1"sv));
+        VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncodedHostName () == L"[fe80::44de:4247:5b76:ddc9]"sv));
+        VerifyTestResult ((Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
+        VerifyTestResult ((Host{L"www.sophists.com"}.AsEncodedHostName () == L"www.sophists.com"sv));
+        VerifyTestResult ((Host{L"hello mom"}.AsEncodedHostName () == L"hello%20mom"sv));
+        VerifyTestResult ((Host::Parse (L"hello%20mom") == Host{L"hello mom"}));
+        {
+            // negative tests - must throw
+            try {
+                Host::Parse (L"%%%");
+                VerifyTestResult (false); // must throw
+            }
+            catch (const runtime_error&) {
+            }
+            try {
+                Host::Parse (L"%a");
+                VerifyTestResult (false); // must throw
+            }
+            catch (const runtime_error&) {
+            }
+            try {
+                Host::Parse (L"%ag");
+                VerifyTestResult (false); // must throw
+            }
+            catch (const runtime_error&) {
+            }
+        }
     }
 }
 void DoTests_ ()

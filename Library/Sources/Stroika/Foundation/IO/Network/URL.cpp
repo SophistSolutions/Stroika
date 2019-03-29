@@ -50,10 +50,13 @@ namespace {
             return static_cast<uint8_t> (digit - '0');
         }
         else if (islower (digit)) {
+            if (digit > 'f') {
+                Execution::Throw (Execution::RuntimeErrorException (L"illegal hex digit"sv));
+            }
             return static_cast<uint8_t> (10 + (digit - 'a'));
         }
         else {
-            return 0u;
+            Execution::Throw (Execution::RuntimeErrorException (L"illegal hex digit"sv));
         }
     }
 }
@@ -123,7 +126,7 @@ pair<optional<String>, optional<InternetAddress>> URL::Authority::Host::ParseRaw
                 case '%': {
                     if (i + 2 < tmp.end ()) {
                         unsigned char newC = (ConvertReadSingleHexDigit_ (*(i + 1)) << 4) + ConvertReadSingleHexDigit_ (*(i + 2));
-                        tmp.push_back (newC);
+                        utf8ResultBuffer.push_back (newC);
                         i += 2;
                     }
                     else {
@@ -131,7 +134,7 @@ pair<optional<String>, optional<InternetAddress>> URL::Authority::Host::ParseRaw
                     }
                 } break;
                 default: {
-                    tmp.push_back (*i);
+                    utf8ResultBuffer.push_back (*i);
                 } break;
             }
         }
