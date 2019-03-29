@@ -140,8 +140,8 @@ pair<optional<String>, optional<InternetAddress>> URL::Authority::Host::ParseRaw
 }
 String URL::Authority::Host::EncodeAsRawURL_ (const String& registeredName)
 {
-	// See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
-	string utf8Query = registeredName.AsUTF8 ();
+    // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
+    string utf8Query = registeredName.AsUTF8 ();
     string result;
     size_t sLength = utf8Query.length ();
     result.reserve (sLength);
@@ -159,20 +159,20 @@ String URL::Authority::Host::EncodeAsRawURL_ (const String& registeredName)
 
 String URL::Authority::Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
 {
-	// See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
-	switch (ipAddr.GetAddressFamily ()) {
+    // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
+    switch (ipAddr.GetAddressFamily ()) {
         case InternetAddress::AddressFamily::V4: {
-			return ipAddr.As<String> ();
+            return ipAddr.As<String> ();
 
         } break;
         case InternetAddress::AddressFamily::V6: {
-			return L"[" + ipAddr.As<String> () + L"]";
+            return L"[" + ipAddr.As<String> () + L"]";
 
         } break;
         default: {
             WeakAssertNotImplemented ();
             // Probably need to use the V??? format - but this maybe the best we can do for now...
-			return ipAddr.As<String> ();
+            return ipAddr.As<String> ();
         } break;
     }
 }
