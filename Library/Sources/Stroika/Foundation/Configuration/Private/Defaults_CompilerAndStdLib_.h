@@ -620,7 +620,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 */
 #ifndef qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
 #if defined(__GNUC__) && !defined(__clang__)
-#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy (__GNUC__ <= 8))
+#define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy (__GNUC__ <= 8))
 #else
 #define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy 0
 #endif
