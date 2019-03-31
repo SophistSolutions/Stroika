@@ -143,13 +143,6 @@ namespace Stroika::Foundation::IO::Network {
          *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
          */
         struct Authority {
-            /**
-             * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
-             *      The userinfo subcomponent may consist of a user name and, optionally,
-             *      scheme-specific information about how to gain authorization to access
-             *      the resource
-             */
-            optional<String> fUserInfo;
 
             /**
              * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:
@@ -209,9 +202,33 @@ namespace Stroika::Foundation::IO::Network {
             private:
                 friend bool operator== (const Host& lhs, const Host& rhs);
             };
-            Host fHost;
+
+            /*
+             *  note that https://tools.ietf.org/html/rfc3986#appendix-A sort if indicates that the host is NOT optional, but maybe empty
+             *  Because of how combining works with base urls and full URLs, I think its clearer to represent the empty case of an empty 
+             *  host as a missing host specificiation.
+             */
+            optional<Host> fHost;
 
             optional<PortType> fPort;
+
+            /**
+             * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
+             *      The userinfo subcomponent may consist of a user name and, optionally,
+             *      scheme-specific information about how to gain authorization to access
+             *      the resource
+             */
+            optional<String> fUserInfo;
+
+            Authority (const optional<Host>& h = nullopt, optional<PortType> port = nullopt, optional<String> userInfo = nullopt);
+
+            /**
+             *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
+             *  This may throw if given an invalid raw URL hostname value.
+             *
+             *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
+             */
+            static optional<Authority> Parse (const String& rawURLAuthorityText);
         };
 
         ///// &&&&& @TODO
@@ -306,6 +323,9 @@ namespace Stroika::Foundation::IO::Network {
          *  Returns if the URL protocol is secure (SSL-based). If the URL scheme is not recognized, this returns false.
          */
         nonvirtual bool IsSecure () const;
+
+    public:
+        nonvirtual optional<Authority> GetAuthority () const;
 
     public:
         /**

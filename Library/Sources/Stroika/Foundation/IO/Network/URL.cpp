@@ -182,6 +182,31 @@ String URL::Authority::Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
 
 /*
  ********************************************************************************
+ **************************** URL::Authority ************************************
+ ********************************************************************************
+ */
+optional<URL::Authority> URL::Authority::Parse (const String& rawURLAuthorityText)
+{
+    if (rawURLAuthorityText.empty ()) {
+        return nullopt;
+    }
+    optional<String> userInfo;
+    // From https://tools.ietf.org/html/rfc3986#appendix-A
+    String remainingString2Parse = rawURLAuthorityText;
+    if (auto oat = remainingString2Parse.Find ('@')) {
+        userInfo              = remainingString2Parse.SubString (0, *oat);
+        remainingString2Parse = remainingString2Parse.SubString (*oat + 1);
+    }
+    optional<uint16_t> port;
+    if (auto oPortColon = remainingString2Parse.Find (':')) {
+        port                  = Characters::String2Int<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1));
+        remainingString2Parse = remainingString2Parse.SubString (0, *oPortColon);
+    }
+    return URL::Authority{URL::Authority::Host::Parse (remainingString2Parse), port, userInfo};
+}
+
+/*
+ ********************************************************************************
  ************************************** URL *************************************
  ********************************************************************************
  */
@@ -505,6 +530,15 @@ bool URL::IsSecure () const
     SchemeType scheme = GetSchemeValue ();
     // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
     return scheme == L"https"sv or scheme == L"ftps"sv or scheme == L"ldaps"sv;
+}
+
+optional<URL::Authority> URL::GetAuthority () const
+{
+    // temporarily compute from these value (later change stored field)
+    if (fHost_.empty () and not fPort_.has_value ()) {
+        return nullopt;
+    }
+    return Authority{fHost_, fPort_};
 }
 
 URL::SchemeType URL::GetSchemeValue () const
