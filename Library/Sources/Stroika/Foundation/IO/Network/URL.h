@@ -467,7 +467,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
-            */
+        */
         nonvirtual void SetQueryString (const String& queryString);
 
     public:

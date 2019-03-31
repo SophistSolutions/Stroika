@@ -166,11 +166,9 @@ String URL::Authority::Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
     switch (ipAddr.GetAddressFamily ()) {
         case InternetAddress::AddressFamily::V4: {
             return ipAddr.As<String> ();
-
         } break;
         case InternetAddress::AddressFamily::V6: {
             return L"[" + ipAddr.As<String> () + L"]";
-
         } break;
         default: {
             WeakAssertNotImplemented ();
