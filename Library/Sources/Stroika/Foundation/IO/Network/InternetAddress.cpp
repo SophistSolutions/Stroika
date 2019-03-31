@@ -176,12 +176,14 @@ namespace Stroika::Foundation::IO::Network {
             case AddressFamily::V4: {
                 char        buf[INET_ADDRSTRLEN + 1];
                 const char* result = ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
-                return result == nullptr ? String () : String::FromUTF8 (result);
+                Assert (result != nullptr); // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
+                return String::FromUTF8 (result);
             } break;
             case AddressFamily::V6: {
                 char        buf[INET6_ADDRSTRLEN + 1];
                 const char* result = ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
-                return result == nullptr ? String () : String::FromUTF8 (result);
+                Assert (result != nullptr); // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
+                return String::FromUTF8 (result);
             } break;
             default: {
                 RequireNotReached ();
