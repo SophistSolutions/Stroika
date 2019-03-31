@@ -178,14 +178,21 @@ namespace Stroika::Foundation::IO::Network {
                 const char* result = ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                 Assert (result != nullptr);             // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
                 Assert (::strlen (buf) < sizeof (buf)); // docs don't say explicitly, but assuming it nul-terminates
+                Assert (result == buf);
                 return String::FromASCII (result);
             } break;
             case AddressFamily::V6: {
                 char        buf[INET6_ADDRSTRLEN];
                 const char* result = ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
-                Assert (result != nullptr);             // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
+                Assert (result != nullptr); // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
+                Assert (result == buf);
                 Assert (::strlen (buf) < sizeof (buf)); // docs don't say explicitly, but assuming it nul-terminates
-                return String::FromASCII (buf);
+#if qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
+                auto tmp = String::FromASCII (result);
+                return tmp;
+#else
+                return String::FromASCII (result);
+#endif
             } break;
             default: {
                 RequireNotReached ();

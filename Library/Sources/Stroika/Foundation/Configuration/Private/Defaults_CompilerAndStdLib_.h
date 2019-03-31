@@ -560,6 +560,74 @@ ABORTING...
 #endif
 
 /*
+Builds/g++-8-debug-c++17/Tests/Test41
+=================================================================
+==11117==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ffeaef13750 at pc 0x55fa63931042 bp 0x7ffeaef13680 sp 0x7ffeaef13670
+WRITE of size 4 at 0x7ffeaef13750 thread T0
+    #0 0x55fa63931041 in Stroika::Foundation::Characters::String::FromASCII(char const*, char const*) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.cpp:352
+    #1 0x55fa63d84a02 in Stroika::Foundation::Characters::String::FromASCII(char const*) ../../Characters/Concrete/../String.inl:188
+    #2 0x55fa63f0263f in Stroika::Foundation::Characters::String Stroika::Foundation::IO::Network::InternetAddress::As<Stroika::Foundation::Characters::String>() const /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/Network/InternetAddress.cpp:188
+    #3 0x55fa63f4b745 in Stroika::Foundation::IO::Network::URL::Authority::Host::EncodeAsRawURL_(Stroika::Foundation::IO::Network::InternetAddress const&) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/Network/URL.cpp:171
+    #4 0x55fa638f83d8 in Stroika::Foundation::IO::Network::URL::Authority::Host::Host(Stroika::Foundation::IO::Network::InternetAddress const&) (/Sandbox/Stroika-Dev/Builds/Debug/Tests/Test41+0x19e43d8)
+    #5 0x55fa638e619c in TestHostParsing_ /Sandbox/Stroika-Dev/Tests/41/Test.cpp:267
+    #6 0x55fa638e7dae in DoTests_ /Sandbox/Stroika-Dev/Tests/41/Test.cpp:299
+    #7 0x55fa638f0411 in DoRegressionTests_ /Sandbox/Stroika-Dev/Tests/41/Test.cpp:440
+    #8 0x55fa63925288 in Stroika::TestHarness::PrintPassOrFail(void (*)()) /Sandbox/Stroika-Dev/Tests/41/../TestHarness/TestHarness.cpp:75
+    #9 0x55fa638f0443 in main /Sandbox/Stroika-Dev/Tests/41/Test.cpp:450
+    #10 0x7fc2d310909a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2409a)
+    #11 0x55fa637d0f19 in _start (/Sandbox/Stroika-Dev/Builds/Debug/Tests/Test41+0x18bcf19)
+
+Address 0x7ffeaef13750 is located in stack of thread T0 at offset 144 in frame
+    #0 0x55fa63930d87 in Stroika::Foundation::Characters::String::FromASCII(char const*, char const*) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.cpp:345
+
+  This frame has 1 object(s):
+    [32, 4160) 'buf' <== Memory access at offset 144 is inside this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-use-after-scope /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.cpp:352 in Stroika::Foundation::Characters::String::FromASCII(char const*, char const*)
+Shadow bytes around the buggy address:
+  0x100055dda690: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda6a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda6b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda6c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda6d0: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00
+=>0x100055dda6e0: 00 00 00 00 00 00 00 00 00 00[f8]f8 f8 f8 f8 f8
+  0x100055dda6f0: f8 f8 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda710: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda720: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x100055dda730: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==11117==ABORTING
+*/
+#ifndef qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
+#if defined(__GNUC__) && !defined(__clang__)
+#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy (__GNUC__ <= 8))
+#else
+#define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy 0
+#endif
+
+#endif
+
+/*
 @DESCRIPTION:   
 
 @see https://stroika.atlassian.net/browse/STK-635
