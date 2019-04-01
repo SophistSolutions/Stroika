@@ -177,6 +177,36 @@ namespace Stroika::Foundation::IO::Network {
 
     /*
      ********************************************************************************
+     *************************************** URI ************************************
+     ********************************************************************************
+     */
+    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& relPath, const String& query, const String& fragment)
+        : fScheme_{scheme}
+        , fAuthority_{authority}
+        , fRelPath_{relPath}
+        , fQuery_{query}
+        , fFragment_{fragment}
+    {
+    }
+    inline URI::URI (const URL& url)
+        : fScheme_{url.GetScheme ()}
+        , fAuthority_{url.GetAuthority ()}
+        , fRelPath_{url.GetHostRelativePath ()}
+        , fQuery_{url.GetQueryString ()}
+        , fFragment_{url.GetFragment ()}
+    {
+    }
+    inline bool URI::IsURL () const
+    {
+        return false; // check key fields present?
+    }
+    inline optional<URI::Authority> URI::GetAuthority () const
+    {
+        return fAuthority_;
+    }
+
+    /*
+     ********************************************************************************
      ******************* URL::Authority::Host operators *****************************
      ********************************************************************************
      */

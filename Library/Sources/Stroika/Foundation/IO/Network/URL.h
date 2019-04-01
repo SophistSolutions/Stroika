@@ -68,6 +68,7 @@ namespace Stroika::Foundation::IO::Network {
     using Characters::String;
 
     class URLQuery;
+    class URI;
 
     /**
      *  Class to help encode/decode the logical parts of an internet URL
@@ -355,6 +356,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual void SetPortNumber (const optional<PortType>& portNum = nullopt);
 
+#if 0
     public:
         /**
          *  NYI
@@ -362,6 +364,16 @@ namespace Stroika::Foundation::IO::Network {
          *  Presume the given url is the owning webpage. What is the print string for this relative url.
          */
         nonvirtual String GetRelativeURL (const URL& baseURL) const;
+#endif
+
+    public:
+        /**
+         *  Combine a full url with a relative URI, to produce a new URL. Note - its completely legal for hte argument uri
+         *  to be a full url, in which case this returns its argument (taking no properties from 'this')
+         *
+         *      @see https://tools.ietf.org/html/rfc3986#section-5.2
+         */
+        nonvirtual URL Combine (const URI& uri) const;
 
     public:
         /**
@@ -523,38 +535,82 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
+     *  operators indirects to URL::Compare()
      */
     bool operator== (const URL::Authority::Host& lhs, const URL::Authority::Host& rhs);
 
     /**
-     *  operator indirects to URL::Compare()
+     *  operators indirects to URL::Compare()
      */
     bool operator< (const URL& lhs, const URL& rhs);
-
-    /**
-     *  operator indirects to URL::Compare()
-     */
     bool operator<= (const URL& lhs, const URL& rhs);
-
-    /**
-     *  operator indirects to URL::Equals ()
-     */
     bool operator== (const URL& lhs, const URL& rhs);
-
-    /**
-     *  operator indirects to URL::Equals ()
-     */
     bool operator!= (const URL& lhs, const URL& rhs);
-
-    /**
-     *  operator indirects to URL::Compare()
-     */
     bool operator> (const URL& lhs, const URL& rhs);
+    bool operator>= (const URL& lhs, const URL& rhs);
 
     /**
-     *  operator indirects to URL::Compare()
+     *  A URI is EITHER a URL, or a relative reference to a URL. This definition is VERY MUCH LESS THAN CLEAR,
+     *  but the closest I can infer from:
+     *      https://tools.ietf.org/html/rfc3986
+     *
+     *          A URI can be further classified as a locator, a name, or both.  The
+     *          term "Uniform Resource Locator" (URL) refers to the subset of URIs
+     *          that, in addition to identifying a resource, provide a means of
+     *          locating the resource by describing its primary access mechanism
+     *          (e.g., its network "location").
      */
-    bool operator>= (const URL& lhs, const URL& rhs);
+    class URI {
+    public:
+        using Authority = URL::Authority;
+
+    public:
+        using SchemeType = URL::SchemeType;
+
+    public:
+        /**
+         *  This Requires() its arguments are valid and in range (where provided)
+         *
+         *  These will raise exceptions if anything illegal in the URL specification.
+         */
+        URI () = default;
+        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& relPath = String{}, const String& query = String{}, const String& fragment = String{});
+        URI (const URL& url);
+
+    public:
+        /**
+         *  This returns true if this is an absolute URL, and false if it is a relative URL
+         */
+        nonvirtual bool IsURL () const;
+
+    public:
+        /**
+         *  The authority of a URI is basically the hostname (+ optional port and user info)
+         */
+        nonvirtual optional<Authority> GetAuthority () const;
+
+    public:
+        /**
+         *  Supported conversion-targets (T):
+         *      String - converts to the raw URI format (as it would appear in a web-browser or html link)
+         *      URL - requires IsURL ()  - but then returns URL
+         */
+        template <typename T>
+        nonvirtual T As () const;
+
+    public:
+        /**
+         *  For debugging purposes: don't count on the format.
+         */
+        nonvirtual String ToString () const;
+
+    private:
+        optional<String>    fScheme_;    // aka protocol
+        optional<Authority> fAuthority_; // aka host+port+username
+        optional<String>    fRelPath_;   // must read docs on combinng urls - but this maybe required (though can be empty)
+        optional<String>    fQuery_;     // ditto
+        optional<String>    fFragment_;  // ditto
+    };
 
     /**
      *  Probably should define standard protos here - with named constants - like http/ftp/https etc
@@ -562,6 +618,7 @@ namespace Stroika::Foundation::IO::Network {
     optional<uint16_t> GetDefaultPortForScheme (const String& proto);
 
     /**
+     &  @todo - this should be nested under URL/URI
      */
     class URLQuery {
     public:
