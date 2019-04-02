@@ -279,6 +279,7 @@ namespace Stroika::Foundation::IO::Network {
              *      CAN produce URL which is relative or absoluete (new IsAbsolute () method checks for presence of schema, and authority/host)
              &&& AND 
              *  AND make it the DEFAULT when constructing URL from String
+             &&& NO - INSTEAD - MAKE THIS DEPRECATED AND ADD NEW VALUE FOR eNormallyAsRFC...
              */
             eFlexiblyAsUI,
 

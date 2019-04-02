@@ -265,9 +265,12 @@ URL URL::Parse (const String& w, ParseOptions po)
             hostNameStart   = e + 1;
         }
         else if (flexibleURLParsingMode) {
-            // NO - leave blank, so
-            // caller parsing can see its missing.
-            // result.fScheme_ = L"http"sv;
+			/* 
+			 *	Until Stroika 2.1d23 this just left blank (so caller parsing can see its missing)
+			 *	But since Stroika v2.1d23, this flexible parsing mode constructs a full url, by filling in details at parse
+			 *	time
+			 */
+            result.fScheme_ = L"http"sv;
         }
         else {
             Execution::Throw (Execution::RuntimeErrorException (L"URL missing scheme"sv));
@@ -724,8 +727,8 @@ http://ABC.com:/%7esmith/home.html
 #if 0
 URI URI::Parse (const String& rawURL)
 {
-	// https://tools.ietf.org/html/rfc3986#appendix-B
-	return URI{};
+    // https://tools.ietf.org/html/rfc3986#appendix-B
+    return URI{};
 }
 #endif
 

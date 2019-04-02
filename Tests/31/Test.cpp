@@ -697,7 +697,7 @@ namespace {
         tmp.fVector1_.push_back (3);
         tmp.fVector1_.push_back (-91);
         tmp.fURL1_     = IO::Network::URL (L"http://localhost:3344/fred", IO::Network::URL::eFlexiblyAsUI);
-        tmp.fURL2_     = IO::Network::URL (L"localhost:1234", IO::Network::URL::eFlexiblyAsUI);
+        tmp.fURL2_     = IO::Network::URL (L"http://localhost:1234", IO::Network::URL::eFlexiblyAsUI);
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
