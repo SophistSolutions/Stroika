@@ -265,11 +265,11 @@ URL URL::Parse (const String& w, ParseOptions po)
             hostNameStart   = e + 1;
         }
         else if (flexibleURLParsingMode) {
-			/* 
-			 *	Until Stroika 2.1d23 this just left blank (so caller parsing can see its missing)
-			 *	But since Stroika v2.1d23, this flexible parsing mode constructs a full url, by filling in details at parse
-			 *	time
-			 */
+            /* 
+             *  Until Stroika 2.1d23 this just left blank (so caller parsing can see its missing)
+             *  But since Stroika v2.1d23, this flexible parsing mode constructs a full url, by filling in details at parse
+             *  time
+             */
             result.fScheme_ = L"http"sv;
         }
         else {
