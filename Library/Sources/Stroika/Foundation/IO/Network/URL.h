@@ -414,9 +414,8 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  @see GetScheme, but defaults to (typically) to http. Roughly equivilent to GetScheme ().Value (L"https") - except that we might take other info into acocunt to select another default scheme
          */
-        nonvirtual SchemeType GetSchemeValue () const;
+        [[deprecated ("Use GetScheme instead (no value version cuz no good default)- as of 2.1d23")]] nonvirtual SchemeType GetSchemeValue () const;
 
     public:
         /**
@@ -581,6 +580,12 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  This takes argument string url, with possibly % encoded characters, accorind to https://tools.ietf.org/html/rfc3986
+         */
+        static URI Parse (const String& rawURL);
+
+    public:
+        /**
          *  This returns true if this is an absolute URL, and false if it is a relative URL
          */
         nonvirtual bool IsURL () const;
@@ -617,7 +622,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  Probably should define standard protos here - with named constants - like http/ftp/https etc
      */
-    optional<uint16_t> GetDefaultPortForScheme (const String& proto);
+    optional<uint16_t> GetDefaultPortForScheme (const optional<String>& scheme);
 
     /**
      &  @todo - this should be nested under URL/URI

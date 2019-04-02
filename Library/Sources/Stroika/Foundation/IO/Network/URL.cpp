@@ -66,7 +66,7 @@ namespace {
  ********************* Network::GetDefaultPortForScheme *************************
  ********************************************************************************
  */
-optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
+optional<uint16_t> Network::GetDefaultPortForScheme (const optional<String>& scheme)
 {
     // From http://www.iana.org/assignments/port-numbers
     static const pair<String, uint16_t> kPredefined_[] = {
@@ -77,9 +77,11 @@ optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
         {L"ftp"sv, static_cast<uint16_t> (21)},
         {L"ftps"sv, static_cast<uint16_t> (990)},
     };
-    for (auto i : kPredefined_) {
-        if (i.first == proto) {
-            return i.second;
+    if (scheme) {
+        for (auto i : kPredefined_) {
+            if (i.first == *scheme) {
+                return i.second;
+            }
         }
     }
     return nullopt;
@@ -513,7 +515,7 @@ void URL::SetScheme (const SchemeType& scheme)
 
 bool URL::IsSecure () const
 {
-    SchemeType scheme = GetSchemeValue ();
+    optional<SchemeType> scheme = GetScheme ();
     // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
     return scheme == L"https"sv or scheme == L"ftps"sv or scheme == L"ldaps"sv;
 }
@@ -533,9 +535,13 @@ String URL::GetFullURL () const
 {
     String result;
 
-    SchemeType scheme = GetSchemeValue ();
+    optional<SchemeType> scheme = GetScheme ();
+    // @todo - major rework of this for partial URLs
+    if (not scheme.has_value ()) {
+        scheme = L"http"; // backward compatible but bad design...
+    }
 
-    result += scheme + L":"sv;
+    result += *scheme + L":"sv;
 
     if (fAuthority_.fHost) {
         result += L"//"sv + fAuthority_.fHost->AsEncodedHostName ();
@@ -714,6 +720,15 @@ http://ABC.com:/%7esmith/home.html
  ************************************** URI *************************************
  ********************************************************************************
  */
+
+#if 0
+URI URI::Parse (const String& rawURL)
+{
+	// https://tools.ietf.org/html/rfc3986#appendix-B
+	return URI{};
+}
+#endif
+
 template <>
 String URI::As () const
 {

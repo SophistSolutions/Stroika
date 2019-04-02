@@ -108,7 +108,7 @@ namespace Stroika::Foundation::IO::Network {
             return *fAuthority_.fPort;
         }
         else {
-            return GetDefaultPortForScheme (GetSchemeValue ()).value_or (defaultValue);
+            return GetDefaultPortForScheme (GetScheme ()).value_or (defaultValue);
         }
     }
     inline optional<URL::PortType> URL::GetPortNumber () const
