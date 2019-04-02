@@ -202,6 +202,7 @@ namespace Stroika::Foundation::IO::Network {
 
             private:
                 friend bool operator== (const Host& lhs, const Host& rhs);
+                friend bool operator!= (const Host& lhs, const Host& rhs);
             };
 
             /*
@@ -305,7 +306,7 @@ namespace Stroika::Foundation::IO::Network {
          *  (except for the default constuctor) - these will raise exceptions if anything illegal in the URL specification.
          *  \todo - maybe we shouldn't have an empty url constructor?"
          */
-        URL ();
+        URL () = default;
         URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber = nullopt, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
         URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
         URL (const String& urlText, ParseOptions po);
@@ -427,11 +428,13 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+            // @todo DEPRECATE THIS METHIOD - cuz unclear if returns encoded or unencoded host
          */
         nonvirtual String GetHost () const;
 
     public:
         /**
+            // @todo DEPRECATE THIS METHIOD - cuz unclear if returns encoded or unencoded host
          @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
             */
         nonvirtual void SetHost (const String& host);
@@ -526,12 +529,11 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual String ToString () const;
 
     private:
-        optional<String>   fScheme_; // aka protocol
-        String             fHost_;
-        optional<PortType> fPort_;
-        String             fRelPath_;
-        String             fQuery_;
-        String             fFragment_;
+        optional<String> fScheme_; // aka protocol
+        Authority        fAuthority_;
+        String           fRelPath_;
+        String           fQuery_;
+        String           fFragment_;
     };
 
     /**

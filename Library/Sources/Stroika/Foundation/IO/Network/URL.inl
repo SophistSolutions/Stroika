@@ -104,8 +104,8 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline URL::PortType URL::GetPortValue (PortType defaultValue) const
     {
-        if (fPort_) {
-            return *fPort_;
+        if (fAuthority_.fPort) {
+            return *fAuthority_.fPort;
         }
         else {
             return GetDefaultPortForScheme (GetSchemeValue ()).value_or (defaultValue);
@@ -113,11 +113,11 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline optional<URL::PortType> URL::GetPortNumber () const
     {
-        return fPort_;
+        return fAuthority_.fPort;
     }
     inline void URL::SetPortNumber (const optional<PortType>& portNum)
     {
-        fPort_ = portNum;
+        fAuthority_.fPort = portNum;
     }
     inline optional<URL::SchemeType> URL::GetScheme () const
     {
@@ -125,11 +125,21 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline String URL::GetHost () const
     {
-        return fHost_;
+        if (fAuthority_.fHost) {
+            return fAuthority_.fHost->AsEncodedHostName ();
+        }
+        else {
+            return String{};
+        }
     }
     inline void URL::SetHost (const String& host)
     {
-        fHost_ = host;
+        if (host.empty ()) {
+            fAuthority_.fHost = nullopt;
+        }
+        else {
+            fAuthority_.fHost = host;
+        }
     }
     inline void URL::SetScheme (const optional<SchemeType>& scheme)
     {
@@ -212,7 +222,11 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline bool operator== (const URL::Authority::Host& lhs, const URL::Authority::Host& rhs)
     {
-        return lhs.fEncodedName_ == rhs.fEncodedName_;
+        return lhs.fEncodedName_.Equals (rhs.fEncodedName_, Characters::CompareOptions::eCaseInsensitive);
+    }
+    inline bool operator!= (const URL::Authority::Host& lhs, const URL::Authority::Host& rhs)
+    {
+        return not lhs.fEncodedName_.Equals (rhs.fEncodedName_, Characters::CompareOptions::eCaseInsensitive);
     }
 
     /*

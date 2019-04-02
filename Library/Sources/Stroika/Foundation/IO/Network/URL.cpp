@@ -208,18 +208,8 @@ optional<URL::Authority> URL::Authority::Parse (const String& rawURLAuthorityTex
  ************************************** URL *************************************
  ********************************************************************************
  */
-URL::URL ()
-    : fScheme_ ()
-    , fHost_ ()
-    , fPort_ ()
-    , fRelPath_ ()
-    , fQuery_ ()
-    , fFragment_ ()
-{
-    Ensure (empty ());
-}
-
 URL::URL (const String& urlText, ParseOptions po)
+    : URL ()
 {
     *this = Parse (urlText, po);
 }
@@ -318,8 +308,8 @@ URL URL::Parse (const String& w, ParseOptions po)
                     break;
                 }
             }
-            size_t endOfHost = i;
-            result.fHost_    = w.SubString (hostNameStart, endOfHost);
+            size_t endOfHost         = i;
+            result.fAuthority_.fHost = Authority::Host::Parse (w.SubString (hostNameStart, endOfHost));
 
             // COULD check right here for port# if c == ':' - but don't bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -331,7 +321,7 @@ URL URL::Parse (const String& w, ParseOptions po)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        result.fPort_ = String2Int<PortType> (num);
+                        result.fAuthority_.fPort = String2Int<PortType> (num);
                     }
                 }
             }
@@ -366,8 +356,7 @@ URL URL::Parse (const String& w, ParseOptions po)
 
 URL::URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
     : fScheme_ (NormalizeScheme_ (scheme))
-    , fHost_ (host)
-    , fPort_ (portNumber)
+    , fAuthority_{Authority::Host{host}, portNumber}
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
@@ -379,8 +368,7 @@ URL::URL (const SchemeType& scheme, const String& host, const optional<PortType>
 
 URL::URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query, const String& fragment)
     : fScheme_ (NormalizeScheme_ (scheme))
-    , fHost_ (host)
-    , fPort_ ()
+    , fAuthority_{Authority::Host{host}}
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
@@ -422,7 +410,7 @@ URL URL::ParseHostRelativeURL_ (const String& w)
 URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 {
     URL url;
-    url.fPort_ = nullopt;
+    url.fAuthority_.fPort = nullopt;
 
     if (w.empty ()) {
         return url;
@@ -471,8 +459,8 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
                     break;
                 }
             }
-            size_t endOfHost = i;
-            url.fHost_       = w.SubString (hostNameStart, endOfHost);
+            size_t endOfHost      = i;
+            url.fAuthority_.fHost = Authority::Host::Parse (w.SubString (hostNameStart, endOfHost));
 
             // COULD check right here for port# if c == ':' - but don't bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -484,7 +472,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        url.fPort_ = String2Int<PortType> (num);
+                        url.fAuthority_.fPort = String2Int<PortType> (num);
                     }
                 }
             }
@@ -532,11 +520,7 @@ bool URL::IsSecure () const
 
 optional<URL::Authority> URL::GetAuthority () const
 {
-    // temporarily compute from these value (later change stored field)
-    if (fHost_.empty () and not fPort_.has_value ()) {
-        return nullopt;
-    }
-    return Authority{fHost_, fPort_};
+    return fAuthority_;
 }
 
 URL::SchemeType URL::GetSchemeValue () const
@@ -553,10 +537,10 @@ String URL::GetFullURL () const
 
     result += scheme + L":"sv;
 
-    if (not fHost_.empty ()) {
-        result += L"//"sv + fHost_;
-        if (fPort_.has_value () and fPort_ != GetDefaultPortForScheme (scheme)) {
-            result += Format (L":%d", *fPort_);
+    if (fAuthority_.fHost) {
+        result += L"//"sv + fAuthority_.fHost->AsEncodedHostName ();
+        if (fAuthority_.fPort.has_value () and fAuthority_.fPort != GetDefaultPortForScheme (scheme)) {
+            result += Format (L":%d", *fAuthority_.fPort);
         }
         result += L"/"sv;
     }
@@ -589,18 +573,21 @@ String URL::GetHostRelPathDir () const
 
 void URL::clear ()
 {
-    fScheme_ = nullopt;
-    fHost_.clear ();
+    fScheme_              = nullopt;
+    fAuthority_.fHost     = nullopt;
+    fAuthority_.fPort     = nullopt;
+    fAuthority_.fUserInfo = nullopt;
     fRelPath_.clear ();
     fQuery_.clear ();
     fFragment_.clear ();
-    fPort_ = nullopt;
+    fAuthority_.fPort = nullopt;
     Ensure (empty ());
 }
 
 bool URL::empty () const
 {
-    return not fScheme_.has_value () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and not fPort_.has_value ();
+    // @todo consider fAuthority.fUserInfo - and rethink this definition
+    return not fScheme_.has_value () and not fAuthority_.fHost and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and not fAuthority_.fPort.has_value ();
 }
 
 bool URL::Equals (const URL& rhs) const
@@ -610,12 +597,11 @@ bool URL::Equals (const URL& rhs) const
         return false;
     }
 
-    //@todo - consider if we want to do CASE INSENSIVE COMAPRE - I THINK WE MUST!!!
-    if (fHost_ != rhs.fHost_) {
+    if (fAuthority_.fHost != rhs.fAuthority_.fHost) {
         return false;
     }
 
-    if (fPort_ != rhs.fPort_) {
+    if (fAuthority_.fPort != rhs.fAuthority_.fPort) {
         return false;
     }
     if (fRelPath_ != rhs.fRelPath_) {
