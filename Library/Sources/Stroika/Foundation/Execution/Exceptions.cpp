@@ -124,7 +124,7 @@ optional<String> TryToOverrideDefaultWindowsSystemCategoryMessage_ (error_code e
     return {};
 }
 #endif
-Characters::String Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code errCode)
+Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code errCode)
 {
 #if qPlatform_Windows
     // for some messages, the default windows implemation does poorly generating messages
@@ -136,7 +136,7 @@ Characters::String Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code er
     return Characters::String::FromNarrowSDKString (errCode.message ());
 }
 
-Characters::String Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (error_code errCode, const Characters::String& message)
+Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (error_code errCode, const Characters::String& message)
 {
     StringBuilder sb{message};
     sb += L" ";
@@ -158,7 +158,7 @@ Characters::String Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (error
     return sb.str ();
 }
 
-void Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code errCode)
+void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (error_code errCode)
 {
     if (errCode == errc::not_enough_memory) {
         Throw (bad_alloc ());
