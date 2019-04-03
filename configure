@@ -489,29 +489,6 @@ sub	SetInitialDefaults_
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
 	if ("$^O" eq "cygwin") {
-		# try vs 2k17
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-			#autodetect ATLMFC (Express verison missing it)
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-				if ($? == 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
-			}
-		}
 		# try vs 2k19
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
@@ -527,6 +504,29 @@ sub	SetInitialDefaults_
 			#autodetect ATLMFC (Express verison missing it)
 			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
 				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+				if ($? == 0) {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+				else  {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+				}
+			}
+		}
+		# try vs 2k17
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
+			}
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
+			}
+			#autodetect ATLMFC (Express verison missing it)
+			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
 				if ($? == 0) {
 					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 				}
