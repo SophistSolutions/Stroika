@@ -726,25 +726,44 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          static const RegularExpression kSonosRE_{L"([0-9.:]*)( - .*)"_RegEx};
          *          static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
-         *          optional< String> match1;
-         *          optional< String> match2;
+         *          optional<String> match1;
+         *          optional<String> match2;
          *          VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          // https://tools.ietf.org/html/rfc3986#appendix-B
+         *          static const RegularExpression kParseURLRegExp_{L"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
+         *          optional<String>               scheme;
+         *          optional<String>               authority;
+         *          optional<String>               path;
+         *          optional<String>               query;
+         *          optional<String>               fragment;
+         *          if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+         *              DbgTrace (L"***good - scehme=%s", Characters::ToString (scheme).c_str ());
+         *              DbgTrace (L"***good - authority=%s", Characters::ToString (authority).c_str ());
+         *              DbgTrace (L"***good - path=%s", Characters::ToString (path).c_str ());
+         *              DbgTrace (L"***good - query=%s", Characters::ToString (query).c_str ());
+         *              DbgTrace (L"***good - fragment=%s", Characters::ToString (fragment).c_str ());
+         *          }
          *      \endcode
          *
          *  Details on the regular expression language/format can be found at:
          *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
+         *
+         *  \note If any 'submatch' arguments are passed to Match, they MUST be of type optional<String>* or nullptr.
+         *        Passing nullptr allows matched parameters to not be returned, but still identified positionally (by index).
          *
          *  @see Contains
          *  @see StartsWith
          *  @see EndsWith
          *  @see Find
          *  @see FindEach
-         *
-         *  \todo redo overloads with variadic template
          */
         nonvirtual bool Match (const RegularExpression& regEx) const;
-        nonvirtual bool Match (const RegularExpression& regEx, optional<String>* subMatch1) const;
-        nonvirtual bool Match (const RegularExpression& regEx, optional<String>* subMatch1, optional<String>* subMatch2) const;
+        template <typename... OPTIONAL_STRINGS>
+        nonvirtual bool Match (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const;
 
     public:
         /**
