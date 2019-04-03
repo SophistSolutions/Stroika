@@ -86,13 +86,13 @@ namespace Stroika::Foundation::Cryptography::Encoding {
     class OpenSSLCryptoParams {
     public:
         // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
-        OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
+        OpenSSLCryptoParams (const function<void (EVP_CIPHER_CTX*, Direction d)>& f);
         // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
         OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV);
         OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey);
 
     public:
-        function<void(EVP_CIPHER_CTX*, Direction)> fInitializer;
+        function<void (EVP_CIPHER_CTX*, Direction)> fInitializer;
     };
 #endif
 

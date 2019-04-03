@@ -53,9 +53,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         /**
          */
         Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart);
-        Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, AutoStart);
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart);
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart);
         Listener (Listener&&)      = default;
         Listener (const Listener&) = delete;
 
@@ -75,7 +75,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
          *  This can be done after the listening has started.
          */
-        void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
+        void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
 
     public:
         /**

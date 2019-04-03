@@ -423,7 +423,7 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
     Led_Distance fullWordWidth = LookupLengthInVector (widthsVector, startSoFar, length);
 
     Assert (length >= 1);
-    size_t guessIdx = size_t ((length - 1) * (float(wrapWidth) / float(fullWordWidth)));
+    size_t guessIdx = size_t ((length - 1) * (float (wrapWidth) / float (fullWordWidth)));
     Assert (guessIdx < length);
 
 /*

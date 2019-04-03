@@ -66,9 +66,12 @@ namespace Stroika::Foundation::Database::SQLite {
         /**
          */
         Connection () = delete;
-        Connection (const URL& dbURL, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
-        Connection (const String& dbPath, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
-        Connection (InMemoryDBFlag memoryDBFlag, const function<void(Connection&)>& dbInitializer = [](Connection&) {});
+        Connection (
+            const URL& dbURL, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
+        Connection (
+            const String& dbPath, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
+        Connection (
+            InMemoryDBFlag memoryDBFlag, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
         Connection (const Connection&) = delete;
 
     public:

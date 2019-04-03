@@ -60,7 +60,7 @@ WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, cons
     if (x != 0) {
         Execution::Throw (Exception (L"PdhOpenQuery"sv));
     }
-    counterNames.Apply ([this](String i) { AddCounter (i); });
+    counterNames.Apply ([this] (String i) { AddCounter (i); });
 }
 
 WMICollector::PerInstanceData_::~PerInstanceData_ ()
@@ -158,8 +158,8 @@ WMICollector::WMICollector (const String& objectName, const Iterable<String>& in
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");
 #endif
-    instances.Apply ([this](String i) { AddInstance_ (i); });
-    counterName.Apply ([this](String i) { AddCounter_ (i); });
+    instances.Apply ([this] (String i) { AddInstance_ (i); });
+    counterName.Apply ([this] (String i) { AddCounter_ (i); });
 }
 
 WMICollector::WMICollector (const WMICollector& from)
@@ -183,8 +183,8 @@ WMICollector& WMICollector::operator= (const WMICollector& rhs)
         lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};
         fInstanceData_.clear ();
         fObjectName_ = rhs.fObjectName_;
-        rhs.fInstanceData_.Keys ().Apply ([this](String i) { AddInstance_ (i); });
-        rhs.fCounterNames_.Apply ([this](String i) { AddCounter_ (i); });
+        rhs.fInstanceData_.Keys ().Apply ([this] (String i) { AddInstance_ (i); });
+        rhs.fCounterNames_.Apply ([this] (String i) { AddCounter_ (i); });
     }
     return *this;
 }
@@ -195,7 +195,7 @@ void WMICollector::Collect ()
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::Collect");
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    fInstanceData_.Apply ([this](KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
+    fInstanceData_.Apply ([this] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
         PDH_STATUS x = ::PdhCollectQueryData (i.fValue->fQuery_);
         if (x != 0) {
             bool isPDH_PDH_NO_DATA = (x == PDH_NO_DATA);
@@ -278,7 +278,7 @@ void WMICollector::AddCounters (const Iterable<String>& counterNames)
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounters");
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    counterNames.Apply ([this](String i) { AddCounter_ (i); });
+    counterNames.Apply ([this] (String i) { AddCounter_ (i); });
 }
 
 void WMICollector::AddInstances (const String& instance)
@@ -296,7 +296,7 @@ void WMICollector::AddInstances (const Iterable<String>& instances)
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstances");
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    instances.Apply ([this](String i) { AddInstance_ (i); });
+    instances.Apply ([this] (String i) { AddInstance_ (i); });
 }
 
 bool WMICollector::AddInstancesIf (const String& instance)
@@ -319,7 +319,7 @@ bool WMICollector::AddInstancesIf (const Iterable<String>& instances)
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     bool                                               anyAdded = false;
-    instances.Apply ([this, &anyAdded](String i) {
+    instances.Apply ([this, &anyAdded] (String i) {
         if (not fInstanceData_.ContainsKey (i)) {
             AddInstance_ (i);
             anyAdded = true;
@@ -365,7 +365,7 @@ void WMICollector::AddCounter_ (const String& counterName)
 #endif
     //RENEABLKE WHEN WE HAVE RECURSIVE DEBUG LOCK - lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (not fCounterNames_.Contains (counterName));
-    fInstanceData_.Apply ([this, counterName](KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
+    fInstanceData_.Apply ([this, counterName] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
         i.fValue->AddCounter (counterName);
     });
     fCounterNames_.Add (counterName);

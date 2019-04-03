@@ -207,7 +207,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
 
 Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
-    auto ComputeIdx_ = [](const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
+    auto ComputeIdx_ = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
         size_t result = 0;
         for (auto i = s; i != c; ++i, ++result)
             ;
@@ -587,7 +587,7 @@ DayOfWeek Date::GetDayOfWeek () const
      *              - where {\displaystyle R(y,m)} R(y,m) is the remainder after division of y by m,[6] or y modulo m.
      */
     unsigned int y             = static_cast<unsigned int> (GetYear ());
-    auto         R             = [](unsigned int i, unsigned int r) { return i % r; };
+    auto         R             = [] (unsigned int i, unsigned int r) { return i % r; };
     unsigned int weekdayOfJan1 = R (1 + 5 * R (y - 1, 4) + 4 * R (y - 1, 100) + 6 * R (y - 1, 400), 7);
     // this assumes Sunday is ZERO and the rest of the days follow it...
 
@@ -791,7 +791,7 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
         int yearDiff = deathDate.has_value () ? YearDifference (*deathDate, *birthDate) : YearDifference (DateTime::GetToday (), *birthDate);
         if (yearDiff >= 0 and yearDiff < 2) {
             float   yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
-            int     months    = int(yearDiffF * 12.0f + 0.4999f);
+            int     months    = int (yearDiffF * 12.0f + 0.4999f);
             wstring unitBase  = abbrevUnit ? L"mo" : L"month";
             return Format (L"%d %s", months, Linguistics::CurrentLocaleMessageUtilities::PluralizeNoun (unitBase, months).c_str ());
         }

@@ -1418,7 +1418,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
             case SB_LINEUP: {
                 if (GetHScrollPos () > 0) {
-                    SetHScrollPos (max<Led_Coordinate> (0, int(GetHScrollPos ()) - increment));
+                    SetHScrollPos (max<Led_Coordinate> (0, int (GetHScrollPos ()) - increment));
                 }
             } break;
 
@@ -2582,7 +2582,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineIndex (WPARAM wParam, LPARAM /*lParam*/)
     {
-        size_t row = (int(wParam) == -1) ? GetRowContainingPosition (GetSelectionEnd ()) : (size_t (wParam));
+        size_t row = (int (wParam) == -1) ? GetRowContainingPosition (GetSelectionEnd ()) : (size_t (wParam));
         if (row < 0) {
             row = 0;
         }
@@ -2674,7 +2674,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineLength (WPARAM wParam, LPARAM /*lParam*/)
     {
-        size_t row = (int(wParam) == -1) ? GetRowContainingPosition (GetSelectionEnd ()) : (size_t (wParam));
+        size_t row = (int (wParam) == -1) ? GetRowContainingPosition (GetSelectionEnd ()) : (size_t (wParam));
         if (row < 0) {
             row = 0;
         }
@@ -2686,9 +2686,9 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineScroll (WPARAM wParam, LPARAM lParam)
     {
-        [[maybe_unused]] int nChars = int(wParam); // NOTE THAT FOR NOW WE IGNORE nChars since we only
+        [[maybe_unused]] int nChars = int (wParam); // NOTE THAT FOR NOW WE IGNORE nChars since we only
         // support word-wrapped text for this release...
-        int nLines = int(lParam);
+        int nLines = int (lParam);
         ScrollByIfRoom (nLines);
         return !!(GetStyle () & ES_MULTILINE);
     }

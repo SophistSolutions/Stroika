@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Cache {
         inherited::clear (key);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline void SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (function<bool(typename Configuration::ArgByValueType<KEY>)> clearPredicate)
+    inline void SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (function<bool (typename Configuration::ArgByValueType<KEY>)> clearPredicate)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::clear (clearPredicate);

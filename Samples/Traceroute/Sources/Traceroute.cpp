@@ -40,7 +40,7 @@ int main (int argc, const char* argv[])
     unsigned int          sampleCount = 3;
     static const Duration kInterSampleTime_{"PT.1S"};
     size_t                packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
-    auto                  usage      = [](const optional<String>& extraArg = {}) {
+    auto                  usage      = [] (const optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }
@@ -130,7 +130,7 @@ int main (int argc, const char* argv[])
                 Sequence<Traceroute::Hop> hops = Traceroute::Run (addr, options);
                 unsigned int              hopIdx{1};
                 for (Traceroute::Hop h : hops) {
-                    String hopName = [=]() {
+                    String hopName = [=] () {
                         String addrStr = h.fAddress.As<String> ();
                         if (auto rdnsName = DNS::Default ().QuietReverseLookup (h.fAddress)) {
                             return *rdnsName + L" [" + addrStr + L"]";

@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
          *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
          */
-        using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>>;
+        using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 
     public:
         /**
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Containers {
          *          VerifyTestResult ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
          *      \endcode
          */
-        nonvirtual Set<T> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual Set<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
         /**

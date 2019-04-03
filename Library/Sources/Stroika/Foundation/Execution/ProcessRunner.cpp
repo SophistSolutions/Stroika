@@ -66,7 +66,7 @@ namespace {
     inline void CLOSE_ (int& fd) noexcept
     {
         if (fd >= 0) {
-            IgnoreExceptionsForCall (Execution::Handle_ErrNoResultInterruption ([fd]() -> int { return ::close (fd); }));
+            IgnoreExceptionsForCall (Execution::Handle_ErrNoResultInterruption ([fd] () -> int { return ::close (fd); }));
             fd = -1;
         }
     }
@@ -75,7 +75,7 @@ namespace {
 
 #if qPlatform_POSIX
 namespace {
-    static const int kMaxFD_ = []() -> int {
+    static const int kMaxFD_ = [] () -> int {
         int            result{};
         constexpr bool kUseSysConf_ = true;
 #if _BSD_SOURCE || _XOPEN_SOURCE >= 500
@@ -260,19 +260,19 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
-            extraMsg += Characters::Format (L"exit status %d", int(*wExitStatus));
+            extraMsg += Characters::Format (L"exit status %d", int (*wExitStatus));
         }
         if (wTermSig) {
             if (not extraMsg.empty ()) {
                 extraMsg += L", ";
             }
-            extraMsg += Characters::Format (L"terminated by signal %d", int(*wTermSig));
+            extraMsg += Characters::Format (L"terminated by signal %d", int (*wTermSig));
         }
         if (wStopSig) {
             if (not extraMsg.empty ()) {
                 extraMsg += L", ";
             }
-            extraMsg += Characters::Format (L"stopped by signal %d", int(*wStopSig));
+            extraMsg += Characters::Format (L"stopped by signal %d", int (*wStopSig));
         }
         if (not extraMsg.empty ()) {
             sb += L": " + extraMsg.str ();
@@ -292,7 +292,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     {
         Characters::StringBuilder extraMsg;
         if (err) {
-            extraMsg += Characters::Format (L"error: %d", int(*err));
+            extraMsg += Characters::Format (L"error: %d", int (*err));
         }
         if (not extraMsg.empty ()) {
             sb += L": " + extraMsg.str ();
@@ -493,7 +493,7 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
-            [[maybe_unused]] auto&&                   cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
             CreateRunnable_ (&pr, nullptr, progress) ();
         }
     }
@@ -505,7 +505,7 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
-            [[maybe_unused]] auto&&                   cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
             Thread::Ptr                               t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
             t.Join (timeout);
         }
@@ -586,7 +586,7 @@ namespace {
         int    jStdin[2]{-1, -1};
         int    jStdout[2]{-1, -1};
         int    jStderr[2]{-1, -1};
-        auto&& cleanup = Finally ([&]() noexcept {
+        auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
             ::CLOSE_ (jStdout[0]);
@@ -594,9 +594,9 @@ namespace {
             ::CLOSE_ (jStderr[0]);
             ::CLOSE_ (jStderr[1]);
         });
-        Execution::Handle_ErrNoResultInterruption ([&jStdin]() -> int { return ::pipe (jStdin); });
-        Execution::Handle_ErrNoResultInterruption ([&jStdout]() -> int { return ::pipe (jStdout); });
-        Execution::Handle_ErrNoResultInterruption ([&jStderr]() -> int { return ::pipe (jStderr); });
+        Execution::Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
+        Execution::Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
+        Execution::Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
         // assert cuz code below needs to be more careful if these can overlap 0..2
         Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
         Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
@@ -648,7 +648,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
-                auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ()); });
+                auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ()); });
                 DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);
             }
@@ -765,7 +765,7 @@ namespace {
             ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
+            auto readALittleFromProcess = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 uint8_t buf[10 * 1024];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -817,13 +817,13 @@ namespace {
                     *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
                 }
             };
-            auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
+            auto readSoNotBlocking = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
                 bool maybeMoreData = true;
                 while (maybeMoreData) {
                     readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
                 }
             };
-            auto readTilEOF = [&](int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
+            auto readTilEOF = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
                 Execution::WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
@@ -850,7 +850,7 @@ namespace {
                                 readSoNotBlocking (useSTDOUT, out, false);
                                 readSoNotBlocking (useSTDERR, err, true);
                                 int bytesWritten = ThrowPOSIXErrNoIfNegative (
-                                    Handle_ErrNoResultInterruption ([useSTDIN, i, e]() {
+                                    Handle_ErrNoResultInterruption ([useSTDIN, i, e] () {
                                         int tmp = ::write (useSTDIN, i, e - i);
                                         // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
                                         if (tmp < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
@@ -889,7 +889,7 @@ namespace {
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
                             //  Wait for child
-            int result = Execution::Handle_ErrNoResultInterruption ([childPID, &status, flags]() -> int { return ::waitpid (childPID, &status, flags); });
+            int result = Execution::Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
@@ -1006,7 +1006,7 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [](HANDLE p, const Streams::OutputStream<byte>::Ptr& o) {
+            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const Streams::OutputStream<byte>::Ptr& o) {
                 RequireNotNull (p);
                 byte buf[kReadBufSize_];
 #if qUsePeekNamedPipe_
@@ -1038,7 +1038,7 @@ namespace {
                         /*
                          * Set the pipe endpoints to non-blocking mode.
                          */
-                        auto mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
+                        auto mkPipeNoWait_ = [] (HANDLE ioHandle) -> void {
                             DWORD stdinMode = 0;
                             Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
                             stdinMode |= PIPE_NOWAIT;
@@ -1192,7 +1192,7 @@ namespace {
 }
 #endif
 
-function<void()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
+function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
@@ -1205,7 +1205,7 @@ function<void()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessRe
     Streams::OutputStream<byte>::Ptr                    err              = GetStdErr ();
     String                                              effectiveCmdLine = GetEffectiveCmdLine_ ();
 
-    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine]() {
+    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx ("ProcessRunner::CreateRunnable_::{}::Runner...");
 #endif
@@ -1349,7 +1349,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
     processInfo.hProcess            = INVALID_HANDLE_VALUE;
     processInfo.hThread             = INVALID_HANDLE_VALUE;
     [[maybe_unused]] auto&& cleanup = Finally (
-        [&processInfo]() noexcept {
+        [&processInfo] () noexcept {
             SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
             SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
         });

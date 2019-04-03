@@ -143,7 +143,7 @@ namespace Stroika::Frameworks::Led {
     struct TextLayoutBlock::LessThanVirtualStart {
         bool operator() (const ScriptRunElt& lhs, const ScriptRunElt& rhs)
         {
-            int diff = int(lhs.fVirtualStart) - int(rhs.fVirtualStart);
+            int diff = int (lhs.fVirtualStart) - int (rhs.fVirtualStart);
             return (diff < 0);
         }
     };

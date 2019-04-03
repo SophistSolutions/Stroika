@@ -2091,7 +2091,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (static_cast<Led_Color::ColorValue> (unsigned(cword.fValue) << 8), 0, 0);
+                        curColor = Led_Color (static_cast<Led_Color::ColorValue> (unsigned (cword.fValue) << 8), 0, 0);
                     }
                 }
                 else {
@@ -2123,7 +2123,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (curColor.GetRed (), static_cast<Led_Color::ColorValue> (unsigned(cword.fValue) << 8), 0);
+                        curColor = Led_Color (curColor.GetRed (), static_cast<Led_Color::ColorValue> (unsigned (cword.fValue) << 8), 0);
                     }
                 }
                 else {
@@ -2155,7 +2155,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (curColor.GetRed (), curColor.GetGreen (), static_cast<Led_Color::ColorValue> (unsigned(cword.fValue) << 8));
+                        curColor = Led_Color (curColor.GetRed (), curColor.GetGreen (), static_cast<Led_Color::ColorValue> (unsigned (cword.fValue) << 8));
                     }
                 }
                 else {
@@ -3230,7 +3230,7 @@ RTFIO::ControlWord StyledTextIOReader_RTF::ReadControlWord ()
     }
     // or it is a NUMBER, and we must read/consume the #
     else if (c == '-' or quickIsDigit (c)) {
-        bool negative = bool(c == '-');
+        bool negative = bool (c == '-');
         if (negative) {
             c = GetNextChar (); // so we start loop looking at right character
         }
@@ -3242,7 +3242,7 @@ RTFIO::ControlWord StyledTextIOReader_RTF::ReadControlWord ()
         controlWord.fHasArg = true;
         // Note that this can OVERFLOW/UNDERFLOW for very large numbers? Maybe?
         // Most of spec only provides for 2-byte ints anyhow, so that should rarely, if ever, be a problem.
-        controlWord.fValue = negative ? -long(number) : number;
+        controlWord.fValue = negative ? -long (number) : number;
         if (c == ' ') {
             // EAT ME
         }

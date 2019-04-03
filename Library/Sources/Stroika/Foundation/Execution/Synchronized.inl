@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
-    void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock)
+    void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UpgradeLock2", L"&fLock_=%p", &fLock_};
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Execution {
         //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
         fLock_.unlock_shared ();
         // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
             fLock_.lock_shared ();
         });
         doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));

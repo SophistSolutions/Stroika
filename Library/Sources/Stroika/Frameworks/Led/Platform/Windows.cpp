@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void FunnyMSPageUpDownAdjustSelectionHelper::CaptureInfo (TextInteractor& ti)
     {
         size_t    pinPoint = ti.GetSelectionStart ();
-        ptrdiff_t rowNum   = ti.CalculateRowDeltaFromCharDeltaFromTopOfWindow (long(pinPoint) - long(ti.GetMarkerPositionOfStartOfWindow ()));
+        ptrdiff_t rowNum   = ti.CalculateRowDeltaFromCharDeltaFromTopOfWindow (long (pinPoint) - long (ti.GetMarkerPositionOfStartOfWindow ()));
         fRowNum            = ::abs (rowNum);
     }
 

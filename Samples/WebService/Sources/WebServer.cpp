@@ -60,26 +60,26 @@ public:
                   Route{
                       RegularExpression{IO::Network::HTTP::Methods::kOptions},
                       RegularExpression::kAny,
-                      []([[maybe_unused]] Message* m) { Lambda_Arg_Unused_BWA (m); }},
+                      [] ([[maybe_unused]] Message* m) { Lambda_Arg_Unused_BWA (m); }},
 
                   Route{L""_RegEx, DefaultPage_},
 
                   Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
 
-                  Route{L"GET"_RegEx, L"FRED"_RegEx, [](Request*, Response* response) {
+                  Route{L"GET"_RegEx, L"FRED"_RegEx, [] (Request*, Response* response) {
                             response->write (L"FRED");
                             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
 
-                  Route{L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
+                  Route{L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
 
-                  Route{L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
+                  Route{L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
 
-                  Route{L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
+                  Route{L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
 
-                  Route{L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=](Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
+                  Route{L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
 
-                  Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void(double)>{[=](double check) {
+                  Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void (double)>{[=] (double check) {
                                     if (check > 10) {
                                         Execution::Throw (Execution::Exception (L"more than 10"sv));
                                     } }})},

@@ -160,7 +160,7 @@ namespace {
                 DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
                 {
                     return sDiskUsageCache_.LookupValue (diskName,
-                                                         [](String diskName) -> DiskSpaceUsageType {
+                                                         [] (String diskName) -> DiskSpaceUsageType {
                                                              return LookupDiskStats_ (diskName);
                                                          });
                 }
@@ -230,9 +230,9 @@ namespace {
             {
                 unsigned int totalCallsCount{};
 #if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
-                Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+                Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
 #else
-                Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+                Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
 #endif
                 VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
                 VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
@@ -259,7 +259,7 @@ namespace {
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<void, optional<int>> sCache_;
-                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<int> {
+                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
                 });
@@ -276,7 +276,7 @@ namespace {
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<int, optional<int>> sCache_;
-                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
                 });

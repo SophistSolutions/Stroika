@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Traversal {
         Containers::Sequence<RangeType> subRanges{this->SubRanges ()};
         // Find the first subrange which might contain elt, or successors
         value_type          next = RANGE_TYPE::TraitsType::GetNext (elt);
-        Iterator<RangeType> i{subRanges.FindFirstThat ([next](const RangeType& r) -> bool { return r.GetUpperBound () >= next; })};
+        Iterator<RangeType> i{subRanges.FindFirstThat ([next] (const RangeType& r) -> bool { return r.GetUpperBound () >= next; })};
         if (i) {
             return max (next, i->GetLowerBound ());
         }
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Traversal {
         Containers::Sequence<RangeType> subRanges{this->SubRanges ()};
         // Find the first subrange which might contain elt, or predecessors
         value_type          prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
-        Iterator<RangeType> i{subRanges.FindFirstThat ([prev](const RangeType& r) -> bool { return r.GetUpperBound () >= prev; })};
+        Iterator<RangeType> i{subRanges.FindFirstThat ([prev] (const RangeType& r) -> bool { return r.GetUpperBound () >= prev; })};
         if (i) {
             if (i->Contains (prev)) {
                 return prev;
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Traversal {
         }
 
         // tmphack - need random-access iterators !!! for sequence at least!
-        auto prevOfIterator = [&subRanges](const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
+        auto prevOfIterator = [&subRanges] (const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
             Iterator<RangeType> result = Iterator<RangeType>::GetEmptyIterator ();
             for (Iterator<RangeType> i = subRanges.begin (); i != subRanges.end (); ++i) {
                 if (i == pOfI) {
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Traversal {
         };
 
         // if none contain next, find the last before we pass prev
-        i = prevOfIterator (subRanges.FindFirstThat ([prev](const RangeType& r) -> bool { return r.GetUpperBound () > prev; }));
+        i = prevOfIterator (subRanges.FindFirstThat ([prev] (const RangeType& r) -> bool { return r.GetUpperBound () > prev; }));
         if (i) {
             Ensure (i->GetUpperBound () < prev);
             return i->GetUpperBound ();
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Traversal {
             context_ (const context_& from) = default;
         };
         auto myContext = make_shared<context_> (context_{subRanges});
-        auto getNext   = [myContext]() -> optional<value_type> {
+        auto getNext   = [myContext] () -> optional<value_type> {
             if (myContext->fSubRangeIdx < myContext->fSubRanges.size ()) {
                 RangeType              curRange{myContext->fSubRanges[myContext->fSubRangeIdx]};
                 UnsignedDifferenceType nEltsPerRange{curRange.GetDistanceSpanned ()};
@@ -204,12 +204,12 @@ namespace Stroika::Foundation::Traversal {
         return Traversal::CreateGenerator<value_type> (getNext);
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(value_type)>& testF) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool (value_type)>& testF) const -> optional<value_type>
     {
         return this->empty () ? optional<value_type> () : FindFirstThat (testF, FindHints (this->GetBounds ().GetLowerBound (), true));
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(value_type)>& testF, const FindHints& hints) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool (value_type)>& testF, const FindHints& hints) const -> optional<value_type>
     {
         Require (this->Contains (hints.fSeedPosition));
         optional<value_type> o = ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
@@ -234,12 +234,12 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(value_type)>& testF) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF) const -> optional<value_type>
     {
         return this->empty () ? optional<value_type> () : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(value_type)>& testF, const FindHints& hints) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const -> optional<value_type>
     {
         Require (this->Contains (hints.fSeedPosition));
         optional<value_type> o = ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool(value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool (value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const -> optional<value_type>
     {
         value_type i{seedPosition};
         while (not testF (i)) {
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Traversal {
         return i;
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool(value_type)>& testF, value_type seedPosition, bool forwardFirst) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const -> optional<value_type>
     {
         /*
             *  First we must find a value/position where testF is true. It could be forward or backward from our start hint.
@@ -288,8 +288,8 @@ namespace Stroika::Foundation::Traversal {
             *
             *  Only return 'IsIMissing()' if there are no values from which testF is true.
             */
-        function<optional<value_type> (value_type)> backwardNext = [this](value_type i) { return GetPrevious (i); };
-        function<optional<value_type> (value_type)> forwardNext  = [this](value_type i) { return GetNext (i); };
+        function<optional<value_type> (value_type)> backwardNext = [this] (value_type i) { return GetPrevious (i); };
+        function<optional<value_type> (value_type)> forwardNext  = [this] (value_type i) { return GetNext (i); };
         value_type                                  i{seedPosition};
         optional<value_type>                        o{ScanTil_ (testF, forwardFirst ? forwardNext : backwardNext, i)};
         if (o) {

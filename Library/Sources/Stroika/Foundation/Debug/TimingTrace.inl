@@ -17,19 +17,19 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     inline TimingTrace::TimingTrace (Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded (warnIfLongerThan, [](Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken); })
+        : WhenTimeExceeded (warnIfLongerThan, [] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken); })
     {
     }
     inline TimingTrace::TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded (warnIfLongerThan, [=](Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken); })
+        : WhenTimeExceeded (warnIfLongerThan, [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken); })
     {
     }
     inline TimingTrace::TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded (warnIfLongerThan, [=](Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label, timeTaken); })
+        : WhenTimeExceeded (warnIfLongerThan, [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label, timeTaken); })
     {
     }
     inline TimingTrace::TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded (warnIfLongerThan, [=](Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
+        : WhenTimeExceeded (warnIfLongerThan, [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
     {
     }
 

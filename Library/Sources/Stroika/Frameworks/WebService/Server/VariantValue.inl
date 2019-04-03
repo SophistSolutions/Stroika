@@ -51,7 +51,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         using IO::Network::HTTP::ClientErrorException;
         Require (variantValueArgs.size () == sizeof...(ARG_TYPES));
         // exceptions parsing args mean ill-formatted arguments to the webservice, so treat as client errors
-        auto&& args = ClientErrorException::TreatExceptionsAsClientError ([&]() { return STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f); });
+        auto&& args = ClientErrorException::TreatExceptionsAsClientError ([&] () { return STROIKA_PRIVATE_::mkArgsTuple_ (variantValueArgs, objVarMapper, f); });
         if constexpr (is_same_v<RETURN_TYPE, void>) {
             apply (f, args);
             return VariantValue{};
@@ -120,7 +120,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
-        return [=](WebServer::Message* m) {
+        return [=] (WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
             if constexpr (is_same_v<RETURN_TYPE, void>) {
                 f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ())));
@@ -135,7 +135,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
     {
         Require (paramNames.size () == sizeof...(IN_ARGS));
-        return [=](WebServer::Message* m) {
+        return [=] (WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
             Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
             Assert (args.size () == paramNames.size ());
@@ -151,7 +151,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     template <typename RETURN_TYPE>
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
     {
-        return [=](WebServer::Message* m) {
+        return [=] (WebServer::Message* m) {
             ExpectedMethod (m->GetRequestReference (), webServiceDescription);
             if constexpr (is_same_v<RETURN_TYPE, void>) {
                 f ();

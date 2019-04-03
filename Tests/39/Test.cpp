@@ -59,7 +59,7 @@ namespace {
     Thread::Ptr mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         using value_type = typename ITERABLE_TYPE::value_type;
-        return Thread::New ([iterable, lock, repeatCount]() {
+        return Thread::New ([iterable, lock, repeatCount] () {
             Debug::TraceContextBumper traceCtx ("{}IterateOverThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 //DbgTrace ("Iterate thread loop %d", i);
@@ -76,7 +76,7 @@ namespace {
     template <typename ITERABLE_TYPE, typename ITERABLE_TYPE2, typename LOCK_TYPE>
     Thread::Ptr mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
-        return Thread::New ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2]() {
+        return Thread::New ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2] () {
             Debug::TraceContextBumper traceCtx ("{}OverwriteThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 for (int ii = 0; ii <= 100; ++ii) {
@@ -144,7 +144,7 @@ namespace {
         void DoItOnce_ (LOCK* lock, ITERABLE_TYPE elt1, unsigned int repeatCount, MUTATE_FUNCTION baseMutateFunction)
         {
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
-            auto                        mutateFunction = [&oneToKeepOverwriting, repeatCount, &baseMutateFunction]() {
+            auto                        mutateFunction = [&oneToKeepOverwriting, repeatCount, &baseMutateFunction] () {
                 Debug::TraceContextBumper traceCtx ("{}::MutateFunction ()");
                 DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name ());
                 for (unsigned int i = 0; i < repeatCount; ++i) {
@@ -178,7 +178,7 @@ namespace {
                 &lock,
                 Set<int> (kOrigValueInit_),
                 kRepeatCount_,
-                [&lock](Synchronized<Set<int>>* oneToKeepOverwriting) {
+                [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {
                     for (int ii = 0; ii <= 100; ++ii) {
                         //DbgTrace ("doing update loop %d", ii);
                         if (Math::IsOdd (ii)) {
@@ -196,7 +196,7 @@ namespace {
                 &lock,
                 Sequence<int> (kOrigValueInit_),
                 kRepeatCount_,
-                [&lock](Synchronized<Sequence<int>>* oneToKeepOverwriting) {
+                [&lock] (Synchronized<Sequence<int>>* oneToKeepOverwriting) {
                     for (int ii = 0; ii <= 100; ++ii) {
                         if (Math::IsOdd (ii)) {
                             lock_guard<decltype (lock)> critSec (lock);
@@ -213,7 +213,7 @@ namespace {
                 &lock,
                 String (L"123456789"),
                 kRepeatCount_,
-                [&lock](Synchronized<String>* oneToKeepOverwriting) {
+                [&lock] (Synchronized<String>* oneToKeepOverwriting) {
                     for (int ii = 0; ii <= 100; ++ii) {
                         if (Math::IsOdd (ii)) {
                             lock_guard<decltype (lock)> critSec (lock);
@@ -239,7 +239,7 @@ namespace {
                 Synchronized<Optional<int>> sharedValue{0};
                 static const bool           kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
                 static const int            kMaxVal_          = kRunningValgrind_ ? 5 : 100000;
-                Thread::Ptr                 reader            = Thread::New ([&sharedValue]() {
+                Thread::Ptr                 reader            = Thread::New ([&sharedValue] () {
                     Optional<int> prevValue;
                     unsigned int  repeatCount{};
                     while ((prevValue = sharedValue.load ()) < kMaxVal_) {
@@ -259,14 +259,14 @@ namespace {
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
                 });
-                Thread::Ptr                 adder             = Thread::New ([&sharedValue]() {
+                Thread::Ptr                 adder             = Thread::New ([&sharedValue] () {
                     while (sharedValue.load () < kMaxVal_) {
                         sharedValue.store (*sharedValue.load () + 1);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
                 });
                 Thread::Start ({reader, adder});
-                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder]() {
+                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder] () {
                     Thread::AbortAndWaitForDone ({reader, adder});
                 });
                 // wait long time cuz of debuggers (esp valgrind) etc
@@ -384,17 +384,17 @@ namespace {
                 }
             }
             template <typename INTISH_TYPE>
-            void DoInterlocktest_ (function<void(INTISH_TYPE*)> increment, function<void(INTISH_TYPE*)> decrement)
+            void DoInterlocktest_ (function<void (INTISH_TYPE*)> increment, function<void (INTISH_TYPE*)> decrement)
             {
                 using namespace Execution;
                 static constexpr int kMaxTimes_  = 100 * 1000;
                 INTISH_TYPE          s           = 0;
-                Thread::Ptr          incrementer = Thread::New ([&s, increment]() {
+                Thread::Ptr          incrementer = Thread::New ([&s, increment] () {
                     for (int i = 0; i < kMaxTimes_; ++i) {
                         increment (&s);
                     }
                 });
-                Thread::Ptr          decrementer = Thread::New ([&s, decrement]() {
+                Thread::Ptr          decrementer = Thread::New ([&s, decrement] () {
                     for (int i = 0; i < kMaxTimes_; ++i) {
                         decrement (&s);
                     }
@@ -410,7 +410,7 @@ namespace {
                 using namespace Execution;
                 if (false) {
                     // Fails cuz no synchonization
-                    DoInterlocktest_<int> ([](int* i) { (*i)++; }, [](int* i) { (*i)--; });
+                    DoInterlocktest_<int> ([] (int* i) { (*i)++; }, [] (int* i) { (*i)--; });
                 }
                 struct intish_object1 {
                     int fVal;
@@ -422,9 +422,9 @@ namespace {
                 };
                 if (false) {
                     // Fails cuz no synchonization
-                    DoInterlocktest_<intish_object1> ([](intish_object1* i) { (i->fVal)++; }, [](intish_object1* i) { (i->fVal)--; });
+                    DoInterlocktest_<intish_object1> ([] (intish_object1* i) { (i->fVal)++; }, [] (intish_object1* i) { (i->fVal)--; });
                 }
-                DoInterlocktest_<Synchronized<intish_object1>> ([](Synchronized<intish_object1>* i) { (i->rwget ()->fVal)++; }, [](Synchronized<intish_object1>* i) { (i->rwget ()->fVal)--; });
+                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) { (i->rwget ()->fVal)++; }, [] (Synchronized<intish_object1>* i) { (i->rwget ()->fVal)--; });
             }
             void TestSynchronizedNotCopyable_ ()
             {
@@ -502,7 +502,7 @@ namespace {
                 static constexpr size_t kIOverallRepeatCount_{(qDebug or qStroika_FeatureSupported_Valgrind) ? 50 : 1000}; // tweak count cuz too slow
                 Sequence<int>           tmp{Traversal::DiscreteRange<int>{1, 1000}};
                 Thread::Ptr             t1 = Thread::New (
-                    [&tmp]() {
+                    [&tmp] () {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {
                                 VerifyTestResult (1 <= j and j <= 1000);
@@ -510,7 +510,7 @@ namespace {
                         }
                     });
                 Thread::Ptr t2 = Thread::New (
-                    [&tmp]() {
+                    [&tmp] () {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {
                                 VerifyTestResult (1 <= j and j <= 1000);
@@ -518,7 +518,7 @@ namespace {
                         }
                     });
                 Thread::Ptr t3 = Thread::New (
-                    [&tmp]() {
+                    [&tmp] () {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             if (tmp.GetLength () == 1000) {
                                 VerifyTestResult (tmp.IndexOf (6) == 5u);
@@ -549,7 +549,7 @@ namespace {
                 static const int        kInnterConstantForHowMuchStuffTodo_ = (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 100 : 1000);
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
-                    [&syncObj, &addF]() {
+                    [&syncObj, &addF] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
                                 addF (&syncObj.rwget ().rwref (), j);
@@ -558,7 +558,7 @@ namespace {
                     },
                     String{L"adderThread"});
                 Thread::Ptr removerThread = Thread::New (
-                    [&syncObj, &remF]() {
+                    [&syncObj, &remF] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
                                 remF (&syncObj.rwget ().rwref (), j);
@@ -567,7 +567,7 @@ namespace {
                     },
                     String{L"removerThread"});
                 Thread::Ptr examineThread = Thread::New (
-                    [&syncObj, &examineF]() {
+                    [&syncObj, &examineF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{10};
                         for (size_t i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
                             examineF (&syncObj.cget ().cref ());
@@ -575,7 +575,7 @@ namespace {
                     },
                     String{L"examineThread"});
                 Thread::Ptr walkerThread = Thread::New (
-                    [&syncObj, &iterF]() {
+                    [&syncObj, &iterF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{7};
                         for (size_t i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
 #if qIterationOnCopiedContainer_ThreadSafety_Buggy
@@ -700,20 +700,20 @@ namespace {
             Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()");
             int64_t                   cnt{};
             Private_::TestBasics_<Sequence<int>> (
-                [](Sequence<int>* c, int i) { c->Append (i); },
-                [](Sequence<int>* c, [[maybe_unused]] int i) { Lambda_Arg_Unused_BWA (i); size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
-                [](const Sequence<int>* c) { [[maybe_unused]] size_t n = Memory::ValueOrDefault (c->IndexOf (3)); },
-                [&cnt](int v) { cnt += v; });
+                [] (Sequence<int>* c, int i) { c->Append (i); },
+                [] (Sequence<int>* c, [[maybe_unused]] int i) { Lambda_Arg_Unused_BWA (i); size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+                [] (const Sequence<int>* c) { [[maybe_unused]] size_t n = Memory::ValueOrDefault (c->IndexOf (3)); },
+                [&cnt] (int v) { cnt += v; });
             Private_::TestBasics_<Set<int>> (
-                [](Set<int>* c, int i) { c->Add (i); },
-                [](Set<int>* c, int i) { c->Remove (i); },
-                [](const Set<int>* c) { [[maybe_unused]] bool b = c->Contains (5); },
-                [&cnt](int v) { cnt += v; });
+                [] (Set<int>* c, int i) { c->Add (i); },
+                [] (Set<int>* c, int i) { c->Remove (i); },
+                [] (const Set<int>* c) { [[maybe_unused]] bool b = c->Contains (5); },
+                [&cnt] (int v) { cnt += v; });
             Private_::TestBasics_<Mapping<int, Time::DateTime>> (
-                [](Mapping<int, Time::DateTime>* c, int i) { c->Add (i, Time::DateTime::Now ()); },
-                [](Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
-                [](const Mapping<int, Time::DateTime>* c) { [[maybe_unused]] bool b = c->ContainsKey (5); },
-                [&cnt](KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; });
+                [] (Mapping<int, Time::DateTime>* c, int i) { c->Add (i, Time::DateTime::Now ()); },
+                [] (Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
+                [] (const Mapping<int, Time::DateTime>* c) { [[maybe_unused]] bool b = c->ContainsKey (5); },
+                [&cnt] (KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; });
         }
     }
 }
@@ -728,7 +728,7 @@ namespace {
                 using namespace Cache;
                 SynchronizedLRUCache cache (pair<string, string>{}, 3, 10, hash<string>{});
                 Thread::Ptr          writerThread = Thread::New (
-                    [&cache]() {
+                    [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             cache.Add ("a", "1");
                             cache.Add ("b", "2");
@@ -744,7 +744,7 @@ namespace {
                     },
                     String{L"writerThread"});
                 Thread::Ptr copierThread = Thread::New (
-                    [&cache]() {
+                    [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             {
                                 auto oa = cache.Lookup ("a");
@@ -772,20 +772,20 @@ namespace {
                 Debug::TraceContextBumper traceCtx ("{}SyncCallerStalenessCacheT1_...");
                 using namespace Cache;
                 SynchronizedCallerStalenessCache<int, int> cache;
-                auto                                       mapValue = [&cache](int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
-                    return cache.LookupValue (value, cache.Ago (allowedStaleness.value_or (30)), [=](int v) {
+                auto                                       mapValue = [&cache] (int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
+                    return cache.LookupValue (value, cache.Ago (allowedStaleness.value_or (30)), [=] (int v) {
                         return v; // could be more expensive computation
                     });
                 };
                 Thread::Ptr writerThread = Thread::New (
-                    [&mapValue]() {
+                    [&mapValue] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
                     String{L"writerThread"});
                 Thread::Ptr copierThread = Thread::New (
-                    [&mapValue]() {
+                    [&mapValue] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
@@ -820,7 +820,7 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([]() {
+        [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {

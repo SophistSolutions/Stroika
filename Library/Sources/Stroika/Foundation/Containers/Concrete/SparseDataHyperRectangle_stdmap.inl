@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (_APPLY_ARGTYPE doToElement) const override
         {
             fData_.Apply (
-                [&](const pair<tuple<INDEXES...>, T>& item) {
+                [&] (const pair<tuple<INDEXES...>, T>& item) {
                     doToElement (tuple_cat (tuple<T>{item.second}, item.first));
                 });
         }
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
             using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
-                [&](const pair<tuple<INDEXES...>, T>& item) {
+                [&] (const pair<tuple<INDEXES...>, T>& item) {
                     return doToElement (tuple_cat (tuple<T>{item.second}, item.first));
                 });
             if (iLink == fData_.end ()) {

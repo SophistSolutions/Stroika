@@ -249,7 +249,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (cmpFunction);
         unsigned u = 0;
         for (size_t i = 0; i < nKeywords; ++i) {
-            u = max (u, unsigned(Led_tStrlen (keyWords[i])));
+            u = max (u, unsigned (Led_tStrlen (keyWords[i])));
         }
         fMaxKeywordLength = u;
     }

@@ -61,14 +61,14 @@ bool SimpleClass::operator== (const SimpleClass& rhs) const
 {
     VerifyTestResult (fConstructed == kFunnyValue);
     VerifyTestResult (rhs.fConstructed == kFunnyValue);
-    return (bool(fValue == rhs.fValue));
+    return (bool (fValue == rhs.fValue));
 }
 
 bool SimpleClass::operator< (const SimpleClass& rhs) const
 {
     VerifyTestResult (fConstructed == kFunnyValue);
     VerifyTestResult (rhs.fConstructed == kFunnyValue);
-    return (bool(fValue < rhs.fValue));
+    return (bool (fValue < rhs.fValue));
 }
 
 /*

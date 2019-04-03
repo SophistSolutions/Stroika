@@ -303,12 +303,12 @@ namespace Stroika::Foundation::Containers {
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool(ArgByValueType<key_type>)>& includeIfTrue) const -> ArchetypeContainerType
+    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const -> ArchetypeContainerType
     {
-        return inherited::Where ([=](const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); }, ArchetypeContainerType{});
+        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); }, ArchetypeContainerType{});
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool(ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const -> ArchetypeContainerType
+    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const -> ArchetypeContainerType
     {
         return inherited::Where (includeIfTrue, ArchetypeContainerType{});
     }
@@ -316,13 +316,13 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_KEYS>
     auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const CONTAINER_OF_KEYS& includeKeys) const -> ArchetypeContainerType
     {
-        return Where ([=](const key_type& key) -> bool { return includeKeys.Contains (key); });
+        return Where ([=] (const key_type& key) -> bool { return includeKeys.Contains (key); });
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const initializer_list<key_type>& includeKeys) const -> ArchetypeContainerType
     {
         Iterable<key_type> ik{includeKeys};
-        return inherited::Where ([=](const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return ik.Contains (kvp.fKey); }, ArchetypeContainerType{});
+        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return ik.Contains (kvp.fKey); }, ArchetypeContainerType{});
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
@@ -473,7 +473,7 @@ namespace Stroika::Foundation::Containers {
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                    auto getNext   = [myContext]() -> optional<KEY_TYPE> {
+                    auto getNext   = [myContext] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
                             return optional<KEY_TYPE> ();
                         }
@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Containers {
                 virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                    auto getNext   = [myContext]() -> optional<MAPPED_VALUE_TYPE> {
+                    auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
                         if (myContext->Done ()) {
                             return optional<MAPPED_VALUE_TYPE> ();
                         }

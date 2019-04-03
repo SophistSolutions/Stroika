@@ -31,7 +31,7 @@ namespace {
     void RunTests_ (const INORDER_COMPARER& inorderComparer, CONCRETE_CONTAINER_FACTORY factory)
     {
         typedef typename CONCRETE_CONTAINER::value_type T;
-        auto                                            testFunc = [&](const SortedCollection<T>& s) {
+        auto                                            testFunc = [&] (const SortedCollection<T>& s) {
             // verify in sorted order
             Memory::Optional<T> last;
             for (T i : s) {
@@ -46,7 +46,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
     {
-        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
+        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, [] () { return CONCRETE_CONTAINER (); });
     }
 }
 
@@ -75,11 +75,11 @@ namespace {
 
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<SimpleClass>> ();
-        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedCollection<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
-        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         TestOverwriteContainerWhileIteratorRunning_ ();
     }

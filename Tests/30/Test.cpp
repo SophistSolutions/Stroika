@@ -448,7 +448,7 @@ namespace Test_05_ParseRegressionTest_1_ {
 namespace Test_06_ParseRegressionTest_2_ {
     void DoIt ()
     {
-        auto f = []() {
+        auto f = [] () {
             map<wstring, VariantValue> mv;
             mv[L"MaxFiles"] = VariantValue (405);
             VariantValue v  = VariantValue (mv);
@@ -501,7 +501,7 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
     void DoIt ()
     {
         using namespace Time;
-        auto f = [](VariantValue v) {
+        auto f = [] (VariantValue v) {
             string encoded;
             {
                 stringstream tmpStrm;
@@ -524,7 +524,7 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
                 VerifyTestResult (v1 == v);
             }
         };
-        auto doAll = [f]() {
+        auto doAll = [f] () {
             f (VariantValue (405));
             f (VariantValue (4405));
             f (VariantValue (44905));
@@ -708,7 +708,7 @@ namespace {
             using Characters::Character;
             using Characters::String;
 
-            auto roundTripCheck = [](const VariantValue& vv) {
+            auto roundTripCheck = [] (const VariantValue& vv) {
                 String       inputAsJSON = Variant::JSON::Writer ().WriteAsString (vv);
                 VariantValue v           = Variant::JSON::Reader ().Read (inputAsJSON);
                 VerifyTestResult (v == vv);

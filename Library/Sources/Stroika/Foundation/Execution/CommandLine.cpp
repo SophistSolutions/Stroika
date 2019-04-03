@@ -116,7 +116,7 @@ Sequence<String> Execution::ParseCommandLine (int argc, const wchar_t* argv[])
 namespace {
     String Simplify2Compare_ (const String& actualArg)
     {
-        return actualArg.StripAll ([](Characters::Character c) -> bool { return c == '-' or c == '/'; }).ToLowerCase ();
+        return actualArg.StripAll ([] (Characters::Character c) -> bool { return c == '-' or c == '/'; }).ToLowerCase ();
     }
 }
 
@@ -140,7 +140,7 @@ bool Execution::MatchesCommandLineArgument (const String& actualArg, const Strin
 
 bool Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    return static_cast<bool> (argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); }));
+    return static_cast<bool> (argList.FindFirstThat ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); }));
 }
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]] const String& actualArg, [[maybe_unused]] const String& matchesArgPattern)
@@ -153,7 +153,7 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    auto i = argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    auto i = argList.FindFirstThat ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ())

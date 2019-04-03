@@ -595,7 +595,7 @@ namespace {
         using SEQ     = typename CONCRETE_SEQUENCE_T::ArchetypeContainerType;
         using ELTTYPE = typename CONCRETE_SEQUENCE_T::value_type;
 
-        auto counter = [](SEQ s) -> size_t {
+        auto counter = [] (SEQ s) -> size_t {
             size_t cnt = 0;
             for ([[maybe_unused]] auto i : s) {
                 Lambda_Arg_Unused_BWA (i);
@@ -603,7 +603,7 @@ namespace {
             }
             return cnt;
         };
-        auto counterI = [](Iterator<ELTTYPE> i) -> size_t {
+        auto counterI = [] (Iterator<ELTTYPE> i) -> size_t {
             size_t cnt = 0;
             while (i) {
                 ++cnt;

@@ -164,7 +164,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
 #endif
     return InternetAddress ();
 #elif qPlatform_POSIX
-    auto getFlags = [](int sd, const char* name) -> int {
+    auto getFlags = [] (int sd, const char* name) -> int {
         struct ifreq ifreq {
         };
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
@@ -211,7 +211,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"IO::Network::GetPrimaryNetworkDeviceMacAddress"};
 #endif
-    auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
+    auto printMacAddr = [] (const uint8_t macaddrBytes[6]) -> String {
         char buf[100]{};
         (void)std::snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
                              macaddrBytes[0], macaddrBytes[1],
@@ -307,7 +307,7 @@ struct LinkMonitor::Rep_ {
 #if qPlatform_Linux
         if (fMonitorThread_ == nullptr) {
             // very slight race starting this but not worth worrying about
-            fMonitorThread_ = Execution::Thread::New ([this]() {
+            fMonitorThread_ = Execution::Thread::New ([this] () {
                 // for now - only handle adds, but removes SB easy too...
 
                 ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);

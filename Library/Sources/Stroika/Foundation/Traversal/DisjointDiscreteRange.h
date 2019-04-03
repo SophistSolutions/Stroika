@@ -109,20 +109,20 @@ namespace Stroika::Foundation::Traversal {
          *  Find the first element of the DisjointDiscreteRange that passes the argument function test.
          &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
             */
-        nonvirtual optional<value_type> FindFirstThat (const function<bool(value_type)>& testF) const;
-        nonvirtual optional<value_type> FindFirstThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
+        nonvirtual optional<value_type> FindFirstThat (const function<bool (value_type)>& testF) const;
+        nonvirtual optional<value_type> FindFirstThat (const function<bool (value_type)>& testF, const FindHints& hints) const;
 
     public:
         /**
          *  Find the last element of the DisjointDiscreteRange that passes the argument function test.
          &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
             */
-        nonvirtual optional<value_type> FindLastThat (const function<bool(value_type)>& testF) const;
-        nonvirtual optional<value_type> FindLastThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
+        nonvirtual optional<value_type> FindLastThat (const function<bool (value_type)>& testF) const;
+        nonvirtual optional<value_type> FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const;
 
     private:
-        nonvirtual optional<value_type> ScanTil_ (const function<bool(value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const;
-        nonvirtual optional<value_type> ScanFindAny_ (const function<bool(value_type)>& testF, value_type seedPosition, bool forwardFirst) const;
+        nonvirtual optional<value_type> ScanTil_ (const function<bool (value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const;
+        nonvirtual optional<value_type> ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const;
     };
 
 }

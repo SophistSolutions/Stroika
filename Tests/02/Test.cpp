@@ -568,7 +568,7 @@ namespace {
         VerifyTestResult (kT1.Trim () == L"abc");
         VerifyTestResult (String (L" abc ").Trim () == L"abc");
 
-        VerifyTestResult (kT1.Trim ([](Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
+        VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
         VerifyTestResult (String (L"/\n").Trim () == L"/");
     }
 }
@@ -637,10 +637,10 @@ namespace {
     void Test15_StripAll_ ()
     {
         String w = L"Le wis";
-        VerifyTestResult (w.StripAll ([](Character c) -> bool { return c.IsWhitespace (); }) == L"Lewis");
+        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == L"Lewis");
 
         w = L"This is a very good test    ";
-        VerifyTestResult (w.StripAll ([](Character c) -> bool { return c.IsWhitespace (); }) == L"Thisisaverygoodtest");
+        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == L"Thisisaverygoodtest");
     }
 }
 
@@ -979,7 +979,7 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (String2Float<double> (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float<double> (String (L"44.4333")), 44.4333));
         }
-        auto runLocaleIndepTest = []() {
+        auto runLocaleIndepTest = [] () {
             VerifyTestResult (Float2String (3000.5) == L"3000.5");
             VerifyTestResult (Float2String (30000.5) == L"30000.5");
         };
@@ -1107,7 +1107,7 @@ namespace {
 namespace {
     void Test28_ReplacementForStripTrailingCharIfAny_ ()
     {
-        auto StripTrailingCharIfAny = [](const String& s, const Character& c) -> String {
+        auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String {
             return s.EndsWith (c) ? s.SubString (0, -1) : s;
         };
         VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
@@ -1186,7 +1186,7 @@ namespace {
     {
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 #if !qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
-        auto testRoundtrip = [](const char* localName, const string& localMBString, const wstring& wideStr) {
+        auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
             try {
                 locale l{localName};

@@ -106,7 +106,7 @@ namespace {
  ********************************************************************************
  */
 FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
-    : RequestHandler ((tBuilding_ = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames), [rep = tBuilding_](Message* m) -> void { rep->HandleMessage (m); }))
+    : RequestHandler ((tBuilding_ = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames), [rep = tBuilding_] (Message* m) -> void { rep->HandleMessage (m); }))
 {
     Assert (tBuilding_ != nullptr); // @todo use this hack to add instance variable to FileSystemRouter so it can be referenced from above handler
     tBuilding_ = nullptr;

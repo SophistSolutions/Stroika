@@ -298,7 +298,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
     }
 
 #if qDebug
-    auto oldCode = [&]() {
+    auto oldCode = [&] () {
         ios::iostate state = ios::goodbit;
         tm           when{};
 

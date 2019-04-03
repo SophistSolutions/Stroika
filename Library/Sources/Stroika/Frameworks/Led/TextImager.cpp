@@ -414,12 +414,12 @@ static int FAR PASCAL EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /
     memcpy (&potentialResult.fBestFont, lplf, sizeof (LOGFONT));
 
     if (potentialResult.fDesiredCharset == DEFAULT_CHARSET) {
-        potentialResult.fUsesBestCharset = bool(lplf->lfCharSet == theANSILogFont.lfCharSet);
+        potentialResult.fUsesBestCharset = bool (lplf->lfCharSet == theANSILogFont.lfCharSet);
     }
     else {
-        potentialResult.fUsesBestCharset = bool(lplf->lfCharSet == potentialResult.fDesiredCharset);
+        potentialResult.fUsesBestCharset = bool (lplf->lfCharSet == potentialResult.fDesiredCharset);
     }
-    potentialResult.fIsTT                = bool(fontType & TRUETYPE_FONTTYPE);
+    potentialResult.fIsTT                = bool (fontType & TRUETYPE_FONTTYPE);
     potentialResult.fIsANSI_VAR_Font     = ::_tcscmp (lplf->lfFaceName, theANSILogFont.lfFaceName) == 0;
     potentialResult.fIsGoodBackupCharset = (lplf->lfCharSet == DEFAULT_CHARSET or lplf->lfCharSet == theANSILogFont.lfCharSet);
     {
@@ -766,7 +766,7 @@ void TextImager::SetHilightMarker (HilightMarker* newHilightMarker)
         }
     }
     fHiliteMarker          = newHilightMarker;
-    fWeAllocedHiliteMarker = bool(fHiliteMarker == nullptr);
+    fWeAllocedHiliteMarker = bool (fHiliteMarker == nullptr);
     if (fHiliteMarker == nullptr) {
         fHiliteMarker = new HilightMarker ();
     }

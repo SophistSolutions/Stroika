@@ -151,7 +151,7 @@ namespace {
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
         DbgTrace ("Starting modbus connection %d", thisModbusConnectionNumber);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([thisModbusConnectionNumber]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([thisModbusConnectionNumber] () {
             DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber);
         });
 #endif
@@ -165,7 +165,7 @@ namespace {
         InputStream<byte>::Ptr  in           = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
         OutputStream<byte>::Ptr out          = BufferedOutputStream<byte>::New (socketStream); // critical so we don't write multiple packets - at least some apps assume whole thing comes in one packet
 
-        auto checkedReadHelperPayload2Shorts = [](const Memory::BLOB& requestPayload, uint16_t minSecondValue, uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
+        auto checkedReadHelperPayload2Shorts = [] (const Memory::BLOB& requestPayload, uint16_t minSecondValue, uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
             /*
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16 (etc)
              */
@@ -211,8 +211,8 @@ namespace {
                 }
 
                 Memory::BLOB requestPayload      = in.ReadAll (requestHeader.GetPayloadLength ());
-                auto         zeroToOneBased      = [](uint16_t i) -> uint16_t { return i + 1; };
-                auto         oneBasedToZeroBased = [](uint16_t i) -> uint16_t { return i - 1; };
+                auto         zeroToOneBased      = [] (uint16_t i) -> uint16_t { return i + 1; };
+                auto         oneBasedToZeroBased = [] (uint16_t i) -> uint16_t { return i - 1; };
                 switch (requestHeader.fFunctionCode) {
                     case FunctionCodeType_::kReadCoils_: {
                         /*
@@ -413,11 +413,11 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
-    auto onModbusConnection = [serviceHandler, options, usingThreadPool](const ConnectionOrientedStreamSocket::Ptr& s) {
-        usingThreadPool->AddTask ([serviceHandler, options, s]() { ConnectionHandler_ (s, serviceHandler, options); });
+    auto onModbusConnection = [serviceHandler, options, usingThreadPool] (const ConnectionOrientedStreamSocket::Ptr& s) {
+        usingThreadPool->AddTask ([serviceHandler, options, s] () { ConnectionHandler_ (s, serviceHandler, options); });
     };
     return Thread::New (
-        [onModbusConnection, options]() {
+        [onModbusConnection, options] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
 #endif

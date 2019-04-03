@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Collection<T> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+        nonvirtual Collection<T> Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
 
     public:
         /**

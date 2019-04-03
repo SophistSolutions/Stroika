@@ -23,7 +23,7 @@ String Stats_Basic::ToString () const
     if (total == 0) {
         total = 1; // avoid divide by zero
     }
-    return Format (L"{ hits: %d, misses: %d, hit%%: %f }", fCachedCollected_Hits, fCachedCollected_Misses, float(fCachedCollected_Hits) / float(total));
+    return Format (L"{ hits: %d, misses: %d, hit%%: %f }", fCachedCollected_Hits, fCachedCollected_Misses, float (fCachedCollected_Hits) / float (total));
 }
 
 /*

@@ -59,7 +59,7 @@ public:
         , fSeekable_ (seekable)
         , fFileName_ (fileName)
     {
-        auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
+        auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
@@ -133,7 +133,7 @@ public:
         Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested));
 #endif
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        auto                                               readingFromFileActivity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
+        auto                                               readingFromFileActivity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity                                    currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
         return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
@@ -164,7 +164,7 @@ public:
         return Read (intoStart, intoEnd);
 #elif qPlatform_POSIX
         pollfd pollData{fFD_, POLLIN, 0};
-        int    pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+        int    pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); }));
         Assert (pollResult >= 0);
         if (pollResult == 0) {
             return {}; // if no data available, return {}

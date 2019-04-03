@@ -126,7 +126,7 @@ namespace {
 
 Response Connection::Send (const Request& r)
 {
-    const LazyEvalActivity activity{[&]() { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (this->GetURL ()); }};
+    const LazyEvalActivity activity{[&] () { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (this->GetURL ()); }};
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
     Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ())

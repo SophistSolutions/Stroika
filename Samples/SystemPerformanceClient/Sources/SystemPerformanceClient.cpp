@@ -39,7 +39,7 @@ namespace {
         // strip CRLF - so shows up on one line
         String result = String::FromUTF8 (out.As<string> ());
         if (oneLineMode) {
-            result = result.StripAll ([](Character c) -> bool { return c == '\n' or c == '\r'; });
+            result = result.StripAll ([] (Character c) -> bool { return c == '\n' or c == '\r'; });
         }
         return result.AsNarrowSDKString ();
     }
@@ -140,7 +140,7 @@ int main (int argc, const char* argv[])
                 }
                 capturer.AddCaptureSet (cs);
             }
-            capturer.AddMeasurementsCallback ([oneLineMode](MeasurementSet ms) {
+            capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
                 cout << "    Measured-At: " << ms.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
                 for (Measurement mi : ms.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;

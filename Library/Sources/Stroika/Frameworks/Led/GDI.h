@@ -3617,7 +3617,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         fFontSize = pointSize;
 #elif qPlatform_Windows
-        fFontInfo.lfHeight = ::MulDiv (-long(pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
+        fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
 #elif qXWindows
         fFontSize = pointSize;
 #endif

@@ -68,7 +68,7 @@ void ThroughTmpFileWriter::Commit ()
     Require (not fTmpFilePath_.empty ()); // cannot Commit more than once
     // Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
 
-    auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"committing temporary file %s to %s", Characters::ToString (fTmpFilePath_).c_str (), Characters::ToString (fRealFilePath_).c_str ()); });
+    auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"committing temporary file %s to %s", Characters::ToString (fTmpFilePath_).c_str (), Characters::ToString (fRealFilePath_).c_str ()); });
     DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
     ThrowPOSIXErrNoIfNegative (::rename (fTmpFilePath_.AsSDKString ().c_str (), fRealFilePath_.AsSDKString ().c_str ()));

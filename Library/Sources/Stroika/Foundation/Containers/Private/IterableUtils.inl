@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Private {
         constexpr bool kUseApply_{true}; // I think apply faster due to single lock
         if (kUseApply_) {
             size_t n = 0;
-            return c.FindFirstThat ([&n, item, equalsComparer](ArgByValueType<T> ii) { return equalsComparer (ii, item) ? true : (n++, false); }) ? n : optional<size_t>{};
+            return c.FindFirstThat ([&n, item, equalsComparer] (ArgByValueType<T> ii) { return equalsComparer (ii, item) ? true : (n++, false); }) ? n : optional<size_t>{};
         }
         else {
             size_t n = 0;

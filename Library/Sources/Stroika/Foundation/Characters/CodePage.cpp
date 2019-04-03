@@ -210,10 +210,10 @@ namespace {
         for (int j = 0; j <= 2; ++j) {
 
             if (j == 0) {
-                outStream << "\tif (c < " << int(kBoundaryForSpecialLoop1) << ") {\n";
+                outStream << "\tif (c < " << int (kBoundaryForSpecialLoop1) << ") {\n";
             }
             else if (j == 1) {
-                outStream << "\telse if (c < " << int(kBoundaryForSpecialLoop2) << ") {\n";
+                outStream << "\telse if (c < " << int (kBoundaryForSpecialLoop2) << ") {\n";
             }
             else {
                 outStream << "\telse {\n";

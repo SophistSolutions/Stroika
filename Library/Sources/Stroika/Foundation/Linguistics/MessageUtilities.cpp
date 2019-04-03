@@ -157,7 +157,7 @@ shared_ptr<MessageUtilities> CurrentLocaleMessageUtilities::LookupHandler ()
         locale          currentLocale{};
         if (not co.has_value () or co->fLocale != currentLocale) {
             // create the appropriate handler for the current locale
-            co = [&]() {
+            co = [&] () {
                 //  search here user installed ones with AddHandler ()
                 for (shared_ptr<MessageUtilities> h : sHandlers_.load ()) {
                     if (h->AppliesToThisLocale (String::FromNarrowSDKString (currentLocale.name ()))) {

@@ -394,7 +394,7 @@ void TableDrivenKeywordSyntaxAnalyzer::AdjustLookBackRange (TextStore* ts, size_
 
     // Now adjust for scanning algorithm sluff
     // for our trivial keyword stuff, only look back at most one keyword length
-    *lookBackStart = max (0, int(*lookBackStart) - int(fKeywordTable.MaxKeywordLength () - 1));
+    *lookBackStart = max (0, int (*lookBackStart) - int (fKeywordTable.MaxKeywordLength () - 1));
     *lookBackTo    = min (ts->GetEnd (), *lookBackTo + fKeywordTable.MaxKeywordLength () - 1);
     Ensure (*lookBackStart <= *lookBackTo);
 }

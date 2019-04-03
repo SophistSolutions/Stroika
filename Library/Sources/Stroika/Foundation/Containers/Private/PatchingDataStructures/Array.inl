@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
          *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
          *  depends on things being properly adjusted.
          */
-        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index](_ArrayIteratorBase* ai) {
+        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index] (_ArrayIteratorBase* ai) {
             ai->PatchRealloc ();
             ai->PatchAdd (index);
         });
@@ -47,21 +47,21 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     template <typename T>
     inline void Array<T>::PatchViewsRemove (size_t index) const
     {
-        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index](_ArrayIteratorBase* ai) {
+        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index] (_ArrayIteratorBase* ai) {
             ai->PatchRemove (index);
         });
     }
     template <typename T>
     inline void Array<T>::PatchViewsRemoveAll () const
     {
-        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([](_ArrayIteratorBase* ai) {
+        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([] (_ArrayIteratorBase* ai) {
             ai->PatchRemoveAll ();
         });
     }
     template <typename T>
     inline void Array<T>::PatchViewsRealloc () const
     {
-        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([](_ArrayIteratorBase* ai) {
+        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([] (_ArrayIteratorBase* ai) {
             ai->PatchRealloc ();
         });
     }
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
          *  date. Instead, so that in local shadow of Invariant() done in Array<T,TRAITS>
          *  so only called when WE call Invariant().
          */
-        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([this](_ArrayIteratorBase* ai) {
+        this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([this] (_ArrayIteratorBase* ai) {
             Assert (ai->_fData == this);
             ai->Invariant ();
         });

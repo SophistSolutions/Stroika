@@ -52,19 +52,19 @@ namespace {
     {
         // Make sure Function<> works as well as std::function
         {
-            Function<int(bool)> f = []([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
+            Function<int (bool)> f = [] ([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
             VerifyTestResult (f (true) == 3);
-            function<int(bool)> ff = f;
+            function<int (bool)> ff = f;
             VerifyTestResult (ff (true) == 3);
         }
         // Make sure Function<> serves its one purpose - being comparable
         {
-            Function<int(bool)> f1 = []([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
-            Function<int(bool)> f2 = []([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
+            Function<int (bool)> f1 = [] ([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
+            Function<int (bool)> f2 = [] ([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
 
             VerifyTestResult (f1 != f2);
             VerifyTestResult (f1 < f2 or f2 < f1);
-            Function<int(bool)> f3 = f1;
+            Function<int (bool)> f3 = f1;
             VerifyTestResult (f3 == f1);
             VerifyTestResult (f3 != f2);
         }
@@ -115,7 +115,7 @@ namespace {
                 unsigned int cnt = 0;
                 {
                     [[maybe_unused]] auto&& c = Finally (
-                        [&cnt]() noexcept {
+                        [&cnt] () noexcept {
                             cnt--;
                         });
                     cnt++;
@@ -174,7 +174,7 @@ namespace {
                 ModuleGetterSetter_Implementation_MyData_ ()
                     : fOptionsFile_{
                           L"MyModule",
-                          []() -> ObjectVariantMapper {
+                          [] () -> ObjectVariantMapper {
                               ObjectVariantMapper mapper;
                               mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
                                   {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
@@ -215,11 +215,11 @@ namespace {
             }
             void TestUse2_ ()
             {
-                sModuleConfiguration_.Update ([](MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt.has_value () and *result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
+                sModuleConfiguration_.Update ([] (MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt.has_value () and *result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
             }
             void TestUse3_ ()
             {
-                if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt.has_value () and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+                if (sModuleConfiguration_.Update ([] (const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt.has_value () and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
                     // e.g. trigger someone to wakeup and used changes?
                 }
             }

@@ -81,8 +81,8 @@ namespace Stroika::Foundation::Execution {
          */
         PIDLoop ()               = delete;
         PIDLoop (const PIDLoop&) = delete;
-        PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
-        PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+        PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+        PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint = {});
         nonvirtual PIDLoop& operator= (const PIDLoop&) = delete;
 
     public:
@@ -135,10 +135,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void RunDirectly ();
 
     private:
-        ControlParams               fPIDParams_;
-        Time::DurationSecondsType   fUpdatePeriod_; // time between loop iterations
-        function<ValueType ()>      fMeasureFunction_;
-        function<void(ValueType o)> fOutputFunction_;
+        ControlParams                fPIDParams_;
+        Time::DurationSecondsType    fUpdatePeriod_; // time between loop iterations
+        function<ValueType ()>       fMeasureFunction_;
+        function<void (ValueType o)> fOutputFunction_;
         struct UpdatableParams_ {
             ValueType fSetPoint_  = {};
             ValueType fPrevError_ = {};

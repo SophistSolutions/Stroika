@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   It is imporant (required) that all tasks added to a ThreadPool respond in a timely manner to Thread Abort.
          *          ThreadPool counts on that for clean shutdown.
          */
-        using TaskType = Function<void()>;
+        using TaskType = Function<void ()>;
 
     public:
         /**

@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void clear ();
         nonvirtual void clear (typename Configuration::ArgByValueType<KEY> key);
-        nonvirtual void clear (function<bool(typename Configuration::ArgByValueType<KEY>)> clearPredicate);
+        nonvirtual void clear (function<bool (typename Configuration::ArgByValueType<KEY>)> clearPredicate);
 
     public:
         /**

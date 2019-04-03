@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Execution {
             */
         shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
         [[maybe_unused]] auto&& cleanup = Finally (
-            [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
+            [we, waitableEventsStart, waitableEventsEnd] () noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts;
                 [[maybe_unused]] auto&&               critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                 for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Execution {
          */
         shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
         [[maybe_unused]] auto&& cleanup = Finally (
-            [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
+            [we, waitableEventsStart, waitableEventsEnd] () noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts;
                 [[maybe_unused]] auto&&               critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                 for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {

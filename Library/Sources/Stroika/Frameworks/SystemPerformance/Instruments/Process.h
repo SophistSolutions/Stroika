@@ -284,7 +284,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
         /**
          *  If FilterFunctionType is nullptr, then treat this as false.
          */
-        using FilterFunctionType = function<bool(pid_t pid, const String& processPath)>;
+        using FilterFunctionType = function<bool (pid_t pid, const String& processPath)>;
 
         /**
          *  \req fMinimumAveragingInterval >= 0
@@ -294,7 +294,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
         /*
          * Assign nullptr to disable commandline capture.
          */
-        FilterFunctionType fCaptureCommandLine{[](pid_t /*pid*/, const String & /*processPath*/) -> bool { return true; }};
+        FilterFunctionType fCaptureCommandLine{[] (pid_t /*pid*/, const String & /*processPath*/) -> bool { return true; }};
 
         bool                 fCaptureEnvironmentVariables{true};
         bool                 fCaptureCurrentWorkingDirectory{true};

@@ -42,7 +42,7 @@ namespace Stroika::Frameworks::WebServer {
         Interceptor ()                   = delete;
         Interceptor (const Interceptor&) = default;
         Interceptor (Interceptor&&)      = default;
-        Interceptor (const function<void(Message*)>& handleMessage, const function<void(Message*, const exception_ptr& e)>& handleFault = nullptr);
+        Interceptor (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr& e)>& handleFault = nullptr);
 
     protected:
         Interceptor (const shared_ptr<_IRep>& rep);

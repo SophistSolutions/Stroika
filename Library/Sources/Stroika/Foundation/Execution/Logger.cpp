@@ -141,7 +141,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             shared_ptr<Rep_> useRepInThread = shared_from_this (); // capture by value the shared_ptr
             if (suppressDuplicates) {
                 newBookKeepThread = Thread::New (
-                    [suppressDuplicatesThreshold, useRepInThread]() {
+                    [suppressDuplicatesThreshold, useRepInThread] () {
                         Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
                         while (true) {
                             Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
@@ -163,7 +163,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             }
             else {
                 newBookKeepThread = Thread::New (
-                    [useRepInThread]() {
+                    [useRepInThread] () {
                         Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/2");
                         while (true) {
                             AssertNotNull (useRepInThread);
@@ -545,7 +545,7 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
     const DWORD kEventID     = EVENT_Message;
     HANDLE      hEventSource = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
     Verify (hEventSource != NULL);
-    [[maybe_unused]] auto&&    cleanup = Execution::Finally ([hEventSource]() { Verify (::DeregisterEventSource (hEventSource)); });
+    [[maybe_unused]] auto&&    cleanup = Execution::Finally ([hEventSource] () { Verify (::DeregisterEventSource (hEventSource)); });
     SDKString                  tmp     = message.AsSDKString ();
     const Characters::SDKChar* msg     = tmp.c_str ();
     Verify (::ReportEvent (

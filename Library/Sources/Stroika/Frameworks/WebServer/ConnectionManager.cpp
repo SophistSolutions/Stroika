@@ -153,9 +153,9 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,
                  options.fBindFlags.value_or (Options::kDefault_BindFlags),
-                 [this](const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
+                 [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  ComputeConnectionBacklog_ (options)}
-    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=]() { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
+    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
 {
 }
 
@@ -206,7 +206,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                 fInactiveOpenConnections_.rwget ().rwref ().RemoveDomainElement (conn);
                 fActiveConnections_.rwget ().rwref ().Add (conn);
                 fActiveConnectionThreads_.AddTask (
-                    [this, conn]() mutable {
+                    [this, conn] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif

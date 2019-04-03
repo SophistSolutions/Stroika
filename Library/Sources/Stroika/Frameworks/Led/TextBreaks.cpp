@@ -118,7 +118,7 @@ static bool SJIS_IsEOLChar (const char* mbChar)
         hi = 0;
         lo = byte0;
     }
-    bool isEOLChar = bool(yEOLTable[hi][lo / 8] & yBits[lo & 7]);
+    bool isEOLChar = bool (yEOLTable[hi][lo / 8] & yBits[lo & 7]);
     return (isEOLChar);
 }
 

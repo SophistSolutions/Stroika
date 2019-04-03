@@ -39,15 +39,15 @@ namespace {
         Options_Storage_IMPL_ ()
             : fOptionsFile_{
                   L"AppSettings"sv,
-                  []() -> ObjectVariantMapper {
+                  [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
 
                       // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
                       mapper.Add<Led_tString> (
-                          [](const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
+                          [] (const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
                               return String{*obj};
                           },
-                          [](const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
+                          [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
                               *intoObj = d.As<String> ().As<Led_tString> ();
                           });
                       mapper.AddCommonType<vector<Led_tString>> ();
@@ -69,7 +69,7 @@ namespace {
                   OptionsFile::kDefaultUpgrader,
 
                   // override the default name mapper to assure folder created, since no installer for activex controls
-                  [](const String& moduleName, const String& fileSuffix) {
+                  [] (const String& moduleName, const String& fileSuffix) {
                       static const auto kDefaultMapper_ = OptionsFile::mkFilenameMapper (L"ActiveLedIt"sv);
                       String            fileName        = kDefaultMapper_ (moduleName, fileSuffix);
                       IO::FileSystem::CreateDirectoryForFile (fileName);
@@ -703,7 +703,7 @@ void LedItView::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
                     continue;
                 }
             }
-            prevItemSep = bool(state.m_nID == 0);
+            prevItemSep = bool (state.m_nID == 0);
             state.m_nIndex++;
         }
         // if LAST item is a separator - remove THAT
@@ -880,7 +880,7 @@ LedItView::SearchParameters LedItView::GetSearchParameters () const
 
 void LedItView::SetSearchParameters (const SearchParameters& sp)
 {
-    sOptions_.Update ([=](Options_ d) { d.fSearchParameters = sp; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fSearchParameters = sp; return d; });
 }
 
 void LedItView::SetSelection (size_t start, size_t end)
@@ -895,8 +895,8 @@ void LedItView::SetSelection (size_t start, size_t end)
 void LedItView::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
     if (GetMaxLength () != -1) {
-        long textAdded = long(updateInfo.fTextLength) - (updateInfo.fReplaceTo - updateInfo.fReplaceFrom);
-        if (textAdded + long(GetLength ()) > GetMaxLength ()) {
+        long textAdded = long (updateInfo.fTextLength) - (updateInfo.fReplaceTo - updateInfo.fReplaceFrom);
+        if (textAdded + long (GetLength ()) > GetMaxLength ()) {
             throw "";
         }
     }

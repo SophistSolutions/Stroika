@@ -132,7 +132,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 #endif
     static const String kThreadName_{String_Constant{L"SSDP Search Responder"}};
     fListenThread_ = Execution::Thread::New (
-        [advertisements]() {
+        [advertisements] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};
             ConnectionlessSocket::Ptr s         = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             Socket::BindFlags         bindFlags = Socket::BindFlags ();

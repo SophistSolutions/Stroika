@@ -275,9 +275,9 @@ unsigned long Led::LedTickCount2XTime (float ledTickCount)
 Time::DurationSecondsType Led::Led_GetDoubleClickTime ()
 {
 #if qPlatform_MacOS
-    return (float(::GetDblTime ()) / 60.0f);
+    return (float (::GetDblTime ()) / 60.0f);
 #elif qPlatform_Windows
-    return (float(::GetDoubleClickTime ()) / 1000.0f);
+    return (float (::GetDoubleClickTime ()) / 1000.0f);
 #elif qXWindows
     return 0.25f; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
 #endif

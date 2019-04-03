@@ -50,7 +50,7 @@ namespace {
             x = max (*x, 1);
             VerifyTestResult (x == 3);
         }
-        auto testOptionalOfThingNotCopyable = []() {
+        auto testOptionalOfThingNotCopyable = [] () {
             {
                 Optional<NotCopyable> n1;
                 VerifyTestResult (not n1.has_value ());
@@ -190,7 +190,7 @@ namespace {
     void Test_5_SharedPtr ()
     {
         {
-            SharedPtr<int> p (new int(3));
+            SharedPtr<int> p (new int (3));
             VerifyTestResult (p.use_count () == 1);
             VerifyTestResult (p.unique ());
             VerifyTestResult (*p == 3);

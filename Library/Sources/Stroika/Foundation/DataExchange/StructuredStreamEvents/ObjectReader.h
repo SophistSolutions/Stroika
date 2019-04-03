@@ -809,17 +809,17 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     class MixinReader : public IElementConsumer {
     public:
         struct MixinEltTraits {
-            ReaderFromVoidStarFactory        fReaderFactory;
-            function<bool(const Name& name)> fReadsName = [](const Name& name) { return true; };
-            function<bool()>                 fReadsText = []() { return true; };
-            function<std::byte*(T*)>         fAddressOfSubElementFetcher;
+            ReaderFromVoidStarFactory         fReaderFactory;
+            function<bool (const Name& name)> fReadsName = [] (const Name& name) { return true; };
+            function<bool ()>                 fReadsText = [] () { return true; };
+            function<std::byte*(T*)>          fAddressOfSubElementFetcher;
 
             static const function<std::byte*(T*)> kDefaultAddressOfSubElementFetcher;
 
             MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<bool()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
         };
 
     public:
@@ -999,7 +999,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     private:
         ContainerType*                      fValuePtr_{};
         optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-        function<bool(Name)>                fReadThisName_{[]([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
+        function<bool (Name)>               fReadThisName_{[] ([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
         ElementType                         fProxyValue_{TRAITS::kDefaultValue};
         shared_ptr<IElementConsumer>        fActiveSubReader_{};
     };

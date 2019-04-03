@@ -40,7 +40,7 @@ namespace {
         {
             vector<int> c{3, 4, 5};
             Set<int>    s9{1, 2, 3};
-            Set<int>    s10{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
+            Set<int>    s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
             Assert (s10.Contains (3) and not s10.Contains (88));
         }
     }

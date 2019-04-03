@@ -628,7 +628,8 @@ namespace Stroika::Foundation::Memory {
          *
          *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
          */
-        nonvirtual void AccumulateIf (const Optional<T>& rhsOptionalValue, const function<T (T, T)>& op = [](T lhs, T rhs) { return lhs + rhs; });
+        nonvirtual void AccumulateIf (
+            const Optional<T>& rhsOptionalValue, const function<T (T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; });
 
     private:
         /*

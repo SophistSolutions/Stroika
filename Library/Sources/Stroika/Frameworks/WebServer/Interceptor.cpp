@@ -16,11 +16,11 @@ using namespace Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 class Interceptor::MyRep_ : public Interceptor::_IRep {
-    function<void(Message*)>                         fHandleMessage_;
-    function<void(Message*, const exception_ptr& e)> fHandleFault_;
+    function<void (Message*)>                         fHandleMessage_;
+    function<void (Message*, const exception_ptr& e)> fHandleFault_;
 
 public:
-    MyRep_ (const function<void(Message*)>& handleMessage, const function<void(Message*, const exception_ptr&)>& handleFault)
+    MyRep_ (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr&)>& handleFault)
         : fHandleMessage_ (handleMessage)
         , fHandleFault_ (handleFault)
     {
@@ -40,7 +40,7 @@ public:
  ***************************** WebServer::Interceptor ***************************
  ********************************************************************************
  */
-Interceptor::Interceptor (const function<void(Message*)>& handleMessage, const function<void(Message*, const exception_ptr&)>& handleFault)
+Interceptor::Interceptor (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr&)>& handleFault)
     : Interceptor (make_shared<MyRep_> (handleMessage, handleFault))
 {
 }

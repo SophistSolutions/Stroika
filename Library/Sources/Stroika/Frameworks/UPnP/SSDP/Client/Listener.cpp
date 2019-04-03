@@ -66,7 +66,7 @@ public:
         }
     }
     ~Rep_ () = default;
-    void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+    void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
         fFoundCallbacks_.push_back (callOnFinds);
@@ -75,7 +75,7 @@ public:
     {
         static const String kThreadName_ = L"SSDP Listener"sv;
         fThread_                         = Execution::Thread::New (
-            [this]() { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
+            [this] () { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
     }
     void Stop ()
     {
@@ -171,10 +171,10 @@ public:
     }
 
 private:
-    recursive_mutex                                      fCritSection_;
-    vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Collection<ConnectionlessSocket::Ptr>                fSockets_;
-    Execution::Thread::CleanupPtr                        fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    recursive_mutex                                       fCritSection_;
+    vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
+    Collection<ConnectionlessSocket::Ptr>                 fSockets_;
+    Execution::Thread::CleanupPtr                         fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
@@ -187,19 +187,19 @@ Listener::Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersio
 {
 }
 
-Listener::Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : Listener (ipVersion)
 {
     AddOnFoundCallback (callOnFinds);
 }
 
-Listener::Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart)
+Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart)
     : Listener (callOnFinds, ipVersion)
 {
     Start ();
 }
 
-Listener::Listener (const function<void(const SSDP::Advertisement& d)>& callOnFinds, AutoStart)
+Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart)
     : Listener (callOnFinds)
 {
     Start ();
@@ -210,7 +210,7 @@ Listener::~Listener ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void Listener::AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+void Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }

@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        nonvirtual Characters::String ToString (const function<Characters::String (T)>& elt2String = [](T x) -> Characters::String { return Characters::ToString (x); }) const;
+        nonvirtual Characters::String ToString (const function<Characters::String (T)>& elt2String = [] (T x) -> Characters::String { return Characters::ToString (x); }) const;
 
     private:
         nonvirtual void MergeIn_ (const RangeType& r);

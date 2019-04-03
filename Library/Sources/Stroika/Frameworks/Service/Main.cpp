@@ -528,8 +528,8 @@ void Main::RunTilIdleService::_RunAsService ()
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_                        = Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
     float timeTilIdleHack = 3.0;
@@ -541,8 +541,8 @@ void Main::RunTilIdleService::_RunDirectly ()
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_                        = Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
     fRunThread_.Join ();
@@ -553,8 +553,8 @@ void Main::RunTilIdleService::_Start ([[maybe_unused]] Time::DurationSecondsType
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_                        = Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
 }
@@ -591,7 +591,7 @@ pid_t Main::RunTilIdleService::_GetServicePID () const
  ********************************************************************************
  */
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
-    : fOurSignalHandler_ ([this](SignalID signum) { SignalHandler_ (signum); })
+    : fOurSignalHandler_ ([this] (SignalID signum) { SignalHandler_ (signum); })
     , fAppRep_ ()
     , fRunThread_ ()
 {
@@ -675,7 +675,7 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     RequireNotNull (appRep);
 
     [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally (
-        [this]() noexcept {
+        [this] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterupts;
             SetupSignalHanlders_ (false);
         });
@@ -683,12 +683,12 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
 
     RequireNotNull (appRep); // must call Attach_ first
     fRunThread_.store (Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_));
     [[maybe_unused]] auto&& cleanup = Execution::Finally (
-        [this]() noexcept {
+        [this] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterupts;
             (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
         });
@@ -711,8 +711,8 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep); // must call Attach_ first
     fRunThread_.store (Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_));
     Thread::Ptr t = fRunThread_.load ();
@@ -889,14 +889,14 @@ Main::State Main::WindowsService::_GetState () const
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService]() noexcept {
+        [hService] () noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
         });
@@ -935,7 +935,7 @@ void Main::WindowsService::_Install ()
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
@@ -957,7 +957,7 @@ void Main::WindowsService::_UnInstall ()
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
@@ -965,7 +965,7 @@ void Main::WindowsService::_UnInstall ()
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService]() noexcept {
+        [hService] () noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
         });
@@ -1007,8 +1007,8 @@ void Main::WindowsService::_RunDirectly ()
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_                        = Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
     fRunThread_.Join ();
@@ -1023,14 +1023,14 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService]() noexcept {
+        [hService] () noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
         });
@@ -1048,7 +1048,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
@@ -1056,7 +1056,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService]() noexcept {
+        [hService] () noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
         });
@@ -1083,14 +1083,14 @@ pid_t Main::WindowsService::_GetServicePID () const
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService]() noexcept {
+        [hService] () noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
         });
@@ -1114,7 +1114,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM]() noexcept {
+        [hSCM] () noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
         });
@@ -1122,7 +1122,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService]() noexcept {
+        [hService] () noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
         });
@@ -1159,8 +1159,8 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
     // about like this - FIX - KEEP SOMETHING SIMIALR
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_                        = Execution::Thread::New (
-        [appRep]() {
-            appRep->MainLoop ([]() {});
+        [appRep] () {
+            appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
     //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");

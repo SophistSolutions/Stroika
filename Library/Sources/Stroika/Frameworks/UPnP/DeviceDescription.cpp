@@ -198,14 +198,14 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
     using namespace Stroika::Foundation::DataExchange::XML;
 
-    static const ObjectReader::Registry kTypesRegistry_ = []() {
+    static const ObjectReader::Registry kTypesRegistry_ = [] () {
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
         registry.AddCommonType<optional<String>> ();
         registry.AddCommonType<uint16_t> ();
         registry.AddCommonType<URL> ();
         registry.AddCommonType<optional<URL>> ();
-        registry.AddCommonReader_Simple<InternetMediaType> ([](const String& s) { return InternetMediaType{s}; });
+        registry.AddCommonReader_Simple<InternetMediaType> ([] (const String& s) { return InternetMediaType{s}; });
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         registry.AddCommonReader_Class<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"mimetype"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fMimeType)},

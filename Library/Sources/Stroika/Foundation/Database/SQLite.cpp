@@ -154,7 +154,7 @@ Connection::Statement::~Statement ()
  *************************** SQLite::Connection *********************************
  ********************************************************************************
  */
-Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbInitializer)
+Connection::Connection (const URL& dbURL, const function<void (Connection&)>& dbInitializer)
 {
     TraceContextBumper ctx ("SQLite::Connection::Connection");
     // @todo - code cleanup!!!
@@ -183,7 +183,7 @@ Connection::Connection (const URL& dbURL, const function<void(Connection&)>& dbI
         }
 }
 
-Connection::Connection (const String& dbPath, const function<void(Connection&)>& dbInitializer)
+Connection::Connection (const String& dbPath, const function<void (Connection&)>& dbInitializer)
 {
     TraceContextBumper ctx ("SQLite::Connection::Connection");
     // @todo - code cleanup!!!
@@ -212,7 +212,7 @@ Connection::Connection (const String& dbPath, const function<void(Connection&)>&
         }
 }
 
-Connection::Connection (InMemoryDBFlag, const function<void(Connection&)>& dbInitializer)
+Connection::Connection (InMemoryDBFlag, const function<void (Connection&)>& dbInitializer)
 {
     TraceContextBumper ctx ("SQLite::Connection::Connection");
     // @todo - code cleanup!!!

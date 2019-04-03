@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Containers {
         return Iterable<DOMAIN_TYPE> (move (tmp));
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool(pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
+    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Containers {
                 virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
                     auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                    auto getNext   = [myContext]() -> optional<DOMAIN_TYPE> {
+                    auto getNext   = [myContext] () -> optional<DOMAIN_TYPE> {
                         if (myContext->Done ()) {
                             return optional<DOMAIN_TYPE> ();
                         }
@@ -474,7 +474,7 @@ namespace Stroika::Foundation::Containers {
                 virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
                     auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                    auto getNext   = [myContext]() -> optional<RANGE_TYPE> {
+                    auto getNext   = [myContext] () -> optional<RANGE_TYPE> {
                         if (myContext->Done ()) {
                             return optional<RANGE_TYPE> ();
                         }

@@ -28,17 +28,17 @@ namespace Stroika::Frameworks::WebServer {
      * Also - a RequestHandler should be careful about threads, as it could be called first on one thread, and
      * then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
      */
-    class RequestHandler : public function<void(Message* message)> {
+    class RequestHandler : public function<void (Message* message)> {
     public:
         /**
          *  \note _Fx _Func, void* arg for one overload is just to differentiate the overload cases so
          *        compiler doesn't complain its a redefinition.
          */
-        RequestHandler (const function<void(Message* message)>& f);
-        RequestHandler (const function<void(Request* request, Response* response)>& f);
-        template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Message*)>>>* = nullptr>
+        RequestHandler (const function<void (Message* message)>& f);
+        RequestHandler (const function<void (Request* request, Response* response)>& f);
+        template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*)>>>* = nullptr>
         RequestHandler (_Fx _Func);
-        template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Request*, Response*)>>>* = nullptr>
+        template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Request*, Response*)>>>* = nullptr>
         RequestHandler (_Fx _Func, void* = nullptr);
     };
 

@@ -32,7 +32,7 @@ namespace {
     void DoTestForConcreteContainer_ (CONCRETE_CONTAINER_FACTORY factory)
     {
         using T                  = typename CONCRETE_CONTAINER::value_type;
-        auto extraChecksFunction = []([[maybe_unused]] const Set<T>& s) {
+        auto extraChecksFunction = [] ([[maybe_unused]] const Set<T>& s) {
             Lambda_Arg_Unused_BWA (s);
             // only work todo on sorted sets
         };
@@ -42,7 +42,7 @@ namespace {
     void DoTestForConcreteContainer_ ()
     {
         using T = typename CONCRETE_CONTAINER::value_type;
-        DoTestForConcreteContainer_<CONCRETE_CONTAINER> ([]() { return CONCRETE_CONTAINER{}; });
+        DoTestForConcreteContainer_<CONCRETE_CONTAINER> ([] () { return CONCRETE_CONTAINER{}; });
     }
 }
 
@@ -64,7 +64,7 @@ namespace {
             Set<int> s8{move (s1)};
             Set<int> s9{1, 2, 3};
             VerifyTestResult (s9.size () == 3);
-            Set<int> s10{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
+            Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
         }
         void TEstCTORFromOtherContainer_ ()
         {
@@ -86,7 +86,7 @@ namespace {
         void DoAll ()
         {
             Set<int> s{1, 2, 3, 4, 5};
-            VerifyTestResult ((s.Where ([](int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
+            VerifyTestResult ((s.Where ([] (int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
         }
     }
 }
@@ -111,15 +111,15 @@ namespace {
 
         DoTestForConcreteContainer_<Set<size_t>> ();
         DoTestForConcreteContainer_<Set<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set<SimpleClassWithoutComparisonOperators>> ([]() { return Set<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
+        DoTestForConcreteContainer_<Set<SimpleClassWithoutComparisonOperators>> ([] () { return Set<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
 
         DoTestForConcreteContainer_<Set_LinkedList<size_t>> ();
         DoTestForConcreteContainer_<Set_LinkedList<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_LinkedList<SimpleClassWithoutComparisonOperators>> ([]() { return Set_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
+        DoTestForConcreteContainer_<Set_LinkedList<SimpleClassWithoutComparisonOperators>> ([] () { return Set_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
 
         DoTestForConcreteContainer_<Set_stdset<size_t>> ();
         DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators>> ([]() { return Set_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
+        DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators>> ([] () { return Set_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
 
         ExampleCTORS_Test_2_::DoTest ();
 

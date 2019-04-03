@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers {
         Remove (i);
     }
     template <typename T>
-    inline Bag<T> Bag<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
+    inline Bag<T> Bag<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const
     {
         return Iterable<T>::Where (doToElement, Bag<T>{});
     }

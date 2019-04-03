@@ -56,7 +56,7 @@ public:
         , fFlushFlag (flushFlag)
         , fFileName_ (fileName)
     {
-        auto            activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
+        auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
@@ -119,7 +119,7 @@ public:
 
         if (start != end) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            auto                                               activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            auto                                               activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
             DeclareActivity                                    currentActivity{&activity};
             const byte*                                        i = start;
             while (i < end) {
@@ -138,7 +138,7 @@ public:
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            auto                                               activity = LazyEvalActivity ([&]() -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+            auto                                               activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
             DeclareActivity                                    currentActivity{&activity};
 #if qPlatform_Windows
             ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));

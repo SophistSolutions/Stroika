@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Sequence<T> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+        nonvirtual Sequence<T> Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
 
     public:
         /**
@@ -470,7 +470,7 @@ namespace Stroika::Foundation::Containers {
          *  @see Iterable<T>::First ()
          */
         nonvirtual optional<T> First () const;
-        nonvirtual optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
 
     public:
         /**
@@ -483,7 +483,7 @@ namespace Stroika::Foundation::Containers {
          *  @see Iterable<T>::Last ()
          */
         nonvirtual optional<T> Last () const;
-        nonvirtual optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
 
     public:
         /**

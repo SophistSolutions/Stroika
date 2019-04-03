@@ -32,7 +32,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+        auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // only work todo on sorted Associations
         };
         CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
@@ -40,7 +40,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
     {
-        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+        auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // only work todo on sorted Associations
         };
         CommonTests::AssociationTests::SimpleAssociationTest_All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
@@ -62,7 +62,7 @@ namespace {
     template <typename CONTAINER, typename COMPARER>
     void doIt_t3_ ()
     {
-        CommonTests::AssociationTests::SimpleAssociationTest_WhichRequiresExplcitValueComparer<CONTAINER, COMPARER> ([]([[maybe_unused]] const CONTAINER& c) { Lambda_Arg_Unused_BWA (c); });
+        CommonTests::AssociationTests::SimpleAssociationTest_WhichRequiresExplcitValueComparer<CONTAINER, COMPARER> ([] ([[maybe_unused]] const CONTAINER& c) { Lambda_Arg_Unused_BWA (c); });
     }
     void Test3_SimpleAssociationTest_WhichRequiresExplcitValueComparer ()
     {

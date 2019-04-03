@@ -34,7 +34,7 @@ namespace {
         VerifyTestResult (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString (L"1.0.1"));
         VerifyTestResult (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString (L"2.0b3"));
 
-        auto verifier = [](const Version& v, const String& prettyName, const String& win32VersionString) {
+        auto verifier = [] (const Version& v, const String& prettyName, const String& win32VersionString) {
             VerifyTestResult (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
             VerifyTestResult (Version::FromPrettyVersionString (prettyName) == v);
             VerifyTestResult (Version::FromPrettyVersionString (prettyName) == Version::FromWin32Version4DotString (win32VersionString));
@@ -52,7 +52,7 @@ namespace {
         verifier (Version (3, 0, VersionStage::Release, 0, true), L"3.0", L"3.0.160.1");
         verifier (Version (3, 0, VersionStage::Release, 1, true), L"3.0.1", L"3.0.160.3");
         {
-            auto testRoundTrip = [](uint32_t fullVer, uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild) {
+            auto testRoundTrip = [] (uint32_t fullVer, uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild) {
                 Version sv{fullVer};
                 VerifyTestResult (sv.fMajorVer == majorVer);
                 VerifyTestResult (sv.fMinorVer == minorVer);

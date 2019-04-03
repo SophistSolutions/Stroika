@@ -85,7 +85,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        using LoggerType = function<void(const LoggerMessage& message)>;
+        using LoggerType = function<void (const LoggerMessage& message)>;
 
     public:
         /**

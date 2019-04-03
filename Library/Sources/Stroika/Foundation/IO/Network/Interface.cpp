@@ -215,7 +215,7 @@ namespace {
         Interface newInterface            = prevInterfaceObject2Update.value_or (Interface{});
         newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
         newInterface.fFriendlyName        = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
-        auto getFlags                     = [](int sd, const char* name) {
+        auto getFlags                     = [] (int sd, const char* name) {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
@@ -224,7 +224,7 @@ namespace {
         };
         int flags = getFlags (sd, i->ifr_name);
 #if qPlatform_Linux
-        auto getWirelessFlag = [](int sd, const char* name) {
+        auto getWirelessFlag = [] (int sd, const char* name) {
             iwreq pwrq{};
             Characters::CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIWNAME, (char*)&pwrq);
@@ -254,7 +254,7 @@ namespace {
 #endif
 
 #if qPlatform_Linux || qPlatform_MacOS
-        auto getNetMaskAsPrefix = [](int sd, const char* name) -> optional<unsigned int> {
+        auto getNetMaskAsPrefix = [] (int sd, const char* name) -> optional<unsigned int> {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
@@ -284,7 +284,7 @@ namespace {
 #endif
 
 #if qPlatform_Linux || qPlatform_MacOS
-        auto getDefaultGateway = [](const char* name) -> optional<InternetAddress> {
+        auto getDefaultGateway = [] (const char* name) -> optional<InternetAddress> {
             try {
 #if qPlatform_Linux
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
@@ -371,7 +371,7 @@ namespace {
 #endif
 
 #if qPlatform_Linux
-        auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
+        auto getSpeed = [] (int sd, const char* name) -> optional<uint64_t> {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             ethtool_cmd edata{};
@@ -414,7 +414,7 @@ namespace {
             else {
                 // see if we can check if physical cable plugged in - https://stackoverflow.com/questions/808560/how-to-detect-the-physical-connected-state-of-a-network-cable-connector
 #if qPlatform_Linux
-                auto checkCarrierKnownSet = [](const char* id) -> bool {
+                auto checkCarrierKnownSet = [] (const char* id) -> bool {
                     try {
                         auto         fs = FileInputStream::New (String::FromNarrowSDKString (string{"/sys/class/net/"} + id), FileInputStream::eNotSeekable);
                         Memory::BLOB b  = fs.ReadAll ();
@@ -462,7 +462,7 @@ namespace {
 
         int sd = ::socket (PF_INET, SOCK_STREAM, 0);
         Assert (sd >= 0);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd]() noexcept { ::close (sd); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd] () noexcept { ::close (sd); });
 
         int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
         Assert (r == 0);
@@ -514,18 +514,18 @@ namespace {
             DWORD dwCurVersion = 0;
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::WlanOpenHandle (2, NULL, &dwCurVersion, &hClient));
         }
-        [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&]() noexcept { if (hClient !=nullptr) {::WlanCloseHandle (hClient, nullptr);} });
+        [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&] () noexcept { if (hClient !=nullptr) {::WlanCloseHandle (hClient, nullptr);} });
 
         PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
         Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::WlanEnumInterfaces (hClient, nullptr, &pIfList));
-        [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&]() noexcept { if (pIfList !=nullptr) {::WlanFreeMemory (pIfList);} });
+        [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { if (pIfList !=nullptr) {::WlanFreeMemory (pIfList);} });
 
         for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
             PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
             WirelessInfoPlus_    wInfo;
             Common::GUID         interfaceGUID{pIfInfo->InterfaceGuid};
 
-            auto mapState = [](WLAN_INTERFACE_STATE s) -> WirelessInfo::State {
+            auto mapState = [] (WLAN_INTERFACE_STATE s) -> WirelessInfo::State {
                 switch (s) {
                     case wlan_interface_state_not_ready:
                         return WirelessInfo::State::eNotReady;
@@ -562,13 +562,13 @@ namespace {
                         ::WlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
                                               nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
                 }
-                [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&]() noexcept { if (pConnectInfo !=nullptr) {::WlanFreeMemory (pConnectInfo);} });
+                [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo !=nullptr) {::WlanFreeMemory (pConnectInfo);} });
 
                 if (pConnectInfo->isState != pIfInfo->isState) {
                     DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
                 }
 
-                auto mapConnectionMode = [](WLAN_CONNECTION_MODE s) -> WirelessInfo::ConnectionMode {
+                auto mapConnectionMode = [] (WLAN_CONNECTION_MODE s) -> WirelessInfo::ConnectionMode {
                     switch (s) {
                         case wlan_connection_mode_profile:
                             return WirelessInfo::ConnectionMode::eProfile;
@@ -595,7 +595,7 @@ namespace {
                     wInfo.fSSID = String::FromNarrowSDKString (reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID + pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength));
                 }
 
-                auto mapBSSType = [](DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
+                auto mapBSSType = [] (DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
                     switch (s) {
                         case dot11_BSS_type_infrastructure:
                             return WirelessInfo::BSSType::eInfrastructure;
@@ -612,7 +612,7 @@ namespace {
 
                 wInfo.fMACAddress = PrintMacAddr_ (std::begin (pConnectInfo->wlanAssociationAttributes.dot11Bssid), std::end (pConnectInfo->wlanAssociationAttributes.dot11Bssid));
 
-                auto mapPhysicalConnectionType = [](DOT11_PHY_TYPE s) -> WirelessInfo::PhysicalConnectionType {
+                auto mapPhysicalConnectionType = [] (DOT11_PHY_TYPE s) -> WirelessInfo::PhysicalConnectionType {
                     switch (s) {
                         case dot11_phy_type_unknown:
                             return WirelessInfo::PhysicalConnectionType::eUnknown;
@@ -650,7 +650,7 @@ namespace {
 
                 wInfo.fSecurityEnabled = pConnectInfo->wlanSecurityAttributes.bSecurityEnabled;
                 wInfo.f8021XEnabled    = pConnectInfo->wlanSecurityAttributes.bOneXEnabled;
-                auto mapAuthAlgorithm  = [](DOT11_AUTH_ALGORITHM s) -> WirelessInfo::AuthAlgorithm {
+                auto mapAuthAlgorithm  = [] (DOT11_AUTH_ALGORITHM s) -> WirelessInfo::AuthAlgorithm {
                     switch (s) {
                         case DOT11_AUTH_ALGO_80211_OPEN:
                             return WirelessInfo::AuthAlgorithm::eOpen;
@@ -673,7 +673,7 @@ namespace {
                 };
                 wInfo.fAuthAlgorithm = mapAuthAlgorithm (pConnectInfo->wlanSecurityAttributes.dot11AuthAlgorithm);
 
-                auto mapCipher = [](DOT11_CIPHER_ALGORITHM s) -> String {
+                auto mapCipher = [] (DOT11_CIPHER_ALGORITHM s) -> String {
                     switch (s) {
                         case DOT11_CIPHER_ALGO_NONE:
                             return L"None"sv;

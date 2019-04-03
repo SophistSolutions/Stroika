@@ -56,7 +56,7 @@ namespace {
         };
         OptionsFile of{
             L"MyModule",
-            []() -> ObjectVariantMapper {
+            [] () -> ObjectVariantMapper {
                 ObjectVariantMapper mapper;
                 mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
                     {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
@@ -65,7 +65,7 @@ namespace {
                 return mapper;
             }(),
             OptionsFile::kDefaultUpgrader,
-            [](const String& moduleName, const String& fileSuffix) -> String {
+            [] (const String& moduleName, const String& fileSuffix) -> String {
                 return IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
             }};
         MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
@@ -82,7 +82,7 @@ namespace {
         ModuleGetterSetter_Implementation_MyData_ ()
             : fOptionsFile_{
                   L"MyModule",
-                  []() -> ObjectVariantMapper {
+                  [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
                           {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
@@ -90,7 +90,7 @@ namespace {
                       });
                       return mapper;
                   }(),
-                  OptionsFile::kDefaultUpgrader, [](const String& moduleName, const String& fileSuffix) -> String {
+                  OptionsFile::kDefaultUpgrader, [] (const String& moduleName, const String& fileSuffix) -> String {
                 // for regression tests write to /tmp
                 return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix; }}
             , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))

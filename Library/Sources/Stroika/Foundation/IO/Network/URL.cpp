@@ -219,7 +219,7 @@ URL::URL (const String& urlText, ParseOptions po)
 URL URL::Parse (const String& w, ParseOptions po)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper{L"IO::Network::URL::Parse", L"%s,%d", w.c_str (), int(po)};
+    Debug::TraceContextBumper{L"IO::Network::URL::Parse", L"%s,%d", w.c_str (), int (po)};
 #endif
     if (po == URL::eAsRelativeURL) {
         return ParseHostRelativeURL_ (w);
@@ -736,8 +736,8 @@ URI URI::Parse (const String& rawURL)
     optional<String>               query;
     optional<String>               fragment;
     if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
-		return URI{ scheme, Authority::Parse (authority.value_or (String{})), path, query, fragment };
-	}
+        return URI{scheme, Authority::Parse (authority.value_or (String{})), path, query, fragment};
+    }
     else {
         Execution::Throw (Execution::RuntimeErrorException (L"Ill-formed URI"sv)); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }

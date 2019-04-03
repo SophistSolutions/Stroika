@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RANGETYPE>
     inline bool IsPartition (const Iterable<RANGETYPE>& iterable)
     {
-        return Private_::IsPartition_Helper_<RANGETYPE> (iterable, [](typename RANGETYPE::value_type lhs, typename RANGETYPE::value_type rhs) { return Math::NearlyEquals (lhs, rhs); });
+        return Private_::IsPartition_Helper_<RANGETYPE> (iterable, [] (typename RANGETYPE::value_type lhs, typename RANGETYPE::value_type rhs) { return Math::NearlyEquals (lhs, rhs); });
     }
     template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
     inline bool IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer)

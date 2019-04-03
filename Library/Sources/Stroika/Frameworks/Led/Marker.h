@@ -328,7 +328,7 @@ namespace Stroika::Frameworks::Led {
         {
             RequireNotNull (lhs);
             RequireNotNull (rhs);
-            int diff = int(lhs->GetStart ()) - int(rhs->GetStart ());
+            int diff = int (lhs->GetStart ()) - int (rhs->GetStart ());
             if (diff == 0) {
                 return (lhs->GetEnd () < rhs->GetEnd ());
             }

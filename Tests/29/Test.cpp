@@ -312,7 +312,7 @@ namespace {
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
-            auto roundTripTester_ = [](const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
+            auto roundTripTester_ = [] (const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
                 BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
@@ -364,13 +364,13 @@ namespace {
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
-            auto checkNoSalt = [](CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const DerivedKey& expected) {
+            auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds};
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
                 VerifyTestResult (dk == expected);
             };
-            auto checkWithSalt = [](CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& salt, const DerivedKey& expected) {
+            auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& salt, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds, salt};
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
@@ -418,7 +418,7 @@ namespace {
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
-            auto checkNoSalt = [](CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src, const BLOB& expected) {
+            auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src, const BLOB& expected) {
                 unsigned int        nRounds = 1; // command-line tool uses this
                 OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                 DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());

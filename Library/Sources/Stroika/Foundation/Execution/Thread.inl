@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Execution {
      */
     class Thread::Rep_ {
     public:
-        Rep_ (const function<void()>& runnable, const optional<Configuration>& configuration);
+        Rep_ (const function<void ()>& runnable, const optional<Configuration>& configuration);
         ~Rep_ ();
 
     public:
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Execution {
         using InterruptFlagType_  = PRIVATE_::InterruptFlagType_;
 
     private:
-        function<void()> fRunnable_;
+        function<void ()> fRunnable_;
         // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
         // a pointer. This is that pointer - so another thread can terminate/abort this thread.
         InterruptFlagType_*              fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Execution {
         lock_guard<AssertExternallySynchronizedLock> critSec{*this};
         fRep_.reset ();
     }
-    inline function<void()> Thread::Ptr::GetFunction () const
+    inline function<void ()> Thread::Ptr::GetFunction () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         if (fRep_ == nullptr)
@@ -283,21 +283,21 @@ namespace Stroika::Foundation::Execution {
      ************************************* Thread ***********************************
      ********************************************************************************
      */
-    inline Thread::Ptr Thread::New (const function<void()>& fun2CallOnce, const optional<Configuration>& configuration)
+    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<Configuration>& configuration)
     {
         return New (fun2CallOnce, nullopt, configuration);
     }
-    inline Thread::Ptr Thread::New (const function<void()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration)
+    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration)
     {
         return New (fun2CallOnce, optional<Characters::String>{name}, configuration);
     }
-    inline Thread::Ptr Thread::New (const function<void()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration)
+    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration)
     {
         Thread::Ptr ptr = Thread::New (fun2CallOnce, nullopt, configuration);
         ptr.Start ();
         return ptr;
     }
-    inline Thread::Ptr Thread::New (const function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name, const optional<Configuration>& configuration)
+    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name, const optional<Configuration>& configuration)
     {
         Thread::Ptr ptr = Thread::New (fun2CallOnce, name, configuration);
         ptr.Start ();
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline void Thread::Start (const Traversal::Iterable<Thread::Ptr>& threads)
     {
-        threads.Apply ([](const Thread::Ptr& p) { p.Start (); });
+        threads.Apply ([] (const Thread::Ptr& p) { p.Start (); });
     }
     inline void Thread::WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
     {

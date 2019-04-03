@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::WebServer {
         , fHandler_ (handler)
     {
     }
-    inline Route::Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler)
+    inline Route::Route (const function<bool (const Request&)>& requestMatcher, const RequestHandler& handler)
         : fRequestMatch_ (requestMatcher)
         , fHandler_ (handler)
     {

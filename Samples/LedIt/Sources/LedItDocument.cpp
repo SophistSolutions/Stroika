@@ -339,7 +339,7 @@ void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
     fileData.GrowToSize (fileLen);
     try {
         ::lseek (fd, 0, SEEK_SET);
-        if (::read (fd, fileData, fileLen) != int(fileLen)) {
+        if (::read (fd, fileData, fileLen) != int (fileLen)) {
             Led_ThrowOutOfMemoryException (); // WRONG EXCEPTION
         }
     }
@@ -490,7 +490,7 @@ void LedItDocument::Save ()
     }
     try {
         ::lseek (fd, 0, SEEK_SET);
-        if (::write (fd, sink.PeekAtData (), sink.GetLength ()) != int(sink.GetLength ())) {
+        if (::write (fd, sink.PeekAtData (), sink.GetLength ()) != int (sink.GetLength ())) {
             Led_ThrowOutOfMemoryException (); // WRONG EXCEPTION
         }
     }

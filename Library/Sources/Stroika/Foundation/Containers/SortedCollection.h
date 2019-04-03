@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
          *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
          *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept (need better name).
          */
-        using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>>;
+        using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
     public:
         /**

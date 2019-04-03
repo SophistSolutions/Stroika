@@ -1732,7 +1732,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
                             goto UniscribeFailure; // Can happen - for example - during ColeControl::DrawMetaFile ()
                             // call - see SPR#1447 - fallback on older draw code...
                         }
-                        Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h + int(widthSoFar) - hScrollOffset, outputAt.v, 0, nullptr, 0, 0, false) == S_OK);
+                        Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h + int (widthSoFar) - hScrollOffset, outputAt.v, 0, nullptr, 0, 0, false) == S_OK);
                         const SIZE* sizep = sUniscribeDLL.ScriptString_pSize (ssa);
                         AssertNotNull (sizep);
                         widthSoFar += sizep->cx;
@@ -1751,7 +1751,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
                         POINT x = vpOrg;
                         x.x += deviceWidth;
                         Verify (::DPtoLP (m_hAttribDC, &x, 1));
-                        if (x.x < outputAt.h + int(widthSoFar) - hScrollOffset) {
+                        if (x.x < outputAt.h + int (widthSoFar) - hScrollOffset) {
                             // assume we're done - and can break out...
                             break;
                         }

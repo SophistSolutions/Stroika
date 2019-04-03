@@ -76,12 +76,12 @@ String OptionsFile::LoggerMessage::FormatMessage () const
  ************************** DataExchange::OptionsFile ***************************
  ********************************************************************************
  */
-const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [](const optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue {
+const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [] (const optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue {
     return rawVariantValue;
 };
 
 const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
-    [](const LoggerMessage& message) {
+    [] (const LoggerMessage& message) {
         using Execution::Logger;
         Logger::Priority priority = Logger::Priority::eError;
         using Msg                 = OptionsFile::LoggerMessage::Msg;
@@ -107,12 +107,12 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
 OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
 {
     return
-        [appName](const String& moduleName, const String& fileSuffix) -> String {
+        [appName] (const String& moduleName, const String& fileSuffix) -> String {
             return IO::FileSystem::WellKnownLocations::GetApplicationData () + appName + String (IO::FileSystem::kPathComponentSeperator) + moduleName + fileSuffix;
         };
 }
 
-const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = []([[maybe_unused]] const String & /*moduleName*/) -> optional<Configuration::Version> {
+const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = [] ([[maybe_unused]] const String & /*moduleName*/) -> optional<Configuration::Version> {
     return optional<Configuration::Version> (); // default to don't know
 };
 

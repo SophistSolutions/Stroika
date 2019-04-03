@@ -53,12 +53,12 @@ namespace {
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<SimpleClass, SimpleClass>> ();
         RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            []() { return Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; });
+            [] () { return Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; });
 
         RunTests_<Bijection_LinkedList<size_t, size_t>> ();
         RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
         RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            []() { return Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; });
+            [] () { return Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; });
     }
 }
 

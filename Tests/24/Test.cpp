@@ -32,7 +32,7 @@ namespace {
     {
         using namespace CommonTests::MappingTests;
         auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
-        testSchema.ApplyToContainerExtraTest = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
             using value_type = typename CONCRETE_CONTAINER::value_type;
             Optional<value_type> last;
@@ -51,7 +51,7 @@ namespace {
     {
         using namespace CommonTests::MappingTests;
         auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
-        testSchema.ApplyToContainerExtraTest = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
             using value_type = typename CONCRETE_CONTAINER::value_type;
             Optional<value_type> last;
@@ -87,13 +87,13 @@ namespace {
         DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            []() { return SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+            [] () { return SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            []() { return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+            [] () { return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
     }
 }

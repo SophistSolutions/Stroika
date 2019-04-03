@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Cache {
         Ensure (not Lookup (key));
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (function<bool(typename Configuration::ArgByValueType<KEY>)> clearPredicate)
+    void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (function<bool (typename Configuration::ArgByValueType<KEY>)> clearPredicate)
     {
         lock_guard<AssertExternallySynchronizedLock> critSec{*this};
         for (auto i = begin_ (); i != end_ (); ++i) {

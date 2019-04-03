@@ -63,10 +63,10 @@ namespace Stroika::Foundation::IO::Network {
          *          The reason the accept callback doesn't tell you which sockaddr returned is because you can find that with
          *          sock.GetLocalAddress ()
          */
-        Listener (const SocketAddress& addr, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
+        Listener (const SocketAddress& addr, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
+        Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
+        Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
+        Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
         Listener (const Listener&& rhs);
         Listener (const Listener&) = delete;
 

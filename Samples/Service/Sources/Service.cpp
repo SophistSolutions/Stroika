@@ -48,7 +48,7 @@ namespace {
         SomeModuleALikeWebServer_ ()
             : fSomeOtherTaskDoingRealWork_ (Thread::CleanupPtr::eAbortBeforeWaiting,
                                             Thread::New (
-                                                []() {
+                                                [] () {
                                                     Execution::Sleep (1 * 24 * 60 * 60); // wait 1 day ... simple test....
                                                 },
                                                 Thread::eAutoStart))
@@ -59,7 +59,7 @@ namespace {
     };
 }
 
-void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
+void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
 {
     /*
      *  The lifetime of the service roughly matches the lifetime of this MainLoop. Terminating the service (myService --stop)
@@ -72,7 +72,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
 #if qUseLogger
     // Just so you get a clear message in the log that the service didn't startup. The things that actually caused the problem should
     bool                    successfullyStarted{false};
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() {
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
         if (not successfullyStarted) {
             Logger::Get ().Log (Logger::Priority::eError, L"Failed to successfully start service");
         }
@@ -96,7 +96,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
 
     // the final object delcared on the stack before we wait, so its the first run when we are handling the
     // thread aboort exception, and unwinding this call.
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&]() {
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () {
         Logger::Get ().Log (Logger::Priority::eInfo, L"Beginning service shutdown");
     });
 #endif

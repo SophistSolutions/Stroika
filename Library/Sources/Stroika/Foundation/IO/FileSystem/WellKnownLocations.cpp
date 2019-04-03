@@ -43,7 +43,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static const String kCachedResult_ = []() -> String {
+    static const String kCachedResult_ = [] () -> String {
         // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
         const char* pPath = ::getenv ("HOME");
         if (pPath != nullptr) {

@@ -109,7 +109,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Ping::Pinger::RunOnce_ICMP_", L"ttl=%d", ttl)};
     fSocket_.setsockopt (IPPROTO_IP, IP_TTL, ttl); // max # of hops
 
-    ICMP::V4::PacketHeader pingRequest = [&]() {
+    ICMP::V4::PacketHeader pingRequest = [&] () {
         ICMP::V4::PacketHeader tmp{};
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
         tmp.id        = static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_));

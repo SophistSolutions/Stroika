@@ -723,8 +723,8 @@ namespace {
         {
             ObjectVariantMapper mapper;
             using IO::Network::CIDR;
-            mapper.Add<CIDR> ([]([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
-                              []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
+            mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
+                              [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
         }
         {
             struct RGBColor {
@@ -737,11 +737,11 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add<RGBColor> (
-                []([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
+                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
                     Lambda_Arg_Unused_BWA (mapper);
                     return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
                 },
-                []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
+                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
                     Lambda_Arg_Unused_BWA (mapper);
                     String tmpInBuf = d.As<String> ();
                     if (tmpInBuf.length () != 7) {
@@ -750,7 +750,7 @@ namespace {
                     if (tmpInBuf[0] != '#') {
                         Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
                     }
-                    auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
+                    auto readColorComponent = [] (const wchar_t* start, const wchar_t* end) -> uint8_t {
                         wchar_t buf[1024];
                         Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
                         memcpy (buf, start, (end - start) * sizeof (wchar_t));
@@ -791,11 +791,11 @@ namespace {
     using namespace aaa;
     DISABLE_COMPILER_MSC_WARNING_START (4573);
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-    const ObjectVariantMapper dev::kMapper_ = []() {
+    const ObjectVariantMapper dev::kMapper_ = [] () {
         ObjectVariantMapper mapper;
         using IO::Network::CIDR;
-        mapper.Add<CIDR> ([]([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
-                          []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
+        mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
+                          [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
         return mapper;
     }();
 }

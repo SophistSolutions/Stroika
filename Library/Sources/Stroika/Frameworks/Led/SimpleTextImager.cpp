@@ -301,17 +301,17 @@ size_t SimpleTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
 
 ptrdiff_t SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
 {
-    Assert (long(GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
-    size_t       pos       = long(GetMarkerPositionOfStartOfWindow ()) + deltaChars;
+    Assert (long (GetMarkerPositionOfStartOfWindow ()) >= 0 - deltaChars);
+    size_t       pos       = long (GetMarkerPositionOfStartOfWindow ()) + deltaChars;
     RowReference targetRow = GetRowReferenceContainingPosition (pos);
     size_t       rowDiff   = CountRowDifference (targetRow, GetTopRowReferenceInWindow ());
-    return (deltaChars >= 0) ? rowDiff : -long(rowDiff);
+    return (deltaChars >= 0) ? rowDiff : -long (rowDiff);
 }
 
 ptrdiff_t SimpleTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const
 {
     RowReference row = GetIthRowReferenceFromHere (GetTopRowReferenceInWindow (), deltaRows);
-    return (long(GetStartOfRow (row)) - long(GetMarkerPositionOfStartOfWindow ()));
+    return (long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ()));
 }
 
 void SimpleTextImager::ScrollByIfRoom (ptrdiff_t downByRows)
@@ -456,7 +456,7 @@ void SimpleTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowMar
 
         // to to make numRowsAbove = 1/2 of numRowsToSpare
         RowReference trailNewTop = newTop;
-        GetIthRowReferenceFromHere (&trailNewTop, int(numRowsAbove) - int(numRowsToSpare / 2));
+        GetIthRowReferenceFromHere (&trailNewTop, int (numRowsAbove) - int (numRowsToSpare / 2));
         if (PositionWouldFitInWindowWithThisTopRow (markerPos, trailNewTop) and
             (not mustPreserveSecondPos or PositionWouldFitInWindowWithThisTopRow (andTryToShowMarkerPos, trailNewTop))) {
             newTop = trailNewTop;

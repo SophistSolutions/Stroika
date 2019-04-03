@@ -75,14 +75,14 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.c_str ());
     response->printf (L"<div class='introduction'>%s</div>", docsOptions.fIntroductoryText.c_str ());
     response->writeln (L"<ul>");
-    auto substVars = [=](const String& origStr) {
+    auto substVars = [=] (const String& origStr) {
         String str = origStr;
         for (auto i : docsOptions.fVariables2Substitute) {
             str = str.ReplaceAll (L"{{" + i.fKey + L"}}", i.fValue);
         }
         return str;
     };
-    auto writeDocs = [=](const String& methodName, const String& docs, const String& exampleCall) {
+    auto writeDocs = [=] (const String& methodName, const String& docs, const String& exampleCall) {
         response->writeln (L"<li>");
         response->printf (L"<a href=\"/%s\">%s</a>", methodName.c_str (), methodName.c_str ());
         response->printf (L"<div class='mainDocs'>%s</div>", docs.c_str ());
@@ -92,11 +92,11 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     for (WebServiceMethodDescription i : operations) {
         StringBuilder tmpDocs;
         if (i.fDetailedDocs) {
-            i.fDetailedDocs->Apply ([&](const String& i) { tmpDocs += L"<div>" + substVars (i) + L"</div>"; });
+            i.fDetailedDocs->Apply ([&] (const String& i) { tmpDocs += L"<div>" + substVars (i) + L"</div>"; });
         }
         StringBuilder tmpCurl;
         if (i.fCurlExample) {
-            i.fCurlExample->Apply ([&](const String& i) { tmpCurl += L"<div>" + substVars (i) + L"</div>"; });
+            i.fCurlExample->Apply ([&] (const String& i) { tmpCurl += L"<div>" + substVars (i) + L"</div>"; });
         }
         writeDocs (i.fOperation, tmpDocs.c_str (), tmpCurl.c_str ());
     }

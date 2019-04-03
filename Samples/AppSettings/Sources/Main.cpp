@@ -54,7 +54,7 @@ namespace {
                    * Note - this serializing logic is VERY widely useful outside of configuration - for example it can be used
                    * to provide WebService/REST interfaces, or for debugging/logging output.
                    */
-                  []() -> ObjectVariantMapper {
+                  [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<OptionsData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
                           {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (OptionsData_, fEnabled)},
@@ -147,7 +147,7 @@ namespace {
         // Use Update () to atomically update data
         // Use the return value to tell if a real change was made (so you can invoke some sort of notication/action)
         static const Duration kMinTime_ = 2min;
-        if (sModuleConfiguration_.Update ([](const OptionsData_& data) -> optional<OptionsData_> {  if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { OptionsData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+        if (sModuleConfiguration_.Update ([] (const OptionsData_& data) -> optional<OptionsData_> {  if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { OptionsData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
             sWaitableEvent_.Set (); // e.g. trigger someone to wakeup and used changes? - no global lock held here...
         }
     }

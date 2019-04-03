@@ -371,7 +371,7 @@ RetryWithAuth:
         DWORD dwFirstScheme{};
         DWORD dwTarget{};
         if (::WinHttpQueryAuthSchemes (hRequest, &dwSupportedSchemes, &dwFirstScheme, &dwTarget)) {
-            auto chooseAuthScheme = [](DWORD supportedSchemes) -> DWORD {
+            auto chooseAuthScheme = [] (DWORD supportedSchemes) -> DWORD {
                 // see https://msdn.microsoft.com/en-us/library/windows/desktop/aa383144(v=vs.85).aspx
                 // ChooseAuthScheme
                 if (supportedSchemes & WINHTTP_AUTH_SCHEME_NEGOTIATE)
@@ -408,7 +408,7 @@ RetryWithAuth:
         certInfo.dwKeySize                      = sizeof (certInfo);
         ThrowIfZeroGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
         [[maybe_unused]] auto&& cleanup = Execution::Finally (
-            [certInfo]() noexcept {
+            [certInfo] () noexcept {
                 if (certInfo.lpszSubjectInfo != nullptr) {
                     ::LocalFree (certInfo.lpszSubjectInfo);
                 }

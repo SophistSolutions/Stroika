@@ -305,11 +305,11 @@ namespace Stroika::Foundation::Execution {
          *          t.WaitForDone ();
          *      \endcode
          */
-        static Ptr New (const function<void()>& fun2CallOnce, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
-        static Ptr New (const function<void()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration = nullopt);
-        static Ptr New (const function<void()>& fun2CallOnce, const optional<Configuration>& configuration);
-        static Ptr New (const function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
-        static Ptr New (const function<void()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration);
+        static Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void ()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void ()>& fun2CallOnce, const optional<Configuration>& configuration);
+        static Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        static Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration);
 #if 0
         template <typename FUNCTION>
         static Ptr New (FUNCTION f, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, enable_if_t<is_function_v<FUNCTION>>* = nullptr);
@@ -541,7 +541,7 @@ namespace Stroika::Foundation::Execution {
          *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
          *  via GetFunction(), but is only settable in the thread constructor.
          */
-        nonvirtual function<void()> GetFunction () const;
+        nonvirtual function<void ()> GetFunction () const;
 
     public:
         /**

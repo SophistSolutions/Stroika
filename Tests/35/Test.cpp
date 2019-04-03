@@ -152,7 +152,7 @@ namespace {
                 // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
                 auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
 
-                auto lazyEvalActivity = LazyEvalActivity ([&]() -> String { return argument.Repeat (5) + L"xxx"; });
+                auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"xxx"; });
 
                 DeclareActivity active1{&kA1_};
                 DeclareActivity active2{&kOtherActivity};

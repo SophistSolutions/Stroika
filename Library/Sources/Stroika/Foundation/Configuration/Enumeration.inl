@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Configuration {
         }
 #if qDebug
         Require (OffsetFromStart<ENUM_TYPE> (e) < fEnumNames_.size ());
-        auto refImpl = [this](ENUM_TYPE e) -> const wchar_t* {
+        auto refImpl = [this] (ENUM_TYPE e) -> const wchar_t* {
             for (auto i : fEnumNames_) {
                 if (i.first == e) {
                     return i.second;

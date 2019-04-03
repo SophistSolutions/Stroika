@@ -249,7 +249,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *  need to fix this..????
              *      --LGP 2015-08-21
              */
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([]() noexcept { ::endutxent (); });
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { ::endutxent (); });
             ::setutxent ();
             for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
                 if (i->ut_type == BOOT_TIME) {
@@ -431,7 +431,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     DWORD processorCoreCount    = 0;
     DWORD processorPackageCount = 0;
     {
-        auto countSetBits = [](ULONG_PTR bitMask) -> DWORD {
+        auto countSetBits = [] (ULONG_PTR bitMask) -> DWORD {
             DWORD     LSHIFT      = sizeof (ULONG_PTR) * 8 - 1;
             DWORD     bitSetCount = 0;
             ULONG_PTR bitTest     = (ULONG_PTR)1 << LSHIFT;
@@ -488,7 +488,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         }
     }
 
-    static const String kProcessorType_ = []() {
+    static const String kProcessorType_ = [] () {
         int  CPUInfo[4] = {-1};
         char CPUBrandString[0x40];
         // Get the information associated with each extended ID.
@@ -562,7 +562,7 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ActualOperatingSystem ()
 {
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
-    static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
+    static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
         OperatingSystem tmp;
 #if qPlatform_POSIX
         tmp.fTokenName = String_Constant (L"Unix");
@@ -809,7 +809,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_ApparentOperatingSystem ()
 {
     using OperatingSystem                       = SystemConfiguration::OperatingSystem;
-    static const OperatingSystem kCachedResult_ = []() -> OperatingSystem {
+    static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
         OperatingSystem tmp{GetSystemConfiguration_ActualOperatingSystem ()};
         // not sure if/how to do this differently on linux? Probably pay MORE attention to stuff from uname and less to stuff like /etc/os-release
 #if qPlatform_Windows

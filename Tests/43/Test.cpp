@@ -42,7 +42,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 
 namespace {
-    const Connection::Options kDefaultTestOptions_ = []() {
+    const Connection::Options kDefaultTestOptions_ = [] () {
         Connection::Options o;
         o.fMaxAutomaticRedirects = 1;
         return o;
@@ -109,7 +109,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -121,10 +121,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -157,7 +157,7 @@ namespace {
                 static mt19937 sRNG_;
 
                 c.SetURL (URL::Parse (L"http://httpbin.org/post"));
-                BLOB roundTripTestData = []() {
+                BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
@@ -231,7 +231,7 @@ namespace {
                 static mt19937 sRNG_;
 
                 c.SetURL (URL::Parse (L"http://httpbin.org/put"));
-                BLOB roundTripTestData = []() {
+                BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
@@ -319,7 +319,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -331,10 +331,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -368,7 +368,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -380,10 +380,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
 #endif
         }
     }

@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Execution {
         , fCall_ (signalHandler)
     {
     }
-    inline SignalHandler::SignalHandler (const Function<void(SignalID)>& signalHandler, Type type)
+    inline SignalHandler::SignalHandler (const Function<void (SignalID)>& signalHandler, Type type)
         : fType_ (type)
         , fCall_ (signalHandler)
     {

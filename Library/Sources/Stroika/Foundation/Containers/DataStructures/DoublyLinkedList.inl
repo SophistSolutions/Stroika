@@ -599,7 +599,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         Invariant ();
-        return bool(_fCurrent == nullptr);
+        return bool (_fCurrent == nullptr);
     }
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::More (T* current, bool advance)

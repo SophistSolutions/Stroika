@@ -896,7 +896,7 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with) const;
         nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual String ReplaceAll (const function<bool(Character)>& replaceCharP, const String& with) const;
+        nonvirtual String ReplaceAll (const function<bool (Character)>& replaceCharP, const String& with) const;
         nonvirtual String ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const;
 
     public:
@@ -910,7 +910,7 @@ namespace Stroika::Foundation::Characters {
          */
         [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
         [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
+        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const function<bool (Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
 
     public:
         /**
@@ -954,7 +954,8 @@ namespace Stroika::Foundation::Characters {
          *              is FIND the regular expression names the things looked for and SPLIT() uses regexp to name the separators?
          *              Add something like the above to the String String demo app (when it exists)
          */
-        nonvirtual Containers::Sequence<String> Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
+        nonvirtual Containers::Sequence<String> Tokenize (
+            const function<bool (Character)>& isTokenSeperator = [] (Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
         nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
 
     public:
@@ -964,7 +965,7 @@ namespace Stroika::Foundation::Characters {
          * and the resulting string is returned. This does not modify the current string its
          * applied to - just returns the trimmed string.
          */
-        nonvirtual String LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+        nonvirtual String LTrim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
 
     public:
         /**
@@ -978,13 +979,13 @@ namespace Stroika::Foundation::Characters {
          *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
          *      \endcode
          */
-        nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+        nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
 
     public:
         /**
          * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
          */
-        nonvirtual String Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+        nonvirtual String Trim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
 
     public:
         /**

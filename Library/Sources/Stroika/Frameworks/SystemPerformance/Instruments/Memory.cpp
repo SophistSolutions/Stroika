@@ -172,7 +172,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Read_ProcMemInfo");
 #endif
-            auto ReadMemInfoLine_ = [](optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
+            auto ReadMemInfoLine_ = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
                 if (line.size () >= 3 and line[0] == n) {
                     String unit   = line[2];
                     double factor = (unit == L"kB") ? 1024 : 1;
@@ -238,7 +238,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Read_ProcVMStat_");
 #endif
-            auto ReadVMStatLine_ = [](optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
+            auto ReadVMStatLine_ = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
                 if (line.size () >= 2 and line[0] == n) {
                     *result = Characters::String2Int<uint64_t> (line[1]);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -278,7 +278,7 @@ namespace {
                 if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
-                auto doAve_ = [](Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
+                auto doAve_ = [] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
                     if (faultsSinceBoot) {
                         if (savedVMPageStatsAt != 0) {
                             *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
@@ -438,7 +438,7 @@ namespace {
 ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 {
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
+    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{

@@ -136,7 +136,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     }
     addrinfo*               res     = nullptr;
     int                     errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([res] () noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
         // @todo - I think we need to capture erron as well if errCode == EAI_SYSTEM (see http://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
         Throw (SystemErrorException (errCode, DNS_error_category ()));

@@ -149,7 +149,7 @@ public:
         size_t offset{};
         size_t outSizeProcessed{};
 
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&outBuffer, this]() { IAlloc_Free (&fAllocImp_, outBuffer); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&outBuffer, this] () { IAlloc_Free (&fAllocImp_, outBuffer); });
 
         SRes ret;
         if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, reinterpret_cast<uint8_t**> (&outBuffer), &outBufferSize, &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {

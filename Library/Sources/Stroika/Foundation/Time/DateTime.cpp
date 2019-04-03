@@ -546,7 +546,7 @@ DateTime DateTime::AsLocalTime () const
 
 DateTime DateTime::AsUTC () const
 {
-    auto oldCode = [&]() {
+    auto oldCode = [&] () {
         if (GetTimezone () == Timezone::UTC ()) {
             return *this;
         }
@@ -590,7 +590,7 @@ namespace {
     // Compute the DateTime which corresponds to a tickcount of zero.
     DateTime GetDateTimeTickCountZeroOffset_ ()
     {
-        static DateTime sTimeZero_ = []() {
+        static DateTime sTimeZero_ = [] () {
             DateTime now = DateTime::Now ();
             return now.AddSeconds (-static_cast<int64_t> (Time::GetTickCount ()));
         }();
@@ -645,7 +645,7 @@ String DateTime::Format (PrintFormat pf) const
                 size_t startAt = 0;
                 while (auto o = mungedData.Find (kZero2StripPattern_, startAt)) {
                     // Look for preceding / and all digits to end of string
-                    if (o->first != 0 and mungedData[o->first - 1] == '/' and mungedData.SubString (o->second).All ([](Character c) { return c.IsDigit (); })) {
+                    if (o->first != 0 and mungedData[o->first - 1] == '/' and mungedData.SubString (o->second).All ([] (Character c) { return c.IsDigit (); })) {
                         // skip this case
                         startAt = o->second; // but don't encounter it again
                     }

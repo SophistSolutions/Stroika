@@ -163,7 +163,7 @@ namespace Stroika::Frameworks::WebServer {
                                      eCompleteGood };
             nonvirtual ReadHeadersResult ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                const function<void(const String&)>& logMsg
+                const function<void (const String&)>& logMsg
 #endif
             );
         };

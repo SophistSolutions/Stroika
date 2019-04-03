@@ -50,7 +50,7 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    ThrowPOSIXErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=]() -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); }));
+    ThrowPOSIXErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=] () -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); }));
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
     ThrowWSASystemErrorIfSOCKET_ERROR (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
@@ -108,7 +108,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
-    auto                    bindingActivity = Execution::LazyEvalActivity{[&]() -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
+    auto                    bindingActivity = Execution::LazyEvalActivity{[&] () -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
     [[maybe_unused]] auto&& declareActivity = Execution::DeclareActivity{&bindingActivity};
 
     // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
@@ -123,7 +123,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #if qPlatform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
-        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
 #endif
     }
     catch (const Execution::SystemErrorException<>& e) {

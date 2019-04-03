@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             CountedValue<T>                                            tmp (item);
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            return (bool(Find_ (tmp) != kNotFound_));
+            return (bool (Find_ (tmp) != kNotFound_));
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {

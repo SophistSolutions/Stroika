@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
             // Simplex iteration
             unsigned int iters = 0;
             while (true) {
-                sort (res.begin (), res.end (), [](auto l, auto r) { return l.fScore < r.fScore; });
+                sort (res.begin (), res.end (), [] (auto l, auto r) { return l.fScore < r.fScore; });
                 FLOAT_TYPE best = res[0].fScore;
 
                 // break after max_iter
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
                 // Centroid
                 Vector<FLOAT_TYPE> x0{dim, 0.0};
                 {
-                    auto removeLast = [](decltype (res) v) {
+                    auto removeLast = [] (decltype (res) v) {
                         decltype (v) tmp;
                         for (auto i = v.begin (); i != v.end () and i + 1 != v.end (); ++i) {
                             tmp.push_back (*i);

@@ -51,8 +51,8 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
 };
 
 struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
-    function<void(Message*, const exception_ptr&)> fHandleFault_;
-    Rep_Explicit_ (const function<void(Message*, const exception_ptr&)>& handleFault)
+    function<void (Message*, const exception_ptr&)> fHandleFault_;
+    Rep_Explicit_ (const function<void (Message*, const exception_ptr&)>& handleFault)
         : fHandleFault_ (handleFault)
     {
     }
@@ -75,7 +75,7 @@ DefaultFaultInterceptor::DefaultFaultInterceptor ()
     : inherited (make_shared<Rep_> ())
 {
 }
-DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&)>& handleFault)
+DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&)>& handleFault)
     : inherited (make_shared<Rep_Explicit_> (handleFault))
 {
 }

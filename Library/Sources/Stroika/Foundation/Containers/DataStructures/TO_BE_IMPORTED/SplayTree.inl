@@ -580,7 +580,7 @@ void SplayTree<KEY, VALUE, TRAITS>::ValidateAll () const
 template <typename KEY, typename VALUE, typename TRAITS>
 void SplayTree<KEY, VALUE, TRAITS>::ListAll () const
 {
-    std::function<void(Node*)> ListNode = [&ListNode](Node* n) {
+    std::function<void (Node*)> ListNode = [&ListNode] (Node* n) {
         if (n->fLeft != nullptr) {
             ListNode (n->fLeft);
         }

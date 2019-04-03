@@ -29,10 +29,10 @@ using IO::Network::HTTP::ClientErrorException;
  */
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url)
 {
-    return ClientErrorException::TreatExceptionsAsClientError ([&]() {
+    return ClientErrorException::TreatExceptionsAsClientError ([&] () {
         Mapping<String, VariantValue> result;
         Mapping<String, String>       unconverted = url.GetQuery ().GetMap ();
-        unconverted.Apply ([&](const KeyValuePair<String, String>& kvp) {
+        unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) {
             result.Add (kvp.fKey, VariantValue{kvp.fValue});
         });
         return result;
@@ -49,7 +49,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     using namespace Characters;
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
-        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&]() { return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> (); });
+        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&] () { return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> (); });
     }
     Execution::Throw (ClientErrorException (L"Unrecognized content-type"sv));
 }
@@ -74,7 +74,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
         // get query args
         // For now - only support String values of query-string args
         Mapping<String, VariantValue> result;
-        url.GetQuery ().GetMap ().Apply ([&result](const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
+        url.GetQuery ().GetMap ().Apply ([&result] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
         return VariantValue{result};
     }
     else {
@@ -92,7 +92,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
 DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantValue (Request* request)
 {
     RequireNotNull (request);
-    return ClientErrorException::TreatExceptionsAsClientError ([&]() {
+    return ClientErrorException::TreatExceptionsAsClientError ([&] () {
         Mapping<String, DataExchange::VariantValue> result;
         {
             Memory::BLOB inData = request->GetBody ();
@@ -124,7 +124,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 {
     Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request);
     // body params take precedence, if they overlap
-    PickoutParamValuesFromBody (request).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
+    PickoutParamValuesFromBody (request).Apply ([&] (auto i) { result.Add (i.fKey, i.fValue); });
     return result;
 }
 
@@ -136,7 +136,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
 {
     Sequence<DataExchange::VariantValue> result;
-    paramNames.Apply ([&](const String& name) {
+    paramNames.Apply ([&] (const String& name) {
         if (auto o = paramValues.Lookup (name)) {
             result += DataExchange::VariantValue{*o};
         }
@@ -191,7 +191,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
  */
 WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<Memory::BLOB (WebServer::Message* m)>& f)
 {
-    return [=](WebServer::Message* m) {
+    return [=] (WebServer::Message* m) {
         ExpectedMethod (m->GetRequestReference (), webServiceDescription);
         if (webServiceDescription.fResponseType) {
             m->PeekResponse ()->SetContentType (*webServiceDescription.fResponseType);

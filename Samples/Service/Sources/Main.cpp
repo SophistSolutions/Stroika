@@ -122,7 +122,7 @@ int main (int argc, const char* argv[])
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-    [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([]() {
+    [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
         DbgTrace (L"Exiting main with thread %s running", Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads).c_str ());
     });
 #endif
@@ -157,7 +157,7 @@ int main (int argc, const char* argv[])
      *  Setup Logging to the OS logging facility.
      */
 #if qUseLogger
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([]() {
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () {
         Logger::ShutdownSingleton (); // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
 #if qHas_Syslog

@@ -30,7 +30,7 @@ namespace {
     void RunTests_ (const INORDER_COMPARER& inorderComparer, CONCRETE_CONTAINER_FACTORY factory)
     {
         typedef typename CONCRETE_CONTAINER::value_type T;
-        auto                                            testFunc = [&](const SortedSet<T>& s) {
+        auto                                            testFunc = [&] (const SortedSet<T>& s) {
             // verify in sorted order
             Memory::Optional<T> last;
             for (T i : s) {
@@ -45,7 +45,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
     {
-        RunTests_<CONCRETE_CONTAINER> (less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
+        RunTests_<CONCRETE_CONTAINER> (less<typename CONCRETE_CONTAINER::value_type>{}, [] () { return CONCRETE_CONTAINER (); });
     }
 }
 
@@ -95,11 +95,11 @@ namespace {
         };
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<SimpleClass>> ();
-        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedSet<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedSet<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         RunTests_<SortedSet_stdset<size_t>> ();
         RunTests_<SortedSet_stdset<SimpleClass>> ();
-        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         Test2_InitalizeCTORs_::DoRun ();
     }

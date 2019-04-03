@@ -541,7 +541,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
 #endif
         Invariant ();
-        return bool(_fCurrent == _fEnd);
+        return bool (_fCurrent == _fEnd);
     }
     template <typename T>
     inline size_t Array<T>::_ArrayIteratorBase::CurrentIndex () const

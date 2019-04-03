@@ -1566,7 +1566,7 @@ void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
     const int kHScrollIncrementFactor = 4;
     if (newMousePos.h < GetWindowRect ().left) {
         if (GetHScrollPos () > 0) {
-            SetHScrollPos (max (0, int(GetHScrollPos ()) - increment * kHScrollIncrementFactor));
+            SetHScrollPos (max (0, int (GetHScrollPos ()) - increment * kHScrollIncrementFactor));
         }
     }
     else if (newMousePos.h > GetWindowRect ().right) {
@@ -1804,7 +1804,7 @@ void TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preS
     if (realUpdateMode != eNoUpdate) {
         preScrollInfo->fOldWindowStart    = GetMarkerPositionOfStartOfWindow ();
         preScrollInfo->fOldHScrollPos     = GetHScrollPos ();
-        preScrollInfo->fTryTodoScrollbits = GetUseBitmapScrollingOptimization () and bool(realUpdateMode == eImmediateUpdate);
+        preScrollInfo->fTryTodoScrollbits = GetUseBitmapScrollingOptimization () and bool (realUpdateMode == eImmediateUpdate);
         if (preScrollInfo->fTryTodoScrollbits) {
             preScrollInfo->fOldLastRowStart = GetMarkerPositionOfStartOfLastRowOfWindow ();
             try {

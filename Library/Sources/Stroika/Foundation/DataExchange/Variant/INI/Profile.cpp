@@ -42,7 +42,7 @@ Profile INI::Convert (VariantValue v)
 
 VariantValue INI::Convert (Profile p)
 {
-    auto sec2VV = [](Section s) -> VariantValue {
+    auto sec2VV = [] (Section s) -> VariantValue {
         Mapping<String, VariantValue> m;
         for (KeyValuePair<String, String> k : s.fProperties) {
             m.Add (k.fKey, k.fValue);

@@ -40,7 +40,7 @@ using Stroika::Foundation::Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS
 namespace {
     Mapping<FileSuffixType, InternetMediaType> GetGlobsFile_ ()
     {
-        auto readGlobsFile = []() -> Mapping<FileSuffixType, InternetMediaType> {
+        auto readGlobsFile = [] () -> Mapping<FileSuffixType, InternetMediaType> {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"{}readGlobsFile"};
 #endif

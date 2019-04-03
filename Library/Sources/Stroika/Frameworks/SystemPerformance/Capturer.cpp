@@ -68,7 +68,7 @@ void Capturer::ManageRunner_ (bool on)
     bool threadPoolRunning = fThreadPool_.GetTasksCount () != 0;
     if (on) {
         if (not threadPoolRunning) {
-            fThreadPool_.AddTask ([this]() { Runner_ (); });
+            fThreadPool_.AddTask ([this] () { Runner_ (); });
             fThreadPool_.SetPoolSize (1);
         }
     }
@@ -89,7 +89,7 @@ void Capturer::Runner_ ()
     while (true) {
         //tmphack a race
         if (fCaptureSets_.cget ()->size () >= 1) {
-            CaptureSet cs = *fCaptureSets_.cget ()->FindFirstThat ([](CaptureSet) { return true; });
+            CaptureSet cs = *fCaptureSets_.cget ()->FindFirstThat ([] (CaptureSet) { return true; });
 
             // @todo fix!!!
             // wrong - period should be from leading edge of last run!!!

@@ -992,7 +992,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline short Led_ByteSwapFromMac (short src)
     {
-        return short(Led_ByteSwapFromMac ((unsigned short)src));
+        return short (Led_ByteSwapFromMac ((unsigned short)src));
     }
 
     inline unsigned short Led_ByteSwapFromWindows (unsigned short src)
@@ -1005,7 +1005,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline short Led_ByteSwapFromWindows (short src)
     {
-        return short(Led_ByteSwapFromWindows ((unsigned short)src));
+        return short (Led_ByteSwapFromWindows ((unsigned short)src));
     }
     inline unsigned long Led_ByteSwapFromWindows (unsigned long src)
     {
@@ -1017,7 +1017,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline long Led_ByteSwapFromWindows (long src)
     {
-        return long(Led_ByteSwapFromWindows ((unsigned long)src));
+        return long (Led_ByteSwapFromWindows ((unsigned long)src));
     }
 
     inline void UInt16ToBuf (uint16_t u, uint16_t* realBuf)

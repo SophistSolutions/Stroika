@@ -409,13 +409,13 @@ namespace Stroika::Foundation::Execution {
          *          }
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock);
+        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock);
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
+        [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void (WritableReference&&)>& doWithWriteLock)
         {
             fLock_.unlock_shared ();
             // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
                 fLock_.lock_shared ();
             });
         }

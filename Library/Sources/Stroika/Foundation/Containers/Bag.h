@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Set<T> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+        nonvirtual Set<T> Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
 
     public:
         /**

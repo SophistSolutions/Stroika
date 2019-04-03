@@ -38,14 +38,14 @@ namespace {
             : fListener ()
         {
             // @todo Consider simplifying this using WebServer Framework more fully - Router or Interceptor
-            auto onConnect = [dd](const ConnectionOrientedStreamSocket::Ptr& acceptedSocketConnection) {
-                Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, dd]() {
+            auto onConnect = [dd] (const ConnectionOrientedStreamSocket::Ptr& acceptedSocketConnection) {
+                Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, dd] () {
                     // If the URLs are served locally, you may want to update the URL based on
                     // IO::Network::GetPrimaryInternetAddress ()
                     Connection conn{acceptedSocketConnection,
                                     Sequence<Interceptor>{
                                         Interceptor (
-                                            [=](Message* m) {
+                                            [=] (Message* m) {
                                                 Response* response = m->PeekResponse ();
                                                 response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
                                                 response->write (Stroika::Frameworks::UPnP::Serialize (dd));

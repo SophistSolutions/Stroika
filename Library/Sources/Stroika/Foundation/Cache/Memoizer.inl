@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Cache {
         // Lookup the value in the cache, and if that fails, call fFunction_ (and add that to the cache)
         return fCache_.LookupValue (
             make_tuple (args...),
-            [&](const tuple<ARGS...>& t) {
+            [&] (const tuple<ARGS...>& t) {
                 using namespace Cache::PRIVATE_;
                 return CallWithExplodedTuple_<RESULT, ARGS...>{t, fFunction_}.callFunc (typename gens_<sizeof...(args)>::type ());
             });

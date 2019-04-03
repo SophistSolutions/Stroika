@@ -2599,7 +2599,7 @@ private:
         MyISeekInStream (const Streams::InputStream<byte>::Ptr& in)
             : fInStream_ (in)
         {
-            this->zopen64_file = [](voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
+            this->zopen64_file = [] (voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
 #if qDebug
                 Assert (not myThis->fOpened_);
@@ -2607,7 +2607,7 @@ private:
 #endif
                 return myThis;
             };
-            this->zread_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
+            this->zread_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
                 Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
@@ -2616,18 +2616,18 @@ private:
                 Assert (sz <= size);
                 return static_cast<uLong> (sz);
             };
-            this->zwrite_file = [](voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/) -> uLong {
+            this->zwrite_file = [] (voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/) -> uLong {
                 RequireNotReached (); // read only zip
                 return static_cast<uLong> (UNZ_PARAMERROR);
             };
-            this->ztell64_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
+            this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
                 Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 return myThis->fInStream_.GetOffset ();
             };
-            this->zseek64_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
+            this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
                 Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
@@ -2648,7 +2648,7 @@ private:
                 }
                 return UNZ_OK;
             };
-            this->zclose_file = []([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
+            this->zclose_file = [] ([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
                 Lambda_Arg_Unused_BWA (opaqueStream);
                 Lambda_Arg_Unused_BWA (stream);
 #if qDebug
@@ -2659,7 +2659,7 @@ private:
 #endif
                 return UNZ_OK;
             };
-            this->zerror_file = [](voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
+            this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
                 Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
@@ -2818,7 +2818,7 @@ public:
             }
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
-        [[maybe_unused]] auto&&          cleanup  = Execution::Finally ([this]() { unzCloseCurrentFile_ (fZipFile_); });
+        [[maybe_unused]] auto&&          cleanup  = Execution::Finally ([this] () { unzCloseCurrentFile_ (fZipFile_); });
         Streams::MemoryStream<byte>::Ptr tmpBuf   = Streams::MemoryStream<byte>::New ();
         do {
             byte buf[10 * 1024];

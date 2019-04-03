@@ -690,25 +690,25 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS>
     inline Optional<T, TRAITS>& Optional<T, TRAITS>::operator+= (const Optional& rhs)
     {
-        AccumulateIf (rhs, [](T lhs, T rhs) { return lhs + rhs; });
+        AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs + rhs; });
         return *this;
     }
     template <typename T, typename TRAITS>
     inline Optional<T, TRAITS>& Optional<T, TRAITS>::operator-= (const Optional& rhs)
     {
-        AccumulateIf (rhs, [](T lhs, T rhs) { return lhs - rhs; });
+        AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs - rhs; });
         return *this;
     }
     template <typename T, typename TRAITS>
     inline Optional<T, TRAITS>& Optional<T, TRAITS>::operator*= (const Optional& rhs)
     {
-        AccumulateIf (rhs, [](T lhs, T rhs) { return lhs * rhs; });
+        AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs * rhs; });
         return *this;
     }
     template <typename T, typename TRAITS>
     inline Optional<T, TRAITS>& Optional<T, TRAITS>::operator/= (const Optional& rhs)
     {
-        AccumulateIf (rhs, [](T lhs, T rhs) { return lhs / rhs; });
+        AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs / rhs; });
         return *this;
     }
     template <typename T, typename TRAITS>

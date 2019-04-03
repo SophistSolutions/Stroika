@@ -457,7 +457,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     template <typename T>
-    const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [](T* b) { return reinterpret_cast<std::byte*> (b); };
+    const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [] (T* b) { return reinterpret_cast<std::byte*> (b); };
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory (readerFactory)
@@ -465,21 +465,21 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory (readerFactory)
         , fReadsName (readsName)
         , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory (readerFactory)
         , fReadsText (readsText)
         , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<bool()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory (readerFactory)
         , fReadsName (readsName)
         , fReadsText (readsText)
@@ -609,7 +609,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     inline ReaderFromVoidStarFactory IgnoreNodeReader::AsFactory ()
     {
-        return [](void*) -> shared_ptr<IElementConsumer> { return make_shared<IgnoreNodeReader> (); };
+        return [] (void*) -> shared_ptr<IElementConsumer> { return make_shared<IgnoreNodeReader> (); };
     }
 
     /*
@@ -619,11 +619,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     inline ReaderFromVoidStarFactory ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader)
     {
-        return [theUseReader](void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p)); };
+        return [theUseReader] (void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p)); };
     }
     inline ReaderFromVoidStarFactory ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff)
     {
-        return [theUseReader, tagToHandOff](void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p), tagToHandOff); };
+        return [theUseReader, tagToHandOff] (void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p), tagToHandOff); };
     }
 
     /*
@@ -646,13 +646,13 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
         : fValuePtr_ (v)
         , fReaderRactory_ (actualElementFactory)
-        , fReadThisName_ ([readonlyThisName](const Name& n) { return n == readonlyThisName; })
+        , fReadThisName_ ([readonlyThisName] (const Name& n) { return n == readonlyThisName; })
     {
     }
     template <typename T, typename TRAITS>
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName)
         : fValuePtr_ (v)
-        , fReadThisName_ ([readonlyThisName](const Name& n) { return n == readonlyThisName; })
+        , fReadThisName_ ([readonlyThisName] (const Name& n) { return n == readonlyThisName; })
     {
     }
     template <typename T, typename TRAITS>
@@ -726,7 +726,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     void Registry::Add (const ReaderFromTStarFactory<T>& readerFactory)
     {
-        Add (typeid (T), [readerFactory](void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
+        Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
     }
     inline shared_ptr<IElementConsumer> Registry::MakeContextReader (type_index ti, void* destinationObject) const
     {
@@ -768,23 +768,23 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename CLASS>
     auto Registry::MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions) -> ReaderFromVoidStarFactory
     {
-        return [fieldDescriptions](void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data)); };
+        return [fieldDescriptions] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data)); };
     }
     template <typename T, typename READER, typename... ARGS>
     auto Registry::ConvertReaderToFactory (ARGS&&... args) -> ReaderFromVoidStarFactory
     {
-        ReaderFromTStarFactory<T> tmpFactory{[args...](T* o) -> shared_ptr<IElementConsumer> { return make_shared<READER> (o, forward<ARGS> (args)...); }};
-        return [tmpFactory](void* data) { return tmpFactory (reinterpret_cast<T*> (data)); };
+        ReaderFromTStarFactory<T> tmpFactory{[args...] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<READER> (o, forward<ARGS> (args)...); }};
+        return [tmpFactory] (void* data) { return tmpFactory (reinterpret_cast<T*> (data)); };
     }
     template <typename T>
     auto Registry::cvtFactory_ (const ReaderFromTStarFactory<T>& tf) -> ReaderFromVoidStarFactory
     {
-        return [tf](void* data) { return tf (reinterpret_cast<T*> (data)); };
+        return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
     }
     template <typename T>
     auto Registry::MakeCommonReader_SimpleReader_ () -> ReaderFromVoidStarFactory
     {
-        return cvtFactory_<T> ([](T* o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
+        return cvtFactory_<T> ([] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
     }
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap) -> ReaderFromVoidStarFactory
@@ -821,7 +821,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
             }
         };
-        return cvtFactory_<ENUM_TYPE> ([nameMap](ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
+        return cvtFactory_<ENUM_TYPE> ([nameMap] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
     };
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap) -> ReaderFromVoidStarFactory
@@ -873,7 +873,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
             }
         };
-        return cvtFactory_<ENUM_TYPE> ([](ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
+        return cvtFactory_<ENUM_TYPE> ([] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
     }
     template <typename ENUM_TYPE>
     inline void Registry::AddCommonReader_EnumAsInt ()
@@ -907,7 +907,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 *fValue_ = fString2TMapper_ (fBuf_.str ()); // its up to fString2TMapper_ to throw if this conversion cannot be done
             }
         };
-        return cvtFactory_<T> ([converterFromString2T](T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
+        return cvtFactory_<T> ([converterFromString2T] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
     };
     template <typename T>
     inline void Registry::AddCommonReader_Simple (const function<T (String)>& converterFromString2T)
@@ -948,7 +948,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T, typename TRAITS>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
     {
-        return cvtFactory_<Memory::Optional<T>> ([](Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OldOptionalTypesReader_<T>> (o); });
+        return cvtFactory_<Memory::Optional<T>> ([] (Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OldOptionalTypesReader_<T>> (o); });
     }
     template <typename T>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const vector<T>*)

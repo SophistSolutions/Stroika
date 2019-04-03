@@ -81,12 +81,12 @@ Characters::String SignalHandler::ToString () const
     sb += L"{";
     sb += L"type: " + Characters::ToString (GetType ()) + L", ";
     // rough guess what to print...
-    Function<void(SignalID)>::STDFUNCTION stdFuncTarget = static_cast<Function<void(SignalID)>::STDFUNCTION> (fCall_);
+    Function<void (SignalID)>::STDFUNCTION stdFuncTarget = static_cast<Function<void (SignalID)>::STDFUNCTION> (fCall_);
     if (stdFuncTarget.target_type () == typeid (void (*) (SignalID))) {
         sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void (*) (SignalID)> ()));
     }
-    else if (stdFuncTarget.target_type () == typeid (Function<void(SignalID)>)) {
-        sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void(SignalID)>> ()));
+    else if (stdFuncTarget.target_type () == typeid (Function<void (SignalID)>)) {
+        sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void (SignalID)>> ()));
     }
     else {
         // type only/mainly interesting if not one of the above so we're printing nullptr
@@ -114,7 +114,7 @@ private:
 #if qConditionVariablesSafeInAsyncSignalHanlders
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-        fRecievedSig_.wait_for (lk, chrono::seconds (100), [this]() { return fWorkMaybeAvailable_.load (); });
+        fRecievedSig_.wait_for (lk, chrono::seconds (100), [this] () { return fWorkMaybeAvailable_.load (); });
 #else
         fRecievedSig_.Wait ();
 #endif
@@ -142,7 +142,7 @@ public:
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fIncomingSignalCounts_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLastSignalRecieved_);
         fBlockingQueuePusherThread_ = Thread::New (
-            [this]() {
+            [this] () {
                 // This is a safe context
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
                 while (true) {
@@ -361,7 +361,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;
-    handlers.Apply ([&directHandlers, &safeHandlers](SignalHandler si) {
+    handlers.Apply ([&directHandlers, &safeHandlers] (SignalHandler si) {
         switch (si.GetType ()) {
             case SignalHandler::Type::eDirect: {
                 directHandlers.Add (si);
@@ -382,7 +382,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         Require (SafeSignalsManager::sTheRep_ != nullptr);
     }
 
-    auto sigSetHandler = [](SignalID signal, [[maybe_unused]] void (*fun) (int)) {
+    auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
         Lambda_Arg_Unused_BWA (fun);
 #if qPlatform_POSIX
         struct sigaction sa {
@@ -406,7 +406,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         }
         // @todo see https://stroika.atlassian.net/browse/STK-465
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
-        vector<function<void(SignalID)>> shs;
+        vector<function<void (SignalID)>> shs;
         for (SignalHandler sh : l->LookupValue (signal)) {
             shs.push_back (sh);
         }
@@ -417,7 +417,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
             Platform::POSIX::ScopedBlockCurrentThreadSignal blockAllSignals2ThisThread{};
 #endif
         Again:
-            [[maybe_unused]] auto&& cleanup = Finally ([this]() noexcept { fDirectSignalHandlersCache_Lock_--; });
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { fDirectSignalHandlersCache_Lock_--; });
             if (fDirectSignalHandlersCache_Lock_++ == 0) {
                 fDirectSignalHandlersCache_[signal] = shs;
             }
@@ -624,9 +624,9 @@ void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
          */
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (SHR.fDirectSignalHandlersCache_)));
     Again:
-        [[maybe_unused]] auto&& cleanup = Finally ([&SHR]() noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
+        [[maybe_unused]] auto&& cleanup = Finally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
         if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {
-            const vector<function<void(SignalID)>>* shs = &SHR.fDirectSignalHandlersCache_[signal];
+            const vector<function<void (SignalID)>>* shs = &SHR.fDirectSignalHandlersCache_[signal];
             for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
                 (*shi) (signal);
             }

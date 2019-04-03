@@ -23,7 +23,7 @@ int main (int argc, char** argv)
     char  result[PATH_MAX];
 
     if (canonicalizeMissing) {
-        auto backTick = [](const string& cmd) -> string {
+        auto backTick = [] (const string& cmd) -> string {
             char result[PATH_MAX] = "\0";
             // super-primitive impl - wont work with funny (quote) chars in pathnames
             FILE* in = nullptr;

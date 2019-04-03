@@ -190,7 +190,7 @@ namespace Stroika::Foundation::DataExchange {
          *  @see FromObjectMapperType
          */
         template <typename T>
-        using ToObjectMapperType = function<void(const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
+        using ToObjectMapperType = function<void (const ObjectVariantMapper& mapper, const VariantValue& d, T* into)>;
 
     public:
         /**
@@ -439,7 +439,7 @@ namespace Stroika::Foundation::DataExchange {
          *      \endcode
          */
         template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void (VariantValue*)> preflightBeforeToObject = nullptr);
 
     public:
         /**
@@ -463,7 +463,7 @@ namespace Stroika::Foundation::DataExchange {
          *      \endcode
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void (VariantValue*)> preflightBeforeToObject = nullptr);
 
     public:
         /**
@@ -722,9 +722,9 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const;
+        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject) const;
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const;
+        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const;
 
     private:
         nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;

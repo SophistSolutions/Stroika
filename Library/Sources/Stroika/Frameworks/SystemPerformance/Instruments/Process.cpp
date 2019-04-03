@@ -240,7 +240,7 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([hThreadSnap]() noexcept { ::CloseHandle (hThreadSnap); });
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
             THREADENTRY32 te32{};
@@ -295,7 +295,7 @@ String Instruments::Process::ProcessType::ToString () const
 ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
 {
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
+    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
         mapper.AddCommonType<optional<ProcessType::RunStatus>> ();
@@ -475,7 +475,7 @@ namespace {
              *  this claim documented anywhere, so beware...
              */
             for (String dir : IO::FileSystem::DirectoryIterable (L"/proc"sv)) {
-                bool isAllNumeric = not dir.FindFirstThat ([](Character c) -> bool { return not c.IsDigit (); });
+                bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files");
                 DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
@@ -509,7 +509,7 @@ namespace {
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -550,7 +550,7 @@ namespace {
                         static const size_t kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
 
                         if (grabStaticData) {
-                            static const time_t kUNIXEpochTimeOfBoot_ = []() {
+                            static const time_t kUNIXEpochTimeOfBoot_ = [] () {
                                 struct sysinfo info;
                                 ::sysinfo (&info);
                                 return ::time (NULL) - info.uptime;
@@ -562,7 +562,7 @@ namespace {
                             processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kUNIXEpochTimeOfBoot_));
                         }
 
-                        processDetails.fTotalCPUTimeEverUsed = (double(stats.utime) + double(stats.stime)) / kClockTick_;
+                        processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
@@ -689,7 +689,7 @@ namespace {
         optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-            auto ReadFileString_ = [](const Streams::InputStream<byte>::Ptr& in) -> String {
+            auto ReadFileString_ = [] (const Streams::InputStream<byte>::Ptr& in) -> String {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_");
 #endif
@@ -1470,7 +1470,7 @@ namespace {
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
-                        [[maybe_unused]] auto&& cleanup = Execution::Finally ([hProcess]() noexcept { Verify (::CloseHandle (hProcess)); });
+                        [[maybe_unused]] auto&& cleanup = Execution::Finally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); });
                         if (grabStaticData) {
                             optional<String> processName;
                             optional<String> processEXEPath;
@@ -1495,7 +1495,7 @@ namespace {
                             }
                         }
                         {
-                            auto convertFILETIME2DurationSeconds = [](FILETIME ft) -> Time::DurationSecondsType {
+                            auto convertFILETIME2DurationSeconds = [] (FILETIME ft) -> Time::DurationSecondsType {
                                 // From https://msdn.microsoft.com/en-us/library/windows/desktop/ms683223%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
                                 // Process kernel mode and user mode times are amounts of time.
                                 // For example, if a process has spent one second in kernel mode, this function
@@ -1706,7 +1706,7 @@ namespace {
                  */
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0) {
-                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([processToken]() noexcept {
+                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([processToken] () noexcept {
                         Verify (::CloseHandle (processToken));
                     });
                     DWORD                   nlen{};

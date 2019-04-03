@@ -47,7 +47,7 @@ BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()
 Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
 {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-    return Execution::ModuleDependency ([]() {}, []() {});
+    return Execution::ModuleDependency ([] () {}, [] () {});
 #else
     return Execution::ModuleInitializer<Private_::BlockAllocator_ModuleInit_>::GetDependency ();
 #endif

@@ -44,14 +44,14 @@ wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
         //DbgTrace ("%d errno", errno); // perror("backtrace_symbols");
         return wstring{};
     }
-    auto narrow2Wide = [](const char* s) -> wstring {
+    auto narrow2Wide = [] (const char* s) -> wstring {
         wstring symStr;
         for (const char* p = s; *p != '\0'; ++p) {
             symStr += *p;
         }
         return symStr;
     };
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms]() noexcept { if (syms != nullptr) ::free (syms); });
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
     wstring                 out;
     for (int j = 0; j < nptrs; j++) {
         wstring symStr = narrow2Wide (syms[j]);

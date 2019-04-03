@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Execution {
          *  This is for consumers of progress information. Consumers MAY either poll the ProgressMonitor,
          *  or may register a callback to be notified of progress.
          */
-        using ChangedCallbackType = Execution::Function<void(const ProgressMonitor& progressMonitor)>;
+        using ChangedCallbackType = Execution::Function<void (const ProgressMonitor& progressMonitor)>;
 
     private:
         class Rep_;

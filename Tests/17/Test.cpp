@@ -55,7 +55,7 @@ namespace {
             MultiSet<int> s6{v};
             MultiSet<int> s7{v.begin (), v.end ()};
             MultiSet<int> s8{move (s1)};
-            MultiSet<int> s9{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
+            MultiSet<int> s9{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
         }
     }
 }
@@ -80,7 +80,7 @@ namespace {
         {
             DoTestForConcreteContainer_<MultiSet<size_t>> ();
             DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
-            auto msFactory = []() { return MultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            auto msFactory = [] () { return MultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
             DoTestForConcreteContainer_<MultiSet<SimpleClassWithoutComparisonOperators>> (
                 CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
         }
@@ -88,7 +88,7 @@ namespace {
         {
             DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
             DoTestForConcreteContainer_<MultiSet_Array<SimpleClass>> ();
-            auto msFactory = []() { return MultiSet_Array<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            auto msFactory = [] () { return MultiSet_Array<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
             DoTestForConcreteContainer_<MultiSet_Array<SimpleClassWithoutComparisonOperators>> (
                 CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
         }
@@ -96,7 +96,7 @@ namespace {
         {
             DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
             DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClass>> ();
-            auto msFactory = []() { return MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            auto msFactory = [] () { return MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
             DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>> (
                 CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
         }
@@ -104,7 +104,7 @@ namespace {
         {
             DoTestForConcreteContainer_<MultiSet_stdmap<size_t>> ();
             DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
-            auto msFactory = []() { return MultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            auto msFactory = [] () { return MultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
             DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
                 CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
         }

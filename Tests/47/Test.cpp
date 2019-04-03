@@ -237,13 +237,13 @@ namespace {
                 unsigned                              sum{};
                 static constexpr unsigned int         kStartWith{1};
                 static constexpr unsigned int         kUpToInclusive_{1000};
-                Thread::Ptr                           consumer = Thread::New ([&]() {
+                Thread::Ptr                           consumer = Thread::New ([&] () {
                     while (auto o = pipe.Read ()) {
                         sum += *o;
                     }
                 },
                                                     Thread::eAutoStart);
-                Thread::Ptr                           producer = Thread::New ([&]() {
+                Thread::Ptr                           producer = Thread::New ([&] () {
                     for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
                         pipe.Write (i);
                     };

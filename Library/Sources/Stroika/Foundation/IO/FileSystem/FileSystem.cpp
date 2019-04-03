@@ -194,7 +194,7 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
     // obtain the IShellLink interface
     IShellLink*             psl     = nullptr;
     IPersistFile*           ppf     = nullptr;
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept {
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept {
         ppf->Release ();
         ppf = nullptr;
         psl->Release ();
@@ -234,7 +234,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
     if (tmp == nullptr) {
         FileSystem::Exception::ThrowPOSIXErrNo (errno, path (path2FileOrShortcut.As<wstring> ()));
     }
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp] () noexcept { ::free (tmp); });
     return String::FromNarrowSDKString (tmp);
 #elif qPlatform_Windows
     // @todo MaYBE USE GetFinalPathNameByHandle

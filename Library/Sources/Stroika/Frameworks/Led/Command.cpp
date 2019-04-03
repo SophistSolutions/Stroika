@@ -547,7 +547,7 @@ void MultiLevelUndoCommandHandler::Commit_After (size_t after)
     Require (after >= 0);
     size_t commandsLen = fCommands.size ();
     if (commandsLen != 0) {
-        for (long i = static_cast<long> (commandsLen) - 1; i >= long(after); i--) {
+        for (long i = static_cast<long> (commandsLen) - 1; i >= long (after); i--) {
             Assert (i >= 0);
             delete fCommands[i];
             fCommands.erase (fCommands.begin () + i);

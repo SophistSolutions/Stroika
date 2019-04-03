@@ -91,7 +91,7 @@ namespace {
         Collection<MountedFilesystemType> results{};
         static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
         [[maybe_unused]] auto&&           critSec = lock_guard{sMutex_};
-        [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&]() noexcept { ::endfsent (); });
+        [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
             results += MountedFilesystemType{String::FromNarrowSDKString (fs->fs_file), Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};
         }
@@ -238,7 +238,7 @@ namespace {
         TCHAR                             volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
 
         HANDLE                  hVol    = INVALID_HANDLE_VALUE;
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept { if (hVol != INVALID_HANDLE_VALUE) { ::CloseHandle (hVol); } });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { if (hVol != INVALID_HANDLE_VALUE) { ::CloseHandle (hVol); } });
 
         for (hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE;) {
             DWORD lpMaximumComponentLength;

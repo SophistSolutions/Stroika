@@ -87,7 +87,7 @@ namespace Stroika::Foundation::IO::Network {
             eAdded,
             eRemoved,
         };
-        using Callback = Execution::Function<void(LinkChange, const String& linkName, const String& ipAddr)>;
+        using Callback = Execution::Function<void (LinkChange, const String& linkName, const String& ipAddr)>;
         nonvirtual void AddCallback (const Callback& callback);
         nonvirtual void RemoveCallback (const Callback& callback);
 

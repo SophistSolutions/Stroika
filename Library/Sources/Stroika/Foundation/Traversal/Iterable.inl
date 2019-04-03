@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Traversal {
     {
         vector<T>                tmp (from.begin (), from.end ()); // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
-        function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
+        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ())
                 [[LIKELY_ATTR]]
                 {
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer) const
     {
         // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
-        return static_cast<bool> (this->FindFirstThat ([&element, &equalsComparer](T i) -> bool {
+        return static_cast<bool> (this->FindFirstThat ([&element, &equalsComparer] (T i) -> bool {
             return equalsComparer (i, element);
         }));
     }
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
     bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        auto tallyOf = [equalsComparer](const Iterable& c, T item) -> size_t {
+        auto tallyOf = [equalsComparer] (const Iterable& c, T item) -> size_t {
             size_t total = 0;
             for (auto ti : c) {
                 if (equalsComparer (ti, item)) {
@@ -370,12 +370,12 @@ namespace Stroika::Foundation::Traversal {
         return li == le and ri == re;
     }
     template <typename T>
-    Iterable<T> Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+    Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         RequireNotNull (includeIfTrue);
         Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue]() mutable -> optional<T> {
+        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue] () mutable -> optional<T> {
             while (tmpIt and not includeIfTrue (*tmpIt)) {
                 ++tmpIt;
             }
@@ -385,13 +385,13 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_CONTAINER>
-    inline RESULT_CONTAINER Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+    inline RESULT_CONTAINER Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         return Where<RESULT_CONTAINER> (includeIfTrue, RESULT_CONTAINER{});
     }
     template <typename T>
     template <typename RESULT_CONTAINER>
-    RESULT_CONTAINER Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const
+    RESULT_CONTAINER Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const
     {
         Require (emptyResult.empty ());
         RESULT_CONTAINER result = emptyResult;
@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
             for (const T&& i : *this) {
-                if (find_if (tmp.begin (), tmp.end (), [&](ArgByValueType<T> n) { return equalsComparer (n, i); }) == tmp.end ()) {
+                if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, i); }) == tmp.end ()) {
                     tmp.push_back (i);
                 }
             }
@@ -434,7 +434,7 @@ namespace Stroika::Foundation::Traversal {
         else {
             for (const T&& i : *this) {
                 RESULT item2Test = extractElt (i);
-                if (find_if (tmp.begin (), tmp.end (), [&](ArgByValueType<T> n) { return equalsComparer (n, item2Test); }) == tmp.end ()) {
+                if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, item2Test); }) == tmp.end ()) {
                     tmp.push_back (item2Test);
                 }
             }
@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<RESULT> Iterable<T>::Distinct_mkGenerator_ (const vector<RESULT>& container)
     {
         size_t                        idx{0};
-        function<optional<RESULT> ()> getNext = [container, idx]() mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [container, idx] () mutable -> optional<RESULT> {
             if (idx < container.size ()) {
                 return container[idx++];
             }
@@ -464,7 +464,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (extract1);
         Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1]() mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1] () mutable -> optional<RESULT> {
             if (tmpIt) {
                 return RESULT (extract1 (*tmpIt++));
             }
@@ -480,7 +480,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (extract2);
         Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2]() mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2] () mutable -> optional<RESULT> {
             if (tmpIt) {
                 RESULT result{extract1 (*tmpIt), extract2 (*tmpIt)};
                 tmpIt++;
@@ -496,7 +496,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2, extract3]() mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2, extract3] () mutable -> optional<RESULT> {
             if (tmpIt) {
                 RESULT result{extract1 (*tmpIt), extract2 (*tmpIt), extract3 (*tmpIt)};
                 tmpIt++;
@@ -512,7 +512,7 @@ namespace Stroika::Foundation::Traversal {
         size_t                   nItemsToSkip                         = nItems;
         Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip]() mutable -> optional<T> {
+        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip] () mutable -> optional<T> {
             while (tmpIt and nItemsToSkip > 0) {
                 nItemsToSkip--;
                 ++tmpIt;
@@ -527,7 +527,7 @@ namespace Stroika::Foundation::Traversal {
         size_t                   nItemsToTake                         = nItems;
         Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToTake]() mutable -> optional<T> {
+        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToTake] () mutable -> optional<T> {
             if (nItemsToTake == 0) {
                 return nullopt;
             }
@@ -543,7 +543,7 @@ namespace Stroika::Foundation::Traversal {
         size_t                   nItemsToTake                         = to - from;
         Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
         Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip, nItemsToTake]() mutable -> optional<T> {
+        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip, nItemsToTake] () mutable -> optional<T> {
             while (tmpIt and nItemsToSkip > 0) {
                 nItemsToSkip--;
                 ++tmpIt;
@@ -563,7 +563,7 @@ namespace Stroika::Foundation::Traversal {
         vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
         sort (tmp.begin (), tmp.end (), inorderComparer);
         size_t                   idx{0};
-        function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
+        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ()) {
                 return tmp[idx++];
             }
@@ -580,7 +580,7 @@ namespace Stroika::Foundation::Traversal {
         return i ? *i : optional<T>{};
     }
     template <typename T>
-    inline optional<T> Iterable<T>::First (const function<bool(ArgByValueType<T>)>& that) const
+    inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
         for (auto i : *this) {
@@ -615,7 +615,7 @@ namespace Stroika::Foundation::Traversal {
         return optional<T>{};
     }
     template <typename T>
-    optional<T> Iterable<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
+    optional<T> Iterable<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
         optional<T> result;
@@ -642,7 +642,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    bool Iterable<T>::All (const function<bool(ArgByValueType<T>)>& testEachElt) const
+    bool Iterable<T>::All (const function<bool (ArgByValueType<T>)>& testEachElt) const
     {
         RequireNotNull (testEachElt);
         for (auto i : *this) {
@@ -676,7 +676,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     optional<T> Iterable<T>::Min () const
     {
-        return Accumulate<T> ([](T lhs, T rhs) { return min (lhs, rhs); });
+        return Accumulate<T> ([] (T lhs, T rhs) { return min (lhs, rhs); });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -687,7 +687,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     optional<T> Iterable<T>::Max () const
     {
-        return Accumulate<T> ([](T lhs, T rhs) -> T { return max (lhs, rhs); });
+        return Accumulate<T> ([] (T lhs, T rhs) -> T { return max (lhs, rhs); });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -717,7 +717,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     optional<RESULT_TYPE> Iterable<T>::Sum () const
     {
-        return Accumulate<RESULT_TYPE> ([](T lhs, T rhs) { return lhs + rhs; });
+        return Accumulate<RESULT_TYPE> ([] (T lhs, T rhs) { return lhs + rhs; });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -727,7 +727,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE>
-    optional<RESULT_TYPE> Iterable<T>::Median (const function<bool(T, T)>& compare) const
+    optional<RESULT_TYPE> Iterable<T>::Median (const function<bool (T, T)>& compare) const
     {
         vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
         sort (tmp.begin (), tmp.end (), compare);
@@ -761,7 +761,7 @@ namespace Stroika::Foundation::Traversal {
         return not IsEmpty ();
     }
     template <typename T>
-    inline bool Iterable<T>::Any (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+    inline bool Iterable<T>::Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         return not Where (includeIfTrue).IsEmpty ();
     }
@@ -786,19 +786,19 @@ namespace Stroika::Foundation::Traversal {
         return Iterator<T>::GetEmptyIterator ();
     }
     template <typename T>
-    inline void Iterable<T>::Apply (const function<void(ArgByValueType<T> item)>& doToElement) const
+    inline void Iterable<T>::Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         _SafeReadRepAccessor<>{this}._ConstGetRep ().Apply (doToElement);
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::FindFirstThat (const function<bool(ArgByValueType<T> item)>& doToElement) const
+    inline Iterator<T> Iterable<T>::FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         return _SafeReadRepAccessor<>{this}._ConstGetRep ().FindFirstThat (doToElement, this);
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool(ArgByValueType<T> item)>& doToElement) const
+    inline Iterator<T> Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = startAt; i != Iterable<T>::end (); ++i) {

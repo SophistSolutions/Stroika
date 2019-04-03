@@ -183,7 +183,7 @@ namespace {
         {
             //  COMPARE TEST WITH bash -c "python nelder_mead.py"
             //              [array([ -1.58089710e+00,  -2.39020317e-03,   1.39669799e-06]), -0.99994473460027922]
-            DownhillSimplexMinimization::TargetFunction<double> f = [](const Traversal::Iterable<double>& x) {
+            DownhillSimplexMinimization::TargetFunction<double> f = [] (const Traversal::Iterable<double>& x) {
                 return sin (x.Nth (0)) * cos (x.Nth (1)) * 1 / (abs (x.Nth (2)) + 1);
             };
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {0, 0, 0});
@@ -193,7 +193,7 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
         }
         {
-            DownhillSimplexMinimization::TargetFunction<double> f = [](const Sequence<double>& x) {
+            DownhillSimplexMinimization::TargetFunction<double> f = [] (const Sequence<double>& x) {
                 double d = x[0];
                 if (d < 0 or d >= Math::kPi) { // avoid falling off ends of ranges - periodic function
                     return 100.0;
@@ -298,21 +298,21 @@ namespace {
             };
             static constexpr double kDACcountMax_          = 65536;
             static constexpr double k32K                   = kDACcountMax_ / 2;
-            auto                    WaveNumber2Wavelength_ = [](double wn) -> double {
+            auto                    WaveNumber2Wavelength_ = [] (double wn) -> double {
                 return 0.01 / wn;
             };
-            auto MDrive2WaveLength = [](const K_Constants_& constants, double mirrorDriveValue) -> double {
+            auto MDrive2WaveLength = [] (const K_Constants_& constants, double mirrorDriveValue) -> double {
                 double signedMDrive = mirrorDriveValue - k32K;
                 return 2 * constants.tunerInfoD / constants.tunerInfoM * sin (constants.k2 + constants.k1 * signedMDrive / k32K);
             };
-            auto wavelengthModel = [=](const K_Constants_& parameters, unsigned int mdrive) {
+            auto wavelengthModel = [=] (const K_Constants_& parameters, unsigned int mdrive) {
                 constexpr double kMinWaveLengthAllowed_{1.0e-20};
                 return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
             };
             Sequence<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
             K_Constants_     mdKConstants = {};
             mdKConstants.tunerInfoD       = NominalGrooveSpacing;
-            auto fitFun                   = [=](const K_Constants_& parameters) {
+            auto fitFun                   = [=] (const K_Constants_& parameters) {
                 double result{};
                 size_t nEntries{NEltsOf (kCalData_)};
                 for (auto i : kCalData_) {
@@ -324,7 +324,7 @@ namespace {
                 }
                 return sqrt (result) / nEntries;
             };
-            DownhillSimplexMinimization::TargetFunction<double> f = [=](const Traversal::Iterable<double>& x) -> double {
+            DownhillSimplexMinimization::TargetFunction<double> f = [=] (const Traversal::Iterable<double>& x) -> double {
                 K_Constants_ tmp = mdKConstants;
                 tmp.k1           = x.Nth (0);
                 tmp.k2           = x.Nth (1);

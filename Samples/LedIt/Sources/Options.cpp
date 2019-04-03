@@ -50,15 +50,15 @@ namespace {
         Options_Storage_IMPL_ ()
             : fOptionsFile_{
                   L"AppSettings"sv,
-                  []() -> ObjectVariantMapper {
+                  [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
 
                       // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
                       mapper.Add<Led_tString> (
-                          [](const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
+                          [] (const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
                               return String{*obj};
                           },
-                          [](const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
+                          [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
                               *intoObj = d.As<String> ().As<Led_tString> ();
                           });
                       mapper.AddCommonType<vector<Led_tString>> ();
@@ -126,7 +126,7 @@ SearchParameters Options::GetSearchParameters () const
 
 void Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
-    sOptions_.Update ([=](Options_ d) { d.fSearchParameters = searchParameters; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fSearchParameters = searchParameters; return d; });
 }
 
 #if qPlatform_Windows
@@ -134,7 +134,7 @@ const CDockState& Options::GetDocBarState () const
 {
     static CDockState     dockState; // keep static copy and clear each time cuz CDocState doesn't support copy CTOR - LGP971214
     static std::once_flag sOnce_;
-    std::call_once (sOnce_, []() {
+    std::call_once (sOnce_, [] () {
         dockState.Clear ();
         BLOB bytes = sOptions_.Get ().fDockBarState;
         if (not bytes.empty ()) {
@@ -161,7 +161,7 @@ void Options::SetDocBarState (const CDockState& dockState)
     byte* p = new byte[nSize];
     file.SeekToBegin ();
     file.Read (p, nSize);
-    sOptions_.Update ([=](Options_ d) { d.fDockBarState = BLOB{p, p+nSize}; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fDockBarState = BLOB{p, p+nSize}; return d; });
     delete[] p;
 }
 #endif
@@ -173,7 +173,7 @@ bool Options::GetSmartCutAndPaste () const
 
 void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
-    sOptions_.Update ([=](Options_ d) { d.fSmartCutAndPaste = smartCutAndPaste; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fSmartCutAndPaste = smartCutAndPaste; return d; });
 }
 
 bool Options::GetWrapToWindow () const
@@ -183,7 +183,7 @@ bool Options::GetWrapToWindow () const
 
 void Options::SetWrapToWindow (bool wrapToWindow)
 {
-    sOptions_.Update ([=](Options_ d) { d.fWrapToWindow = wrapToWindow; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fWrapToWindow = wrapToWindow; return d; });
 }
 
 bool Options::GetShowHiddenText () const
@@ -193,7 +193,7 @@ bool Options::GetShowHiddenText () const
 
 void Options::SetShowHiddenText (bool showHiddenText)
 {
-    sOptions_.Update ([=](Options_ d) { d.fShowHiddenText = showHiddenText; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fShowHiddenText = showHiddenText; return d; });
 }
 
 bool Options::GetShowParagraphGlyphs () const
@@ -203,7 +203,7 @@ bool Options::GetShowParagraphGlyphs () const
 
 void Options::SetShowParagraphGlyphs (bool showParagraphGlyphs)
 {
-    sOptions_.Update ([=](Options_ d) { d.fShowParagraphGlyphs = showParagraphGlyphs; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fShowParagraphGlyphs = showParagraphGlyphs; return d; });
 }
 
 bool Options::GetShowTabGlyphs () const
@@ -213,7 +213,7 @@ bool Options::GetShowTabGlyphs () const
 
 void Options::SetShowTabGlyphs (bool showTabGlyphs)
 {
-    sOptions_.Update ([=](Options_ d) { d.fShowTabGlyphs = showTabGlyphs; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fShowTabGlyphs = showTabGlyphs; return d; });
 }
 
 bool Options::GetShowSpaceGlyphs () const
@@ -223,7 +223,7 @@ bool Options::GetShowSpaceGlyphs () const
 
 void Options::SetShowSpaceGlyphs (bool showSpaceGlyphs)
 {
-    sOptions_.Update ([=](Options_ d) { d.fShowSpaceGlyphs = showSpaceGlyphs; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fShowSpaceGlyphs = showSpaceGlyphs; return d; });
 }
 
 #if qPlatform_Windows
@@ -234,7 +234,7 @@ bool Options::GetCheckFileAssocsAtStartup () const
 
 void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 {
-    sOptions_.Update ([=](Options_ d) { d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup; return d; });
+    sOptions_.Update ([=] (Options_ d) { d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup; return d; });
 }
 #endif
 
@@ -256,7 +256,7 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
 void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
-    sOptions_.Update ([&](Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });
+    sOptions_.Update ([&] (Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });
 #else
     Led_Arg_Unused (defaultNewDocFont);
 #endif

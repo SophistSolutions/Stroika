@@ -622,7 +622,7 @@ namespace {
                 using namespace ObjectReader;
                 DISABLE_COMPILER_MSC_WARNING_START (4573)
                 static const ReaderFromVoidStarFactory sEltReader_ =
-                    []() -> ReaderFromVoidStarFactory {
+                    [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
                     return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
                         {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
@@ -836,7 +836,7 @@ namespace {
                     using namespace ObjectReader;
                     DISABLE_COMPILER_MSC_WARNING_START (4573)
                     static const ReaderFromVoidStarFactory sEltReader_ =
-                        []() -> ReaderFromVoidStarFactory {
+                        [] () -> ReaderFromVoidStarFactory {
                         using KVPType_ = SpectrumType_::value_type;
                         return Registry::MakeClassReader<KVPType_> (
                             initializer_list<StructFieldInfo>{
@@ -864,7 +864,7 @@ namespace {
                     DISABLE_COMPILER_MSC_WARNING_START (4573)
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
                     static const ReaderFromVoidStarFactory sEltReader_ =
-                        []() -> ReaderFromVoidStarFactory {
+                        [] () -> ReaderFromVoidStarFactory {
                         using KVPType_ = KeyValuePair<String, String>;
                         return Registry::MakeClassReader<KVPType_> (
                             initializer_list<StructFieldInfo>{
@@ -1073,8 +1073,8 @@ namespace {
                                 {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
                             });
                         Sequence<MixinEltTraits> tmp;
-                        tmp += MixinEltTraits{kTunerReader_, [](const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [](KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
-                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name& name) { return name != Name{L"Tuner", Name::eAttribute}; }, [](KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
+                        tmp += MixinEltTraits{kTunerReader_, [] (const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
+                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_, [] (const Name& name) { return name != Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
                         return tmp;
                     }
                     MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
@@ -1302,7 +1302,7 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
         ObjectReader::Registry registry;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         registry.AddCommonType<String> ();
-        registry.AddCommonReader_Simple<GenderType_> ([](String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
+        registry.AddCommonReader_Simple<GenderType_> ([] (String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
         registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
             {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},

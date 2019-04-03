@@ -41,7 +41,7 @@ namespace Samples {
             virtual ~SampleAppServiceRep () = default;
 
         public:
-            virtual void MainLoop (const std::function<void()>& startedCB) override;
+            virtual void MainLoop (const std::function<void ()>& startedCB) override;
 
         public:
             virtual Main::ServiceDescription GetServiceDescription () const override;

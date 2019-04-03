@@ -542,7 +542,7 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (pm);
         using CacheElt = PartitioningTextImager::MeasureTextCache::CacheElt;
-        return fCache.LookupValue (CacheElt::COMPARE_ITEM (pm, rowStart), [valueFetcher](const CacheElt::COMPARE_ITEM& c) { return valueFetcher (c.fPM, c.fRowStartingAt); });
+        return fCache.LookupValue (CacheElt::COMPARE_ITEM (pm, rowStart), [valueFetcher] (const CacheElt::COMPARE_ITEM& c) { return valueFetcher (c.fPM, c.fRowStartingAt); });
     }
 
     //  class   PartitioningTextImager::MeasureTextCache::CacheElt

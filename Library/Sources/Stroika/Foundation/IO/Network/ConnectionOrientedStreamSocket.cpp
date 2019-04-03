@@ -70,7 +70,7 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
+                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
                 ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else
@@ -83,11 +83,11 @@ namespace {
 
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
-                [[maybe_unused]] auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+                [[maybe_unused]] auto&& cleanup = Finally ([=] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 
 #if qPlatform_POSIX
-                return ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
+                return ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif qPlatform_Windows
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
@@ -101,7 +101,7 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
-                [[maybe_unused]] auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+                [[maybe_unused]] auto&& cleanup = Finally ([=] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 #if qPlatform_POSIX || qPlatform_Windows
                 {
@@ -116,7 +116,7 @@ namespace {
                             // But MUST check if is EOF or real data available
                             char buf[1024];
 #if qPlatform_POSIX
-                            int tmp = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
+                            int tmp = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
 #elif qPlatform_Windows
                             int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else
@@ -126,7 +126,7 @@ namespace {
                         }
 #if qDebug
                         --fCurrentPendingReadsCount; // reverse for inherited Read ()
-                        [[maybe_unused]] auto&& cleanup2 = Finally ([=]() noexcept { ++fCurrentPendingReadsCount; });
+                        [[maybe_unused]] auto&& cleanup2 = Finally ([=] () noexcept { ++fCurrentPendingReadsCount; });
 #endif
                         return Read (intoStart, intoEnd);
                     }
@@ -155,10 +155,10 @@ namespace {
                     start,
                     end,
                     numeric_limits<int>::max (),
-                    [this](const byte* start, const byte* end) -> size_t {
+                    [this] (const byte* start, const byte* end) -> size_t {
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int     len = static_cast<int> (end - start);
-                        ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end]() -> ssize_t { return ::write (fSD_, start, end - start); });
+                        ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end] () -> ssize_t { return ::write (fSD_, start, end - start); });
                         ThrowPOSIXErrNoIfNegative (n);
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
@@ -175,7 +175,7 @@ namespace {
                     start,
                     end,
                     maxSendAtATime,
-                    [this, maxSendAtATime](const byte* start, const byte* end) -> size_t {
+                    [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
                         Require (static_cast<size_t> (end - start) <= maxSendAtATime);
                         Assert ((end - start) < numeric_limits<int>::max ());
                         int len = static_cast<int> (end - start);

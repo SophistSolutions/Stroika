@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename SHARED_IMLP = shared_ptr<T>>
     struct [[deprecated ("use std::function<> or just any functor with operator() - since in version 2.1d6")]] SharedByValue_CopyByFunction
     {
-        SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP { return SHARED_IMLP (new T (t)); }) noexcept
+        SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [] (const T& t) -> SHARED_IMLP { return SHARED_IMLP (new T (t)); }) noexcept
             : fCopier (copier)
         {
             //RequireNotNull (copier);

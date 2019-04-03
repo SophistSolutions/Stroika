@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     T Vector<T>::Norm () const
     {
         T result{};
-        fRep_.cget ()->Apply ([&](T v) { result += v * v; });
+        fRep_.cget ()->Apply ([&] (T v) { result += v * v; });
         return sqrt (result);
     }
     template <typename T>

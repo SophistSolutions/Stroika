@@ -53,7 +53,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
                 StringBuilder res;
-                o->Apply ([&res](const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
+                o->Apply ([&res] (const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
                 m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAllow, res.str ());
                 Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kMethodNotAllowed));
             }

@@ -90,7 +90,7 @@ String Instruments::CPU::Info::ToString () const
 ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 {
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper kMapper_ = []() -> ObjectVariantMapper {
+    static const ObjectVariantMapper kMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage

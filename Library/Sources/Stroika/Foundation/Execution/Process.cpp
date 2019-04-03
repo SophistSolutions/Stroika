@@ -41,7 +41,7 @@ bool Execution::IsProcessRunning (pid_t pid)
         // Probably best answer here is just to return no, that its not running
         return false;
     }
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() {
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
         ::CloseHandle (process);
     });
     constexpr bool          kUseGetExitCodeProcess_{false}; // GetExitCodeProcess can get confused by bad error code so WFSO probably better

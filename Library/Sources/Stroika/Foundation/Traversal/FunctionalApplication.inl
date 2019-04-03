@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename IN_OUT_T>
-    Iterable<IN_OUT_T> DirectPushMapEngine::Filter (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& includeTest)
+    Iterable<IN_OUT_T> DirectPushMapEngine::Filter (const Iterable<IN_OUT_T>& from, const function<bool (IN_OUT_T)>& includeTest)
     {
         Containers::Sequence<IN_OUT_T> result;
         for (IN_OUT_T i : from) {
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename IN_OUT_T>
-    optional<IN_OUT_T> DirectPushMapEngine::Find (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& thatPassesThisTest)
+    optional<IN_OUT_T> DirectPushMapEngine::Find (const Iterable<IN_OUT_T>& from, const function<bool (IN_OUT_T)>& thatPassesThisTest)
     {
         for (IN_OUT_T i : from) {
             if (thatPassesThisTest (i)) {
@@ -80,13 +80,13 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename INOUT_T>
-    inline FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> FunctionalApplicationContext<T, MAPPER_ENGINE>::Filter (const function<bool(INOUT_T)>& includeTest)
+    inline FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> FunctionalApplicationContext<T, MAPPER_ENGINE>::Filter (const function<bool (INOUT_T)>& includeTest)
     {
         return FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> (fMappingEngine_.Filter (inherited (*this), includeTest), fMappingEngine_);
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename INOUT_T>
-    optional<INOUT_T> FunctionalApplicationContext<T, MAPPER_ENGINE>::Find (const function<bool(INOUT_T)>& thatPassesThisTest)
+    optional<INOUT_T> FunctionalApplicationContext<T, MAPPER_ENGINE>::Find (const function<bool (INOUT_T)>& thatPassesThisTest)
     {
         return fMappingEngine_.Find (inherited (*this), thatPassesThisTest);
     }

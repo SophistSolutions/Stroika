@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Execution {
          */
         SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT);
         SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
-        SignalHandler (const Function<void(SignalID)>& signalHandler, Type type = Type::eDEFAULT);
+        SignalHandler (const Function<void (SignalID)>& signalHandler, Type type = Type::eDEFAULT);
 
     public:
         nonvirtual Type GetType () const;
@@ -130,8 +130,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual bool operator< (const SignalHandler& rhs) const;
 
     private:
-        Type                     fType_;
-        Function<void(SignalID)> fCall_;
+        Type                      fType_;
+        Function<void (SignalID)> fCall_;
     };
 
     /**
@@ -282,8 +282,8 @@ namespace Stroika::Foundation::Execution {
         RWSynchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;
 
     private:
-        mutable atomic<unsigned int>     fDirectSignalHandlersCache_Lock_{0};
-        vector<function<void(SignalID)>> fDirectSignalHandlersCache_[NSIG];
+        mutable atomic<unsigned int>      fDirectSignalHandlersCache_Lock_{0};
+        vector<function<void (SignalID)>> fDirectSignalHandlersCache_[NSIG];
 
     private:
         static void FirstPassSignalHandler_ (SignalID signal);

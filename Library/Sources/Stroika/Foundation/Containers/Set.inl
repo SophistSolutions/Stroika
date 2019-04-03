@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Containers {
         return Equals (Set<T>{rhs});
     }
     template <typename T>
-    inline Set<T> Set<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+    inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         return Iterable<T>::Where (includeIfTrue, Set<T>{});
     }

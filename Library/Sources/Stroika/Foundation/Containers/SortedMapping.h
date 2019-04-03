@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers {
          *  This CAN be used as the argument to a SortedMapping<> as InOrderComparerType, but
          *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept
          */
-        using KeyInOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(KEY_TYPE, KEY_TYPE)>>;
+        using KeyInOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (KEY_TYPE, KEY_TYPE)>>;
 
     public:
         /**

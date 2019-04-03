@@ -495,7 +495,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note   \em Thread-Safety   The argument function (lambda) may
          *              directly (or indirectly) access the Iterable<> being iterated over.
          */
-        nonvirtual void Apply (const function<void(ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
 
     public:
         /**
@@ -535,8 +535,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  @see First () - often more handy
          */
-        nonvirtual Iterator<T> FindFirstThat (const function<bool(ArgByValueType<T> item)>& doToElement) const;
-        nonvirtual Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool(ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const;
 
     public:
         /**
@@ -601,11 +601,11 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   Could have been called EachWith, EachWhere, or EachThat ().
          */
-        nonvirtual Iterable<T> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual Iterable<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
         template <typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
         template <typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
+        nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
 
     public:
         /**
@@ -783,7 +783,7 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
          */
         nonvirtual optional<T> First () const;
-        nonvirtual optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
 
     public:
         /**
@@ -817,7 +817,7 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
          */
         nonvirtual optional<T> Last () const;
-        nonvirtual optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
 
     public:
         /**
@@ -849,7 +849,7 @@ namespace Stroika::Foundation::Traversal {
          *      BASED ON Microsoft .net Linq. (Last)
          *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.all?view=netframework-4.7.2
          */
-        nonvirtual bool All (const function<bool(ArgByValueType<T>)>& testEachElt) const;
+        nonvirtual bool All (const function<bool (ArgByValueType<T>)>& testEachElt) const;
 
     public:
         /**
@@ -1006,7 +1006,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note   returns nullopt if empty list
          */
         template <typename RESULT_TYPE = T>
-        nonvirtual optional<RESULT_TYPE> Median (const function<bool(T, T)>& compare = [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+        nonvirtual optional<RESULT_TYPE> Median (const function<bool (T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
 
     public:
         /**
@@ -1022,7 +1022,7 @@ namespace Stroika::Foundation::Traversal {
          *  Second overload (with filter function) same as .Where(filter).Any ();
          */
         nonvirtual bool Any () const;
-        nonvirtual bool Any (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual bool Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
         /**
@@ -1198,8 +1198,8 @@ namespace Stroika::Foundation::Traversal {
         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
 
     public:
-        using _APPLY_ARGTYPE      = const function<void(ArgByValueType<T> item)>&;
-        using _APPLYUNTIL_ARGTYPE = const function<bool(ArgByValueType<T> item)>&;
+        using _APPLY_ARGTYPE      = const function<void (ArgByValueType<T> item)>&;
+        using _APPLYUNTIL_ARGTYPE = const function<bool (ArgByValueType<T> item)>&;
 
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const = 0;

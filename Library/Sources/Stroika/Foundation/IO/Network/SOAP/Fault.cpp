@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::IO::Network::SOAP;
 optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<byte>::Ptr& from)
 {
     using namespace ObjectReader;
-    static const Registry kSOAPTypeMapper_ = []() -> Registry {
+    static const Registry kSOAPTypeMapper_ = [] () -> Registry {
         //      using   namespace DataExchange::StructuredStreamEvents;
         Registry mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04

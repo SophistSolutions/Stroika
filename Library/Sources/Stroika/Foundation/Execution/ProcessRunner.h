@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Execution {
          *
          *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
          */
-        nonvirtual function<void()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
+        nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
     private:
         nonvirtual String GetEffectiveCmdLine_ () const;

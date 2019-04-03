@@ -135,7 +135,7 @@ namespace {
          */
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-            auto            whereTestResult = tmp.Where ([](int i) { return i % 2 == 1; });
+            auto            whereTestResult = tmp.Where ([] (int i) { return i % 2 == 1; });
             DbgTrace (L"tmp=%s", Characters::ToString (whereTestResult).c_str ());
         }
         {
@@ -176,7 +176,7 @@ namespace {
         //      myObjects.Remove (MyFunnyObject_{3});
         // but this will remove the first object found
         Assert (myObjects.size () == 2);
-        myObjects.Remove (MyFunnyObject_{3}, [](const MyFunnyObject_&, const MyFunnyObject_&) { return true; });
+        myObjects.Remove (MyFunnyObject_{3}, [] (const MyFunnyObject_&, const MyFunnyObject_&) { return true; });
         Assert (myObjects.size () == 1);
     }
 }
@@ -192,7 +192,7 @@ namespace {
         fruits += L"cherries";
 
         {
-            Iterator<String> i = fruits.FindFirstThat ([](String i) { return i == L"apple"; });
+            Iterator<String> i = fruits.FindFirstThat ([] (String i) { return i == L"apple"; });
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
         }

@@ -381,7 +381,7 @@ IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& di
     , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter))
     , fQuitting (false)
 {
-    fThread = Execution::Thread::New ([this]() { ThreadProc (this); }, Execution::Thread::eAutoStart, L"DirectoryChangeWatcher");
+    fThread = Execution::Thread::New ([this] () { ThreadProc (this); }, Execution::Thread::eAutoStart, L"DirectoryChangeWatcher");
 }
 
 IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()

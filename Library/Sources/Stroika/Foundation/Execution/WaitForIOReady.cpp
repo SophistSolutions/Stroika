@@ -153,7 +153,7 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
     }
 #endif
 #else
-    pollResult = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
+    pollResult = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
 #endif
     Set<FileDescriptorType> result;
     if (pollResult != 0) {

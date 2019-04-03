@@ -74,7 +74,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        using NewMeasurementsCallbackType = Function<void(MeasurementSet)>;
+        using NewMeasurementsCallbackType = Function<void (MeasurementSet)>;
 
     public:
         /**

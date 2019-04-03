@@ -110,10 +110,10 @@ namespace Stroika::Foundation::Traversal {
         OUT_T Reduce (const Iterable<IN_T>& from, const function<OUT_T (IN_T, OUT_T)>& do2Each, OUT_T memo);
 
         template <typename IN_OUT_T>
-        Iterable<IN_OUT_T> Filter (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& includeTest);
+        Iterable<IN_OUT_T> Filter (const Iterable<IN_OUT_T>& from, const function<bool (IN_OUT_T)>& includeTest);
 
         template <typename IN_OUT_T>
-        optional<IN_OUT_T> Find (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& thatPassesThisTest);
+        optional<IN_OUT_T> Find (const Iterable<IN_OUT_T>& from, const function<bool (IN_OUT_T)>& thatPassesThisTest);
     };
 
     /**
@@ -235,13 +235,13 @@ namespace Stroika::Foundation::Traversal {
         /**
          */
         template <typename INOUT_T>
-        FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> Filter (const function<bool(INOUT_T)>& includeTest);
+        FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> Filter (const function<bool (INOUT_T)>& includeTest);
 
     public:
         /**
          */
         template <typename INOUT_T>
-        optional<INOUT_T> Find (const function<bool(INOUT_T)>& thatPassesThisTest);
+        optional<INOUT_T> Find (const function<bool (INOUT_T)>& thatPassesThisTest);
     };
 
 }

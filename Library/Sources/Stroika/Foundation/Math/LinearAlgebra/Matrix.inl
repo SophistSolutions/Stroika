@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     {
         size_t row = 0;
         size_t col = 0;
-        return Matrix{dimensions, [&]() { T result = (row == col) ? 1 : 0; ++col; if (col > dimensions.fColumns) { col = 0; row++; } }};
+        return Matrix{dimensions, [&] () { T result = (row == col) ? 1 : 0; ++col; if (col > dimensions.fColumns) { col = 0; row++; } }};
     }
     template <typename T>
     inline auto Matrix<T>::GetDimensions () const -> DimensionType

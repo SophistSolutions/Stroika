@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void LinkedList<T>::PatchViewsAdd (const Link* link) const
     {
         RequireNotNull (link);
-        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link](ForwardIterator* ai) {
+        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link] (ForwardIterator* ai) {
             ai->PatchAdd (link);
         });
     }
@@ -47,21 +47,21 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void LinkedList<T>::PatchViewsRemove (const Link* link) const
     {
         RequireNotNull (link);
-        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link](ForwardIterator* ai) {
+        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link] (ForwardIterator* ai) {
             ai->PatchRemove (link);
         });
     }
     template <typename T>
     inline void LinkedList<T>::PatchViewsRemoveAll () const
     {
-        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([](ForwardIterator* ai) {
+        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([] (ForwardIterator* ai) {
             ai->PatchRemoveAll ();
         });
     }
     template <typename T>
     inline void LinkedList<T>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
     {
-        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch](ForwardIterator* ai) {
+        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch] (ForwardIterator* ai) {
             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
         });
     }
@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
             *  date. Instead, so that in local shadow of Invariant() done in LinkedList<T>
             *  so only called when WE call Invariant().
             */
-        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this](ForwardIterator* ai) {
+        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator* ai) {
             Assert (ai->_fData == this);
         });
     }
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
             *      Only here can we iterate over each iterator and calls its Invariant()
             *  since now we've completed any needed patching.
             */
-        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this](ForwardIterator* ai) {
+        this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this] (ForwardIterator* ai) {
             Assert (ai->_fData == this);
             ai->Invariant ();
         });

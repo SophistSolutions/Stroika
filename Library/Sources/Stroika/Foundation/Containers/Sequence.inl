@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Containers {
         return Private::ThreeWayCompare_<T, ELEMENT_COMPARER> (*this, rhs, comparer);
     }
     template <typename T>
-    inline Sequence<T> Sequence<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
+    inline Sequence<T> Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const
     {
         return Iterable<T>::Where (doToElement, Sequence<T>{});
     }
@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Containers {
         return this->IsEmpty () ? optional<T>{} : GetAt (0);
     }
     template <typename T>
-    inline optional<T> Sequence<T>::First (const function<bool(ArgByValueType<T>)>& that) const
+    inline optional<T> Sequence<T>::First (const function<bool (ArgByValueType<T>)>& that) const
     {
         return inherited::First (that);
     }
@@ -367,7 +367,7 @@ namespace Stroika::Foundation::Containers {
         return this->IsEmpty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
     }
     template <typename T>
-    inline optional<T> Sequence<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
+    inline optional<T> Sequence<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
     {
         // @todo when we have reverse iterators - we could implement this more efficiently by walking the sequence backwards
         return inherited::Last (that);

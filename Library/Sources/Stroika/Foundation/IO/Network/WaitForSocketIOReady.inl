@@ -19,7 +19,7 @@ namespace Stroika::Foundation::IO::Network {
      */
     template <typename SOCKET_SUBTYPE>
     WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitForSocketIOReady (const Traversal::Iterable<SOCKET_SUBTYPE>& sockets, const TypeOfMonitorSet& flags)
-        : inherited (sockets.template Select<Socket::PlatformNativeHandle> ([](const Socket::Ptr& s) { return s.GetNativeSocket (); }), flags)
+        : inherited (sockets.template Select<Socket::PlatformNativeHandle> ([] (const Socket::Ptr& s) { return s.GetNativeSocket (); }), flags)
     {
         for (SOCKET_SUBTYPE i : sockets) {
             fMapping_.Add (i, i.GetNativeSocket ());
@@ -27,7 +27,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     template <typename SOCKET_SUBTYPE>
     WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitForSocketIOReady (const Traversal::Iterable<pair<SOCKET_SUBTYPE, TypeOfMonitorSet>>& fds)
-        : inherited (fds.template Select<pair<Socket::PlatformNativeHandle, TypeOfMonitorSet>> ([](const pair<SOCKET_SUBTYPE, TypeOfMonitorSet>& p) { return pair<Socket::PlatformNativeHandle, TypeOfMonitorSet>{p.first.GetNativeSocket (), p.second}; }))
+        : inherited (fds.template Select<pair<Socket::PlatformNativeHandle, TypeOfMonitorSet>> ([] (const pair<SOCKET_SUBTYPE, TypeOfMonitorSet>& p) { return pair<Socket::PlatformNativeHandle, TypeOfMonitorSet>{p.first.GetNativeSocket (), p.second}; }))
     {
         for (SOCKET_SUBTYPE i : fds) {
             fMapping_.Add (i, i.GetNativeSocket ());

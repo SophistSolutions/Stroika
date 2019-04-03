@@ -59,7 +59,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     uint8_t minor = 0;
 
     // Helper to throw if out of range
-    auto my_wcstol_ = [=](const wchar_t* i, wchar_t** endResult) -> uint8_t {
+    auto my_wcstol_ = [=] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ())
             [[UNLIKELY_ATTR]]

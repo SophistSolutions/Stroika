@@ -46,7 +46,7 @@ namespace {
                 {
                     bool created = false;
                     try {
-                        fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created](Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
                     catch (...) {
                         DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", testDBFile.c_str (), Characters::ToString (current_exception ()).c_str ());
@@ -63,7 +63,7 @@ namespace {
                 {
                     bool created = false;
                     try {
-                        fDB_ = make_unique<Database::SQLite::Connection> (Database::SQLite::Connection::eInMemoryDB, [&created](Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = make_unique<Database::SQLite::Connection> (Database::SQLite::Connection::eInMemoryDB, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
                     catch (...) {
                         DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
@@ -80,7 +80,7 @@ namespace {
                 nonvirtual DB& operator= (const DB&) = delete;
                 nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const Optional<String>& ScanLabel, ScanKindType_ scanKind, const Optional<SpectrumType_>& rawSpectrum)
                 {
-                    String insertSQL = [&]() {
+                    String insertSQL = [&] () {
                         StringBuilder sb;
                         sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
                         sb += L"select ";
@@ -128,7 +128,7 @@ namespace {
                 static void InitialSetup_ (Database::SQLite::Connection& db)
                 {
                     TraceContextBumper ctx ("ScanDB_::DB::InitialSetup_");
-                    auto               tableSetup_ScanTypes = [&db]() {
+                    auto               tableSetup_ScanTypes = [&db] () {
                         db.Exec (L"create table 'ScanTypes' "
                                  L"("
                                  L"ScanTypeId tinyint Primary Key,"
@@ -138,7 +138,7 @@ namespace {
                         db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
                         db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
                     };
-                    auto tableSetup_Scans = [&db]() {
+                    auto tableSetup_Scans = [&db] () {
                         db.Exec (
                             L"create table 'Scans'"
                             L"("
@@ -150,7 +150,7 @@ namespace {
                             L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
                             L");");
                     };
-                    auto tableSetup_ScanSets = [&db]() {
+                    auto tableSetup_ScanSets = [&db] () {
                         db.Exec (
                             L"Create table ScanSet"
                             L"("
@@ -159,7 +159,7 @@ namespace {
                             L"Foreign key (ScanIdRef) References Scans(ScanId)"
                             L");");
                     };
-                    auto tableSetup_AuxData = [&db]() {
+                    auto tableSetup_AuxData = [&db] () {
                         db.Exec (
                             L"Create table AuxData"
                             L"("
@@ -168,7 +168,7 @@ namespace {
                             L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
                             L");");
                     };
-                    auto tableSetup_ExtraForeignKeys = [&db]() {
+                    auto tableSetup_ExtraForeignKeys = [&db] () {
                         db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references  ScanSet(ScanSetID);");
                         db.Exec (L"Alter table Scans add column RawScanData BLOB;");
                     };
@@ -185,7 +185,7 @@ namespace {
         {
             using namespace PRIVATE_;
             TraceContextBumper ctx ("ScanDB::DB::RunTest");
-            auto               test = [](PRIVATE_::DB& db, unsigned nTimesRanBefore) {
+            auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
                     Statement s{db.fDB_.get (), L"select * from ScanTypes;"};

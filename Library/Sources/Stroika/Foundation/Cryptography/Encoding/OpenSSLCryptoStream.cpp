@@ -352,32 +352,32 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key,
     bool nopad = false;
     switch (alg) {
         case CipherAlgorithm::eRC2_CBC: {
-            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
                 ApplySettings2CTX_ (ctx, ::EVP_rc2_cbc (), d, nopad, true, key, initialIV);
             };
         } break;
         case CipherAlgorithm::eRC2_ECB: {
-            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
                 ApplySettings2CTX_ (ctx, ::EVP_rc2_ecb (), d, nopad, true, key, initialIV);
             };
         } break;
         case CipherAlgorithm::eRC2_CFB: {
-            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
                 ApplySettings2CTX_ (ctx, ::EVP_rc2_cfb (), d, nopad, true, key, initialIV);
             };
         } break;
         case CipherAlgorithm::eRC2_OFB: {
-            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
                 ApplySettings2CTX_ (ctx, ::EVP_rc2_ofb (), d, nopad, true, key, initialIV);
             };
         } break;
         case CipherAlgorithm::eRC4: {
-            fInitializer = [nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
                 ApplySettings2CTX_ (ctx, ::EVP_rc4 (), d, nopad, true, key, initialIV);
             };
         } break;
         default: {
-            fInitializer = [alg, nopad, key, initialIV](EVP_CIPHER_CTX* ctx, Direction d) {
+            fInitializer = [alg, nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
                 ApplySettings2CTX_ (ctx, Convert2OpenSSL (alg), d, nopad, false, key, initialIV);
             };
             break;

@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers {
         Remove (i);
     }
     template <typename T>
-    inline Collection<T> Collection<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
+    inline Collection<T> Collection<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const
     {
         return Iterable<T>::Where (doToElement, Collection<T>{});
     }

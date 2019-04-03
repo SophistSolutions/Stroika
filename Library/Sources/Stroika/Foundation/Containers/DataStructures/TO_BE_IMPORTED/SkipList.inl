@@ -322,7 +322,7 @@ void SkipList<KEY, VALUE, TRAITS>::Optimize ()
     size_t height[kMaxLinkHeight];
     size_t lastValidHeight = 0;
     for (size_t i = 0; i < sizeof (height) / sizeof (size_t); ++i) {
-        height[i] = size_t (pow (indexBase, double(i)));
+        height[i] = size_t (pow (indexBase, double (i)));
 
         if (height[i] == 0 or height[i] > GetLength ()) {
             Assert (i > 0); // else have no valid heights

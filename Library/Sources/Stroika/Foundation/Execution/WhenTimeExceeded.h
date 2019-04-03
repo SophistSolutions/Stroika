@@ -23,13 +23,13 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      */
     struct WhenTimeExceeded {
-        WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType)>& f);
+        WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void (Time::DurationSecondsType)>& f);
         ~WhenTimeExceeded ();
 
     private:
-        Time::DurationSecondsType                 fStartedAt_;
-        Time::DurationSecondsType                 fCallIfTakesLongerThan_;
-        function<void(Time::DurationSecondsType)> fRunIfTakesTooLong;
+        Time::DurationSecondsType                  fStartedAt_;
+        Time::DurationSecondsType                  fCallIfTakesLongerThan_;
+        function<void (Time::DurationSecondsType)> fRunIfTakesTooLong;
     };
 
 }

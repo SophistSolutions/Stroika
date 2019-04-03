@@ -128,7 +128,7 @@ void Treap<KEY, VALUE, TRAITS>::Prioritize (Node* n)
 #define qUseSplayStyleZigZigWhenCan 0
 
 #if qUseSplayStyleZigZigWhenCan
-    auto OtherChild = [](Node* parent, Node* child) -> Node* {
+    auto OtherChild = [] (Node* parent, Node* child) -> Node* {
         RequireNotNull (parent);
         RequireNotNull (child);
         Require (parent->fLeft == child or parent->fRight == child);
@@ -258,7 +258,7 @@ void Treap<KEY, VALUE, TRAITS>::RemoveNode (Node* n)
 template <typename KEY, typename VALUE, typename TRAITS>
 void Treap<KEY, VALUE, TRAITS>::RemoveAll ()
 {
-    std::function<void(Node*)> DeleteANode = [&DeleteANode](Node* n) {
+    std::function<void (Node*)> DeleteANode = [&DeleteANode] (Node* n) {
         if (n != nullptr) {
             DeleteANode (n->fLeft);
             DeleteANode (n->fRight);
@@ -346,7 +346,7 @@ void Treap<KEY, VALUE, TRAITS>::Optimize ()
     int    curIndex = 0;
 
     // stuff the array with the nodes. Better if have iterator support
-    std::function<void(Node*)> AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex](Node* n) {
+    std::function<void (Node*)> AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n) {
         if (n->fLeft != nullptr) {
             AssignNodeToArray (n->fLeft);
         }
@@ -360,10 +360,10 @@ void Treap<KEY, VALUE, TRAITS>::Optimize ()
 
     // from now on, working with an array (nodeList) that has all the tree nodes in sorted order
     size_t kMaxPriority = size_t (-1);
-    size_t maxHeight    = size_t (log (double(GetLength ())) / log (2.0) + .5) + 1;
+    size_t maxHeight    = size_t (log (double (GetLength ())) / log (2.0) + .5) + 1;
     size_t bucketSize   = kMaxPriority / maxHeight;
 
-    std::function<Node*(int startIndex, int endIndex)> Balance = [&Balance, &nodeList, &bucketSize, &maxHeight](int startIndex, int endIndex) -> Node* {
+    std::function<Node*(int startIndex, int endIndex)> Balance = [&Balance, &nodeList, &bucketSize, &maxHeight] (int startIndex, int endIndex) -> Node* {
         Require (startIndex <= endIndex);
         if (startIndex == endIndex) {
             Node* n      = nodeList[startIndex];
@@ -483,7 +483,7 @@ void Treap<KEY, VALUE, TRAITS>::ValidateAll () const
 template <typename KEY, typename VALUE, typename TRAITS>
 void Treap<KEY, VALUE, TRAITS>::ListAll () const
 {
-    std::function<void(Node*)> ListNode = [&ListNode](Node* n) {
+    std::function<void (Node*)> ListNode = [&ListNode] (Node* n) {
         if (n->fLeft != nullptr) {
             ListNode (n->fLeft);
         }

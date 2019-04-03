@@ -55,7 +55,7 @@ public:
         }
     }
     ~Rep_ () = default;
-    void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+    void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
         fFoundCallbacks_.push_back (callOnFinds);
@@ -65,7 +65,7 @@ public:
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
         }
-        fThread_ = Execution::Thread::New ([this, serviceType]() { DoRun_ (serviceType); }, Execution::Thread::eAutoStart, String_Constant{L"SSDP Searcher"});
+        fThread_ = Execution::Thread::New ([this, serviceType] () { DoRun_ (serviceType); }, Execution::Thread::eAutoStart, String_Constant{L"SSDP Searcher"});
     }
     void Stop ()
     {
@@ -180,10 +180,10 @@ public:
     }
 
 private:
-    recursive_mutex                                      fCritSection_;
-    vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
-    Collection<ConnectionlessSocket::Ptr>                fSockets_;
-    Execution::Thread::CleanupPtr                        fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    recursive_mutex                                       fCritSection_;
+    vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
+    Collection<ConnectionlessSocket::Ptr>                 fSockets_;
+    Execution::Thread::CleanupPtr                         fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
@@ -199,13 +199,13 @@ Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
 {
 }
 
-Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : Search (ipVersion)
 {
     AddOnFoundCallback (callOnFinds);
 }
 
-Search::Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : Search (callOnFinds, ipVersion)
 {
     Start (initialSearch);
@@ -216,7 +216,7 @@ Search::~Search ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void Search::AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
+void Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }

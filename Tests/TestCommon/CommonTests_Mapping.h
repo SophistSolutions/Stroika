@@ -31,12 +31,12 @@ namespace CommonTests {
                 , fValueEqualsComparer (valueEqualsComparer)
             {
             }
-            using ConcreteContainerType                                             = CONCRETE_CONTAINER;
-            using ArchetypeContainerType                                            = typename CONCRETE_CONTAINER::ArchetypeContainerType;
-            using key_type                                                          = typename CONCRETE_CONTAINER::key_type;
-            using mapped_type                                                       = typename CONCRETE_CONTAINER::mapped_type;
-            function<void(const ArchetypeContainerType&)> ApplyToContainerExtraTest = [](const ArchetypeContainerType&) {};
-            using ValueEqualsCompareFunctionType                                    = VALUE_EQUALS_COMPARER_TYPE;
+            using ConcreteContainerType                                              = CONCRETE_CONTAINER;
+            using ArchetypeContainerType                                             = typename CONCRETE_CONTAINER::ArchetypeContainerType;
+            using key_type                                                           = typename CONCRETE_CONTAINER::key_type;
+            using mapped_type                                                        = typename CONCRETE_CONTAINER::mapped_type;
+            function<void (const ArchetypeContainerType&)> ApplyToContainerExtraTest = [] (const ArchetypeContainerType&) {};
+            using ValueEqualsCompareFunctionType                                     = VALUE_EQUALS_COMPARER_TYPE;
 
             FACTORY                    Factory;
             VALUE_EQUALS_COMPARER_TYPE fValueEqualsComparer;

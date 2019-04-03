@@ -73,7 +73,7 @@ void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
 Exception TranslateBoostFilesystemException2StandardExceptions (const boost::filesystem::filesystem_error& e)
 {
     // translate error code
-    auto mapCat = [&]() -> const error_category& {
+    auto mapCat = [&] () -> const error_category& {
         if (e.code ().category () == boost::system::generic_category ()) {
             return generic_category ();
         }

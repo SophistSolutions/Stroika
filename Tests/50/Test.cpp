@@ -164,7 +164,7 @@ namespace {
         outTo << endl;
     }
 
-    DurationSecondsType RunTest_ (function<void()> t, unsigned int runCount)
+    DurationSecondsType RunTest_ (function<void ()> t, unsigned int runCount)
     {
 #if 1
         const size_t                                  kNParts2Divide_{10};
@@ -190,12 +190,12 @@ namespace {
     }
 
     // return true if test failed (slower than expected)
-    bool Tester (String           testName,
-                 function<void()> baselineT, String baselineTName,
-                 function<void()> compareWithT, String compareWithTName,
-                 unsigned int                                                                                                                                                                                   runCount,
-                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
-                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
+    bool Tester (String            testName,
+                 function<void ()> baselineT, String baselineTName,
+                 function<void ()> compareWithT, String compareWithTName,
+                 unsigned int                                                                                                                                                                                    runCount,
+                 double                                                                                                                                                                                          warnIfPerformanceScoreHigherThan,
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s, runCount=%d", testName.c_str (), runCount)};
 #if qDebug
@@ -205,7 +205,7 @@ namespace {
         DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
 #if qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int(runCount / baselineTime) << endl;
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
         }
 #endif
         printResults (testName, baselineTName, compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
@@ -218,10 +218,10 @@ namespace {
     }
     bool Tester (String              testName,
                  DurationSecondsType baselineTime,
-                 function<void()> compareWithT, String compareWithTName,
-                 unsigned int                                                                                                                                                                                   runCount,
-                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
-                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
+                 function<void ()> compareWithT, String compareWithTName,
+                 unsigned int                                                                                                                                                                                    runCount,
+                 double                                                                                                                                                                                          warnIfPerformanceScoreHigherThan,
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s, runCount=%d", testName.c_str (), runCount)};
 #if qDebug
@@ -231,7 +231,7 @@ namespace {
         DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
 #if qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int(runCount / baselineTime) << endl;
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
         }
 #endif
         printResults (testName, Characters::Format (L"%f seconds", baselineTime), compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
@@ -243,25 +243,25 @@ namespace {
 #endif
     }
 
-    void Tester (String           testName,
-                 function<void()> compareWithT, String compareWithTName,
-                 unsigned int                                                                                                                                                                                   runCount,
-                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
-                 Set<String>*                                                                                                                                                                                   failedTestAccumulator,
-                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
+    void Tester (String            testName,
+                 function<void ()> compareWithT, String compareWithTName,
+                 unsigned int                                                                                                                                                                                    runCount,
+                 double                                                                                                                                                                                          warnIfPerformanceScoreHigherThan,
+                 Set<String>*                                                                                                                                                                                    failedTestAccumulator,
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
-        DurationSecondsType baselineTime = 1 / double(runCount);
+        DurationSecondsType baselineTime = 1 / double (runCount);
         if (Tester (testName, baselineTime, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
         }
     }
-    void Tester (String           testName,
-                 function<void()> baselineT, String baselineTName,
-                 function<void()> compareWithT, String compareWithTName,
-                 unsigned int                                                                                                                                                                                   runCount,
-                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
-                 Set<String>*                                                                                                                                                                                   failedTestAccumulator,
-                 function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
+    void Tester (String            testName,
+                 function<void ()> baselineT, String baselineTName,
+                 function<void ()> compareWithT, String compareWithTName,
+                 unsigned int                                                                                                                                                                                    runCount,
+                 double                                                                                                                                                                                          warnIfPerformanceScoreHigherThan,
+                 Set<String>*                                                                                                                                                                                    failedTestAccumulator,
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
@@ -297,7 +297,7 @@ namespace {
         for (size_t i = 1; i < 10; ++i) {
             v.push_back (s2);
         }
-        sort (v.begin (), v.end (), [](S a, S b) {
+        sort (v.begin (), v.end (), [] (S a, S b) {
             return b.fS1 < a.fS1;
         });
         VerifyTestResult (v[0].fS1 == v[1].fS1);
@@ -337,7 +337,7 @@ namespace {
         for (size_t i = 1; i < 10; ++i) {
             v.push_back (s2);
         }
-        sort (v.begin (), v.end (), [](S a, S b) {
+        sort (v.begin (), v.end (), [] (S a, S b) {
             return b.fS1 < a.fS1;
         });
         VerifyTestResult (v[0].fS1 == v[1].fS1);
@@ -429,7 +429,7 @@ namespace {
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
         mutex Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
         int   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
-        void  Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (function<void(int*)> doInsideLock)
+        void  Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (function<void (int*)> doInsideLock)
         {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
@@ -438,8 +438,8 @@ namespace {
             lock_guard<mutex> critSec (Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex);
             doInsideLock (&Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int);
         }
-        shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int(1));
-        void            Test_MutexVersusSharedPtrCopy_SharedPtrCopy (function<void(int*)> doInsideLock)
+        shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int (1));
+        void            Test_MutexVersusSharedPtrCopy_SharedPtrCopy (function<void (int*)> doInsideLock)
         {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
@@ -481,25 +481,25 @@ namespace {
 
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
         int             COUNTER             = 1;
-        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int(1));
-        void            Test_stdsharedptr_use_ (function<void(int*)> doInsideLock)
+        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        void            Test_stdsharedptr_use_ (function<void (int*)> doInsideLock)
         {
             shared_ptr<int> tmp = s_stdSharedPtr2Copy;
             doInsideLock (tmp.get ());
         }
         void Test_stdsharedptr_alloc_ ()
         {
-            s_stdSharedPtr2Copy = shared_ptr<int> (new int(1));
+            s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
         }
-        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int(1));
-        void           Test_MemorySharedPtr_use_ (function<void(int*)> doInsideLock)
+        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        void           Test_MemorySharedPtr_use_ (function<void (int*)> doInsideLock)
         {
             SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
             doInsideLock (tmp.get ());
         }
         void Test_MemorySharedPtr_alloc_ ()
         {
-            s_MemorySharedPtr2Copy = SharedPtr<int> (new int(1));
+            s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
         }
         void Test_ACCUM (int* i)
         {
@@ -542,13 +542,13 @@ namespace {
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
         mutex s_Mutex_;
         int   sCnt2Add_ = 1;
-        void  Test_MutexVersusSpinLock_MUTEXT_LOCK (function<void(int*)> doInsideLock)
+        void  Test_MutexVersusSpinLock_MUTEXT_LOCK (function<void (int*)> doInsideLock)
         {
             lock_guard<mutex> critSec (s_Mutex_);
             doInsideLock (&sCnt2Add_);
         }
         SpinLock s_SpinLock_;
-        void     Test_MutexVersusSpinLock_SPINLOCK_LOCK (function<void(int*)> doInsideLock)
+        void     Test_MutexVersusSpinLock_SPINLOCK_LOCK (function<void (int*)> doInsideLock)
         {
             lock_guard<SpinLock> critSec (s_SpinLock_);
             doInsideLock (&sCnt2Add_);
@@ -730,7 +730,7 @@ namespace {
         }
     }
     template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
-    void Test_CollectionVectorAdditionsAndCopies_ (function<void(CONTAINER* c)> f2Add)
+    void Test_CollectionVectorAdditionsAndCopies_ (function<void (CONTAINER* c)> f2Add)
     {
         CONTAINER c;
         for (int i = 0; i < 500; ++i) {
@@ -1369,8 +1369,8 @@ namespace {
 #endif
         Tester (
             L"wstringstream versus BasicTextOutputStream",
-            []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
-            []() { Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([](const MemStreamOfChars_& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
+            [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
+            [] () { Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
             210000,
             1.3,
             &failedTests);
@@ -1378,8 +1378,8 @@ namespace {
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus StringBuilder",
-            []() { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream& w) { return w.str (); }); }, L"wstringstream",
-            []() { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
+            [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
+            [] () { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([] (const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
             220000,
             .18,
             &failedTests);
@@ -1422,15 +1422,15 @@ namespace {
             &failedTests);
         Tester (
             L"Collection<int> basics",
-            []() { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
-            []() { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) { c->Add (2); }); }, L"Collection<int>",
+            [] () { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([] (vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
+            [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([] (Collection<int>* c) { c->Add (2); }); }, L"Collection<int>",
             113000,
             4.4,
             &failedTests);
         Tester (
             L"Collection<string> basics",
-            []() { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
-            []() { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
+            [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+            [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
             9600,
             0.6,
             &failedTests);
@@ -1485,7 +1485,7 @@ namespace {
 
         if (not failedTests.empty ()) {
             String listAsMsg;
-            failedTests.Apply ([&listAsMsg](String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
+            failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
                 Stroika::TestHarness::WarnTestIssue ((L"At least one test failed expected time constaint (see above): " + listAsMsg).AsNarrowSDKString ().c_str ());
             }

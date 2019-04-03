@@ -69,7 +69,7 @@ public:
         StartResponder_ ();
 
         IO::Network::LinkMonitor lm;
-        lm.AddCallback ([this](IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
+        lm.AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Basic SSDP server - LinkMonitor callback", L"lc = %d, netName=%s, ipNum=%s", lc, netName.c_str (), ipNum.c_str ())};
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
                 this->Restart_ ();
@@ -98,7 +98,7 @@ public:
     void StartNotifier_ ()
     {
         fNotifierThread_ = Thread::New (
-            [this]() {
+            [this] () {
                 PeriodicNotifier l;
                 l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
             },
@@ -107,7 +107,7 @@ public:
     void StartResponder_ ()
     {
         fSearchResponderThread_ = Thread::New (
-            [this]() {
+            [this] () {
                 SearchResponder sr;
                 sr.Run (GetAdjustedAdvertisements_ ());
             },

@@ -798,14 +798,14 @@ namespace {
                     v.fUsedSizeInBytes         = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
                     v.fAvailableSizeInBytes    = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if qUseWMICollectionSupport_
-                    auto safePctInUse2QL_ = [](double pctInUse) {
+                    auto safePctInUse2QL_ = [] (double pctInUse) {
                         // %InUse = QL / (1 + QL).
                         pctInUse /= 100;
                         pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
                         return pctInUse / (1 - pctInUse);
                     };
                     if (fOptions_.fIOStatistics) {
-                        String wmiInstanceName = mfinfo.fMountedOn.RTrim ([](Characters::Character c) { return c == '\\'; });
+                        String wmiInstanceName = mfinfo.fMountedOn.RTrim ([] (Characters::Character c) { return c == '\\'; });
                         fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;
@@ -1031,7 +1031,7 @@ namespace {
 ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
 {
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
+    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
         mapper.AddCommonType<optional<BlockDeviceKind>> ();

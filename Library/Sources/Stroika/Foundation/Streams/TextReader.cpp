@@ -237,7 +237,7 @@ protected:
 
         // if not already cached, add to cache, and then return the data
         SeekOffsetType origOffset       = _fOffset;
-        auto           pushIntoCacheBuf = [origOffset, this](Character* bufStart, Character* bufEnd) {
+        auto           pushIntoCacheBuf = [origOffset, this] (Character* bufStart, Character* bufEnd) {
             size_t n            = bufEnd - bufStart;
             size_t newCacheSize = static_cast<size_t> (origOffset + n);
             Assert (fCache_.size () == static_cast<size_t> (origOffset));

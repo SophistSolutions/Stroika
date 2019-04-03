@@ -15,7 +15,7 @@ using namespace Stroika::Frameworks::WebServer;
  ************************* WebServer::RequestHandler ****************************
  ********************************************************************************
  */
-RequestHandler::RequestHandler (const function<void(Request* request, Response* response)>& f)
-    : RequestHandler{[f](Message* message) { f (message->PeekRequest (), message->PeekResponse ()); }}
+RequestHandler::RequestHandler (const function<void (Request* request, Response* response)>& f)
+    : RequestHandler{[f] (Message* message) { f (message->PeekRequest (), message->PeekResponse ()); }}
 {
 }

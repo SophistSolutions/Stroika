@@ -412,12 +412,12 @@ namespace {
             }
         }
         {
-            auto roundTripD = [](DateTime dt) {
+            auto roundTripD = [] (DateTime dt) {
                 String   s   = dt.Format (DateTime::PrintFormat::eRFC1123);
                 DateTime dt2 = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
                 VerifyTestResult (dt == dt2);
             };
-            auto roundTripS = [](String s) {
+            auto roundTripS = [] (String s) {
                 DateTime dt = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
                 VerifyTestResult (dt.Format (DateTime::PrintFormat::eRFC1123) == s);
             };

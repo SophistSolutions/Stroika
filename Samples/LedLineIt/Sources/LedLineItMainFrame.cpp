@@ -306,7 +306,7 @@ void LedLineItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL b
                     continue;
                 }
             }
-            prevItemSep = bool(state.m_nID == 0);
+            prevItemSep = bool (state.m_nID == 0);
             state.m_nIndex++;
         }
         // if LAST item is a separator - remove THAT

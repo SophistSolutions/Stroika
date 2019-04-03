@@ -22,12 +22,12 @@ using namespace StroikaSample::WebServices::Model;
 
 DISABLE_COMPILER_MSC_WARNING_START (4573);
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = []() {
+const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
     ObjectVariantMapper mapper;
 
     // Read/Write real/complex numbers
     mapper.Add<Number> (
-        []([[maybe_unused]] const ObjectVariantMapper& mapper, const Number* obj) -> VariantValue {
+        [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const Number* obj) -> VariantValue {
             Lambda_Arg_Unused_BWA (mapper);
             static const Float2StringOptions kFloat2StringOptions_{};
             StringBuilder                    sb;
@@ -60,7 +60,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = []() {
             }
             return sb.str ();
         },
-        []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& vv, Number* intoObj) -> void {
+        [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& vv, Number* intoObj) -> void {
             Lambda_Arg_Unused_BWA (mapper);
             // Parse complex numbers of the form a + bi, handling special cases of a, and bi.
             // Trick: parse one number, and then accumulate second number (if any)

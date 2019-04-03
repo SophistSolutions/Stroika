@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Math::ReBin {
             using XType           = typename DATA_DESCRIPTOR_TYPE::XType;
             auto myContext        = make_shared<BucketIndexType> (0);
             auto bucketCount      = d.GetBucketCount ();
-            auto getNext          = [myContext, bucketCount, d]() -> optional<Range<XType>> {
+            auto getNext          = [myContext, bucketCount, d] () -> optional<Range<XType>> {
                 /*
                     * Intentionally skip empty range elements, as legal in ReBin () - but which make
                     * the set not technically a partition.
