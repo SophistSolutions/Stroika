@@ -190,7 +190,7 @@ namespace Stroika::Foundation::IO::Network {
      *************************************** URI ************************************
      ********************************************************************************
      */
-    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& relPath, const String& query, const String& fragment)
+    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const optional<String>& relPath, const optional<String>& query, const optional<String>& fragment)
         : fScheme_{scheme}
         , fAuthority_{authority}
         , fRelPath_{relPath}

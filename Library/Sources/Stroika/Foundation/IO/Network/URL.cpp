@@ -5,6 +5,7 @@
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
+#include "../../Characters/RegularExpression.h"
 #include "../../Characters/String2Int.h"
 #include "../../Characters/ToString.h"
 #include "../../Execution/Exceptions.h"
@@ -211,7 +212,6 @@ optional<URL::Authority> URL::Authority::Parse (const String& rawURLAuthorityTex
  ********************************************************************************
  */
 URL::URL (const String& urlText, ParseOptions po)
-    : URL ()
 {
     *this = Parse (urlText, po);
 }
@@ -723,14 +723,25 @@ http://ABC.com:/%7esmith/home.html
  ************************************** URI *************************************
  ********************************************************************************
  */
-
-#if 0
 URI URI::Parse (const String& rawURL)
 {
-    // https://tools.ietf.org/html/rfc3986#appendix-B
-    return URI{};
-}
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper{L"IO::Network::URI::Parse", L"%s", rawURL.c_str ()};
 #endif
+    // https://tools.ietf.org/html/rfc3986#appendix-B
+    static const RegularExpression kParseURLRegExp_{L"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
+    optional<String>               scheme;
+    optional<String>               authority;
+    optional<String>               path;
+    optional<String>               query;
+    optional<String>               fragment;
+    if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+		return URI{ scheme, Authority::Parse (authority.value_or (String{})), path, query, fragment };
+	}
+    else {
+        Execution::Throw (Execution::RuntimeErrorException (L"Ill-formed URI"sv)); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
+    }
+}
 
 template <>
 String URI::As () const

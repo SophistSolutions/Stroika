@@ -576,7 +576,7 @@ namespace Stroika::Foundation::IO::Network {
          *  These will raise exceptions if anything illegal in the URL specification.
          */
         URI () = default;
-        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& relPath = String{}, const String& query = String{}, const String& fragment = String{});
+        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const optional<String>& relPath = {}, const optional<String>& query = {}, const optional<String>& fragment = {});
         URI (const URL& url);
 
     public:
