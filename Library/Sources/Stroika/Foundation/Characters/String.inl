@@ -15,6 +15,8 @@
 #include "../Execution/ModuleInit.h"
 #include "../Execution/Throw.h"
 
+#include "RegularExpression.h"
+
 namespace Stroika::Foundation::Characters {
 
     /*
