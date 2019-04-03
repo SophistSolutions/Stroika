@@ -334,10 +334,10 @@ namespace Stroika::Foundation::Characters {
     }
     namespace Private_ {
         // match index starts with 1 (and requres match.size () >=2)
-		inline void ExtractMatches_ ([[maybe_unused]] const wsmatch& base_match, [[maybe_unused]] size_t currentUnpackIndex)
-		{
-		}
-		template <typename... OPTIONAL_STRINGS>
+        inline void ExtractMatches_ ([[maybe_unused]] const wsmatch& base_match, [[maybe_unused]] size_t currentUnpackIndex)
+        {
+        }
+        template <typename... OPTIONAL_STRINGS>
         void ExtractMatches_ (const wsmatch& base_match, size_t currentUnpackIndex, optional<String>* subMatchI, OPTIONAL_STRINGS&&... remainingSubmatches)
         {
             if (currentUnpackIndex < base_match.size ()) {
