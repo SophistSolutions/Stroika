@@ -335,7 +335,6 @@ namespace Stroika::Foundation::Characters {
         template <typename... OPTIONAL_STRINGS>
         void ExtractMatches_ (const wsmatch& base_match, size_t currentUnpackIndex, optional<String>* subMatchI, OPTIONAL_STRINGS&&... remainingSubmatches)
         {
-            RequireNotNull (subMatchI);
             if (currentUnpackIndex < base_match.size ()) {
                 if (subMatchI != nullptr) {
                     *subMatchI = base_match[currentUnpackIndex].str ();
