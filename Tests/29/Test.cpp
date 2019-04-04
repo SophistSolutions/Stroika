@@ -101,7 +101,7 @@ namespace {
 #endif
 
             namespace {
-                inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]]const vector<byte>& bytes)
+                inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
 #if qPlatform_Windows && qHasFeature_ATLMFC
                     VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
