@@ -197,125 +197,128 @@ namespace {
                     //  Though the names of our attributes differ, and our results, somewhat differ...
                     {
                         URL url = URL::Parse (L"http://www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI);
-						VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-						VerifyTestResult (url.GetPortValue () == 80);
-						VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
-						VerifyTestResult (url.GetQueryString () == L"");
-						VerifyTestResult (url.GetFragment () == L"");
-						VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
-					}
+                        VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+                        VerifyTestResult (url.GetPortValue () == 80);
+                        VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
+                        VerifyTestResult (url.GetQueryString () == L"");
+                        VerifyTestResult (url.GetFragment () == L"");
+                        VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
+                    }
+#if 0
+                    // Unclear why this  (#if section/comment) is needed, but without it, clang-format screws up the indent level
+#endif
+                    {
+                        URL url{URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
+                        VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+                        VerifyTestResult (url.GetPortValue () == 80);
+                        VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
+                        VerifyTestResult (url.GetQueryString () == L"");
+                        VerifyTestResult (url.GetFragment () == L"");
+                        VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
+                    }
+                }
+                {
+                    URL url{URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
+                    VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+                    VerifyTestResult (url.GetPortValue () == 8080);
+                    VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
+                    VerifyTestResult (url.GetQueryString () == L"");
+                    VerifyTestResult (url.GetFragment () == L"");
+                    VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl:8080/%7Eguido/Python.html");
+                }
+                {
+                    URL url{URL::Parse (L"https://www.cwi.nl/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
+                    VerifyTestResult (url.GetScheme () == L"https");
+                    VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+                    VerifyTestResult (url.GetPortValue () == 443);
+                    VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
+                    VerifyTestResult (url.GetQueryString () == L"");
+                    VerifyTestResult (url.GetFragment () == L"");
+                    VerifyTestResult (url.GetFullURL () == L"https://www.cwi.nl/%7Eguido/Python.html");
+                }
+                {
+                    URL url = URL::Parse (L"Start.htm", URL::eAsRelativeURL);
+                    VerifyTestResult (url.GetHost ().empty ());
+                    VerifyTestResult (url.GetHostRelativePath () == L"Start.htm");
+                    VerifyTestResult (url.GetFragment ().empty ());
+                }
+                {
+                    URL url = URL::Parse (L"fred/Start.htm", URL::eAsRelativeURL);
+                    VerifyTestResult (url.GetHost ().empty ());
+                    VerifyTestResult (url.GetHostRelativePath () == L"fred/Start.htm");
+                    VerifyTestResult (url.GetFragment ().empty ());
+                }
+                if (false) {
+                    // https://stroika.atlassian.net/browse/STK-502
+                    URL url = URL::Parse (L"123.1.2.3:8080", URL::eFlexiblyAsUI);
+                    VerifyTestResult (url.GetHost () == L"123.1.2.3");
+                    VerifyTestResult (url.GetPortValue () == 8080);
+                    VerifyTestResult (url.GetHostRelativePath ().empty ());
+                    VerifyTestResult (url.GetFragment ().empty ());
+                }
+            }
+            void TestHostParsing_ ()
             {
-                URL url{URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-                VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                VerifyTestResult (url.GetPortValue () == 80);
-                VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
-                VerifyTestResult (url.GetQueryString () == L"");
-                VerifyTestResult (url.GetFragment () == L"");
-                VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
+                using Host = URL::Authority::Host;
+                VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncodedHostName () == L"127.0.0.1"sv));
+                VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncodedHostName () == L"169.254.0.1"sv));
+                VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncodedHostName () == L"[fe80::44de:4247:5b76:ddc9]"sv));
+                VerifyTestResult ((Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
+                VerifyTestResult ((Host{L"www.sophists.com"}.AsEncodedHostName () == L"www.sophists.com"sv));
+                VerifyTestResult ((Host{L"hello mom"}.AsEncodedHostName () == L"hello%20mom"sv));
+                VerifyTestResult ((Host::Parse (L"hello%20mom") == Host{L"hello mom"}));
+                {
+                    // negative tests - must throw
+                    try {
+                        Host::Parse (L"%%%");
+                        VerifyTestResult (false); // must throw
+                    }
+                    catch (const runtime_error&) {
+                    }
+                    try {
+                        Host::Parse (L"%a");
+                        VerifyTestResult (false); // must throw
+                    }
+                    catch (const runtime_error&) {
+                    }
+                    try {
+                        Host::Parse (L"%ag");
+                        VerifyTestResult (false); // must throw
+                    }
+                    catch (const runtime_error&) {
+                    }
+                }
+            }
+            void Test_NewURI_Class_ ()
+            {
+                {
+                    IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
+                    VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
+                    VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
+                }
+                {
+                    IO::Network::URI uri = IO::Network::URI::Parse (L"localhost:1234");
+                    //VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
+                    //VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
+                }
+                {
+                    IO::Network::URI uri = IO::Network::URI::Parse (L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
+                    VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"www.ics.uci.edu");
+                }
+                {
+                    IO::Network::URI uri = IO::Network::URI::Parse (L"/uri/#Related");
+                    VerifyTestResult (not uri.GetAuthority ().has_value ());
+                }
             }
         }
+        void DoTests_ ()
         {
-            URL url{URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-            VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-            VerifyTestResult (url.GetPortValue () == 8080);
-            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
-            VerifyTestResult (url.GetQueryString () == L"");
-            VerifyTestResult (url.GetFragment () == L"");
-            VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl:8080/%7Eguido/Python.html");
-        }
-        {
-            URL url{URL::Parse (L"https://www.cwi.nl/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-            VerifyTestResult (url.GetScheme () == L"https");
-            VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-            VerifyTestResult (url.GetPortValue () == 443);
-            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
-            VerifyTestResult (url.GetQueryString () == L"");
-            VerifyTestResult (url.GetFragment () == L"");
-            VerifyTestResult (url.GetFullURL () == L"https://www.cwi.nl/%7Eguido/Python.html");
-        }
-        {
-            URL url = URL::Parse (L"Start.htm", URL::eAsRelativeURL);
-            VerifyTestResult (url.GetHost ().empty ());
-            VerifyTestResult (url.GetHostRelativePath () == L"Start.htm");
-            VerifyTestResult (url.GetFragment ().empty ());
-        }
-        {
-            URL url = URL::Parse (L"fred/Start.htm", URL::eAsRelativeURL);
-            VerifyTestResult (url.GetHost ().empty ());
-            VerifyTestResult (url.GetHostRelativePath () == L"fred/Start.htm");
-            VerifyTestResult (url.GetFragment ().empty ());
-        }
-        if (false) {
-            // https://stroika.atlassian.net/browse/STK-502
-            URL url = URL::Parse (L"123.1.2.3:8080", URL::eFlexiblyAsUI);
-            VerifyTestResult (url.GetHost () == L"123.1.2.3");
-            VerifyTestResult (url.GetPortValue () == 8080);
-            VerifyTestResult (url.GetHostRelativePath ().empty ());
-            VerifyTestResult (url.GetFragment ().empty ());
+            Private_::TestBackCompatURL_ ();
+            Private_::BasicTests_AsOf21d22_ ();
+            Private_::TestHostParsing_ ();
+            Private_::Test_NewURI_Class_ ();
         }
     }
-    void TestHostParsing_ ()
-    {
-        using Host = URL::Authority::Host;
-        VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncodedHostName () == L"127.0.0.1"sv));
-        VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncodedHostName () == L"169.254.0.1"sv));
-        VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncodedHostName () == L"[fe80::44de:4247:5b76:ddc9]"sv));
-        VerifyTestResult ((Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
-        VerifyTestResult ((Host{L"www.sophists.com"}.AsEncodedHostName () == L"www.sophists.com"sv));
-        VerifyTestResult ((Host{L"hello mom"}.AsEncodedHostName () == L"hello%20mom"sv));
-        VerifyTestResult ((Host::Parse (L"hello%20mom") == Host{L"hello mom"}));
-        {
-            // negative tests - must throw
-            try {
-                Host::Parse (L"%%%");
-                VerifyTestResult (false); // must throw
-            }
-            catch (const runtime_error&) {
-            }
-            try {
-                Host::Parse (L"%a");
-                VerifyTestResult (false); // must throw
-            }
-            catch (const runtime_error&) {
-            }
-            try {
-                Host::Parse (L"%ag");
-                VerifyTestResult (false); // must throw
-            }
-            catch (const runtime_error&) {
-            }
-        }
-    }
-    void Test_NewURI_Class_ ()
-    {
-        {
-            IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
-            VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
-            VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
-        }
-        {
-            IO::Network::URI uri = IO::Network::URI::Parse (L"localhost:1234");
-            //VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
-            //VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
-        }
-        {
-            IO::Network::URI uri = IO::Network::URI::Parse (L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
-            VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"www.ics.uci.edu");
-        }
-        {
-            IO::Network::URI uri = IO::Network::URI::Parse (L"/uri/#Related");
-            VerifyTestResult (not uri.GetAuthority ().has_value ());
-        }
-    }
-}
-void DoTests_ ()
-{
-    Private_::TestBackCompatURL_ ();
-    Private_::BasicTests_AsOf21d22_ ();
-    Private_::TestHostParsing_ ();
-    Private_::Test_NewURI_Class_ ();
-}
-}
 }
 
 namespace {
