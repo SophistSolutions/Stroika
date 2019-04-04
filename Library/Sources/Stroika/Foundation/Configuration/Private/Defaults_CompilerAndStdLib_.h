@@ -1444,7 +1444,7 @@ namespace {
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
-// UNTESTED _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
+// VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
