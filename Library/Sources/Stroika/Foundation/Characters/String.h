@@ -824,33 +824,41 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see Find ()
          *  @see FindEachString ()
+         *  @see Match ()
          */
         nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
         nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
     public:
         /**
-         *  @todo CLEANUP DOCS
-         *
          *  \par Example Usage
          *      \code
-         *      const String_Constant kTest_    { L"a=b," };
-         *      const RegularExpression kRE_    { L"a=(.*)[, ]" };
-         *      Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
-         *      Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
-         *      Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
-         *      Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+         *          const String_Constant kTest_    { L"a=b," };
+         *          const RegularExpression kRE_    { L"a=(.*)[, ]" };
+         *          Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
+         *          Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+         *          Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+         *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
          *      \endcode
          *
-         *  \par Example Usage
-         *      \code
-         *      const String_Constant kTest_ { L"a=b, c=d" };
-         *      const RegularExpression kRE_ { L"(.)=(.)" };
-         *      Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
-         *      \endcode
-         *
+         *  @see Find ()
+         *  @see FindEachString ()
+         *  @see Match ()
          */
         nonvirtual vector<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
+
+        /**
+         *  \par Example Usage
+         *      \code
+         *          const String_Constant kTest_ { L"a=b, c=d" };
+         *          const RegularExpression kRE_ { L"(.)=(.)" };
+         *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
+         *      \endcode
+         *
+         *  @see Find ()
+         *  @see FindEachMatch ()
+         *  @see Match ()
+         */
         nonvirtual vector<String> FindEachString (const RegularExpression& regEx) const;
 
     public:
