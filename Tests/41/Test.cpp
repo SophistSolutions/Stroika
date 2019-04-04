@@ -94,7 +94,7 @@ namespace {
 namespace {
     namespace Test1_URL_Parsing_ {
         namespace Private_ {
-            void TestOldWinCracker_ (const String& w, const URL& url)
+            void TestOldWinCracker_ ([[maybe_unused]] const String& w, [[maybe_unused]] const URL& url)
             {
 #if qPlatform_Windows && qHasFeature_ATLMFC
                 {
