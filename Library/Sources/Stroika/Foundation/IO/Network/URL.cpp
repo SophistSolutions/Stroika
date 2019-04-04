@@ -736,7 +736,7 @@ URI URI::Parse (const String& rawURL)
     optional<String>               query;
     optional<String>               fragment;
     if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
-        return URI{scheme, Authority::Parse (authority.value_or (String{})), path, query, fragment};
+        return URI{scheme, Authority::Parse (authority.value_or (String{})), path.value_or (String{}), query, fragment};
     }
     else {
         Execution::Throw (Execution::RuntimeErrorException (L"Ill-formed URI"sv)); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B

@@ -114,7 +114,33 @@ namespace Stroika::Foundation::IO::Network {
          READ https://tools.ietf.org/html/rfc3986#section-4.2 more carefully
 
          AND NEED API TO GLUE FULL_URI with RELATIVE_URI () to produce a new FULL_URI
- 
+     *
+     *  \par Empty String versus optional 'missing' !has_value
+     *
+     *      For the various optional peices of a URL (or URI), we could represent this as
+     *      an empty string, or call the feature optional, and return nullopt.
+     *
+     *      We COULD allow for EITHER, but that would be clearly needlessly confusing.
+     *      PRO USE of optional
+     *          o   its the normal way (since C++17) to represent that something is there, or not (string empty is a throwback
+     *              sentinal value approach)
+     *          o   Some objects (like port#, or authority) have formatting constraints and using optional makes
+     *              clear that IF it exists its of the right form, and else it just doesn't exist (small point)
+     *      CONS USE of optional
+     *          o   Backward compatability with earlier versions of the API are a bit of a pain, as the old API used
+     *              string and string.empty () in many places.
+     *      Performance:
+     *          o   optional more often avoids allocating memory, but is larger, so probably a wash
+     *      Choice:
+     *          o   API will use optional<> for sub-elements of URL and URI that may or may not be present, and
+     *              if a string value is provoded (not nullopt) - then it MUST be a legal value (not empty typically).
+     *              So, for example, Authority.Get/SetUserInfo () - MUST be either nullopt or a non-empty string.
+     *          o   Exception - because the https://tools.ietf.org/html/rfc3986#page-11 explicitly says the path is not optional
+     *              
+     *              "A path is always defined for a URI, though the defined path may be empty (zero length)"
+     *
+     *              So the Path in Stroika does not use optional.
+     *
      *
      * TODO:
      *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
@@ -575,8 +601,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  These will raise exceptions if anything illegal in the URL specification.
          */
-        URI () = default;
-        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const optional<String>& relPath = {}, const optional<String>& query = {}, const optional<String>& fragment = {});
+        URI (const optional<SchemeType>& scheme = nullopt, const optional<Authority>& authority = nullopt, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const URL& url);
 
     public:
@@ -598,6 +623,12 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual optional<Authority> GetAuthority () const;
 
     public:
+        /*
+         *  The path MAY or MAY NOT start with a /, and it may be empty.
+         */
+        nonvirtual String GetPath () const;
+
+    public:
         /**
          *  Supported conversion-targets (T):
          *      String - converts to the raw URI format (as it would appear in a web-browser or html link)
@@ -615,7 +646,7 @@ namespace Stroika::Foundation::IO::Network {
     private:
         optional<String>    fScheme_;    // aka protocol
         optional<Authority> fAuthority_; // aka host+port+username
-        optional<String>    fRelPath_;   // must read docs on combinng urls - but this maybe required (though can be empty)
+        String              fPath_;      // must read docs on combinng urls - but this maybe required (though can be empty)
         optional<String>    fQuery_;     // ditto
         optional<String>    fFragment_;  // ditto
     };

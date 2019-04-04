@@ -64,8 +64,8 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline URL::Authority::Host URL::Authority::Host::Parse (const String& rawURLHostnameText)
     {
-        auto                 tmp{ParseRaw_ (rawURLHostnameText)};
-        URL::Authority::Host h;
+        pair<optional<String>, optional<InternetAddress>> tmp{ParseRaw_ (rawURLHostnameText)};
+        URL::Authority::Host                              h;
         h.fEncodedName_     = rawURLHostnameText;
         h.fRegisteredName_  = tmp.first;
         h.fInternetAddress_ = tmp.second;
@@ -190,10 +190,10 @@ namespace Stroika::Foundation::IO::Network {
      *************************************** URI ************************************
      ********************************************************************************
      */
-    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const optional<String>& relPath, const optional<String>& query, const optional<String>& fragment)
+    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path, const optional<String>& query, const optional<String>& fragment)
         : fScheme_{scheme}
         , fAuthority_{authority}
-        , fRelPath_{relPath}
+        , fPath_{path}
         , fQuery_{query}
         , fFragment_{fragment}
     {
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::IO::Network {
     inline URI::URI (const URL& url)
         : fScheme_{url.GetScheme ()}
         , fAuthority_{url.GetAuthority ()}
-        , fRelPath_{url.GetHostRelativePath ()}
+        , fPath_{url.GetHostRelativePath ()}
         , fQuery_{url.GetQueryString ()}
         , fFragment_{url.GetFragment ()}
     {
@@ -213,6 +213,10 @@ namespace Stroika::Foundation::IO::Network {
     inline optional<URI::Authority> URI::GetAuthority () const
     {
         return fAuthority_;
+    }
+    inline String URI::GetPath () const
+    {
+        return fPath_;
     }
 
     /*
