@@ -130,6 +130,7 @@
 #define _MS_VS_2k19_16Pt0Pt0pre3_ 192027323
 #define _MS_VS_2k19_16Pt0Pt0pre4_ 192027404
 #define _MS_VS_2k19_16Pt0Pt0pre43_ 192027508
+#define _MS_VS_2k19_16Pt0Pt0_ 192027508
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -148,9 +149,9 @@
 #endif
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt0_
 // check which pointer-version of MSVC2k17 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0pre43_
+#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0_
 // @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0-preview4.3 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -682,7 +683,7 @@ lose those deprecated interfaces.
 // verified broken _MS_VS_2k19_16Pt0Pt0pre2_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre3_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre4_
-// verified broken _MS_VS_2k19_16Pt0Pt0pre43_
+// verified broken _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
@@ -921,8 +922,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MSC_VER_2k19_16Pt0_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
-// still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (running from visual studio gui)
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre43_)
+// still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_) (running from visual studio gui)
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -972,7 +973,7 @@ WORKAROUND:
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
@@ -1198,7 +1199,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_
+// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 #define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
@@ -1326,7 +1327,7 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
-// UNTESTED _MS_VS_2k19_16Pt0Pt0pre43_
+// VERIFIED BROKEN IN _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
@@ -1443,7 +1444,7 @@ namespace {
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
-// UNTESTED _MS_VS_2k19_16Pt0Pt0pre43_
+// UNTESTED _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
