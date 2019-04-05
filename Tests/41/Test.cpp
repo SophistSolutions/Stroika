@@ -320,7 +320,8 @@ namespace {
                     VerifyTestResult (*uri.GetScheme () == L"dyn");
                     VerifyTestResult (not uri.GetAuthority ().has_value ());
                     VerifyTestResult (uri.GetPath () == L"/StyleSheet.css");
-                    VerifyTestResult (uri.GetQueryString () == L"ThemeName=Cupertino");
+                    VerifyTestResult (uri.GetQuery<String> () == L"ThemeName=Cupertino");
+                    VerifyTestResult (uri.GetQuery ()->operator() (L"ThemeName") == L"Cupertino");
                 }
             }
         }

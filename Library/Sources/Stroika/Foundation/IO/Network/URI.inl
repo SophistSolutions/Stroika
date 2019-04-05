@@ -38,18 +38,35 @@ namespace Stroika::Foundation::IO::Network {
     {
         return fScheme_;
     }
+    inline void URI::SetScheme (const optional<SchemeType>& scheme)
+    {
+        if (scheme) {
+            UniformResourceIdentification::ValidateScheme (*scheme);
+        }
+        fScheme_ = scheme;
+    }
     inline optional<URI::Authority> URI::GetAuthority () const
     {
         return fAuthority_;
+    }
+    inline void URI::SetAuthority (const optional<Authority>& authority)
+    {
+        fAuthority_ = authority;
     }
     inline String URI::GetPath () const
     {
         return fPath_;
     }
-    inline optional<String> URI::GetQueryString () const
+    inline void URI::SetPath (const String& path)
+    {
+        fPath_ = path;
+	}
+    template <>
+    inline auto URI::GetQuery () const -> optional<String>
     {
         return fQuery_;
     }
+    template <>
     inline auto URI::GetQuery () const -> optional<Query>
     {
         if (fQuery_) {

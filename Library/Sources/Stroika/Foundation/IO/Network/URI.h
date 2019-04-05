@@ -109,29 +109,45 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         */
+        nonvirtual void SetScheme (const optional<SchemeType>& scheme);
+
+    public:
+        /**
          *  The authority of a URI is basically the hostname (+ optional port and user info)
          */
         nonvirtual optional<Authority> GetAuthority () const;
 
     public:
+        /**
+         */
+        nonvirtual void SetAuthority (const optional<Authority>& authority);
+
+    public:
         /*
          *  The path MAY or MAY NOT start with a /, and it may be empty.
+         *
+         *  \note - the path is already decoded (% decoding and character set decoded)
          */
         nonvirtual String GetPath () const;
 
     public:
         /**
-         *  @see GetQuery ()
+         *  \note - the path is a UNICODE string, and should not be url-encoded.
          */
-        nonvirtual optional<String> GetQueryString () const;
+        nonvirtual void SetPath (const String& path);
 
     public:
         /*
-         *  Return the query part of the URI as a parsed object. Note this this value maybe missing.
+         *  Return the query part of the URI as the given RETURN_TYPE. Note this this value maybe missing.
          *
-         *  @see GetQueryString ()
+         *  Supported RETURN_TYPE values are:
+         *      o   String
+         *      o   Query (a parsed query string - much akin to a Mapping<String,String>)
+         *
          */
-        nonvirtual optional<Query> GetQuery () const;
+        template <typename RETURN_TYPE = Query>
+        nonvirtual optional<RETURN_TYPE> GetQuery () const;
 
     public:
         /**
@@ -162,9 +178,14 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     template <>
-    nonvirtual String URI::As () const;
+    optional<String> URI::GetQuery () const;
     template <>
-    nonvirtual URL URI::As () const;
+    optional<URI::Query> URI::GetQuery () const;
+
+    template <>
+    String URI::As () const;
+    template <>
+    URL URI::As () const;
 
 }
 
