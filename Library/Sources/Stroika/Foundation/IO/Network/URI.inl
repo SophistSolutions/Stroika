@@ -60,7 +60,7 @@ namespace Stroika::Foundation::IO::Network {
     inline void URI::SetPath (const String& path)
     {
         fPath_ = path;
-	}
+    }
     template <>
     inline auto URI::GetQuery () const -> optional<String>
     {
