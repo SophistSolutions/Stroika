@@ -206,6 +206,22 @@ optional<URL::Authority> URL::Authority::Parse (const String& rawURLAuthorityTex
     return URL::Authority{URL::Authority::Host::Parse (remainingString2Parse), port, userInfo};
 }
 
+template <>
+String URL::Authority::As () const
+{
+    StringBuilder sb;
+    if (fUserInfo) {
+        sb += *fUserInfo + L"@";
+    }
+    if (fHost) {
+        sb += fHost->AsEncoded ();
+    }
+    if (fPort) {
+        sb += Format (L":%d", *fPort);
+    }
+    return sb.str ();
+}
+
 /*
  ********************************************************************************
  ************************************** URL *************************************
@@ -547,7 +563,7 @@ String URL::GetFullURL () const
     result += *scheme + L":"sv;
 
     if (fAuthority_.fHost) {
-        result += L"//"sv + fAuthority_.fHost->AsEncodedHostName ();
+        result += L"//"sv + fAuthority_.fHost->AsEncoded ();
         if (fAuthority_.fPort.has_value () and fAuthority_.fPort != GetDefaultPortForScheme (scheme)) {
             result += Format (L":%d", *fAuthority_.fPort);
         }
@@ -735,8 +751,16 @@ URI URI::Parse (const String& rawURL)
     optional<String>               path;
     optional<String>               query;
     optional<String>               fragment;
+    auto                           emptyStr2Missing = [] (const optional<String>& s) -> optional<String> {
+        if (s) {
+            if (not s->empty ()) {
+                return s;
+            }
+        }
+        return nullopt;
+    };
     if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
-        return URI{scheme, Authority::Parse (authority.value_or (String{})), path.value_or (String{}), query, fragment};
+        return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), path.value_or (String{}), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
         Execution::Throw (Execution::RuntimeErrorException (L"Ill-formed URI"sv)); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
@@ -746,8 +770,26 @@ URI URI::Parse (const String& rawURL)
 template <>
 String URI::As () const
 {
-    return String{}; //tmphack
+    // @todo - support %PCT ENCODING
+    StringBuilder        result;
+    optional<SchemeType> scheme = this->fScheme_;
+    if (fScheme_) {
+        result += *fScheme_ + L":";
+    }
+    if (fAuthority_) {
+        result += L"//" + fAuthority_->As<String> ();
+    }
+    // @todo IF we have a HOST, then path must have leading '/' !!!! - NOT SURE HOW TO HANDLE
+    result += fPath_;
+    if (fQuery_) {
+        result += L"?"sv + *fQuery_;
+    }
+    if (fFragment_) {
+        result += L"#"sv + *fFragment_;
+    }
+    return result.str ();
 }
+
 template <>
 URL URI::As () const
 {
@@ -757,7 +799,7 @@ URL URI::As () const
 
 String URI::ToString () const
 {
-    return String{};
+    return Characters::ToString (As<String> ());
 }
 
 /*

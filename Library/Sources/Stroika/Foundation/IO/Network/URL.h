@@ -211,7 +211,7 @@ namespace Stroika::Foundation::IO::Network {
                 /*
                  *  Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
                  */
-                nonvirtual String AsEncodedHostName () const;
+                nonvirtual String AsEncoded () const;
 
             private:
                 // Throws if cannot parse/illegal
@@ -257,6 +257,20 @@ namespace Stroika::Foundation::IO::Network {
              *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
              */
             static optional<Authority> Parse (const String& rawURLAuthorityText);
+
+        public:
+            /**
+         *  Supported conversion-targets (T):
+         *      String - converts to the raw URI format (as it would appear in a web-browser or html link)
+         */
+            template <typename T>
+            nonvirtual T As () const;
+
+        public:
+            /**
+         *  For debugging purposes: don't count on the format.
+         */
+            nonvirtual String ToString () const;
         };
 
         ///// &&&&& @TODO
@@ -613,8 +627,21 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  This returns true if this is an absolute URL, and false if it is a relative URL
+         *
+         *  \par Example Usage
+         *      \code
+         *          if (u.IsURL ()) {
+         *              URL url = u.As<URL> ();
+         *          }
+         *      \endcode
          */
         nonvirtual bool IsURL () const;
+
+    public:
+        /**
+         *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
+         */
+        nonvirtual optional<SchemeType> GetScheme () const;
 
     public:
         /**
@@ -627,6 +654,11 @@ namespace Stroika::Foundation::IO::Network {
          *  The path MAY or MAY NOT start with a /, and it may be empty.
          */
         nonvirtual String GetPath () const;
+
+    public:
+        /*
+         */
+        nonvirtual optional<String> GetQueryString () const;
 
     public:
         /**
@@ -650,6 +682,11 @@ namespace Stroika::Foundation::IO::Network {
         optional<String>    fQuery_;     // ditto
         optional<String>    fFragment_;  // ditto
     };
+
+    template <>
+    nonvirtual String URI::As () const;
+    template <>
+    nonvirtual URL URI::As () const;
 
     /**
      *  Probably should define standard protos here - with named constants - like http/ftp/https etc

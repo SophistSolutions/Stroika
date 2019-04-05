@@ -79,7 +79,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return fInternetAddress_;
     }
-    inline String URL::Authority::Host::AsEncodedHostName () const
+    inline String URL::Authority::Host::AsEncoded () const
     {
         return fEncodedName_;
     }
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::IO::Network {
     inline String URL::GetHost () const
     {
         if (fAuthority_.fHost) {
-            return fAuthority_.fHost->AsEncodedHostName ();
+            return fAuthority_.fHost->AsEncoded ();
         }
         else {
             return String{};
@@ -210,6 +210,10 @@ namespace Stroika::Foundation::IO::Network {
     {
         return false; // check key fields present?
     }
+    inline optional<URI::SchemeType> URI::GetScheme () const
+    {
+        return fScheme_;
+    }
     inline optional<URI::Authority> URI::GetAuthority () const
     {
         return fAuthority_;
@@ -217,6 +221,10 @@ namespace Stroika::Foundation::IO::Network {
     inline String URI::GetPath () const
     {
         return fPath_;
+    }
+    inline optional<String> URI::GetQueryString () const
+    {
+        return fQuery_;
     }
 
     /*

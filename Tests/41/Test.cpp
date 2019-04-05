@@ -260,12 +260,12 @@ namespace {
             void TestHostParsing_ ()
             {
                 using Host = URL::Authority::Host;
-                VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncodedHostName () == L"127.0.0.1"sv));
-                VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncodedHostName () == L"169.254.0.1"sv));
-                VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncodedHostName () == L"[fe80::44de:4247:5b76:ddc9]"sv));
+                VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
+                VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
+                VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == L"[fe80::44de:4247:5b76:ddc9]"sv));
                 VerifyTestResult ((Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
-                VerifyTestResult ((Host{L"www.sophists.com"}.AsEncodedHostName () == L"www.sophists.com"sv));
-                VerifyTestResult ((Host{L"hello mom"}.AsEncodedHostName () == L"hello%20mom"sv));
+                VerifyTestResult ((Host{L"www.sophists.com"}.AsEncoded () == L"www.sophists.com"sv));
+                VerifyTestResult ((Host{L"hello mom"}.AsEncoded () == L"hello%20mom"sv));
                 VerifyTestResult ((Host::Parse (L"hello%20mom") == Host{L"hello mom"}));
                 {
                     // negative tests - must throw
@@ -295,19 +295,31 @@ namespace {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
                     VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
                     VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
+                    VerifyTestResult (uri.As<String> () == L"http://localhost:1234");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"localhost:1234");
-                    //VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
-                    //VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
+                    VerifyTestResult (not uri.GetAuthority ().has_value ()); // treated as a scheme
+                    VerifyTestResult (uri.As<String> () == L"localhost:1234");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
                     VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"www.ics.uci.edu");
+                    VerifyTestResult (uri.As<String> () == L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"/uri/#Related");
                     VerifyTestResult (not uri.GetAuthority ().has_value ());
+                    VerifyTestResult (uri.As<String> () == L"/uri/#Related");
+                }
+                {
+                    // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
+                    // AT LEAST CLOSE - I THINK I CAN COME UP WITH CHEATSHEET TO MAP NAMES (like GetRElPath to GetPath () - but does it handle leading slash same?)
+                    IO::Network::URI uri = IO::Network::URI::Parse (L"dyn:/StyleSheet.css?ThemeName=Cupertino");
+                    VerifyTestResult (*uri.GetScheme () == L"dyn");
+                    VerifyTestResult (not uri.GetAuthority ().has_value ());
+                    VerifyTestResult (uri.GetPath () == L"/StyleSheet.css");
+                    VerifyTestResult (uri.GetQueryString () == L"ThemeName=Cupertino");
                 }
             }
         }
