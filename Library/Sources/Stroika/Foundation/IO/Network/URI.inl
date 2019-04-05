@@ -24,10 +24,15 @@ namespace Stroika::Foundation::IO::Network {
         , fQuery_{query}
         , fFragment_{fragment}
     {
+        // @todo probably validate query and fragment args?? Maybe not needed (if not document why)
+        if (scheme) {
+            UniformResourceIdentification::ValidateScheme (*scheme);
+        }
     }
     inline bool URI::IsURL () const
     {
-        return false; // check key fields present?
+        // @todo review/revise/document reference
+        return fScheme_ and fAuthority_;
     }
     inline optional<URI::SchemeType> URI::GetScheme () const
     {

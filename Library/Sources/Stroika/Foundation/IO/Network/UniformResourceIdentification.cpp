@@ -67,33 +67,31 @@ void UniformResourceIdentification::ValidateScheme (const SchemeType& s)
         if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+'))
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::RuntimeErrorException (L"bad character in scheme"sv));
+                Execution::Throw (Execution::RuntimeErrorException (L"bad character in URI scheme"sv));
             }
     }
 }
 
 /*
  ********************************************************************************
- ************* UniformResourceIdentification::GetDefaultPortForScheme ***********
+ *********** UniformResourceIdentification::GetDefaultPortForScheme *************
  ********************************************************************************
  */
 optional<PortType> UniformResourceIdentification::GetDefaultPortForScheme (const optional<String>& scheme)
 {
     // From http://www.iana.org/assignments/port-numbers
-    static const pair<String, PortType> kPredefined_[] = {
-        {L"http"sv, static_cast<PortType> (80)},
-        {L"https"sv, static_cast<PortType> (443)},
-        {L"ldap"sv, static_cast<PortType> (389)},
-        {L"ldaps"sv, static_cast<PortType> (636)},
-        {L"ftp"sv, static_cast<PortType> (21)},
-        {L"ftps"sv, static_cast<PortType> (990)},
-    };
+    static const Mapping<String, PortType> kPredefined_{
+        String::EqualToCI{},
+        initializer_list<Common::KeyValuePair<String, PortType>>{
+            {L"http"sv, static_cast<PortType> (80)},
+            {L"https"sv, static_cast<PortType> (443)},
+            {L"ldap"sv, static_cast<PortType> (389)},
+            {L"ldaps"sv, static_cast<PortType> (636)},
+            {L"ftp"sv, static_cast<PortType> (21)},
+            {L"ftps"sv, static_cast<PortType> (990)},
+        }};
     if (scheme) {
-        for (auto i : kPredefined_) {
-            if (i.first == *scheme) {
-                return i.second;
-            }
-        }
+        return kPredefined_.Lookup (*scheme);
     }
     return nullopt;
 }

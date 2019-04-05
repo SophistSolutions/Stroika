@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers {
          *          Mapping<int,int> m6  { m };
          *          Mapping<int,int> m7  { m.begin (), m.end () };
          *          Mapping<int,int> m8  { move (m1) };
-         *          Mapping<int,int> m9  {Common::DeclareEqualsComparer ([](int l, int r) { return l == r; })};
+         *          Mapping<int,int> m9  { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
          *      \endcode
          */
         Mapping ();

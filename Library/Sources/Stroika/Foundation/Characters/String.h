@@ -1299,8 +1299,8 @@ namespace Stroika::Foundation::Characters {
     pair<const wchar_t*, const wchar_t*> String::GetData () const;
 
     /*
-        *  Equivilent to std::equal_to<String>, except doing case insensitive compares
-        */
+     *  Equivilent to std::equal_to<String>, except doing case insensitive compares
+     */
     struct String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         nonvirtual bool operator() (const String& lhs, const String& rhs) const;
     };

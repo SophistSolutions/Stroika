@@ -144,6 +144,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      insensitive, the canonical form is lowercase ...
      *
      *  \note schemes cannot include a ':' character
+     *
+     *  \note Schemes should generally be treated as case insensitive, so compare with String::EqualToCI{}
      */
     using SchemeType = String;
 
