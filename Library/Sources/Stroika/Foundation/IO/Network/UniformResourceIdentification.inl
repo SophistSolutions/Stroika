@@ -69,7 +69,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ********************************* Authority ************************************
      ********************************************************************************
      */
-    inline Authority::Authority (const optional<Host>& h, cibst optional<PortType>& port, const optional<String>& userInfo)
+    inline Authority::Authority (const optional<Host>& h, const optional<PortType>& port, const optional<String>& userInfo)
         : fHost{h}
         , fPort{port}
         , fUserInfo (userInfo)
