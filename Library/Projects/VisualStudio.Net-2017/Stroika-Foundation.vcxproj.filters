@@ -831,6 +831,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.cpp">
       <Filter>Sources\Configuration\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2069,6 +2075,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.h">
       <Filter>Sources\Configuration\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3359,6 +3371,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.inl">
       <Filter>Sources\Configuration\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

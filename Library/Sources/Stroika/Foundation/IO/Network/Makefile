@@ -33,6 +33,8 @@ Objs	=	\
 	$(ObjDir)Socket${OBJ_SUFFIX}\
 	$(ObjDir)SocketAddress${OBJ_SUFFIX}\
 	$(ObjDir)SocketStream${OBJ_SUFFIX}\
+	$(ObjDir)UniformResourceIdentification${OBJ_SUFFIX}\
+	$(ObjDir)URI${OBJ_SUFFIX}\
 	$(ObjDir)URL${OBJ_SUFFIX}\
 	$(ObjDir)WaitForSocketIOReady${OBJ_SUFFIX}\
 

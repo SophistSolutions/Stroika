@@ -22,6 +22,7 @@
 #endif
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/IO/Network/URL.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
@@ -259,7 +260,7 @@ namespace {
             }
             void TestHostParsing_ ()
             {
-                using Host = URL::Authority::Host;
+                using UniformResourceIdentification::Host;
                 VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
                 VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
                 VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == L"[fe80::44de:4247:5b76:ddc9]"sv));
