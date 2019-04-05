@@ -15,7 +15,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     /*
      ********************************************************************************
-     **************************************** Host **********************************
+     ************************************* Host *************************************
      ********************************************************************************
      */
     inline Host::Host (const String& registeredName)
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     /*
      ********************************************************************************
-     *************************************** Host operators *************************
+     ********************************** Host operators ******************************
      ********************************************************************************
      */
     inline bool operator== (const Host& lhs, const Host& rhs)
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ********************************* Authority ************************************
      ********************************************************************************
      */
-    inline Authority::Authority (const optional<Host>& h, optional<PortType> port, optional<String> userInfo)
+    inline Authority::Authority (const optional<Host>& h, cibst optional<PortType>& port, const optional<String>& userInfo)
         : fHost{h}
         , fPort{port}
         , fUserInfo (userInfo)

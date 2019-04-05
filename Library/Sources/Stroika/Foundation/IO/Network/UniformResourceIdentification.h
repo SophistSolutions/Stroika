@@ -251,7 +251,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         optional<String> fUserInfo;
 
-        Authority (const optional<Host>& h = nullopt, optional<PortType> port = nullopt, optional<String> userInfo = nullopt);
+        Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<String>& userInfo = nullopt);
 
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
