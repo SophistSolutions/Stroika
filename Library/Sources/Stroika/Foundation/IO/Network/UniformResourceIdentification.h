@@ -30,20 +30,8 @@
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
  *
- *      @todo   Read http://tools.ietf.org/html/rfc1808.html section "Resolving Relative URLs"
- *              Maybe add method (resolverelative)? - that performns this logic.
- *
  *      @todo   MABYE "SCHEMEREGISTER"
  *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
- *
- *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
- *              we allow relative urls, etc.
- *
- *              We currently produce differnt answers than https://docs.python.org/2/library/urlparse.html for the case
- *              of the url urlparse('help/Python.html'), where I treat help as a hostname, and python
- *              as part of the path.
- *
- *              Maybe params to parser to say "strict", or "can-be-relative-url", or "best guess full url"
  *
  *      @todo   Add PREDEFINED namespace and list predefined protocols
  *              o   HTTP

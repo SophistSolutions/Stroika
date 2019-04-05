@@ -50,6 +50,17 @@ namespace Stroika::Foundation::IO::Network {
     {
         return fQuery_;
     }
+    inline auto URI::GetQuery () const -> optional<Query>
+    {
+        if (fQuery_) {
+            return Query{*fQuery_};
+        }
+        return nullopt;
+    }
+    inline optional<String> URI::GetFragment () const
+    {
+        return fFragment_;
+    }
 
 }
 

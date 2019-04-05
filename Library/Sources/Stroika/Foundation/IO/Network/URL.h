@@ -26,16 +26,11 @@
  *
  *              (partly/maybe done?)
  *
- *      @todo   support Compare() and oeprator<, etc.
+ *      @todo   Add Compare() method, and operator<, so we can easily add URL to
+ *              sorted types.
  *
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
- *
- *      @todo   Read http://tools.ietf.org/html/rfc1808.html section "Resolving Relative URLs"
- *              Maybe add method (resolverelative)? - that performns this logic.
- *
- *      @todo   MABYE "SCHEMEREGISTER"
- *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
  *
  *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
  *              we allow relative urls, etc.
@@ -48,19 +43,7 @@
  *
  *      @todo   CLEANUP PROTOCOL AND HOSTNAME METHODS - ADD CLEAR REQUIREMENTS AND ENFORCE
  *              ESP FOR STUFF LIKE COLONS!!!
- *
- *      @todo   Add overload for URL with map<> for query.
- *
- *      @todo   Add PREDEFINED namespace and list predefined protocols
- *              o   HTTP
- *              o   HTTPS
- *              o   FTP
- *              o   FILE
- *          (only do with new stroika string class so we can use low-cost constants)
- *
- *      @todo   Add Compare() method, and operator<, so we can easily add URL to
- *              sorted types.
- *
+
  *      @todo   Need LOTS of reg-tests tests!.
  */
 
@@ -72,7 +55,6 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      *  Class to help encode/decode the logical parts of an internet URL
-     *
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      *

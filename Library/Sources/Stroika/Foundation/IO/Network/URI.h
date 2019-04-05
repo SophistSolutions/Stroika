@@ -28,15 +28,6 @@
  *
  *      @todo   support Compare() and oeprator<, etc.
  *
- *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
- *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
- *
- *      @todo   Read http://tools.ietf.org/html/rfc1808.html section "Resolving Relative URLs"
- *              Maybe add method (resolverelative)? - that performns this logic.
- *
- *      @todo   MABYE "SCHEMEREGISTER"
- *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
- *
  *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
  *              we allow relative urls, etc.
  *
@@ -45,21 +36,6 @@
  *              as part of the path.
  *
  *              Maybe params to parser to say "strict", or "can-be-relative-url", or "best guess full url"
- *
- *      @todo   CLEANUP PROTOCOL AND HOSTNAME METHODS - ADD CLEAR REQUIREMENTS AND ENFORCE
- *              ESP FOR STUFF LIKE COLONS!!!
- *
- *      @todo   Add overload for URL with map<> for query.
- *
- *      @todo   Add PREDEFINED namespace and list predefined protocols
- *              o   HTTP
- *              o   HTTPS
- *              o   FTP
- *              o   FILE
- *          (only do with new stroika string class so we can use low-cost constants)
- *
- *      @todo   Add Compare() method, and operator<, so we can easily add URL to
- *              sorted types.
  *
  *      @todo   Need LOTS of reg-tests tests!.
  */
@@ -144,9 +120,23 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual String GetPath () const;
 
     public:
-        /*
+        /**
+         *  @see GetQuery ()
          */
         nonvirtual optional<String> GetQueryString () const;
+
+    public:
+        /*
+         *  Return the query part of the URI as a parsed object. Note this this value maybe missing.
+         *
+         *  @see GetQueryString ()
+         */
+        nonvirtual optional<Query> GetQuery () const;
+
+    public:
+        /**
+         */
+        nonvirtual optional<String> GetFragment () const;
 
     public:
         /**
