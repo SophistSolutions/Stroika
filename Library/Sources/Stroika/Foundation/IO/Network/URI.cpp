@@ -8,6 +8,7 @@
 #include "../../Characters/RegularExpression.h"
 #include "../../Characters/String2Int.h"
 #include "../../Characters/ToString.h"
+#include "../../DataExchange/CheckedConverter.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 
@@ -38,6 +39,11 @@ URI::URI (const URL& url)
 {
 }
 
+URI URI::Parse (const string& rawURL)
+{
+    return Parse (DataExchange::CheckedConverter<String, DataExchange::ASCII> (rawURL));
+}
+
 URI URI::Parse (const String& rawURL)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -58,7 +64,7 @@ URI URI::Parse (const String& rawURL)
         }
         return nullopt;
     };
-    if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+    if (DataExchange::CheckedConverter<String, DataExchange::ASCII> (rawURL).Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
         return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), path.value_or (String{}), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {

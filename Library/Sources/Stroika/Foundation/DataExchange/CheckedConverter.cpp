@@ -39,6 +39,19 @@ String DataExchange::CheckedConverter<String, ASCII, string> (string from, [[may
 }
 
 template <>
+String DataExchange::CheckedConverter<String, ASCII, String> (String from, [[maybe_unused]] const ASCII& extraData)
+{
+    for (auto i = from.begin (); i != from.end (); ++i) {
+        if (not i->IsASCII ())
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
+            }
+    }
+    return from;
+}
+
+template <>
 String DataExchange::CheckedConverter<String, ASCII, const char*> (const char* from, [[maybe_unused]] const ASCII& extraData)
 {
     RequireNotNull (from);

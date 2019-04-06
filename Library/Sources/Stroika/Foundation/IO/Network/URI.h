@@ -90,7 +90,10 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  This takes argument string url, with possibly % encoded characters, accorind to https://tools.ietf.org/html/rfc3986
+         *  The input characterset is always ASCII (but may encode UCS after %PCT substitions).
+         *  If not handed ASCII text, an exception will be thrown.
          */
+        static URI Parse (const string& rawURL);
         static URI Parse (const String& rawURL);
 
     public:
@@ -185,7 +188,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  Supported conversion-targets (T):
-         *      String - converts to the raw URI format (as it would appear in a web-browser or html link)
+         *      String - converts to the raw URI format (as it would appear in a web-browser or html link); not raw form is ASCII
          *      URL - requires IsURL ()  - but then returns URL
          */
         template <typename T>

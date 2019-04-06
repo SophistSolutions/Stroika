@@ -47,6 +47,8 @@ namespace Stroika::Foundation::DataExchange {
     template <>
     Characters::String CheckedConverter<Characters::String, ASCII, string> (string from, const ASCII& extraData);
     template <>
+    Characters::String CheckedConverter<Characters::String, ASCII, Characters::String> (Characters::String from, const ASCII& extraData);
+    template <>
     Characters::String CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData);
 
     template <>
