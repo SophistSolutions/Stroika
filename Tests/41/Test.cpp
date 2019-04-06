@@ -323,6 +323,10 @@ namespace {
                     VerifyTestResult (uri.GetQuery<String> () == L"ThemeName=Cupertino");
                     VerifyTestResult (uri.GetQuery ()->operator() (L"ThemeName") == L"Cupertino");
                 }
+                {
+                    IO::Network::URI uri = IO::Network::URI::Parse (L"HTTPS://www.MICROSOFT.com/Path");
+                    VerifyTestResult (uri.Normalize ().As<String> () == L"https://www.microsoft.com/Path");
+                }
             }
         }
         void DoTests_ ()

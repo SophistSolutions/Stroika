@@ -95,7 +95,7 @@ URL URI::As () const
     return URL{}; // NYI
 }
 
-URI URI::GetNormalized () const
+URI URI::Normalize () const
 {
     optional<SchemeType> scheme = fScheme_;
     if (scheme) {
@@ -103,7 +103,7 @@ URI URI::GetNormalized () const
     }
     optional<Authority> authority = fAuthority_;
     if (authority) {
-        //@todo NORMALIZE--- authority = authority->ToLowerCase ();
+        authority = authority->Normalize ();
     }
     String path = fPath_; // @todo https://tools.ietf.org/html/rfc3986#section-6.2.2.3
 

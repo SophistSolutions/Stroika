@@ -180,7 +180,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  @see https://tools.ietf.org/html/rfc3986#section-6
          */
-        nonvirtual URI GetNormalized () const;
+        nonvirtual URI Normalize () const;
 
     public:
         /**
