@@ -53,7 +53,7 @@ Common::GUID::GUID (const string& src)
 }
 
 Common::GUID::GUID (const Characters::String& src)
-    : GUID (DataExchange::CheckedConverter<string, DataExchange::ASCII, Characters::String> (src))
+    : GUID (src.AsASCII ())
 {
 }
 

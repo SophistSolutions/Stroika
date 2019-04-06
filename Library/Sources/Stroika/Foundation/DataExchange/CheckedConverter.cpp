@@ -11,6 +11,9 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_START (4996);
 template <>
 String DataExchange::CheckedConverter<String, UTF8, string> (string from, [[maybe_unused]] const UTF8& extraData)
 {
@@ -68,6 +71,8 @@ String DataExchange::CheckedConverter<String, ASCII, const char*> (const char* f
 template <>
 string DataExchange::CheckedConverter<string, ASCII, String> (String from, [[maybe_unused]] const ASCII& extraData)
 {
-    // @todo no chekcing done yet...
     return from.AsASCII ();
 }
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_END (4996);

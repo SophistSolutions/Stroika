@@ -381,6 +381,9 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
          *      \endcode
+         *
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *
          */
         static String FromUTF8 (const char* from);
         static String FromUTF8 (const char* from, const char* to);
@@ -391,6 +394,9 @@ namespace Stroika::Foundation::Characters {
          *  Create a String object from a 'SDKChar' (os-setting - current code page) encoded string.
          *  See @SDKChar
          *  See @SDKString
+         *
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *
          */
         static String FromSDKString (const SDKChar* from);
         static String FromSDKString (const SDKChar* from, const SDKChar* to);
@@ -399,6 +405,9 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
+         *
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *
          */
         static String FromNarrowSDKString (const char* from);
         static String FromNarrowSDKString (const char* from, const char* to);
@@ -408,6 +417,9 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Create a String object from a 'char-based' on the encoding from the argument locale.
          *  This throws an exception if there is an error performing the conversion.
+         *
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *
          */
         static String FromNarrowString (const char* from, const locale& l);
         static String FromNarrowString (const char* from, const char* to, const locale& l);
@@ -417,9 +429,9 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Create a String object from ascii text. 
          *
-         *  \req This function requires that its arguments all ascii (no high-bit set)
+         *  \note   Reading non-ascii text will result in a RuntimeException indicating inproperly encoded characters.
          *
-         *  \note @see CheckedConverter<String, ASCII, string> for conversion which is safe if invalid ascii.
+         *  \note - before Stroika v2.1d23 this was a requires check, and an assertion error to pass in non-ascii text
          */
         static String FromASCII (const char* from);
         static String FromASCII (const char* from, const char* to);

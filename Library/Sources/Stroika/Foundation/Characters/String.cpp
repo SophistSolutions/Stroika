@@ -348,7 +348,9 @@ String String::FromASCII (const char* from, const char* to)
     SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (to - from)};
     wchar_t*                  pOut = buf.begin ();
     for (const char* i = from; i != to; ++i, pOut++) {
-        Require (isascii (*i));
+        if (not isascii (*i)) {
+            Execution::Throw (Execution::RuntimeErrorException (L"Error converting non-ascii text to String"sv));
+        }
         *pOut = *i;
     }
     return String{buf.begin (), pOut};
@@ -359,7 +361,9 @@ String String::FromASCII (const wchar_t* from, const wchar_t* to)
     RequireNotNull (from);
     Require (from <= to);
     for (const wchar_t* i = from; i != to; ++i) {
-        Require (isascii (*i));
+        if (not isascii (*i)) {
+            Execution::Throw (Execution::RuntimeErrorException (L"Error converting non-ascii text to String"sv));
+        }
     }
     return String{from, to};
 }
