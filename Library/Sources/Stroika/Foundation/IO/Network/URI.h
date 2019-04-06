@@ -61,6 +61,9 @@ namespace Stroika::Foundation::IO::Network {
      *          that, in addition to identifying a resource, provide a means of
      *          locating the resource by describing its primary access mechanism
      *          (e.g., its network "location").
+	 *
+	 *	\note This code does not currently (as of v2.1d23) address https://tools.ietf.org/html/rfc3986#appendix-C - URI delimiting (finding the boundaries of the URI from
+	 *		  surrounding text).
      */
     class URI {
     public:
@@ -188,7 +191,8 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  Supported conversion-targets (T):
-         *      String - converts to the raw URI format (as it would appear in a web-browser or html link); not raw form is ASCII
+         *      String - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
+         *      string - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
          *      URL - requires IsURL ()  - but then returns URL
          */
         template <typename T>

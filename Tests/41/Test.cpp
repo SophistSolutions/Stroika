@@ -306,6 +306,7 @@ namespace {
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
                     VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"www.ics.uci.edu");
+                    DbgTrace (L"X=%s", uri.As<String> ().c_str ());
                     VerifyTestResult (uri.As<String> () == L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {

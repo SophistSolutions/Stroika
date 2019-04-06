@@ -78,20 +78,38 @@ String URI::As () const
     // @todo - support %PCT ENCODING
     StringBuilder result;
     if (fScheme_) {
+        // From https://tools.ietf.org/html/rfc3986#appendix-A
+        //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+        // no need to pct encode this
+        Assert (fScheme_->All ([] (Character c) { return c.IsASCII (); }));
         result += *fScheme_ + L":";
     }
     if (fAuthority_) {
-        result += L"//" + fAuthority_->As<String> ();
+        Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));
+        result += L"//" + fAuthority_->As<String> (); // this already produces 'raw' format
     }
+
     // @todo IF we have a HOST, then path must have leading '/' !!!! - NOT SURE HOW TO HANDLE
-    result += fPath_;
+
+    static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
+    result += UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
-        result += L"?"sv + *fQuery_;
+        static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
+        result += L"?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
     }
     if (fFragment_) {
-        result += L"#"sv + *fFragment_;
+        static constexpr UniformResourceIdentification::PCTEncodeOptions kFragmentEncodeOptiosn_{false, false, false, true};
+        result += L"#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptiosn_);
     }
+    Ensure (result.str ().All ([] (Character c) { return c.IsASCII (); }));
     return result.str ();
+}
+
+template <>
+string URI::As () const
+{
+    // @todo - Could be more efficient duing String algorithm directly
+    return As<String> ().AsASCII ();
 }
 
 template <>

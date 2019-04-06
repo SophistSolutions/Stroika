@@ -62,9 +62,9 @@ SchemeType UniformResourceIdentification::NormalizeScheme (const SchemeType& s)
  */
 void UniformResourceIdentification::ValidateScheme (const SchemeType& s)
 {
-    // use for (Character c : s) {... when that works -- LGP 2013-05-29)
-    for (size_t i = 0; i < s.GetLength (); ++i) {
-        if (not s[i].IsASCII () or not(s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+'))
+    // https://tools.ietf.org/html/rfc3986#appendix-A  -- scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+    for (Characters::Character c : s) {
+        if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+'))
             [[UNLIKELY_ATTR]]
             {
                 Execution::Throw (Execution::RuntimeErrorException (L"bad character in URI scheme"sv));
@@ -352,4 +352,194 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
         }
     }
     return result;
+}
+
+/*
+ ********************************************************************************
+ ****************** UniformResourceIdentification::PCTEncode ********************
+ ********************************************************************************
+ */
+namespace {
+    enum CharClass_ {
+        eUnreserved,
+        eGenDelims,
+        eSubDelims,
+        eBAD,
+    };
+    CharClass_ decode_ (char c)
+    {
+        if (isalpha (c) or isdigit (c)) {
+            return eUnreserved;
+        }
+        switch (c) {
+            case '-':
+            case '.':
+            case '_':
+            case '~':
+                return eUnreserved;
+        }
+        switch (c) {
+            case ':':
+            case '/':
+            case '?':
+            case '[':
+            case ']':
+            case '@':
+                return eGenDelims;
+        }
+        switch (c) {
+            case '!':
+            case '$':
+            case '&':
+            case '\'':
+            case '(':
+            case ')':
+            case '*':
+            case '+':
+            case ',':
+            case ';':
+            case '=':
+                return eSubDelims;
+        }
+        return eBAD;
+    }
+}
+string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncodeOptions& options)
+{
+    string result;
+    size_t sLength = s.length ();
+    result.reserve (sLength);
+
+    PCTEncodeOptions useOptions = options;
+    if (useOptions.allowFragOrQueryChars) {
+        useOptions.allowPChar = true;
+    }
+    if (useOptions.allowPChar) {
+        useOptions.allowSubDelims = true;
+    }
+    if (useOptions.allowPathCharacters) {
+        useOptions.allowSubDelims = true;
+    }
+
+    for (char c : s) {
+        bool encode{true};
+
+        // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+        if (isalpha (c) or isdigit (c)) {
+            encode = false;
+        }
+        switch (c) {
+            case '-':
+            case '.':
+            case '_':
+            case '~':
+                encode = false;
+        }
+
+        if (options.allowFragOrQueryChars) {
+            switch (c) {
+                case '/':
+                case '?':
+                    encode = false;
+            }
+        }
+        if (options.allowPathCharacters) {
+            switch (c) {
+                case '/':
+                    encode = false;
+            }
+        }
+        if (options.allowGenDelims) {
+            switch (c) {
+                case ':':
+                case '/':
+                case '?':
+                case '[':
+                case ']':
+                case '@':
+                    encode = false;
+            }
+        }
+        if (options.allowSubDelims) {
+            switch (c) {
+                case '!':
+                case '$':
+                case '&':
+                case '\'':
+                case '(':
+                case ')':
+                case '*':
+                case '+':
+                case ',':
+                case ';':
+                case '=':
+                    encode = false;
+            }
+        }
+        if (encode) {
+            Containers::ReserveSpeedTweekAddN (result, 3);
+            result += CString::Format ("%%%.2x", c);
+        }
+        else {
+            Containers::ReserveSpeedTweekAdd1 (result);
+            result += c;
+        }
+    }
+    return result;
+}
+
+string UniformResourceIdentification::PCTEncode (const String& s, const PCTEncodeOptions& options)
+{
+    return PCTEncode (s.AsUTF8 (), options);
+}
+
+String UniformResourceIdentification::PCTEncode2String (const String& s, const PCTEncodeOptions& options)
+{
+    // @todo fix - must do CHECKED CONVERT
+    return String::FromUTF8 (PCTEncode (s, options));
+}
+
+/*
+ ********************************************************************************
+ ************** UniformResourceIdentification::PCTDecode ************************
+ ********************************************************************************
+ */
+string UniformResourceIdentification::PCTDecode (const string& s)
+{
+    string result;
+    result.reserve (s.length ());
+    for (auto p = s.begin (); p != s.end (); ++p) {
+        switch (*p) {
+            case '%': {
+                if (p + 2 < s.end ()) {
+                    unsigned char newC = (ConvertReadSingleHexDigit_ (*(p + 1)) << 4) + ConvertReadSingleHexDigit_ (*(p + 2));
+                    p += 2;
+                    result += (newC);
+                }
+                else {
+                    Execution::Throw (Execution::RuntimeErrorException (L"incomplete % encoded character in URI"sv));
+                }
+            } break;
+            default: {
+                result += *p;
+            } break;
+        }
+    }
+    return result;
+}
+
+/*
+ ********************************************************************************
+ ************** UniformResourceIdentification::PCTDecode2String *****************
+ ********************************************************************************
+ */
+String UniformResourceIdentification::PCTDecode2String (const string& s)
+{
+    // @todo fix - must do CHECKED CONVERT
+    return String::FromUTF8 (PCTDecode (s));
+}
+String UniformResourceIdentification::PCTDecode2String (const String& s)
+{
+    // @todo fix - must do CHECKED CONVERT
+    return String::FromUTF8 (PCTDecode (s.AsASCII ()));
 }

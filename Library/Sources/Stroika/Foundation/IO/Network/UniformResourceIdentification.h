@@ -346,6 +346,34 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     string EncodeURLQueryStringField (const String& s);
 
+    /**
+     *  See https://tools.ietf.org/html/rfc3986#appendix-A for the meaning of encodeGenDelims/encodeSubDelims
+     *
+     *  When called with a String, the string is first UTF8 encoded.
+     */
+    struct PCTEncodeOptions {
+        // From https://tools.ietf.org/html/rfc3986#appendix-A
+        // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+        // gen-delims    = ":" / "/" / "?" / "#" / "[" / "]" / "@"
+        // pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+        // we always allow 'unreserved'
+        bool allowSubDelims        = false;
+        bool allowGenDelims        = false;
+        bool allowPChar            = false; // sub-delims + ":" / "@"
+        bool allowFragOrQueryChars = false; // pchar / "/" / "?"
+        bool allowPathCharacters   = false; // COMPLICATED - I THINK this means sub-delims + '/' (@ and : maybe sometimes allowed, but I think always safe to encode)
+    };
+    string PCTEncode (const string& s, const PCTEncodeOptions& options);
+    string PCTEncode (const String& s, const PCTEncodeOptions& options);
+    String PCTEncode2String (const String& s, const PCTEncodeOptions& options);
+
+    /**
+     *  PCTDecode2String () takes the result of PCTDecode, and treats it as UTF8 text, and converts a String from that.
+     */
+    string PCTDecode (const string& s);
+    String PCTDecode2String (const string& s);
+    String PCTDecode2String (const String& s);
+
 }
 
 /*
