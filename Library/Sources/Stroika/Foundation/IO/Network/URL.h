@@ -215,15 +215,6 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Combine a full url with a relative URI, to produce a new URL. Note - its completely legal for hte argument uri
-         *  to be a full url, in which case this returns its argument (taking no properties from 'this')
-         *
-         *      @see https://tools.ietf.org/html/rfc3986#section-5.2
-         */
-        nonvirtual URL Combine (const URI& uri) const;
-
-    public:
-        /**
          *  \brief Compare if two URLs are identical.
          *
          *  \note This is NOT the same as this->GetFullURL () == rhs.GetFullURL (), because default values may be

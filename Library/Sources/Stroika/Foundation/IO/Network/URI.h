@@ -200,6 +200,15 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  Combine a full url with a relative URI, to produce a new URL. Note - its completely legal for hte argument uri
+         *  to be a full url, in which case this returns its argument (taking no properties from 'this')
+         *
+         *      @see https://tools.ietf.org/html/rfc3986#section-5.2
+         */
+        nonvirtual URI Combine (const URI& uri) const;
+
+    public:
+        /**
          *  For debugging purposes: don't count on the format.
          */
         nonvirtual String ToString () const;

@@ -329,6 +329,16 @@ namespace {
                     VerifyTestResult (uri.Normalize ().As<String> () == L"https://www.microsoft.com/Path");
                 }
             }
+            void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
+            {
+				// tests from https://tools.ietf.org/html/rfc3986#section-5.4
+                URI base = URI::Parse (L"http://a/b/c/d;p?q");
+                VerifyTestResult (base.Combine (URI::Parse (L"g:h")).As<String> () == L"g:h");
+                VerifyTestResult (base.Combine (URI::Parse (L"g")).As<String> () == L"http://a/b/c/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"./g")).As<String> () == L"http://a/b/c/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"/g")).As<String> () == L"http://a/g");
+				// INCOMPLETE SET OF REGTESTS
+            }
         }
         void DoTests_ ()
         {
@@ -336,6 +346,7 @@ namespace {
             Private_::BasicTests_AsOf21d22_ ();
             Private_::TestHostParsing_ ();
             Private_::Test_NewURI_Class_ ();
+            Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
         }
     }
 }
@@ -355,7 +366,7 @@ namespace {
             VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
         }
         {
-            auto testRoundtrip = [] (const String& s) {
+            auto testRoundtrip = [](const String& s) {
                 InternetAddress iaddr1{s};
                 InternetAddress iaddr2{s.As<wstring> ()};
                 InternetAddress iaddr3{s.AsASCII ()};

@@ -139,3 +139,106 @@ String URI::ToString () const
 {
     return Characters::ToString (As<String> ());
 }
+
+URI URI::Combine (const URI& uri) const
+{
+    // From https://tools.ietf.org/html/rfc3986#section-5
+    //      "Note that only the scheme component is required to be present in a base URI; the other components may be empty or undefined."
+    URI baseURI = Normalize ();
+    if (not baseURI.GetScheme ()) {
+        Execution::Throw (Execution::RuntimeErrorException (L"Scheme is required in base URI to combine with another URI"sv));
+    }
+    auto merge = [&] (const String& base, const String& rhs) {
+        // @see https://tools.ietf.org/html/rfc3986#section-5.2.3
+        if (baseURI.GetAuthority () and base.empty ()) {
+            return L"/" + rhs;
+        }
+        static const RegularExpression kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
+        optional<String>               baseDir;
+        (void)base.Match (kSelectDir_, &baseDir);
+        return baseDir.value_or (String{}) + rhs;
+    };
+    auto remove_dot_segments = [] (const String& p) {
+        // from https://tools.ietf.org/html/rfc3986#section-5.2.4
+        vector<String> segments; // for our purpose here, segments may (or not in case of first) contain a leading /
+        StringBuilder  accumulatingSegment;
+        for (Character c : p) {
+            if (c == '/' and not accumulatingSegment.empty ()) {
+                segments.push_back (accumulatingSegment.str ());
+                accumulatingSegment.clear ();
+            }
+            accumulatingSegment += c;
+        }
+        if (not accumulatingSegment.empty ()) {
+            segments.push_back (accumulatingSegment.str ());
+        }
+        vector<String> segments2; // apply ../. removeal
+        for (String segment : segments) {
+            if (segment == L"." or segment == L"/.") {
+                // drop it on the floor
+            }
+            else if (segment == L".." or segment == L"/..") {
+                if (not segments2.empty ()) {
+                    segments2.pop_back ();
+                }
+            }
+            else {
+                segments2.push_back (segment);
+            }
+        }
+
+        StringBuilder result;
+        for (String segment : segments2) {
+            result += segment;
+        }
+        return result.str ();
+    };
+
+    Assert (remove_dot_segments (L"/a/b/c/./../../g") == L"/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
+    Assert (remove_dot_segments (L"mid/content=5/../6") == L"mid/6"); // ditto
+
+    // Algorithm copied from https://tools.ietf.org/html/rfc3986#section-5.2.2
+    URI result;
+
+    /*
+     * Skipped this part
+     *    -- A non-strict parser may ignore a scheme in the reference
+     *    -- if it is identical to the base URI's scheme.
+     *    --
+     *    if ((not strict) and (R.scheme == Base.scheme)) then
+     *       undefine(R.scheme);
+     *    endif;
+     */
+    if (uri.GetScheme ()) {
+        result.SetScheme (uri.GetScheme ());
+        result.SetAuthority (uri.GetAuthority ());
+        result.SetPath (remove_dot_segments (uri.GetPath ()));
+        result.SetQuery (uri.GetQuery ());
+    }
+    else {
+        result.SetScheme (baseURI.GetScheme ());
+        if (uri.GetAuthority ()) {
+            result.SetAuthority (uri.GetAuthority ());
+            result.SetPath (remove_dot_segments (uri.GetPath ()));
+            result.SetQuery (uri.GetQuery ());
+        }
+        else {
+            result.SetAuthority (baseURI.GetAuthority ());
+            if (uri.GetPath ().empty ()) {
+                result.SetPath (baseURI.GetPath ());
+                result.SetQuery (uri.GetQuery () ? uri.GetQuery () : baseURI.GetQuery ());
+            }
+            else {
+                if (uri.GetPath ().StartsWith (L"/")) {
+                    result.SetPath (remove_dot_segments (uri.GetPath ()));
+                }
+                else {
+                    result.SetPath (remove_dot_segments (merge (baseURI.GetPath (), uri.GetPath ())));
+                }
+                result.SetQuery (uri.GetQuery ());
+            }
+        }
+    }
+    result.SetFragment (uri.GetFragment ());
+    return result;
+}
