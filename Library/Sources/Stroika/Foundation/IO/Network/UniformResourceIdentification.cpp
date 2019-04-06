@@ -164,6 +164,13 @@ Host Host::Normalize () const
 
 String Host::EncodeAsRawURL_ (const String& registeredName)
 {
+#if 1
+
+    // https://tools.ietf.org/html/rfc3986#appendix-A
+    //reg-name      = *( unreserved / pct-encoded / sub-delims )
+    static constexpr UniformResourceIdentification::PCTEncodeOptions kHostEncodeOptions_{true};
+    return UniformResourceIdentification::PCTEncode2String (registeredName, kHostEncodeOptions_);
+#else
     // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
     string utf8Query = registeredName.AsUTF8 ();
     string result;
@@ -178,7 +185,8 @@ String Host::EncodeAsRawURL_ (const String& registeredName)
             result += CString::Format ("%%%.2x", ccode);
         }
     }
-    return String::FromUTF8 (result);
+    return String::FromASCII (result);
+#endif
 }
 
 String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)

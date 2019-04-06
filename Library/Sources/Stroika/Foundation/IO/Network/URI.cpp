@@ -41,7 +41,7 @@ URI::URI (const URL& url)
 
 URI URI::Parse (const string& rawURL)
 {
-    return Parse (DataExchange::CheckedConverter<String, DataExchange::ASCII> (rawURL));
+    return Parse (String::FromASCII (rawURL));
 }
 
 URI URI::Parse (const String& rawURL)
@@ -64,7 +64,8 @@ URI URI::Parse (const String& rawURL)
         }
         return nullopt;
     };
-    if (DataExchange::CheckedConverter<String, DataExchange::ASCII> (rawURL).Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+    (void)rawURL.AsASCII (); // for throw check side-effect
+    if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
         return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), path.value_or (String{}), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
