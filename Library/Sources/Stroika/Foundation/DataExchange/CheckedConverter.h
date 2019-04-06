@@ -35,25 +35,25 @@ namespace Stroika::Foundation::DataExchange {
     template <typename TO, typename EXTRA_DATA, typename FROM>
     [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] TO CheckedConverter (FROM from, const EXTRA_DATA& extraData = EXTRA_DATA{});
 
-    struct [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] UTF8{};
-    struct [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] ASCII{};
+    struct [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] UTF8{};
+    struct [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] ASCII{};
 
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START (4996);
     template <>
-    [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, UTF8, string> (string from, const UTF8& extraData);
+    [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, UTF8, string> (string from, const UTF8& extraData);
     template <>
-    [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, UTF8, const char*> (const char* from, const UTF8& extraData);
+    [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, UTF8, const char*> (const char* from, const UTF8& extraData);
     template <>
-    [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, ASCII, string> (string from, const ASCII& extraData);
+    [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, ASCII, string> (string from, const ASCII& extraData);
     template <>
-    [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, ASCII, Characters::String> (Characters::String from, const ASCII& extraData);
+    [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, ASCII, Characters::String> (Characters::String from, const ASCII& extraData);
     template <>
-    [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData);
+    [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] Characters::String CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData);
 
     template <>
-    [[deprecated ("Use String::AsASCII , or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] string CheckedConverter<string, ASCII, Characters::String> (Characters::String from, const ASCII& extraData);
+    [[deprecated ("Use String::AsASCII, or String::FromAscii, or String::FromUTF8 since Stroika v2.1d23")]] string CheckedConverter<string, ASCII, Characters::String> (Characters::String from, const ASCII& extraData);
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_END (4996);
