@@ -179,14 +179,24 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         static Host Parse (const String& rawURLHostnameText);
 
     public:
+        /**
+         *  See https://tools.ietf.org/html/rfc3986#section-6.2.2
+         */
+        nonvirtual Host Normalize () const;
+
+    public:
         /*
          *  Returns missing if its nota  registered name (dnsname).
+         *
+         *  \note always AsRegisteredName () or AsInternetAddress () returns a value;
          */
         nonvirtual optional<String> AsRegisteredName () const;
 
     public:
         /**
          *  Returns missing if its not an InternetAddress
+         *
+         *  \note always AsRegisteredName () or AsInternetAddress () returns a value;
          */
         nonvirtual optional<InternetAddress> AsInternetAddress () const;
 
@@ -220,27 +230,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     /**
      *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
      */
-    struct Authority {
-
-        /*
-         *  note that https://tools.ietf.org/html/rfc3986#appendix-A sort if indicates that the host is NOT optional, but maybe empty
-         *  Because of how combining works with base urls and full URLs, I think its clearer to represent the empty case of an empty 
-         *  host as a missing host specificiation.
-         */
-        optional<Host> fHost;
-
-        optional<PortType> fPort;
-
-        /**
-         * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
-         *      The userinfo subcomponent may consist of a user name and, optionally,
-         *      scheme-specific information about how to gain authorization to access
-         *      the resource
-         */
-        optional<String> fUserInfo;
-
+    class Authority {
+    public:
         Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<String>& userInfo = nullopt);
 
+    public:
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
@@ -248,6 +242,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
          */
         static optional<Authority> Parse (const String& rawURLAuthorityText);
+
+    public:
+        /**
+         *  See https://tools.ietf.org/html/rfc3986#section-6.2.2
+         */
+        nonvirtual Authority Normalize () const;
 
     public:
         /**
@@ -259,9 +259,51 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
+         *  note that https://tools.ietf.org/html/rfc3986#appendix-A sort if indicates that the host is NOT optional, but maybe empty
+         *  Because of how combining works with base urls and full URLs, I think its clearer to represent the empty case of an empty 
+         *  host as a missing host specificiation.
+         */
+        nonvirtual optional<Host> GetHost () const;
+
+    public:
+        /**
+         */
+        nonvirtual void SetHost (const optional<Host>& host);
+
+    public:
+        /**
+         */
+        nonvirtual optional<PortType> GetPort () const;
+
+    public:
+        /**
+         */
+        nonvirtual void SetPort (const optional<PortType>& port);
+
+    public:
+        /**
+         * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
+         *      The userinfo subcomponent may consist of a user name and, optionally,
+         *      scheme-specific information about how to gain authorization to access
+         *      the resource
+         */
+        nonvirtual optional<String> GetUserInfo () const;
+
+    public:
+        /**
+         */
+        nonvirtual void SetUserInfo (const optional<String>& userInfo);
+
+    public:
+        /**
          *  For debugging purposes: don't count on the format.
          */
         nonvirtual String ToString () const;
+
+    private:
+        optional<Host>     fHost_;
+        optional<PortType> fPort_;
+        optional<String>   fUserInfo_;
     };
 
     /**

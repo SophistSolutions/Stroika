@@ -47,6 +47,11 @@ namespace Stroika::Foundation::IO::Network {
     class URL;
 
     /**
+     *  \par RFC Reference
+     *       \note https://tools.ietf.org/html/rfc3986 - Uniform Resource Identifier (URI): Generic Syntax - 2005
+     *             Updates: 1738; Obsoletes 2732, 2396, 1808
+     *             (so combines relative and absolute)
+     *
      *  A URI is EITHER a URL, or a relative reference to a URL. This definition is VERY MUCH LESS THAN CLEAR,
      *  but the closest I can infer from:
      *      https://tools.ietf.org/html/rfc3986
@@ -111,6 +116,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         nonvirtual void SetScheme (const optional<SchemeType>& scheme);
+        nonvirtual void SetScheme (const SchemeType& scheme);
 
     public:
         /**
@@ -152,7 +158,29 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
+        nonvirtual void SetQuery (const optional<String>& query);
+        nonvirtual void SetQuery (const optional<Query>& query);
+
+    public:
+        /**
+         */
         nonvirtual optional<String> GetFragment () const;
+
+    public:
+        /**
+         */
+        nonvirtual void SetFragment (const optional<String>& query);
+
+    public:
+        /**
+         *  Produce a normalized represnetation of the URI.
+         *
+         *  Since constructing the URI object already does alot of this, some parts are not needed (like 
+         *  Percent-Encoding Normalization, and character set conversion. But other parts are still useful/impactful (like tolower).
+         *
+         *  @see https://tools.ietf.org/html/rfc3986#section-6
+         */
+        nonvirtual URI GetNormalized () const;
 
     public:
         /**

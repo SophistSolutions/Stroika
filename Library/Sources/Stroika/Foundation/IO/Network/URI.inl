@@ -45,6 +45,11 @@ namespace Stroika::Foundation::IO::Network {
         }
         fScheme_ = scheme;
     }
+    inline void URI::SetScheme (const SchemeType& scheme)
+    {
+        UniformResourceIdentification::ValidateScheme (scheme);
+        fScheme_ = scheme;
+    }
     inline optional<URI::Authority> URI::GetAuthority () const
     {
         return fAuthority_;
@@ -74,9 +79,21 @@ namespace Stroika::Foundation::IO::Network {
         }
         return nullopt;
     }
+    inline void URI::SetQuery (const optional<String>& query)
+    {
+        fQuery_ = query;
+    }
+    inline void URI::SetQuery (const optional<Query>& query)
+    {
+        fQuery_ = query ? query->ComputeQueryString () : optional<String>{};
+    }
     inline optional<String> URI::GetFragment () const
     {
         return fFragment_;
+    }
+    inline void URI::SetFragment (const optional<String>& fragment)
+    {
+        fFragment_ = fragment;
     }
 
 }

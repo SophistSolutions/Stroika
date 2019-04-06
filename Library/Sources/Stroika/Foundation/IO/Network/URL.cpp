@@ -130,8 +130,8 @@ URL URL::Parse (const String& w, ParseOptions po)
                     break;
                 }
             }
-            size_t endOfHost         = i;
-            result.fAuthority_.fHost = Host::Parse (w.SubString (hostNameStart, endOfHost));
+            size_t endOfHost = i;
+            result.fAuthority_.SetHost (Host::Parse (w.SubString (hostNameStart, endOfHost)));
 
             // COULD check right here for port# if c == ':' - but don't bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -143,7 +143,7 @@ URL URL::Parse (const String& w, ParseOptions po)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        result.fAuthority_.fPort = String2Int<PortType> (num);
+                        result.fAuthority_.SetPort (String2Int<PortType> (num));
                     }
                 }
             }
@@ -232,7 +232,7 @@ URL URL::ParseHostRelativeURL_ (const String& w)
 URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 {
     URL url;
-    url.fAuthority_.fPort = nullopt;
+    url.fAuthority_.SetPort (nullopt);
 
     if (w.empty ()) {
         return url;
@@ -281,8 +281,8 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
                     break;
                 }
             }
-            size_t endOfHost      = i;
-            url.fAuthority_.fHost = Host::Parse (w.SubString (hostNameStart, endOfHost));
+            size_t endOfHost = i;
+            url.fAuthority_.SetHost (Host::Parse (w.SubString (hostNameStart, endOfHost)));
 
             // COULD check right here for port# if c == ':' - but don't bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -294,7 +294,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        url.fAuthority_.fPort = String2Int<PortType> (num);
+                        url.fAuthority_.SetPort (String2Int<PortType> (num));
                     }
                 }
             }
@@ -363,10 +363,10 @@ String URL::GetFullURL () const
 
     result += *scheme + L":"sv;
 
-    if (fAuthority_.fHost) {
-        result += L"//"sv + fAuthority_.fHost->AsEncoded ();
-        if (fAuthority_.fPort.has_value () and fAuthority_.fPort != GetDefaultPortForScheme (scheme)) {
-            result += Format (L":%d", *fAuthority_.fPort);
+    if (fAuthority_.GetHost ()) {
+        result += L"//"sv + fAuthority_.GetHost ()->AsEncoded ();
+        if (fAuthority_.GetPort ().has_value () and fAuthority_.GetPort () != GetDefaultPortForScheme (scheme)) {
+            result += Format (L":%d", *fAuthority_.GetPort ());
         }
         result += L"/"sv;
     }
@@ -399,21 +399,20 @@ String URL::GetHostRelPathDir () const
 
 void URL::clear ()
 {
-    fScheme_              = nullopt;
-    fAuthority_.fHost     = nullopt;
-    fAuthority_.fPort     = nullopt;
-    fAuthority_.fUserInfo = nullopt;
+    fScheme_ = nullopt;
+    fAuthority_.SetHost (nullopt);
+    fAuthority_.SetPort (nullopt);
+    fAuthority_.SetUserInfo (nullopt);
     fRelPath_.clear ();
     fQuery_.clear ();
     fFragment_.clear ();
-    fAuthority_.fPort = nullopt;
     Ensure (empty ());
 }
 
 bool URL::empty () const
 {
     // @todo consider fAuthority.fUserInfo - and rethink this definition
-    return not fScheme_.has_value () and not fAuthority_.fHost and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and not fAuthority_.fPort.has_value ();
+    return not fScheme_.has_value () and not fAuthority_.GetHost () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and not fAuthority_.GetPort ();
 }
 
 bool URL::Equals (const URL& rhs) const
@@ -423,11 +422,11 @@ bool URL::Equals (const URL& rhs) const
         return false;
     }
 
-    if (fAuthority_.fHost != rhs.fAuthority_.fHost) {
+    if (fAuthority_.GetHost () != rhs.fAuthority_.GetHost ()) {
         return false;
     }
 
-    if (fAuthority_.fPort != rhs.fAuthority_.fPort) {
+    if (fAuthority_.GetPort () != rhs.fAuthority_.GetPort ()) {
         return false;
     }
     if (fRelPath_ != rhs.fRelPath_) {

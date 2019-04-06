@@ -152,6 +152,16 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         return pair<optional<String>, optional<InternetAddress>>{String::FromUTF8 (utf8ResultBuffer), nullopt};
     }
 }
+
+Host Host::Normalize () const
+{
+    if (fRegisteredName_) {
+        return Host{fRegisteredName_->ToLowerCase ()};
+    }
+    Assert (fInternetAddress_);
+    return Host{*fInternetAddress_};
+}
+
 String Host::EncodeAsRawURL_ (const String& registeredName)
 {
     // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
@@ -214,18 +224,23 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     return Authority{Host::Parse (remainingString2Parse), port, userInfo};
 }
 
+Authority Authority::Normalize () const
+{
+    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_};
+}
+
 template <>
 String Authority::As () const
 {
     StringBuilder sb;
-    if (fUserInfo) {
-        sb += *fUserInfo + L"@";
+    if (fUserInfo_) {
+        sb += *fUserInfo_ + L"@";
     }
-    if (fHost) {
-        sb += fHost->AsEncoded ();
+    if (fHost_) {
+        sb += fHost_->AsEncoded ();
     }
-    if (fPort) {
-        sb += Format (L":%d", *fPort);
+    if (fPort_) {
+        sb += Format (L":%d", *fPort_);
     }
     return sb.str ();
 }

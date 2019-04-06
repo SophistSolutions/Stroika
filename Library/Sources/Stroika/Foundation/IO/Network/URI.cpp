@@ -70,8 +70,7 @@ template <>
 String URI::As () const
 {
     // @todo - support %PCT ENCODING
-    StringBuilder        result;
-    optional<SchemeType> scheme = this->fScheme_;
+    StringBuilder result;
     if (fScheme_) {
         result += *fScheme_ + L":";
     }
@@ -94,6 +93,21 @@ URL URI::As () const
 {
     Require (IsURL ());
     return URL{}; // NYI
+}
+
+URI URI::GetNormalized () const
+{
+    optional<SchemeType> scheme = fScheme_;
+    if (scheme) {
+        scheme = UniformResourceIdentification::NormalizeScheme (*scheme);
+    }
+    optional<Authority> authority = fAuthority_;
+    if (authority) {
+        //@todo NORMALIZE--- authority = authority->ToLowerCase ();
+    }
+    String path = fPath_; // @todo https://tools.ietf.org/html/rfc3986#section-6.2.2.3
+
+    return URI{scheme, authority, path, fQuery_, fFragment_};
 }
 
 String URI::ToString () const

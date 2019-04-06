@@ -20,8 +20,8 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline URL::PortType URL::GetPortValue (PortType defaultValue) const
     {
-        if (fAuthority_.fPort) {
-            return *fAuthority_.fPort;
+        if (fAuthority_.GetPort ()) {
+            return *fAuthority_.GetPort ();
         }
         else {
             return UniformResourceIdentification::GetDefaultPortForScheme (GetScheme ()).value_or (defaultValue);
@@ -29,11 +29,11 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline optional<URL::PortType> URL::GetPortNumber () const
     {
-        return fAuthority_.fPort;
+        return fAuthority_.GetPort ();
     }
     inline void URL::SetPortNumber (const optional<PortType>& portNum)
     {
-        fAuthority_.fPort = portNum;
+        fAuthority_.SetPort (portNum);
     }
     inline optional<URL::SchemeType> URL::GetScheme () const
     {
@@ -41,8 +41,8 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline String URL::GetHost () const
     {
-        if (fAuthority_.fHost) {
-            return fAuthority_.fHost->AsEncoded ();
+        if (fAuthority_.GetHost ()) {
+            return fAuthority_.GetHost ()->AsEncoded ();
         }
         else {
             return String{};
@@ -51,10 +51,10 @@ namespace Stroika::Foundation::IO::Network {
     inline void URL::SetHost (const String& host)
     {
         if (host.empty ()) {
-            fAuthority_.fHost = nullopt;
+            fAuthority_.SetHost (nullopt);
         }
         else {
-            fAuthority_.fHost = host;
+            fAuthority_.SetHost (host);
         }
     }
     inline void URL::SetScheme (const optional<SchemeType>& scheme)

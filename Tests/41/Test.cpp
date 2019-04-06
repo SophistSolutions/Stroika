@@ -294,8 +294,8 @@ namespace {
             {
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
-                    VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"localhost");
-                    VerifyTestResult (uri.GetAuthority ()->fPort == 1234);
+                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"localhost");
+                    VerifyTestResult (uri.GetAuthority ()->GetPort () == 1234);
                     VerifyTestResult (uri.As<String> () == L"http://localhost:1234");
                 }
                 {
@@ -305,7 +305,7 @@ namespace {
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
-                    VerifyTestResult (uri.GetAuthority ()->fHost->AsRegisteredName () == L"www.ics.uci.edu");
+                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"www.ics.uci.edu");
                     VerifyTestResult (uri.As<String> () == L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
