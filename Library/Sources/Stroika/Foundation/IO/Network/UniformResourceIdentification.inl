@@ -105,7 +105,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      **************************** Authority::operators ******************************
      ********************************************************************************
      */
-    inline bool UniformResourceIdentification::operator!= (const Authority& lhs, const Authority& rhs)
+    inline bool operator!= (const Authority& lhs, const Authority& rhs)
     {
         not(lhs == rhs);
     }
