@@ -305,6 +305,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<PortType> fPort_;
         optional<String>   fUserInfo_;
     };
+    bool operator== (const Authority& lhs, const Authority& rhs);
+    bool operator!= (const Authority& lhs, const Authority& rhs);
 
     /**
      */

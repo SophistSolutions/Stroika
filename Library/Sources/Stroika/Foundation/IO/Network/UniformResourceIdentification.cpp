@@ -253,6 +253,33 @@ String Authority::As () const
     return sb.str ();
 }
 
+bool UniformResourceIdentification::operator== (const Authority& lhs, const Authority& rhs)
+{
+    if (lhs.GetUserInfo () != rhs.GetUserInfo ()) {
+        return false;
+    }
+    if (lhs.GetHost () != rhs.GetHost ()) {
+        return false;
+    }
+    if (lhs.GetPort () != rhs.GetPort ()) {
+        return false;
+    }
+    return true;
+}
+bool UniformResourceIdentification::operator!= (const Authority& lhs, const Authority& rhs)
+{
+    if (lhs.GetUserInfo () != rhs.GetUserInfo ()) {
+        return true;
+    }
+    if (lhs.GetHost () != rhs.GetHost ()) {
+        return true;
+    }
+    if (lhs.GetPort () != rhs.GetPort ()) {
+        return true;
+    }
+    return false;
+}
+
 /*
  ********************************************************************************
  ************************************** URLQuery ********************************

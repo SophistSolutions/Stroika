@@ -421,12 +421,7 @@ bool URL::Equals (const URL& rhs) const
     if (fScheme_ != rhs.fScheme_) {
         return false;
     }
-
-    if (fAuthority_.GetHost () != rhs.fAuthority_.GetHost ()) {
-        return false;
-    }
-
-    if (fAuthority_.GetPort () != rhs.fAuthority_.GetPort ()) {
+    if (fAuthority_ != rhs.fAuthority_) {
         return false;
     }
     if (fRelPath_ != rhs.fRelPath_) {
