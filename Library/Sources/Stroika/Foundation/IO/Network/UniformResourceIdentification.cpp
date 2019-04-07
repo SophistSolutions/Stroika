@@ -207,6 +207,11 @@ String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
     }
 }
 
+String Host::ToString () const
+{
+    return Characters::ToString (AsEncoded ());
+}
+
 /*
  ********************************************************************************
  ********************************* Authority ************************************
@@ -253,6 +258,16 @@ String Authority::As () const
     return sb.str ();
 }
 
+String Authority::ToString () const
+{
+    return Characters::ToString (As<String> ());
+}
+
+/*
+ ********************************************************************************
+ **************************** Authority::operators ******************************
+ ********************************************************************************
+ */
 bool UniformResourceIdentification::operator== (const Authority& lhs, const Authority& rhs)
 {
     if (lhs.GetUserInfo () != rhs.GetUserInfo ()) {
@@ -266,6 +281,7 @@ bool UniformResourceIdentification::operator== (const Authority& lhs, const Auth
     }
     return true;
 }
+
 bool UniformResourceIdentification::operator!= (const Authority& lhs, const Authority& rhs)
 {
     if (lhs.GetUserInfo () != rhs.GetUserInfo ()) {

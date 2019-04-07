@@ -206,6 +206,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual String AsEncoded () const;
 
+    public:
+        /**
+         *  For debugging purposes: don't count on the format.
+         */
+        nonvirtual String ToString () const;
+
     private:
         // Throws if cannot parse/illegal
         static pair<optional<String>, optional<InternetAddress>> ParseRaw_ (const String& raw);
