@@ -78,7 +78,7 @@ URL URL::Parse (const String& w, ParseOptions po)
         size_t slashshash = w.Find (L"//").value_or (String::npos); // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
         size_t e          = w.find (':');
         if (e != String::npos and (slashshash == String::npos or e < slashshash)) {
-            result.fScheme_ = NormalizeScheme (w.SubString (0, e));
+            result.fScheme_ = SchemeType (w.SubString (0, e)).Normalize ();
             hostNameStart   = e + 1;
         }
         else if (flexibleURLParsingMode) {
@@ -87,13 +87,13 @@ URL URL::Parse (const String& w, ParseOptions po)
              *  But since Stroika v2.1d23, this flexible parsing mode constructs a full url, by filling in details at parse
              *  time
              */
-            result.fScheme_ = L"http"sv;
+            result.fScheme_ = L"http"_k;
         }
         else {
             Execution::Throw (Execution::RuntimeErrorException (L"URL missing scheme"sv));
         }
         if (result.fScheme_) {
-            ValidateScheme (*result.fScheme_);
+            result.fScheme_->Validate ();
         }
     }
 
@@ -177,7 +177,7 @@ URL URL::Parse (const String& w, ParseOptions po)
 }
 
 URL::URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
-    : fScheme_ (NormalizeScheme (scheme))
+    : fScheme_ (scheme.Normalize ())
     , fAuthority_{Host{host}, portNumber}
     , fRelPath_ (relPath)
     , fQuery_ (query)
@@ -185,11 +185,11 @@ URL::URL (const SchemeType& scheme, const String& host, const optional<PortType>
 {
     Require (not relPath.StartsWith (L"/"sv));
     Require (not query.StartsWith (L"?"sv));
-    ValidateScheme (*fScheme_);
+    fScheme_->Validate ();
 }
 
 URL::URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query, const String& fragment)
-    : fScheme_ (NormalizeScheme (scheme))
+    : fScheme_ (scheme.Normalize ())
     , fAuthority_{Host{host}}
     , fRelPath_ (relPath)
     , fQuery_ (query)
@@ -197,7 +197,7 @@ URL::URL (const SchemeType& scheme, const String& host, const String& relPath, c
 {
     Require (not relPath.StartsWith (L"/"sv));
     Require (not query.StartsWith (L"?"sv));
-    ValidateScheme (*fScheme_);
+    fScheme_->Validate ();
 }
 
 URL URL::ParseHostRelativeURL_ (const String& w)
@@ -249,8 +249,8 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
     {
         size_t e = w.find (':');
         if (e != String::npos) {
-            url.fScheme_ = NormalizeScheme (w.SubString (0, e));
-            ValidateScheme (*url.fScheme_);
+            url.fScheme_ = SchemeType (w.SubString (0, e)).Normalize ();
+            url.fScheme_->Validate ();
         }
     }
 
@@ -329,15 +329,16 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 
 void URL::SetScheme (const SchemeType& scheme)
 {
-    fScheme_ = NormalizeScheme (scheme);
-    ValidateScheme (*fScheme_);
+    fScheme_ = scheme.Normalize ();
+    fScheme_->Validate ();
 }
 
 bool URL::IsSecure () const
 {
-    optional<SchemeType> scheme = GetScheme ();
-    // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
-    return scheme == L"https"sv or scheme == L"ftps"sv or scheme == L"ldaps"sv;
+    if (optional<SchemeType> scheme = GetScheme ()) {
+        return scheme->IsSecure ();
+    }
+    return false;
 }
 
 optional<URL::Authority> URL::GetAuthority () const
@@ -358,7 +359,7 @@ String URL::GetFullURL () const
     optional<SchemeType> scheme = GetScheme ();
     // @todo - major rework of this for partial URLs
     if (not scheme.has_value ()) {
-        scheme = L"http"; // backward compatible but bad design...
+        scheme = L"http"_k; // backward compatible but bad design...
     }
 
     result += *scheme + L":"sv;

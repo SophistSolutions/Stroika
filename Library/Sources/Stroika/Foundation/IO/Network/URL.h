@@ -180,6 +180,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Returns if the URL protocol is secure (SSL-based). If the URL scheme is not recognized, this returns false.
          */
+        //[[deprecated(REPLACE WITH GetScheme () and GetScheme ()->IsSecure ()]]
         nonvirtual bool IsSecure () const;
 
     public:
@@ -189,12 +190,14 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Returns a String representation of the fully qualified URL.
          */
+        //[[deprecated(REPLACE WITH URI::As<String> ())]]
         nonvirtual String GetFullURL () const;
 
     public:
         /**
          *      If port# not specified, returns detault given the protocol.
          */
+        //[[deprecated(REPLACE WITH URI::GetAuthority () && GetAuthority ().GetPort ().value_or (80))]]
         nonvirtual PortType GetPortValue (PortType defaultValue = 80) const;
 
     public:
@@ -205,6 +208,7 @@ namespace Stroika::Foundation::IO::Network {
          *  @see GetPortValue
          *  @see SetPortNumber
          */
+        //[[deprecated(REPLACE WITH URI::GetAuthority () && GetAuthority ().GetPort ().value_or (80))]]
         nonvirtual optional<PortType> GetPortNumber () const;
 
     public:
@@ -235,12 +239,14 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
+        //[[deprecated(REPLACE WITH use of optional)]]
         nonvirtual void clear ();
 
     public:
         /**
          *  This is the value created by clear or the no-arg CTOR.
          */
+        //[[deprecated(REPLACE WITH use of optional)]]
         nonvirtual bool empty () const;
 
     public:
@@ -266,6 +272,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
             // @todo DEPRECATE THIS METHIOD - cuz unclear if returns encoded or unencoded host
          */
+        //[[deprecated(REPLACE WITH URI GetAuthority () && GetAuthority ()->GetHost ().value_or (String{}))]]
         nonvirtual String GetHost () const;
 
     public:
@@ -273,6 +280,7 @@ namespace Stroika::Foundation::IO::Network {
             // @todo DEPRECATE THIS METHIOD - cuz unclear if returns encoded or unencoded host
          @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
             */
+        //[[deprecated(REPLACE WITH URI TBD)]]
         nonvirtual void SetHost (const String& host);
 
     public:
@@ -285,18 +293,21 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  @see GetHostRelURLString ()
          */
+        //[[deprecated(REPLACE WITH URI TBD - close to GetPath)]]
         nonvirtual String GetHostRelativePath () const;
 
     public:
         /**
          *  @see GetHostRelativePath for format restrictions.
          */
+        //[[deprecated(REPLACE WITH URI TBD - close to SetPath)]]
         nonvirtual void SetHostRelativePath (const String& hostRelativePath);
 
     public:
         /**
          *   @see GetHostRelativePath for format restrictions. This can be empty.
          */
+        //[[deprecated(REPLACE WITH URI TBD - close to GetPath???)]]
         nonvirtual String GetHostRelPathDir () const;
 
     public:
@@ -313,23 +324,27 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \note   This returns an empty string if no query.
          */
+        //[[deprecated(REPLACE WITH URI TBD - close to GetQyery<String>???)]]
         nonvirtual String GetQueryString () const;
 
     public:
         /**
          @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
         */
+        //[[deprecated(REPLACE WITH URI SetQuery)]]
         nonvirtual void SetQueryString (const String& queryString);
 
     public:
         /**
          */
+        //[[deprecated(same as class URI, exeption returns optional<String> - so diff for the case of empty string versus empty optional)]]
         nonvirtual String GetFragment () const;
 
     public:
         /**
          *  @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
          */
+        //[[deprecated(same as class URI, exeption returns optional<String> - so diff for the case of empty string versus empty optional)]]
         nonvirtual void SetFragment (const String& frag);
 
     public:
@@ -343,6 +358,7 @@ namespace Stroika::Foundation::IO::Network {
          *  @see GetHostRelativePath ()
          *  @see GetHostRelativePathPlusQuery ()
          */
+        //[[deprecated(USE URI - METHOD TBD)]]
         nonvirtual String GetHostRelURLString () const;
 
     public:
@@ -356,6 +372,7 @@ namespace Stroika::Foundation::IO::Network {
          *  @see GetHostRelURLString ()
          *  @see GetHostRelativePath ()
          */
+        //[[deprecated(USE URI - METHOD TBD)]]
         nonvirtual String GetHostRelativePathPlusQuery () const;
 
     public:
@@ -365,11 +382,11 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual String ToString () const;
 
     private:
-        optional<String> fScheme_; // aka protocol
-        Authority        fAuthority_;
-        String           fRelPath_;
-        String           fQuery_;
-        String           fFragment_;
+        optional<SchemeType> fScheme_; // aka protocol
+        Authority            fAuthority_;
+        String               fRelPath_;
+        String               fQuery_;
+        String               fFragment_;
     };
 
     /**
@@ -386,7 +403,8 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      */
-    class LabeledURL {
+    class [[deprecated ("Since 2.1d23, too simple (and due to switch to uri not worth maintaining)")]] LabeledURL
+    {
     public:
         LabeledURL (const URL& url = URL (), const String& label = String ());
 

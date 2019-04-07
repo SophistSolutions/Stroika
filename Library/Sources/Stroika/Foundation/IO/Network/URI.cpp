@@ -124,7 +124,7 @@ URI URI::Normalize () const
 {
     optional<SchemeType> scheme = fScheme_;
     if (scheme) {
-        scheme = UniformResourceIdentification::NormalizeScheme (*scheme);
+        scheme = scheme->Normalize ();
     }
     optional<Authority> authority = fAuthority_;
     if (authority) {

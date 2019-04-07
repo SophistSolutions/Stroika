@@ -26,7 +26,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         // @todo probably validate query and fragment args?? Maybe not needed (if not document why)
         if (scheme) {
-            UniformResourceIdentification::ValidateScheme (*scheme);
+            scheme->Validate ();
         }
     }
     inline bool URI::IsURL () const
@@ -41,13 +41,13 @@ namespace Stroika::Foundation::IO::Network {
     inline void URI::SetScheme (const optional<SchemeType>& scheme)
     {
         if (scheme) {
-            UniformResourceIdentification::ValidateScheme (*scheme);
+            scheme->Validate ();
         }
         fScheme_ = scheme;
     }
     inline void URI::SetScheme (const SchemeType& scheme)
     {
-        UniformResourceIdentification::ValidateScheme (scheme);
+        scheme.Validate ();
         fScheme_ = scheme;
     }
     inline optional<URI::Authority> URI::GetAuthority () const

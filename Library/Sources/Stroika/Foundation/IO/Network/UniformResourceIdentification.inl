@@ -15,6 +15,20 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     /*
      ********************************************************************************
+     ******************* UniformResourceIdentification::SchemeType ******************
+     ********************************************************************************
+     */
+    inline SchemeType::SchemeType (const wstring_view& s)
+        : inherited{s}
+    {
+    }
+    inline SchemeType::SchemeType (const String& s)
+        : inherited{s}
+    {
+    }
+
+    /*
+     ********************************************************************************
      ************************************* Host *************************************
      ********************************************************************************
      */
@@ -55,10 +69,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ********************************** Host operators ******************************
      ********************************************************************************
      */
-    inline bool operator== (const Host& lhs, const Host& rhs)
-    {
-        return lhs.AsEncoded ().Equals (rhs.AsEncoded (), Characters::CompareOptions::eCaseInsensitive);
-    }
     inline bool operator!= (const Host& lhs, const Host& rhs)
     {
         return not(lhs == rhs);

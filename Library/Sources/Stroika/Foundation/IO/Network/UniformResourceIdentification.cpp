@@ -46,30 +46,31 @@ namespace {
 
 /*
  ********************************************************************************
- *************** UniformResourceIdentification::NormalizeScheme *****************
+ *************** UniformResourceIdentification::SchemeType **********************
  ********************************************************************************
  */
-SchemeType UniformResourceIdentification::NormalizeScheme (const SchemeType& s)
+SchemeType SchemeType::Normalize () const
 {
     // replace all uppercase with lowercase - don't validate here
-    return s.ToLowerCase ();
+    return ToLowerCase ();
 }
 
-/*
- ********************************************************************************
- *************** UniformResourceIdentification::ValidateScheme ******************
- ********************************************************************************
- */
-void UniformResourceIdentification::ValidateScheme (const SchemeType& s)
+void SchemeType::Validate () const
 {
     // https://tools.ietf.org/html/rfc3986#appendix-A  -- scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-    for (Characters::Character c : s) {
+    for (Characters::Character c : *this) {
         if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+'))
             [[UNLIKELY_ATTR]]
             {
                 Execution::Throw (Execution::RuntimeErrorException (L"bad character in URI scheme"sv));
             }
     }
+}
+
+bool SchemeType::IsSecure () const
+{
+    auto ns = Normalize ();
+    return ns == L"https"sv or ns == L"ftps"sv or ns == L"ldaps"sv or ns == L"ssh"sv;
 }
 
 /*
@@ -98,7 +99,7 @@ optional<PortType> UniformResourceIdentification::GetDefaultPortForScheme (const
 
 /*
  ********************************************************************************
- *************************************** Host ***********************************
+ ************************************** Host ************************************
  ********************************************************************************
  */
 pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String& raw)
@@ -164,29 +165,10 @@ Host Host::Normalize () const
 
 String Host::EncodeAsRawURL_ (const String& registeredName)
 {
-#if 1
-
     // https://tools.ietf.org/html/rfc3986#appendix-A
     //reg-name      = *( unreserved / pct-encoded / sub-delims )
     static constexpr UniformResourceIdentification::PCTEncodeOptions kHostEncodeOptions_{true};
     return UniformResourceIdentification::PCTEncode2String (registeredName, kHostEncodeOptions_);
-#else
-    // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
-    string utf8Query = registeredName.AsUTF8 ();
-    string result;
-    size_t sLength = utf8Query.length ();
-    result.reserve (sLength);
-    for (size_t i = 0; i < sLength; ++i) {
-        wchar_t ccode = utf8Query[i];
-        if (isascii (ccode) and (isalnum (ccode) or (ccode == '-') or (ccode == '.') or (ccode == '_') or (ccode == '~'))) {
-            result += static_cast<char> (utf8Query[i]);
-        }
-        else {
-            result += CString::Format ("%%%.2x", ccode);
-        }
-    }
-    return String::FromASCII (result);
-#endif
 }
 
 String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
@@ -217,7 +199,7 @@ String Host::ToString () const
  ********************************** Host operators ******************************
  ********************************************************************************
  */
-bool UniformResourceIdentification::operator == (const Host& lhs, const Host& rhs)
+bool UniformResourceIdentification::operator== (const Host& lhs, const Host& rhs)
 {
     auto loi = lhs.AsInternetAddress ();
     auto roi = rhs.AsInternetAddress ();

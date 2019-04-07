@@ -129,15 +129,29 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \note Schemes should generally be treated as case insensitive, so compare with String::EqualToCI{}
      */
-    using SchemeType = String;
+    class SchemeType : public String {
+        using inherited = String;
 
-    /**
-     */
-    SchemeType NormalizeScheme (const SchemeType& s);
+    public:
+        SchemeType (const wstring_view& s);
+        SchemeType (const String& s);
 
-    /**
-     */
-    void ValidateScheme (const SchemeType& s);
+    public:
+        /**
+         */
+        nonvirtual SchemeType Normalize () const;
+
+    public:
+        /**
+         */
+        nonvirtual void Validate () const;
+
+    public:
+        /**
+         *  Returns true iff its a KNOWN secure protocol, like https, ssh, ftps, etc.
+        */
+        nonvirtual bool IsSecure () const;
+    };
 
     /**
      */
