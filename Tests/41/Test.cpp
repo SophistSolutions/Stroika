@@ -331,13 +331,40 @@ namespace {
             }
             void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
             {
-				// tests from https://tools.ietf.org/html/rfc3986#section-5.4
+                // tests from https://tools.ietf.org/html/rfc3986#section-5.4
                 URI base = URI::Parse (L"http://a/b/c/d;p?q");
                 VerifyTestResult (base.Combine (URI::Parse (L"g:h")).As<String> () == L"g:h");
                 VerifyTestResult (base.Combine (URI::Parse (L"g")).As<String> () == L"http://a/b/c/g");
                 VerifyTestResult (base.Combine (URI::Parse (L"./g")).As<String> () == L"http://a/b/c/g");
                 VerifyTestResult (base.Combine (URI::Parse (L"/g")).As<String> () == L"http://a/g");
-				// INCOMPLETE SET OF REGTESTS
+                VerifyTestResult (base.Combine (URI::Parse (L"//g")).As<String> () == L"http://g");
+
+
+                VerifyTestResult (base.Combine (URI::Parse (L"?y")).As<String> () == L"http://a/b/c/d;p?y");
+                VerifyTestResult (base.Combine (URI::Parse (L"g?y")).As<String> () == L"http://a/b/c/g?y");
+                VerifyTestResult (base.Combine (URI::Parse (L"#s")).As<String> () == L"http://a/b/c/d;p?q#s");
+                VerifyTestResult (base.Combine (URI::Parse (L"g#s")).As<String> () == L"http://a/b/c/g#s");
+                VerifyTestResult (base.Combine (URI::Parse (L"g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
+                VerifyTestResult (base.Combine (URI::Parse (L";x")).As<String> () == L"http://a/b/c/;x");
+                VerifyTestResult (base.Combine (URI::Parse (L"g;x")).As<String> () == L"http://a/b/c/g;x");
+                VerifyTestResult (base.Combine (URI::Parse (L"")).As<String> () == L"http://a/b/c/d;p?q");
+
+                URI x = URI::Parse (L"?y");
+                DbgTrace (L"***x=%s", Characters::ToString (x).c_str ());
+                URI y = base.Combine (x);
+                DbgTrace (L"***y=%s", Characters::ToString (y).c_str ());
+
+                //BROKEN                VerifyTestResult (base.Combine (URI::Parse (L".")).As<String> () == L"http://a/b/c/");
+                VerifyTestResult (base.Combine (URI::Parse (L"./")).As<String> () == L"http://a/b/c/");
+                //BROKEN     VerifyTestResult (base.Combine (URI::Parse (L"..")).As<String> () == L"http://a/b/");
+#if 0
+      "../"           =  "http://a/b/"
+      "../g"          =  "http://a/b/g"
+      "../.."         =  "http://a/"
+      "../../"        =  "http://a/"
+      "../../g"       =  "http://a/g"
+#endif
+                // INCOMPLETE SET OF REGTESTS
             }
         }
         void DoTests_ ()
@@ -366,7 +393,7 @@ namespace {
             VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
         }
         {
-            auto testRoundtrip = [](const String& s) {
+            auto testRoundtrip = [] (const String& s) {
                 InternetAddress iaddr1{s};
                 InternetAddress iaddr2{s.As<wstring> ()};
                 InternetAddress iaddr3{s.AsASCII ()};

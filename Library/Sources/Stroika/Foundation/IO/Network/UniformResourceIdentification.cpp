@@ -297,7 +297,7 @@ namespace {
 Query::Query (const String& query)
     : fMap_ ()
 {
-    InitURLQueryDecoder_ (&fMap_, query.AsUTF8 ());
+    InitURLQueryDecoder_ (&fMap_, query.AsASCII ());
 }
 
 Query::Query (const string& query)
@@ -444,20 +444,20 @@ string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncod
                 encode = false;
         }
 
-        if (options.allowFragOrQueryChars) {
+        if (useOptions.allowFragOrQueryChars) {
             switch (c) {
                 case '/':
                 case '?':
                     encode = false;
             }
         }
-        if (options.allowPathCharacters) {
+        if (useOptions.allowPathCharacters) {
             switch (c) {
                 case '/':
                     encode = false;
             }
         }
-        if (options.allowGenDelims) {
+        if (useOptions.allowGenDelims) {
             switch (c) {
                 case ':':
                 case '/':
@@ -468,7 +468,7 @@ string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncod
                     encode = false;
             }
         }
-        if (options.allowSubDelims) {
+        if (useOptions.allowSubDelims) {
             switch (c) {
                 case '!':
                 case '$':

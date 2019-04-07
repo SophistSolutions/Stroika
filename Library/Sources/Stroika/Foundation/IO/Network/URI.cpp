@@ -213,20 +213,20 @@ URI URI::Combine (const URI& uri) const
         result.SetScheme (uri.GetScheme ());
         result.SetAuthority (uri.GetAuthority ());
         result.SetPath (remove_dot_segments (uri.GetPath ()));
-        result.SetQuery (uri.GetQuery ());
+        result.SetQuery (uri.GetQuery<String> ());
     }
     else {
         result.SetScheme (baseURI.GetScheme ());
         if (uri.GetAuthority ()) {
             result.SetAuthority (uri.GetAuthority ());
             result.SetPath (remove_dot_segments (uri.GetPath ()));
-            result.SetQuery (uri.GetQuery ());
+            result.SetQuery (uri.GetQuery<String> ());
         }
         else {
             result.SetAuthority (baseURI.GetAuthority ());
             if (uri.GetPath ().empty ()) {
                 result.SetPath (baseURI.GetPath ());
-                result.SetQuery (uri.GetQuery () ? uri.GetQuery () : baseURI.GetQuery ());
+                result.SetQuery (uri.GetQuery<String> () ? uri.GetQuery<String> () : baseURI.GetQuery<String> ());
             }
             else {
                 if (uri.GetPath ().StartsWith (L"/")) {
@@ -235,7 +235,7 @@ URI URI::Combine (const URI& uri) const
                 else {
                     result.SetPath (remove_dot_segments (merge (baseURI.GetPath (), uri.GetPath ())));
                 }
-                result.SetQuery (uri.GetQuery ());
+                result.SetQuery (uri.GetQuery<String> ());
             }
         }
     }
