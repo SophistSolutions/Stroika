@@ -19,18 +19,12 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Use "Value" style hack to deal with optional stuff, and use more of optional class, at least in API.
- *              That way - we capture just what the user said, and only when he askes for info, do we use the Value() variant
- *              that plugs in defaults.
- *
- *              (partly/maybe done?)
- *
  *      @todo   support Compare() and oeprator<, etc.
  *
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
  *
- *      @todo   MABYE "SCHEMEREGISTER"
+ *      @todo   MABYE "SCHEME REGISTER"
  *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
  *
  *      @todo   Add PREDEFINED namespace and list predefined protocols
@@ -160,6 +154,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      encapsulated within square brackets, an IPv4 address in dotted-
      *      decimal form, or a registered name.  The host subcomponent is case-
      *      insensitive.
+     *
+     *  This class is ALWAYS either (mutually exclusive) regsiterName, or internetAddress
      */
     class Host {
     public:
@@ -186,7 +182,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /*
-         *  Returns missing if its nota  registered name (dnsname).
+         *  Returns missing if its not a  registered name (dnsname).
          *
          *  \note always AsRegisteredName () or AsInternetAddress () returns a value;
          */
@@ -234,6 +230,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator!= (const Host& lhs, const Host& rhs);
 
     /**
+     *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
+     *
      *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
      */
     class Authority {
@@ -358,6 +356,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  See https://tools.ietf.org/html/rfc3986#appendix-A for the meaning of encodeGenDelims/encodeSubDelims
      *
      *  When called with a String, the string is first UTF8 encoded.
+     *
+     *  This is mostly used INTERNALLY in parsing URLs, and probably should not be used otherwise.
      */
     struct PCTEncodeOptions {
         // From https://tools.ietf.org/html/rfc3986#appendix-A

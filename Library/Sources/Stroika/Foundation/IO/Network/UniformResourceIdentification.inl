@@ -61,7 +61,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator!= (const Host& lhs, const Host& rhs)
     {
-        return not lhs.AsEncoded ().Equals (rhs.AsEncoded (), Characters::CompareOptions::eCaseInsensitive);
+        return not(lhs == rhs);
     }
 
     /*

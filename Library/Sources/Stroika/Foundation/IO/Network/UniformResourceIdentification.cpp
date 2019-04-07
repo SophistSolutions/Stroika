@@ -214,6 +214,28 @@ String Host::ToString () const
 
 /*
  ********************************************************************************
+ ********************************** Host operators ******************************
+ ********************************************************************************
+ */
+bool UniformResourceIdentification::operator == (const Host& lhs, const Host& rhs)
+{
+    auto loi = lhs.AsInternetAddress ();
+    auto roi = rhs.AsInternetAddress ();
+    if (loi != roi) {
+        return false;
+    }
+    if (loi) {
+        Assert (not lhs.AsRegisteredName ());
+        Assert (not rhs.AsRegisteredName ());
+        return true; // if they are equal and defined, then NOT AsRegisteredName
+    }
+    Assert (lhs.AsRegisteredName ()); // must be one or the other
+    Assert (rhs.AsRegisteredName ());
+    return lhs.AsRegisteredName ()->Equals (*rhs.AsRegisteredName (), Characters::CompareOptions::eCaseInsensitive);
+}
+
+/*
+ ********************************************************************************
  ********************************* Authority ************************************
  ********************************************************************************
  */
