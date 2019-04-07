@@ -172,14 +172,22 @@ URI URI::Combine (const URI& uri) const
         if (not accumulatingSegment.empty ()) {
             segments.push_back (accumulatingSegment.str ());
         }
-        vector<String> segments2; // apply ../. removeal
+        vector<String> segments2;                         // apply ../. removeal
+        bool           lastSegmentShouldHaveSlash{false}; // not sure about this
         for (String segment : segments) {
+            lastSegmentShouldHaveSlash = false;
             if (segment == L"." or segment == L"/.") {
                 // drop it on the floor
+                if (segment[0] == '/') {
+                    lastSegmentShouldHaveSlash = true;
+                }
             }
             else if (segment == L".." or segment == L"/..") {
                 if (not segments2.empty ()) {
                     segments2.pop_back ();
+                }
+                if (segment[0] == '/') {
+                    lastSegmentShouldHaveSlash = true;
                 }
             }
             else {
@@ -190,6 +198,9 @@ URI URI::Combine (const URI& uri) const
         StringBuilder result;
         for (String segment : segments2) {
             result += segment;
+        }
+        if (lastSegmentShouldHaveSlash and not result.str ().EndsWith (L"/")) {
+            result += L"/";
         }
         return result.str ();
     };

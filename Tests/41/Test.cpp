@@ -333,13 +333,13 @@ namespace {
             {
                 // tests from https://tools.ietf.org/html/rfc3986#section-5.4
                 URI base = URI::Parse (L"http://a/b/c/d;p?q");
+
+                // https://tools.ietf.org/html/rfc3986#section-5.4.1
                 VerifyTestResult (base.Combine (URI::Parse (L"g:h")).As<String> () == L"g:h");
                 VerifyTestResult (base.Combine (URI::Parse (L"g")).As<String> () == L"http://a/b/c/g");
                 VerifyTestResult (base.Combine (URI::Parse (L"./g")).As<String> () == L"http://a/b/c/g");
                 VerifyTestResult (base.Combine (URI::Parse (L"/g")).As<String> () == L"http://a/g");
                 VerifyTestResult (base.Combine (URI::Parse (L"//g")).As<String> () == L"http://g");
-
-
                 VerifyTestResult (base.Combine (URI::Parse (L"?y")).As<String> () == L"http://a/b/c/d;p?y");
                 VerifyTestResult (base.Combine (URI::Parse (L"g?y")).As<String> () == L"http://a/b/c/g?y");
                 VerifyTestResult (base.Combine (URI::Parse (L"#s")).As<String> () == L"http://a/b/c/d;p?q#s");
@@ -348,23 +348,35 @@ namespace {
                 VerifyTestResult (base.Combine (URI::Parse (L";x")).As<String> () == L"http://a/b/c/;x");
                 VerifyTestResult (base.Combine (URI::Parse (L"g;x")).As<String> () == L"http://a/b/c/g;x");
                 VerifyTestResult (base.Combine (URI::Parse (L"")).As<String> () == L"http://a/b/c/d;p?q");
-
-                URI x = URI::Parse (L"?y");
-                DbgTrace (L"***x=%s", Characters::ToString (x).c_str ());
-                URI y = base.Combine (x);
-                DbgTrace (L"***y=%s", Characters::ToString (y).c_str ());
-
-                //BROKEN                VerifyTestResult (base.Combine (URI::Parse (L".")).As<String> () == L"http://a/b/c/");
+                VerifyTestResult (base.Combine (URI::Parse (L".")).As<String> () == L"http://a/b/c/");
                 VerifyTestResult (base.Combine (URI::Parse (L"./")).As<String> () == L"http://a/b/c/");
-                //BROKEN     VerifyTestResult (base.Combine (URI::Parse (L"..")).As<String> () == L"http://a/b/");
-#if 0
-      "../"           =  "http://a/b/"
-      "../g"          =  "http://a/b/g"
-      "../.."         =  "http://a/"
-      "../../"        =  "http://a/"
-      "../../g"       =  "http://a/g"
-#endif
-                // INCOMPLETE SET OF REGTESTS
+                VerifyTestResult (base.Combine (URI::Parse (L"..")).As<String> () == L"http://a/b/");
+                VerifyTestResult (base.Combine (URI::Parse (L"../")).As<String> () == L"http://a/b/");
+                VerifyTestResult (base.Combine (URI::Parse (L"../g")).As<String> () == L"http://a/b/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"../..")).As<String> () == L"http://a/");
+                VerifyTestResult (base.Combine (URI::Parse (L"../../")).As<String> () == L"http://a/");
+                VerifyTestResult (base.Combine (URI::Parse (L"../../g")).As<String> () == L"http://a/g");
+
+                // https://tools.ietf.org/html/rfc3986#section-5.4.2 Abnormal Examples
+                VerifyTestResult (base.Combine (URI::Parse (L"../../../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"../../../../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"/./g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"/../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"g.")).As<String> () == L"http://a/b/c/g.");
+                VerifyTestResult (base.Combine (URI::Parse (L".g")).As<String> () == L"http://a/b/c/.g");
+                VerifyTestResult (base.Combine (URI::Parse (L"g..")).As<String> () == L"http://a/b/c/g..");
+                VerifyTestResult (base.Combine (URI::Parse (L"..g")).As<String> () == L"http://a/b/c/..g");
+                VerifyTestResult (base.Combine (URI::Parse (L"./../g")).As<String> () == L"http://a/b/g");
+                VerifyTestResult (base.Combine (URI::Parse (L"./g/.")).As<String> () == L"http://a/b/c/g/");
+                VerifyTestResult (base.Combine (URI::Parse (L"g/./h")).As<String> () == L"http://a/b/c/g/h");
+                VerifyTestResult (base.Combine (URI::Parse (L"g/../h")).As<String> () == L"http://a/b/c/h");
+                VerifyTestResult (base.Combine (URI::Parse (L"g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
+                VerifyTestResult (base.Combine (URI::Parse (L"g;x=1/../y")).As<String> () == L"http://a/b/c/y");
+                VerifyTestResult (base.Combine (URI::Parse (L"g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
+                VerifyTestResult (base.Combine (URI::Parse (L"g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
+                VerifyTestResult (base.Combine (URI::Parse (L"g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
+                VerifyTestResult (base.Combine (URI::Parse (L"g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
+                VerifyTestResult (base.Combine (URI::Parse (L"http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
             }
         }
         void DoTests_ ()
