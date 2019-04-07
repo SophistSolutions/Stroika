@@ -24,9 +24,6 @@
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
  *
- *      @todo   MABYE "SCHEME REGISTER"
- *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
- *
  *      @todo   Add PREDEFINED namespace and list predefined protocols
  *              o   HTTP
  *              o   HTTPS
@@ -128,11 +125,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  \note schemes cannot include a ':' character
      *
      *  \note Schemes should generally be treated as case insensitive, so compare with String::EqualToCI{}
+     *
+     * TODO:
+     *      @todo   MABYE add "SCHEME REGISTER"
+     *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
+     *
      */
     class SchemeType : public String {
         using inherited = String;
 
     public:
+        SchemeType (const wchar_t* s);
         SchemeType (const wstring_view& s);
         SchemeType (const String& s);
 
@@ -148,8 +151,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  Returns true iff its a KNOWN secure protocol, like https, ssh, ftps, etc.
-        */
+         *  Returns true iff its a KNOWN secure protocol, like https, ssh, ftps, etc. By secure, this generally means that it is TLS based.
+         */
         nonvirtual bool IsSecure () const;
     };
 

@@ -20,12 +20,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Use "Value" style hack to deal with optional stuff, and use more of optional class, at least in API.
- *              That way - we capture just what the user said, and only when he askes for info, do we use the Value() variant
- *              that plugs in defaults.
- *
- *              (partly/maybe done?)
- *
  *      @todo   support Compare() and oeprator<, etc.
  *
  *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if

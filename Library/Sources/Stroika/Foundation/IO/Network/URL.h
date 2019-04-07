@@ -20,31 +20,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Use "Value" style hack to deal with optional stuff, and use more of optional class, at least in API.
- *              That way - we capture just what the user said, and only when he askes for info, do we use the Value() variant
- *              that plugs in defaults.
- *
- *              (partly/maybe done?)
- *
- *      @todo   Add Compare() method, and operator<, so we can easily add URL to
- *              sorted types.
- *
- *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
- *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
- *
- *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
- *              we allow relative urls, etc.
- *
- *              We currently produce differnt answers than https://docs.python.org/2/library/urlparse.html for the case
- *              of the url urlparse('help/Python.html'), where I treat help as a hostname, and python
- *              as part of the path.
- *
- *              Maybe params to parser to say "strict", or "can-be-relative-url", or "best guess full url"
- *
- *      @todo   CLEANUP PROTOCOL AND HOSTNAME METHODS - ADD CLEAR REQUIREMENTS AND ENFORCE
- *              ESP FOR STUFF LIKE COLONS!!!
 
- *      @todo   Need LOTS of reg-tests tests!.
  */
 
 namespace Stroika::Foundation::IO::Network {
