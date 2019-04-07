@@ -107,7 +107,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator!= (const Authority& lhs, const Authority& rhs)
     {
-        not(lhs == rhs);
+        return not(lhs == rhs);
     }
 
     /*
