@@ -95,16 +95,29 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  This returns true if this is an absolute URL, and false if it is a relative URL
+         *  This returns true if this is relative URI (either network relative or host-relative), and false if
+         *  it contains a scheme.
          *
-         *  \par Example Usage
-         *      \code
-         *          if (u.IsURL ()) {
-         *              URL url = u.As<URL> ();
-         *          }
-         *      \endcode
+         *      From https://tools.ietf.org/html/rfc3986#section-4.1
+         *
+         *          URI-reference = URI / relative-ref
+         *
+         *          A URI-reference is either a URI or a relative reference.  If the
+         *          URI-reference's prefix does not match the syntax of a scheme followed
+         *          by its colon separator, then the URI-reference is a relative
+         *          reference.
+         *          ...
+         *          A relative reference that begins with two slash characters is termed
+         *          a network-path reference; such references are rarely used.  A
+         *          relative reference that begins with a single slash character is
+         *          termed an absolute-path reference.  A relative reference that does
+         *          not begin with a slash character is termed a relative-path reference
+         *
+         *  \note Even if something is NOT a relative reference, it may not have a host/authority:
+         *          e.g.
+         *              mailto:John.Doe@example.com
          */
-        nonvirtual bool IsURL () const;
+        nonvirtual bool IsRelativeReference () const;
 
     public:
         /**
@@ -194,7 +207,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Combine a full url with a relative URI, to produce a new URL. Note - its completely legal for hte argument uri
+         *  Combine a full URI with a (possibly) relative URI, to produce a new URI. Note - its completely legal for hte argument uri
          *  to be a full url, in which case this returns its argument (taking no properties from 'this')
          *
          *      @see https://tools.ietf.org/html/rfc3986#section-5.2

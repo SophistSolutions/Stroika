@@ -29,10 +29,9 @@ namespace Stroika::Foundation::IO::Network {
             scheme->Validate ();
         }
     }
-    inline bool URI::IsURL () const
+    inline bool URI::IsRelativeReference () const
     {
-        // @todo review/revise/document reference
-        return fScheme_ and fAuthority_;
+        return fScheme_.has_value ();
     }
     inline optional<URI::SchemeType> URI::GetScheme () const
     {
