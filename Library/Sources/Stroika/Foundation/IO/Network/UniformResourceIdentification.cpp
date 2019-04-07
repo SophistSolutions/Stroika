@@ -276,24 +276,23 @@ bool UniformResourceIdentification::operator== (const Authority& lhs, const Auth
     if (lhs.GetHost () != rhs.GetHost ()) {
         return false;
     }
+#if qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
+    if (lhs.GetPort () and rhs.GetPort ()) {
+        if (lhs.GetPort () != rhs.GetPort ()) {
+            return false;
+        }
+    }
+    else {
+        if (lhs.GetPort ().has_value () != rhs.GetPort ().has_value ()) {
+            return false;
+        }
+    }
+#else
     if (lhs.GetPort () != rhs.GetPort ()) {
         return false;
     }
+#endif
     return true;
-}
-
-bool UniformResourceIdentification::operator!= (const Authority& lhs, const Authority& rhs)
-{
-    if (lhs.GetUserInfo () != rhs.GetUserInfo ()) {
-        return true;
-    }
-    if (lhs.GetHost () != rhs.GetHost ()) {
-        return true;
-    }
-    if (lhs.GetPort () != rhs.GetPort ()) {
-        return true;
-    }
-    return false;
 }
 
 /*

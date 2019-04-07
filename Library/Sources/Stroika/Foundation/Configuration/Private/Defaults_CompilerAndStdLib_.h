@@ -1513,6 +1513,36 @@ namespace {
 #endif
 
 /*
+ *  This COULD have todo with using LTO? Or any other form of optimizaiton.
+ *
+ *      valgrind --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41
+ 
+            ==25626== Conditional jump or move depends on uninitialised value(s)
+            ==25626==    at 0x18791F: (anonymous namespace)::Test1_URL_Parsing_::Private_::BasicTests_AsOf21d22_() [clone .lto_priv.852] (in /Sandbox/Stroika-Dev/Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41)
+            ==25626==    by 0x1358AA: main (in /Sandbox/Stroika-Dev/Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41)
+            ==25626==  Uninitialised value was created by a stack allocation
+            ==25626==    at 0x15181F: Stroika::Foundation::IO::Network::URL::Parse(Stroika::Foundation::Characters::String const&, Stroika::Foundation::IO::Network::URL::ParseOptions) (in /Sandbox/Stroika-Dev/Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41)
+
+ REALLY bad message. Triggered by:
+                     VerifyTestResult (URL::Parse (kTestURL_, po) == URL (L"http", L"www.x.com", L"foo", L"bar=3"));
+
+                    because it calls operator==, which calls
+                    UniformResourceIdentification::operator!= (const Authority& lhs, const Authority& rhs)
+
+                    and compares with missing port. NOT SURE if missing other stuff also causes trouble but it appears not.
+
+            */
+#ifndef qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
+
+#if defined(__GNUC__)
+#define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#else
+#define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
