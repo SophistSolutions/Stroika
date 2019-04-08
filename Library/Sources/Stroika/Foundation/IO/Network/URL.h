@@ -280,7 +280,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *   @see GetHostRelativePath for format restrictions. This can be empty.
          */
-        //[[deprecated(REPLACE WITH URI TBD - close to GetPath???)]]
+        //[[deprecated("deprecated in v2.1d23 - use URI : GetAuthorityRelativeResourceDir instead")]]
         nonvirtual String GetHostRelPathDir () const;
 
     public:

@@ -140,6 +140,14 @@ String URI::GetAuthorityRelativeResource () const
     return result.str ();
 }
 
+String URI::GetAuthorityRelativeResourceDir () const
+{
+    static const RegularExpression kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
+    optional<String>               baseDir;
+    (void)fPath_.Match (kSelectDir_, &baseDir);
+    return baseDir.value_or (String{});
+}
+
 URI URI::Normalize () const
 {
     optional<SchemeType> scheme = fScheme_;

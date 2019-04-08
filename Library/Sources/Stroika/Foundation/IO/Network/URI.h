@@ -193,6 +193,16 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const;
 
     public:
+        /**
+         *  Return the path component, excluding any text after the final /.
+         *
+         *  \note Alias - this used to be called GetHostRelPathDir
+         *
+         *  This value maybe a full UNICODE String, and is NOT PCT encoded.
+         */
+        nonvirtual String GetAuthorityRelativeResourceDir () const;
+
+    public:
         /*
          *  Return the query part of the URI as the given RETURN_TYPE. Note this this value maybe missing.
          *
@@ -261,7 +271,7 @@ namespace Stroika::Foundation::IO::Network {
     private:
         optional<SchemeType> fScheme_;    // aka protocol
         optional<Authority>  fAuthority_; // aka host+port+username
-        String               fPath_;      // must read docs on combinng urls - but this maybe required (though can be empty)
+        String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
         optional<String>     fQuery_;     // ditto
         optional<String>     fFragment_;  // ditto
     };
