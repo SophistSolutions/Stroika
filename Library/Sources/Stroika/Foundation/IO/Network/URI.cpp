@@ -34,8 +34,8 @@ URI::URI (const URL& url)
     : fScheme_{url.GetScheme ()}
     , fAuthority_{url.GetAuthority ()}
     , fPath_{url.GetHostRelativePath ()}
-    , fQuery_{url.GetQueryString ()}
-    , fFragment_{url.GetFragment ()}
+    , fQuery_{url.GetQueryString ().empty () ? optional<String>{} : url.GetQueryString ()}
+    , fFragment_{url.GetFragment ().empty () ? optional<String>{} : url.GetFragment ()}
 {
 }
 
