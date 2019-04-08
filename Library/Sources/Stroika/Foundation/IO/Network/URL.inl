@@ -23,9 +23,10 @@ namespace Stroika::Foundation::IO::Network {
         if (fAuthority_.GetPort ()) {
             return *fAuthority_.GetPort ();
         }
-        else {
-            return UniformResourceIdentification::GetDefaultPortForScheme (GetScheme ()).value_or (defaultValue);
+        if (GetScheme ()) {
+            return GetScheme ()->GetDefaultPort ().value_or (defaultValue);
         }
+        return defaultValue;
     }
     inline optional<URL::PortType> URL::GetPortNumber () const
     {

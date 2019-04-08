@@ -143,6 +143,13 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual void SetAuthority (const optional<Authority>& authority);
 
     public:
+        /**
+         *  Get the best guess possible for the port#, based on the given port, and given the scheme. Will return a bogus
+         *  port number (like 80) if not enough information given.
+         */
+        nonvirtual PortType GetPortValue () const;
+
+    public:
         /*
          *  The path MAY or MAY NOT start with a /, and it may be empty.
          *
@@ -155,6 +162,19 @@ namespace Stroika::Foundation::IO::Network {
          *  \note - the path is a UNICODE string, and should not be url-encoded.
          */
         nonvirtual void SetPath (const String& path);
+
+    public:
+        /**
+         *  Return the (PCT etc encoded) string AFTER the authority, but not including the fragment
+         *
+         *  \note Alias - this used to be called GetHostRelativePathPlusQuery
+         *
+         *  RETURN_TYPE may be:
+         *      o   String (default)
+         *      o   string (because its all ASCII return since ENCODED)
+         */
+        template <typename RETURN_TYPE = String>
+        nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const;
 
     public:
         /*
@@ -200,7 +220,6 @@ namespace Stroika::Foundation::IO::Network {
          *  Supported conversion-targets (T):
          *      String - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
          *      string - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
-         *      URL - requires IsURL ()  - but then returns URL
          */
         template <typename T>
         nonvirtual T As () const;
@@ -221,11 +240,11 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual String ToString () const;
 
     private:
-        optional<String>    fScheme_;    // aka protocol
-        optional<Authority> fAuthority_; // aka host+port+username
-        String              fPath_;      // must read docs on combinng urls - but this maybe required (though can be empty)
-        optional<String>    fQuery_;     // ditto
-        optional<String>    fFragment_;  // ditto
+        optional<SchemeType> fScheme_;    // aka protocol
+        optional<Authority>  fAuthority_; // aka host+port+username
+        String               fPath_;      // must read docs on combinng urls - but this maybe required (though can be empty)
+        optional<String>     fQuery_;     // ditto
+        optional<String>     fFragment_;  // ditto
     };
 
     template <>
@@ -236,7 +255,17 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     String URI::As () const;
     template <>
-    URL URI::As () const;
+    string URI::As () const;
+
+    template <>
+    String URI::GetAuthorityRelativeResource () const;
+    template <>
+    string URI::GetAuthorityRelativeResource () const;
+
+    /**
+     */
+    bool operator== (const URI& lhs, const URI& rhs);
+    bool operator!= (const URI& lhs, const URI& rhs);
 
 }
 

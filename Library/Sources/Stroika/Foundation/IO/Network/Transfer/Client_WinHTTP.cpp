@@ -106,8 +106,8 @@ public:
     }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
-    virtual URL                 GetURL () const override;
-    virtual void                SetURL (const URL& url) override;
+    virtual URI                 GetURL () const override;
+    virtual void                SetURL (const URI& url) override;
     virtual void                Close () override;
     virtual Response            Send (const Request& request) override;
 
@@ -118,7 +118,7 @@ private:
 private:
     Connection::Options           fOptions_;
     DurationSecondsType           fTimeout_{Time::kInfinite};
-    URL                           fURL_;
+    URI                           fURL_;
     shared_ptr<AutoWinHINTERNET_> fSessionHandle_;
     String                        fSessionHandle_UserAgent_;
     shared_ptr<AutoWinHINTERNET_> fConnectionHandle_;
@@ -168,12 +168,12 @@ void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
     fTimeout_ = timeout; // affects subsequent calls to send...
 }
 
-URL Connection_WinHTTP::Rep_::GetURL () const
+URI Connection_WinHTTP::Rep_::GetURL () const
 {
     return fURL_;
 }
 
-void Connection_WinHTTP::Rep_::SetURL (const URL& url)
+void Connection_WinHTTP::Rep_::SetURL (const URI& url)
 {
     if (fURL_ != url) {
         fConnectionHandle_.reset ();
@@ -240,10 +240,10 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
         //Verify (::WinHttpSetOption (*fConnectionHandle_, WINHTTP_OPTION_WEB_SOCKET_KEEPALIVE_INTERVAL, &dwOptionsTimeout, sizeof (dwOptionsTimeout)));
     }
 
-    bool useSecureHTTP = fURL_.IsSecure ();
+    bool useSecureHTTP = fURL_.GetScheme () and fURL_.GetScheme ()->IsSecure ();
 
     AutoWinHINTERNET_ hRequest (
-        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePathPlusQuery ().c_str (),
+        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetAuthorityRelativeResource ().c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
                               useSecureHTTP ? WINHTTP_FLAG_SECURE : 0));
@@ -452,8 +452,11 @@ RetryWithAuth:
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertExpired;
         }
 
-        if (not fURL_.GetHost ().Equals (resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
-            not fURL_.GetHost ().Equals (L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)) {
+        if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost () or not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()) {
+            Execution::Throw (Execution::RuntimeErrorException (L"Cannot validate TLS without a host name"));
+        }
+        if (not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()->Equals (resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
+            not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()->Equals (L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }
 
@@ -514,7 +517,11 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
     RequireNotNull (fSessionHandle_);
     if (fConnectionHandle_ == nullptr) {
-        fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0));
+        if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost ()) {
+            Execution::Throw (Execution::RuntimeErrorException (L"Cannot connect without a host"));
+        }
+        // NOT SURE - for IPv6 address - if we want to pass encoded value here?
+        fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (*fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->AsEncoded ().c_str (), fURL_.GetPortValue (), 0));
     }
 }
 #endif

@@ -73,12 +73,7 @@ bool SchemeType::IsSecure () const
     return ns == L"https"sv or ns == L"ftps"sv or ns == L"ldaps"sv or ns == L"ssh"sv;
 }
 
-/*
- ********************************************************************************
- *********** UniformResourceIdentification::GetDefaultPortForScheme *************
- ********************************************************************************
- */
-optional<PortType> UniformResourceIdentification::GetDefaultPortForScheme (const optional<String>& scheme)
+optional<PortType> SchemeType::GetDefaultPort () const
 {
     // From http://www.iana.org/assignments/port-numbers
     static const Mapping<String, PortType> kPredefined_{
@@ -91,10 +86,7 @@ optional<PortType> UniformResourceIdentification::GetDefaultPortForScheme (const
             {L"ftp"sv, static_cast<PortType> (21)},
             {L"ftps"sv, static_cast<PortType> (990)},
         }};
-    if (scheme) {
-        return kPredefined_.Lookup (*scheme);
-    }
-    return nullopt;
+    return kPredefined_.Lookup (*this);
 }
 
 /*

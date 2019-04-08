@@ -116,6 +116,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
 
     /**
+     */
+    using PortType = uint16_t;
+
+    /**
      *  From https://tools.ietf.org/html/rfc3986#section-3.1
      *      Scheme names consist of a sequence of characters beginning with a
      *      letter and followed by any combination of letters, digits, plus
@@ -154,16 +158,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  Returns true iff its a KNOWN secure protocol, like https, ssh, ftps, etc. By secure, this generally means that it is TLS based.
          */
         nonvirtual bool IsSecure () const;
+
+    public:
+        nonvirtual optional<PortType> GetDefaultPort () const;
     };
-
-    /**
-     */
-    using PortType = uint16_t;
-
-    /**
-     *  Probably should define standard protos here - with named constants - like http/ftp/https etc
-     */
-    optional<PortType> GetDefaultPortForScheme (const optional<String>& scheme);
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:

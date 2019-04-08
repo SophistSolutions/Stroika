@@ -64,7 +64,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  \par Example Usage
      *      \code
      *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-     *          c.SetURL (URL::Parse (L"http://www.google.com"));
+     *          c.SetURL (URI::Parse (L"http://www.google.com"));
      *          Response    r   =   c.GET ();
      *          Assert (r.GetSucceeded ());
      *          String result = r.GetDataTextInputStream ().ReadAll ();
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  \par Example Usage
      *      \code
      *          auto&&             connection = IO::Network::Transfer::CreateConnection ();
-     *          connection.SetURL (IO::Network::URL::Parse (L"http://myexternalip.com/raw"));
+     *          connection.SetURL (IO::Network::URI::Parse (L"http://myexternalip.com/raw"));
      *          auto&&             response = connection.GET ();
      *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
      *      \endcode

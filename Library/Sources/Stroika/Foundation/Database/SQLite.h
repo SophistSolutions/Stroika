@@ -17,7 +17,7 @@
 #include "../Containers/Sequence.h"
 #include "../DataExchange/VariantValue.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
-#include "../IO/Network/URL.h"
+#include "../IO/Network/URI.h"
 
 /**
  *  \file
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Database::SQLite {
     using Containers::Mapping;
     using Containers::Sequence;
     using DataExchange::VariantValue;
-    using IO::Network::URL;
+    using IO::Network::URI;
 
     /**
      *  @todo - probably move to common area - for all DB stuff - not specific to SQLite (maybe have folder for "SQL")
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Database::SQLite {
          */
         Connection () = delete;
         Connection (
-            const URL& dbURL, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
+            const URI& dbURL, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
         Connection (
             const String& dbPath, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
         Connection (

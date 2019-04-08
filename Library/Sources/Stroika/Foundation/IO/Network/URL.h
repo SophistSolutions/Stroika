@@ -18,9 +18,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- * TODO:
-
  */
 
 namespace Stroika::Foundation::IO::Network {
@@ -348,7 +345,7 @@ namespace Stroika::Foundation::IO::Network {
          *  @see GetHostRelURLString ()
          *  @see GetHostRelativePath ()
          */
-        //[[deprecated(USE URI - METHOD TBD)]]
+        //[[deprecated("USE URI - METHOD GetAuthorityRelativeResource")]]
         nonvirtual String GetHostRelativePathPlusQuery () const;
 
     public:

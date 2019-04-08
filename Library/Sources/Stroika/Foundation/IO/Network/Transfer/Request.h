@@ -13,7 +13,7 @@
 #include "../../../Memory/BLOB.h"
 #include "../../../Time/Realtime.h"
 
-#include "../URL.h"
+#include "../URI.h"
 
 /**
  *

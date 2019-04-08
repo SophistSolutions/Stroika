@@ -366,7 +366,7 @@ String URL::GetFullURL () const
 
     if (fAuthority_.GetHost ()) {
         result += L"//"sv + fAuthority_.GetHost ()->AsEncoded ();
-        if (fAuthority_.GetPort ().has_value () and fAuthority_.GetPort () != GetDefaultPortForScheme (scheme)) {
+        if (fAuthority_.GetPort ().has_value () and fAuthority_.GetPort () != scheme->GetDefaultPort ()) {
             result += Format (L":%d", *fAuthority_.GetPort ());
         }
         result += L"/"sv;

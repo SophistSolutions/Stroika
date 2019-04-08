@@ -24,6 +24,7 @@
 #include "../Containers/SortedSet.h"
 #include "../Execution/Synchronized.h"
 #include "../IO/Network/InternetAddress.h"
+#include "../IO/Network/URI.h"
 #include "../IO/Network/URL.h"
 #include "../Memory/Common.h"
 #include "../Memory/Optional.h"
@@ -376,6 +377,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Duration
          *      o   IO::Network::InternetAddress
          *      o   IO::Network::URL
+         *      o   IO::Network::URI
          *      o   String
          *      o   Mapping<String, String>
          *      o   Mapping<String, VariantValue>
@@ -413,22 +415,22 @@ namespace Stroika::Foundation::DataExchange {
          *  \par Example Usage
          *      \code
          *      struct  MyConfig_ {
-         *          IO::Network::URL        fURL1_;
-         *          IO::Network::URL        fURL2_;
+         *          IO::Network::URI        fURL1_;
+         *          IO::Network::URI        fURL2_;
          *      };
          *
          *      ObjectVariantMapper mapper;
-         *      mapper.AddCommonType<IO::Network::URL> ();      // add default type mapper (using default URL parse)
+         *      mapper.AddCommonType<IO::Network::URI> ();      // add default type mapper (using default URL parse)
          *
          *      // register each of your mappable (even private) types
          *      mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
          *          { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_) },        // use default parser
          *          // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
-         *          { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> (IO::Network::URL::eFlexiblyAsUI)  },
+         *          { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
          *      });
          *
          *      MyConfig_   tmp;
-         *      tmp.fURL2_ = IO::Network::URL (L"localhost:1234", IO::Network::URL::eFlexiblyAsUI);
+         *      tmp.fURL2_ = IO::Network::URI (L"http://localhost:1234");
          *      VariantValue v = mapper.Serialize  (tmp);
          *
          *      Streams::MemoryStream<byte>   tmpStream;
@@ -540,6 +542,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Characters::String
          *      o   VariantValue
          *      o   IO::Network::URL
+         *      o   IO::Network::URI
          *      o   Time::TimeOfDay
          *      o   Common::GUID
          *
@@ -697,6 +700,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Memory::BLOB*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
+        static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
         template <typename T1, typename T2>

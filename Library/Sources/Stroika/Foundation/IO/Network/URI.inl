@@ -57,6 +57,18 @@ namespace Stroika::Foundation::IO::Network {
     {
         fAuthority_ = authority;
     }
+    inline URI::PortType URI::GetPortValue () const
+    {
+        optional<PortType> op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
+        if (op) {
+            return *op;
+        }
+        static constexpr PortType kDefault_{0}; // should return 80????
+        if (fScheme_) {
+            return fScheme_->GetDefaultPort ().value_or (kDefault_);
+        }
+        return kDefault_;
+    }
     inline String URI::GetPath () const
     {
         return fPath_;
@@ -64,6 +76,11 @@ namespace Stroika::Foundation::IO::Network {
     inline void URI::SetPath (const String& path)
     {
         fPath_ = path;
+    }
+    template <>
+    inline string URI::GetAuthorityRelativeResource () const
+    {
+        return GetAuthorityRelativeResource<String> ().AsASCII ();
     }
     template <>
     inline auto URI::GetQuery () const -> optional<String>
@@ -93,6 +110,16 @@ namespace Stroika::Foundation::IO::Network {
     inline void URI::SetFragment (const optional<String>& fragment)
     {
         fFragment_ = fragment;
+    }
+
+    /*
+     ********************************************************************************
+     ******************************** URI operators *********************************
+     ********************************************************************************
+     */
+    inline bool operator!= (const URI& lhs, const URI& rhs)
+    {
+        return not(lhs == rhs);
     }
 
 }

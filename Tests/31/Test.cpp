@@ -641,8 +641,8 @@ namespace {
             int                   fBasicArray1[5];
             Set<int>              fSet1_;
             vector<int>           fVector1_;
-            IO::Network::URL      fURL1_;
-            IO::Network::URL      fURL2_;
+            IO::Network::URI      fURL1_;
+            IO::Network::URI      fURL2_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -682,8 +682,8 @@ namespace {
             {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
             {L"fSet1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_), ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
             {L"fVector1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_)},
-            {L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> ()},
-            {L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URL> (IO::Network::URL::eFlexiblyAsUI)},
+            {L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 

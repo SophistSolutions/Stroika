@@ -17,7 +17,7 @@
 #include "../HTTP/Status.h"
 
 #include "../ConnectionOrientedStreamSocket.h"
-#include "../URL.h"
+#include "../URI.h"
 
 #include "Exception.h"
 #include "Request.h"
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  \par Example Usage
      *      \code
      *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-     *          c.SetURL (URL::Parse (L"http://www.google.com"));
+     *          c.SetURL (URI::Parse (L"http://www.google.com"));
      *          Response    r   =   c.GET ();
      *          Assert (r.GetSucceeded ());
      *          VerifyTestResult (r.GetData ().size () > 1);
@@ -91,12 +91,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         /**
          */
-        nonvirtual URL GetURL () const;
+        nonvirtual URI GetURL () const;
 
     public:
         /**
          */
-        nonvirtual void SetURL (const URL& url);
+        nonvirtual void SetURL (const URI& url);
 
     public:
         /**
@@ -337,8 +337,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         virtual Options             GetOptions () const                      = 0;
-        virtual URL                 GetURL () const                          = 0;
-        virtual void                SetURL (const URL& url)                  = 0;
+        virtual URI                 GetURL () const                          = 0;
+        virtual void                SetURL (const URI& url)                  = 0;
         virtual DurationSecondsType GetTimeout () const                      = 0;
         virtual void                SetTimeout (DurationSecondsType timeout) = 0;
         virtual void                Close ()                                 = 0;

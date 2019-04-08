@@ -290,6 +290,18 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URI*)
+{
+    using T                                  = IO::Network::URI;
+    FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+        return VariantValue (fromObjOfTypeT->As<String> ());
+    };
+    ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = T::Parse (d.As<String> ());
+    };
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+}
+
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions)
 {
     using T                                  = IO::Network::URL;

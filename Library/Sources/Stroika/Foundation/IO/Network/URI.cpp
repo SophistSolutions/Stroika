@@ -114,10 +114,15 @@ string URI::As () const
 }
 
 template <>
-URL URI::As () const
+String URI::GetAuthorityRelativeResource () const
 {
-    Require (IsURL ());
-    return URL{}; // NYI
+    static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
+    Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
+    if (fQuery_) {
+        static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
+        result += L"?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+    }
+    return result.str ();
 }
 
 URI URI::Normalize () const
@@ -252,4 +257,15 @@ URI URI::Combine (const URI& uri) const
     }
     result.SetFragment (uri.GetFragment ());
     return result;
+}
+
+/*
+ ********************************************************************************
+ ******************************** URI operators *********************************
+ ********************************************************************************
+ */
+bool Network::operator== (const URI& lhs, const URI& rhs)
+{
+    //@todo tmphack
+    return lhs.As<String> () == rhs.As<String> (); // wrong - must normalize - then close
 }

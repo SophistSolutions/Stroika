@@ -160,6 +160,13 @@ void Registry::SimpleReader_<IO::Network::URL>::Deactivating ()
 }
 
 template <>
+void Registry::SimpleReader_<IO::Network::URI>::Deactivating ()
+{
+    // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
+    IgnoreExceptionsForCall (*fValue_ = IO::Network::URI::Parse (fBuf_.str ()));
+}
+
+template <>
 void Registry::SimpleReader_<Time::DateTime>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
