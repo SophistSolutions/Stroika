@@ -104,9 +104,6 @@ ifeq ($(shell uname -s),Darwin)
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
-	@#if [ "$@" != "ORIGs" ] ; then \
-		patch --quiet -p0 $@/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch;\
-	fi
 
 PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
