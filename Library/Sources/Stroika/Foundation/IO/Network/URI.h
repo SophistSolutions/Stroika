@@ -93,12 +93,17 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  This Requires() its arguments are valid and in range (where provided)
+         *  This checks and throws if arguments are invalid our out of range (e.g. a scheme with a colon in it will trigger a throw).
          *
          *  These will raise exceptions if anything illegal in the URL specification.
+         *
+         *  Constructor from String(or string) and no other arguments, is equivilent to calling URI::Parse ()
          */
-        URI (const optional<SchemeType>& scheme = nullopt, const optional<Authority>& authority = nullopt, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
+        URI () = default;
+        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const URL& url);
+        URI (const string& encodedURI);
+        URI (const String& encodedURI);
 
     public:
         /**
@@ -184,6 +189,8 @@ namespace Stroika::Foundation::IO::Network {
          *  Return the (PCT etc encoded) string AFTER the authority, but not including the fragment
          *
          *  \note Alias - this used to be called GetHostRelativePathPlusQuery
+         *
+         *  This returns the path + the query (omitting authory, scheme, and fragment).
          *
          *  RETURN_TYPE may be:
          *      o   String (default)

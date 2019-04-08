@@ -30,6 +30,14 @@ namespace Stroika::Foundation::IO::Network {
         }
         CheckValidPathForAuthority_ (authority, path);
     }
+    inline URI::URI (const string& encodedURI)
+        : URI (Parse (encodedURI))
+    {
+    }
+    inline URI::URI (const String& encodedURI)
+        : URI (Parse (encodedURI))
+    {
+    }
     inline bool URI::IsRelativeReference () const
     {
         return fScheme_.has_value ();
