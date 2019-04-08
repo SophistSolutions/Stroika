@@ -58,6 +58,22 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note This code does not currently (as of v2.1d23) address https://tools.ietf.org/html/rfc3986#appendix-C - URI delimiting (finding the boundaries of the URI from
      *        surrounding text).
+     *
+     *  \note   One subtlty with the URI syntax is that:
+     *          https://tools.ietf.org/html/rfc3986#section-3.3
+     *              If a URI contains an authority component, then the path component
+     *              must either be empty or begin with a slash ("/") character
+     *          If you look at the syntax/BNF, this makes sense. But logically, it makes no sense. The specification of an authority
+     *          then PROHIBITS the specification of a relative path.
+     *
+     *          But - I don't get to write the specs ;-).
+     *
+     *          So this class triggers throws if you ever attempt to specify a non-empty path that doesn't start with /
+     *          on a URI that has an authority.
+     *
+     *          This poses some difficulties for code that wants to update BOTH the authority and the path of a URI (which do you do first - tricky).
+     *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individiaul components) constructor.
+     *      
      */
     class URI {
     public:
@@ -238,6 +254,9 @@ namespace Stroika::Foundation::IO::Network {
          *  For debugging purposes: don't count on the format.
          */
         nonvirtual String ToString () const;
+
+    private:
+        static void CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path);
 
     private:
         optional<SchemeType> fScheme_;    // aka protocol

@@ -28,6 +28,7 @@ namespace Stroika::Foundation::IO::Network {
         if (scheme) {
             scheme->Validate ();
         }
+        CheckValidPathForAuthority_ (authority, path);
     }
     inline bool URI::IsRelativeReference () const
     {
@@ -55,6 +56,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetAuthority (const optional<Authority>& authority)
     {
+        CheckValidPathForAuthority_ (authority, fPath_);
         fAuthority_ = authority;
     }
     inline URI::PortType URI::GetPortValue () const
@@ -75,6 +77,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetPath (const String& path)
     {
+        CheckValidPathForAuthority_ (fAuthority_, path);
         fPath_ = path;
     }
     template <>

@@ -30,12 +30,27 @@ using namespace Stroika::Foundation::IO::Network;
  ************************************** URI *************************************
  ********************************************************************************
  */
+namespace {
+    String PatchOldStroikaURLPath2NewPath_ (const optional<URI::Authority>& a, const String& s)
+    {
+        if (s.empty ()) {
+            return s;
+        }
+        if (s.StartsWith (L"/")) {
+            return s;
+        }
+        if (a) {
+            return L"/" + s;
+        }
+        return s;
+    }
+}
 URI::URI (const URL& url)
-    : fScheme_{url.GetScheme ()}
-    , fAuthority_{url.GetAuthority ()}
-    , fPath_{url.GetHostRelativePath ()}
-    , fQuery_{url.GetQueryString ().empty () ? optional<String>{} : url.GetQueryString ()}
-    , fFragment_{url.GetFragment ().empty () ? optional<String>{} : url.GetFragment ()}
+    : URI{url.GetScheme (),
+          url.GetAuthority (),
+          PatchOldStroikaURLPath2NewPath_ (url.GetAuthority (), url.GetHostRelativePath ()),
+          url.GetQueryString ().empty () ? optional<String>{} : url.GetQueryString (),
+          url.GetFragment ().empty () ? optional<String>{} : url.GetFragment ()}
 {
 }
 
@@ -143,6 +158,18 @@ URI URI::Normalize () const
 String URI::ToString () const
 {
     return Characters::ToString (As<String> ());
+}
+
+void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path)
+{
+    /*
+     *          https://tools.ietf.org/html/rfc3986#section-3.3
+     *              If a URI contains an authority component, then the path component
+     *              must either be empty or begin with a slash ("/") character
+     */
+    if (authority and (not path.empty () and not path.StartsWith (L"/"))) {
+        Execution::Throw (Execution::RuntimeErrorException (L"A URI with an authority must have an empty path, or an absolute path"sv));
+    }
 }
 
 URI URI::Combine (const URI& uri) const
@@ -266,6 +293,6 @@ URI URI::Combine (const URI& uri) const
  */
 bool Network::operator== (const URI& lhs, const URI& rhs)
 {
-    //@todo tmphack
-    return lhs.As<String> () == rhs.As<String> (); // wrong - must normalize - then close
+    //@todo tmphack - maybe OK, but could be better/faster
+    return lhs.Normalize ().As<String> () == rhs.Normalize ().As<String> ();
 }
