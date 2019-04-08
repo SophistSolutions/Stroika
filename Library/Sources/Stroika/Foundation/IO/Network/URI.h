@@ -56,6 +56,23 @@ namespace Stroika::Foundation::IO::Network {
      *          locating the resource by describing its primary access mechanism
      *          (e.g., its network "location").
      *
+     *  From:
+     *      https://tools.ietf.org/html/rfc3986#section-3.2
+     *
+     *          The generic URI syntax consists of a hierarchical sequence of
+     *          components referred to as the scheme, authority, path, query, and
+     *          fragment
+     *          ...
+     *         The following are two example URIs and their component parts:
+     *
+     *               foo://example.com:8042/over/there?name=ferret#nose
+     *               \_/   \______________/\_________/ \_________/ \__/
+     *                |           |            |            |        |
+     *             scheme     authority       path        query   fragment
+     *                |   _____________________|__
+     *               / \ /                        \
+     *               urn:example:animal:ferret:nose
+     *
      *  \note This code does not currently (as of v2.1d23) address https://tools.ietf.org/html/rfc3986#appendix-C - URI delimiting (finding the boundaries of the URI from
      *        surrounding text).
      *
