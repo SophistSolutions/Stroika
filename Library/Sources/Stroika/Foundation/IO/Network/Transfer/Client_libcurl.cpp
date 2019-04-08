@@ -218,7 +218,7 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
-URL Connection_LibCurl::Rep_::GetURL () const
+URI Connection_LibCurl::Rep_::GetURL () const
 {
     return fURL_;
 }
