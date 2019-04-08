@@ -41,5 +41,10 @@
      {fStorage_}
     </DisplayString>
   </Type>
+  <Type Name="Stroika::Foundation::IO::Network::URI">
+    <DisplayString>
+      {ToString ()}
+    </DisplayString>
+  </Type>
 
 </AutoVisualizer>
