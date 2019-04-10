@@ -687,6 +687,20 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ************************* String::ThreeWayCompare ******************************
+     ********************************************************************************
+     */
+    inline String::ThreeWayCompare::ThreeWayCompare (CompareOptions co)
+        : fCompareOptions (co)
+    {
+    }
+    inline int String::ThreeWayCompare::operator() (const String& lhs, const String& rhs) const
+    {
+        return lhs.Compare (rhs, fCompareOptions);
+    }
+
+    /*
+     ********************************************************************************
      *********************************** operator< **********************************
      ********************************************************************************
      */

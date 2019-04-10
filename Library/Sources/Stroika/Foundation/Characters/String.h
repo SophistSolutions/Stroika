@@ -1180,6 +1180,9 @@ namespace Stroika::Foundation::Characters {
         struct LessCI;
 
     public:
+        struct ThreeWayCompare;
+
+    public:
         /**
          *  Alias for basic_string>char>::npos - except this is constexpr.
          *
@@ -1318,10 +1321,18 @@ namespace Stroika::Foundation::Characters {
     };
 
     /*
-        *  Equivilent to std::less<String>, except doing case insensitive compares
-        */
+     *  Equivilent to std::less<String>, except doing case insensitive compares
+     */
     struct String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
         nonvirtual bool operator() (const String& lhs, const String& rhs) const;
+    };
+
+    /**
+     */
+    struct String::ThreeWayCompare : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        ThreeWayCompare (CompareOptions co = CompareOptions::eWithCase);
+        nonvirtual int operator() (const String& lhs, const String& rhs) const;
+        CompareOptions fCompareOptions;
     };
 
     /**
