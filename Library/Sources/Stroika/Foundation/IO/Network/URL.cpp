@@ -23,6 +23,10 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::UniformResourceIdentification;
 
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+
 /*
  ********************************************************************************
  ************************************** URL *************************************
@@ -498,3 +502,6 @@ http://abc.com:80/~smith/home.html
 http://ABC.com/%7Esmith/home.html
 http://ABC.com:/%7esmith/home.html
 #endif
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_END (4996);

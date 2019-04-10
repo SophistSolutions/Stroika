@@ -14,7 +14,7 @@
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
-#include "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/IO/Network/URI.h"
 #include "../../Foundation/Streams/InputStream.h"
 
 /*
@@ -80,12 +80,12 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        nonvirtual IO::Network::URL GetURL () const;
+        nonvirtual IO::Network::URI GetURL () const;
 
     public:
         /**
          */
-        nonvirtual void SetURL (const IO::Network::URL& url);
+        nonvirtual void SetURL (const IO::Network::URI& url);
 
     public:
         /**
@@ -150,7 +150,7 @@ namespace Stroika::Frameworks::WebServer {
     private:
         String                  fHTTPVersion_;
         String                  fMethod_;
-        IO::Network::URL        fURL_;
+        IO::Network::URI        fURL_;
         Mapping<String, String> fHeaders_;
 
     private:

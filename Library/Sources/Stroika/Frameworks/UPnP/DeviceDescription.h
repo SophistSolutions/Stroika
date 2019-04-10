@@ -10,7 +10,7 @@
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/IO/Network/URI.h"
 #include "../../Foundation/Memory/BLOB.h"
 
 #include "Device.h"
@@ -27,7 +27,7 @@ namespace Stroika::Frameworks::UPnP {
     using Characters::String;
     using Containers::Collection;
     using DataExchange::InternetMediaType;
-    using IO::Network::URL;
+    using IO::Network::URI;
 
     /**
      * high level device description - from ssdp. This is the BASIC device info
@@ -36,15 +36,15 @@ namespace Stroika::Frameworks::UPnP {
      *  This is based on http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf, page 43-46 apx
      */
     struct DeviceDescription {
-        optional<URL>    fPresentationURL;
+        optional<URI>    fPresentationURL;
         String           fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
         String           fManufactureName;
         String           fFriendlyName;
-        optional<URL>    fManufacturingURL;
+        optional<URI>    fManufacturingURL;
         optional<String> fModelDescription;
         String           fModelName;
         optional<String> fModelNumber;
-        optional<URL>    fModelURL;
+        optional<URI>    fModelURL;
         optional<String> fSerialNumber;
         /**
          *  Unique Device Name. Universally-unique identifier for the device, whether root or embedded.
@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::UPnP {
             uint16_t          fHorizontalPixels{16};
             uint16_t          fVerticalPixels{16};
             uint16_t          fColorDepth{8};
-            URL               fURL; // url to the icon image file
+            URI               fURL; // url to the icon image file
 
             /**
              *  @see Characters::ToString ();
@@ -83,9 +83,9 @@ namespace Stroika::Frameworks::UPnP {
         struct Service {
             String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
             String fServiceID;   // e.g. urn:upnp-org:serviceId:serviceID
-            URL    fSCPDURL;     // URL to service description
-            URL    fControlURL;  // URL to service description
-            URL    fEventSubURL; // URL to service description
+            URI    fSCPDURL;     // URL to service description
+            URI    fControlURL;  // URL to service description
+            URI    fEventSubURL; // URL to service description
 
             /**
              *  @see Characters::ToString ();

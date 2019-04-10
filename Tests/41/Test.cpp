@@ -93,7 +93,10 @@ namespace {
 #endif
 
 namespace {
-    namespace Test1_URL_Parsing_ {
+    namespace Test1_DEPRECATED_URL_Parsing_ {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         namespace Private_ {
             void TestOldWinCracker_ ([[maybe_unused]] const String& w, [[maybe_unused]] const URL& url)
             {
@@ -258,6 +261,21 @@ namespace {
                     VerifyTestResult (url.GetFragment ().empty ());
                 }
             }
+        }
+        void DoTests_ ()
+        {
+            Private_::TestBackCompatURL_ ();
+            Private_::BasicTests_AsOf21d22_ ();
+        }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+    }
+}
+
+namespace {
+    namespace Test1_URI_ {
+        namespace Private_ {
             void TestHostParsing_ ()
             {
                 using UniformResourceIdentification::Host;
@@ -381,8 +399,6 @@ namespace {
         }
         void DoTests_ ()
         {
-            Private_::TestBackCompatURL_ ();
-            Private_::BasicTests_AsOf21d22_ ();
             Private_::TestHostParsing_ ();
             Private_::Test_NewURI_Class_ ();
             Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
@@ -526,7 +542,8 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Test1_URL_Parsing_::DoTests_ ();
+        Test1_DEPRECATED_URL_Parsing_::DoTests_ ();
+        Test1_URI_::DoTests_ ();
         Test2_InternetAddress_ ();
         Test3_NetworkInterfaceList_ ();
         Test4_DNS_::DoTests_ ();

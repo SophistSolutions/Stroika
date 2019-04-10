@@ -27,14 +27,16 @@ using IO::Network::HTTP::ClientErrorException;
  ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URI& url)
 {
     return ClientErrorException::TreatExceptionsAsClientError ([&] () {
         Mapping<String, VariantValue> result;
-        Mapping<String, String>       unconverted = url.GetQuery ().GetMap ();
-        unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) {
-            result.Add (kvp.fKey, VariantValue{kvp.fValue});
-        });
+        if (auto query = url.GetQuery ()) {
+            Mapping<String, String> unconverted = query->GetMap ();
+            unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) {
+                result.Add (kvp.fKey, VariantValue{kvp.fValue});
+            });
+        }
         return result;
     });
 }
@@ -70,11 +72,13 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
         return inData.empty () ? VariantValue{} : Variant::JSON::Reader ().Read (inData);
     }
     else if (method == L"GET") {
-        IO::Network::URL url = request->GetURL ();
+        IO::Network::URI url = request->GetURL ();
         // get query args
         // For now - only support String values of query-string args
         Mapping<String, VariantValue> result;
-        url.GetQuery ().GetMap ().Apply ([&result] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
+        if (auto query = url.GetQuery ()) {
+            query->GetMap ().Apply ([&result] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
+        }
         return VariantValue{result};
     }
     else {

@@ -11,7 +11,7 @@
 #include "../../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/DataExchange/VariantValue.h"
-#include "../../../Foundation/IO/Network/URL.h"
+#include "../../../Foundation/IO/Network/URI.h"
 
 #include "../../WebServer/Request.h"
 #include "../../WebServer/RequestHandler.h"
@@ -31,7 +31,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     using Containers::Sequence;
     using DataExchange::InternetMediaType;
     using DataExchange::VariantValue;
-    using IO::Network::URL;
+    using IO::Network::URI;
     using Memory::BLOB;
     using Traversal::Iterable;
 
@@ -51,7 +51,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \note - PickoutParamValuesFromURL maps exceptions returned to IO::Network::HTTP::ClientErrorException
      */
     Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request);
-    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url);
+    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URI& url);
 
     /**
      * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
@@ -99,7 +99,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \par Example Usage
      *      \code
-     *          Sequence<VariantValue> tmp = OrderParamValues ( Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URL (L"http://www.sophist.com?page=5", URL::eFlexiblyAsUI)));
+     *          Sequence<VariantValue> tmp = OrderParamValues ( Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URI {L"http://www.sophist.com?page=5"}));
      *          Assert (tmp.size () == 2);
      *          Assert (tmp[0] == 5);
      *          Assert (tmp[1] == nullptr);

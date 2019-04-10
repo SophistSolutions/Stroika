@@ -169,7 +169,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValuesFromURL (request);
     }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
+    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const URI& url, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
     {
         Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
         return PickoutParamValuesFromURL (url);

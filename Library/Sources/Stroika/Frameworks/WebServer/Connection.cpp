@@ -123,7 +123,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP Request line - missing host-relative URL")));
         }
         using IO::Network::URL;
-        request->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
+        request->SetURL (URI{tokens[1]});
         if (request->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());

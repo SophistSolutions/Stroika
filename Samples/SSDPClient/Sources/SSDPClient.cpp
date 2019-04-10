@@ -33,7 +33,7 @@ namespace {
 
 namespace {
     // Ignore if fails
-    void DoPrintDeviceDescription_ (const URL& deviceDescriptionURL)
+    void DoPrintDeviceDescription_ (const URI& deviceDescriptionURL)
     {
         try {
             IO::Network::Transfer::Connection c = IO::Network::Transfer::CreateConnection ();

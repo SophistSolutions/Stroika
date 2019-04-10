@@ -32,12 +32,12 @@ namespace Stroika::Frameworks::WebServer {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fMethod_ = method;
     }
-    inline IO::Network::URL Request::GetURL () const
+    inline IO::Network::URI Request::GetURL () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fURL_;
     }
-    inline void Request::SetURL (const IO::Network::URL& url)
+    inline void Request::SetURL (const IO::Network::URI& url)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fURL_ = url;

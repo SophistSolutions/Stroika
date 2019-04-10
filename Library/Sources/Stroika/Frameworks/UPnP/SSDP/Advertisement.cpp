@@ -63,9 +63,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
     textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
     textOut.Write (Characters::Format (L"Cache-Control: max-age=60\r\n")); // @todo fix
-    if (not ad.fLocation.empty ()) {
-        textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.GetFullURL ().c_str ()));
-    }
+    textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.As<String> ().c_str ()));
     if (ad.fAlive.has_value ()) {
         if (*ad.fAlive) {
             textOut.Write (Characters::Format (L"NTS: ssdp:alive\r\n"));
@@ -124,7 +122,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
             advertisement->fRawHeaders.Add (label, value);
         }
         if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
-            advertisement->fLocation = IO::Network::URL{value, IO::Network::URL::ParseOptions::eAsFullURL};
+            advertisement->fLocation = IO::Network::URI{value};
         }
         else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
             advertisement->fTarget = value;

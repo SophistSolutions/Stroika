@@ -38,7 +38,7 @@ class BasicServer::Rep_ {
 public:
     Sequence<Advertisement> fAdvertisements;
     FrequencyInfo           fFrequencyInfo;
-    URL                     fLocation;
+    URI                     fLocation;
     Rep_ (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
         : fAdvertisements ()
         , fFrequencyInfo (fi)
@@ -81,18 +81,22 @@ public:
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
-        if (fLocation.GetHost ().empty ()) {
+        // @todo EXPLAIN THIS LOGIC? What its doing is - if NO LOCATION HOST SPECIFIED - picka  good default (not so crazy) - but only
+        // in that case do we patch/replace the location for the advertisements? That makes little sense
+        if (fLocation.GetAuthority () and fLocation.GetAuthority ()->GetHost ()) {
+            return fAdvertisements;
+        }
+        else {
             Sequence<Advertisement> revisedAdvertisements;
-            URL                     useURL = fLocation;
-            useURL.SetHost (IO::Network::GetPrimaryInternetAddress ().As<String> ());
+            URI                     useURL    = fLocation;
+            URI::Authority          authority = useURL.GetAuthority ().value_or (URI::Authority{});
+            authority.SetHost (URI::Host{IO::Network::GetPrimaryInternetAddress ()});
+            useURL.SetAuthority (authority);
             for (auto ai : fAdvertisements) {
-                ai.fLocation = useURL;
+                ai.fLocation = useURL; // !@todo MAYBE this would make more sense replacing just the HOST part of each advertisement?
                 revisedAdvertisements.Append (ai);
             }
             return revisedAdvertisements;
-        }
-        else {
-            return fAdvertisements;
         }
     }
     void StartNotifier_ ()

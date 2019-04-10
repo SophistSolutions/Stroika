@@ -55,7 +55,7 @@ namespace {
             void Test_1_SimpleFetch_Google_C_ (Connection c)
             {
                 Debug::TraceContextBumper ctx ("{}::...Test_1_SimpleFetch_Google_C_");
-                c.SetURL (URL::Parse (L"http://www.google.com"));
+                c.SetURL (URI{L"http://www.google.com"});
                 Response r = c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
@@ -64,7 +64,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx ("{}::...Test_2_SimpleFetch_SSL_Google_C_");
                 try {
-                    c.SetURL (URL::Parse (L"https://www.google.com"));
+                    c.SetURL ({L"https://www.google.com"});
                     Response r = c.GET ();
                     VerifyTestResult (r.GetSucceeded ());
                     VerifyTestResult (r.GetData ().size () > 1);
@@ -136,7 +136,7 @@ namespace {
             void T1_httpbin_SimpleGET_ (Connection c)
             {
                 Debug::TraceContextBumper ctx ("T1_httpbin_SimpleGET_");
-                c.SetURL (URL::Parse (L"http://httpbin.org/get"));
+                c.SetURL (URI{L"http://httpbin.org/get"});
                 Response r = c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
@@ -156,7 +156,7 @@ namespace {
 
                 static mt19937 sRNG_;
 
-                c.SetURL (URL::Parse (L"http://httpbin.org/post"));
+                c.SetURL (URI{L"http://httpbin.org/post"});
                 BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
@@ -176,7 +176,7 @@ namespace {
 #if qHasFeature_OpenSSL
                     if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored failure since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - try again ssl link");
-                        c.SetURL (URL::Parse (L"https://httpbin.org/post"));
+                        c.SetURL (URI{L"https://httpbin.org/post"});
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
                             Execution::Sleep (500ms * tryCount);
@@ -230,7 +230,7 @@ namespace {
 
                 static mt19937 sRNG_;
 
-                c.SetURL (URL::Parse (L"http://httpbin.org/put"));
+                c.SetURL (URI{L"http://httpbin.org/put"});
                 BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
@@ -345,7 +345,7 @@ namespace {
         namespace Private_ {
             void Test_1_SimpleFetch_Google_C_ (Connection c)
             {
-                c.SetURL (URL::Parse (L"http://www.google.com"));
+                c.SetURL (URI{L"http://www.google.com"});
                 Response r = c.GET ();
                 VerifyTestResultWarning (r.GetSucceeded ());
                 for (auto i : r.GetHeaders ()) {
@@ -395,7 +395,7 @@ namespace {
             void T1_get_ ()
             {
                 Connection c = IO::Network::Transfer::CreateConnection (kDefaultTestOptions_);
-                c.SetURL (URL::Parse (L"http://www.google.com"));
+                c.SetURL (URI{L"http://www.google.com"});
                 Response r = c.GET ();
                 VerifyTestResultWarning (r.GetSucceeded ());
                 VerifyTestResultWarning (r.GetData ().size () > 1);
@@ -428,7 +428,7 @@ namespace {
             {
                 Connection c = IO::Network::Transfer::CreateConnection (o);
                 try {
-                    c.SetURL (URL::Parse (L"https://testssl-valid.disig.sk/index.en.html"));
+                    c.SetURL (URI{L"https://testssl-valid.disig.sk/index.en.html"});
                     Response r = c.GET ();
                     VerifyTestResultWarning (r.GetSucceeded ());
                     VerifyTestResultWarning (r.GetData ().size () > 1);

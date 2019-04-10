@@ -125,7 +125,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
     tmp << "            <friendlyName>" << QuoteForXML (dd.fFriendlyName) << "</friendlyName>" << endl;
     tmp << "            <manufacturer>" << QuoteForXML (dd.fManufactureName) << "</manufacturer>" << endl;
     if (dd.fManufacturingURL) {
-        tmp << "                <manufacturerURL>" << QuoteForXML (dd.fManufacturingURL->GetFullURL ()) << "</manufacturerURL>" << endl;
+        tmp << "                <manufacturerURL>" << QuoteForXML (dd.fManufacturingURL->As<String> ()) << "</manufacturerURL>" << endl;
     }
     if (dd.fModelDescription) {
         tmp << "            <modelDescription>" << QuoteForXML (dd.fModelDescription) << "</modelDescription>" << endl;
@@ -135,7 +135,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
         tmp << "            <modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
     }
     if (dd.fModelURL) {
-        tmp << "                <modelURL>" << QuoteForXML (dd.fModelURL->GetFullURL ()) << "</modelURL>" << endl;
+        tmp << "                <modelURL>" << QuoteForXML (dd.fModelURL->As<String> ()) << "</modelURL>" << endl;
     }
     if (dd.fSerialNumber) {
         tmp << "            <serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
@@ -152,7 +152,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
             tmp << "                            <width>" << i.fHorizontalPixels << "</width>" << endl;
             tmp << "                            <height>" << i.fVerticalPixels << "</height>" << endl;
             tmp << "                            <depth>" << i.fColorDepth << "</depth>" << endl;
-            tmp << "                            <url>" << QuoteForXML (i.fURL.GetFullURL ()) << "</url>" << endl;
+            tmp << "                            <url>" << QuoteForXML (i.fURL.As<String> ()) << "</url>" << endl;
             tmp << "                    </icon>" << endl;
         }
         tmp << "                </iconList>" << endl;
@@ -163,9 +163,9 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
             tmp << "                    <service>" << endl;
             tmp << "                            <serviceType>" << QuoteForXML (i.fServiceType) << "</serviceType>" << endl;
             tmp << "                            <serviceId>" << QuoteForXML (i.fServiceID) << "</serviceId>" << endl;
-            tmp << "                            <SCPDURL>" << QuoteForXML (i.fSCPDURL.GetFullURL ()) << "</SCPDURL>" << endl;
-            tmp << "                            <controlURL>" << QuoteForXML (i.fControlURL.GetFullURL ()) << "</controlURL>" << endl;
-            tmp << "                            <eventSubURL>" << QuoteForXML (i.fEventSubURL.GetFullURL ()) << "</eventSubURL>" << endl;
+            tmp << "                            <SCPDURL>" << QuoteForXML (i.fSCPDURL.As<String> ()) << "</SCPDURL>" << endl;
+            tmp << "                            <controlURL>" << QuoteForXML (i.fControlURL.As<String> ()) << "</controlURL>" << endl;
+            tmp << "                            <eventSubURL>" << QuoteForXML (i.fEventSubURL.As<String> ()) << "</eventSubURL>" << endl;
             tmp << "                    </service>" << endl;
         }
         tmp << "                </serviceList>" << endl;
@@ -180,7 +180,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
 #endif
 
     if (dd.fPresentationURL.has_value ()) {
-        tmp << "                <presentationURL>" << QuoteForXML (dd.fPresentationURL->GetFullURL ()) << "</presentationURL>" << endl;
+        tmp << "                <presentationURL>" << QuoteForXML (dd.fPresentationURL->As<String> ()) << "</presentationURL>" << endl;
     }
     tmp << "    </device>" << endl;
     tmp << "</root>" << endl;
@@ -203,8 +203,8 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<String> ();
         registry.AddCommonType<optional<String>> ();
         registry.AddCommonType<uint16_t> ();
-        registry.AddCommonType<URL> ();
-        registry.AddCommonType<optional<URL>> ();
+        registry.AddCommonType<URI> ();
+        registry.AddCommonType<optional<URI>> ();
         registry.AddCommonReader_Simple<InternetMediaType> ([] (const String& s) { return InternetMediaType{s}; });
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         registry.AddCommonReader_Class<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{

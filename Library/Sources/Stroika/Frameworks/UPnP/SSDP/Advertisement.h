@@ -13,7 +13,7 @@
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
-#include "../../../Foundation/IO/Network/URL.h"
+#include "../../../Foundation/IO/Network/URI.h"
 #include "../../../Foundation/Memory/BLOB.h"
 
 /**
@@ -30,7 +30,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     using Foundation::Characters::String;
     using Foundation::Characters::String_Constant;
     using Foundation::Containers::Mapping;
-    using Foundation::IO::Network::URL;
+    using Foundation::IO::Network::URI;
     using Foundation::Memory::BLOB;
 
     /**
@@ -38,7 +38,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     struct Advertisement {
         optional<bool>          fAlive; // else Bye notification, or empty if neither
         String                  fUSN;
-        URL                     fLocation;
+        URI                     fLocation;
         String                  fServer;
         String                  fTarget; // usually ST header (or NT for notify)
         Mapping<String, String> fRawHeaders;

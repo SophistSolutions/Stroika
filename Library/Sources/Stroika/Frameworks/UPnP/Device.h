@@ -8,7 +8,7 @@
 
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/IO/Network/URI.h"
 
 /*
  * TODO:
@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::UPnP {
 
     using namespace Stroika::Foundation;
     using Characters::String;
-    using Foundation::IO::Network::URL;
+    using Foundation::IO::Network::URI;
 
     /**
      * High level device description - from ssdp. This is the BASIC device info.
@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::UPnP {
     class Device {
     public:
         String fDeviceID; // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
-        URL    fLocation;
+        URI    fLocation;
         String fServer;
     };
 

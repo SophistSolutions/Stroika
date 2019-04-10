@@ -90,8 +90,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     void Registry::SimpleReader_<double>::Deactivating ();
     template <>
     void Registry::SimpleReader_<long double>::Deactivating ();
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     template <>
     void Registry::SimpleReader_<IO::Network::URL>::Deactivating ();
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
     template <>
     void Registry::SimpleReader_<Time::DateTime>::Deactivating ();
     template <>
@@ -918,9 +924,19 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         return MakeCommonReader_SimpleReader_<String> ();
     }
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const IO::Network::URL*)
     {
         return MakeCommonReader_SimpleReader_<IO::Network::URL> ();
+    }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const IO::Network::URI*)
+    {
+        return MakeCommonReader_SimpleReader_<IO::Network::URI> ();
     }
     template <typename T>
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>*)

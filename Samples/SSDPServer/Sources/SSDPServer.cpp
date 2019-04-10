@@ -74,21 +74,21 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         uint16_t portForOurWS = 8080;
 
         Device d;
-        d.fLocation.SetPortNumber (portForOurWS);
-        d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"_k);
-        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627"_k);
+        d.fLocation.SetAuthority (URI::Authority{nullopt, portForOurWS});
+        d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"sv);
+        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627"sv);
 
         DeviceDescription deviceInfo;
-        deviceInfo.fPresentationURL  = URL::Parse (L"http://www.sophists.com/"_k);
-        deviceInfo.fDeviceType       = L"urn:sophists.com:device:deviceType:1.0"_k;
-        deviceInfo.fManufactureName  = L"Sophist Solutions, Inc."_k;
-        deviceInfo.fFriendlyName     = L"Sophist Solutions fake device"_k;
-        deviceInfo.fManufacturingURL = URL::Parse (L"http://www.sophists.com/"_k);
-        deviceInfo.fModelDescription = L"long user-friendly title"_k;
-        deviceInfo.fModelName        = L"model name"_k;
-        deviceInfo.fModelNumber      = L"model number"_k;
-        deviceInfo.fModelURL         = URL::Parse (L"http://www.sophists.com/"_k);
-        deviceInfo.fSerialNumber     = L"manufacturer's serial number"_k;
+        deviceInfo.fPresentationURL  = URI{L"http://www.sophists.com/"sv};
+        deviceInfo.fDeviceType       = L"urn:sophists.com:device:deviceType:1.0"sv;
+        deviceInfo.fManufactureName  = L"Sophist Solutions, Inc."sv;
+        deviceInfo.fFriendlyName     = L"Sophist Solutions fake device"sv;
+        deviceInfo.fManufacturingURL = URI{L"http://www.sophists.com/"sv};
+        deviceInfo.fModelDescription = L"long user-friendly title"sv;
+        deviceInfo.fModelName        = L"model name"sv;
+        deviceInfo.fModelNumber      = L"model number"sv;
+        deviceInfo.fModelURL         = URI{L"http://www.sophists.com/"sv};
+        deviceInfo.fSerialNumber     = L"manufacturer's serial number"sv;
         deviceInfo.fUDN              = L"uuid:" + d.fDeviceID;
 
         WebServerForDeviceDescription_ deviceWS (portForOurWS, deviceInfo);

@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
-#include "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/IO/Network/URI.h"
 
 #include "Request.h"
 #include "Response.h"
@@ -23,7 +23,7 @@ namespace Stroika::Frameworks::WebServer {
 
     using namespace Stroika::Foundation;
 
-    using IO::Network::URL;
+    using IO::Network::URI;
 
     /**
      *  For now assume externally sycnhronized
@@ -72,7 +72,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
          */
-        nonvirtual URL GetRequestURL () const;
+        nonvirtual URI GetRequestURL () const;
 
     public:
         /**

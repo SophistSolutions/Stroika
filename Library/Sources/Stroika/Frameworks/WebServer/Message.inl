@@ -58,7 +58,7 @@ namespace Stroika::Frameworks::WebServer {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
         return &fResponse_;
     }
-    inline URL Message::GetRequestURL () const
+    inline URI Message::GetRequestURL () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fRequest_.GetURL ();

@@ -5,6 +5,7 @@
 
 #include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
+#include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 
@@ -66,8 +67,17 @@ struct Router::Rep_ : Interceptor::_IRep {
     optional<RequestHandler> Lookup_ (const Request& request) const
     {
         String method      = request.GetHTTPMethod ();
-        URL    url         = request.GetURL ();
-        String hostRelPath = url.GetHostRelativePath ();
+        URI    url         = request.GetURL ();
+        String hostRelPath = url.GetPath ();
+        // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
+        // NOTE - unclear if this should throw or return nullopt
+        if (hostRelPath.StartsWith (L"/")) {
+            hostRelPath = hostRelPath.SubString (1);
+        }
+        else {
+            Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv));
+        }
+        // We interpret routes as matching against a relative path from the root
         for (Route r : fRoutes_) {
             if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
                 continue;
@@ -84,9 +94,9 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
-        URL                      url         = request.GetURL ();
-        String                   hostRelPath = url.GetHostRelativePath ();
-        static const Set<String> kMethods2Try_{String_Constant{L"GET"}, String_Constant{L"PUT"}, String_Constant{L"OPTIONS"}, String_Constant{L"DELETE"}, String_Constant{L"POST"}};
+        URI                      url         = request.GetURL ();
+        String                   hostRelPath = url.GetPath ();
+        static const Set<String> kMethods2Try_{L"GET"sv, L"PUT"sv, L"OPTIONS"sv, L"DELETE"sv, L"POST"sv};
         Set<String>              methods;
         for (String method : kMethods2Try_) {
             for (Route r : fRoutes_) {

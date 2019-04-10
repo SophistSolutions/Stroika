@@ -49,7 +49,8 @@ namespace Stroika::Foundation::IO::Network {
      *
      *      @todo   Bake in as member the URLQuery object
      */
-    class URL {
+    class [[deprecated ("Use class URI instead - since 2.1d23")]] URL
+    {
     public:
         using Authority = UniformResourceIdentification::Authority;
 
@@ -365,17 +366,26 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  operators indirects to URL::Compare()
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     bool operator< (const URL& lhs, const URL& rhs);
     bool operator<= (const URL& lhs, const URL& rhs);
     bool operator== (const URL& lhs, const URL& rhs);
     bool operator!= (const URL& lhs, const URL& rhs);
     bool operator> (const URL& lhs, const URL& rhs);
     bool operator>= (const URL& lhs, const URL& rhs);
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     using URLQuery [[deprecated ("Since 2.1d23, use UniformResourceIdentification::Query)")]] = UniformResourceIdentification::Query;
 
     /**
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     class [[deprecated ("Since 2.1d23, too simple (and due to switch to uri not worth maintaining)")]] LabeledURL
     {
     public:
@@ -385,6 +395,9 @@ namespace Stroika::Foundation::IO::Network {
         URL    fURL;
         String fLabel;
     };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
 }
 

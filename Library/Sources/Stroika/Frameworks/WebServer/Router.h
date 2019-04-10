@@ -10,7 +10,7 @@
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/Execution/Synchronized.h"
-#include "../../Foundation/IO/Network/URL.h"
+#include "../../Foundation/IO/Network/URI.h"
 
 #include "Interceptor.h"
 #include "Request.h"
@@ -46,7 +46,7 @@ namespace Stroika::Frameworks::WebServer {
     using Characters::RegularExpression;
     using Characters::String;
     using Containers::Sequence;
-    using IO::Network::URL;
+    using IO::Network::URI;
 
     class Router;
 
@@ -104,7 +104,7 @@ namespace Stroika::Frameworks::WebServer {
 
         //public:
         // typically just examine host-relative part of URL
-        //    nonvirtual  optional<Handler>   Lookup (const String& method, const URL& url) const;
+        //    nonvirtual  optional<Handler>   Lookup (const String& method, const URI& url) const;
 
     private:
         struct Rep_;

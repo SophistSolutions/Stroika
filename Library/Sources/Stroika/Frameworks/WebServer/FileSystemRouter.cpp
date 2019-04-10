@@ -77,7 +77,7 @@ namespace {
         String ExtractFileName_ (const Message* m) const
         {
             const Request& request    = *m->PeekRequest ();
-            String         urlRelPath = request.GetURL ().GetHostRelativePath ();
+            String         urlRelPath = request.GetURL ().GetPath ();
             if (fURLPrefix2Strip) {
                 if (urlRelPath.StartsWith (*fURLPrefix2Strip)) {
                     urlRelPath = urlRelPath.SubString (fURLPrefix2Strip->length ());
