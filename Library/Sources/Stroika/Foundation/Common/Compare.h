@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
@@ -29,6 +30,16 @@ namespace Stroika::Foundation::Common {
     struct ThreeWayCompare {
         constexpr ThreeWayCompare () = default;
         constexpr int operator() (const T& lhs, const T& rhs) const;
+    };
+
+    /**
+     *  EXPERIMENTAL - API subject to change - see if I can find a way to mix  with (partial specialization) of ThreeWayCompare but still pass in other base comparer (to say case insensitive)
+     */
+    template <typename T, typename TCOMPARER = ThreeWayCompare<T>>
+    struct OptionalThreeWayCompare {
+        constexpr OptionalThreeWayCompare (const TCOMPARER& tComparer);
+        constexpr int operator() (const optional<T>& lhs, const optional<T>& rhs) const;
+        TCOMPARER     fTComparer_;
     };
 
     /**

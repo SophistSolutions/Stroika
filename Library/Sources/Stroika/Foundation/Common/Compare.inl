@@ -27,6 +27,33 @@ namespace Stroika::Foundation::Common {
         }
         return less<T>{}(lhs, rhs) ? -1 : 1;
     }
+    /*
+     ********************************************************************************
+     *************** OptionalThreeWayCompare<T, TCOMPARER> **************************
+     ********************************************************************************
+     */
+    template <typename T, typename TCOMPARER>
+    constexpr OptionalThreeWayCompare<T, TCOMPARER>::OptionalThreeWayCompare (const TCOMPARER& comparer)
+        : fTComparer_ (comparer)
+    {
+    }
+    template <typename T, typename TCOMPARER>
+    constexpr int OptionalThreeWayCompare<T, TCOMPARER>::operator() (const optional<T>& lhs, const optional<T>& rhs) const
+    {
+        if (lhs and rhs) {
+            return fTComparer_ (*lhs, *rhs);
+        }
+        if (not lhs and not rhs) {
+            return 0;
+        }
+        // treat missing as less than present
+        if (lhs) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
 
     /*
      ********************************************************************************
