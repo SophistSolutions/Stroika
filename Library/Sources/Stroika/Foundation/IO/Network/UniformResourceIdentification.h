@@ -243,6 +243,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     bool operator== (const Host& lhs, const Host& rhs);
     bool operator!= (const Host& lhs, const Host& rhs);
+    bool operator< (const Host& lhs, const Host& rhs);
 
     /**
      *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
@@ -326,6 +327,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
     bool operator== (const Authority& lhs, const Authority& rhs);
     bool operator!= (const Authority& lhs, const Authority& rhs);
+    bool operator< (const Authority& lhs, const Authority& rhs);
 
     /**
      */
@@ -396,6 +398,21 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     string PCTDecode (const string& s);
     String PCTDecode2String (const string& s);
     String PCTDecode2String (const String& s);
+
+}
+
+namespace Stroika::Foundation::Common {
+
+    template <>
+    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> {
+        constexpr ThreeWayCompare () = default;
+        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& rhs) const;
+    };
+    template <>
+    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> {
+        constexpr ThreeWayCompare () = default;
+        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& rhs) const;
+    };
 
 }
 

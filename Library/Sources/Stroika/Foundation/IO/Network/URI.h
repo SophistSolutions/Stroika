@@ -9,6 +9,7 @@
 #include <string>
 
 #include "../../Characters/String.h"
+#include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
 #include "InternetAddress.h"
@@ -319,6 +320,16 @@ namespace Stroika::Foundation::IO::Network {
      */
     bool operator== (const URI& lhs, const URI& rhs);
     bool operator!= (const URI& lhs, const URI& rhs);
+
+}
+
+namespace Stroika::Foundation::Common {
+
+    template <>
+    struct ThreeWayCompare<Stroika::Foundation::IO::Network::URI> {
+        constexpr ThreeWayCompare () = default;
+        int operator() (const Stroika::Foundation::IO::Network::URI& lhs, const Stroika::Foundation::IO::Network::URI& rhs) const;
+    };
 
 }
 

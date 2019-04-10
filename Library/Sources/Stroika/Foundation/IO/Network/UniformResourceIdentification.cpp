@@ -208,6 +208,32 @@ bool UniformResourceIdentification::operator== (const Host& lhs, const Host& rhs
     return lhs.AsRegisteredName ()->Equals (*rhs.AsRegisteredName (), Characters::CompareOptions::eCaseInsensitive);
 }
 
+bool UniformResourceIdentification::operator< (const Host& lhs, const Host& rhs)
+{
+    // treat all internet addresses as < host registered names
+    auto loi = lhs.AsInternetAddress ();
+    auto roi = rhs.AsInternetAddress ();
+    if (loi) {
+        return loi < roi;
+    }
+    return lhs.AsRegisteredName ()->Compare (*rhs.AsRegisteredName (), Characters::CompareOptions::eCaseInsensitive) < 0;
+}
+
+/*
+ ********************************************************************************
+ *************************** ThreeWayCompare<Host> ******************************
+ ********************************************************************************
+ */
+int Common::ThreeWayCompare<Host>::operator() (const Host& lhs, const Host& rhs) const
+{
+    int cmpAddr = Common::ThreeWayCompare<optional<InternetAddress>>{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ());
+    if (cmpAddr != 0) {
+        return cmpAddr;
+    }
+    return Common::OptionalThreeWayCompare<String, String::ThreeWayCompare>{
+        String::ThreeWayCompare{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
+}
+
 /*
  ********************************************************************************
  ********************************* Authority ************************************
@@ -289,6 +315,47 @@ bool UniformResourceIdentification::operator== (const Authority& lhs, const Auth
     }
 #endif
     return true;
+}
+
+bool UniformResourceIdentification::operator< (const Authority& lhs, const Authority& rhs)
+{
+    // first compare on hostname, and then username, and then port
+
+    int cmpHost = Common::ThreeWayCompare<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ());
+    if (cmpHost < 0) {
+        return true;
+    }
+    else if (cmpHost > 0) {
+        return false;
+    }
+    int cmpUserName = Common::ThreeWayCompare<optional<String>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
+    if (cmpUserName < 0) {
+        return true;
+    }
+    else if (cmpUserName > 0) {
+        return false;
+    }
+
+    int cmpPort = Common::ThreeWayCompare<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
+    return cmpPort < 0;
+}
+
+/*
+ ********************************************************************************
+ ********************* ThreeWayCompare<Authority> *******************************
+ ********************************************************************************
+ */
+int Common::ThreeWayCompare<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
+{
+    int cmpHost = Common::ThreeWayCompare<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ());
+    if (cmpHost != 0) {
+        return cmpHost;
+    }
+    int cmpUserName = Common::ThreeWayCompare<optional<String>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
+    if (cmpUserName != 0) {
+        return cmpUserName;
+    }
+    return Common::ThreeWayCompare<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
 }
 
 /*
@@ -584,6 +651,7 @@ String UniformResourceIdentification::PCTDecode2String (const string& s)
     // @todo fix - must do CHECKED CONVERT
     return String::FromUTF8 (PCTDecode (s));
 }
+
 String UniformResourceIdentification::PCTDecode2String (const String& s)
 {
     // @todo fix - must do CHECKED CONVERT
