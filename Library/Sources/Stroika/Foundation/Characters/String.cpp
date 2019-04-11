@@ -113,6 +113,16 @@ namespace {
 
 /*
  ********************************************************************************
+ ******* Characters::Private_::RegularExpression_GetCompiled ********************
+ ********************************************************************************
+ */
+const wregex& Characters::Private_::RegularExpression_GetCompiled (const RegularExpression& regExp)
+{
+    return regExp.GetCompiled ();
+}
+
+/*
+ ********************************************************************************
  ****************************** String::_IRep ***********************************
  ********************************************************************************
  */
@@ -846,7 +856,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
     return result;
 }
 
-String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const String& with) const
+String String::ReplaceAll (const function<bool(Character)>& replaceCharP, const String& with) const
 {
     StringBuilder sb;
     for (const Character&& i : *this) {
@@ -895,7 +905,7 @@ String String::FilteredString (const RegularExpression& badCharacters, optional<
     return ReplaceAll (badCharacters, replacement.has_value () ? String (*replacement) : L"");
 }
 
-String String::FilteredString (const function<bool (Character)>& badCharacterP, optional<Character> replacement) const
+String String::FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement) const
 {
     StringBuilder sb;
     for (const Character&& i : *this) {
@@ -911,7 +921,7 @@ String String::FilteredString (const function<bool (Character)>& badCharacterP, 
     return sb.str ();
 }
 
-Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
+Containers::Sequence<String> String::Tokenize (const function<bool(Character)>& isTokenSeperator, bool trim) const
 {
     String                       tmp{*this}; // quickie thread-safety - do diffenrtly soon with new thread safety model... -- LGP 2014-10-31
     Containers::Sequence<String> r;
@@ -955,7 +965,7 @@ Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>&
      *  @todo Inefficient impl, to encourage code saving. Do more efficently.
      */
     return Tokenize (
-        [delimiters] (Character c) -> bool {
+        [delimiters](Character c) -> bool {
             return delimiters.Contains (c);
         },
         trim);
@@ -1136,7 +1146,7 @@ String String::ToUpperCase () const
 bool String::IsWhitespace () const
 {
     // It is all whitespace if the first non-whatspace character is 'EOF'
-    return not FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
+    return not FindFirstThat ([](Character c) -> bool { return not c.IsWhitespace (); });
 }
 
 String String::LimitLength (size_t maxLen, bool keepLeft) const
