@@ -76,24 +76,24 @@ namespace {
         }
         String ExtractFileName_ (const Message* m) const
         {
-            const Request& request    = *m->PeekRequest ();
-            String         urlRelPath = request.GetURL ().GetPath ();
+            const Request& request        = *m->PeekRequest ();
+            String         urlHostRelPath = request.GetURL ().GetAbsPath<String> ().SubString (1);
             if (fURLPrefix2Strip) {
-                if (urlRelPath.StartsWith (*fURLPrefix2Strip)) {
-                    urlRelPath = urlRelPath.SubString (fURLPrefix2Strip->length ());
-                    if (urlRelPath.StartsWith (L"/")) {
-                        urlRelPath = urlRelPath.SubString (1);
+                if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {
+                    urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip->length ());
+                    if (urlHostRelPath.StartsWith (L"/")) {
+                        urlHostRelPath = urlHostRelPath.SubString (1);
                     }
                 }
                 else {
                     Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
                 }
             }
-            if ((urlRelPath.empty () or urlRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {
+            if ((urlHostRelPath.empty () or urlHostRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {
                 //@todo tmphack - need to try a bunch and look for 'access'
-                urlRelPath += fDefaultIndexFileNames[0];
+                urlHostRelPath += fDefaultIndexFileNames[0];
             }
-            return (fFSRoot_ / filesystem::path (urlRelPath.As<wstring> ())).wstring ();
+            return (fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ())).wstring ();
         }
     };
 
