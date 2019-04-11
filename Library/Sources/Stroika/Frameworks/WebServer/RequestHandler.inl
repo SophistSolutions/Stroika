@@ -15,16 +15,25 @@ namespace Stroika::Frameworks::WebServer {
 
     /*
      ********************************************************************************
-     ***************************** WebServer::RequestHandler ************************
+     ************************** WebServer::RequestHandler ***************************
      ********************************************************************************
      */
+    inline RequestHandler::RequestHandler (const function<void (Message*, const Containers::Sequence<Characters::String>&)>& f)
+        : function<void (Message*, const Containers::Sequence<Characters::String>&)>{f}
+    {
+    }
     inline RequestHandler::RequestHandler (const function<void (Message*)>& f)
-        : function<void (Message*)>{f}
+        : function<void (Message*, const Containers::Sequence<Characters::String>&)>{[=] (Message* m, const Containers::Sequence<Characters::String>&) { f (m); }}
     {
     }
     template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*)>>>*>
     RequestHandler::RequestHandler (_Fx _Func)
         : RequestHandler (function<void (Message*)>{_Func})
+    {
+    }
+    template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*, const Containers::Sequence<Characters::String>&)>>>*>
+    RequestHandler::RequestHandler (_Fx _Func, int*)
+        : RequestHandler (function<void (Message*, const Containers::Sequence<Characters::String>&)>{_Func})
     {
     }
     template <class _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Request*, Response*)>>>*>

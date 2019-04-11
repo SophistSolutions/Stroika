@@ -43,9 +43,10 @@ struct Router::Rep_ : Interceptor::_IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->GetRequestHTTPMethod ().c_str (), Characters::ToString (m->GetRequestURL ()).c_str ()};
 #endif
-        optional<RequestHandler> handler = Lookup_ (*m->PeekRequest ());
+        Sequence<String>         matches;
+        optional<RequestHandler> handler = Lookup_ (*m->PeekRequest (), &matches);
         if (handler) {
-            (*handler) (m);
+            (*handler) (m, matches);
         }
         else {
             if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (*m->PeekRequest ())) {
@@ -64,26 +65,33 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
     }
-    optional<RequestHandler> Lookup_ (const Request& request) const
+    optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
     {
-        String method      = request.GetHTTPMethod ();
-        URI    url         = request.GetURL ();
-        String hostRelPath = url.GetPath ();
-        // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
-        // NOTE - unclear if this should throw or return nullopt
-        if (hostRelPath.StartsWith (L"/")) {
-            hostRelPath = hostRelPath.SubString (1);
+        String method = request.GetHTTPMethod ();
+        URI    url    = request.GetURL ();
+
+        String hostRelPath;
+        try {
+            hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
         }
-        else {
+        catch (...) {
             Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv));
         }
+
         // We interpret routes as matching against a relative path from the root
         for (Route r : fRoutes_) {
             if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
                 continue;
             }
-            if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
-                continue;
+            if (matches == nullptr) {
+                if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
+                    continue;
+                }
+            }
+            else {
+                if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_, matches)) {
+                    continue;
+                }
             }
             if (r.fRequestMatch_ and not(*r.fRequestMatch_) (request)) {
                 continue;
@@ -130,5 +138,5 @@ Router::Router (const Sequence<Route>& routes)
 
 optional<RequestHandler> Router::Lookup (const Request& request) const
 {
-    return _GetRep<Rep_> ().Lookup_ (request);
+    return _GetRep<Rep_> ().Lookup_ (request, nullptr);
 }
