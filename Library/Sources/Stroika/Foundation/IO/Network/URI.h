@@ -234,6 +234,23 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual String GetAuthorityRelativeResourceDir () const;
 
     public:
+        /**
+         *  Return the GetPath () value, but assuring its an absolute path.
+         *
+         *  Return type maybe:
+         *      String
+         *      optional<String>
+         *
+         *  If return type is optional<String>, it will return nullopt when the path is NOT an absolute path.
+         *  If return type is String, it will THROW when the path is not an absolute path.
+         *
+         *  In either case, the special case of GetPath ().empty () will be treated as '/'.
+         *
+         */
+        template <typename RETURN_VALUE = String>
+        nonvirtual RETURN_VALUE GetAbsPath () const;
+
+    public:
         /*
          *  Return the query part of the URI as the given RETURN_TYPE. Note this this value maybe missing.
          *
@@ -321,6 +338,11 @@ namespace Stroika::Foundation::IO::Network {
     String URI::GetAuthorityRelativeResource () const;
     template <>
     string URI::GetAuthorityRelativeResource () const;
+
+    template <>
+    String URI::GetAbsPath () const;
+    template <>
+    optional<String> URI::GetAbsPath () const;
 
     /**
      */

@@ -94,6 +94,25 @@ namespace Stroika::Foundation::IO::Network {
         return GetAuthorityRelativeResource<String> ().AsASCII ();
     }
     template <>
+    inline optional<String> URI::GetAbsPath () const
+    {
+        if (fPath_.empty ()) {
+            return L"/"sv;
+        }
+        if (fPath_.StartsWith (L"/")) {
+            return fPath_;
+        }
+        return nullopt;
+    }
+    template <>
+    inline String URI::GetAbsPath () const
+    {
+        if (auto op = GetAbsPath<optional<String>> ()) {
+            return *op;
+        }
+        Execution::Throw (Execution::RuntimeErrorException (L"This URI does not have an absolute path"));
+    }
+    template <>
     inline auto URI::GetQuery () const -> optional<String>
     {
         return fQuery_;
