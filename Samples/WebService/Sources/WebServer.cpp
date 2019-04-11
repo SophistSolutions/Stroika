@@ -90,7 +90,7 @@ public:
     {
         // @todo - move this to some framework-specific regtests...
         using VariantValue         = DataExchange::VariantValue;
-        Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URL (L"http://www.sophist.com?page=5", URL::eFlexiblyAsUI)));
+        Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URI{L"http://www.sophist.com?page=5"}));
         Assert (tmp.size () == 2);
         Assert (tmp[0] == 5);
         Assert (tmp[1] == nullptr);
