@@ -774,6 +774,7 @@ namespace Stroika::Foundation::Characters {
          *  @see FindEach
          */
         nonvirtual bool Match (const RegularExpression& regEx) const;
+        nonvirtual bool Match (const RegularExpression& regEx, Containers::Sequence<String>* matches) const;
         template <typename... OPTIONAL_STRINGS>
         nonvirtual bool Match (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const;
 

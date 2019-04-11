@@ -812,6 +812,22 @@ bool String::Match (const RegularExpression& regEx) const
     return regex_match (tmp.begin (), tmp.end (), regEx.GetCompiled ());
 }
 
+bool String::Match (const RegularExpression& regEx, Containers::Sequence<String>* matches) const
+{
+    RequireNotNull (matches);
+    //tmphack
+    wstring tmp{As<wstring> ()};
+    wsmatch base_match;
+    if (regex_match (tmp, base_match, regEx.GetCompiled ())) {
+        matches->clear ();
+        for (size_t i = 1; i < base_match.size (); ++i) {
+            matches->Append (base_match[i].str ());
+        }
+        return true;
+    }
+    return false;
+}
+
 String String::ReplaceAll (const RegularExpression& regEx, const String& with) const
 {
     return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
