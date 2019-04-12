@@ -15,7 +15,7 @@
 
 /*
  * TODO:
- *      (o)
+ *		@todo	RequestHandler overloads taking STRING arguments should use variadic templates (but tricky)
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -43,6 +43,10 @@ namespace Stroika::Frameworks::WebServer {
         RequestHandler (_Fx _Func);
         template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*, const Containers::Sequence<Characters::String>&)>>>* = nullptr>
         RequestHandler (_Fx _Func, int* = nullptr);
+        template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Message*, const Characters::String& arg0)>>>* = nullptr>
+        RequestHandler (_Fx _Func, short* = nullptr);
+        template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Message*, const Characters::String& arg0, const Characters::String& arg1)>>>* = nullptr>
+        RequestHandler (_Fx _Func, char* = nullptr);
         template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Request*, Response*)>>>* = nullptr>
         RequestHandler (_Fx _Func, void* = nullptr);
     };

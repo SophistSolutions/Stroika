@@ -36,6 +36,24 @@ namespace Stroika::Frameworks::WebServer {
         : RequestHandler (function<void (Message*, const Containers::Sequence<Characters::String>&)>{_Func})
     {
     }
+    template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*, const Characters::String& arg0)>>>*>
+    RequestHandler::RequestHandler (_Fx _Func, short*)
+        : RequestHandler (function<void (Message*, const Containers::Sequence<Characters::String>&)>{
+              [_Func] (Message* msg, const Containers::Sequence<Characters::String>& matches) {
+                  Require (matches.length () >= 1);
+                  _Func (msg, matches[0]);
+              }})
+    {
+    }
+    template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*, const Characters::String& arg0, const Characters::String& arg1)>>>*>
+    RequestHandler::RequestHandler (_Fx _Func, char*)
+        : RequestHandler (function<void (Message*, const Containers::Sequence<Characters::String>&)>{
+              [_Func] (Message* msg, const Containers::Sequence<Characters::String>& matches) {
+                  Require (matches.length () >= 2);
+                  _Func (msg, matches[0], matches[1]);
+              }})
+    {
+    }
     template <class _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Request*, Response*)>>>*>
     RequestHandler::RequestHandler (_Fx _Func, void*)
         : RequestHandler ([_Func] (Message* message) { RequireNotNull (message); _Func (message->PeekRequest (), message->PeekResponse ()); })
