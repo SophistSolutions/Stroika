@@ -254,11 +254,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<InternetAddress> fInternetAddress_;
     };
 
-	template <>
-	String Host::AsEncoded () const;
-	template <>
-	string Host::AsEncoded () const;
-
+    template <>
+    String Host::AsEncoded () const;
+    template <>
+    string Host::AsEncoded () const;
 
     /**
      *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
