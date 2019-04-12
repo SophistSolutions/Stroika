@@ -63,9 +63,23 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fInternetAddress_;
     }
+    inline String Host::AsDecoded () const
+    {
+        if (fRegisteredName_) {
+            return *fRegisteredName_;
+        }
+        Assert (fInternetAddress_);
+        return fInternetAddress_->As<String> ();
+    }
+    template <>
     inline String Host::AsEncoded () const
     {
         return fEncodedName_;
+    }
+    template <>
+    inline string Host::AsEncoded () const
+    {
+        return fEncodedName_.AsASCII<string> ();
     }
 
     /*

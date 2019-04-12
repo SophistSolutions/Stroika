@@ -212,10 +212,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual optional<InternetAddress> AsInternetAddress () const;
 
     public:
-        /*
-         *  Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
+        /**
+         *  Returns decoded (no PCT encoding etc) hostname (registered name, ipv4 or ipv6 address). Doesn't contain the
+         *  [] decoration around ip addresses, etc. Suitable for passing to DNS::Default::GetHostAddress ().
+         *
+         *  \par Example Usage
+         *      \code
+         *          auto locAddrs = IO::Network::DNS::Default ().GetHostAddresses (host.AsDecoded ());
+         *      \endcode
          */
-        nonvirtual String AsEncoded () const;
+        nonvirtual String AsDecoded () const;
+
+    public:
+        /**
+         *  Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
+         *
+         *  Supported RESULT_TYPE values are:
+         *      String      (all ASCII characters)
+         *      string      (ASCII encoded)
+         */
+        template <typename RESULT_TYPE = String>
+        nonvirtual RESULT_TYPE AsEncoded () const;
 
     public:
         /**
@@ -236,6 +253,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<String>          fRegisteredName_;
         optional<InternetAddress> fInternetAddress_;
     };
+
+	template <>
+	String Host::AsEncoded () const;
+	template <>
+	string Host::AsEncoded () const;
+
 
     /**
      *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
