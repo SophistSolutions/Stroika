@@ -90,7 +90,7 @@ public:
             Sequence<Advertisement> revisedAdvertisements;
             URI                     useURL    = fLocation;
             URI::Authority          authority = useURL.GetAuthority ().value_or (URI::Authority{});
-            authority.SetHost (URI::Host{IO::Network::GetPrimaryInternetAddress ()});
+            authority.SetHost (IO::Network::GetPrimaryInternetAddress ());
             useURL.SetAuthority (authority);
             for (auto ai : fAdvertisements) {
                 ai.fLocation = useURL; // !@todo MAYBE this would make more sense replacing just the HOST part of each advertisement?
