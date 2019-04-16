@@ -39,9 +39,23 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  @see TimedCache constructor for examples
+         *  \par Example Usage
+         *      \code
+         *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
+         *          {
+         *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
+         *              static Cache::SynchronizedTimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};
+         *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+         *                  static const DNS kDNS_ = DNS::Default ();
+         *                  return kDNS_.ReverseLookup (inetAddr);
+         *              });
+         *          }
+         *      \endcode
+         *
+         *  @see TimedCache constructor for more examples
          */
         SynchronizedTimedCache (Time::DurationSecondsType timeoutInSeconds);
+        SynchronizedTimedCache (const Time::Duration& timeout);
         SynchronizedTimedCache (const SynchronizedTimedCache& src);
 
     public:

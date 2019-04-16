@@ -15,6 +15,7 @@
 #include "../Configuration/TypeHints.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Debug/Assertions.h"
+#include "../Time/Duration.h"
 #include "../Time/Realtime.h"
 
 #include "Statistics.h"
@@ -105,6 +106,18 @@ namespace Stroika::Foundation::Cache {
      *
      *          N.B. the KEY=void functionality is NYI for TimedCache, so best to use CallerStalenessCache for that, at least for
      *          now.
+     *
+     *  \par Example Usage
+     *      \code
+     *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
+     *          {
+     *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
+     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};
+     *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+     *                  return DNS::Default ().ReverseLookup (inetAddr);
+     *              });
+     *          }
+     *      \endcode
      *
      *  \par Example Usage
      *      Use TimedCache to avoid needlessly redundant lookups
@@ -237,7 +250,8 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        TimedCache (Time::DurationSecondsType timeoutInSeconds);
+        TimedCache (Time::DurationSecondsType timeout);
+        TimedCache (const Time::Duration& timeout);
         TimedCache (const TimedCache&) = default;
 
     public:
