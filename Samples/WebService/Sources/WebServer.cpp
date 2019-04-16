@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/String_Constant.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -49,6 +50,8 @@ public:
     shared_ptr<IWSAPI> fWSImpl_;        // application logic actually handling webservices
     ConnectionManager  fConnectionMgr_; // manage http connection objects, thread pool, etc
 
+    static const WebServiceMethodDescription kVariables_;
+
     static const WebServiceMethodDescription kPlus_;
     static const WebServiceMethodDescription kMinus;
     static const WebServiceMethodDescription kTimes;
@@ -71,14 +74,60 @@ public:
                             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
 
+                  /*
+                   * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
+                   * the URL itself.
+                   */
+                  Route{L"GET"_RegEx, L"variables(/?)"_RegEx, [=] (Message* m) {
+                            WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
+                        }},
+                  Route{L"GET"_RegEx, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                            WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
+                        }},
+                  Route{L"POST|PUT"_RegEx, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                            optional<Number> number;
+                            // demo getting argument from the body
+                            if (not number) {
+								// read if content-type is text (not json)
+                                if (m->PeekRequest ()->GetContentType () and m->PeekRequest ()->GetContentType ()->IsA (Stroika::Foundation::DataExchange::PredefinedInternetMediaType::Text_CT ())) {
+                                    String argsAsString = Streams::TextReader::New (m->PeekRequest ()->GetBody ()).ReadAll ();
+                                    number = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
+                                }
+                            }
+                            // demo getting argument from the query argument
+                            if (not number) {
+                                static const String kValueParamName_ = L"value"sv;
+                                Mapping<String, DataExchange::VariantValue> args = PickoutParamValuesFromURL (m->PeekRequest ());
+                                number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+                            }
+                            // demo getting either query arg, or url encoded arg
+                            if (not number) {
+                                static const String kValueParamName_ = L"value"sv;
+                                // NOTE - PickoutParamValues combines PickoutParamValuesFromURL, and PickoutParamValuesFromBody. You can use
+                                // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
+                                // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivilent you can parse ouf
+                                // of the body, either json encoded or form-encoded (as of 2.1d23, only json encoded supported)
+                                Mapping<String, DataExchange::VariantValue> args = PickoutParamValues (m->PeekRequest ());
+                                number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+                            }
+                            if (not number) {
+                                Execution::Throw (ClientErrorException (L"Expected argument to PUT/POST variable"));
+                            }
+                            fWSImpl_->Variables_SET (varName, *number);
+                            WriteResponse (m->PeekResponse (), kVariables_);
+                        }},
+                  Route{L"DELETE"_RegEx, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                            fWSImpl_->Variables_DELETE (varName);
+                            WriteResponse (m->PeekResponse (), kVariables_);
+                        }},
+
+                  /*
+                   *    plus, minus, times, and divide, test-void-return all all demonstrate passing in variables through either the POST body, or query-arguments.
+                   */
                   Route{L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
-
                   Route{L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
-
                   Route{L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
-
                   Route{L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[=] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
-
                   Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void (double)>{[=] (double check) {
                                     if (check > 10) {
                                         Execution::Throw (Execution::Exception (L"more than 10"sv));
@@ -101,10 +150,12 @@ public:
         WriteDocsPage (
             response,
             Sequence<WebServiceMethodDescription>{
+                kVariables_,
                 kPlus_,
                 kMinus,
                 kTimes,
                 kDivide,
+
             },
             DocsOptions{L"Stroika Sample WebService - Web Methods"_k});
     }
@@ -120,6 +171,20 @@ public:
 /*
  *  Documentation on WSAPIs
  */
+const WebServiceMethodDescription WebServer::Rep_::kVariables_{
+    L"variables"_k,
+    Set<String>{IO::Network::HTTP::Methods::kGet, IO::Network::HTTP::Methods::kPost, IO::Network::HTTP::Methods::kDelete},
+    DataExchange::PredefinedInternetMediaType::kJSON,
+    {},
+    Sequence<String>{
+        L"curl http://localhost:8080/variables -v --output -",
+        L"curl http://localhost:8080/variables/x -v --output -",
+        L"curl  -X POST http://localhost:8080/variables/x -v --output -",
+        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
+        L"curl -H \"Content-Type: text/plain\" -X POST -d '3' http://localhost:8080/variables/x --output -"},
+    Sequence<String>{L"@todo - NYI"},
+};
+
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
     Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},

@@ -94,6 +94,8 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
             *intoObj = accum;
         });
 
+    mapper.AddCommonType<Collection<String>> ();
+
     return mapper;
 }();
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");

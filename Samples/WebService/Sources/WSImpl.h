@@ -6,9 +6,6 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Containers/Collection.h"
-#include "Stroika/Foundation/Containers/Sequence.h"
-
 #include "IWSAPI.h"
 
 /**
@@ -22,6 +19,12 @@ namespace StroikaSample::WebServices {
      *  This is straight C++ application logic, with (hopefully) zero logic relating to marshalling, or HTTP etc.
      */
     class WSImpl : public IWSAPI {
+    public:
+        virtual Collection<String> Variables_GET () const override;
+        virtual Number             Variables_GET (const String& variable) const override;
+        virtual void               Variables_DELETE (const String& variable) const override;
+        virtual void               Variables_SET (const String& variable, const Number& value) override;
+
     public:
         virtual Number plus (Number lhs, Number rhs) const override;
         virtual Number minus (Number lhs, Number rhs) const override;
