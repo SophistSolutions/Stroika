@@ -8,6 +8,7 @@
 #include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
+#include "../../Foundation/IO/Network/HTTP/Methods.h"
 
 #include "Router.h"
 
@@ -15,11 +16,12 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
-using IO::Network::HTTP::ClientErrorException;
+using HTTP::ClientErrorException;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -56,12 +58,12 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Assert (not o->empty ());
                 StringBuilder res;
                 o->Apply ([&res] (const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
-                m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAllow, res.str ());
-                Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kMethodNotAllowed));
+                m->PeekResponse ()->AddHeader (HTTP::HeaderName::kAllow, res.str ());
+                Execution::Throw (ClientErrorException (HTTP::StatusCodes::kMethodNotAllowed));
             }
             else {
                 DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ());
-                Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kNotFound));
+                Execution::Throw (ClientErrorException (HTTP::StatusCodes::kNotFound));
             }
         }
     }
@@ -75,7 +77,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
         }
         catch (...) {
-            Execution::Throw (ClientErrorException (IO::Network::HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv));
+            Execution::Throw (ClientErrorException (HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv));
         }
 
         // We interpret routes as matching against a relative path from the root
@@ -102,9 +104,15 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
-        URI                      url         = request.GetURL ();
-        String                   hostRelPath = url.GetPath ();
-        static const Set<String> kMethods2Try_{L"GET"sv, L"PUT"sv, L"OPTIONS"sv, L"DELETE"sv, L"POST"sv};
+        URI    url = request.GetURL ();
+        String hostRelPath;
+        try {
+            hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
+        }
+        catch (...) {
+            return nullopt;
+        }
+        static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete, HTTP::Methods::kPost};
         Set<String>              methods;
         for (String method : kMethods2Try_) {
             for (Route r : fRoutes_) {
@@ -120,7 +128,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 methods.Add (method);
             }
         }
-        return methods.empty () ? optional<Set<String>>{} : optional<Set<String>>{methods};
+        return methods.empty () ? nullopt : optional<Set<String>>{methods};
     }
 
     const Sequence<Route> fRoutes_; // no need for synchronization cuz constant - just set on construction
