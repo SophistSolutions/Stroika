@@ -88,17 +88,17 @@ public:
                             optional<Number> number;
                             // demo getting argument from the body
                             if (not number) {
-								// read if content-type is text (not json)
+                                // read if content-type is text (not json)
                                 if (m->PeekRequest ()->GetContentType () and m->PeekRequest ()->GetContentType ()->IsA (Stroika::Foundation::DataExchange::PredefinedInternetMediaType::Text_CT ())) {
                                     String argsAsString = Streams::TextReader::New (m->PeekRequest ()->GetBody ()).ReadAll ();
-                                    number = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
+                                    number              = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
                                 }
                             }
                             // demo getting argument from the query argument
                             if (not number) {
-                                static const String kValueParamName_ = L"value"sv;
-                                Mapping<String, DataExchange::VariantValue> args = PickoutParamValuesFromURL (m->PeekRequest ());
-                                number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+                                static const String                         kValueParamName_ = L"value"sv;
+                                Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m->PeekRequest ());
+                                number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                             }
                             // demo getting either query arg, or url encoded arg
                             if (not number) {
@@ -182,7 +182,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
         L"curl  -X POST http://localhost:8080/variables/x -v --output -",
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
         L"curl -H \"Content-Type: text/plain\" -X POST -d '3' http://localhost:8080/variables/x --output -"},
-    Sequence<String>{L"@todo - NYI"},
+    Sequence<String>{L"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
 };
 
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
