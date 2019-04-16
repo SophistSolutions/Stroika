@@ -9,7 +9,6 @@
 #include <string>
 
 #include "../../../Characters/RegularExpression.h"
-#include "../../../Configuration/Common.h"
 
 /*
  */
