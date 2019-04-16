@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Time {
          */
         constexpr Duration ();
         Duration (const Duration& src);
-        Duration (Duration&& src);
+        Duration (Duration&& src) noexcept;
         explicit Duration (const string& durationStr);
         explicit Duration (const Characters::String& durationStr);
         constexpr explicit Duration (int duration);
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         nonvirtual Duration& operator= (const Duration& rhs);
-        nonvirtual Duration& operator= (Duration&& rhs);
+        nonvirtual Duration& operator= (Duration&& rhs) noexcept;
 
     public:
         /**

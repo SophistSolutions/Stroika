@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Time {
             new (&fStringRep_) string (src.fStringRep_);
         }
     }
-    inline Duration::Duration (Duration&& src)
+    inline Duration::Duration (Duration&& src) noexcept
         : fRepType_ (src.fRepType_)
         , fNumericRepOrCache_ (src.fNumericRepOrCache_)
     {
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Time {
         }
         return *this;
     }
-    inline Duration& Duration::operator= (Duration&& rhs)
+    inline Duration& Duration::operator= (Duration&& rhs) noexcept
     {
         if (this != &rhs) {
             if (fRepType_ == rhs.fRepType_) {
