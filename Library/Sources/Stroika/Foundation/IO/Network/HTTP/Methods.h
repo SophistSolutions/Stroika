@@ -23,11 +23,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *        "The method is case-sensitive"
      */
     namespace Methods {
-        constexpr wstring_view kGet     = L"GET";
-        constexpr wstring_view kPut     = L"PUT";
-        constexpr wstring_view kPost    = L"POST";
-        constexpr wstring_view kDelete  = L"DELETE";
-        constexpr wstring_view kOptions = L"OPTIONS";
+        constexpr wstring_view kGet{L"GET"};
+        constexpr wstring_view kPut{L"PUT"};
+        constexpr wstring_view kPost{L"POST"};
+        constexpr wstring_view kDelete{L"DELETE"};
+        constexpr wstring_view kOptions{L"OPTIONS"};
     }
 
     namespace MethodsRegularExpressions {
