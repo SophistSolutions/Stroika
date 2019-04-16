@@ -28,6 +28,7 @@ using namespace std;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Frameworks::WebServer;
 using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::WebService::Server;
@@ -61,15 +62,15 @@ public:
         : kRouter_{
               Sequence<Route>{
                   Route{
-                      RegularExpression{IO::Network::HTTP::Methods::kOptions},
+                      MethodsRegularExpressions::kOptions,
                       RegularExpression::kAny,
                       [] ([[maybe_unused]] Message* m) { Lambda_Arg_Unused_BWA (m); }},
 
                   Route{L""_RegEx, DefaultPage_},
 
-                  Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
+                  Route{MethodsRegularExpressions::kPost, L"SetAppState"_RegEx, SetAppState_},
 
-                  Route{L"GET"_RegEx, L"FRED"_RegEx, [] (Request*, Response* response) {
+                  Route{MethodsRegularExpressions::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
                             response->write (L"FRED");
                             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
                         }},
@@ -78,13 +79,13 @@ public:
                    * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
                    * the URL itself.
                    */
-                  Route{L"GET"_RegEx, L"variables(/?)"_RegEx, [=] (Message* m) {
+                  Route{MethodsRegularExpressions::kGet, L"variables(/?)"_RegEx, [=] (Message* m) {
                             WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
                         }},
-                  Route{L"GET"_RegEx, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                  Route{MethodsRegularExpressions::kGet, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
                             WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                         }},
-                  Route{L"POST|PUT"_RegEx, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                  Route{MethodsRegularExpressions::kPostOrPut, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
                             optional<Number> number;
                             // demo getting argument from the body
                             if (not number) {
@@ -116,7 +117,7 @@ public:
                             fWSImpl_->Variables_SET (varName, *number);
                             WriteResponse (m->PeekResponse (), kVariables_);
                         }},
-                  Route{L"DELETE"_RegEx, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                  Route{MethodsRegularExpressions::kDelete, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
                             fWSImpl_->Variables_DELETE (varName);
                             WriteResponse (m->PeekResponse (), kVariables_);
                         }},
@@ -173,7 +174,7 @@ public:
  */
 const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     L"variables"_k,
-    Set<String>{IO::Network::HTTP::Methods::kGet, IO::Network::HTTP::Methods::kPost, IO::Network::HTTP::Methods::kDelete},
+    Set<String>{Methods::kGet, Methods::kPost, Methods::kDelete},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
@@ -187,7 +188,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
 
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
-    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    Set<String>{String_Constant{Methods::kPost}},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
@@ -197,7 +198,7 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
 };
 const WebServiceMethodDescription WebServer::Rep_::kMinus{
     L"minus"_k,
-    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    Set<String>{String_Constant{Methods::kPost}},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
@@ -207,7 +208,7 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus{
 };
 const WebServiceMethodDescription WebServer::Rep_::kTimes{
     L"times"_k,
-    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    Set<String>{String_Constant{Methods::kPost}},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{
@@ -218,7 +219,7 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
 };
 const WebServiceMethodDescription WebServer::Rep_::kDivide{
     L"divide"_k,
-    Set<String>{String_Constant{IO::Network::HTTP::Methods::kPost}},
+    Set<String>{String_Constant{Methods::kPost}},
     DataExchange::PredefinedInternetMediaType::kJSON,
     {},
     Sequence<String>{

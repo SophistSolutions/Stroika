@@ -6,25 +6,37 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include <map>
 #include <string>
 
+#include "../../../Characters/RegularExpression.h"
 #include "../../../Configuration/Common.h"
 
 /*
- * TODO:
- *      (o)     consider using std::string_view?
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
-    // standard HTTP METHODS
+    /*
+     *  Standard HTTP METHODS
+     *
+     *  \note https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1
+     *        "The method is case-sensitive"
+     */
     namespace Methods {
-        constexpr wchar_t kGet[]     = L"GET";
-        constexpr wchar_t kPut[]     = L"PUT";
-        constexpr wchar_t kPost[]    = L"POST";
-        constexpr wchar_t kDelete[]  = L"DELETE";
-        constexpr wchar_t kOptions[] = L"OPTIONS";
+        constexpr wstring_view kGet     = L"GET";
+        constexpr wstring_view kPut     = L"PUT";
+        constexpr wstring_view kPost    = L"POST";
+        constexpr wstring_view kDelete  = L"DELETE";
+        constexpr wstring_view kOptions = L"OPTIONS";
+    }
+
+    namespace MethodsRegularExpressions {
+        extern const Characters::RegularExpression kGet;
+        extern const Characters::RegularExpression kPut;
+        extern const Characters::RegularExpression kPost;
+        extern const Characters::RegularExpression kPostOrPut;
+        extern const Characters::RegularExpression kDelete;
+        extern const Characters::RegularExpression kOptions;
     }
 
 }

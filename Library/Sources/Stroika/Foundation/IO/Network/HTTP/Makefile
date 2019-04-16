@@ -18,6 +18,7 @@ Objs	=	\
 	$(ObjDir)Cookies${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
+	$(ObjDir)Methods${OBJ_SUFFIX}\
 
 
 all:	$(Objs)
