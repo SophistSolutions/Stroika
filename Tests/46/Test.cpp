@@ -285,7 +285,7 @@ namespace {
             VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
         }
         {
-#if defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
 #endif
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-move\"")
@@ -294,7 +294,7 @@ namespace {
             bl = move (bl);
             VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-move\"")
-#if defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
 #endif
         }
@@ -395,7 +395,7 @@ namespace {
         void DoTest ()
         {
             {
-#if defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
 #endif
                 // ASSIGN
@@ -417,7 +417,7 @@ namespace {
                 }
             }
             // note - see https://stroika.atlassian.net/browse/STK-556 - we DON'T support Optional self-move
-#if defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
         }

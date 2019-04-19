@@ -267,11 +267,11 @@ namespace {
         VerifyTestResult (t3 == L"a");
         VerifyTestResult (t3 == String (L"a"));
         VerifyTestResult (t4 == L"a");
-#if defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
 #endif
         t1 = t1;
-#if defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
         VerifyTestResult (t1 == L"");
