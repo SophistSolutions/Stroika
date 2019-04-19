@@ -2138,6 +2138,24 @@ if ($onlyGenerateIfCompilerExists) {
 	if (trim (`./ScriptsLib/HasCompiler $COMPILER_DRIVER_CPlusPlus`) eq "0") {
 		$generate = false;
 	}
+	# if flag to use libc++ - check if right gersion is available
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++')) {
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8.0') {
+			if (not exists ('/usr/lib/llvm-6/include/c++/v1/stdlib.h') {
+				$generate = false;
+			}
+		}
+		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8.0') {
+			if (not exists ('/usr/lib/llvm-7/include/c++/v1/stdlib.h') {
+				$generate = false;
+			}
+		}
+		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
+			if (not exists ('/usr/lib/llvm-8/include/c++/v1/stdlib.h') {
+				$generate = false;
+			}
+		}
+	}
 }
 
 if ($generate) {
