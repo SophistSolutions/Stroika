@@ -1,4 +1,4 @@
-# Could use about any version of ubuntu, but 1804 or later comes with C++17 friendly compilers, so a good baseline
+# Could use about any version of ubuntu, but 1804 or later comes with C++17 friendly compilers
 FROM ubuntu:19.04
 
 
