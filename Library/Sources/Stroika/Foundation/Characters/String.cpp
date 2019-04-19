@@ -279,6 +279,7 @@ String String::FromUTF8 (const char* from, const char* to)
     UTFConvert::Convert (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
     return String{buf.begin (), outStr};
 }
+
 String String::FromSDKString (const SDKChar* from)
 {
     RequireNotNull (from);

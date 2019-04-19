@@ -211,6 +211,21 @@ namespace Stroika::Foundation::Characters {
     {
         return FromUTF8 (from.c_str (), from.c_str () + from.length ());
     }
+#if __cpp_char8_t >= 201811L
+    inline String String::FromUTF8 (const char8_t* from, const char8_t* to)
+    {
+        return FromUTF8 ((const char*)from, (const char*)to)
+    }
+    inline String String::FromUTF8 (const char8_t* from)
+    {
+        return FromUTF8 (from, from + ::strlen ((const char*)from));
+    }
+    inline String String::FromUTF8 (const u8string& from)
+    {
+        return FromUTF8 (from.c_str (), from.c_str () + from.length ());
+    }
+#endif
+
     inline String String::FromISOLatin1 (const char* from)
     {
         return FromISOLatin1 (from, from + ::strlen (from));

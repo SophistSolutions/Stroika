@@ -388,6 +388,11 @@ namespace Stroika::Foundation::Characters {
         static String FromUTF8 (const char* from);
         static String FromUTF8 (const char* from, const char* to);
         static String FromUTF8 (const string& from);
+#if __cpp_char8_t >= 201811L
+        static String FromUTF8 (const char8_t* from);
+        static String FromUTF8 (const char8_t* from, const char8_t* to);
+        static String FromUTF8 (const u8string& from);
+#endif
 
     public:
         /**
