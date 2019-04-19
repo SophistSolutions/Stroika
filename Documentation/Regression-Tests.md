@@ -95,6 +95,30 @@ checkin from one spot.
         ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
+* $TEST_TARGET=Ubuntu1904_x86_64
+
+    (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+    ~~~bash
+    RUN_IN_DOCKER=1 \
+        USE_TEST_BASENAME=Ubuntu1904_x86_64 \
+        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+        CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests \
+        MACHINE=Hercules \
+        ./ScriptsLib/RunRemoteRegressionTests
+    ~~~
+
+* $TEST_TARGET=Ubuntu1904-Cross-Compile2RaspberryPi
+
+    (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
+    ~~~bash
+    sleep 12000 && RUN_IN_DOCKER=1 \
+        USE_TEST_BASENAME=Ubuntu1904-Cross-Compile2RaspberryPi \
+        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
+        CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests \
+        MACHINE=Hercules \
+        ./ScriptsLib/RunRemoteRegressionTests
+    ~~~
+
 ## Checkin results
 
 ~~~bash
