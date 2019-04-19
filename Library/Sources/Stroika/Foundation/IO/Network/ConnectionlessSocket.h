@@ -90,9 +90,8 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  defaults to null (empty ())
          */
-        Ptr () = default;
+        Ptr () = delete;
         Ptr (nullptr_t);
         Ptr (const Ptr& src) = default;
         Ptr (Ptr&& src)      = default;
