@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_char8_t >= 201811L
     inline String String::FromUTF8 (const char8_t* from, const char8_t* to)
     {
-        return FromUTF8 ((const char*)from, (const char*)to);
+        return FromUTF8 (reinterpret_cast<const char*> (from), reinterpret_cast<const char*> (to));
     }
     inline String String::FromUTF8 (const char8_t* from)
     {
