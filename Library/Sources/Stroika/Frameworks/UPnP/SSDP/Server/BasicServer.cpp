@@ -106,7 +106,7 @@ public:
                 PeriodicNotifier l;
                 l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
             },
-            Thread::eAutoStart, String{L"SSDP Notifier"});
+            Thread::eAutoStart, L"SSDP Notifier"sv);
     }
     void StartResponder_ ()
     {
@@ -115,7 +115,7 @@ public:
                 SearchResponder sr;
                 sr.Run (GetAdjustedAdvertisements_ ());
             },
-            Thread::eAutoStart, String{L"SSDP Search Responder"});
+            Thread::eAutoStart, L"SSDP Search Responder"sv);
     }
     void Restart_ ()
     {
