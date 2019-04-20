@@ -111,7 +111,7 @@ checkin from one spot.
 
     (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
     ~~~bash
-    sleep 24000 && RUN_IN_DOCKER=1 \
+    sleep 30000 && RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1904-Cross-Compile2RaspberryPi \
         BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests \
