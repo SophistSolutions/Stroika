@@ -1305,11 +1305,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
 
 #if defined(__clang__) && !defined(__APPLE__)
-/// CANNOT TEST YET - cuz don't have sanitzer stuff working with my private clang-7 build. For now assume broken so I have less trouble
-// getting the clang-7 sanitzer stuff owrking (and when the rest is working, retry this maybe)
-// 
-// SINCE TESTING IS IN CONFIGURE SCRIPT - AND IT CHECKS CLANG++-6, appears fixed after that
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 6)
+// This appears still an issue (dont want to say broken exactly) in clang++-8 - real issue, but I cannot get suppression to work so far
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 8)
 #else
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
 #endif
