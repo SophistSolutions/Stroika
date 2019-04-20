@@ -72,8 +72,8 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 7) || (__clang_major__ == 7 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#if (__clang_major__ > 8) || (__clang_major__ == 8 && (__clang_minor__ > 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>8.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -654,7 +654,8 @@ lose those deprecated interfaces.
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+// APPEARS still broken with clang++-8
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
@@ -730,12 +731,24 @@ lose those deprecated interfaces.
 #endif
 #endif
 
+/**
+ * REALLY UNSURE if this is a real bug or a misunderstanding.
+ * 
+ *  In file included from ObjectVariantMapper.cpp:19:
+In file included from ./ObjectVariantMapper.h:883:
+./ObjectVariantMapper.inl:931:130: error: 'no_sanitize' attribute cannot be applied to types
+        FromObjectMapperType<CLASS> fromObjectMapper = [fields] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ...
+                                                                                                                                 ^
+./../Debug/Sanitizer.h:42
+*/
+
 #ifndef qCompiler_noSanitizeAttributeForLamdas_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+// tested still generates error with clang++-8
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
@@ -1007,13 +1020,20 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 1>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.11.25503\include\xtr1common(66): note: see declaration of '_Test' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
 
     ************NOTE - this may NOT be a bug. I seem to recall soemthing about this being a restruction in C++17 and earlier and losed (fixed) in C++20
+
+
+./../Configuration/Endian.inl:33:29: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
+    inline constexpr Endian GetEndianness ()
+                            ^
+
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+// still broken in clang++-8
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -1052,7 +1072,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+// verified still broken in clang++-8
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1076,7 +1097,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 // Broken in _LIBCPP_VERSION  5000
 // Broken in _LIBCPP_VERSION  6000
 // Broken in _LIBCPP_VERSION  7000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 7000))
+// Broken in _LIBCPP_VERSION  8000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 8000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
@@ -1285,7 +1307,9 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if defined(__clang__) && !defined(__APPLE__)
 /// CANNOT TEST YET - cuz don't have sanitzer stuff working with my private clang-7 build. For now assume broken so I have less trouble
 // getting the clang-7 sanitzer stuff owrking (and when the rest is working, retry this maybe)
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 7)
+// 
+// SINCE TESTING IS IN CONFIGURE SCRIPT - AND IT CHECKS CLANG++-6, appears fixed after that
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 6)
 #else
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
 #endif
