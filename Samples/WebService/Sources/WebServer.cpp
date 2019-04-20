@@ -79,13 +79,13 @@ public:
                    * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
                    * the URL itself.
                    */
-                  Route{MethodsRegularExpressions::kGet, L"variables(/?)"_RegEx, [=] (Message* m) {
+                  Route{MethodsRegularExpressions::kGet, L"variables(/?)"_RegEx, [this] (Message* m) {
                             WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
                         }},
-                  Route{MethodsRegularExpressions::kGet, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                  Route{MethodsRegularExpressions::kGet, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                             WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                         }},
-                  Route{MethodsRegularExpressions::kPostOrPut, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                  Route{MethodsRegularExpressions::kPostOrPut, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                             optional<Number> number;
                             // demo getting argument from the body
                             if (not number) {
@@ -112,12 +112,12 @@ public:
                                 number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                             }
                             if (not number) {
-                                Execution::Throw (ClientErrorException (L"Expected argument to PUT/POST variable"));
+                                Execution::Throw (ClientErrorException (L"Expected argument to PUT/POST variable"sv));
                             }
                             fWSImpl_->Variables_SET (varName, *number);
                             WriteResponse (m->PeekResponse (), kVariables_);
                         }},
-                  Route{MethodsRegularExpressions::kDelete, L"variables/(.+)"_RegEx, [=] (Message* m, const String& varName) {
+                  Route{MethodsRegularExpressions::kDelete, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                             fWSImpl_->Variables_DELETE (varName);
                             WriteResponse (m->PeekResponse (), kVariables_);
                         }},

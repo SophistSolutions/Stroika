@@ -83,7 +83,7 @@ namespace {
 
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
-                [[maybe_unused]] auto&& cleanup = Finally ([=] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+                [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 
 #if qPlatform_POSIX
@@ -101,7 +101,7 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
-                [[maybe_unused]] auto&& cleanup = Finally ([=] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+                [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 #if qPlatform_POSIX || qPlatform_Windows
                 {
@@ -126,7 +126,7 @@ namespace {
                         }
 #if qDebug
                         --fCurrentPendingReadsCount; // reverse for inherited Read ()
-                        [[maybe_unused]] auto&& cleanup2 = Finally ([=] () noexcept { ++fCurrentPendingReadsCount; });
+                        [[maybe_unused]] auto&& cleanup2 = Finally ([this] () noexcept { ++fCurrentPendingReadsCount; });
 #endif
                         return Read (intoStart, intoEnd);
                     }

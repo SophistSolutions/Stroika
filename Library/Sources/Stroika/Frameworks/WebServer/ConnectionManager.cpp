@@ -155,7 +155,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                  options.fBindFlags.value_or (Options::kDefault_BindFlags),
                  [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  ComputeConnectionBacklog_ (options)}
-    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
+    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
 {
 }
 
