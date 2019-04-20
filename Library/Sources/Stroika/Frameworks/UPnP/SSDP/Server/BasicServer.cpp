@@ -4,7 +4,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../../Foundation/Characters/Format.h"
-#include "../../../../Foundation/Characters/String_Constant.h"
 #include "../../../../Foundation/Containers/Sequence.h"
 #include "../../../../Foundation/Debug/Trace.h"
 #include "../../../../Foundation/Execution/Sleep.h"
