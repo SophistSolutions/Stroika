@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Cache {
         else {
             VALUE v = cacheFiller (key);
             Add (key, v);
-            return move (v);
+            return v;
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
