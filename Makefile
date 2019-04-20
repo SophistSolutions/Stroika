@@ -419,8 +419,8 @@ basic-unix-test-configurations:
 	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a;\
 	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable --lto disable;\
 	# clang-8\
-	./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
-	./configure clang++-8-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined --cppstd-version c++2a;\
+	./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
+	./configure clang++-8-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
 	./configure clang++-8-release-libstdc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 	#\
 	#32-bit not working now - asm bug - must debug...\
