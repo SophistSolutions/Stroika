@@ -699,7 +699,8 @@ sub	SetDefaultForCompilerDriver_
 			}
 			# @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper) - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
 			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '8.0') {
-				my $test2Suppress = "function";
+				#my $test2Suppress = "function";
+				my $test2Suppress = "undefined";
 				if ("$^O" eq "darwin") {
 					### verified still broken in XCode 10 (or cannot find other workaround without this)
 					$test2Suppress = "vptr";
