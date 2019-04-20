@@ -83,7 +83,7 @@
 #if __GNUC__ < 7
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 7 (v2.0 supports g++5 and g++6)"
 #endif
-#if __GNUC__ > 8 || (__GNUC__ == 8 && (__GNUC_MINOR__ > 3))
+#if __GNUC__ > 9 || (__GNUC__ == 9 && (__GNUC_MINOR__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -375,10 +375,14 @@ ABORTING...
 
 #endif
 
-// According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
+/**
+ * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
+ */
 #ifndef qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
 
 #if defined(__GNUC__)
+// VERIFIED BROKEN IN GCC8
+// VERIFIED FIXED in GCC9
 #define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #elif defined(_MSC_VER)
 // verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
@@ -399,8 +403,7 @@ ABORTING...
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 3)
 #elif __GNUC__ <= 8
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 3)
-#elif __GNUC__ <= 9
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 0)
+// VERIFIED FIXED in GCC9
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
 #endif
@@ -622,6 +625,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 #ifndef qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
+// Appears fixed in GCC 9.0 (ubuntu 1904)
 #define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 8))
 #else
 #define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy 0
@@ -663,7 +667,8 @@ lose those deprecated interfaces.
 // APPEARS still broken with gcc 7.1
 // APPEARS still broken with gcc 7.2
 // APPEARS still broken with gcc 8.1
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+// APPEARS still broken with gcc 9.0
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 9)
 #elif defined(_MSC_VER)
 // STILL WARNINGS in _MS_VS_2k17_15Pt1_
 // now link error in _MS_VS_2k17_15Pt3Pt2_
@@ -742,7 +747,6 @@ In file included from ./ObjectVariantMapper.h:883:
                                                                                                                                  ^
 ./../Debug/Sanitizer.h:42
 */
-
 #ifndef qCompiler_noSanitizeAttributeForLamdas_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
@@ -752,6 +756,7 @@ In file included from ./ObjectVariantMapper.h:883:
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
+// appears fixed (at least no warning) with gcc9
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #else
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy 1
@@ -773,6 +778,7 @@ In file included from ./ObjectVariantMapper.h:883:
 #ifndef qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
+// Broken in GCC 9.0
 #define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ == 9))
 #else
 #define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy 0
@@ -873,7 +879,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_process_init_constructor_array_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_process_init_constructor_array_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7)
+//#define qCompilerAndStdLib_process_init_constructor_array_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7)
+#define qCompilerAndStdLib_process_init_constructor_array_Buggy (__GNUC__ == 7)
 #else
 #define qCompilerAndStdLib_process_init_constructor_array_Buggy 0
 #endif
@@ -1411,10 +1418,20 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 
 #endif
 
+/*
+ *
+ *      FAILED: REGRESSION TEST DUE TO EXCEPTION: 'Invalid Time Format'
+ *      [Failed]  (0  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/clang++-7-release-libstdc++/Tests/Test31)
+ *      FAILED: REGRESSION TEST DUE TO EXCEPTION: 'Invalid Time Format'
+ *      [Failed]  (0  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/clang++-7-release-libstdc++/Tests/Test31)
+ *
+ */
 #ifndef qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
 
 #if defined(_GLIBCXX_RELEASE)
-#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 8)
+// VERIFIED BROKEN IN GCC8
+// VERIFIED BROKEN IN GCC9.0
+#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 9)
 #else
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy 0
 #endif
@@ -1521,7 +1538,9 @@ namespace {
 
 #if defined(__GNUC__) && defined(__arm__)
 // tested still generates warning with gcc8 (actually crash on valgrind and raspberrypi - stretch - maybe fixed in buster? - maybe got worse cuz I upgraded libc on that machine but not valgrind to buster?)
+/// @todo UNTESTED
 #define qCompilerAndStdLib_arm_openssl_valgrind_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+//#define qCompilerAndStdLib_arm_openssl_valgrind_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 9)
 #else
 #define qCompilerAndStdLib_arm_openssl_valgrind_Buggy 0
 #endif
@@ -1579,6 +1598,7 @@ namespace {
 #ifndef qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
 
 #if defined(__GNUC__)
+// APPEARS fixed in GCC 9.0
 #define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #else
 #define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy 0
