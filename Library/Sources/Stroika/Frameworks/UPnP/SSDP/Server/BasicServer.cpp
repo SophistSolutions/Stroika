@@ -80,7 +80,7 @@ public:
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
-        // @todo EXPLAIN THIS LOGIC? What its doing is - if NO LOCATION HOST SPECIFIED - picka  good default (not so crazy) - but only
+        // @todo EXPLAIN THIS LOGIC? What its doing is - if NO LOCATION HOST SPECIFIED - pick a good default (not so crazy) - but only
         // in that case do we patch/replace the location for the advertisements? That makes little sense
         if (fLocation.GetAuthority () and fLocation.GetAuthority ()->GetHost ()) {
             return fAdvertisements;
