@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
-    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>&
+    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> _SafeReadRepAccessor&
     {
         shared_lock<const Debug::AssertExternallySynchronizedLock>::operator= (rhs);
         fConstRef_                                                          = rhs.fConstRef_;
