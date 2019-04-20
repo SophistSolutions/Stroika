@@ -620,6 +620,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ==11117==ABORTING
 */
 #ifndef qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
+
 #if defined(__GNUC__) && !defined(__clang__)
 #define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 8))
 #else
@@ -755,6 +756,28 @@ In file included from ./ObjectVariantMapper.h:883:
 #else
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy 1
 #endif
+#endif
+
+/*
+ *  https://timsong-cpp.github.io/cppwp/draft.pdf documents
+            if (n > 5) [[unlikely]] { // n > 5 is considered to be arbitrarily unlikely
+                g(0);
+                return n * 2 + 1;
+            }
+ *  But with gcc 9, this generates:
+        ../Containers/../Configuration/Enumeration.inl: In member function 'ENUM_TYPE Stroika::Foundation::Configuration::EnumNames<ENUM_TYPE>::GetValue(const wchar_t*, const NOT_FOUND_EXCEPTION&) const':
+        ../Containers/../Configuration/Enumeration.inl:190:13: warning: attributes at the beginning of statement are ignored [-Wattributes]
+          190 |             [[UNLIKELY_ATTR]]
+
+ */
+#ifndef qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+#define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ == 9))
+#else
+#define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy 0
+#endif
+
 #endif
 
 /**
@@ -1686,6 +1709,10 @@ namespace {
 //  and if debug is false, expands to nothing. So the compiler sees differnt expectations of whether you ever get the the line
 //  return x;
 #pragma warning(disable : 4702)
+#endif
+
+#if qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
+#pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
 // doesn't seem any portable way todo this, and not defined in C++ language
