@@ -44,6 +44,10 @@ namespace Stroika::Foundation::Characters::CString {
      */
     template <typename T>
     size_t Length (const T* p);
+#if __cpp_char8_t >= 201811L
+    template <>
+    size_t Length (const char8_t* p);
+#endif
     template <>
     size_t Length (const char* p);
     template <>
