@@ -70,23 +70,9 @@
 {
    https://stroika.atlassian.net/browse/STK-620
    Helgrind:Misc
-   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
    fun:_ZNSt18condition_variable10notify_allEv
    ...
-}
-{
-   https://stroika.atlassian.net/browse/STK-620 - suppression needed on Ubuntu1904
-   Helgrind:Misc
-   obj:/usr/lib/x86_64-linux-gnu/valgrind/vgpreload_helgrind-amd64-linux.so
-   fun:_ZNSt18condition_variable10notify_allEv
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
-   ...
-}
-{
-   https://stroika.atlassian.net/browse/STK-620  (same but for ARM)
-   Helgrind:Misc
-   fun:pthread_cond_broadcast_WRK
-   fun:_ZNSt18condition_variable10notify_allEv
 }
 {
    https://stroika.atlassian.net/browse/STK-628
