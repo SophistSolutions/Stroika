@@ -119,7 +119,7 @@ public:
     }
     void Restart_ ()
     {
-        Debug::TraceContextBumper ctx ("Restarting Basic SSDP server threads");
+        Debug::TraceContextBumper ctx{"Restarting Basic SSDP server threads"};
         {
             Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
             if (fNotifierThread_ != nullptr) {
