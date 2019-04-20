@@ -51,6 +51,9 @@
  *              For example, if you had 3 threads in the pool, and 5 thread groups, then typically one or
  *              more thread groups would be idle. The thread groups give you lockless execution, and
  *              the threadpool lets the 5 groups run 'at the same time' on only 3 threads.
+ *
+ *      @todo   had declared ThreadPool movable, but never worked because mutex not movable - could fix if needed - review
+ *              WOULD make sense to make movable, just low priority
  */
 
 namespace Stroika::Foundation::Execution {
@@ -79,11 +82,11 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         ThreadPool (unsigned int nThreads = 0, const optional<Characters::String>& threadPoolName = {});
-        ThreadPool (ThreadPool&&)      = default;
+        ThreadPool (ThreadPool&&)      = delete;
         ThreadPool (const ThreadPool&) = delete;
 
     public:
-        nonvirtual ThreadPool& operator= (ThreadPool&&) = default;
+        nonvirtual ThreadPool& operator= (ThreadPool&&) = delete;
         nonvirtual ThreadPool& operator= (const ThreadPool&) = delete;
 
     public:
