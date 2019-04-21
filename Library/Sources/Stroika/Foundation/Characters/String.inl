@@ -512,15 +512,15 @@ namespace Stroika::Foundation::Characters {
         AsUTF8 (&r);
         return r;
     }
-    inline string String::AsUTF8 () const
+#if __cpp_char8_t >= 201811L
+    template <>
+    inline u8string String::AsUTF8 () const
     {
-        return AsUTF8<string> ();
+        u8string r;
+        AsUTF8 (&r);
+        return r;
     }
-    inline void String::AsUTF8 (string* into) const
-    {
-        RequireNotNull (into);
-        AsUTF8<string> (into);
-    }
+#endif
     inline u16string String::AsUTF16 () const
     {
         u16string r;

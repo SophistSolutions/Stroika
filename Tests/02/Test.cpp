@@ -1316,9 +1316,16 @@ namespace {
 namespace {
     void Test50_Utf8Conversions_ ()
     {
-#if __cpp_char8_t >= 201811L
-        // NYI - must redo
-#else
+        {
+            VerifyTestResult (u8"phred" == String::FromUTF8 (u8"phred").AsUTF8 ());
+            VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8 ());
+        }
+        {
+            StringBuilder tmp;
+            tmp.Append (String::FromUTF8 (u8"€"));
+            Verify (tmp.str () == L"€");
+        }
+#if __cpp_char8_t < 201811L
         {
             VerifyTestResult (string (u8"phred") == String::FromUTF8 (string (u8"phred")).AsUTF8 ());
             VerifyTestResult (string (u8"שלום") == String::FromUTF8 (string (u8"שלום")).AsUTF8 ());

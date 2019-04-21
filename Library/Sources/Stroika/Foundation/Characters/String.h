@@ -61,6 +61,9 @@
  *              indexing (must be index in terms of characters but that doesnt work right now on windows due to
  *              using utf16 and not handling surrogates).
  *
+ *      @todo   Consider if AsUTF8 () should start returning u8string instead of string, after Stroika v2.2, when we directly
+ *              support C++20.
+ *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
  *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
@@ -1099,13 +1102,15 @@ namespace Stroika::Foundation::Characters {
          * Convert String losslessly into a standard C++ type.
          * Only specifically specialized variants are supported (right now just <string> supported).
          * Note - template param is optional.
+         *
+         *  SUPPORTED result type "T": values are:
+         *      string
+         *      u8string        // C++2a or higher
          */
-        template <typename T>
+        template <typename T = string>
         nonvirtual T AsUTF8 () const;
-        template <typename T>
+        template <typename T = string>
         nonvirtual void AsUTF8 (T* into) const;
-        nonvirtual string AsUTF8 () const;
-        nonvirtual void   AsUTF8 (string* into) const;
 
     public:
         /**
@@ -1308,6 +1313,12 @@ namespace Stroika::Foundation::Characters {
     void String::AsUTF8 (string* into) const;
     template <>
     string String::AsUTF8 () const;
+#if __cpp_char8_t >= 201811L
+    template <>
+    void String::AsUTF8 (u8string* into) const;
+    template <>
+    u8string String::AsUTF8 () const;
+#endif
 
     template <>
     void String::AsASCII (string* into) const;

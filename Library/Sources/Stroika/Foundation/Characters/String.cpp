@@ -1220,6 +1220,24 @@ void String::AsUTF8 (string* into) const
     into->assign (buf.begin (), outStr);
 }
 
+#if __cpp_char8_t >= 201811L
+template <>
+void String::AsUTF8 (u8string* into) const
+{
+    RequireNotNull (into);
+    _SafeReadRepAccessor                     accessor{this};
+    pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
+    Assert (sizeof (Character) == sizeof (wchar_t));
+    const wchar_t*            wcp        = (const wchar_t*)lhsD.first;
+    const wchar_t*            wcpe       = (const wchar_t*)lhsD.second;
+    size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (wcp, wcpe);
+    SmallStackBuffer<char8_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+    UTFConvert::UTF8*         outStr = buf.begin ();
+    UTFConvert::Convert (&wcp, wcpe, &outStr, buf.end (), UTFConvert::lenientConversion);
+    into->assign (buf.begin (), outStr);
+}
+#endif
+
 void String::AsUTF16 (u16string* into) const
 {
     RequireNotNull (into);
