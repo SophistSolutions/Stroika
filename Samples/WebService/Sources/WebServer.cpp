@@ -160,7 +160,6 @@ public:
             },
             DocsOptions{L"Stroika Sample WebService - Web Methods"_k});
     }
-    // Can declare arguments as Message* message
     static void SetAppState_ (Message* message)
     {
         String argsAsString = Streams::TextReader::New (message->PeekRequest ()->GetBody ()).ReadAll ();
