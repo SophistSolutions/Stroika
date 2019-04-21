@@ -371,7 +371,7 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
             resultSize = inCharCnt * 6;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
         case kCodePage_UTF8:
-            resultSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, UTFConvert::UTF8> (inChars, inChars + inCharCnt);
+            resultSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char> (inChars, inChars + inCharCnt);
         default:
             resultSize = inCharCnt * 8;
             break; // I THINK that should always be enough - but who knows...
@@ -3006,8 +3006,8 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);
     using namespace UTFConvert;
-    const UTF8*                       sourceStart = inMBChars;
-    const UTF8*                       sourceEnd   = sourceStart + inMBCharCnt;
+    const char*                       sourceStart = inMBChars;
+    const char*                       sourceEnd   = sourceStart + inMBCharCnt;
     char16_t*                         targetStart = outChars;
     char16_t*                         targetEnd   = outChars + *outCharCnt;
     constexpr ConversionFlags         kFlag_      = lenientConversion;
@@ -3018,8 +3018,8 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
 void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
 {
     using namespace UTFConvert;
-    const UTF8*                       sourceStart = inMBChars;
-    const UTF8*                       sourceEnd   = sourceStart + inMBCharCnt;
+    const char*                       sourceStart = inMBChars;
+    const char*                       sourceEnd   = sourceStart + inMBCharCnt;
     char32_t*                         targetStart = outChars;
     char32_t*                         targetEnd   = outChars + *outCharCnt;
     constexpr ConversionFlags         kFlag_      = lenientConversion;
@@ -3032,11 +3032,11 @@ void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, c
     using namespace UTFConvert;
     const char16_t*                   sourceStart = inChars;
     const char16_t*                   sourceEnd   = sourceStart + inCharCnt;
-    UTF8*                             targetStart = reinterpret_cast<UTF8*> (outChars);
-    UTF8*                             targetEnd   = targetStart + *outCharCnt;
+    char*                             targetStart = reinterpret_cast<char*> (outChars);
+    char*                             targetEnd   = targetStart + *outCharCnt;
     constexpr ConversionFlags         kFlag_      = lenientConversion;
     [[maybe_unused]] ConversionResult tmp         = ConvertQuietly (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    *outCharCnt                                   = targetStart - reinterpret_cast<UTF8*> (outChars);
+    *outCharCnt                                   = targetStart - reinterpret_cast<char*> (outChars);
 }
 
 void UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
@@ -3044,11 +3044,11 @@ void UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, c
     using namespace UTFConvert;
     const char32_t*                   sourceStart = reinterpret_cast<const char32_t*> (inChars);
     const char32_t*                   sourceEnd   = sourceStart + inCharCnt;
-    UTF8*                             targetStart = reinterpret_cast<UTF8*> (outChars);
-    UTF8*                             targetEnd   = targetStart + *outCharCnt;
+    char*                             targetStart = reinterpret_cast<char*> (outChars);
+    char*                             targetEnd   = targetStart + *outCharCnt;
     constexpr ConversionFlags         kFlag_      = lenientConversion;
     [[maybe_unused]] ConversionResult tmp         = ConvertQuietly (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    *outCharCnt                                   = targetStart - reinterpret_cast<UTF8*> (outChars);
+    *outCharCnt                                   = targetStart - reinterpret_cast<char*> (outChars);
 }
 
 /*
@@ -3289,7 +3289,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
 
     template <>
-    ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
+    ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
     {
         //  was ConvertUTF16toUTF8
         ConversionResult result = conversionOK;
@@ -3377,12 +3377,20 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             target += bytesToWrite;
         }
         *sourceStart = source;
-        *targetStart = reinterpret_cast<UTF8*> (target);
+        *targetStart = reinterpret_cast<char*> (target);
         return result;
     }
 
+#if __cpp_char8_t >= 201811L
     template <>
-    ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
+    ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags)
+    {
+        return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char**> (targetStart), reinterpret_cast<char*> (targetEnd), flags);
+    }
+	#endif
+
+    template <>
+    ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
     {
         //  was ConvertUTF8toUTF16
         ConversionResult result = conversionOK;
@@ -3469,13 +3477,22 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
             }
         }
-        *sourceStart = reinterpret_cast<const UTF8*> (source);
+        *sourceStart = reinterpret_cast<const char*> (source);
         *targetStart = target;
         return result;
     }
 
+#if __cpp_char8_t >= 201811L
     template <>
-    ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
+    ConversionResult ConvertQuietly (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
+    {
+        return ConvertQuietly (reinterpret_cast<const char**> (sourceStart), reinterpret_cast<const char*> (sourceEnd), targetStart, targetEnd, flags);
+    }
+#endif
+
+
+	template <>
+    ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
     {
         //  was ConvertUTF32toUTF8
         ConversionResult result = conversionOK;
@@ -3542,12 +3559,21 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             target += bytesToWrite;
         }
         *sourceStart = source;
-        *targetStart = reinterpret_cast<UTF8*> (target);
+        *targetStart = reinterpret_cast<char*> (target);
         return result;
     }
 
+#if __cpp_char8_t >= 201811L
     template <>
-    ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
+    ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
+    {
+        return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast< char8_t**> (targetStart), reinterpret_cast< char8_t*> (targetEnd), flags);
+    }
+#endif
+
+
+    template <>
+    ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
     {
         //  was ConvertUTF8toUTF32
         ConversionResult result = conversionOK;
@@ -3624,12 +3650,20 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 *target++ = UNI_REPLACEMENT_CHAR;
             }
         }
-        *sourceStart = reinterpret_cast<const UTF8*> (source);
+        *sourceStart = reinterpret_cast<const char*> (source);
         *targetStart = target;
         return result;
     }
 
-    bool IsLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd)
+#if __cpp_char8_t >= 201811L
+    template <>
+    ConversionResult ConvertQuietly (const char8_t** sourceStart, const char8_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
+    {
+        return ConvertQuietly (reinterpret_cast<const char**> (sourceStart), reinterpret_cast<const char*> (sourceEnd), targetStart, targetEnd, flags);
+    }
+#endif
+
+    bool IsLegalUTF8Sequence (const char* source, const char* sourceEnd)
     {
         int length = trailingBytesForUTF8[*reinterpret_cast<const UTF8_*> (source)] + 1;
         if (source + length > sourceEnd) {
@@ -3637,6 +3671,17 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         }
         return isLegalUTF8_ (reinterpret_cast<const UTF8_*> (source), length);
     }
+
+#if __cpp_char8_t >= 201811L
+    bool IsLegalUTF8Sequence (const char8_t* source, const char8_t* sourceEnd)
+    {
+        int length = trailingBytesForUTF8[*reinterpret_cast<const UTF8_*> (source)] + 1;
+        if (source + length > sourceEnd) {
+            return false;
+        }
+        return isLegalUTF8_ (reinterpret_cast<const UTF8_*> (source), length);
+    }
+	#endif
 
     namespace Private_ {
         void DoThrowBadSourceString_ThrowSourceExhausted_ ()

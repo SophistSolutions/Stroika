@@ -59,35 +59,75 @@ namespace Stroika::Foundation::Characters {
             return sourceEnd - sourceStart;
         }
         template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char16_t, UTF8> (const char16_t* sourceStart, const char16_t* sourceEnd)
+        inline size_t QuickComputeConversionOutputBufferSize<char16_t, char> (const char16_t* sourceStart, const char16_t* sourceEnd)
         {
             // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
             // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
             return (sourceEnd - sourceStart) * 4;
         }
+#if __cpp_char8_t >= 201811L
         template <>
-        inline size_t QuickComputeConversionOutputBufferSize<UTF8, char16_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
+        inline size_t QuickComputeConversionOutputBufferSize<char16_t, char8_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
+        {
+            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+            // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
+            return (sourceEnd - sourceStart) * 4;
+        }
+#endif
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char, char16_t> (const char* sourceStart, const char* sourceEnd)
         {
             return sourceEnd - sourceStart;
         }
+#if __cpp_char8_t >= 201811L
         template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char32_t, UTF8> (const char32_t* sourceStart, const char32_t* sourceEnd)
+        inline size_t QuickComputeConversionOutputBufferSize<char8_t, char16_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
+        {
+            return sourceEnd - sourceStart;
+        }
+#endif
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char32_t, char> (const char32_t* sourceStart, const char32_t* sourceEnd)
         {
             // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
             // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
             return (sourceEnd - sourceStart) * 6;
         }
+#if __cpp_char8_t >= 201811L
         template <>
-        inline size_t QuickComputeConversionOutputBufferSize<UTF8, char32_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
+        inline size_t QuickComputeConversionOutputBufferSize<char32_t, char8_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
+        {
+            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+            // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
+            return (sourceEnd - sourceStart) * 6;
+        }
+#endif
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char, char32_t> (const char* sourceStart, const char* sourceEnd)
         {
             return sourceEnd - sourceStart;
         }
+#if __cpp_char8_t >= 201811L
         template <>
-        inline size_t QuickComputeConversionOutputBufferSize<UTF8, wchar_t> (const UTF8* sourceStart, const UTF8* sourceEnd)
+        inline size_t QuickComputeConversionOutputBufferSize<char8_t, char32_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
+        {
+            return sourceEnd - sourceStart;
+        }
+#endif
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char, wchar_t> (const char* sourceStart, const char* sourceEnd)
         {
             using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<UTF8, ReplaceCharType> (sourceStart, sourceEnd);
+            return QuickComputeConversionOutputBufferSize<char, ReplaceCharType> (sourceStart, sourceEnd);
         }
+#if __cpp_char8_t >= 201811L
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<char8_t, wchar_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<char8_t, ReplaceCharType> (sourceStart, sourceEnd);
+        }
+#endif
         template <>
         inline size_t QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
         {
@@ -101,11 +141,19 @@ namespace Stroika::Foundation::Characters {
             return QuickComputeConversionOutputBufferSize<char32_t, ReplaceCharType> (sourceStart, sourceEnd);
         }
         template <>
-        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, UTF8> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
+        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
         {
             using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<ReplaceCharType, UTF8> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
+            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
         }
+#if __cpp_char8_t >= 201811L
+        template <>
+        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
+        {
+            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
+            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char8_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
+        }
+#endif
         template <>
         inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
         {
@@ -119,7 +167,7 @@ namespace Stroika::Foundation::Characters {
             return QuickComputeConversionOutputBufferSize<ReplaceCharType, char32_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
         }
         template <>
-        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
+        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
         {
             if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
                 return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
@@ -130,6 +178,20 @@ namespace Stroika::Foundation::Characters {
             AssertNotReached ();
             return sourceIllegal;
         }
+#if __cpp_char8_t >= 201811L
+        template <>
+        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
+            }
+            AssertNotReached ();
+            return sourceIllegal;
+        }
+#endif
         template <>
         inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
         {
@@ -155,7 +217,7 @@ namespace Stroika::Foundation::Characters {
             return sourceIllegal;
         }
         template <>
-        inline ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
+        inline ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
         {
             if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
                 return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
@@ -166,6 +228,20 @@ namespace Stroika::Foundation::Characters {
             AssertNotReached ();
             return sourceIllegal;
         }
+#if __cpp_char8_t >= 201811L
+        template <>
+        inline ConversionResult ConvertQuietly (const char8_t** sourceStart, const char8_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
+        {
+            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
+                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
+            }
+            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
+            }
+            AssertNotReached ();
+            return sourceIllegal;
+        }
+#endif
         template <>
         inline ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
         {

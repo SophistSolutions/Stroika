@@ -251,11 +251,13 @@ namespace Stroika::Foundation::Characters {
             lenientConversion
         };
 
-        using UTF8 = char;
+        // [ - in C++20, get rid of this, as it can be either char, or char8_t (and/or change to char8_t)
+        using UTF8 [[deprecated ("2.1d23 deprecated, use char or char8_t as apppropriate")]] = char;
 
         /**
          *  FROM and TO can be
-         *      UTF8
+         *      char
+         *      char8_t
          *      char16_t
          *      char32_t
          *      wchar_t
@@ -319,10 +321,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<UTFConvert::UTF8, wchar_t> (from, to);
+         *          size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char8_t, wchar_t> (from, to);
          *          SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
          *          wchar_t*                  outStr = buf.begin ();
-         *          UTFConvert::Convert<UTFConvert::UTF8, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
+         *          UTFConvert::Convert<char8_t, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
          *          return String{buf.begin (), outStr};
          *      \endcode
          *
@@ -337,7 +339,8 @@ namespace Stroika::Foundation::Characters {
          *  This will frequently (greatly) over-estimate the amount of space needed.
          *
          *  FROM and TO can be
-         *      UTF8
+         *      char
+         *      char8_t     requires C++20 or later
          *      char16_t
          *      char32_t
          *      wchar_t
@@ -354,29 +357,64 @@ namespace Stroika::Foundation::Characters {
         template <>
         ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
         template <>
-        ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags);
+#if __cpp_char8_t >= 201811L
         template <>
-        ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags);
+#endif
         template <>
-        ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+#if __cpp_char8_t >= 201811L
         template <>
-        ConversionResult ConvertQuietly (const UTF8** sourceStart, const UTF8* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+        ConversionResult ConvertQuietly (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags);
+#endif
+        template <>
+        ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags);
+#if __cpp_char8_t >= 201811L
+        template <>
+        ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags);
+#endif
+        template <>
+        ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+#if __cpp_char8_t >= 201811L
+        template <>
+        ConversionResult ConvertQuietly (const char8_t** sourceStart, const char8_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags);
+#endif
         template <>
         size_t QuickComputeConversionOutputBufferSize<char32_t, char16_t> (const char32_t* sourceStart, const char32_t* sourceEnd);
         template <>
         size_t QuickComputeConversionOutputBufferSize<char16_t, char32_t> (const char16_t* sourceStart, const char16_t* sourceEnd);
         template <>
-        size_t QuickComputeConversionOutputBufferSize<char16_t, UTF8> (const char16_t* sourceStart, const char16_t* sourceEnd);
+        size_t QuickComputeConversionOutputBufferSize<char16_t, char> (const char16_t* sourceStart, const char16_t* sourceEnd);
+#if __cpp_char8_t >= 201811L
         template <>
-        size_t QuickComputeConversionOutputBufferSize<UTF8, char16_t> (const UTF8* sourceStart, const UTF8* sourceEnd);
+        size_t QuickComputeConversionOutputBufferSize<char16_t, char8_t> (const char16_t* sourceStart, const char16_t* sourceEnd);
+#endif
         template <>
-        size_t QuickComputeConversionOutputBufferSize<char32_t, UTF8> (const char32_t* sourceStart, const char32_t* sourceEnd);
+        size_t QuickComputeConversionOutputBufferSize<char, char16_t> (const char* sourceStart, const char* sourceEnd);
+#if __cpp_char8_t >= 201811L
         template <>
-        size_t QuickComputeConversionOutputBufferSize<UTF8, char32_t> (const UTF8* sourceStart, const UTF8* sourceEnd);
+        size_t QuickComputeConversionOutputBufferSize<char8_t, char16_t> (const char8_t* sourceStart, const char8_t* sourceEnd);
+#endif
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char32_t, char> (const char32_t* sourceStart, const char32_t* sourceEnd);
+#if __cpp_char8_t >= 201811L
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char32_t, char8_t> (const char32_t* sourceStart, const char32_t* sourceEnd);
+#endif
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char, char32_t> (const char* sourceStart, const char* sourceEnd);
+#if __cpp_char8_t >= 201811L
+        template <>
+        size_t QuickComputeConversionOutputBufferSize<char8_t, char32_t> (const char8_t* sourceStart, const char8_t* sourceEnd);
+#endif
 
         /**
          */
-        bool IsLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd);
+        bool IsLegalUTF8Sequence (const char* source, const char* sourceEnd);
+#if __cpp_char8_t >= 201811L
+        bool IsLegalUTF8Sequence (const char8_t* source, const char8_t* sourceEnd);
+#endif
 
         namespace Private_ {
             void DoThrowBadSourceString_ThrowSourceExhausted_ ();
