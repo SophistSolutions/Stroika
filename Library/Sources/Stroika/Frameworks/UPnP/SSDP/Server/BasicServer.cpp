@@ -78,8 +78,10 @@ public:
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
-        // @todo EXPLAIN THIS LOGIC? What its doing is - if NO LOCATION HOST SPECIFIED - pick a good default (not so crazy) - but only
-        // in that case do we patch/replace the location for the advertisements? That makes little sense
+        /*
+         *  As a convenience, automatically set the LOCATION advertised to be that of the primary IP address of this
+         *  host.
+         */
         if (fLocation.GetAuthority () and fLocation.GetAuthority ()->GetHost ()) {
             return fAdvertisements;
         }
@@ -90,7 +92,7 @@ public:
             authority.SetHost (IO::Network::GetPrimaryInternetAddress ());
             useURL.SetAuthority (authority);
             for (auto ai : fAdvertisements) {
-                ai.fLocation = useURL; // !@todo MAYBE this would make more sense replacing just the HOST part of each advertisement?
+                ai.fLocation = fLocation.Combine (ai.fLocation);
                 revisedAdvertisements.Append (ai);
             }
             return revisedAdvertisements;
