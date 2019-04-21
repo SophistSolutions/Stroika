@@ -3387,7 +3387,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     {
         return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char**> (targetStart), reinterpret_cast<char*> (targetEnd), flags);
     }
-	#endif
+#endif
 
     template <>
     ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
@@ -3490,8 +3490,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     }
 #endif
 
-
-	template <>
+    template <>
     ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
     {
         //  was ConvertUTF32toUTF8
@@ -3567,10 +3566,9 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     template <>
     ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
     {
-        return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast< char8_t**> (targetStart), reinterpret_cast< char8_t*> (targetEnd), flags);
+        return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char8_t**> (targetStart), reinterpret_cast<char8_t*> (targetEnd), flags);
     }
 #endif
-
 
     template <>
     ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
@@ -3681,7 +3679,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         }
         return isLegalUTF8_ (reinterpret_cast<const UTF8_*> (source), length);
     }
-	#endif
+#endif
 
     namespace Private_ {
         void DoThrowBadSourceString_ThrowSourceExhausted_ ()
