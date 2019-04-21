@@ -1538,9 +1538,8 @@ namespace {
 
 #if defined(__GNUC__) && defined(__arm__)
 // tested still generates warning with gcc8 (actually crash on valgrind and raspberrypi - stretch - maybe fixed in buster? - maybe got worse cuz I upgraded libc on that machine but not valgrind to buster?)
-/// @todo UNTESTED
+// UNTESTED with GCC-9, because my only ARM machine right now doesn't have the right version of glibc -- LGP 2019-04-20
 #define qCompilerAndStdLib_arm_openssl_valgrind_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
-//#define qCompilerAndStdLib_arm_openssl_valgrind_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 9)
 #else
 #define qCompilerAndStdLib_arm_openssl_valgrind_Buggy 0
 #endif
