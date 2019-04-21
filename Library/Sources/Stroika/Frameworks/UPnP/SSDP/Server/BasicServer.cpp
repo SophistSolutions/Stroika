@@ -74,9 +74,7 @@ public:
                 this->Restart_ ();
             }
         });
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
         fLinkMonitor_ = optional<IO::Network::LinkMonitor> (move (lm));
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
