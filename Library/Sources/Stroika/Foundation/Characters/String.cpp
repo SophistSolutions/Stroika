@@ -273,7 +273,7 @@ String String::FromUTF8 (const char* from, const char* to)
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<UTFConvert::UTF8, wchar_t> (from, to);
+    size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char, wchar_t> (from, to);
     SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
     wchar_t*                  outStr = buf.begin ();
     UTFConvert::Convert (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
@@ -1211,11 +1211,11 @@ void String::AsUTF8 (string* into) const
     _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
     Assert (sizeof (Character) == sizeof (wchar_t));
-    const wchar_t*                     wcp        = (const wchar_t*)lhsD.first;
-    const wchar_t*                     wcpe       = (const wchar_t*)lhsD.second;
-    size_t                             cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, UTFConvert::UTF8> (wcp, wcpe);
-    SmallStackBuffer<UTFConvert::UTF8> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-    UTFConvert::UTF8*                  outStr = buf.begin ();
+    const wchar_t*         wcp        = (const wchar_t*)lhsD.first;
+    const wchar_t*         wcpe       = (const wchar_t*)lhsD.second;
+    size_t                 cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char> (wcp, wcpe);
+    SmallStackBuffer<char> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+    char*                  outStr = buf.begin ();
     UTFConvert::Convert (&wcp, wcpe, &outStr, buf.end (), UTFConvert::lenientConversion);
     into->assign (buf.begin (), outStr);
 }
@@ -1232,7 +1232,7 @@ void String::AsUTF8 (u8string* into) const
     const wchar_t*            wcpe       = (const wchar_t*)lhsD.second;
     size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (wcp, wcpe);
     SmallStackBuffer<char8_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-    UTFConvert::UTF8*         outStr = buf.begin ();
+    char8_t*                  outStr = buf.begin ();
     UTFConvert::Convert (&wcp, wcpe, &outStr, buf.end (), UTFConvert::lenientConversion);
     into->assign (buf.begin (), outStr);
 }
