@@ -3564,9 +3564,9 @@ namespace Stroika::Foundation::Characters::UTFConvert {
 
 #if __cpp_char8_t >= 201811L
     template <>
-    ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
+    ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags)
     {
-        return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char8_t**> (targetStart), reinterpret_cast<char8_t*> (targetEnd), flags);
+        return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char**> (targetStart), reinterpret_cast<char*> (targetEnd), flags);
     }
 #endif
 
