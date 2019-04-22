@@ -43,6 +43,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \par Example Usage
      *      \code
+     *         static const String                         kValueParamName_ = L"value"sv;
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m->PeekRequest ());
+     *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
      *
      *  @see PickoutParamValuesFromBody () to just pickout params from Body
@@ -56,6 +59,17 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     /**
      * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
      *
+     *  \par Example Usage
+     *      \code
+     *         static const String                         kValueParamName_ = L"value"sv;
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromBody (m->PeekRequest ());
+     *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+     *      \endcode
+     *
+     *  Supported BODY formats:
+     *      o   DataExchange::PredefinedInternetMediaType::kJSON
+     *      o   application/x-www-form-urlencoded           *** @todo NOT YET IMPLEMENTED - BUT SHOULD BE SUPPORTED ***
+     *
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
      *  @see PickoutParamValues () to pickout params from both url arg and body
      *
@@ -67,9 +81,16 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     /**
      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
      *
-     *  @todo FIX to be smarter about if to check body/url, and how to combine. THIS WILL CHANGE TO BE SMATER - bUT NOT SURE HOW YET.
-     *
+     *  @todo FIX to be smarter about if to check body/url, and how to combine. 
+     *        THIS WILL CHANGE TO BE SMATER - bUT NOT SURE HOW YET.
      *  If parameters given in both places, use the BODY -provided value.
+     *
+     *  \par Example Usage
+     *      \code
+     *         static const String                         kValueParamName_ = L"value"sv;
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValues (m->PeekRequest ());
+     *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
+     *      \endcode
      *
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
      *  @see PickoutParamValuesFromBody () to just pickout params from Body
