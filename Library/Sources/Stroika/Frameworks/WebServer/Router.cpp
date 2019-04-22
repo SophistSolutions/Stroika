@@ -67,7 +67,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
     }
-    optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
+    nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
     {
         String method = request.GetHTTPMethod ();
         URI    url    = request.GetURL ();
@@ -102,7 +102,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
         return nullopt;
     }
-    optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
+    nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
         URI    url = request.GetURL ();
         String hostRelPath;
