@@ -124,6 +124,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -395,6 +396,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -666,6 +668,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -937,6 +940,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -1208,6 +1212,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -1479,6 +1484,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -1750,6 +1756,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
@@ -2021,6 +2028,7 @@ namespace {
         {
             MapFromUNICODEFromTable_ (kMap_, inChars, inCharCnt, outChars, outCharCnt);
         }
+
     private:
         static constexpr char16_t kMap_[256] = {
             0x0,
