@@ -664,7 +664,7 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
  ***************** TableDrivenCodePageConverter_<kCodePage_ANSI> ****************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_ANSI>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_ANSI>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -956,7 +956,7 @@ void TableDrivenCodePageConverter_<kCodePage_ANSI>::MapFromUNICODE (const char16
  ******************** TableDrivenCodePageConverter_<kCodePage_MAC> **************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_MAC>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_MAC>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -1248,7 +1248,7 @@ void TableDrivenCodePageConverter_<kCodePage_MAC>::MapFromUNICODE (const char16_
  ******************** TableDrivenCodePageConverter_<kCodePage_PC> ***************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_PC>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_PC>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -1540,7 +1540,7 @@ void TableDrivenCodePageConverter_<kCodePage_PC>::MapFromUNICODE (const char16_t
  ******************** TableDrivenCodePageConverter_<kCodePage_PCA> **************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_PCA>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_PCA>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -1832,7 +1832,7 @@ void TableDrivenCodePageConverter_<kCodePage_PCA>::MapFromUNICODE (const char16_
  ******************* TableDrivenCodePageConverter_<kCodePage_GREEK> *************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_GREEK>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_GREEK>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -2124,7 +2124,7 @@ void TableDrivenCodePageConverter_<kCodePage_GREEK>::MapFromUNICODE (const char1
  **************** TableDrivenCodePageConverter_<kCodePage_Turkish> ***************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_Turkish>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_Turkish>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -2416,7 +2416,7 @@ void TableDrivenCodePageConverter_<kCodePage_Turkish>::MapFromUNICODE (const cha
  **************** TableDrivenCodePageConverter_<kCodePage_HEBREW> ***************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_HEBREW>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_HEBREW>::kMap[256] = {
     0x0,
     0x1,
     0x2,
@@ -2708,7 +2708,7 @@ void TableDrivenCodePageConverter_<kCodePage_HEBREW>::MapFromUNICODE (const char
  ******************* TableDrivenCodePageConverter_<kCodePage_ARABIC> ************
  ********************************************************************************
  */
-const char16_t TableDrivenCodePageConverter_<kCodePage_ARABIC>::kMap[256] = {
+constexpr char16_t TableDrivenCodePageConverter_<kCodePage_ARABIC>::kMap[256] = {
     0x0,
     0x1,
     0x2,
