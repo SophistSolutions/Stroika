@@ -25,6 +25,7 @@ checkin from one spot.
 * $TEST_TARGET=MacOS_XCode10
 
     (takes about 1 HR)
+
     ~~~bash
     MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
         ./ScriptsLib/RunRemoteRegressionTests
@@ -33,7 +34,9 @@ checkin from one spot.
 * $TEST_TARGET=Windows_VS2k17
 
     (on windows bash shell run; takes about 8 HRs)
+
     ~~~bash
+
     USE_TEST_BASENAME=Windows_VS2k17 PLATFORM=VisualStudio.Net-2017 \
         ./ScriptsLib/RegressionTests
     ~~~
@@ -41,6 +44,7 @@ checkin from one spot.
 * $TEST_TARGET=Windows_VS2k19
 
     (on windows bash shell run; takes about 8 HRs)
+
     ~~~bash
     USE_TEST_BASENAME=Windows_VS2k19 PLATFORM=VisualStudio.Net-2019 \
         ./ScriptsLib/RegressionTests
@@ -49,6 +53,7 @@ checkin from one spot.
 * $TEST_TARGET=Ubuntu1804_x86_64
 
     (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1804_x86_64 \
@@ -62,6 +67,7 @@ checkin from one spot.
 * $TEST_TARGET=Ubuntu1804-Cross-Compile2RaspberryPi
 
     (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
+
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1804-Cross-Compile2RaspberryPi \
@@ -74,6 +80,7 @@ checkin from one spot.
 * $TEST_TARGET=Ubuntu1810_x86_64
 
     (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1810_x86_64 \
@@ -86,6 +93,7 @@ checkin from one spot.
 * $TEST_TARGET=Ubuntu1810-Cross-Compile2RaspberryPi
 
     (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
+
     ~~~bash
     sleep 12000 && RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1810-Cross-Compile2RaspberryPi \
@@ -98,6 +106,7 @@ checkin from one spot.
 * $TEST_TARGET=Ubuntu1904_x86_64
 
     (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1904_x86_64 \
@@ -110,6 +119,8 @@ checkin from one spot.
 * $TEST_TARGET=Ubuntu1904-Cross-Compile2RaspberryPi
 
     (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
+      - note - many of these tests fail as of 2019-04-22, because its hard to get the latest version of libc on a raspberrypi. Ignore those failures.
+
     ~~~bash
     sleep 25000 && RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1904-Cross-Compile2RaspberryPi \
