@@ -1115,6 +1115,8 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          * Convert String losslessly into a standard C++ type u16string.
+         *
+         *  \note - the resulting string may have a different length than this->GetLength() due to surrogates
          */
         nonvirtual u16string AsUTF16 () const;
         nonvirtual void      AsUTF16 (u16string* into) const;
@@ -1122,6 +1124,10 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          * Convert String losslessly into a standard C++ type u32string.
+         *
+         *  \note - As of Stroika 2.1d23 - the resulting string may have a different length than this->GetLength() due to surrogates,
+         *          but eventually the intent is to fix Stroika's string class so this is not true, and it returns the length of the string
+         *          in GetLength () with surrogates removed (in other words uses ucs32 represenation). But not there yet.
          */
         nonvirtual u32string AsUTF32 () const;
         nonvirtual void      AsUTF32 (u32string* into) const;
@@ -1142,14 +1148,14 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          * Only specifically specialized variants are supported (right now just <string> supported).
-         * The source string MUST be valid ascii characters (asserted)
+         * The source string MUST be valid ascii characters - throw RuntimeErrorException<>
+         *
+         *  \note - this is a (compatible) change of behavior: before Stroika v2.1d23, this would assert out on invalid ASCII.
          */
-        template <typename T>
+        template <typename T = string>
         nonvirtual T AsASCII () const;
-        template <typename T>
+        template <typename T = string>
         nonvirtual void AsASCII (T* into) const;
-        nonvirtual string AsASCII () const;
-        nonvirtual void   AsASCII (string* into) const;
 
     public:
         /**

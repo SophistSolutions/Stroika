@@ -540,15 +540,6 @@ namespace Stroika::Foundation::Characters {
         AsASCII (&r);
         return r;
     }
-    inline string String::AsASCII () const
-    {
-        return AsASCII<string> ();
-    }
-    inline void String::AsASCII (string* into) const
-    {
-        RequireNotNull (into);
-        AsASCII<string> (into);
-    }
     inline string String::AsNarrowString (const locale& l) const
     {
         string result;

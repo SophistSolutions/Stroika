@@ -1311,7 +1311,9 @@ void String::AsASCII (string* into) const
     size_t               len = accessor._ConstGetRep ().GetLength ();
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
-        Assert (accessor._ConstGetRep ().GetAt (i).IsASCII ());
+        if (not accessor._ConstGetRep ().GetAt (i).IsASCII ()) {
+            Execution::Throw (Execution::RuntimeErrorException (L"Error converting non-ascii text to string"sv));
+        }
         into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
     }
 }
