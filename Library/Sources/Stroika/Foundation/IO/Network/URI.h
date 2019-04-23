@@ -12,6 +12,7 @@
 #include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
+#include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "InternetAddress.h"
 #include "UniformResourceIdentification.h"
 
@@ -93,7 +94,7 @@ namespace Stroika::Foundation::IO::Network {
      *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individiaul components) constructor.
      *      
      */
-    class URI {
+    class URI : private Debug::AssertExternallySynchronizedLock {
     public:
         using Authority = UniformResourceIdentification::Authority;
 

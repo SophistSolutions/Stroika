@@ -97,6 +97,7 @@ URI URI::Parse (const String& rawURL)
 template <>
 String URI::As () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     // @todo - support %PCT ENCODING
     StringBuilder result;
     if (fScheme_) {
@@ -130,6 +131,7 @@ String URI::As () const
 template <>
 string URI::As () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     // @todo - Could be more efficient duing String algorithm directly
     return As<String> ().AsASCII ();
 }
@@ -137,6 +139,7 @@ string URI::As () const
 template <>
 String URI::GetAuthorityRelativeResource () const
 {
+    shared_lock<const AssertExternallySynchronizedLock>              critSec{*this};
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
     Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
@@ -148,15 +151,17 @@ String URI::GetAuthorityRelativeResource () const
 
 String URI::GetAuthorityRelativeResourceDir () const
 {
-    static const RegularExpression kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
-    optional<String>               baseDir;
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    static const RegularExpression                      kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
+    optional<String>                                    baseDir;
     (void)fPath_.Match (kSelectDir_, &baseDir);
     return baseDir.value_or (String{});
 }
 
 URI URI::Normalize () const
 {
-    optional<SchemeType> scheme = fScheme_;
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    optional<SchemeType>                                scheme = fScheme_;
     if (scheme) {
         scheme = scheme->Normalize ();
     }
@@ -171,15 +176,16 @@ URI URI::Normalize () const
 
 String URI::ToString () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return Characters::ToString (As<String> ());
 }
 
 void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path)
 {
     /*
-     *          https://tools.ietf.org/html/rfc3986#section-3.3
-     *              If a URI contains an authority component, then the path component
-     *              must either be empty or begin with a slash ("/") character
+     *  https://tools.ietf.org/html/rfc3986#section-3.3
+     *      If a URI contains an authority component, then the path component
+     *      must either be empty or begin with a slash ("/") character
      */
     if (authority and (not path.empty () and not path.StartsWith (L"/"))) {
         Execution::Throw (Execution::RuntimeErrorException (L"A URI with an authority must have an empty path, or an absolute path"sv));
@@ -188,8 +194,12 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
 
 URI URI::Combine (const URI& uri) const
 {
-    // From https://tools.ietf.org/html/rfc3986#section-5
-    //      "Note that only the scheme component is required to be present in a base URI; the other components may be empty or undefined."
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+
+    /*
+     *  From https://tools.ietf.org/html/rfc3986#section-5
+     *      "Note that only the scheme component is required to be present in a base URI; the other components may be empty or undefined."
+     */
     URI baseURI = Normalize ();
     if (not baseURI.GetScheme ()) {
         Execution::Throw (Execution::RuntimeErrorException (L"Scheme is required in base URI to combine with another URI"sv));
