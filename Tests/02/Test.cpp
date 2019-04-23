@@ -1338,12 +1338,12 @@ namespace {
             VerifyTestResult (string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8<string> ());
             VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8<string> ());
         }
-        {
-            StringBuilder tmp;
-            tmp.Append (String::FromUTF8 (u8"€"));
-            Verify (tmp.str () == L"€");
-        }
 #else
+        {
+            VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
+            VerifyTestResult (u8string (u8"phred") == String::FromUTF8 (u8string (u8"phred")).AsUTF8<u8string> ());
+            VerifyTestResult (u8string (u8"שלום") == String::FromUTF8 (u8string (u8"שלום")).AsUTF8<u8string> ());
+        }
         {
             VerifyTestResult (u8string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
             VerifyTestResult (u8string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
