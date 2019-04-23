@@ -70,18 +70,18 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *      struct foo : private Debug::AssertExternallySynchronizedLock {
-     *          inline  void    DoReadWriteStuffOnData ()
-     *          {
-     *              lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-     *              // now do what you usually do for to modify locked data...
-     *          }
-     *          inline  void    DoReadOnlyStuffOnData ()
-     *          {
-     *              shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-     *              // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
-     *          }
-     *      };
+     *          struct foo : private Debug::AssertExternallySynchronizedLock {
+     *              inline  void    DoReadWriteStuffOnData ()
+     *              {
+     *                  lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+     *                  // now do what you usually do for to modify locked data...
+     *              }
+     *              inline  void    DoReadOnlyStuffOnData ()
+     *              {
+     *                  shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+     *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
+     *              }
+     *          };
      *      \endcode
      *
      *  \note   The use of explicit <AssertExternallySynchronizedLock> argument to lock_guard/shared_lock
