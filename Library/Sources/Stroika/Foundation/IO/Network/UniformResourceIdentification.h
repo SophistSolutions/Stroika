@@ -328,11 +328,20 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *      The userinfo subcomponent may consist of a user name and, optionally,
          *      scheme-specific information about how to gain authorization to access
          *      the resource
+         *
+         *  It is defined in raw encoded form as:
+         *      userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
+         *
+         *  This API returns the 'decoded' (not pct-encoded) name form.
          */
         nonvirtual optional<String> GetUserInfo () const;
 
     public:
         /**
+         *  This takes an un-encoded UNICODE string (which will be converted to UTF8 and PCT-encoded) 
+         *  as it appears in a raw url.
+         *
+         *  @see GetUserInfo ()
          */
         nonvirtual void SetUserInfo (const optional<String>& userInfo);
 
@@ -345,7 +354,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     private:
         optional<Host>     fHost_;
         optional<PortType> fPort_;
-        optional<String>   fUserInfo_;
+        optional<String>   fDecodedUserInfo_;
     };
     bool operator== (const Authority& lhs, const Authority& rhs);
     bool operator!= (const Authority& lhs, const Authority& rhs);

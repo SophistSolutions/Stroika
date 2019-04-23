@@ -244,32 +244,38 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     if (rawURLAuthorityText.empty ()) {
         return nullopt;
     }
-    optional<String> userInfo;
+    optional<String> encodedUserInfo;
     // From https://tools.ietf.org/html/rfc3986#appendix-A
     String remainingString2Parse = rawURLAuthorityText;
     if (auto oat = remainingString2Parse.Find ('@')) {
-        userInfo              = remainingString2Parse.SubString (0, *oat);
+        encodedUserInfo       = remainingString2Parse.SubString (0, *oat);
         remainingString2Parse = remainingString2Parse.SubString (*oat + 1);
+    }
+    optional<String> decodedUserInfo;
+    if (encodedUserInfo) {
+        // @todo must to PCT and UNICODE decoding as we do for paths - above --LGP 2019-04-23
+        encodedUserInfo = decodedUserInfo;
     }
     optional<uint16_t> port;
     if (auto oPortColon = remainingString2Parse.Find (':')) {
         port                  = Characters::String2Int<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1));
         remainingString2Parse = remainingString2Parse.SubString (0, *oPortColon);
     }
-    return Authority{Host::Parse (remainingString2Parse), port, userInfo};
+    return Authority{Host::Parse (remainingString2Parse), port, decodedUserInfo};
 }
 
 Authority Authority::Normalize () const
 {
-    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_};
+    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fDecodedUserInfo_};
 }
 
 template <>
 String Authority::As () const
 {
     StringBuilder sb;
-    if (fUserInfo_) {
-        sb += *fUserInfo_ + L"@";
+    if (fDecodedUserInfo_) {
+        // @todo must to PCT and UNICODE decoding as we do for paths - above --LGP 2019-04-23
+        sb += *fDecodedUserInfo_ + L"@";
     }
     if (fHost_) {
         sb += fHost_->AsEncoded ();
