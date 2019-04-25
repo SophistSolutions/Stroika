@@ -278,6 +278,7 @@ namespace {
         namespace Private_ {
             void TestHostParsing_ ()
             {
+                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::TestHostParsing_"};
                 using UniformResourceIdentification::Host;
                 VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
                 VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
@@ -310,6 +311,7 @@ namespace {
             }
             void Test_NewURI_Class_ ()
             {
+                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::Test_NewURI_Class_"};
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
                     VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"localhost");
@@ -349,6 +351,7 @@ namespace {
             }
             void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
             {
+                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::Test_Reference_Resolution_Examples_From_RFC_3986_"};
                 // tests from https://tools.ietf.org/html/rfc3986#section-5.4
                 URI base = URI::Parse (L"http://a/b/c/d;p?q");
 
@@ -399,7 +402,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper trcCtx ("Test1_URI_::DoTests");
+            Debug::TraceContextBumper ctx{"Test1_URI_::DoTests"};
             Private_::TestHostParsing_ ();
             Private_::Test_NewURI_Class_ ();
             Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
