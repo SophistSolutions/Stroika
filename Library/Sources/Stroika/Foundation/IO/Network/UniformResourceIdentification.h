@@ -70,18 +70,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      *
-     *  Stroika's URL class comprises the concept URI Reference (https://tools.ietf.org/html/rfc3986#section-4.1):
-     *      URI-reference = URI / relative-ref
-     *
-     *  So a given URL object maybe a FullURI, or a RelativeURI () - 
-        &&& TBD but probabkly add
-         GetType () => URLType { eFullURI, eRelativeURI } based on ??? if it has authority?
-         NO - because many different subtypes. 
-         Just bool IsFullURL () (all parts all needed parts specified - scheme principally)
-         READ https://tools.ietf.org/html/rfc3986#section-4.2 more carefully
-
-         AND NEED API TO GLUE FULL_URI with RELATIVE_URI () to produce a new FULL_URI
-     *
      *  \par Empty String versus optional 'missing' !has_value
      *
      *      For the various optional peices of a URL (or URI), we could represent this as
@@ -107,10 +95,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *              "A path is always defined for a URI, though the defined path may be empty (zero length)"
      *
      *              So the Path in Stroika does not use optional.
-     *
-     *
-     * TODO:
-     *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
      */
 
     /**
@@ -168,11 +152,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      decimal form, or a registered name.  The host subcomponent is case-
      *      insensitive.
      *
-     *  This class is ALWAYS either (mutually exclusive) regsiterName, or internetAddress
+     *  This class is ALWAYS either (mutually exclusive) regsiterName, or internetAddress.
      */
     class Host {
     public:
         /**
+		 *	Technically accoridng to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
+		 *	maybe empty, but for the sake of consistency with the rest of this module, we intead represent
+		 *	this using optional<Host> and say that the optional host is missing.
+		 *
+		 *	So, \req not registeredName.empty ()
          */
         Host (const String& registeredName);
         Host (const InternetAddress& addr);
@@ -184,6 +173,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
+		 *
+		 *	Require (not rawURLHostnameText.empty ());	// use optional instead, and treat empty text as invalid. NBL L" " is OK.
          */
         static Host Parse (const String& rawURLHostnameText);
 
@@ -351,7 +342,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
-         *  This may throw if given an invalid raw URL hostname value.
+         *  This may throw if given an invalid raw URL hostname value. However, a 'missing' hostname is not an error, and will just
+		 *	return an Authority with HostName == nullopt.
          *
          *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
          */

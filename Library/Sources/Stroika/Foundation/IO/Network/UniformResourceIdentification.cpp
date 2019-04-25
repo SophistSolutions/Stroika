@@ -96,10 +96,9 @@ optional<PortType> SchemeType::GetDefaultPort () const
  */
 pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String& raw)
 {
+    Require (not raw.empty ());
+
     // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
-    if (raw.empty ()) {
-        Execution::Throw (Execution::RuntimeErrorException (L"Empty string cannot be parsed as a URI Host"sv));
-    }
     if (raw[0].IsDigit ()) {
         // must be ipv4 address
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw, InternetAddress::AddressFamily::V4}};
@@ -259,17 +258,16 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
         encodedUserInfo       = remainingString2Parse.SubString (0, *oat);
         remainingString2Parse = remainingString2Parse.SubString (*oat + 1);
     }
-    optional<String> decodedUserInfo;
+    optional<UserInfo> userInfo;
     if (encodedUserInfo) {
-        // @todo must to PCT and UNICODE decoding as we do for paths - above --LGP 2019-04-23
-        encodedUserInfo = decodedUserInfo;
+        userInfo = UserInfo::Parse (*encodedUserInfo);
     }
     optional<uint16_t> port;
     if (auto oPortColon = remainingString2Parse.Find (':')) {
         port                  = Characters::String2Int<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1));
         remainingString2Parse = remainingString2Parse.SubString (0, *oPortColon);
     }
-    return Authority{Host::Parse (remainingString2Parse), port, decodedUserInfo};
+    return Authority{remainingString2Parse.empty () ? optional <Host>{} : Host::Parse (remainingString2Parse), port, userInfo};
 }
 
 Authority Authority::Normalize () const

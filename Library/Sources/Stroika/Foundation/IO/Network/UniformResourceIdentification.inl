@@ -40,6 +40,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         : fEncodedName_{EncodeAsRawURL_ (registeredName)}
         , fRegisteredName_{registeredName}
     {
+        Require (not registeredName.empty ());
     }
     inline Host::Host (const InternetAddress& addr)
         : fEncodedName_{EncodeAsRawURL_ (addr)}
@@ -48,6 +49,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline Host Host::Parse (const String& rawURLHostnameText)
     {
+        Require (not rawURLHostnameText.empty ());
         pair<optional<String>, optional<InternetAddress>> tmp{ParseRaw_ (rawURLHostnameText)};
         Host                                              h;
         h.fEncodedName_     = rawURLHostnameText;
