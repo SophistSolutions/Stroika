@@ -20,7 +20,7 @@
  *
  * TODO:
  *      @todo   support Compare() and oeprator<, etc.
- *				Mostly done (ThreeWayCompare) - but incomplete
+ *              Mostly done (ThreeWayCompare) - but incomplete
  *
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
@@ -346,7 +346,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     class Authority {
     public:
-        Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<String>& userInfo = nullopt);
+        Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<UserInfo>& userInfo = nullopt);
 
     public:
         /**
@@ -401,21 +401,15 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *      scheme-specific information about how to gain authorization to access
          *      the resource
          *
-         *  It is defined in raw encoded form as:
-         *      userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
-         *
-         *  This API returns the 'decoded' (not pct-encoded) name form.
+         *  \note This value is typically missing (nullopt)
          */
-        nonvirtual optional<String> GetUserInfo () const;
+        nonvirtual optional<UserInfo> GetUserInfo () const;
 
     public:
         /**
-         *  This takes an un-encoded UNICODE string (which will be converted to UTF8 and PCT-encoded) 
-         *  as it appears in a raw url.
-         *
          *  @see GetUserInfo ()
          */
-        nonvirtual void SetUserInfo (const optional<String>& userInfo);
+        nonvirtual void SetUserInfo (const optional<UserInfo>& userInfo);
 
     public:
         /**
@@ -426,7 +420,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     private:
         optional<Host>     fHost_;
         optional<PortType> fPort_;
-        optional<String>   fDecodedUserInfo_;
+        optional<UserInfo> fUserInfo_;
     };
     bool operator== (const Authority& lhs, const Authority& rhs);
     bool operator!= (const Authority& lhs, const Authority& rhs);

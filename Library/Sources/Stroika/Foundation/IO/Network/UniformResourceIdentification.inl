@@ -147,10 +147,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ********************************* Authority ************************************
      ********************************************************************************
      */
-    inline Authority::Authority (const optional<Host>& h, const optional<PortType>& port, const optional<String>& userInfo)
+    inline Authority::Authority (const optional<Host>& h, const optional<PortType>& port, const optional<UserInfo>& userInfo)
         : fHost_{h}
         , fPort_{port}
-        , fDecodedUserInfo_ (userInfo)
+        , fUserInfo_{userInfo}
     {
     }
     inline optional<Host> Authority::GetHost () const
@@ -169,13 +169,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         fPort_ = port;
     }
-    inline optional<String> Authority::GetUserInfo () const
+    inline optional<UserInfo> Authority::GetUserInfo () const
     {
-        return fDecodedUserInfo_;
+        return fUserInfo_;
     }
-    inline void Authority::SetUserInfo (const optional<String>& userInfo)
+    inline void Authority::SetUserInfo (const optional<UserInfo>& userInfo)
     {
-        fDecodedUserInfo_ = userInfo;
+        fUserInfo_ = userInfo;
     }
 
     /*

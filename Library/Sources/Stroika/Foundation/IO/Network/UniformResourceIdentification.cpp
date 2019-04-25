@@ -274,16 +274,15 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
 
 Authority Authority::Normalize () const
 {
-    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fDecodedUserInfo_};
+    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_};
 }
 
 template <>
 String Authority::As () const
 {
     StringBuilder sb;
-    if (fDecodedUserInfo_) {
-        // @todo must to PCT and UNICODE decoding as we do for paths - above --LGP 2019-04-23
-        sb += *fDecodedUserInfo_ + L"@";
+    if (fUserInfo_) {
+        sb += fUserInfo_->AsEncoded () + L"@";
     }
     if (fHost_) {
         sb += fHost_->AsEncoded ();
@@ -342,7 +341,7 @@ bool UniformResourceIdentification::operator< (const Authority& lhs, const Autho
     else if (cmpHost > 0) {
         return false;
     }
-    int cmpUserName = Common::ThreeWayCompare<optional<String>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
+    int cmpUserName = Common::ThreeWayCompare<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
     if (cmpUserName < 0) {
         return true;
     }
@@ -356,7 +355,7 @@ bool UniformResourceIdentification::operator< (const Authority& lhs, const Autho
 
 /*
  ********************************************************************************
- ********************* ThreeWayCompare<Authority> *******************************
+ ************************ ThreeWayCompare<Authority> ****************************
  ********************************************************************************
  */
 int Common::ThreeWayCompare<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
@@ -365,7 +364,7 @@ int Common::ThreeWayCompare<Authority>::operator() (const Authority& lhs, const 
     if (cmpHost != 0) {
         return cmpHost;
     }
-    int cmpUserName = Common::ThreeWayCompare<optional<String>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
+    int cmpUserName = Common::ThreeWayCompare<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
     if (cmpUserName != 0) {
         return cmpUserName;
     }
@@ -380,6 +379,7 @@ int Common::ThreeWayCompare<Authority>::operator() (const Authority& lhs, const 
 namespace {
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
+    // Note - not quite the same as PCTDecode (because of + expansion), and because of looking for = and building a map (and cuz = can be pct encoded)
     void InitURLQueryDecoder_ (Mapping<String, String>* m, const string& utf8Query)
     {
         size_t utfqLen = utf8Query.length ();
@@ -667,6 +667,5 @@ String UniformResourceIdentification::PCTDecode2String (const string& s)
 
 String UniformResourceIdentification::PCTDecode2String (const String& s)
 {
-    // @todo fix - must do CHECKED CONVERT
     return String::FromUTF8 (PCTDecode (s.AsASCII ()));
 }
