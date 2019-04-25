@@ -94,6 +94,56 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     /*
      ********************************************************************************
+     ********************************* UserInfo *************************************
+     ********************************************************************************
+     */
+    inline UserInfo::UserInfo (const String& decodedUserInfo)
+        : fEncodedUserInfo_{EncodeAsRawURL_ (decodedUserInfo)}
+        , fUserInfo_{decodedUserInfo}
+    {
+    }
+    inline UserInfo UserInfo::Parse (const String& rawURLUserInfo)
+    {
+        UserInfo h;
+        h.fEncodedUserInfo_ = rawURLUserInfo;
+        h.fUserInfo_        = ParseRaw_ (rawURLUserInfo);
+        return h;
+    }
+    inline String UserInfo::AsDecoded () const
+    {
+        return fUserInfo_;
+    }
+    template <>
+    inline String UserInfo::AsEncoded () const
+    {
+        return fEncodedUserInfo_;
+    }
+    template <>
+    inline string UserInfo::AsEncoded () const
+    {
+        return fEncodedUserInfo_.AsASCII<string> ();
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** UserInfo operators ******************************
+     ********************************************************************************
+     */
+    inline bool operator== (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return lhs.AsDecoded () == rhs.AsDecoded ();
+    }
+    inline bool operator!= (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return not(lhs == rhs);
+    }
+    inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return lhs.AsDecoded () < rhs.AsDecoded ();
+    }
+
+    /*
+     ********************************************************************************
      ********************************* Authority ************************************
      ********************************************************************************
      */

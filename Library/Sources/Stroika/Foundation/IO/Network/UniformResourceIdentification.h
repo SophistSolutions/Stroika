@@ -20,6 +20,7 @@
  *
  * TODO:
  *      @todo   support Compare() and oeprator<, etc.
+ *				Mostly done (ThreeWayCompare) - but incomplete
  *
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
@@ -30,9 +31,6 @@
  *              o   FTP
  *              o   FILE
  *          (only do with new stroika string class so we can use low-cost constants)
- *
- *      @todo   Add Compare() method, and operator<, so we can easily add URL to
- *              sorted types.
  *
  *      @todo   Need more regression tests
  */
@@ -268,6 +266,80 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator< (const Host& lhs, const Host& rhs);
 
     /**
+     * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
+     *      The userinfo subcomponent may consist of a user name and, optionally,
+     *      scheme-specific information about how to gain authorization to access
+     *      the resource.
+     *
+     *  No claims are made about case sensativity, so this is treated as case sensitive.
+     *
+     *  \note UserInfo may not contain an empty string (use optional<UserInfo> and nullopt for that)
+     */
+    class UserInfo {
+    public:
+        /**
+         */
+        UserInfo (const String& decodedUserInfo);
+
+    private:
+        UserInfo () = default;
+
+    public:
+        /**
+         *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
+         *  This may throw if given an invalid raw URL hostname value.
+         */
+        static UserInfo Parse (const String& rawURLUserInfo);
+
+    public:
+        /**
+         *  Returns decoded (no PCT encoding etc) userInfo.
+         */
+        nonvirtual String AsDecoded () const;
+
+    public:
+        /**
+         *  Returns encoded result (%-encoding userinfo after converting to UTF8).
+         *
+         *  Supported RESULT_TYPE values are:
+         *      String      (all ASCII characters)
+         *      string      (ASCII encoded)
+         */
+        template <typename RESULT_TYPE = String>
+        nonvirtual RESULT_TYPE AsEncoded () const;
+
+    public:
+        /**
+         *  For debugging purposes: don't count on the format.
+         */
+        nonvirtual String ToString () const;
+
+    private:
+        // Throws if cannot parse/illegal
+        static String ParseRaw_ (const String& raw);
+
+    private:
+        static String EncodeAsRawURL_ (const String& decodedName);
+
+    private:
+        String fEncodedUserInfo_;
+        String fUserInfo_;
+    };
+
+    template <>
+    String UserInfo::AsEncoded () const;
+    template <>
+    string UserInfo::AsEncoded () const;
+
+    /**
+     *  Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
+     *  These are compared as case-senstive strings.
+     */
+    bool operator== (const UserInfo& lhs, const UserInfo& rhs);
+    bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
+    bool operator< (const UserInfo& lhs, const UserInfo& rhs);
+
+    /**
      *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
      *
      *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
@@ -438,6 +510,11 @@ namespace Stroika::Foundation::Common {
     struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> {
         constexpr ThreeWayCompare () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& rhs) const;
+    };
+    template <>
+    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo> {
+        constexpr ThreeWayCompare () = default;
+        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& rhs) const;
     };
     template <>
     struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> {

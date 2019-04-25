@@ -91,14 +91,14 @@ optional<PortType> SchemeType::GetDefaultPort () const
 
 /*
  ********************************************************************************
- ************************************** Host ************************************
+ ************************************ Host **************************************
  ********************************************************************************
  */
 pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String& raw)
 {
     // See https://tools.ietf.org/html/rfc3986#section-3.2.2 for details of this algorithm
     if (raw.empty ()) {
-        Execution::Throw (Execution::RuntimeErrorException (L"Empty string cannot be parsed as a URL"sv));
+        Execution::Throw (Execution::RuntimeErrorException (L"Empty string cannot be parsed as a URI Host"sv));
     }
     if (raw[0].IsDigit ()) {
         // must be ipv4 address
@@ -113,36 +113,7 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
     }
     else {
-        // must 'registeredname' - typically a DNS name
-        // Must decode %NN values, and ??? characterset???
-        string utf8ResultBuffer;
-
-        // @todo THROW IF INCOMING STRING NOT VALID ASCII - SO NO REAL UTF8 if I read spec right - use validator code (checked covnvert)
-
-        // pct encoding defined on characters as UTF8 so convert to utf8 string first before decoding
-        // @todo very unsure if I interpretted this correctly...
-
-        // See https://tools.ietf.org/html/rfc3986#section-2.1 Percent-Encoding
-        string tmp = raw.AsUTF8 ();
-        utf8ResultBuffer.reserve (tmp.length ());
-        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
-            switch (*i) {
-                case '%': {
-                    if (i + 2 < tmp.end ()) {
-                        unsigned char newC = (ConvertReadSingleHexDigit_ (*(i + 1)) << 4) + ConvertReadSingleHexDigit_ (*(i + 2));
-                        utf8ResultBuffer.push_back (newC);
-                        i += 2;
-                    }
-                    else {
-                        Execution::Throw (Execution::RuntimeErrorException (L"illegal % character parsing URL hostname"sv));
-                    }
-                } break;
-                default: {
-                    utf8ResultBuffer.push_back (*i);
-                } break;
-            }
-        }
-        return pair<optional<String>, optional<InternetAddress>>{String::FromUTF8 (utf8ResultBuffer), nullopt};
+        return pair<optional<String>, optional<InternetAddress>>{PCTDecode2String (raw.AsUTF8 ()), nullopt};
     }
 }
 
@@ -183,7 +154,7 @@ String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
 
 String Host::ToString () const
 {
-    return Characters::ToString (AsEncoded ());
+    return Characters::ToString (AsDecoded ());
 }
 
 /*
@@ -232,6 +203,43 @@ int Common::ThreeWayCompare<Host>::operator() (const Host& lhs, const Host& rhs)
     }
     return Common::OptionalThreeWayCompare<String, String::ThreeWayCompare>{
         String::ThreeWayCompare{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
+}
+
+/*
+ ********************************************************************************
+ ************************************ UserInfo **********************************
+ ********************************************************************************
+ */
+String UserInfo::ParseRaw_ (const String& raw)
+{
+    // See https://tools.ietf.org/html/rfc3986#section-3.2.1 for details of this algorithm
+    if (raw.empty ()) {
+        Execution::Throw (Execution::RuntimeErrorException (L"Empty string cannot be parsed as a URI UserInfo"sv));
+    }
+    return PCTDecode2String (raw);
+}
+
+String UserInfo::EncodeAsRawURL_ (const String& decodedName)
+{
+    // https://tools.ietf.org/html/rfc3986#appendix-A
+    //userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
+    static constexpr UniformResourceIdentification::PCTEncodeOptions kUserInfoEncodeOptions_{true};
+    return UniformResourceIdentification::PCTEncode2String (decodedName, kUserInfoEncodeOptions_);
+}
+
+String UserInfo::ToString () const
+{
+    return Characters::ToString (AsDecoded ());
+}
+
+/*
+ ********************************************************************************
+ *********************** ThreeWayCompare<UserInfo> ******************************
+ ********************************************************************************
+ */
+int Common::ThreeWayCompare<UserInfo>::operator() (const UserInfo& lhs, const UserInfo& rhs) const
+{
+    return ThreeWayCompare<String>{}(lhs.AsDecoded (), rhs.AsDecoded ());
 }
 
 /*
@@ -654,7 +662,6 @@ string UniformResourceIdentification::PCTDecode (const string& s)
  */
 String UniformResourceIdentification::PCTDecode2String (const string& s)
 {
-    // @todo fix - must do CHECKED CONVERT
     return String::FromUTF8 (PCTDecode (s));
 }
 
