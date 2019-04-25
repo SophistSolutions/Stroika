@@ -399,6 +399,7 @@ namespace {
         }
         void DoTests_ ()
         {
+            Debug::TraceContextBumper trcCtx ("Test1_URI_::DoTests");
             Private_::TestHostParsing_ ();
             Private_::Test_NewURI_Class_ ();
             Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
