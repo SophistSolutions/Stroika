@@ -486,51 +486,6 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
  ****************** UniformResourceIdentification::PCTEncode ********************
  ********************************************************************************
  */
-namespace {
-    enum CharClass_ {
-        eUnreserved,
-        eGenDelims,
-        eSubDelims,
-        eBAD,
-    };
-    CharClass_ decode_ (char c)
-    {
-        if (isalpha (c) or isdigit (c)) {
-            return eUnreserved;
-        }
-        switch (c) {
-            case '-':
-            case '.':
-            case '_':
-            case '~':
-                return eUnreserved;
-        }
-        switch (c) {
-            case ':':
-            case '/':
-            case '?':
-            case '[':
-            case ']':
-            case '@':
-                return eGenDelims;
-        }
-        switch (c) {
-            case '!':
-            case '$':
-            case '&':
-            case '\'':
-            case '(':
-            case ')':
-            case '*':
-            case '+':
-            case ',':
-            case ';':
-            case '=':
-                return eSubDelims;
-        }
-        return eBAD;
-    }
-}
 string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncodeOptions& options)
 {
     string result;
@@ -622,7 +577,6 @@ string UniformResourceIdentification::PCTEncode (const String& s, const PCTEncod
 
 String UniformResourceIdentification::PCTEncode2String (const String& s, const PCTEncodeOptions& options)
 {
-    // @todo fix - must do CHECKED CONVERT
     return String::FromUTF8 (PCTEncode (s, options));
 }
 
