@@ -33,6 +33,40 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     /*
      ********************************************************************************
+     **************************** SchemeType operators ******************************
+     ********************************************************************************
+     */
+    inline bool operator== (const SchemeType& lhs, const SchemeType& rhs)
+    {
+        return String::EqualToCI{}(lhs, rhs);
+    }
+    inline bool operator== (const wchar_t* lhs, const SchemeType& rhs)
+    {
+        return String::EqualToCI{}(lhs, rhs);
+    }
+    inline bool operator== (const SchemeType& lhs, const wchar_t* rhs)
+    {
+        return String::EqualToCI{}(lhs, rhs);
+    }
+    inline bool operator!= (const SchemeType& lhs, const SchemeType& rhs)
+    {
+        return not(lhs == rhs);
+    }
+    inline bool operator!= (const wchar_t* lhs, const SchemeType& rhs)
+    {
+        return not(lhs == rhs);
+    }
+    inline bool operator!= (const SchemeType& lhs, const wchar_t* rhs)
+    {
+        return not(lhs == rhs);
+    }
+    inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
+    {
+        return String::LessCI{}(lhs, rhs);
+    }
+
+    /*
+     ********************************************************************************
      ************************************* Host *************************************
      ********************************************************************************
      */
@@ -103,9 +137,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         : fEncodedUserInfo_{EncodeAsRawURL_ (decodedUserInfo)}
         , fUserInfo_{decodedUserInfo}
     {
+        Require (not decodedUserInfo.empty ());
     }
     inline UserInfo UserInfo::Parse (const String& rawURLUserInfo)
     {
+        Require (not rawURLUserInfo.empty ());
         UserInfo h;
         h.fEncodedUserInfo_ = rawURLUserInfo;
         h.fUserInfo_        = ParseRaw_ (rawURLUserInfo);

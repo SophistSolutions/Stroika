@@ -146,6 +146,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
 
     /**
+     *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
+     *  @see https://tools.ietf.org/html/rfc3986#section-3.1
+     */
+    bool operator== (const SchemeType& lhs, const SchemeType& rhs);
+    bool operator== (const wchar_t* lhs, const SchemeType& rhs);
+    bool operator== (const SchemeType& lhs, const wchar_t* rhs);
+    bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
+    bool operator!= (const wchar_t* lhs, const SchemeType& rhs);
+    bool operator!= (const SchemeType& lhs, const wchar_t* rhs);
+    bool operator< (const SchemeType& lhs, const SchemeType& rhs);
+
+    /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:
      *      The host subcomponent of authority is identified by an IP literal
      *      encapsulated within square brackets, an IPv4 address in dotted-
@@ -157,11 +169,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     class Host {
     public:
         /**
-		 *	Technically accoridng to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
-		 *	maybe empty, but for the sake of consistency with the rest of this module, we intead represent
-		 *	this using optional<Host> and say that the optional host is missing.
-		 *
-		 *	So, \req not registeredName.empty ()
+         *  Technically accoridng to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
+         *  maybe empty, but for the sake of consistency with the rest of this module, we intead represent
+         *  this using optional<Host> and say that the optional host is missing.
+         *
+         *  So, \req not registeredName.empty ()
          */
         Host (const String& registeredName);
         Host (const InternetAddress& addr);
@@ -173,8 +185,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
-		 *
-		 *	Require (not rawURLHostnameText.empty ());	// use optional instead, and treat empty text as invalid. NBL L" " is OK.
+         *
+         *  Require (not rawURLHostnameText.empty ());  // use optional instead, and treat empty text as invalid. NBL L" " is OK.
          */
         static Host Parse (const String& rawURLHostnameText);
 
@@ -269,6 +281,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     class UserInfo {
     public:
         /**
+         *  Note, though https://tools.ietf.org/html/rfc3986#section-3.2.1 allows for an empty UserInfo, we instead
+         *  handle that case with uses of UserInfo being optional<UserInfo>. So, we require that the decoded userInfo
+         *  is not an empty string in this class.
+         *
+         *  \req not decodedUserInfo.empty ()
          */
         UserInfo (const String& decodedUserInfo);
 
@@ -279,6 +296,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
+         *
+         *  \req not rawURLUserInfo.empty ()        // use optional<UserInfo> {} instead
          */
         static UserInfo Parse (const String& rawURLUserInfo);
 
@@ -343,7 +362,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value. However, a 'missing' hostname is not an error, and will just
-		 *	return an Authority with HostName == nullopt.
+         *  return an Authority with HostName == nullopt.
          *
          *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
          */

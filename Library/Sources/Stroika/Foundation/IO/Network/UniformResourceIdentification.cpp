@@ -211,15 +211,14 @@ int Common::ThreeWayCompare<Host>::operator() (const Host& lhs, const Host& rhs)
  */
 String UserInfo::ParseRaw_ (const String& raw)
 {
+    Require (not raw.empty ());
     // See https://tools.ietf.org/html/rfc3986#section-3.2.1 for details of this algorithm
-    if (raw.empty ()) {
-        Execution::Throw (Execution::RuntimeErrorException (L"Empty string cannot be parsed as a URI UserInfo"sv));
-    }
     return PCTDecode2String (raw);
 }
 
 String UserInfo::EncodeAsRawURL_ (const String& decodedName)
 {
+    Require (not decodedName.empty ());
     // https://tools.ietf.org/html/rfc3986#appendix-A
     //userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
     static constexpr UniformResourceIdentification::PCTEncodeOptions kUserInfoEncodeOptions_{true};
@@ -267,7 +266,7 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
         port                  = Characters::String2Int<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1));
         remainingString2Parse = remainingString2Parse.SubString (0, *oPortColon);
     }
-    return Authority{remainingString2Parse.empty () ? optional <Host>{} : Host::Parse (remainingString2Parse), port, userInfo};
+    return Authority{remainingString2Parse.empty () ? optional<Host>{} : Host::Parse (remainingString2Parse), port, userInfo};
 }
 
 Authority Authority::Normalize () const
