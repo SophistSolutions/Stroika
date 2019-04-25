@@ -150,11 +150,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  @see https://tools.ietf.org/html/rfc3986#section-3.1
      */
     bool operator== (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator== (const wchar_t* lhs, const SchemeType& rhs);
-    bool operator== (const SchemeType& lhs, const wchar_t* rhs);
     bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator!= (const wchar_t* lhs, const SchemeType& rhs);
-    bool operator!= (const SchemeType& lhs, const wchar_t* rhs);
     bool operator< (const SchemeType& lhs, const SchemeType& rhs);
 
     /**

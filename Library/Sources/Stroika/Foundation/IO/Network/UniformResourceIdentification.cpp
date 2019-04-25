@@ -69,7 +69,7 @@ void SchemeType::Validate () const
 
 bool SchemeType::IsSecure () const
 {
-    auto ns = Normalize ();
+    SchemeType ns = Normalize ();
     return ns == L"https"sv or ns == L"ftps"sv or ns == L"ldaps"sv or ns == L"ssh"sv;
 }
 

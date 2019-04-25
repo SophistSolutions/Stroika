@@ -40,23 +40,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return String::EqualToCI{}(lhs, rhs);
     }
-    inline bool operator== (const wchar_t* lhs, const SchemeType& rhs)
-    {
-        return String::EqualToCI{}(lhs, rhs);
-    }
-    inline bool operator== (const SchemeType& lhs, const wchar_t* rhs)
-    {
-        return String::EqualToCI{}(lhs, rhs);
-    }
     inline bool operator!= (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return not(lhs == rhs);
-    }
-    inline bool operator!= (const wchar_t* lhs, const SchemeType& rhs)
-    {
-        return not(lhs == rhs);
-    }
-    inline bool operator!= (const SchemeType& lhs, const wchar_t* rhs)
     {
         return not(lhs == rhs);
     }

@@ -102,13 +102,14 @@ namespace {
             {
 #if qPlatform_Windows && qHasFeature_ATLMFC
                 {
+                    using namespace IO::Network::UniformResourceIdentification;
                     String testProtocol;
                     String testHost;
                     String testPort;
                     String testRelPath;
                     String testQuery;
                     OLD_Cracker_ (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-                    VerifyTestResult (testProtocol == url.GetScheme ());
+                    VerifyTestResult (SchemeType{testProtocol} == url.GetScheme ());
                     if (testProtocol == L"http") {
                         VerifyTestResult (testHost == url.GetHost ().ToLowerCase ());
                         {
@@ -133,12 +134,13 @@ namespace {
             }
             void TestBackCompatURL_ ()
             {
+                using IO::Network::UniformResourceIdentification::SchemeType;
                 TestOldWinCracker_ (L"dyn:/Reminders/Home.htm");
                 TestOldWinCracker_ (L"dyn:/Startup.htm");
                 TestOldWinCracker_ (L"home:Home.htm");
                 {
                     URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
-                    VerifyTestResult (url.GetScheme () == L"dyn");
+                    VerifyTestResult (url.GetScheme () == SchemeType{L"dyn"});
                     VerifyTestResult (url.GetHost ().empty ());
                     VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
                     VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
@@ -146,6 +148,7 @@ namespace {
             }
             void BasicTests_AsOf21d22_ ()
             {
+                using IO::Network::UniformResourceIdentification::SchemeType;
                 {
                     URL url = URL::Parse (L"http:/StyleSheet.css?ThemeName=Cupertino", URL::eFlexiblyAsUI);
                     VerifyTestResult (url.GetPortValue () == 80);
@@ -153,7 +156,7 @@ namespace {
                     VerifyTestResult (url.GetHost ().empty ());
                     VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
                     VerifyTestResult (url.GetFragment ().empty ());
-                    VerifyTestResult (url.GetScheme () == L"http");
+                    VerifyTestResult (url.GetScheme () == SchemeType{L"http"});
                 }
                 {
                     URL url = URL::Parse (L"http://www.recordsforliving.com/");
@@ -162,7 +165,7 @@ namespace {
                     VerifyTestResult (url.GetFragment ().empty ());
                     VerifyTestResult (url.GetHostRelativePath ().empty ());
                     VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
-                    VerifyTestResult (url.GetScheme () == L"http");
+                    VerifyTestResult (url.GetScheme () == SchemeType{L"http"});
                     VerifyTestResult (not url.IsSecure ());
                 }
                 {
@@ -172,7 +175,7 @@ namespace {
                     VerifyTestResult (url.GetFragment ().empty ());
                     VerifyTestResult (url.GetHostRelativePath ().empty ());
                     VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
-                    VerifyTestResult (url.GetScheme () == L"https");
+                    VerifyTestResult (url.GetScheme () == SchemeType{L"https"});
                     VerifyTestResult (url.IsSecure ());
                 }
                 for (auto po : {URL::eAsFullURL, URL::eFlexiblyAsUI}) {
@@ -186,7 +189,7 @@ namespace {
                 {
                     URL url{URL::Parse (L"localhost", URL::eFlexiblyAsUI)};
                     //VerifyTestResult (not url.GetScheme ().has_value ()); // UNCLEAR WHAT THIS SHOULD DO - MUST RETHINK - NOT WELL DEFINED
-                    VerifyTestResult (url.GetScheme () == L"http"); // DITTO
+                    VerifyTestResult (url.GetScheme () == SchemeType{L"http"}); // DITTO
                     VerifyTestResult (url.GetHost () == L"localhost");
                     VerifyTestResult (url.GetPortValue () == 80);
                     VerifyTestResult (url.GetHostRelativePath () == L"");
@@ -232,7 +235,7 @@ namespace {
                 }
                 {
                     URL url{URL::Parse (L"https://www.cwi.nl/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-                    VerifyTestResult (url.GetScheme () == L"https");
+                    VerifyTestResult (url.GetScheme () == SchemeType{L"https"});
                     VerifyTestResult (url.GetHost () == L"www.cwi.nl");
                     VerifyTestResult (url.GetPortValue () == 443);
                     VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
@@ -311,6 +314,7 @@ namespace {
             }
             void Test_NewURI_Class_ ()
             {
+                using IO::Network::UniformResourceIdentification::SchemeType;
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::Test_NewURI_Class_"};
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
@@ -338,7 +342,7 @@ namespace {
                     // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
                     // AT LEAST CLOSE - I THINK I CAN COME UP WITH CHEATSHEET TO MAP NAMES (like GetRElPath to GetPath () - but does it handle leading slash same?)
                     IO::Network::URI uri = IO::Network::URI::Parse (L"dyn:/StyleSheet.css?ThemeName=Cupertino");
-                    VerifyTestResult (*uri.GetScheme () == L"dyn");
+                    VerifyTestResult (*uri.GetScheme () == SchemeType{L"dyn"});
                     VerifyTestResult (not uri.GetAuthority ().has_value ());
                     VerifyTestResult (uri.GetPath () == L"/StyleSheet.css");
                     VerifyTestResult (uri.GetQuery<String> () == L"ThemeName=Cupertino");
