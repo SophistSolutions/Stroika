@@ -411,7 +411,7 @@ String Query::ComputeQueryString () const
  */
 bool UniformResourceIdentification::operator== (const Query& lhs, const Query& rhs)
 {
-	// Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
+    // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
     return lhs.GetMap () == rhs.GetMap ();
 }
 
@@ -424,7 +424,7 @@ int Common::ThreeWayCompare<Query>::operator() (const Query& lhs, const Query& r
 {
     // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
 
-	// comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
+    // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
     // So pick a preferred ordering (alphabetical) - and compare one after the other
     // @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
     vector<String> combinedKeys = (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).As<vector<String>> ();
@@ -439,7 +439,6 @@ int Common::ThreeWayCompare<Query>::operator() (const Query& lhs, const Query& r
     }
     return 0;
 }
-
 
 /*
  ********************************************************************************
