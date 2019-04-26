@@ -244,6 +244,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
     }
 
+    /*
+     ********************************************************************************
+     **************************** Query::operators **********************************
+     ********************************************************************************
+     */
+    inline bool operator!= (const Query& lhs, const Query& rhs)
+    {
+        return not(lhs == rhs);
+    }
+
 }
 
 #endif /*_Stroika_Foundation_IO_Network_URL_UniformResourceIdentification_*/

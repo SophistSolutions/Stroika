@@ -467,6 +467,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         Containers::Mapping<String, String> fMap_;
     };
 
+    bool operator== (const Query& lhs, const Query& rhs);
+    bool operator!= (const Query& lhs, const Query& rhs);
+    bool operator< (const Query& lhs, const Query& rhs);
+
     /*
      *  See http://tools.ietf.org/html/rfc3986
      *  This doesn't encode an entire URL, just a particular field

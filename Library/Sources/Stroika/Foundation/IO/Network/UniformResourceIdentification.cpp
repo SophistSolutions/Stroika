@@ -370,7 +370,7 @@ int Common::ThreeWayCompare<Authority>::operator() (const Authority& lhs, const 
 
 /*
  ********************************************************************************
- *********************************** URLQuery ***********************************
+ *********************************** Query **************************************
  ********************************************************************************
  */
 namespace {
@@ -440,6 +440,35 @@ String Query::ComputeQueryString () const
     }
     return ASCIIStringToWide (result);
 }
+
+/*
+ ********************************************************************************
+ ********************************* Query operators ******************************
+ ********************************************************************************
+ */
+bool UniformResourceIdentification::operator== (const Query& lhs, const Query& rhs)
+{
+    return lhs.GetMap () == rhs.GetMap ();
+}
+
+bool UniformResourceIdentification::operator< (const Query& lhs, const Query& rhs)
+{
+    // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
+    // So pick a preferred ordering (alphabetical) - and compare one after the other
+	// @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
+    vector<String> combinedKeys = (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).As<vector<String>> ();
+    sort (combinedKeys.begin (), combinedKeys.end ());
+    for (String i : combinedKeys) {
+        optional<String> lhsVal = lhs.GetMap ().Lookup (i);
+        optional<String> rhsVal = rhs.GetMap ().Lookup (i);
+        int cmp = Common::ThreeWayCompare<optional<String>>{}(lhsVal, rhsVal);
+        if (cmp != 0) {
+            return cmp;
+		}
+	}
+    return 0;
+}
+
 
 /*
  ********************************************************************************
