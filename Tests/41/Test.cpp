@@ -312,10 +312,10 @@ namespace {
                     }
                 }
             }
-            void Test_NewURI_Class_ ()
+            void SimpleURITests_ ()
             {
                 using IO::Network::UniformResourceIdentification::SchemeType;
-                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::Test_NewURI_Class_"};
+                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::SimpleURITests_"};
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
                     VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"localhost");
@@ -403,13 +403,66 @@ namespace {
                 VerifyTestResult (base.Combine (URI::Parse (L"g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
                 VerifyTestResult (base.Combine (URI::Parse (L"http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
             }
+            void TestEmptyURI_ ()
+            {
+                {
+                    URI u{};
+                    VerifyTestResult (u.As<String> () == L"");
+                }
+                {
+                    URI u{L""};
+                    VerifyTestResult (u.As<String> () == L"");
+                }
+                {
+                    URI u{L" "};
+                    VerifyTestResult (u.As<String> () == L"%20");	// @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
+                    VerifyTestResult (u.GetPath () == L" ");
+                }
+            }
+            void TestSamplesFromPythonURLParseDocs_ ()
+            {
+                using namespace IO::Network::UniformResourceIdentification;
+                {
+                    /*
+					 *	From https://docs.python.org/2/library/urlparse.html
+					 *		from urlparse import urlparse
+					 *		o = urlparse('http://www.cwi.nl:80/%7Eguido/Python.html')
+					 *		o.scheme
+					 *		o.port
+					 *		o.geturl ()
+					 */
+                    auto o = URI{"http://www.cwi.nl:80/%7Eguido/Python.html"};
+                    VerifyTestResult (o.GetScheme () == SchemeType{L"http"});
+                    VerifyTestResult (o.GetAuthority ()->GetPort () == 80);
+		// Todo fix - not yet working
+         //           VerifyTestResult (o.As<string> () == "http://www.cwi.nl:80/%7Eguido/Python.html");
+                }
+                {
+                    /*
+					 *	From https://docs.python.org/2/library/urlparse.html
+					 *		from urlparse import urlparse
+					 *		o = urlparse('//www.cwi.nl:80/%7Eguido/Python.html')
+					 *		o.scheme
+					 *		o.netloc
+					 *		o.path
+					 *		o.query
+					 *		o.fragment
+					 */
+                    auto o = URI{"//www.cwi.nl:80/%7Eguido/Python.html"};
+                    VerifyTestResult (o.GetScheme () == nullopt);
+                    //VerifyTestResult (o.GetAuthority () == Authority{"www.cwi.nl:80"});
+                    //VerifyTestResult (o.As<string> () == "http://www.cwi.nl:80/%7Eguido/Python.html");
+                }
+            }
         }
         void DoTests_ ()
         {
             Debug::TraceContextBumper ctx{"Test1_URI_::DoTests"};
             Private_::TestHostParsing_ ();
-            Private_::Test_NewURI_Class_ ();
+            Private_::SimpleURITests_ ();
             Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
+            Private_::TestEmptyURI_ ();
+            Private_::TestSamplesFromPythonURLParseDocs_ ();
         }
     }
 }
@@ -429,7 +482,7 @@ namespace {
             VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
         }
         {
-            auto testRoundtrip = [] (const String& s) {
+            auto testRoundtrip = [](const String& s) {
                 InternetAddress iaddr1{s};
                 InternetAddress iaddr2{s.As<wstring> ()};
                 InternetAddress iaddr3{s.AsASCII ()};
