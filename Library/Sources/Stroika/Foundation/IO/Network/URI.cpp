@@ -47,8 +47,8 @@ namespace {
 }
 
 namespace {
-    String remove_dot_segments_ (const String& p) 
-	{
+    String remove_dot_segments_ (const String& p)
+    {
         // from https://tools.ietf.org/html/rfc3986#section-5.2.4
         vector<String> segments; // for our purpose here, segments may (or not in case of first) contain a leading /
         StringBuilder  accumulatingSegment;
@@ -149,7 +149,7 @@ template <>
 String URI::As () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder result;
+    StringBuilder                                       result;
     if (fScheme_) {
         // From https://tools.ietf.org/html/rfc3986#appendix-A
         //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
@@ -165,7 +165,7 @@ String URI::As () const
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith (L"/"))) {
         // NOT SURE HOW TO HANDLE
         Execution::Throw (Execution::RuntimeErrorException (L"This is not a legal URI to encode (authority present, but path not empty or absolute)"));
-	}
+    }
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
     result += UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);

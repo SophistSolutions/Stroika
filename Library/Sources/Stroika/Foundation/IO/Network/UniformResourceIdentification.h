@@ -19,9 +19,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
- *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
- *
  *      @todo   Add PREDEFINED namespace and list predefined protocols
  *              o   HTTP
  *              o   HTTPS
@@ -92,6 +89,15 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *              "A path is always defined for a URI, though the defined path may be empty (zero length)"
      *
      *              So the Path in Stroika does not use optional.
+     *
+     *  \note   As () versus AsEncoded () versus AsDecoded ()
+     *          Some objects (like Host, or UserInfo) make sense to access in either encoded or decoded for. Other objects, like an
+     *          Authority, or URI, really don't make sense except in ENCODED form (because you couldn't parse out the peices to
+     *          get back to the original). So - for objects where it makes sense to access either way, we provide AsEncoded/AsDecoded
+     *          methods, and for objects that really require the string form to be encoded - we just call that As<>.
+     *
+     *          One SLIGHT exception is the ToString() method, which is just for debugging, and there we emit what will be easier/better
+     *          for debugging, and dont worry about reversability.
      */
 
     /**

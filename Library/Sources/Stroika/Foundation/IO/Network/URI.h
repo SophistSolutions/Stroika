@@ -22,17 +22,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   support Compare() and oeprator<, etc.
- *
- *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
- *              we allow relative urls, etc.
- *
- *              We currently produce differnt answers than https://docs.python.org/2/library/urlparse.html for the case
- *              of the url urlparse('help/Python.html'), where I treat help as a hostname, and python
- *              as part of the path.
- *
- *              Maybe params to parser to say "strict", or "can-be-relative-url", or "best guess full url"
- *
  *      @todo   Need LOTS of reg-tests tests!.
  */
 
@@ -301,7 +290,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Combine a full URI with a (possibly) relative URI, to produce a new URI. Note - its completely legal for hte argument uri
+         *  Combine a full URI with a (possibly) relative URI, to produce a new URI. Note - its completely legal for the argument uri
          *  to be a full url, in which case this returns its argument (taking no properties from 'this')
          *
          *      @see https://tools.ietf.org/html/rfc3986#section-5.2
