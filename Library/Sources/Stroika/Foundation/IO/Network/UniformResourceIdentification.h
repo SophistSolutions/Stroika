@@ -372,8 +372,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  This may throw if given an invalid raw URL hostname value. However, a 'missing' hostname is not an error, and will just
          *  return an Authority with HostName == nullopt.
          *
+         *  \note - the argument rawURLAuthorityText must be valid ASCII, or this will throw
+         *
          *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
          */
+        static optional<Authority> Parse (const string& rawURLAuthorityText);
         static optional<Authority> Parse (const String& rawURLAuthorityText);
 
     public:

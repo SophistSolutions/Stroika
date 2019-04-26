@@ -233,6 +233,11 @@ int Common::ThreeWayCompare<UserInfo>::operator() (const UserInfo& lhs, const Us
  ********************************* Authority ************************************
  ********************************************************************************
  */
+optional<Authority> Authority::Parse (const string& rawURL)
+{
+    return Parse (String::FromASCII (rawURL));
+}
+
 optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
 {
     if (rawURLAuthorityText.empty ()) {
