@@ -347,9 +347,12 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      */
+    bool operator< (const URI& lhs, const URI& rhs);
+    bool operator<= (const URI& lhs, const URI& rhs);
     bool operator== (const URI& lhs, const URI& rhs);
     bool operator!= (const URI& lhs, const URI& rhs);
-    bool operator< (const URI& lhs, const URI& rhs);
+    bool operator>= (const URI& lhs, const URI& rhs);
+    bool operator> (const URI& lhs, const URI& rhs);
 
 }
 

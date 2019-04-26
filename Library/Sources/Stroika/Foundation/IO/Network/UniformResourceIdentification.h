@@ -19,9 +19,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   support Compare() and oeprator<, etc.
- *              Mostly done (ThreeWayCompare) - but incomplete
- *
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
  *
@@ -149,9 +146,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
      *  @see https://tools.ietf.org/html/rfc3986#section-3.1
      */
+    bool operator< (const SchemeType& lhs, const SchemeType& rhs);
+    bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
     bool operator== (const SchemeType& lhs, const SchemeType& rhs);
     bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator< (const SchemeType& lhs, const SchemeType& rhs);
+    bool operator>= (const SchemeType& lhs, const SchemeType& rhs);
+    bool operator> (const SchemeType& lhs, const SchemeType& rhs);
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:
@@ -260,9 +260,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
      *  @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
      */
+    bool operator< (const Host& lhs, const Host& rhs);
+    bool operator<= (const Host& lhs, const Host& rhs);
     bool operator== (const Host& lhs, const Host& rhs);
     bool operator!= (const Host& lhs, const Host& rhs);
-    bool operator< (const Host& lhs, const Host& rhs);
+    bool operator>= (const Host& lhs, const Host& rhs);
+    bool operator> (const Host& lhs, const Host& rhs);
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
@@ -341,9 +344,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
      *  These are compared as case-senstive strings.
      */
+    bool operator< (const UserInfo& lhs, const UserInfo& rhs);
+    bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
     bool operator== (const UserInfo& lhs, const UserInfo& rhs);
     bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
-    bool operator< (const UserInfo& lhs, const UserInfo& rhs);
+    bool operator>= (const UserInfo& lhs, const UserInfo& rhs);
+    bool operator> (const UserInfo& lhs, const UserInfo& rhs);
 
     /**
      *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
@@ -429,9 +435,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<PortType> fPort_;
         optional<UserInfo> fUserInfo_;
     };
+    bool operator< (const Authority& lhs, const Authority& rhs);
+    bool operator<= (const Authority& lhs, const Authority& rhs);
     bool operator== (const Authority& lhs, const Authority& rhs);
     bool operator!= (const Authority& lhs, const Authority& rhs);
-    bool operator< (const Authority& lhs, const Authority& rhs);
+    bool operator>= (const Authority& lhs, const Authority& rhs);
+    bool operator> (const Authority& lhs, const Authority& rhs);
 
     /**
      */
@@ -467,9 +476,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         Containers::Mapping<String, String> fMap_;
     };
 
+    bool operator< (const Query& lhs, const Query& rhs);
+    bool operator<= (const Query& lhs, const Query& rhs);
     bool operator== (const Query& lhs, const Query& rhs);
     bool operator!= (const Query& lhs, const Query& rhs);
-    bool operator< (const Query& lhs, const Query& rhs);
+    bool operator>= (const Query& lhs, const Query& rhs);
+    bool operator> (const Query& lhs, const Query& rhs);
 
     /*
      *  See http://tools.ietf.org/html/rfc3986
@@ -525,6 +537,11 @@ namespace Stroika::Foundation::Common {
     struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> {
         constexpr ThreeWayCompare () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& rhs) const;
+    };
+    template <>
+    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Query> {
+        constexpr ThreeWayCompare () = default;
+        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& rhs) const;
     };
 
 }

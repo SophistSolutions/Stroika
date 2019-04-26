@@ -335,27 +335,6 @@ bool Network::operator== (const URI& lhs, const URI& rhs)
     return true;
 }
 
-bool Network::operator< (const URI& lhs, const URI& rhs)
-{
-    using namespace UniformResourceIdentification;
-    if (int cmp = Common::ThreeWayCompare<optional<SchemeType>>{}(lhs.GetScheme (), rhs.GetScheme ())) {
-        return cmp < 0;
-    }
-    if (int cmp = Common::ThreeWayCompare<optional<Authority>>{}(lhs.GetAuthority (), rhs.GetAuthority ())) {
-        return cmp < 0;
-    }
-    if (int cmp = Common::ThreeWayCompare<String>{}(lhs.GetPath (), rhs.GetPath ())) {
-        return cmp < 0;
-    }
-    if (int cmp = Common::ThreeWayCompare<optional<Query>>{}(lhs.GetQuery (), rhs.GetQuery ())) {
-        return cmp < 0;
-    }
-    if (int cmp = Common::ThreeWayCompare<optional<String>>{}(lhs.GetFragment (), rhs.GetFragment ())) {
-        return cmp < 0;
-    }
-    return false;
-}
-
 /*
  ********************************************************************************
  **************************** ThreeWayCompare<URI> ******************************

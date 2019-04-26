@@ -36,6 +36,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      **************************** SchemeType operators ******************************
      ********************************************************************************
      */
+    inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
+    {
+        return String::LessCI{}(lhs, rhs);
+    }
+    inline bool operator<= (const SchemeType& lhs, const SchemeType& rhs)
+    {
+        return String::ThreeWayCompare{Characters::CompareOptions::eCaseInsensitive}(lhs, rhs) <= 0;
+    }
     inline bool operator== (const SchemeType& lhs, const SchemeType& rhs)
     {
         return String::EqualToCI{}(lhs, rhs);
@@ -44,9 +52,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return not(lhs == rhs);
     }
-    inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
+    inline bool operator>= (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return String::LessCI{}(lhs, rhs);
+        return String::ThreeWayCompare{Characters::CompareOptions::eCaseInsensitive}(lhs, rhs) >= 0;
+    }
+    inline bool operator> (const SchemeType& lhs, const SchemeType& rhs)
+    {
+        return String::ThreeWayCompare{Characters::CompareOptions::eCaseInsensitive}(lhs, rhs) > 0;
     }
 
     /*
@@ -107,9 +119,25 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ******************************** Host operators ********************************
      ********************************************************************************
      */
+    inline bool operator< (const Host& lhs, const Host& rhs)
+    {
+        return Common::ThreeWayCompare<Host>{}(lhs, rhs) < 0;
+    }
+    inline bool operator<= (const Host& lhs, const Host& rhs)
+    {
+        return Common::ThreeWayCompare<Host>{}(lhs, rhs) <= 0;
+    }
     inline bool operator!= (const Host& lhs, const Host& rhs)
     {
         return not(lhs == rhs);
+    }
+    inline bool operator>= (const Host& lhs, const Host& rhs)
+    {
+        return Common::ThreeWayCompare<Host>{}(lhs, rhs) >= 0;
+    }
+    inline bool operator> (const Host& lhs, const Host& rhs)
+    {
+        return Common::ThreeWayCompare<Host>{}(lhs, rhs) > 0;
     }
 
     /*
@@ -151,6 +179,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ****************************** UserInfo operators ******************************
      ********************************************************************************
      */
+    inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return Common::ThreeWayCompare<UserInfo>{}(lhs, rhs) < 0;
+    }
+    inline bool operator<= (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return Common::ThreeWayCompare<UserInfo>{}(lhs, rhs) <= 0;
+    }
     inline bool operator== (const UserInfo& lhs, const UserInfo& rhs)
     {
         return lhs.AsDecoded () == rhs.AsDecoded ();
@@ -159,9 +195,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return not(lhs == rhs);
     }
-    inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
+    inline bool operator>= (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return lhs.AsDecoded () < rhs.AsDecoded ();
+        return Common::ThreeWayCompare<UserInfo>{}(lhs, rhs) >= 0;
+    }
+    inline bool operator> (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return Common::ThreeWayCompare<UserInfo>{}(lhs, rhs) > 0;
     }
 
     /*
@@ -205,9 +245,25 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      **************************** Authority::operators ******************************
      ********************************************************************************
      */
+    inline bool operator< (const Authority& lhs, const Authority& rhs)
+    {
+        return Common::ThreeWayCompare<Authority>{}(lhs, rhs) < 0;
+    }
+    inline bool operator<= (const Authority& lhs, const Authority& rhs)
+    {
+        return Common::ThreeWayCompare<Authority>{}(lhs, rhs) <= 0;
+    }
     inline bool operator!= (const Authority& lhs, const Authority& rhs)
     {
         return not(lhs == rhs);
+    }
+    inline bool operator>= (const Authority& lhs, const Authority& rhs)
+    {
+        return Common::ThreeWayCompare<Authority>{}(lhs, rhs) >= 0;
+    }
+    inline bool operator> (const Authority& lhs, const Authority& rhs)
+    {
+        return Common::ThreeWayCompare<Authority>{}(lhs, rhs) > 0;
     }
 
     /*
@@ -249,9 +305,25 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      **************************** Query::operators **********************************
      ********************************************************************************
      */
+    inline bool operator< (const Query& lhs, const Query& rhs)
+    {
+        return Common::ThreeWayCompare<Query>{}(lhs, rhs) < 0;
+    }
+    inline bool operator<= (const Query& lhs, const Query& rhs)
+    {
+        return Common::ThreeWayCompare<Query>{}(lhs, rhs) <= 0;
+    }
     inline bool operator!= (const Query& lhs, const Query& rhs)
     {
         return not(lhs == rhs);
+    }
+    inline bool operator>= (const Query& lhs, const Query& rhs)
+    {
+        return Common::ThreeWayCompare<Query>{}(lhs, rhs) >= 0;
+    }
+    inline bool operator> (const Query& lhs, const Query& rhs)
+    {
+        return Common::ThreeWayCompare<Query>{}(lhs, rhs) > 0;
     }
 
 }

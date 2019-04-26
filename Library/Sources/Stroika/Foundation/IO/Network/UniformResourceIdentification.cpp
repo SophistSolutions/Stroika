@@ -178,17 +178,6 @@ bool UniformResourceIdentification::operator== (const Host& lhs, const Host& rhs
     return lhs.AsRegisteredName ()->Equals (*rhs.AsRegisteredName (), Characters::CompareOptions::eCaseInsensitive);
 }
 
-bool UniformResourceIdentification::operator< (const Host& lhs, const Host& rhs)
-{
-    // treat all internet addresses as < host registered names
-    auto loi = lhs.AsInternetAddress ();
-    auto roi = rhs.AsInternetAddress ();
-    if (loi) {
-        return loi < roi;
-    }
-    return lhs.AsRegisteredName ()->Compare (*rhs.AsRegisteredName (), Characters::CompareOptions::eCaseInsensitive) < 0;
-}
-
 /*
  ********************************************************************************
  *************************** ThreeWayCompare<Host> ******************************
@@ -326,29 +315,6 @@ bool UniformResourceIdentification::operator== (const Authority& lhs, const Auth
     return true;
 }
 
-bool UniformResourceIdentification::operator< (const Authority& lhs, const Authority& rhs)
-{
-    // first compare on hostname, and then username, and then port
-
-    int cmpHost = Common::ThreeWayCompare<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ());
-    if (cmpHost < 0) {
-        return true;
-    }
-    else if (cmpHost > 0) {
-        return false;
-    }
-    int cmpUserName = Common::ThreeWayCompare<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
-    if (cmpUserName < 0) {
-        return true;
-    }
-    else if (cmpUserName > 0) {
-        return false;
-    }
-
-    int cmpPort = Common::ThreeWayCompare<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
-    return cmpPort < 0;
-}
-
 /*
  ********************************************************************************
  ************************ ThreeWayCompare<Authority> ****************************
@@ -445,12 +411,20 @@ String Query::ComputeQueryString () const
  */
 bool UniformResourceIdentification::operator== (const Query& lhs, const Query& rhs)
 {
+	// Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
     return lhs.GetMap () == rhs.GetMap ();
 }
 
-bool UniformResourceIdentification::operator< (const Query& lhs, const Query& rhs)
+/*
+ ********************************************************************************
+ ************************ ThreeWayCompare<Query> ****************************
+ ********************************************************************************
+ */
+int Common::ThreeWayCompare<Query>::operator() (const Query& lhs, const Query& rhs) const
 {
-    // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
+    // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
+
+	// comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
     // So pick a preferred ordering (alphabetical) - and compare one after the other
     // @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
     vector<String> combinedKeys = (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).As<vector<String>> ();
@@ -465,6 +439,7 @@ bool UniformResourceIdentification::operator< (const Query& lhs, const Query& rh
     }
     return 0;
 }
+
 
 /*
  ********************************************************************************
