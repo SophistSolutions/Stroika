@@ -357,13 +357,11 @@ bool UniformResourceIdentification::operator< (const Authority& lhs, const Autho
  */
 int Common::ThreeWayCompare<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
 {
-    int cmpHost = Common::ThreeWayCompare<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ());
-    if (cmpHost != 0) {
-        return cmpHost;
+    if (int cmp = Common::ThreeWayCompare<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ())) {
+        return cmp;
     }
-    int cmpUserName = Common::ThreeWayCompare<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ());
-    if (cmpUserName != 0) {
-        return cmpUserName;
+    if (int cmp = Common::ThreeWayCompare<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+        return cmp;
     }
     return Common::ThreeWayCompare<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
 }
@@ -455,20 +453,19 @@ bool UniformResourceIdentification::operator< (const Query& lhs, const Query& rh
 {
     // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
     // So pick a preferred ordering (alphabetical) - and compare one after the other
-	// @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
+    // @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
     vector<String> combinedKeys = (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).As<vector<String>> ();
     sort (combinedKeys.begin (), combinedKeys.end ());
     for (String i : combinedKeys) {
         optional<String> lhsVal = lhs.GetMap ().Lookup (i);
         optional<String> rhsVal = rhs.GetMap ().Lookup (i);
-        int cmp = Common::ThreeWayCompare<optional<String>>{}(lhsVal, rhsVal);
+        int              cmp    = Common::ThreeWayCompare<optional<String>>{}(lhsVal, rhsVal);
         if (cmp != 0) {
             return cmp;
-		}
-	}
+        }
+    }
     return 0;
 }
-
 
 /*
  ********************************************************************************

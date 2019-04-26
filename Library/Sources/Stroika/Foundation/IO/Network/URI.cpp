@@ -317,6 +317,67 @@ URI URI::Combine (const URI& uri) const
  */
 bool Network::operator== (const URI& lhs, const URI& rhs)
 {
-    //@todo tmphack - maybe OK, but could be better/faster
-    return lhs.Normalize ().As<String> () == rhs.Normalize ().As<String> ();
+    if (lhs.GetScheme () != rhs.GetScheme ()) {
+        return false;
+    }
+    if (lhs.GetAuthority () != rhs.GetAuthority ()) {
+        return false;
+    }
+    if (lhs.GetPath () != rhs.GetPath ()) {
+        return false;
+    }
+    if (lhs.GetQuery () != rhs.GetQuery ()) {
+        return false;
+    }
+    if (lhs.GetFragment () != rhs.GetFragment ()) {
+        return false;
+    }
+    return true;
+}
+
+bool Network::operator< (const URI& lhs, const URI& rhs)
+{
+    using namespace UniformResourceIdentification;
+    if (int cmp = Common::ThreeWayCompare<optional<SchemeType>>{}(lhs.GetScheme (), rhs.GetScheme ())) {
+        return cmp < 0;
+    }
+    if (int cmp = Common::ThreeWayCompare<optional<Authority>>{}(lhs.GetAuthority (), rhs.GetAuthority ())) {
+        return cmp < 0;
+    }
+    if (int cmp = Common::ThreeWayCompare<String>{}(lhs.GetPath (), rhs.GetPath ())) {
+        return cmp < 0;
+    }
+    if (int cmp = Common::ThreeWayCompare<optional<Query>>{}(lhs.GetQuery (), rhs.GetQuery ())) {
+        return cmp < 0;
+    }
+    if (int cmp = Common::ThreeWayCompare<optional<String>>{}(lhs.GetFragment (), rhs.GetFragment ())) {
+        return cmp < 0;
+    }
+    return false;
+}
+
+/*
+ ********************************************************************************
+ **************************** ThreeWayCompare<URI> ******************************
+ ********************************************************************************
+ */
+int Common::ThreeWayCompare<URI>::operator() (const URI& lhs, const URI& rhs) const
+{
+    using namespace UniformResourceIdentification;
+    if (int cmp = Common::ThreeWayCompare<optional<SchemeType>>{}(lhs.GetScheme (), rhs.GetScheme ())) {
+        return cmp;
+    }
+    if (int cmp = Common::ThreeWayCompare<optional<Authority>>{}(lhs.GetAuthority (), rhs.GetAuthority ())) {
+        return cmp;
+    }
+    if (int cmp = Common::ThreeWayCompare<String>{}(lhs.GetPath (), rhs.GetPath ())) {
+        return cmp;
+    }
+    if (int cmp = Common::ThreeWayCompare<optional<Query>>{}(lhs.GetQuery (), rhs.GetQuery ())) {
+        return cmp;
+    }
+    if (int cmp = Common::ThreeWayCompare<optional<String>>{}(lhs.GetFragment (), rhs.GetFragment ())) {
+        return cmp;
+    }
+    return 0;
 }
