@@ -45,6 +45,57 @@ namespace {
         return s;
     }
 }
+
+namespace {
+    String remove_dot_segments_ (const String& p) 
+	{
+        // from https://tools.ietf.org/html/rfc3986#section-5.2.4
+        vector<String> segments; // for our purpose here, segments may (or not in case of first) contain a leading /
+        StringBuilder  accumulatingSegment;
+        for (Character c : p) {
+            if (c == '/' and not accumulatingSegment.empty ()) {
+                segments.push_back (accumulatingSegment.str ());
+                accumulatingSegment.clear ();
+            }
+            accumulatingSegment += c;
+        }
+        if (not accumulatingSegment.empty ()) {
+            segments.push_back (accumulatingSegment.str ());
+        }
+        vector<String> segments2;                         // apply ../. removeal
+        bool           lastSegmentShouldHaveSlash{false}; // not sure about this
+        for (String segment : segments) {
+            lastSegmentShouldHaveSlash = false;
+            if (segment == L"." or segment == L"/.") {
+                // drop it on the floor
+                if (segment[0] == '/') {
+                    lastSegmentShouldHaveSlash = true;
+                }
+            }
+            else if (segment == L".." or segment == L"/..") {
+                if (not segments2.empty ()) {
+                    segments2.pop_back ();
+                }
+                if (segment[0] == '/') {
+                    lastSegmentShouldHaveSlash = true;
+                }
+            }
+            else {
+                segments2.push_back (segment);
+            }
+        }
+
+        StringBuilder result;
+        for (String segment : segments2) {
+            result += segment;
+        }
+        if (lastSegmentShouldHaveSlash and not result.str ().EndsWith (L"/")) {
+            result += L"/";
+        }
+        return result.str ();
+    };
+}
+
 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 DISABLE_COMPILER_MSC_WARNING_START (4996);
@@ -98,7 +149,6 @@ template <>
 String URI::As () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    // @todo - support %PCT ENCODING
     StringBuilder result;
     if (fScheme_) {
         // From https://tools.ietf.org/html/rfc3986#appendix-A
@@ -109,10 +159,13 @@ String URI::As () const
     }
     if (fAuthority_) {
         Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));
-        result += L"//" + fAuthority_->As<String> (); // this already produces 'raw' format
+        result += L"//" + fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
     }
 
-    // @todo IF we have a HOST, then path must have leading '/' !!!! - NOT SURE HOW TO HANDLE
+    if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith (L"/"))) {
+        // NOT SURE HOW TO HANDLE
+        Execution::Throw (Execution::RuntimeErrorException (L"This is not a legal URI to encode (authority present, but path not empty or absolute)"));
+	}
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
     result += UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
@@ -132,7 +185,7 @@ template <>
 string URI::As () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    // @todo - Could be more efficient duing String algorithm directly
+    // @todo - Could be more efficient doing String algorithm directly
     return As<String> ().AsASCII ();
 }
 
@@ -169,15 +222,30 @@ URI URI::Normalize () const
     if (authority) {
         authority = authority->Normalize ();
     }
-    String path = fPath_; // @todo https://tools.ietf.org/html/rfc3986#section-6.2.2.3
+    String path = remove_dot_segments_ (fPath_); // review https://tools.ietf.org/html/rfc3986#section-6.2.2.3 - this algorithm for removing dots was from merge code, so not sure it applies here
 
     return URI{scheme, authority, path, fQuery_, fFragment_};
 }
 
 String URI::ToString () const
 {
+    // dont use As<String> () because this can throw if bad string - and no need to pct-encode here
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return Characters::ToString (As<String> ());
+    StringBuilder                                       result;
+    if (fScheme_) {
+        result += *fScheme_ + L":";
+    }
+    if (fAuthority_) {
+        result += L"//" + fAuthority_->As<String> ();
+    }
+    result += fPath_;
+    if (fQuery_) {
+        result += L"?"sv + *fQuery_;
+    }
+    if (fFragment_) {
+        result += L"#"sv + *fFragment_;
+    }
+    return Characters::ToString (result.str ());
 }
 
 void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path)
@@ -214,55 +282,9 @@ URI URI::Combine (const URI& uri) const
         (void)base.Match (kSelectDir_, &baseDir);
         return baseDir.value_or (String{}) + rhs;
     };
-    auto remove_dot_segments = [] (const String& p) {
-        // from https://tools.ietf.org/html/rfc3986#section-5.2.4
-        vector<String> segments; // for our purpose here, segments may (or not in case of first) contain a leading /
-        StringBuilder  accumulatingSegment;
-        for (Character c : p) {
-            if (c == '/' and not accumulatingSegment.empty ()) {
-                segments.push_back (accumulatingSegment.str ());
-                accumulatingSegment.clear ();
-            }
-            accumulatingSegment += c;
-        }
-        if (not accumulatingSegment.empty ()) {
-            segments.push_back (accumulatingSegment.str ());
-        }
-        vector<String> segments2;                         // apply ../. removeal
-        bool           lastSegmentShouldHaveSlash{false}; // not sure about this
-        for (String segment : segments) {
-            lastSegmentShouldHaveSlash = false;
-            if (segment == L"." or segment == L"/.") {
-                // drop it on the floor
-                if (segment[0] == '/') {
-                    lastSegmentShouldHaveSlash = true;
-                }
-            }
-            else if (segment == L".." or segment == L"/..") {
-                if (not segments2.empty ()) {
-                    segments2.pop_back ();
-                }
-                if (segment[0] == '/') {
-                    lastSegmentShouldHaveSlash = true;
-                }
-            }
-            else {
-                segments2.push_back (segment);
-            }
-        }
 
-        StringBuilder result;
-        for (String segment : segments2) {
-            result += segment;
-        }
-        if (lastSegmentShouldHaveSlash and not result.str ().EndsWith (L"/")) {
-            result += L"/";
-        }
-        return result.str ();
-    };
-
-    Assert (remove_dot_segments (L"/a/b/c/./../../g") == L"/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
-    Assert (remove_dot_segments (L"mid/content=5/../6") == L"mid/6"); // ditto
+    Assert (remove_dot_segments_ (L"/a/b/c/./../../g") == L"/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
+    Assert (remove_dot_segments_ (L"mid/content=5/../6") == L"mid/6"); // ditto
 
     // Algorithm copied from https://tools.ietf.org/html/rfc3986#section-5.2.2
     URI result;
@@ -279,14 +301,14 @@ URI URI::Combine (const URI& uri) const
     if (uri.GetScheme ()) {
         result.SetScheme (uri.GetScheme ());
         result.SetAuthority (uri.GetAuthority ());
-        result.SetPath (remove_dot_segments (uri.GetPath ()));
+        result.SetPath (remove_dot_segments_ (uri.GetPath ()));
         result.SetQuery (uri.GetQuery<String> ());
     }
     else {
         result.SetScheme (baseURI.GetScheme ());
         if (uri.GetAuthority ()) {
             result.SetAuthority (uri.GetAuthority ());
-            result.SetPath (remove_dot_segments (uri.GetPath ()));
+            result.SetPath (remove_dot_segments_ (uri.GetPath ()));
             result.SetQuery (uri.GetQuery<String> ());
         }
         else {
@@ -297,10 +319,10 @@ URI URI::Combine (const URI& uri) const
             }
             else {
                 if (uri.GetPath ().StartsWith (L"/")) {
-                    result.SetPath (remove_dot_segments (uri.GetPath ()));
+                    result.SetPath (remove_dot_segments_ (uri.GetPath ()));
                 }
                 else {
-                    result.SetPath (remove_dot_segments (merge (baseURI.GetPath (), uri.GetPath ())));
+                    result.SetPath (remove_dot_segments_ (merge (baseURI.GetPath (), uri.GetPath ())));
                 }
                 result.SetQuery (uri.GetQuery<String> ());
             }
