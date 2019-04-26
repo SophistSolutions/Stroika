@@ -352,6 +352,14 @@ namespace {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"HTTPS://www.MICROSOFT.com/Path");
                     VerifyTestResult (uri.Normalize ().As<String> () == L"https://www.microsoft.com/Path");
                 }
+                {
+                    URI base{"http://www.sophists.com"};
+                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
+                }
+                {
+                    URI base{"http://www.sophists.com/"};
+                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
+                }
             }
             void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
             {
