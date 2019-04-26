@@ -423,7 +423,7 @@ namespace {
                 }
                 {
                     URI u{L" "};
-                    VerifyTestResult (u.As<String> () == L"%20");	// @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
+                    VerifyTestResult (u.As<String> () == L"%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
                     VerifyTestResult (u.GetPath () == L" ");
                 }
             }
@@ -432,34 +432,110 @@ namespace {
                 using namespace IO::Network::UniformResourceIdentification;
                 {
                     /*
-					 *	From https://docs.python.org/2/library/urlparse.html
-					 *		from urlparse import urlparse
-					 *		o = urlparse('http://www.cwi.nl:80/%7Eguido/Python.html')
-					 *		o.scheme
-					 *		o.port
-					 *		o.geturl ()
-					 */
+                     *  From https://docs.python.org/2/library/urlparse.html
+                     *      from urlparse import urlparse
+                     *      o = urlparse('http://www.cwi.nl:80/%7Eguido/Python.html')
+                     *      o.scheme
+                     *      o.port
+                     *      o.geturl ()
+                     */
                     auto o = URI{"http://www.cwi.nl:80/%7Eguido/Python.html"};
                     VerifyTestResult (o.GetScheme () == SchemeType{L"http"});
                     VerifyTestResult (o.GetAuthority ()->GetPort () == 80);
-		// Todo fix - not yet working
-         //           VerifyTestResult (o.As<string> () == "http://www.cwi.nl:80/%7Eguido/Python.html");
+                    // NOTE - here python emits '%7Eguido' instead of '~guido'. However, according to
+                    // https://tools.ietf.org/html/rfc3986#section-2.3, '~' - %7E - is an unreserved character, and
+                    // so Stroika does NOT encode it.
+                    VerifyTestResult (o.As<string> () == "http://www.cwi.nl:80/~guido/Python.html");
                 }
                 {
                     /*
-					 *	From https://docs.python.org/2/library/urlparse.html
-					 *		from urlparse import urlparse
-					 *		o = urlparse('//www.cwi.nl:80/%7Eguido/Python.html')
-					 *		o.scheme
-					 *		o.netloc
-					 *		o.path
-					 *		o.query
-					 *		o.fragment
-					 */
+                     *  From https://docs.python.org/2/library/urlparse.html
+                     *      from urlparse import urlparse
+                     *      o = urlparse('//www.cwi.nl:80/%7Eguido/Python.html')
+                     *      o.scheme
+                     *      o.netloc
+                     *      o.path
+                     *      o.query
+                     *      o.fragment
+                     */
                     auto o = URI{"//www.cwi.nl:80/%7Eguido/Python.html"};
                     VerifyTestResult (o.GetScheme () == nullopt);
-                    //VerifyTestResult (o.GetAuthority () == Authority{"www.cwi.nl:80"});
-                    //VerifyTestResult (o.As<string> () == "http://www.cwi.nl:80/%7Eguido/Python.html");
+                    VerifyTestResult (o.GetAuthority () == Authority::Parse ("www.cwi.nl:80"));
+                    VerifyTestResult (o.GetPath () == L"/~guido/Python.html");
+                    VerifyTestResult (o.GetQuery () == nullopt);
+                    VerifyTestResult (o.GetFragment () == nullopt);
+                    VerifyTestResult (o.As<string> () == "//www.cwi.nl:80/~guido/Python.html");
+                }
+                {
+                    /*
+                     *  From https://docs.python.org/2/library/urlparse.html
+                     *      from urlparse import urlparse
+                     *      o = urlparse('www.cwi.nl/%7Eguido/Python.html')
+                     *      o.scheme
+                     *      o.netloc
+                     *      o.path
+                     *      o.query
+                     *      o.fragment
+                     */
+                    auto o = URI{"www.cwi.nl/%7Eguido/Python.html"};
+                    VerifyTestResult (o.GetScheme () == nullopt);
+                    VerifyTestResult (o.GetAuthority () == nullopt);
+                    VerifyTestResult (o.GetPath () == L"www.cwi.nl/~guido/Python.html"); // again, differ from python because our getPath returns decoded string
+                    VerifyTestResult (o.GetQuery () == nullopt);
+                    VerifyTestResult (o.GetFragment () == nullopt);
+                    VerifyTestResult (o.As<string> () == "www.cwi.nl/~guido/Python.html"); // again, differ from python because %7E (~) is unreserved character
+                }
+                {
+                    /*
+                     *  From https://docs.python.org/2/library/urlparse.html
+                     *      from urlparse import urlparse
+                     *      o = urlparse('help/Python.html')
+                     *      o.scheme
+                     *      o.netloc
+                     *      o.path
+                     *      o.query
+                     *      o.fragment
+                     */
+                    auto o = URI{"help/Python.html"};
+                    VerifyTestResult (o.GetScheme () == nullopt);
+                    VerifyTestResult (o.GetAuthority () == nullopt);
+                    VerifyTestResult (o.GetPath () == L"help/Python.html");
+                    VerifyTestResult (o.GetQuery () == nullopt);
+                    VerifyTestResult (o.GetFragment () == nullopt);
+                    VerifyTestResult (o.As<string> () == "help/Python.html");
+                }
+                {
+                    /*
+                     *  From https://docs.python.org/2/library/urlparse.html
+                     *      from urlparse import urljoin
+                     *      urljoin('http://www.cwi.nl/%7Eguido/Python.html', 'FAQ.html')
+                     */
+                    auto o = URI{"http://www.cwi.nl/%7Eguido/Python.html"}.Combine (URI{"FAQ.html"});
+                    VerifyTestResult (o.As<string> () == "http://www.cwi.nl/~guido/FAQ.html"); // again, differ from python because %7E (~) is unreserved character
+                }
+                {
+                    /*
+                     *  From https://docs.python.org/2/library/urlparse.html
+                     *      from urlparse import urljoin
+                     *      urljoin('http://www.cwi.nl/%7Eguido/Python.html', '//www.python.org/%7Eguido')
+                     */
+                    auto o = URI{"http://www.cwi.nl/%7Eguido/Python.html"}.Combine (URI{"//www.python.org/%7Eguido"});
+                    VerifyTestResult (o.As<string> () == "http://www.python.org/~guido"); // again, differ from python because %7E (~) is unreserved character
+                }
+            }
+            void Test_PatternUsedInHealthFrame_ ()
+            {
+                using namespace IO::Network::UniformResourceIdentification;
+                {
+                    auto o = URI{"dyn:/Reminders/Home.htm"};
+                    VerifyTestResult (o.GetScheme () == SchemeType{L"dyn"});
+                    VerifyTestResult (o.GetPath () == L"/Reminders/Home.htm");
+                }
+                {
+                    auto o = URI{"dyn:/StyleSheet.css?ThemeName=Cupertino"};
+                    VerifyTestResult (o.GetScheme () == SchemeType{L"dyn"});
+                    VerifyTestResult (o.GetPath () == L"/StyleSheet.css");
+                    VerifyTestResult ((*o.GetQuery<Query> ()) (L"ThemeName") == L"Cupertino");
                 }
             }
         }
@@ -471,6 +547,7 @@ namespace {
             Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
             Private_::TestEmptyURI_ ();
             Private_::TestSamplesFromPythonURLParseDocs_ ();
+            Private_::Test_PatternUsedInHealthFrame_ ();
         }
     }
 }
@@ -490,7 +567,7 @@ namespace {
             VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
         }
         {
-            auto testRoundtrip = [](const String& s) {
+            auto testRoundtrip = [] (const String& s) {
                 InternetAddress iaddr1{s};
                 InternetAddress iaddr2{s.As<wstring> ()};
                 InternetAddress iaddr3{s.AsASCII ()};
