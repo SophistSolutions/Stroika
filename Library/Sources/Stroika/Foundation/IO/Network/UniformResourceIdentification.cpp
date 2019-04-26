@@ -196,9 +196,8 @@ bool UniformResourceIdentification::operator< (const Host& lhs, const Host& rhs)
  */
 int Common::ThreeWayCompare<Host>::operator() (const Host& lhs, const Host& rhs) const
 {
-    int cmpAddr = Common::ThreeWayCompare<optional<InternetAddress>>{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ());
-    if (cmpAddr != 0) {
-        return cmpAddr;
+    if (int cmp = Common::ThreeWayCompare<optional<InternetAddress>>{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ())) {
+        return cmp;
     }
     return Common::OptionalThreeWayCompare<String, String::ThreeWayCompare>{
         String::ThreeWayCompare{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
