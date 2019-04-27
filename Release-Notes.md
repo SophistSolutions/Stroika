@@ -7,6 +7,140 @@ to be aware of when upgrading.
 History
 =======
 
+## 2.1d23 {2019-04-27}
+
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d22...v2.1d23
+
+- URI
+  - Major rewrite/replacement for (now deprecated URL class) - https://tools.ietf.org/html/rfc3986
+  - new support classes Authority, SchemaType, Host, UserInfo etc for the parts of a URI - namespace UniformResourceIdentification
+  - Support relative URLs, and Combine()
+  - Properly support normalizing, and compare (case insenitive or sensitive
+    for the right parts)
+  - Properly support encoding/decoding (PCT encode and UTF8)
+  - Major improvement to regression tests - based on RFC and docs on python urlparse
+  - Complete support of operator<=> etc (threewaycompare) for all the URI related classes
+  - Support URI in VisualStudio-Stroika-Foundation-Debugger-Template.natvis
+  - Deprecated URL class, and switched all the samples and (most tests) and internal use in frameworks to URI - MOSTLY backward compatible, but not 100%
+  - URI class uses AssertExternallySynchronizedLock for thread safety checking
+
+- String/CodePage
+  - varidadic version of String::Match()
+  - Deprecated CheckedConverter<> and instead documented that String methods AsAscii, FromAscii, and FromUTF8 THROW if invalid characters in conversion (and in some cases changed code to check/throw)
+  - Added String::ThreeWayCompare
+  - Added String::Match (const RegularExpression& regEx, Containers::Sequence<String>* matches) const overload
+  - fixed some #if __cpp_char8_t  support (e.g. Length (const char8_t* p) specialization)
+  - UTFConvert support for C++20 char8_t
+  - AsUTF8 now template only (defualt using char, but also support char8_t if C++ 20 or >
+  - constexpr use in CodePage module
+
+- Frameworks::UPnP
+  - DeviceDescription improved UPnP::DeSerialize() to read services and list
+    of icons (but still not complete)
+  - Lots of cleanup of the Frameworks/UPnP/DeviceDescription code. Closer data
+    structure conformance to spec (optional) - and added UDN element to Device Description
+    instead of storing it in Device Only.
+  - NOTE - ***NOT BACKWARD COMPATIOBLE CHANGE***
+    Users of SSDP SERVER code - MUST add setting device description UDN field (see example code - with prefix of uuid).
+  - lose unneeded move() in SSDP/Server/BasicServer
+  - fixed GetAdjustedAdvertisements_ () to merge top level URL with advertisments urls (combine) and cleanup docs
+
+- Exceptions
+  - DeclareActivity now supports optional nullptr value for argument to CTOR (allowing for optionally declared activities)
+  - IO::Network::Transfer Connection::GetOptions method, and field fDeclareActivities in that options object, and if effecively true, sometimes DeclareActivty of sending request to URL
+
+- Documentation
+  - Lots of varied cleanups, but especially new URI code
+
+- DataExchange/StructuredStreamEvents/ObjectReader
+  - supports Collection in MakeCommonReader
+  - Support new registry.AddCommonReader_SimpleStringish<> helper, to ObjectReader code, and related docs, and regression tests.
+  - added AddCommonReader_NamedEnumerations, AddCommonReader_EnumAsInt
+  - Deprecated AddClass, using new AddCommonReader_Class instead
+
+- IO::Networking misc
+  - use assert not null, not if return " for ::inet_ntop results - cuz should   never be bad result (we pass in buffer, and its mechanical, and only
+    listed erorr returns are bad args)
+  - Socket::Ptr has deleted default CTOR, so ConnectionlessSocket::Ptr, ConnectionOrientedMasterSocket::Ptr (subclasses) should too (inconsistency detected by clang8)
+    NOTE, though the change is not backward compatible, its trivial to fix code (just add initializer to nullptr)
+
+- Compiler Bugs/Workarounds
+  - define and workaround qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy bug
+  - qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy workaround
+  - another helgrind workaround for https://stroika.atlassian.net/browse/STK-620 on ubuntu1904
+  - qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy for g++-9
+
+- Supported Compilers
+  - Now that vs2k19 is released, make that the default platform to look for when configuring (if not specified on cmdline or env var)
+  - VS2k19 16.0.2
+  - gcc-9
+  - clang-8
+
+- Memory support
+  - rough draft class OptionalThreeWayCompare<T>
+
+- Frameworks::WebServer
+  - start of big improvement to WebServer Router - using regexp matches to add extra   
+    parameters to RequestHandler functions (with those matches)
+
+- Samples
+  - WebService
+    - enhanced webservice sample to show example use of CRUD
+
+- Regression Tests
+  - tweak error reporting in a regtest(38)
+  - Ubuntu1904-RegressionTests/Dockerfile and regtests now run under Ubuntu1904 too
+  - further tweak Ubuntu1904-RegressionTests/Dockerfile for issue with clang libc++ versions
+  - lose manual setting of --no-sanitize undefeind and instead count on configure setting qCompiler_SanitizerFunctionPtrConversionSuppressionBug
+  - simplify/generalize helgrind workaround for fun:_ZNSt18condition_variable10notify_allEv https://stroika.atlassian.net/browse/STK-620 issue
+  - tweak Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled for ubuntu1904
+  - Test50_Utf8Conversions_ regtests uppdates for __cpp_char8_t
+
+- Foundation::Cache
+  - overload Cache object CTOR so takes Duration, and more docs/examples
+  - lose unhelpful move() on return value in TimedCache
+
+- Build System
+  - adjust configure -dont generate if not there  code to handle checking for libc++ for clang builds
+  - tweak configure code for https://stroika.atlassian.net/browse/STK-601 for macos
+
+- Foundation::Execution
+  - mark ThreadPool as not moveable since move never implemetned properly (detected by clang++-8) - added todo to maybe someday make movable
+
+- ThirdPartyComponents
+  - libcurl 7.64.1
+  - disable ZSH patch when upgrading to curl 7.64.1 since no longer works (and may not be needed)
+  - sqlite 3.28
+  - tried boost 1.70.0 but it had a problem, so reverted to 1.69.0 for now
+
+- HistoricalPerformanceRegressionTestResults/
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, Ubuntu1904_x86_64, MacOS_XCode10}-2.1d23.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
+        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d23-OUT.txt
+  - vc++2k17 (15.9.11)
+  - vc++2k19 (16.0.2)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10, Ubuntu 19.04
+  - gcc 7, gcc 8, gcc 9
+  - clang++-6, clang++-7, clang++-8 (ubuntu) {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, gcc9 (not passing tests cuz libc version) and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy)
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+
+----
+
 ## 2.1d22 {2019-03-23}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d21...v2.1d22
