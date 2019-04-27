@@ -33,7 +33,11 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_70_0
+VERSION=1_69_0
+
+#https://github.com/boostorg/build/issues/385 --- seems bug with boost_1_69_0/tools/build/src/tools\common.jam wait for next boost release to see if fixed
+#VERSION=1_70_0
+
 #VERSION=1_69_0
 #VERSION=1_68_0
 #VERSION=1_67_0_rc2
