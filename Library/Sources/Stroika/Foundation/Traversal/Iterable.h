@@ -12,6 +12,7 @@
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Memory/SharedByValue.h"
@@ -289,7 +290,6 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  Make a copy of the given argument, and treat it as an iterable.
-
          *
          *  \par Example Usage
          *      \code
