@@ -15,11 +15,36 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ***************************** ThreeWayCompare<T> *******************************
+     ***************************** ThreeWayComparer<T> ******************************
+     ********************************************************************************
+     */
+#if 0
+    template <typename T>
+    template <typename enable_if_t<Private_::has_Comparer<T>::value>*>
+    constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
+    {
+        return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
+    }
+    template <typename T>
+    template <typename enable_if_t<not Private_::has_Comparer<T>::value>*>
+    constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs, int*) const
+    {
+        return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
+    }
+#endif
+    template <typename T>
+    constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
+    {
+        return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
+    }
+
+    /*
+     ********************************************************************************
+     ********************* ThreeWayComparerDefaultImplementation<T> *****************
      ********************************************************************************
      */
     template <typename T>
-    constexpr int ThreeWayCompare<T>::operator() (const T& lhs, const T& rhs) const
+    constexpr int ThreeWayComparerDefaultImplementation<T>::operator() (const T& lhs, const T& rhs) const
     {
         // in general, can do this much more efficiently (subtract left and right), but for now, KISS
         if (equal_to<T>{}(lhs, rhs)) {
@@ -27,6 +52,7 @@ namespace Stroika::Foundation::Common {
         }
         return less<T>{}(lhs, rhs) ? -1 : 1;
     }
+
     /*
      ********************************************************************************
      *************** OptionalThreeWayCompare<T, TCOMPARER> **************************

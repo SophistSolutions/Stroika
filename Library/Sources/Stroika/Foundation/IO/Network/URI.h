@@ -348,8 +348,8 @@ namespace Stroika::Foundation::IO::Network {
 namespace Stroika::Foundation::Common {
 
     template <>
-    struct ThreeWayCompare<Stroika::Foundation::IO::Network::URI> {
-        constexpr ThreeWayCompare () = default;
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::URI> {
+        constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::URI& lhs, const Stroika::Foundation::IO::Network::URI& rhs) const;
     };
 

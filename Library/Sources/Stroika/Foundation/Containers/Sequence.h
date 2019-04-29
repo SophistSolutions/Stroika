@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Containers {
          *      (CONSIDER NEW code to detect methods in templates)
          *      (MAYBE always use compare() - not Compare)
          */
-        template <typename ELEMENT_COMPARER = Common::ThreeWayCompare<T>>
+        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
         nonvirtual int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
 
     public:

@@ -167,11 +167,11 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline bool operator< (const URI& lhs, const URI& rhs)
     {
-        return Common::ThreeWayCompare<URI>{}(lhs, rhs) < 0;
+        return Common::ThreeWayComparer<URI>{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const URI& lhs, const URI& rhs)
     {
-        return Common::ThreeWayCompare<URI>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayComparer<URI>{}(lhs, rhs) <= 0;
     }
     inline bool operator!= (const URI& lhs, const URI& rhs)
     {
@@ -179,11 +179,11 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline bool operator>= (const URI& lhs, const URI& rhs)
     {
-        return Common::ThreeWayCompare<URI>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayComparer<URI>{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const URI& lhs, const URI& rhs)
     {
-        return Common::ThreeWayCompare<URI>{}(lhs, rhs) > 0;
+        return Common::ThreeWayComparer<URI>{}(lhs, rhs) > 0;
     }
 
 }

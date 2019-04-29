@@ -11,7 +11,8 @@
 #include <optional>
 
 #include "../Configuration/Common.h"
-#include "../Configuration/Concepts.h"
+//#include "../Configuration/Concepts.h"
+//#include "../Configuration/ConceptsBase.h"
 #include "../Configuration/Enumeration.h"
 #include "../Configuration/TypeHints.h"
 
@@ -23,19 +24,63 @@
 
 namespace Stroika::Foundation::Common {
 
+#if 0
+    namespace Private_ {
+        // FOR NOW TAKE COMPARE - TEST - STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (Comparer, ((decltype (x))::Comparer{}(x, x)));
+        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (Comparer, (x < x));
+    }
+#endif
+#if 1
+    namespace Private_ {
+        // Avoid STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS due to #include deadly embrace and the fact that it wasn't working very well anyhow - may
+        // need to tune/fiddle
+        template <typename T>
+        class has_Comparer {
+            typedef char one;
+            typedef long two;
+            template <typename C>
+            static one test (const typename C::Comparer&);
+            template <typename C>
+            static two test (...);
+
+        public:
+            enum { value = sizeof (test<T> (0)) == sizeof (char) };
+        };
+    }
+#endif
     /**
-     *  Stand-in until C++20, three way compare
+     *  Stand-in until C++20, three way compare - used for Calling three-way-comparer
+     *
+     *  Not every class implements the three-way comparer (especailly before C++20).
+     *  @see ThreeWayComparerDefaultImplementation<>
      */
     template <typename T>
-    struct ThreeWayCompare {
-        constexpr ThreeWayCompare () = default;
+    struct ThreeWayComparer {
+        constexpr ThreeWayComparer () = default;
+#if 0
+        template <typename enable_if_t<Stroika::Foundation::Common::Private_::has_Comparer<T>::value>* = nullptr>
+        constexpr int operator() (const T& lhs, const T& rhs) const;
+        template <typename enable_if_t<!Stroika::Foundation::Common::Private_::has_Comparer<T>::value>* = nullptr>
+        constexpr int operator() (const T& lhs, const T& rhs, int* = nullptr) const;
+#endif
+        constexpr int operator() (const T& lhs, const T& rhs) const;
+    };
+
+    /**
+     *  Stand-in until C++20, three way compare - used for implementing three-way-comparer
+     *
+     *  @see ThreeWayComparer<>
+     */
+    template <typename T>
+    struct ThreeWayComparerDefaultImplementation {
+        constexpr ThreeWayComparerDefaultImplementation () = default;
         constexpr int operator() (const T& lhs, const T& rhs) const;
     };
 
     /**
      *  EXPERIMENTAL - API subject to change - see if I can find a way to mix  with (partial specialization) of ThreeWayCompare but still pass in other base comparer (to say case insensitive)
      */
-    template <typename T, typename TCOMPARER = ThreeWayCompare<T>>
+    template <typename T, typename TCOMPARER = ThreeWayComparer<T>>
     struct OptionalThreeWayCompare {
         constexpr OptionalThreeWayCompare (const TCOMPARER& tComparer);
         constexpr int operator() (const optional<T>& lhs, const optional<T>& rhs) const;
@@ -166,7 +211,7 @@ namespace Stroika::Foundation::Common {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
     template <typename T>
-    struct ExtractComparisonTraits<ThreeWayCompare<T>> {
+    struct ExtractComparisonTraits<ThreeWayComparer<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
 

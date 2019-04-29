@@ -692,14 +692,14 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ************************* String::ThreeWayCompare ******************************
+     ************************* String::ThreeWayComparer *****************************
      ********************************************************************************
      */
-    inline String::ThreeWayCompare::ThreeWayCompare (CompareOptions co)
+    inline String::ThreeWayComparer::ThreeWayComparer (CompareOptions co)
         : fCompareOptions (co)
     {
     }
-    inline int String::ThreeWayCompare::operator() (const String& lhs, const String& rhs) const
+    inline int String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
     {
         return lhs.Compare (rhs, fCompareOptions);
     }

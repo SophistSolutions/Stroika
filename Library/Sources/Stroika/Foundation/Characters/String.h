@@ -1197,7 +1197,7 @@ namespace Stroika::Foundation::Characters {
         struct LessCI;
 
     public:
-        struct ThreeWayCompare;
+        struct ThreeWayComparer;
 
     public:
         /**
@@ -1352,8 +1352,8 @@ namespace Stroika::Foundation::Characters {
 
     /**
      */
-    struct String::ThreeWayCompare : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        ThreeWayCompare (CompareOptions co = CompareOptions::eWithCase);
+    struct String::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
         nonvirtual int operator() (const String& lhs, const String& rhs) const;
         CompareOptions fCompareOptions;
     };

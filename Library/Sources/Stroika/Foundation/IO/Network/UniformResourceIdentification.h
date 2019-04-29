@@ -533,23 +533,23 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 namespace Stroika::Foundation::Common {
 
     template <>
-    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> {
-        constexpr ThreeWayCompare () = default;
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> {
+        constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& rhs) const;
     };
     template <>
-    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo> {
-        constexpr ThreeWayCompare () = default;
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo> {
+        constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& rhs) const;
     };
     template <>
-    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> {
-        constexpr ThreeWayCompare () = default;
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> {
+        constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& rhs) const;
     };
     template <>
-    struct ThreeWayCompare<Stroika::Foundation::IO::Network::UniformResourceIdentification::Query> {
-        constexpr ThreeWayCompare () = default;
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Query> {
+        constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& rhs) const;
     };
 
