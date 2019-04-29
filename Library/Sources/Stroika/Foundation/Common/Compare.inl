@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Configuration/Concepts.h"
 #include "../Debug/Assertions.h"
 
 namespace Stroika::Foundation::Common {

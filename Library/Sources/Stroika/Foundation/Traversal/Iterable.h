@@ -12,6 +12,7 @@
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Memory/SharedByValue.h"
