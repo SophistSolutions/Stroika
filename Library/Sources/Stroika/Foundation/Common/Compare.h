@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 #include "../Configuration/Enumeration.h"
 #include "../Configuration/TypeHints.h"
 
