@@ -21,23 +21,24 @@ namespace Stroika::Foundation::Common {
      */
 #if 0
     template <typename T>
-    template <typename enable_if_t<Private_::has_Comparer<T>::value>*>
+    template <typename enable_if_t<Stroika::Foundation::Common::Private_::has_Comparer<T>::value>*>
     constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
     }
     template <typename T>
-    template <typename enable_if_t<not Private_::has_Comparer<T>::value>*>
+    template <typename enable_if_t<not Stroika::Foundation::Common::Private_::has_Comparer<T>::value>*>
     constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs, int*) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
     }
-#endif
+#else
     template <typename T>
     constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
     }
+#endif
 
     /*
      ********************************************************************************

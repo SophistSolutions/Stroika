@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Common {
             typedef char one;
             typedef long two;
             template <typename C>
-            static one test (const typename C::Comparer&);
+            static one test (typename C::Comparer*);
             template <typename C>
             static two test (...);
 
@@ -56,12 +56,13 @@ namespace Stroika::Foundation::Common {
     struct ThreeWayComparer {
         constexpr ThreeWayComparer () = default;
 #if 0
-        template <typename enable_if_t<Stroika::Foundation::Common::Private_::has_Comparer<T>::value>* = nullptr>
+        template <typename enable_if_t<Private_::has_Comparer<T>::value>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-        template <typename enable_if_t<!Stroika::Foundation::Common::Private_::has_Comparer<T>::value>* = nullptr>
+        template <typename enable_if_t<not Private_::has_Comparer<T>::value>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs, int* = nullptr) const;
-#endif
+#else
         constexpr int operator() (const T& lhs, const T& rhs) const;
+#endif
     };
 
     /**
