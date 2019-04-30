@@ -24,29 +24,6 @@ namespace Stroika::Foundation::Cache {
         , fCache_ (forward<CACHE<tuple<ARGS...>, RESULT>> (cache))
     {
     }
-    namespace PRIVATE_ {
-        // @todo - Find a cleaner simpler way to exlode the tuple and call by its members...
-        template <int...>
-        struct seq_ {
-        };
-        template <int N, int... S>
-        struct gens_ : gens_<N - 1, N - 1, S...> {
-        };
-        template <int... S>
-        struct gens_<0, S...> {
-            typedef seq_<S...> type;
-        };
-        template <typename RESULT, typename... Args>
-        struct CallWithExplodedTuple_ {
-            tuple<Args...>             params;
-            function<RESULT (Args...)> func;
-            template <int... S>
-            RESULT callFunc (seq_<S...>)
-            {
-                return func (get<S> (params)...);
-            }
-        };
-    }
     template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
     RESULT Memoizer<RESULT, CACHE, ARGS...>::Compute (ARGS... args)
     {
@@ -54,8 +31,7 @@ namespace Stroika::Foundation::Cache {
         return fCache_.LookupValue (
             make_tuple (args...),
             [&] (const tuple<ARGS...>& t) {
-                using namespace Cache::PRIVATE_;
-                return CallWithExplodedTuple_<RESULT, ARGS...>{t, fFunction_}.callFunc (typename gens_<sizeof...(args)>::type ());
+                return apply (fFunction_, t);
             });
     }
 
