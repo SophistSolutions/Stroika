@@ -30,16 +30,41 @@ namespace Stroika::Foundation::Common {
     /**
      *  Stand-in until C++20, three way compare - used for Calling three-way-comparer
      *
-     *  Not every class implements the three-way comparer (especailly before C++20).
+     *  Not every class implements the three-way comparer (spaceship operator) - especailly before C++20.
      *  @see ThreeWayComparerDefaultImplementation<>
+     *
+     *  \note   Common::ThreeWayComparer<> will work for any type for which:
+     *          o   Common::ThreeWayComparer<> has already been explicitly specialized
+     *          o   has a spaceship operator defined for it (C++20 or later - and NYI)
+     *          o   has less<> and equal_to<> defined (either explicitly, or implicitly by
+     *              having < and == work with it)   
+     *              
+     *  \par Example Usage
+     *      \code
+     *          int Common::ThreeWayComparer<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
+     *          {
+     *              if (int cmp = Common::ThreeWayComparer<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ())) {
+     *                  return cmp;
+     *              }
+     *              if (int cmp = Common::ThreeWayComparer<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+     *                  return cmp;
+     *              }
+     *              return Common::ThreeWayComparer<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
+     *          }
+     *      \endcode
+     *
+     *  \note TODO
+     *      @todo   Support spaceship operator - like we do with HasComparer_v - detecting if class Q has spaceship operator and
+     *              using that (after check for HasComparer_v and before default using ThreeWayComparerDefaultImplementation).
      */
-    template <typename T>
+    template <typename T, typename... ARGS>
     struct ThreeWayComparer {
-        constexpr ThreeWayComparer () = default;
-        template <typename Q = T, enable_if_t<Private_::HasComparer_v<Q>, char>* = nullptr>
+        constexpr ThreeWayComparer (ARGS... args);
+        template <typename Q = T, enable_if_t<Private_::HasComparer_v<Q>>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-        template <typename Q = T, enable_if_t<not Private_::HasComparer_v<Q>, short>* = nullptr>
-        constexpr int operator() (const T& lhs, const T& rhs) const;
+        template <typename Q = T, enable_if_t<not Private_::HasComparer_v<Q>>* = nullptr>
+        constexpr int  operator() (const T& lhs, const T& rhs) const;
+        tuple<ARGS...> fArgs_;
     };
 
     /**

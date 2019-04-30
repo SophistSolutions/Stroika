@@ -18,15 +18,20 @@ namespace Stroika::Foundation::Common {
      ***************************** ThreeWayComparer<T> ******************************
      ********************************************************************************
      */
-    template <typename T>
-    template <typename Q, enable_if_t<Private_::HasComparer_v<Q>, char>*>
-    constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
+    template <typename T, typename... ARGS>
+    constexpr ThreeWayComparer<T, ARGS...>::ThreeWayComparer (ARGS... args)
+        : fArgs_ (make_tuple (args...))
     {
-        return (typename Q::Comparer{}) (lhs, rhs);
     }
-    template <typename T>
-    template <typename Q, enable_if_t<not Private_::HasComparer_v<Q>, short>*>
-    constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
+    template <typename T, typename... ARGS>
+    template <typename Q, enable_if_t<Private_::HasComparer_v<Q>>*>
+    constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    {
+        return make_from_tuple<Q::Comparer> (fArgs_) (lhs, rhs);
+    }
+    template <typename T, typename... ARGS>
+    template <typename Q, enable_if_t<not Private_::HasComparer_v<Q>>*>
+    constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
     }
