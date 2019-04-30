@@ -19,13 +19,13 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    template <typename Q , enable_if_t<Private_::has_Comparer<Q>::value, char>*>
+    template <typename Q, enable_if_t<Private_::HasComparer_v<Q>, char>*>
     constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
     {
-        return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
+        return (typename Q::Comparer{}) (lhs, rhs);
     }
     template <typename T>
-    template <typename Q, enable_if_t<not Private_::has_Comparer<Q>::value, short>*>
+    template <typename Q, enable_if_t<not Private_::HasComparer_v<Q>, short>*>
     constexpr int ThreeWayComparer<T>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);

@@ -36,9 +36,9 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     struct ThreeWayComparer {
         constexpr ThreeWayComparer () = default;
-        template <typename Q = T, enable_if_t<Private_::has_Comparer<Q>::value, char>* = nullptr>
+        template <typename Q = T, enable_if_t<Private_::HasComparer_v<Q>, char>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-        template <typename Q = T, enable_if_t<not Private_::has_Comparer<Q>::value, short>* = nullptr>
+        template <typename Q = T, enable_if_t<not Private_::HasComparer_v<Q>, short>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
     };
 
