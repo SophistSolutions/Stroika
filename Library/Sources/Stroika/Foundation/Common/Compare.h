@@ -23,30 +23,10 @@
 
 namespace Stroika::Foundation::Common {
 
-#if 0
     namespace Private_ {
-        // FOR NOW TAKE COMPARE - TEST - STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (Comparer, ((decltype (x))::Comparer{}(x, x)));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (Comparer, (x < x));
+        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (Comparer, (typename X::Comparer{}(x, x)));
     }
-#endif
-#if 1
-    namespace Private_ {
-        // Avoid STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS due to #include deadly embrace and the fact that it wasn't working very well anyhow - may
-        // need to tune/fiddle
-        template <typename T>
-        class has_Comparer {
-            typedef char one;
-            typedef long two;
-            template <typename C>
-            static one test (typename C::Comparer*);
-            template <typename C>
-            static two test (...);
 
-        public:
-            enum { value = sizeof (test<T> (0)) == sizeof (char) };
-        };
-    }
-#endif
     /**
      *  Stand-in until C++20, three way compare - used for Calling three-way-comparer
      *
@@ -56,14 +36,10 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     struct ThreeWayComparer {
         constexpr ThreeWayComparer () = default;
-#if 0
-        template <typename enable_if_t<Private_::has_Comparer<T>::value>* = nullptr>
+        template <typename Q = T, enable_if_t<Private_::has_Comparer<Q>::value, char>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-        template <typename enable_if_t<not Private_::has_Comparer<T>::value>* = nullptr>
-        constexpr int operator() (const T& lhs, const T& rhs, int* = nullptr) const;
-#else
+        template <typename Q = T, enable_if_t<not Private_::has_Comparer<Q>::value, short>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-#endif
     };
 
     /**
