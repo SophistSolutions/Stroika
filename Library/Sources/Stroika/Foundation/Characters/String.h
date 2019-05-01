@@ -1356,11 +1356,16 @@ namespace Stroika::Foundation::Characters {
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
         // Extra overloads a slight performance improvement
         nonvirtual int operator() (const String& lhs, const String& rhs) const;
+        nonvirtual int operator() (const wstring_view& lhs, const wstring_view& rhs) const;
         nonvirtual int operator() (const Character* lhs, const String& rhs) const;
+        nonvirtual int operator() (const Character* lhs, const wstring_view& rhs) const;
         nonvirtual int operator() (const String& lhs, const Character* rhs) const;
+        nonvirtual int operator() (const wstring_view& lhs, const Character* rhs) const;
         nonvirtual int operator() (const Character* lhs, const Character* rhs) const;
         nonvirtual int operator() (const wchar_t* lhs, const String& rhs) const;
+        nonvirtual int operator() (const wchar_t* lhs, const wstring_view& rhs) const;
         nonvirtual int operator() (const String& lhs, const wchar_t* rhs) const;
+        nonvirtual int operator() (const wstring_view& lhs, const wchar_t* rhs) const;
         nonvirtual int operator() (const wchar_t* lhs, const wchar_t* rhs) const;
 
         CompareOptions fCompareOptions;

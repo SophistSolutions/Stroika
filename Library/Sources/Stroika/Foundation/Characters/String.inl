@@ -725,6 +725,12 @@ namespace Stroika::Foundation::Characters {
         pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
+    inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
+    {
+        pair<const Character*, const Character*> l = lhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*lhs.begin ()), reinterpret_cast<const Character*> (&*lhs.begin () + lhs.size ()));
+        pair<const Character*, const Character*> r = rhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*rhs.begin ()), reinterpret_cast<const Character*> (&*rhs.begin () + rhs.size ()));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
     inline int String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
     {
         RequireNotNull (lhs);
@@ -734,12 +740,28 @@ namespace Stroika::Foundation::Characters {
         pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
+    inline int String::ThreeWayComparer::operator() (const Character* lhs, const wstring_view& rhs) const
+    {
+        RequireNotNull (lhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = make_pair (lhs, lhs + ::wcslen (reinterpret_cast<const wchar_t*> (lhs)));
+        pair<const Character*, const Character*> r = rhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*rhs.begin ()), reinterpret_cast<const Character*> (&*rhs.begin () + rhs.size ()));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
     inline int String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
     {
         RequireNotNull (rhs);
         static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         _SafeReadRepAccessor                     accessor{&lhs};
         pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
+        pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const Character* rhs) const
+    {
+        RequireNotNull (rhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = lhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*lhs.begin ()), reinterpret_cast<const Character*> (&*lhs.begin () + lhs.size ()));
         pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
@@ -761,12 +783,28 @@ namespace Stroika::Foundation::Characters {
         pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
+    inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
+    {
+        RequireNotNull (lhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = make_pair (reinterpret_cast<const Character*> (lhs), reinterpret_cast<const Character*> (lhs) + ::wcslen (lhs));
+        pair<const Character*, const Character*> r = rhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*rhs.begin ()), reinterpret_cast<const Character*> (&*rhs.begin () + rhs.size ()));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
     inline int String::ThreeWayComparer::operator() (const String& lhs, const wchar_t* rhs) const
     {
         RequireNotNull (rhs);
         static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         _SafeReadRepAccessor                     accessor{&lhs};
         pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
+        pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    {
+        RequireNotNull (rhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = lhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*lhs.begin ()), reinterpret_cast<const Character*> (&*lhs.begin () + lhs.size ()));
         pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
