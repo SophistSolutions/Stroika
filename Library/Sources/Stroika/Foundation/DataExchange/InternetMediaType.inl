@@ -40,7 +40,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline int InternetMediaType::Compare (const InternetMediaType& rhs) const
     {
-        return fType_.Compare (rhs.fType_);
+        return String::ThreeWayComparer{}(fType_, rhs.fType_);
     }
     template <>
     inline String InternetMediaType::As () const

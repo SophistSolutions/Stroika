@@ -24,13 +24,13 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T, typename... ARGS>
-    template <typename Q, enable_if_t<Private_::HasComparer_v<Q>>*>
+    template <typename Q, enable_if_t<Private_::HasThreeWayComparer_v<Q>>*>
     constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
-        return make_from_tuple<Q::Comparer> (fArgs_) (lhs, rhs);
+        return make_from_tuple<Q::ThreeWayComparer> (fArgs_) (lhs, rhs);
     }
     template <typename T, typename... ARGS>
-    template <typename Q, enable_if_t<not Private_::HasComparer_v<Q>>*>
+    template <typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q>>*>
     constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);

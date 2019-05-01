@@ -835,17 +835,16 @@ namespace {
     void Test18_Compare_ ()
     {
         const String kHELLOWorld = String (L"Hello world");
-        VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld, CompareOptions::eWithCase) == 0);
-        VerifyTestResult (kHELLOWorld.Compare (String (L"Hello world"), CompareOptions::eWithCase) == 0);
-
-        VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), CompareOptions::eWithCase) < 0);
-        VerifyTestResult (kHELLOWorld.Compare (kHELLOWorld.ToLowerCase (), CompareOptions::eCaseInsensitive) == 0);
-        VerifyTestResult (String (L"fred").Compare (L"fredy", CompareOptions::eCaseInsensitive) < 0);
-        VerifyTestResult (String (L"fred").Compare (L"Fredy", CompareOptions::eCaseInsensitive) < 0);
-        VerifyTestResult (String (L"Fred").Compare (L"fredy", CompareOptions::eCaseInsensitive) < 0);
-        VerifyTestResult (String (L"fred").Compare (L"fredy", CompareOptions::eWithCase) < 0);
-        VerifyTestResult (String (L"fred").Compare (L"Fredy", CompareOptions::eWithCase) > 0);
-        VerifyTestResult (String (L"Fred").Compare (L"fredy", CompareOptions::eWithCase) < 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld) == 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String (L"Hello world")) == 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}((L"fred"), L"fredy") < 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}((L"fred"), L"Fredy") < 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}((L"Fred"), L"fredy") < 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}((L"fred"), L"fredy") < 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}((L"fred"), L"Fredy") > 0);
+        VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}((L"Fred"), L"fredy") < 0);
     }
 }
 

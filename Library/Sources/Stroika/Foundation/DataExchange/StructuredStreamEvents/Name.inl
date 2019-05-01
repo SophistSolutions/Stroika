@@ -57,52 +57,26 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     inline bool operator< (const Name& lhs, const Name& rhs)
     {
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            int cmp = lhs.fNamespaceURI->Compare (*rhs.fNamespaceURI);
-            if (cmp < 0) {
-                return true;
-            }
-            else if (cmp > 0) {
-                return false;
+            if (int cmp = String::ThreeWayComparer{}(*lhs.fNamespaceURI, *rhs.fNamespaceURI)) {
+                return cmp < 0;
             }
         }
-        {
-            int cmp = lhs.fLocalName.Compare (rhs.fLocalName);
-            if (cmp < 0) {
-                return true;
-            }
-            else if (cmp > 0) {
-                return false;
-            }
+        if (int cmp = String::ThreeWayComparer{}(lhs.fLocalName, rhs.fLocalName)) {
+            return cmp < 0;
         }
-        if (lhs.fType < rhs.fType) {
-            return true;
-        }
-        return false;
+        return (lhs.fType < rhs.fType);
     }
     inline bool operator<= (const Name& lhs, const Name& rhs)
     {
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            int cmp = lhs.fNamespaceURI->Compare (*rhs.fNamespaceURI);
-            if (cmp < 0) {
-                return true;
-            }
-            else if (cmp > 0) {
-                return false;
+            if (int cmp = String::ThreeWayComparer{}(*lhs.fNamespaceURI, *rhs.fNamespaceURI)) {
+                return cmp < 0;
             }
         }
-        {
-            int cmp = lhs.fLocalName.Compare (rhs.fLocalName);
-            if (cmp < 0) {
-                return true;
-            }
-            else if (cmp > 0) {
-                return false;
-            }
+        if (int cmp = String::ThreeWayComparer{}(lhs.fLocalName, rhs.fLocalName)) {
+            return cmp < 0;
         }
-        if (lhs.fType <= rhs.fType) {
-            return true;
-        }
-        return false;
+        return (lhs.fType <= rhs.fType);
     }
     inline bool operator== (const Name& lhs, const Name& rhs)
     {

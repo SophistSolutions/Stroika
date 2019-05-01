@@ -620,6 +620,9 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, thisLen, from, to);
     }
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     inline int String::Compare (const String& rhs, CompareOptions co) const
     {
         _SafeReadRepAccessor                     accessor{this};
@@ -669,39 +672,112 @@ namespace Stroika::Foundation::Characters {
     {
         return Compare (rhs, co) == 0;
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     /*
      ********************************************************************************
      ******************************* String::EqualToCI ******************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     inline bool String::EqualToCI::operator() (const String& lhs, const String& rhs) const
     {
         return lhs.Compare (rhs, CompareOptions::eCaseInsensitive) == 0;
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     /*
      ********************************************************************************
      ******************************* String::LessCI *********************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     inline bool String::LessCI::operator() (const String& lhs, const String& rhs) const
     {
         return lhs.Compare (rhs, CompareOptions::eCaseInsensitive) < 0;
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     /*
      ********************************************************************************
      ************************* String::ThreeWayComparer *****************************
      ********************************************************************************
      */
-    inline String::ThreeWayComparer::ThreeWayComparer (CompareOptions co)
-        : fCompareOptions (co)
+    constexpr String::ThreeWayComparer::ThreeWayComparer (CompareOptions co)
+        : fCompareOptions{co}
     {
     }
     inline int String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
     {
-        return lhs.Compare (rhs, fCompareOptions);
+        _SafeReadRepAccessor                     accessor{&lhs};
+        pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
+        _SafeReadRepAccessor                     rhsAccessor{&rhs};
+        pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
+    {
+        RequireNotNull (lhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = make_pair (lhs, lhs + ::wcslen (reinterpret_cast<const wchar_t*> (lhs)));
+        _SafeReadRepAccessor                     rhsAccessor{&rhs};
+        pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
+    {
+        RequireNotNull (rhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        _SafeReadRepAccessor                     accessor{&lhs};
+        pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
+        pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const Character* lhs, const Character* rhs) const
+    {
+        RequireNotNull (lhs);
+        RequireNotNull (rhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = make_pair (lhs, lhs + ::wcslen (reinterpret_cast<const wchar_t*> (lhs)));
+        pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const String& rhs) const
+    {
+        RequireNotNull (lhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = make_pair (reinterpret_cast<const Character*> (lhs), reinterpret_cast<const Character*> (lhs) + ::wcslen (lhs));
+        _SafeReadRepAccessor                     rhsAccessor{&rhs};
+        pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const String& lhs, const wchar_t* rhs) const
+    {
+        RequireNotNull (rhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        _SafeReadRepAccessor                     accessor{&lhs};
+        pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
+        pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
+    {
+        RequireNotNull (lhs);
+        RequireNotNull (rhs);
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        pair<const Character*, const Character*> l = make_pair (reinterpret_cast<const Character*> (lhs), reinterpret_cast<const Character*> (lhs) + ::wcslen (lhs));
+        pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
 
     /*
@@ -723,18 +799,16 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator< (const String& lhs, const String& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator< (const String& lhs, const wchar_t* rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator< (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
-        bool result{rhs.Compare (lhs) > 0}; // reversed order to avoid construction of extra object
-        Assert ((String (lhs).Compare (rhs) < 0) == result);
-        return result;
+        return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
 
     /*
@@ -744,18 +818,15 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator<= (const String& lhs, const String& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return String::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator<= (const String& lhs, const wchar_t* rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return String::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator<= (const wchar_t* lhs, const String& rhs)
     {
-        RequireNotNull (lhs);
-        bool result{rhs.Compare (lhs) >= 0}; // reversed order to avoid construction of extra object
-        Assert ((String (lhs).Compare (rhs) <= 0) == result);
-        return result;
+        return String::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
 
     /*
@@ -803,18 +874,16 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator>= (const String& lhs, const String& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return String::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator>= (const String& lhs, const wchar_t* rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return String::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator>= (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
-        bool result{rhs.Compare (lhs) <= 0}; // reversed order to avoid construction of extra object
-        Assert ((String (lhs).Compare (rhs) >= 0) == result);
-        return result;
+        return String::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
 
     /*
@@ -824,18 +893,16 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator> (const String& lhs, const String& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return String::ThreeWayComparer{}(lhs, rhs) > 0;
     }
     inline bool operator> (const String& lhs, const wchar_t* rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return String::ThreeWayComparer{}(lhs, rhs) > 0;
     }
     inline bool operator> (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
-        bool result{rhs.Compare (lhs) < 0}; // reversed order to avoid construction of extra object
-        Assert ((String (lhs).Compare (rhs) > 0) == result);
-        return result;
+        return String::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 
     /*

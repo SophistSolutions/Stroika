@@ -24,7 +24,7 @@
 namespace Stroika::Foundation::Common {
 
     namespace Private_ {
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (Comparer, (typename X::Comparer{}(x, x)));
+        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ThreeWayComparer, (typename X::ThreeWayComparer{}(x, x)));
     }
 
     /**
@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Common {
      *
      *  \note   Common::ThreeWayComparer<> will work for any type for which:
      *          o   Common::ThreeWayComparer<> has already been explicitly specialized
+     *          o   has function (three way comparer object) member ThreeWayComparer (e.g. String::ThreeWayComparer)
      *          o   has a spaceship operator defined for it (C++20 or later - and NYI)
      *          o   has less<> and equal_to<> defined (either explicitly, or implicitly by
      *              having < and == work with it)   
@@ -60,9 +61,9 @@ namespace Stroika::Foundation::Common {
     template <typename T, typename... ARGS>
     struct ThreeWayComparer {
         constexpr ThreeWayComparer (ARGS... args);
-        template <typename Q = T, enable_if_t<Private_::HasComparer_v<Q>>* = nullptr>
+        template <typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-        template <typename Q = T, enable_if_t<not Private_::HasComparer_v<Q>>* = nullptr>
+        template <typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q>>* = nullptr>
         constexpr int  operator() (const T& lhs, const T& rhs) const;
         tuple<ARGS...> fArgs_;
     };
@@ -71,6 +72,9 @@ namespace Stroika::Foundation::Common {
      *  Stand-in until C++20, three way compare - used for implementing three-way-comparer
      *
      *  @see ThreeWayComparer<>
+     *
+     *  Generally DONT call this function EXCEPT if you explicitly wish to use the combo of == and < to produce a new
+     *  three-way-comparer object.
      */
     template <typename T>
     struct ThreeWayComparerDefaultImplementation {

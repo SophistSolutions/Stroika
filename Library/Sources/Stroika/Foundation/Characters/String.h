@@ -1174,13 +1174,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-             *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-             */
-        nonvirtual int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+         */
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
 
     public:
         /**
@@ -1353,8 +1353,16 @@ namespace Stroika::Foundation::Characters {
     /**
      */
     struct String::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
+        constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
+        // Extra overloads a slight performance improvement
         nonvirtual int operator() (const String& lhs, const String& rhs) const;
+        nonvirtual int operator() (const Character* lhs, const String& rhs) const;
+        nonvirtual int operator() (const String& lhs, const Character* rhs) const;
+        nonvirtual int operator() (const Character* lhs, const Character* rhs) const;
+        nonvirtual int operator() (const wchar_t* lhs, const String& rhs) const;
+        nonvirtual int operator() (const String& lhs, const wchar_t* rhs) const;
+        nonvirtual int operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+
         CompareOptions fCompareOptions;
     };
 
