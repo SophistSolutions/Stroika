@@ -121,25 +121,25 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         if (not label.empty ()) {
             advertisement->fRawHeaders.Add (label, value);
         }
-        auto labelComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-        if (labelComparer (label, L"Location") == 0) {
+        constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+        if (kLabelComparer_ (label, L"Location") == 0) {
             advertisement->fLocation = IO::Network::URI{value};
         }
-        else if (labelComparer (label, L"NT") == 0) {
+        else if (kLabelComparer_ (label, L"NT") == 0) {
             advertisement->fTarget = value;
         }
-        else if (labelComparer (label, L"USN") == 0) {
+        else if (kLabelComparer_ (label, L"USN") == 0) {
             advertisement->fUSN = value;
         }
-        else if (labelComparer (label, L"Server") == 0) {
+        else if (kLabelComparer_ (label, L"Server") == 0) {
             advertisement->fServer = value;
         }
-        else if (labelComparer (label, L"NTS") == 0) {
-            auto valueComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-            if (valueComparer (value, L"ssdp:alive"sv) == 0) {
+        else if (kLabelComparer_ (label, L"NTS") == 0) {
+            constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+            if (kValueComparer_ (value, L"ssdp:alive"sv) == 0) {
                 advertisement->fAlive = true;
             }
-            else if (valueComparer (value, L"ssdp:byebye"sv) == 0) {
+            else if (kValueComparer_ (value, L"ssdp:byebye"sv) == 0) {
                 advertisement->fAlive = false;
             }
         }

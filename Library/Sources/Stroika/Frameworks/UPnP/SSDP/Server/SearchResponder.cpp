@@ -70,7 +70,8 @@ namespace {
                 if (not label.empty ()) {
                     da.fRawHeaders.Add (label, value);
                 }
-                if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+                if (kLabelComparer_ (label, L"ST"sv) == 0) {
                     da.fTarget = value;
                 }
             }
