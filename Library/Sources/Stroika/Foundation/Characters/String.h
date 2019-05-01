@@ -1369,6 +1369,14 @@ namespace Stroika::Foundation::Characters {
         nonvirtual int operator() (const wchar_t* lhs, const wchar_t* rhs) const;
 
         CompareOptions fCompareOptions;
+
+    private:
+        template <typename LT, typename RT>
+        int                                             Cmp_ (LT lhs, RT rhs) const;
+        static pair<const Character*, const Character*> Access_ (const String& s);
+        static pair<const Character*, const Character*> Access_ (const wstring_view& s);
+        static pair<const Character*, const Character*> Access_ (const Character* lhs);
+        static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
     };
 
     /**

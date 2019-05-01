@@ -717,105 +717,80 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
+    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wstring_view& s)
+    {
+        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*s.begin ()), reinterpret_cast<const Character*> (&*s.begin () + s.size ()));
+    }
+    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const Character* s)
+    {
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
+    }
+    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wchar_t* s)
+    {
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
+    }
+    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const String& s)
+    {
+        return _SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
+    }
+    template <typename LT, typename RT>
+    inline int String::ThreeWayComparer::Cmp_ (LT lhs, RT rhs) const
+    {
+        pair<const Character*, const Character*> l = Access_ (lhs);
+        pair<const Character*, const Character*> r = Access_ (rhs);
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
     inline int String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
     {
-        _SafeReadRepAccessor                     accessor{&lhs};
-        pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
-        _SafeReadRepAccessor                     rhsAccessor{&rhs};
-        pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
     {
-        pair<const Character*, const Character*> l = lhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*lhs.begin ()), reinterpret_cast<const Character*> (&*lhs.begin () + lhs.size ()));
-        pair<const Character*, const Character*> r = rhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*rhs.begin ()), reinterpret_cast<const Character*> (&*rhs.begin () + rhs.size ()));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
     {
-        RequireNotNull (lhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = make_pair (lhs, lhs + ::wcslen (reinterpret_cast<const wchar_t*> (lhs)));
-        _SafeReadRepAccessor                     rhsAccessor{&rhs};
-        pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const Character* lhs, const wstring_view& rhs) const
     {
-        RequireNotNull (lhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = make_pair (lhs, lhs + ::wcslen (reinterpret_cast<const wchar_t*> (lhs)));
-        pair<const Character*, const Character*> r = rhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*rhs.begin ()), reinterpret_cast<const Character*> (&*rhs.begin () + rhs.size ()));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
     {
-        RequireNotNull (rhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        _SafeReadRepAccessor                     accessor{&lhs};
-        pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
-        pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const Character* rhs) const
     {
-        RequireNotNull (rhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = lhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*lhs.begin ()), reinterpret_cast<const Character*> (&*lhs.begin () + lhs.size ()));
-        pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const Character* lhs, const Character* rhs) const
     {
-        RequireNotNull (lhs);
-        RequireNotNull (rhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = make_pair (lhs, lhs + ::wcslen (reinterpret_cast<const wchar_t*> (lhs)));
-        pair<const Character*, const Character*> r = make_pair (rhs, rhs + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const String& rhs) const
     {
-        RequireNotNull (lhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = make_pair (reinterpret_cast<const Character*> (lhs), reinterpret_cast<const Character*> (lhs) + ::wcslen (lhs));
-        _SafeReadRepAccessor                     rhsAccessor{&rhs};
-        pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
     {
-        RequireNotNull (lhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = make_pair (reinterpret_cast<const Character*> (lhs), reinterpret_cast<const Character*> (lhs) + ::wcslen (lhs));
-        pair<const Character*, const Character*> r = rhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*rhs.begin ()), reinterpret_cast<const Character*> (&*rhs.begin () + rhs.size ()));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const String& lhs, const wchar_t* rhs) const
     {
-        RequireNotNull (rhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        _SafeReadRepAccessor                     accessor{&lhs};
-        pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
-        pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
     {
-        RequireNotNull (rhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = lhs.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*lhs.begin ()), reinterpret_cast<const Character*> (&*lhs.begin () + lhs.size ()));
-        pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
     inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
     {
-        RequireNotNull (lhs);
-        RequireNotNull (rhs);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        pair<const Character*, const Character*> l = make_pair (reinterpret_cast<const Character*> (lhs), reinterpret_cast<const Character*> (lhs) + ::wcslen (lhs));
-        pair<const Character*, const Character*> r = make_pair (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Cmp_ (lhs, rhs);
     }
 
     /*
