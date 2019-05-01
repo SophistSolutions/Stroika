@@ -136,7 +136,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         }
         else if (labelComparer (label, L"NTS") == 0) {
             auto valueComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-            if (valueComparer (value, L"ssdp:alive"sv) == 0)  {
+            if (valueComparer (value, L"ssdp:alive"sv) == 0) {
                 advertisement->fAlive = true;
             }
             else if (valueComparer (value, L"ssdp:byebye"sv) == 0) {
