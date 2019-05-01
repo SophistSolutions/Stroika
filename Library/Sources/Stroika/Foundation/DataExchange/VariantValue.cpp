@@ -857,3 +857,76 @@ bool VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) con
             return false;
     }
 }
+
+/*
+ ********************************************************************************
+ ********** Common::ThreeWayComparer<DataExchange::VariantValue> ****************
+ ********************************************************************************
+ */
+int Common::ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue>::operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const
+{
+    VariantValue::Type lt = lhs.GetType ();
+    VariantValue::Type rt = rhs.GetType ();
+    switch (lt) {
+        case VariantValue::eNull:
+            return rt == VariantValue::eNull ? 0 : 1;
+        case VariantValue::eBoolean:
+            return Common::ThreeWayComparer<bool>{}(lhs.As<bool> (), rhs.As<bool> ());
+        case VariantValue::eInteger:
+            return Common::ThreeWayComparer<IntegerType_>{}(lhs.As<IntegerType_> (), rhs.As<IntegerType_> ());
+        case VariantValue::eUnsignedInteger:
+            return Common::ThreeWayComparer<UnsignedIntegerType_>{}(lhs.As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
+        case VariantValue::eFloat: {
+            // explicit test so we can do NearlyEquals()
+            FloatType_ l = lhs.As<FloatType_> ();
+            FloatType_ r = rhs.As<FloatType_> ();
+            if (Math::NearlyEquals (l, r)) {
+                return 0;
+            }
+            else if (l < r) {
+                return -1;
+            }
+            else {
+                return 1;
+            }
+        }
+        case VariantValue::eDate:
+            return Common::ThreeWayComparer<Date> () (lhs.As<Date> (), rhs.As<Date> ());
+        case VariantValue::eDateTime:
+            return Common::ThreeWayComparer<DateTime> () (lhs.As<DateTime> (), rhs.As<DateTime> ());
+        case VariantValue::eString:
+            return Common::ThreeWayComparer<String> () (lhs.As<String> (), rhs.As<String> ());
+        case VariantValue::eArray:
+            return Common::ThreeWayComparer<Sequence<VariantValue>> () (lhs.As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
+        case VariantValue::eMap: {
+// Cannot do cuz Keys() NYI
+// @todo - fix!!!
+#if 0
+                return Common::ThreeWayComparer<Sequence<VariantValue>> () (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
+#endif
+            // same iff all elts same
+            Mapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
+            Mapping<String, VariantValue> rhsM{rhs.As<Mapping<String, VariantValue>> ()};
+            auto                          li = lhsM.begin ();
+            auto                          ri = rhsM.begin ();
+            for (; li != lhsM.end (); ++li, ++ri) {
+                if (ri == rhsM.end ()) {
+                    return -1;
+                }
+                if (*li != *ri) {
+                    return false;
+                }
+            }
+            Ensure (li == lhsM.end ());
+            if (ri == rhsM.end ()) {
+                return 0;
+            }
+            else {
+                return 1;
+            }
+        }
+        default:
+            AssertNotReached ();
+            return false;
+    }
+}

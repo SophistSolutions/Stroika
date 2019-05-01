@@ -303,13 +303,16 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String AsString_ () const;
 
     public:
+        using ThreeWayComparer = Common::ThreeWayComparer<VariantValue>;
+
+    public:
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          *   This coerces types.
          *   @todo - thinkout bettter and document what it means for differnt types
          *           FOR NOW - just key off first type and convert RHS to same type as LHS, where possible
          */
-        nonvirtual int Compare (const VariantValue& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const VariantValue& rhs) const;
 
     public:
         /**
@@ -423,6 +426,15 @@ namespace Stroika::Foundation::DataExchange {
      *  operator indirects to VariantValue::Compare()
      */
     bool operator> (const VariantValue& lhs, const VariantValue& rhs);
+
+}
+namespace Stroika::Foundation::Common {
+
+    template <>
+    struct ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue> {
+        constexpr ThreeWayComparer () = default;
+        int operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const;
+    };
 
 }
 
