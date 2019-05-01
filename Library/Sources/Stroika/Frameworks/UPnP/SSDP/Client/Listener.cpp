@@ -139,7 +139,7 @@ public:
                 if (not label.empty ()) {
                     d.fRawHeaders.Add (label, value);
                 }
-                auto labelComparer = Common::ThreeWayComparer<String>{Characters::CompareOptions::eCaseInsensitive};
+                auto labelComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
                 if (labelComparer (label, L"Location") == 0) {
                     d.fLocation = IO::Network::URI{value};
                 }
@@ -153,7 +153,7 @@ public:
                     d.fServer = value;
                 }
                 else if (labelComparer (label, L"NTS") == 0) {
-                    auto valueComparer = Common::ThreeWayComparer<String>{Characters::CompareOptions::eCaseInsensitive};
+                    auto valueComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
                     if (valueComparer (value, L"ssdp:alive") == 0) {
                         d.fAlive = true;
                     }
