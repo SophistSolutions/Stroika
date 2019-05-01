@@ -13,11 +13,9 @@
 
 /**
  * TODO:
- *      @todo   Consider haivng KeyValuePair have an operator explict pair<Key,Value>() converter.
+ *      @todo   Consider having KeyValuePair have an operator explict pair<Key,Value>() converter.
  *
- *      @todo   Consider adding Compare () method (enableif exists compare fucntions - operator<).
- *              And then implment operaotr<, etc using Comapre(). Leave independent Comapare and Equals
- *              so equals can be used forhtis whne types don't have operator <
+ *      @todo   Add Common::ThreeWayCompare () method (enableif default creatable) or spaceship operator).
  */
 
 namespace Stroika::Foundation::Common {
@@ -25,8 +23,6 @@ namespace Stroika::Foundation::Common {
     /**
      *  Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements
      *  (when used for mappings, or other key/value pairs).
-     *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      *
      *  \note   moderately interoperable with pair<>
      */
