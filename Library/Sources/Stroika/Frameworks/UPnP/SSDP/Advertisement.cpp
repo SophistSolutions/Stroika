@@ -121,23 +121,25 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         if (not label.empty ()) {
             advertisement->fRawHeaders.Add (label, value);
         }
-        if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
+        auto labelComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+        if (labelComparer (label, L"Location") == 0) {
             advertisement->fLocation = IO::Network::URI{value};
         }
-        else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
+        else if (labelComparer (label, L"NT") == 0) {
             advertisement->fTarget = value;
         }
-        else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
+        else if (labelComparer (label, L"USN") == 0) {
             advertisement->fUSN = value;
         }
-        else if (label.Compare (L"Server", Characters::CompareOptions::eCaseInsensitive) == 0) {
+        else if (labelComparer (label, L"Server") == 0) {
             advertisement->fServer = value;
         }
-        else if (label.Compare (L"NTS", Characters::CompareOptions::eCaseInsensitive) == 0) {
-            if (value.Compare (L"ssdp:alive", Characters::CompareOptions::eCaseInsensitive) == 0) {
+        else if (labelComparer (label, L"NTS") == 0) {
+            auto valueComparer = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+            if (valueComparer (value, L"ssdp:alive"sv) == 0)  {
                 advertisement->fAlive = true;
             }
-            else if (value.Compare (L"ssdp:byebye", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            else if (valueComparer (value, L"ssdp:byebye"sv) == 0) {
                 advertisement->fAlive = false;
             }
         }
