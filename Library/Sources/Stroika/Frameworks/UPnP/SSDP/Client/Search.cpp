@@ -156,16 +156,16 @@ public:
                     label = line.SubString (0, *n);
                     value = line.SubString (*n + 1).Trim ();
                 }
-                if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive} (label, L"Location") == 0)  {
                     d.fLocation = IO::Network::URI{value};
                 }
-                else if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"ST") == 0) {
                     d.fTarget = value;
                 }
-                else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"USN") == 0) {
                     d.fUSN = value;
                 }
-                else if (label.Compare (L"Server", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Server") == 0) {
                     d.fServer = value;
                 }
             }
