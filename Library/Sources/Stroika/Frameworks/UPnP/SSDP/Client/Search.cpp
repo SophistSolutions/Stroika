@@ -156,7 +156,7 @@ public:
                     label = line.SubString (0, *n);
                     value = line.SubString (*n + 1).Trim ();
                 }
-                if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive} (label, L"Location") == 0)  {
+                if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Location") == 0) {
                     d.fLocation = IO::Network::URI{value};
                 }
                 else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"ST") == 0) {
