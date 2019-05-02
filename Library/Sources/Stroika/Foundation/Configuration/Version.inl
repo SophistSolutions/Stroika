@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Configuration {
         , fVerSubStage{static_cast<uint16_t> ((fullVersionNumber >> 1) & 0xfff)}
         , fFinalBuild{static_cast<bool> (fullVersionNumber & 1)}
     {
-        Assert (fVerSubStage < kMaxVersionSubStage);	// we got shift/mask right above
+        Assert (fVerSubStage < kMaxVersionSubStage); // we got shift/mask right above
     }
     constexpr Version::Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild)
         : fMajorVer{majorVer}
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Configuration {
         , fVerSubStage{verSubStage}
         , fFinalBuild{finalBuild}
     {
-		// @todo validate arg verSubStage < kMaxVersionSubStage
+        // @todo validate arg verSubStage < kMaxVersionSubStage
     }
     constexpr Binary32BitFullVersionType Version::AsFullVersionNum () const
     {

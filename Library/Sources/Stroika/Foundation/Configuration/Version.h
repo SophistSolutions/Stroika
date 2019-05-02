@@ -80,11 +80,11 @@ namespace Stroika::Foundation::Configuration {
         static Version FromPrettyVersionString (const Characters::String& prettyVersionString);
 
     public:
-        uint8_t      fMajorVer;		// 8 bits
-        uint8_t      fMinorVer;		// 8 bits
-        VersionStage fVerStage;		// 3 bits
-        uint16_t     fVerSubStage;	// 12 bits
-        bool         fFinalBuild;	// 1 bit
+        uint8_t      fMajorVer;    // 8 bits
+        uint8_t      fMinorVer;    // 8 bits
+        VersionStage fVerStage;    // 3 bits
+        uint16_t     fVerSubStage; // 12 bits
+        bool         fFinalBuild;  // 1 bit
 
     public:
         /**
