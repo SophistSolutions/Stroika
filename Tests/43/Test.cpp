@@ -462,7 +462,7 @@ namespace {
 #if qHasFeature_LibCurl && !qHasFeature_OpenSSL
 // ingore this case, since we allow the failed connect above...
 #else
-                VerifyTestResult (false);
+                VerifyTestResultWarning (false);
 #endif
             }
             catch (const Execution::RequiredComponentMissingException&) {
