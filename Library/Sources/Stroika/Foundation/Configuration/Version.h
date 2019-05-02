@@ -80,11 +80,11 @@ namespace Stroika::Foundation::Configuration {
         static Version FromPrettyVersionString (const Characters::String& prettyVersionString);
 
     public:
-        uint8_t      fMajorVer;
-        uint8_t      fMinorVer;
-        VersionStage fVerStage;
-        uint16_t     fVerSubStage;
-        bool         fFinalBuild;
+        uint8_t      fMajorVer;		// 8 bits
+        uint8_t      fMinorVer;		// 8 bits
+        VersionStage fVerStage;		// 3 bits
+        uint16_t     fVerSubStage;	// 12 bits
+        bool         fFinalBuild;	// 1 bit
 
     public:
         /**
@@ -114,22 +114,36 @@ namespace Stroika::Foundation::Configuration {
         nonvirtual Characters::String ToString () const;
 
     public:
-        /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         */
-        nonvirtual constexpr int Compare (const Version& rhs) const;
+        struct ThreeWayComparer;
 
     public:
         /**
-         *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Version& rhs)
+         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
-        nonvirtual constexpr bool operator< (const Version& rhs) const;
-        nonvirtual constexpr bool operator<= (const Version& rhs) const;
-        nonvirtual constexpr bool operator> (const Version& rhs) const;
-        nonvirtual constexpr bool operator>= (const Version& rhs) const;
-        nonvirtual constexpr bool operator== (const Version& rhs) const;
-        nonvirtual constexpr bool operator!= (const Version& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] constexpr int Compare (const Version& rhs) const;
+
+#if __cpp_lib_three_way_comparison >= 201711
+    public:
+        constexpr std::strong_ordering operator<=> (const Version& rhs)
+#endif
     };
+
+    struct Version::ThreeWayComparer {
+        constexpr ThreeWayComparer () = default;
+        constexpr int operator() (const Version& lhs, const Version& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Version& rhs)
+     */
+#if __cpp_lib_three_way_comparison < 201711
+    constexpr bool operator< (const Version& lhs, const Version& rhs);
+    constexpr bool operator<= (const Version& lhs, const Version& rhs);
+    constexpr bool operator== (const Version& lhs, const Version& rhs);
+    constexpr bool operator!= (const Version& lhs, const Version& rhs);
+    constexpr bool operator>= (const Version& lhs, const Version& rhs);
+    constexpr bool operator> (const Version& lhs, const Version& rhs);
+#endif
 
 }
 
