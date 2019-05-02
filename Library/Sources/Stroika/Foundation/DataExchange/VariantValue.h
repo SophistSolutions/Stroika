@@ -398,12 +398,12 @@ namespace Stroika::Foundation::DataExchange {
     Sequence<VariantValue> VariantValue::As () const;
 
     /**
-     *  operator indirects to VariantValue::Compare ()
+     *  operator indirects to VariantValue::ThreeWayComparer ()
      */
     bool operator< (const VariantValue& lhs, const VariantValue& rhs);
 
     /**
-     *  operator indirects to VariantValue::Compare ()
+     *  operator indirects to VariantValue::ThreeWayComparer ()
      */
     bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
 
@@ -418,12 +418,12 @@ namespace Stroika::Foundation::DataExchange {
     bool operator!= (const VariantValue& lhs, const VariantValue& rhs);
 
     /**
-     *  operator indirects to VariantValue::Compare ()
+     *  operator indirects to VariantValue::ThreeWayComparer ()
      */
     bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
 
     /**
-     *  operator indirects to VariantValue::Compare()
+     *  operator indirects to VariantValue::ThreeWayComparer()
      */
     bool operator> (const VariantValue& lhs, const VariantValue& rhs);
 
