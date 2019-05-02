@@ -26,6 +26,13 @@ docker-images:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 
 
+docker-pull-base-images:
+	docker pull ubuntu:18.04
+	docker pull ubuntu:18.10
+	docker pull ubuntu:19.04
+	docker pull centos:centos7
+
+
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
