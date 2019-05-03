@@ -318,7 +318,7 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-            VerifyTestResult (s.template Equals<EQUALS_COMPARER> (x));
+            VerifyTestResult (typename CONCRETE_SEQUENCE_T::EqualsComparer<EQUALS_COMPARER>{}(s, x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER{}(s[1], 11));
             VerifyTestResult (EQUALS_COMPARER{}(s[2], 12));
@@ -767,6 +767,44 @@ namespace {
 }
 
 namespace {
+    namespace ExampleCompare_Test_18_ {
+        void DoTest ()
+        {
+            // From Sequence<> CTOR docs
+            {
+                Sequence<int> s1 = {1, 2, 3};
+                Sequence<int> s2 = s1;
+                if (s1 == s2) {
+                }
+                if (s1 != s2) {
+                }
+                if (s1 < s2) {
+                }
+                if (s1 <= s2) {
+                }
+            }
+            {
+                Sequence<int> s1 = {1, 2, 3};
+                Sequence<int> s2 = {4, 5, 6};
+                if (s1 == s2) {
+                    VerifyTestResult (false);
+                }
+// todo get this type deduction working
+#if 0
+                if (not Sequence<int>::EqualsComparer{[](int l, int r) { return l % 3 == r % 3; }}(s1, s2)) {
+                    VerifyTestResult (false);
+                }
+#endif
+                auto cmp = [] (int l, int r) { return l % 3 == r % 3; };
+                if (not Sequence<int>::EqualsComparer<decltype (cmp)>{cmp}(s1, s2)) {
+                    VerifyTestResult (false);
+                }
+            }
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -816,6 +854,7 @@ namespace {
         SequenceIndexing_Test_16_::DoTest ();
 
         ExampleCTORS_Test_17_::DoTest ();
+        ExampleCompare_Test_18_::DoTest ();
     }
 }
 
