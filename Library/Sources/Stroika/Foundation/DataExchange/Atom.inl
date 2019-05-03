@@ -23,33 +23,33 @@ namespace Stroika::Foundation::DataExchange {
      */
     template <typename ATOM_MANAGER>
     inline constexpr Atom<ATOM_MANAGER>::Atom ()
-        : fValue_ (ATOM_MANAGER::kEmpty)
+        : fValue_{ATOM_MANAGER::kEmpty}
     {
     }
     template <typename ATOM_MANAGER>
     inline Atom<ATOM_MANAGER>::Atom (const wstring& src)
-        : fValue_ (ATOM_MANAGER::Intern (src))
+        : fValue_{ATOM_MANAGER::Intern (src)}
     {
     }
     template <typename ATOM_MANAGER>
     inline Atom<ATOM_MANAGER>::Atom (const wchar_t* src)
-        : fValue_ (ATOM_MANAGER::Intern (src))
+        : fValue_{ATOM_MANAGER::Intern (src)}
     {
     }
     template <typename ATOM_MANAGER>
     inline Atom<ATOM_MANAGER>::Atom (const String& src)
-        : fValue_ (ATOM_MANAGER::Intern (src))
+        : fValue_{ATOM_MANAGER::Intern (src)}
     {
     }
     template <typename ATOM_MANAGER>
     inline constexpr Atom<ATOM_MANAGER>::Atom (const _AtomInternalType& src)
-        : fValue_ (src)
+        : fValue_{src}
     {
     }
     template <typename ATOM_MANAGER>
     inline String Atom<ATOM_MANAGER>::GetPrintName () const
     {
-        return fValue_ == ATOM_MANAGER::kEmpty ? String () : ATOM_MANAGER::Extract (fValue_);
+        return fValue_ == ATOM_MANAGER::kEmpty ? String{} : ATOM_MANAGER::Extract (fValue_);
     }
     template <typename ATOM_MANAGER>
     inline int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
