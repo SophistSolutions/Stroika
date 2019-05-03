@@ -128,8 +128,9 @@ namespace Stroika::Foundation::Configuration {
 #endif
     };
 
+    /**
+     */
     struct Version::ThreeWayComparer {
-        constexpr ThreeWayComparer () = default;
         constexpr int operator() (const Version& lhs, const Version& rhs) const;
     };
 
