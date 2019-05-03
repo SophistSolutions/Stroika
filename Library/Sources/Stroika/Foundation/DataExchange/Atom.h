@@ -60,7 +60,8 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  Atom can even be used with Set_Bitstring () – esp if you don’t use generic Atom<> but one with its own custom arena!
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *  \note   See Atom <ATOM_MANAGER>::ThreeWayComparer for docs on comparing, but brielfly, its by number
+     *          not print name.
      *
      *  \em Design Choice:
      *      In some ways, this could be more powerful if the Atom construction took a ATOM_MANAGER as parameter.
@@ -134,10 +135,13 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String GetPrintName () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
-        nonvirtual int Compare (Atom rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (Atom rhs) const;
 
     public:
         /**
@@ -178,38 +182,28 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     /**
-     *  operator indirects to Atom<>::Compare ()
+     *  Atom's are compared in a way that will NOT in general be the same as print name compare. The smaller values
+     *  will probably be the ones added earlier to the ATOM_MANAGER. But in general, their comparison will persist forever,
+     *  and be well-defined (though not documented in this API).
+     */
+    template <typename ATOM_MANAGER>
+    struct Atom<ATOM_MANAGER>::ThreeWayComparer {
+        constexpr int operator() (const Atom& lhs, const Atom& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
      */
     template <typename ATOM_MANAGER>
     bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-
-    /**
-     *  operator indirects to Atom<>::Compare ()
-     */
     template <typename ATOM_MANAGER>
     bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-
-    /**
-     *  operator indirects to Atom<>::Compare ()
-     */
     template <typename ATOM_MANAGER>
     bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-
-    /**
-     *  operator indirects to Atom<>::Compare ()
-     */
     template <typename ATOM_MANAGER>
     bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-
-    /**
-     *  operator indirects to Atom<>::Compare ()
-     */
     template <typename ATOM_MANAGER>
     bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-
-    /**
-     *  operator indirects to Atom<>::Compare ()
-     */
     template <typename ATOM_MANAGER>
     bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 

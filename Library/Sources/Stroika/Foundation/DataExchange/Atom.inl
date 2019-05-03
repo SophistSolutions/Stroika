@@ -90,38 +90,49 @@ namespace Stroika::Foundation::DataExchange {
 
     /*
      ********************************************************************************
+     ****************** Atom <ATOM_MANAGER>::ThreeWayComparer ***********************
+     ********************************************************************************
+     */
+    template <typename ATOM_MANAGER>
+    constexpr int Atom<ATOM_MANAGER>::ThreeWayComparer::operator() (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs) const
+    {
+        return Common::ThreeWayCompareNormalizer (lhs.fValue_, rhs.fValue_);
+    }
+
+    /*
+     ********************************************************************************
      ****************************** Atom operators **********************************
      ********************************************************************************
      */
     template <typename ATOM_MANAGER>
     inline bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs rhs) < 0;
     }
     template <typename ATOM_MANAGER>
     inline bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs rhs) <= 0;
     }
     template <typename ATOM_MANAGER>
     inline bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs rhs) == 0;
     }
     template <typename ATOM_MANAGER>
     inline bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs rhs) != 0;
     }
     template <typename ATOM_MANAGER>
     inline bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs rhs) >= 0;
     }
     template <typename ATOM_MANAGER>
     inline bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs rhs) > 0;
     }
 
     namespace Private_ {
