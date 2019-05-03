@@ -22,7 +22,7 @@
  *
  *  TODO:
  *      @todo       Provide Slice () overload to mask inherited one from Iterable, but more efficient, and return
- *                  sequence. Mention aliaas 'SubSequence' from older todo.
+ *                  sequence. Mention alias 'SubSequence' from older todo.
  *
  *      @todo       Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *                  concepts and that it USES that for the appropriate overloaded constructors.
@@ -285,13 +285,8 @@ namespace Stroika::Foundation::Containers {
         nonvirtual Sequence<T> Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
 
     public:
-        /**
-         * Only supported of T::Compare() or T::compare() defined
-         *      (CONSIDER NEW code to detect methods in templates)
-         *      (MAYBE always use compare() - not Compare)
-         */
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
-        nonvirtual int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
+        struct ThreeWayComparer;
 
     public:
         /**
@@ -299,11 +294,33 @@ namespace Stroika::Foundation::Containers {
          *  be be defined, but obviously to compare if the containers are equal, you must
          *  compare the individual elements (at least sometimes).
          *
-         *  If operator==(T,T) is predefined, you can just call Equals() - but if its not, or if you wish
+         *  If operator==(T,T) is predefined, you can just call:
+         *  \par Example Usage
+         *      \code
+         *          Sequence<int> a, b;
+         *          if (a == b) {
+         *          }
+         *      \endcode
+         *
+         *  or
+         *      \code
+         *          Sequence<int> a, b;
+         *          if (Sequence<int>::EqualsComparer{eletComparer} (a, b)) {
+         *          }
+         *      \endcode
+         *
          *  to compare with an alternative comparer.
          */
+        template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
+        struct EqualsComparer;
+
+    public:
+        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
+        [[deprecated ("in Stroika v2.1d24 - use Sequence<T>::ThreeWayComparer{} () instead")]] int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
+
+    public:
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Equals (const Sequence& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
+        [[deprecated ("in Stroika v2.1d24 - use Sequence<T>::EqualsComparer{} () instead")]] bool Equals (const Sequence& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
     public:
         /**
@@ -536,6 +553,26 @@ namespace Stroika::Foundation::Containers {
     using Traversal::IteratorOwnerID;
 
     /**
+     */
+    template <typename T>
+    template <typename ELEMENT_COMPARER>
+    struct Sequence<T>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr ThreeWayComparer (const ELEMENT_COMPARER& elementComparer = {});
+        nonvirtual int   operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const;
+        ELEMENT_COMPARER fElementComparer_;
+    };
+
+    /**
+     */
+    template <typename T>
+    template <typename ELEMENT_EQUALS_COMPARER>
+    struct Sequence<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer = {});
+        nonvirtual int          operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const;
+        ELEMENT_EQUALS_COMPARER fElementComparer_;
+    };
+
+    /**
      *  \brief  Implementation detail for Sequence<T> implementors.
      *
      *  Protected abstract interface to support concrete implementations of
@@ -577,40 +614,29 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  operator indirects to Sequence<>::Compare()
+     *  Basic operator overloads with the obivous meaning, and simply indirect to 
+     *  @Sequence<>::ThreeWayComparer and equal_to<Sequence<>>
      */
     template <typename T>
     bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
-    /**
-     *  operator indirects to Sequence<>::Compare()
-     */
     template <typename T>
     bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
-    /**
-     *  operator indirects to Sequence<>::Equals()
-     */
     template <typename T>
     bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
-    /**
-     *  operator indirects to Sequence<>::Equals()
-     */
     template <typename T>
     bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
-    /**
-     *  operator indirects to Sequence<>::Compare()
-     */
     template <typename T>
     bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
-    /**
-     *  operator indirects to Sequence<>::Compare()
-     */
     template <typename T>
     bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
+}
+
+namespace std {
+    template <typename T>
+    struct equal_to<Stroika::Foundation::Containers::Sequence<T>> {
+        bool operator() (const Stroika::Foundation::Containers::Sequence<T>& lhs, const Stroika::Foundation::Containers::Sequence<T>& rhs) const;
+    };
 }
 
 /*

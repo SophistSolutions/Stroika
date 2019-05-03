@@ -420,39 +420,76 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
+     *************************** Sequence<T>::ThreeWayComparer **********************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename ELEMENT_COMPARER>
+    constexpr Sequence<T>::ThreeWayComparer<ELEMENT_COMPARER>::ThreeWayComparer (const ELEMENT_COMPARER& elementComparer)
+        : fElementComparer_{elementComparer}
+    {
+    }
+    template <typename T>
+    template <typename ELEMENT_COMPARER>
+    int Sequence<T>::ThreeWayComparer<ELEMENT_COMPARER>::operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const
+    {
+        return Private::ThreeWayCompare_<T, ELEMENT_COMPARER> (lhs, rhs, fElementComparer_);
+    }
+
+    /*
+     ********************************************************************************
+     *************************** Sequence<T>::EqualsComparer ************************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename ELEMENT_EQUALS_COMPARER>
+    constexpr Sequence<T>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer)
+        : fElementComparer_{elementComparer}
+    {
+    }
+    template <typename T>
+    template <typename ELEMENT_EQUALS_COMPARER>
+    int Sequence<T>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const
+    {
+        return Private::Equals_<T, ELEMENT_EQUALS_COMPARER> (lhs, rhs, fElementComparer_);
+    }
+
+    /*
+     ********************************************************************************
      ************************** Sequence<T> operators *******************************
      ********************************************************************************
      */
     template <typename T>
     inline bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) < 0;
     }
     template <typename T>
     inline bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) <= 0;
     }
     template <typename T>
     inline bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Sequence<T>::template EqualsComparer<>{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Sequence<T>::template EqualsComparer<>{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) >= 0;
     }
     template <typename T>
     inline bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) > 0;
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Sequence_inl_ */
