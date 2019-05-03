@@ -1025,9 +1025,21 @@ WORKAROUND:
 #endif
 
 /*
- *1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Compare.inl(35): error C2672: 'make_from_tuple': no matching overloaded function found (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp(832): note: see reference to function template instantiation 'int Stroika::Foundation::Common::ThreeWayComparer<Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>>::operator ()<T,0x0>(const T &,const T &) const' being compiled
-1>
+VS2k says:
+     *1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Compare.inl(35): error C2672: 'make_from_tuple': no matching overloaded function found (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp)
+    1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp(832): note: see reference to function template instantiation 'int Stroika::Foundation::Common::ThreeWayComparer<Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>>::operator ()<T,0x0>(const T &,const T &) const' being compiled
+
+    
+clang says:
+    n file included from ./../Characters/FloatConversion.h:15:
+    In file included from ./../Characters/../Containers/../Traversal/../Characters/String.h:13:
+    In file included from ./../Characters/../Containers/../Memory/../Common/Compare.h:412:
+    ./../Characters/../Common/Compare.inl:38:44: error: typename specifier refers to class template member in 'Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>';
+          argument deduction not allowed here
+            return make_from_tuple<typename Q::ThreeWayComparer> (fArgs_) (lhs, rhs);
+                                               ^
+    VariantValue.cpp:832:72: note: in instantiation of function template specialization
+          'Stroika::Foundation::Common::ThreeWayComparer<Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>>::operator()<Stroika::Foundation::Containers::Sequence<Stroika
 */
 #ifndef qCompilerAndStdLib_make_from_tuple_Buggy
 
