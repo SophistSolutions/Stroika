@@ -1044,10 +1044,9 @@ clang says:
 #ifndef qCompilerAndStdLib_make_from_tuple_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
+#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
-// APPEARS still broken with clang++-7
-#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
+#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
 // verified broken _MS_VS_2k19_16Pt0Pt0_
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
