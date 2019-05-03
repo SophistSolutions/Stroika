@@ -1025,6 +1025,22 @@ WORKAROUND:
 #endif
 
 /*
+ *1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Compare.inl(35): error C2672: 'make_from_tuple': no matching overloaded function found (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp(832): note: see reference to function template instantiation 'int Stroika::Foundation::Common::ThreeWayComparer<Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>>::operator ()<T,0x0>(const T &,const T &) const' being compiled
+1>
+*/
+#ifndef qCompilerAndStdLib_make_from_tuple_Buggy
+
+#if defined(_MSC_VER)
+// verified broken _MS_VS_2k19_16Pt0Pt0_
+#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+#else
+#define qCompilerAndStdLib_make_from_tuple_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 

@@ -78,7 +78,6 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     struct ThreeWayComparerDefaultImplementation {
-        constexpr ThreeWayComparerDefaultImplementation () = default;
         constexpr int operator() (const T& lhs, const T& rhs) const;
     };
 
