@@ -632,13 +632,6 @@ namespace Stroika::Foundation::Containers {
 
 }
 
-namespace std {
-    template <typename T>
-    struct equal_to<Stroika::Foundation::Containers::Sequence<T>> {
-        bool operator() (const Stroika::Foundation::Containers::Sequence<T>& lhs, const Stroika::Foundation::Containers::Sequence<T>& rhs) const;
-    };
-}
-
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
