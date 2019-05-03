@@ -166,12 +166,13 @@ namespace {
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
-            VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
-            VerifyTestResult (not s2.template Equals<EQUALS_COMPARER> (s));
+            auto useEqualsComparer = typename CONCRETE_SEQUENCE_T::template EqualsComparer<EQUALS_COMPARER>{};
+            VerifyTestResult (not useEqualsComparer (s, s2));
+            VerifyTestResult (not useEqualsComparer (s2, s));
             s.Append (2);
-            VerifyTestResult (s2.template Equals<EQUALS_COMPARER> (s));
+            VerifyTestResult (useEqualsComparer (s2, s));
             s.RemoveAll ();
-            VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
+            VerifyTestResult (not useEqualsComparer (s, s2));
             VerifyTestResult (s.empty ());
         }
     }
@@ -318,7 +319,7 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-            VerifyTestResult (typename CONCRETE_SEQUENCE_T::EqualsComparer<EQUALS_COMPARER>{}(s, x));
+            VerifyTestResult (typename CONCRETE_SEQUENCE_T::template EqualsComparer<EQUALS_COMPARER>{}(s, x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER{}(s[1], 11));
             VerifyTestResult (EQUALS_COMPARER{}(s[2], 12));
