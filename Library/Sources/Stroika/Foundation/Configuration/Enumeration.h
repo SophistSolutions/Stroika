@@ -71,11 +71,12 @@ namespace Stroika::Foundation::Configuration {
      *
      *  \par Example Usage
      *      \code
-     *      enum class Priority {
-     *          a, b, c
-     *          Stroika_Define_Enum_Bounds(a, c)
-     *      };
-     *      unsigned int    eltsWithPriority[GetDistanceSpanned<Priority> ()];
+     *          enum class Priority {
+     *              a, b, c
+     *              Stroika_Define_Enum_Bounds(a, c)
+     *          };
+     *          unsigned int    eltsWithPriority[GetDistanceSpanned<Priority> ()];
+     *      \endcode
      *
      */
     template <typename ENUM>
