@@ -164,11 +164,11 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool operator== (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return lhs.Equals (rhs);
+        return equal_to<VariantValue>{}(lhs, rhs);
     }
     inline bool operator!= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not equal_to<VariantValue>{}(lhs, rhs);
     }
     inline bool operator>= (const VariantValue& lhs, const VariantValue& rhs)
     {
@@ -204,6 +204,17 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+}
+namespace std {
+    /*
+     ********************************************************************************
+     ******** equal_to <Stroika::Foundation::DataExchange::VariantValue> ************
+     ********************************************************************************
+     */
+    constexpr std::equal_to<Stroika::Foundation::DataExchange::VariantValue>::equal_to (bool exactTypeMatchOnly)
+        : fExactTypeMatchOnly (exactTypeMatchOnly)
+    {
+    }
 }
 
 #endif /*_Stroika_Foundation_DataExchange_VariantValue_inl_*/

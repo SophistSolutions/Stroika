@@ -745,7 +745,7 @@ bool VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) con
         case VariantValue::eUnsignedInteger:
             return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
         case VariantValue::eFloat:
-            return Math::NearlyEquals (As<VariantValue::FloatType_> (), rhs.As<VariantValue::FloatType_> ());
+            return Math::NearlyEquals (As<FloatType_> (), rhs.As<FloatType_> ());
         case VariantValue::eDate:
             return As<Date> () == rhs.As<Date> ();
         case VariantValue::eDateTime:
@@ -856,6 +856,101 @@ int Common::ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue>::o
             else {
                 return 1;
             }
+        }
+        default:
+            AssertNotReached ();
+            return false;
+    }
+}
+
+/*
+ ********************************************************************************
+ **************** std::equal_to<DataExchange::VariantValue> *********************
+ ********************************************************************************
+ */
+bool std::equal_to<Stroika::Foundation::DataExchange::VariantValue>::operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const
+{
+    VariantValue::Type lt = lhs.GetType ();
+    VariantValue::Type rt = rhs.GetType ();
+    if (lt != rt) {
+        if (fExactTypeMatchOnly) {
+            return false;
+        }
+        else if (
+            (lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger) and
+            (rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) {
+            // Set compare as type and fall through
+            lt = VariantValue::eUnsignedInteger;
+            rt = VariantValue::eUnsignedInteger;
+        }
+        else if (
+            (lt == VariantValue::eFloat and (rt == VariantValue::eString or rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) or
+            (rt == VariantValue::eFloat and (lt == VariantValue::eString or lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger))) {
+            // Set compare as type and fall through
+            lt = VariantValue::eFloat;
+            rt = VariantValue::eFloat;
+        }
+        else if (
+            ((lt != VariantValue::eArray and lt != VariantValue::eMap) and rt == VariantValue::eString) or
+            ((rt != VariantValue::eArray and rt != VariantValue::eMap) and lt == VariantValue::eString)) {
+            // special case - comparing a string with any type except map or array, trat as strings
+            // Set compare as type and fall through
+            lt = VariantValue::eString;
+            rt = VariantValue::eString;
+        }
+        else {
+            return false;
+        }
+        // can fall through for some fallthrough cases above...
+    }
+    switch (lt) {
+        case VariantValue::eNull:
+            return true;
+        case VariantValue::eBoolean:
+            return lhs.As<bool> () == rhs.As<bool> ();
+        case VariantValue::eInteger:
+            return lhs.As<IntegerType_> () == rhs.As<IntegerType_> ();
+        case VariantValue::eUnsignedInteger:
+            return lhs.As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
+        case VariantValue::eFloat:
+            return Math::NearlyEquals (lhs.As<FloatType_> (), rhs.As<FloatType_> ());
+        case VariantValue::eDate:
+            return lhs.As<Date> () == rhs.As<Date> ();
+        case VariantValue::eDateTime:
+            return lhs.As<DateTime> () == rhs.As<DateTime> ();
+        case VariantValue::eString:
+            return lhs.As<String> () == rhs.As<String> ();
+        case VariantValue::eArray: {
+            // same iff all elts same
+            Sequence<VariantValue> lhsV = lhs.As<Sequence<VariantValue>> ();
+            Sequence<VariantValue> rhsV = rhs.As<Sequence<VariantValue>> ();
+            if (lhsV.size () != rhsV.size ()) {
+                return false;
+            }
+            for (size_t i = 0; i < lhsV.size (); ++i) {
+                if (lhsV[i] != rhsV[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        case VariantValue::eMap: {
+            // same iff all elts same
+            Mapping<String, VariantValue> lhsM = lhs.As<Mapping<String, VariantValue>> ();
+            Mapping<String, VariantValue> rhsM = rhs.As<Mapping<String, VariantValue>> ();
+            if (lhsM.size () != rhsM.size ()) {
+                return false;
+            }
+            auto li = lhsM.begin ();
+            auto ri = rhsM.begin ();
+            for (; li != lhsM.end (); ++li, ++ri) {
+                if (*li != *ri) {
+                    return false;
+                }
+            }
+            Ensure (li == lhsM.end ());
+            Ensure (ri == rhsM.end ());
+            return true;
         }
         default:
             AssertNotReached ();

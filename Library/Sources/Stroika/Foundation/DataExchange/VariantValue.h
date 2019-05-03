@@ -97,9 +97,6 @@ namespace Stroika::Foundation::DataExchange {
      *
      *      @todo   Use Debug::AssertExternallySynchronizedLock<> to assure not used from multiple threads.
      *
-     *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
-     *              (mostly done but review)
-     *
      *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
      *              warrent a careful review
      *
@@ -316,18 +313,8 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  If exactTypeMatchOnly is true, no type coersion takes place, but by default types
-         *  are automatically coereced, if reasonable, so that they can be compared for equality.
-         *
-         *  When comparing two items, at least one of which is a floating point number, the other type
-         *  is coereced into a floating point number and  @Math::NearlyEquals() is used
-         *  (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
-         *  Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
-         *
-         *  When comparing any other types (except Map or Array) with a String, the to types are coerenced
-         *  into Strings, and compared as strings.
          */
-        nonvirtual bool Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
+        [[deprecated ("in Stroika v2.1d24 - use std::equal_to{} () instead")]] bool Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 
     private:
         struct IRep_;
@@ -398,44 +385,43 @@ namespace Stroika::Foundation::DataExchange {
     Sequence<VariantValue> VariantValue::As () const;
 
     /**
-     *  operator indirects to VariantValue::ThreeWayComparer ()
+     *  Basic operator overloads with the obivous meaning, and simply indirect to 
+     *  @Version::ThreeWayComparer and equal_to<VariantValue>
      */
     bool operator< (const VariantValue& lhs, const VariantValue& rhs);
-
-    /**
-     *  operator indirects to VariantValue::ThreeWayComparer ()
-     */
     bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
-
-    /**
-     *  operator indirects to lhs.Equals (rhs, exactTypeMatchOnly = false) -- so conversions applied as needed to compare
-     */
     bool operator== (const VariantValue& lhs, const VariantValue& rhs);
-
-    /**
-     *  operator indirects to not lhs.Equals (rhs, exactTypeMatchOnly = false) -- so conversions applied as needed to compare
-     */
     bool operator!= (const VariantValue& lhs, const VariantValue& rhs);
-
-    /**
-     *  operator indirects to VariantValue::ThreeWayComparer ()
-     */
     bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
-
-    /**
-     *  operator indirects to VariantValue::ThreeWayComparer()
-     */
     bool operator> (const VariantValue& lhs, const VariantValue& rhs);
 
 }
 namespace Stroika::Foundation::Common {
-
     template <>
     struct ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue> {
-        constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const;
     };
+}
 
+namespace std {
+    /**
+     *  If exactTypeMatchOnly is true, no type coersion takes place, but by default types
+     *  are automatically coereced, if reasonable, so that they can be compared for equality.
+     *
+     *  When comparing two items, at least one of which is a floating point number, the other type
+     *  is coereced into a floating point number and  @Math::NearlyEquals() is used
+     *  (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
+     *  Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
+     *
+     *  When comparing any other types (except Map or Array) with a String, the to types are coerenced
+     *  into Strings, and compared as strings.
+     */
+    template <>
+    struct equal_to<Stroika::Foundation::DataExchange::VariantValue> {
+        constexpr equal_to (bool exactTypeMatchOnly = false);
+        bool operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const;
+        bool fExactTypeMatchOnly;
+    };
 }
 
 /*
