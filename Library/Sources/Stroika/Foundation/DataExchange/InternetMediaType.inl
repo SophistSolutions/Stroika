@@ -94,11 +94,11 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return lhs.Equals (rhs);
+        return InternetMediaType::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return not lhs.Equals (rhs);
+        return InternetMediaType::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
