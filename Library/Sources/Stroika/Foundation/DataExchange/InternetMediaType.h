@@ -42,14 +42,15 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const; // synonym for IsSubTypeOfOrEqualTo ()
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          */
         nonvirtual bool Equals (const InternetMediaType& rhs) const;
 
     public:
-        /**
-         */
-        nonvirtual int Compare (const InternetMediaType& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const InternetMediaType& rhs) const;
 
     public:
         /**
@@ -67,26 +68,18 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      */
+    struct InternetMediaType::ThreeWayComparer {
+        nonvirtual int operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
+     */
     bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
-
-    /**
-     */
     bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);
-
-    /**
-     */
     bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs);
-
-    /**
-     */
     bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs);
-
-    /**
-     */
     bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs);
-
-    /**
-     */
     bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs);
 
     /**

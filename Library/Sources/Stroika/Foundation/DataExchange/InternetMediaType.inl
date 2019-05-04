@@ -55,6 +55,16 @@ namespace Stroika::Foundation::DataExchange {
 
     /*
      ********************************************************************************
+     ********************** InternetMediaType::ThreeWayComparer *********************
+     ********************************************************************************
+     */
+    inline int InternetMediaType::ThreeWayComparer::operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const
+    {
+        return String::ThreeWayComparer{}(lhs.fType_, rhs.fType_);
+    }
+
+    /*
+     ********************************************************************************
      ********************************** TypeMatchesAny ******************************
      ********************************************************************************
      */
@@ -76,11 +86,11 @@ namespace Stroika::Foundation::DataExchange {
      */
     inline bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return InternetMediaType::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return InternetMediaType::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
@@ -92,12 +102,13 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return InternetMediaType::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return InternetMediaType::ThreeWayComparer{}(lhs, rhs) > 0;
     }
+
 }
 
 namespace Stroika::Foundation::DataExchange::Private_ {
