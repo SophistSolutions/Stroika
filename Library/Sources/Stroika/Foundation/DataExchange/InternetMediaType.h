@@ -67,6 +67,7 @@ namespace Stroika::Foundation::DataExchange {
     nonvirtual wstring InternetMediaType::As () const;
 
     /**
+     *  @see Common::ThreeWayComparer<> template
      */
     struct InternetMediaType::ThreeWayComparer {
         nonvirtual int operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
