@@ -134,34 +134,56 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ************************* Character::ThreeWayComparer **************************
+     ********************************************************************************
+     */
+    constexpr Character::ThreeWayComparer::ThreeWayComparer (CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    constexpr int Character::ThreeWayComparer::operator() (const Character& lhs, const Character& rhs) const
+    {
+        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
+        switch (fCompareOptions) {
+            case CompareOptions::eCaseInsensitive:
+                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive);
+            case CompareOptions::eWithCase:
+                return static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()) - static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
+            default:
+                AssertNotReached ();
+                return 0;
+        }
+    };
+
+    /*
+     ********************************************************************************
      ************************* Character operators **********************************
      ********************************************************************************
      */
     inline bool operator< (Character lhs, Character rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return Character::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (Character lhs, Character rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return Character::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (Character lhs, Character rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return Character::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (Character lhs, Character rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return Character::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (Character lhs, Character rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return Character::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (Character lhs, Character rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return Character::ThreeWayComparer{}(lhs, rhs) > 0;
     }
-
 }
 
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/

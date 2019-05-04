@@ -130,13 +130,19 @@ namespace Stroika::Foundation::Characters {
         nonvirtual Character ToUpperCase () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
-        nonvirtual int Compare (Character rhs) const;
-        nonvirtual int Compare (Character rhs, CompareOptions co) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (Character rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (Character rhs, CompareOptions co) const;
 
     public:
+        /**
+         *  utility to compare an array of characters, like strcmp (), except with param saying if case sensative or insensitative.
+         */
         static int Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
     private:
@@ -149,33 +155,21 @@ namespace Stroika::Foundation::Characters {
     char32_t Character::As () const;
 
     /**
-     *  operator indirects to Character::Compare()
+     */
+    struct Character::ThreeWayComparer {
+        constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
+        constexpr int  operator() (const Character& lhs, const Character& rhs) const;
+        CompareOptions fCompareOptions;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Character::ThreeWayComparer{}
      */
     bool operator< (Character lhs, Character rhs);
-
-    /**
-     *  operator indirects to Character::Compare()
-     */
     bool operator<= (Character lhs, Character rhs);
-
-    /**
-     *  operator indirects to Character::Compare()
-     */
     bool operator== (Character lhs, Character rhs);
-
-    /**
-     *  operator indirects to Character::Compare()
-     */
     bool operator!= (Character lhs, Character rhs);
-
-    /**
-     *  operator indirects to Character::Compare()
-     */
     bool operator>= (Character lhs, Character rhs);
-
-    /**
-     *  operator indirects to Character::Compare()
-     */
     bool operator> (Character lhs, Character rhs);
 
     /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
