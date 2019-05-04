@@ -19,7 +19,7 @@
 namespace Stroika::Foundation::Common {
 
     /**
-     *  
+     *  A very common 16-byte opaque ID structure.
      */
     struct GUID {
         /**
@@ -44,16 +44,29 @@ namespace Stroika::Foundation::Common {
         static constexpr GUID Zero ();
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  @see Characters::ToString ()
          */
         nonvirtual Characters::String ToString () const;
     };
 
-    bool operator== (const GUID& lhs, const GUID& rhs);
-    bool operator!= (const GUID& lhs, const GUID& rhs);
+    /**
+     *  @see Common::ThreeWayComparer<> template
+     */
+    struct GUID::ThreeWayComparer {
+        nonvirtual int operator() (const GUID& lhs, const GUID& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @GUID::ThreeWayComparer ()
+     */
     bool operator< (const GUID& lhs, const GUID& rhs);
     bool operator<= (const GUID& lhs, const GUID& rhs);
+    bool operator== (const GUID& lhs, const GUID& rhs);
+    bool operator!= (const GUID& lhs, const GUID& rhs);
     bool operator>= (const GUID& lhs, const GUID& rhs);
     bool operator> (const GUID& lhs, const GUID& rhs);
 

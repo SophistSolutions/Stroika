@@ -36,35 +36,46 @@ namespace Stroika::Foundation::Common {
     {
         return GUID ();
     }
-    inline bool operator== (const GUID& lhs, const GUID& rhs)
+
+    /*
+     ********************************************************************************
+     *********************************** Common::GUID *******************************
+     ********************************************************************************
+     */
+    inline int GUID::ThreeWayComparer::operator() (const GUID& lhs, const GUID& rhs) const
     {
         static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID)) == 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID));
     }
-    inline bool operator!= (const GUID& lhs, const GUID& rhs)
-    {
-        static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID)) != 0;
-    }
+
+    /*
+     ********************************************************************************
+     ************************* Common::GUID operators *******************************
+     ********************************************************************************
+     */
     inline bool operator< (const GUID& lhs, const GUID& rhs)
     {
-        static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID)) < 0;
+        return GUID::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const GUID& lhs, const GUID& rhs)
     {
-        static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID)) <= 0;
+        return GUID::ThreeWayComparer{}(lhs, rhs) <= 0;
+    }
+    inline bool operator== (const GUID& lhs, const GUID& rhs)
+    {
+        return GUID::ThreeWayComparer{}(lhs, rhs) == 0;
+    }
+    inline bool operator!= (const GUID& lhs, const GUID& rhs)
+    {
+        return GUID::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const GUID& lhs, const GUID& rhs)
     {
-        static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID)) >= 0;
+        return GUID::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const GUID& lhs, const GUID& rhs)
     {
-        static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID)) > 0;
+        return GUID::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 
 }
