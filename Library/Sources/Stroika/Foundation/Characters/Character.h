@@ -142,6 +142,8 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  utility to compare an array of characters, like strcmp (), except with param saying if case sensative or insensitative.
+         *
+         *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
         static int Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
