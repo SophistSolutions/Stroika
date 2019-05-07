@@ -83,11 +83,29 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
-     *      ThreeWayComparer<T>{} (lhs, rhs).
+     *      \code
+     *          ThreeWayComparer<T>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
+     *      \endcode
      *
      *  This helper function allows for the type deduction, at the cost of not working with arguments to
      *  the comparer, and the cost of not re-using the comparer object. However, since the comparer is typically
      *  constexpr, that should be a modest (zero?) cost.
+     *
+     *  \par Example Usage
+     *      \code
+     *          if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
+     *             return cmp;
+     *          }
+     *          if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+     *             return cmp;
+     *          }
+     *          return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
+     *      \endcode
+     *
+     *  \note Until we start assuming C++20, this will be the preferred way of calling the three way comparison
+     *        in Stroika, EXCEPT when extra args are needed to the ThreeWayComparison function (such as with String::ThreeWayComparer)
+     *        or when the is cost in constructing (not constexpr) the ThreeWayComparer (luckily basically the same cases - when there are args).
+     *              -- LGP 2019-05-07
      */
     template <typename T>
     constexpr int ThreeWayCompare (const T& lhs, const T& rhs);

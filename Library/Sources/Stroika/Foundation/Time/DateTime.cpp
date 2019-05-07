@@ -981,7 +981,7 @@ int DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime&
         int cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ());
         if (cmp == 0) {
 #if 1
-            cmp = Common::ThreeWayCompare(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
+            cmp = Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
 #elif 1
             // @todo - fixup - lost simple impl when I lost use of Memory::Optional and swithc to new style compare logic
             // --LGP 2018-07-03
