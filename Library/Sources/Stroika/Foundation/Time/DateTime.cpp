@@ -944,12 +944,28 @@ Duration DateTime::Difference (const DateTime& rhs) const
     }
 }
 
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_START (4996);
 int DateTime::Compare (const DateTime& rhs) const
+{
+    return ThreeWayComparer{}(*this, rhs);
+}
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+
+/*
+ ********************************************************************************
+ ************************* DateTime::ThreeWayComparer ***************************
+ ********************************************************************************
+ */
+int DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
 {
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (empty ()) {
+    if (lhs.empty ()) {
         return rhs.empty () ? 0 : -1;
     }
     else {
@@ -957,24 +973,24 @@ int DateTime::Compare (const DateTime& rhs) const
             return 1;
         }
     }
-    Assert (not empty () and not rhs.empty ());
+    Assert (not lhs.empty () and not rhs.empty ());
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_END (4996);
-    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
-        int cmp = GetDate ().Compare (rhs.GetDate ());
+    if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
+        int cmp = Common::ThreeWayComparer<Date>{}(lhs.GetDate (), rhs.GetDate ());
         if (cmp == 0) {
 #if 1
             // @todo - fixup - lost simple impl when I lost use of Memory::Optional and swithc to new style compare logic
             // --LGP 2018-07-03
-            if (not GetTimeOfDay ().has_value ()) {
+            if (not lhs.GetTimeOfDay ().has_value ()) {
                 return rhs.GetTimeOfDay ().has_value () ? -1 : 0; // arbitrary choice - but assume if lhs is empty thats less than any T value
             }
-            Assert (GetTimeOfDay ().has_value ());
+            Assert (lhs.GetTimeOfDay ().has_value ());
             if (not rhs.GetTimeOfDay ().has_value ()) {
                 return 1;
             }
-            cmp = GetTimeOfDay ()->Compare (*rhs.GetTimeOfDay ());
+            cmp = lhs.GetTimeOfDay ()->Compare (*rhs.GetTimeOfDay ());
 #else
             cmp = GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());
 #endif
@@ -982,10 +998,15 @@ int DateTime::Compare (const DateTime& rhs) const
         return cmp;
     }
     else {
-        return AsUTC ().Compare (rhs.AsUTC ());
+        return this->operator() (lhs.AsUTC (), rhs.AsUTC ());
     }
 }
 
+/*
+ ********************************************************************************
+ ************************** DateTime operators  *********************************
+ ********************************************************************************
+ */
 DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)
 {
     // Define in .cpp file to avoid #include Duration in DateTime.h

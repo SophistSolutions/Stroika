@@ -129,27 +129,27 @@ namespace Stroika::Foundation::Time {
      */
     inline bool operator< (const DateTime& lhs, const DateTime& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const DateTime& lhs, const DateTime& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (const DateTime& lhs, const DateTime& rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (const DateTime& lhs, const DateTime& rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const DateTime& lhs, const DateTime& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const DateTime& lhs, const DateTime& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 
 }

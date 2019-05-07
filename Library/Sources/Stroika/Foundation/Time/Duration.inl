@@ -286,33 +286,49 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ***************************** Duration operators *******************************
+     ************************** Duration::ThreeWayComparer **************************
+     ********************************************************************************
+     */
+    inline int Duration::ThreeWayComparer::operator() (const Duration& lhs, const Duration& rhs) const
+    {
+        return Common::ThreeWayCompareNormalizer (lhs.As<Duration::InternalNumericFormatType_> (), rhs.As<Duration::InternalNumericFormatType_> ());
+    }
+
+    /*
+     ********************************************************************************
+     ****************** Duration comparison operators *******************************
      ********************************************************************************
      */
     inline bool operator< (const Duration& lhs, const Duration& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const Duration& lhs, const Duration& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) <= 0;
     }
     inline bool operator== (const Duration& lhs, const Duration& rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) == 0;
     }
     inline bool operator!= (const Duration& lhs, const Duration& rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const Duration& lhs, const Duration& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const Duration& lhs, const Duration& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) > 0;
     }
+
+    /*
+     ********************************************************************************
+     ***************************** Duration operators *******************************
+     ********************************************************************************
+     */
     inline Duration operator/ (const Duration& lhs, long double rhs)
     {
         Require (rhs != 0);

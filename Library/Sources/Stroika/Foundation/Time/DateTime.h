@@ -495,14 +495,12 @@ namespace Stroika::Foundation::Time {
         nonvirtual Duration Difference (const DateTime& rhs) const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         *
-         *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
-         *  considered different. If either one is unknown, they will both be treated as the same timezone. 
-         *  Otherwise, they will BOTH be converted to GMT, and compared as GMT.
          */
-        nonvirtual int Compare (const DateTime& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const DateTime& rhs) const;
 
     private:
         optional<Timezone>  fTimezone_;
@@ -534,33 +532,26 @@ namespace Stroika::Foundation::Time {
     Date DateTime::As () const;
 
     /**
-     *  operator indirects to DateTime::Compare()
+     *  @see Common::ThreeWayComparer<> template
+     *
+     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+     *
+     *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
+     *  considered different. If either one is unknown, they will both be treated as the same timezone. 
+     *  Otherwise, they will BOTH be converted to GMT, and compared as GMT.
+     */
+    struct DateTime::ThreeWayComparer {
+        nonvirtual int operator() (const DateTime& lhs, const DateTime& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Date::ThreeWayComparer ()
      */
     bool operator< (const DateTime& lhs, const DateTime& rhs);
-
-    /**
-     *  operator indirects to DateTime::Compare()
-     */
     bool operator<= (const DateTime& lhs, const DateTime& rhs);
-
-    /**
-     *  operator indirects to DateTime::Compare()
-     */
     bool operator== (const DateTime& lhs, const DateTime& rhs);
-
-    /**
-     *  operator indirects to DateTime::Compare()
-     */
     bool operator!= (const DateTime& lhs, const DateTime& rhs);
-
-    /**
-     *  operator indirects to DateTime::Compare()
-     */
     bool operator>= (const DateTime& lhs, const DateTime& rhs);
-
-    /**
-     *  operator indirects to DateTime::Compare()
-     */
     bool operator> (const DateTime& lhs, const DateTime& rhs);
 
     /**

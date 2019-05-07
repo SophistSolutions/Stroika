@@ -326,11 +326,12 @@ namespace Stroika::Foundation::Time {
         class FormatException;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-         * this comparison function - see the notes about 'empty' in the class description.
          */
-        nonvirtual int Compare (const Duration& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const Duration& rhs) const;
 
     private:
         using InternalNumericFormatType_ = double;
@@ -419,6 +420,16 @@ namespace Stroika::Foundation::Time {
 #endif
     Duration operator"" _duration (const char16_t* str, size_t len) noexcept;
     Duration operator"" _duration (const char32_t* str, size_t len) noexcept;
+
+    /**
+     *  @see Common::ThreeWayComparer<> template
+     *
+     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+     * this comparison function - see the notes about 'empty' in the class description.
+     */
+    struct Duration::ThreeWayComparer {
+        nonvirtual int operator() (const Duration& lhs, const Duration& rhs) const;
+    };
 
     /**
      *  operator indirects to Duration::Compare()
