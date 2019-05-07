@@ -253,27 +253,27 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline bool operator< (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return lhs.Equals (rhs);
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     inline bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return not lhs.Equals (rhs);
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
     namespace V4 {

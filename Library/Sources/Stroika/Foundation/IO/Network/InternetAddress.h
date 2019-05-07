@@ -302,12 +302,15 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual bool IsMulticastAddress () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  Return true iff the InternetAddresses are the same.
          *
          *  This is like Compare() == 0.
          */
-        nonvirtual bool Equals (const InternetAddress& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] bool Equals (const InternetAddress& rhs) const;
 
     public:
         /**
@@ -316,7 +319,7 @@ namespace Stroika::Foundation::IO::Network {
          *  For IPv4 compares, compare logically in the form the ip addr would appear as text.
          *  For IPv6, compare as a byte string.
          */
-        nonvirtual int Compare (const InternetAddress& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const InternetAddress& rhs) const;
 
     private:
         AddressFamily fAddressFamily_;
@@ -332,33 +335,19 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
-     *  operator indirects to BLOB::Compare()
+     */
+    struct InternetAddress::ThreeWayComparer {
+        constexpr int operator() (const InternetAddress& lhs, const InternetAddress& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetAddress::ThreeWayComparer ()
      */
     bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
-
-    /**
-     *  operator indirects to InternetAddress::Compare()
-     */
     bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
-
-    /**
-     *  operator indirects to InternetAddress::Equals()
-     */
     bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
-
-    /**
-     *  operator indirects to InternetAddress::Equals()
-     */
     bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
-
-    /**
-     *  operator indirects to InternetAddress::Compare()
-     */
     bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs);
-
-    /**
-     *  operator indirects to InternetAddress::Compare()
-     */
     bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
 
     /**
