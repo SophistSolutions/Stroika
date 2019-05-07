@@ -310,7 +310,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  This is like Compare() == 0.
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] bool Equals (const InternetAddress& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] bool Equals (const InternetAddress& rhs) const;
 
     public:
         /**
@@ -319,7 +319,7 @@ namespace Stroika::Foundation::IO::Network {
          *  For IPv4 compares, compare logically in the form the ip addr would appear as text.
          *  For IPv6, compare as a byte string.
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const InternetAddress& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const InternetAddress& rhs) const;
 
     private:
         AddressFamily fAddressFamily_;

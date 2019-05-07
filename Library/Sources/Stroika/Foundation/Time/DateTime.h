@@ -500,7 +500,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const DateTime& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const DateTime& rhs) const;
 
     private:
         optional<Timezone>  fTimezone_;

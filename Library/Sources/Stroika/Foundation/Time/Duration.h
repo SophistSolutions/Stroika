@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const Duration& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Duration& rhs) const;
 
     private:
         using InternalNumericFormatType_ = double;

@@ -144,7 +144,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         return AsString_ ();
     }
-    [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] inline int VariantValue::Compare (const VariantValue& rhs) const
+    [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] inline int VariantValue::Compare (const VariantValue& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
     }

@@ -47,10 +47,10 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead, or ==, or equal_to<>{}")]] bool Equals (const InternetMediaType& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead, or ==, or equal_to<>{}")]] bool Equals (const InternetMediaType& rhs) const;
 
     public:
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const InternetMediaType& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const InternetMediaType& rhs) const;
 
     public:
         /**

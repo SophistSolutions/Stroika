@@ -460,8 +460,6 @@ constexpr int InternetAddress::ThreeWayComparer::operator() (const InternetAddre
     return 0;
 }
 
-
-
 /*
  ********************************************************************************
  ***************** IO::Network::InternetAddresses_Any ***************************

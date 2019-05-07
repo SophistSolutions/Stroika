@@ -309,7 +309,7 @@ namespace Stroika::Foundation::DataExchange {
          *   @todo - thinkout bettter and document what it means for differnt types
          *           FOR NOW - just key off first type and convert RHS to same type as LHS, where possible
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const VariantValue& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const VariantValue& rhs) const;
 
     public:
         /**

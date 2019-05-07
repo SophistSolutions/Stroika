@@ -294,8 +294,8 @@ namespace Stroika::Foundation::Time {
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int        Compare (const TimeOfDay& rhs) const;
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] static int Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int        Compare (const TimeOfDay& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] static int Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
 
     private:
         uint32_t fTime_;

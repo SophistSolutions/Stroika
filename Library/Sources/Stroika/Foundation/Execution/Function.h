@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Execution {
          *  This is just magic associated with the object so it can be stored in a map.
          *      @todo DOCUMENT BETTER
          */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const Function& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Function& rhs) const;
 
     private:
         STDFUNCTION fFun_;
