@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     constexpr int MemCmp (const T* lhs, const T* rhs, size_t count)
     {
-        return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), n * sizeof (T));
+        return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
     }
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
