@@ -125,14 +125,14 @@ namespace Stroika::Foundation::Configuration {
 #if __cpp_lib_three_way_comparison >= 201711
     public:
         /**
-		 *	@todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
-		 */
+         *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+         */
         constexpr std::strong_ordering operator<=> (const Version& rhs)
 #endif
     };
 
     /**
-   	 *	@todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Version::ThreeWayComparer {
         constexpr int operator() (const Version& lhs, const Version& rhs) const;
@@ -140,8 +140,8 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Version::ThreeWayComparer ()
-	 *
-   	 *	@todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
 #if __cpp_lib_three_way_comparison < 201711
     constexpr bool operator< (const Version& lhs, const Version& rhs);
