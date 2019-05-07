@@ -11,6 +11,7 @@
  */
 #include "../../Configuration/Endian.h"
 #include "../../Memory/Bits.h"
+#include "../../Memory/Common.h"
 
 namespace Stroika::Foundation::IO::Network {
 
@@ -261,10 +262,10 @@ namespace Stroika::Foundation::IO::Network {
                 return 0;
             } break;
             case AddressFamily::V4: {
-                return Common::COMPARE_EQUAL (lhs.fArray_4_uint_.begin (), lhs.fArray_4_uint_.end (), rhs.fArray_4_uint_.begin ());
+                return Memory::MemCmp (&*lhs.fArray_4_uint_.begin (), &*rhs.fArray_4_uint_.begin (), 4);
             } break;
             case AddressFamily::V6: {
-                return Common::COMPARE_EQUAL (lhs.fArray_16_uint_.begin (), lhs.fArray_16_uint_.end (), rhs.fArray_16_uint_.begin ());
+                return Memory::MemCmp (&*lhs.fArray_16_uint_.begin (), &*rhs.fArray_16_uint_.begin (), 16);
             } break;
         }
         //AssertNotReached ();  @todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
