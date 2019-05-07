@@ -288,11 +288,14 @@ namespace Stroika::Foundation::Time {
         nonvirtual String ToString () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
-        nonvirtual int Compare (const TimeOfDay& rhs) const;
-        static int     Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int        Compare (const TimeOfDay& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] static int Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
 
     private:
         uint32_t fTime_;
@@ -309,33 +312,19 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  operator indirects to TimeOfDay::Compare()
+     */
+    struct TimeOfDay::ThreeWayComparer {
+        nonvirtual int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @TimeOfDay::ThreeWayComparer ()
      */
     bool operator< (TimeOfDay lhs, TimeOfDay rhs);
-
-    /**
-     *  operator indirects to TimeOfDay::Compare()
-     */
     bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
-
-    /**
-     *  operator indirects to TimeOfDay::Compare()
-     */
     bool operator== (TimeOfDay lhs, TimeOfDay rhs);
-
-    /**
-     *  operator indirects to TimeOfDay::Compare()
-     */
     bool operator!= (TimeOfDay lhs, TimeOfDay rhs);
-
-    /**
-     *  operator indirects to TimeOfDay::Compare()
-     */
     bool operator>= (TimeOfDay lhs, TimeOfDay rhs);
-
-    /**
-     *  operator indirects to TimeOfDay::Compare()
-     */
     bool operator> (TimeOfDay lhs, TimeOfDay rhs);
 
 }

@@ -127,32 +127,53 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
+     *************************** TimeOfDay::ThreeWayComparer ************************
+     ********************************************************************************
+     */
+    inline int TimeOfDay::ThreeWayComparer::operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const
+    {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        if (lhs.empty ()) {
+            return rhs.empty () ? 0 : -1;
+        }
+        else {
+            return rhs.empty () ? 1 : (lhs.GetAsSecondsCount () - rhs.GetAsSecondsCount ());
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    }
+
+    /*
+     ********************************************************************************
      ************************* TimeOfDay operators **********************************
      ********************************************************************************
      */
     inline bool operator< (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 
 }
