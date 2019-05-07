@@ -121,11 +121,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayComparer<Host>{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayComparer<Host>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator!= (const Host& lhs, const Host& rhs)
     {
@@ -133,11 +133,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator>= (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayComparer<Host>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayComparer<Host>{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
     /*
@@ -181,11 +181,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayComparer<UserInfo>{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayComparer<UserInfo>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const UserInfo& lhs, const UserInfo& rhs)
     {
@@ -197,11 +197,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator>= (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayComparer<UserInfo>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayComparer<UserInfo>{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
     /*
@@ -247,11 +247,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayComparer<Authority>{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayComparer<Authority>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator!= (const Authority& lhs, const Authority& rhs)
     {
@@ -259,11 +259,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator>= (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayComparer<Authority>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayComparer<Authority>{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
     /*
@@ -307,11 +307,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayComparer<Query>{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayComparer<Query>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator!= (const Query& lhs, const Query& rhs)
     {
@@ -319,11 +319,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator>= (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayComparer<Query>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayComparer<Query>{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }

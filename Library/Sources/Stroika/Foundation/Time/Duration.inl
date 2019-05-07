@@ -301,27 +301,27 @@ namespace Stroika::Foundation::Time {
      */
     inline bool operator< (const Duration& lhs, const Duration& rhs)
     {
-        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const Duration& lhs, const Duration& rhs)
     {
-        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const Duration& lhs, const Duration& rhs)
     {
-        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     inline bool operator!= (const Duration& lhs, const Duration& rhs)
     {
-        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const Duration& lhs, const Duration& rhs)
     {
-        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const Duration& lhs, const Duration& rhs)
     {
-        return Common::ThreeWayComparer<Duration>{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
     /*

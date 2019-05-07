@@ -44,13 +44,13 @@ namespace Stroika::Foundation::Common {
      *      \code
      *          int Common::ThreeWayComparer<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
      *          {
-     *              if (int cmp = Common::ThreeWayComparer<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ())) {
+     *              if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
      *                  return cmp;
      *              }
-     *              if (int cmp = Common::ThreeWayComparer<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+     *              if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
      *                  return cmp;
      *              }
-     *              return Common::ThreeWayComparer<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
+     *              return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
      *          }
      *      \endcode
      *
@@ -80,6 +80,17 @@ namespace Stroika::Foundation::Common {
     struct ThreeWayComparerDefaultImplementation {
         constexpr int operator() (const T& lhs, const T& rhs) const;
     };
+
+    /**
+     *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
+     *      ThreeWayComparer<T>{} (lhs, rhs).
+     *
+     *  This helper function allows for the type deduction, at the cost of not working with arguments to
+     *  the comparer, and the cost of not re-using the comparer object. However, since the comparer is typically
+     *  constexpr, that should be a modest (zero?) cost.
+     */
+    template <typename T>
+    constexpr int ThreeWayCompare (const T& lhs, const T& rhs);
 
     /**
      *  EXPERIMENTAL - API subject to change - see if I can find a way to mix  with (partial specialization) of ThreeWayCompare but still pass in other base comparer (to say case insensitive)

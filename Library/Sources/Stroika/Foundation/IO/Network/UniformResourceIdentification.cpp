@@ -185,7 +185,7 @@ bool UniformResourceIdentification::operator== (const Host& lhs, const Host& rhs
  */
 int Common::ThreeWayComparer<Host>::operator() (const Host& lhs, const Host& rhs) const
 {
-    if (int cmp = Common::ThreeWayComparer<optional<InternetAddress>>{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ())) {
         return cmp;
     }
     return Common::OptionalThreeWayCompare<String, String::ThreeWayComparer>{
@@ -225,7 +225,7 @@ String UserInfo::ToString () const
  */
 int Common::ThreeWayComparer<UserInfo>::operator() (const UserInfo& lhs, const UserInfo& rhs) const
 {
-    return ThreeWayComparer<String>{}(lhs.AsDecoded (), rhs.AsDecoded ());
+    return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
 }
 
 /*
@@ -327,13 +327,13 @@ bool UniformResourceIdentification::operator== (const Authority& lhs, const Auth
  */
 int Common::ThreeWayComparer<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
 {
-    if (int cmp = Common::ThreeWayComparer<optional<Host>>{}(lhs.GetHost (), rhs.GetHost ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayComparer<optional<UserInfo>>{}(lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
         return cmp;
     }
-    return Common::ThreeWayComparer<optional<PortType>>{}(lhs.GetPort (), rhs.GetPort ());
+    return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
 }
 
 /*
@@ -437,7 +437,7 @@ int Common::ThreeWayComparer<Query>::operator() (const Query& lhs, const Query& 
     for (String i : combinedKeys) {
         optional<String> lhsVal = lhs.GetMap ().Lookup (i);
         optional<String> rhsVal = rhs.GetMap ().Lookup (i);
-        int              cmp    = Common::ThreeWayComparer<optional<String>>{}(lhsVal, rhsVal);
+        int              cmp    = Common::ThreeWayCompare (lhsVal, rhsVal);
         if (cmp != 0) {
             return cmp;
         }

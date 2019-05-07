@@ -803,11 +803,11 @@ int Common::ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue>::o
         case VariantValue::eNull:
             return rt == VariantValue::eNull ? 0 : 1;
         case VariantValue::eBoolean:
-            return Common::ThreeWayComparer<bool>{}(lhs.As<bool> (), rhs.As<bool> ());
+            return Common::ThreeWayCompare (lhs.As<bool> (), rhs.As<bool> ());
         case VariantValue::eInteger:
-            return Common::ThreeWayComparer<IntegerType_>{}(lhs.As<IntegerType_> (), rhs.As<IntegerType_> ());
+            return Common::ThreeWayCompare (lhs.As<IntegerType_> (), rhs.As<IntegerType_> ());
         case VariantValue::eUnsignedInteger:
-            return Common::ThreeWayComparer<UnsignedIntegerType_>{}(lhs.As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
+            return Common::ThreeWayCompare (lhs.As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
         case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
             FloatType_ l = lhs.As<FloatType_> ();
@@ -823,18 +823,18 @@ int Common::ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue>::o
             }
         }
         case VariantValue::eDate:
-            return Common::ThreeWayComparer<Date> () (lhs.As<Date> (), rhs.As<Date> ());
+            return Common::ThreeWayCompare (lhs.As<Date> (), rhs.As<Date> ());
         case VariantValue::eDateTime:
-            return Common::ThreeWayComparer<DateTime> () (lhs.As<DateTime> (), rhs.As<DateTime> ());
+            return Common::ThreeWayCompare (lhs.As<DateTime> (), rhs.As<DateTime> ());
         case VariantValue::eString:
-            return Common::ThreeWayComparer<String> () (lhs.As<String> (), rhs.As<String> ());
+            return Common::ThreeWayCompare (lhs.As<String> (), rhs.As<String> ());
         case VariantValue::eArray:
-            return Common::ThreeWayComparer<Sequence<VariantValue>> () (lhs.As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
+            return Common::ThreeWayCompare (lhs.As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
         case VariantValue::eMap: {
 // Cannot do cuz Keys() NYI
 // @todo - fix!!!
 #if 0
-                return Common::ThreeWayComparer<Sequence<VariantValue>> () (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
+                return Common::ThreeWayCompare (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
 #endif
             // same iff all elts same
             Mapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};

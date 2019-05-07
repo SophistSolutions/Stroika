@@ -365,19 +365,19 @@ bool Network::operator== (const URI& lhs, const URI& rhs)
 int Common::ThreeWayComparer<URI>::operator() (const URI& lhs, const URI& rhs) const
 {
     using namespace UniformResourceIdentification;
-    if (int cmp = Common::ThreeWayComparer<optional<SchemeType>>{}(lhs.GetScheme (), rhs.GetScheme ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ())) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayComparer<optional<Authority>>{}(lhs.GetAuthority (), rhs.GetAuthority ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetAuthority (), rhs.GetAuthority ())) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayComparer<String>{}(lhs.GetPath (), rhs.GetPath ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetPath (), rhs.GetPath ())) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayComparer<optional<Query>>{}(lhs.GetQuery (), rhs.GetQuery ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetQuery (), rhs.GetQuery ())) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayComparer<optional<String>>{}(lhs.GetFragment (), rhs.GetFragment ())) {
+    if (int cmp = Common::ThreeWayCompare (lhs.GetFragment (), rhs.GetFragment ())) {
         return cmp;
     }
     return 0;
