@@ -267,7 +267,7 @@ namespace Stroika::Foundation::IO::Network {
                 return Common::COMPARE_EQUAL (lhs.fArray_16_uint_.begin (), lhs.fArray_16_uint_.end (), rhs.fArray_16_uint_.begin ());
             } break;
         }
-        AssertNotReached ();
+        //AssertNotReached ();	@todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
         return 0;
     }
 
