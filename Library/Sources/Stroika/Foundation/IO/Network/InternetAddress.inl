@@ -248,6 +248,31 @@ namespace Stroika::Foundation::IO::Network {
 
     /*
      ********************************************************************************
+     ********************** InternetAddress::ThreeWayComparer ***********************
+     ********************************************************************************
+     */
+    constexpr int InternetAddress::ThreeWayComparer::operator() (const InternetAddress& lhs, const InternetAddress& rhs) const
+    {
+        if (int cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_)) {
+            return cmp;
+        }
+        switch (lhs.fAddressFamily_) {
+            case AddressFamily::UNKNOWN: {
+                return 0;
+            } break;
+            case AddressFamily::V4: {
+                return Common::COMPARE_EQUAL (lhs.fArray_4_uint_.begin (), lhs.fArray_4_uint_.end (), rhs.fArray_4_uint_.begin ());
+            } break;
+            case AddressFamily::V6: {
+                return Common::COMPARE_EQUAL (lhs.fArray_16_uint_.begin (), lhs.fArray_16_uint_.end (), rhs.fArray_16_uint_.begin ());
+            } break;
+        }
+        AssertNotReached ();
+        return 0;
+    }
+
+    /*
+     ********************************************************************************
      ************************* InternetAddress operators ****************************
      ********************************************************************************
      */
