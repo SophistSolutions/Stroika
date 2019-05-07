@@ -229,32 +229,62 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
+     ***************************** Date::ThreeWayComparer ***************************
+     ********************************************************************************
+     */
+    inline int Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
+    {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        if (lhs.empty ()) {
+            return rhs.empty () ? 0 : -1;
+        }
+        else {
+            if (rhs.empty ()) {
+                return 1;
+            }
+            // careful of signed/unsigned converstions - esp because of kMax which is very large
+            JulianRepType l = lhs.GetJulianRep ();
+            JulianRepType r = rhs.GetJulianRep ();
+            if (l == r) {
+                return 0;
+            }
+            return l < r ? -1 : 1;
+        }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+    }
+
+    /*
+     ********************************************************************************
      ************************* Time::Date operators *********************************
      ********************************************************************************
      */
     inline bool operator< (const Date& lhs, const Date& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return Date::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const Date& lhs, const Date& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return Date::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (const Date& lhs, const Date& rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return Date::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (const Date& lhs, const Date& rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return Date::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const Date& lhs, const Date& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return Date::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const Date& lhs, const Date& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return Date::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 }
 

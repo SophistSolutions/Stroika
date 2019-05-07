@@ -465,9 +465,12 @@ namespace Stroika::Foundation::Time {
         nonvirtual Date operator- (SignedJulianRepType daysOffset) const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
         // this comparison function - see the notes about 'empty' in the class description.
-        nonvirtual int Compare (const Date& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const Date& rhs) const;
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
@@ -493,33 +496,20 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  operator indirects to Date::Compare()
+     *  @see Common::ThreeWayComparer<> template
+     */
+    struct Date::ThreeWayComparer {
+        nonvirtual int operator() (const Date& lhs, const Date& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Date::ThreeWayComparer ()
      */
     bool operator< (const Date& lhs, const Date& rhs);
-
-    /**
-     *  operator indirects to Date::Compare()
-     */
     bool operator<= (const Date& lhs, const Date& rhs);
-
-    /**
-     *  operator indirects to Date::Compare()
-     */
     bool operator== (const Date& lhs, const Date& rhs);
-
-    /**
-     *  operator indirects to Date::Compare()
-     */
     bool operator!= (const Date& lhs, const Date& rhs);
-
-    /**
-     *  operator indirects to Date::Compare()
-     */
     bool operator>= (const Date& lhs, const Date& rhs);
-
-    /**
-     *  operator indirects to BLOB::Compare()
-     */
     bool operator> (const Date& lhs, const Date& rhs);
 
     Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
