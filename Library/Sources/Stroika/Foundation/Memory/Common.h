@@ -69,6 +69,16 @@ namespace Stroika::Foundation::Memory {
     };
     GlobalAllocationStatistics GetGlobalAllocationStatistics ();
 
+    /**
+     *  \brief - like std::memcmp() - except count is in units of T (not bytes) and this function is
+     *           constexpr.
+     *
+     *      \req  (count == 0 or lhs != nullptr);
+     *      \req  (count == 0 or rhs != nullptr);
+     */
+    template <typename T>
+    constexpr int MemCmp (const T* lhs, const T* rhs, size_t count);
+
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     namespace Private {
         /**

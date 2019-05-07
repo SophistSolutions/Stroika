@@ -12,7 +12,11 @@
 
 namespace Stroika::Foundation::Memory {
 
-    //  class   Memory::GlobalAllocationStatistics
+    /*
+     ********************************************************************************
+     ********************* Memory::GlobalAllocationStatistics ***********************
+     ********************************************************************************
+     */
     inline GlobalAllocationStatistics::GlobalAllocationStatistics ()
         : fTotalOutstandingAllocations (0)
         , fTotalOutstandingBytesAllocated (0)
@@ -20,6 +24,33 @@ namespace Stroika::Foundation::Memory {
         , fWorkingSetSize (0)
         , fPagefileUsage (0)
     {
+    }
+
+    /*
+     ********************************************************************************
+     ********************************* Memory::MemCmp *******************************
+     ********************************************************************************
+     */
+    template <>
+    constexpr int MemCmp (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
+    {
+        //Require (count == 0 or lhs != nullptr);
+        //Require (count == 0 or rhs != nullptr);
+        const uint8_t* li = lhs;
+        const uint8_t* ri = rhs;
+        for (; count--; li++, ri++) {
+            uint8_t lv = *li;
+            uint8_t rv = *ri;
+            if (lv != rv) {
+                return (lv - rv);
+            }
+        }
+        return 0;
+    }
+    template <typename T>
+    constexpr int MemCmp (const T* lhs, const T* rhs, size_t count)
+    {
+        return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), n * sizeof (T));
     }
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
