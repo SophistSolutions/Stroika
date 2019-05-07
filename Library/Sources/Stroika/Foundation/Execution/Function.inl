@@ -53,78 +53,59 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ************************************ operator< *********************************
+     *********** Function<FUNCTION_SIGNATURE>::ThreeWayComparer *********************
+     ********************************************************************************
+     */
+    template <typename FUNCTION_SIGNATURE>
+    inline int Function<FUNCTION_SIGNATURE>::ThreeWayComparer::operator() (const Function& lhs, const Function& rhs) const
+    {
+        return Common::ThreeWayCompareNormalizer (lhs.fOrdering_, rhs.fOrdering_);
+    }
+
+    /*
+     ********************************************************************************
+     ************** Function<FUNCTION_SIGNATURE> operators **************************
      ********************************************************************************
      */
     template <typename FUNCTION_SIGNATURE>
     inline bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) < 0;
     }
-
-    /*
-     ********************************************************************************
-     *********************************** operator<= *********************************
-     ********************************************************************************
-     */
     template <typename FUNCTION_SIGNATURE>
     inline bool operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
-
-    /*
-     ********************************************************************************
-     ************************************* operator== *******************************
-     ********************************************************************************
-     */
     template <typename FUNCTION_SIGNATURE>
     inline bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return lhs.Compare (rhs) == 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return lhs.Compare (nullptr) == 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, nullptr) == 0;
     }
-
-    /*
-     ********************************************************************************
-     ************************************* operator!= *******************************
-     ********************************************************************************
-     */
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return lhs.Compare (rhs) != 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return lhs.Compare (nullptr) != 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, nullptr) != 0;
     }
-
-    /*
-     ********************************************************************************
-     ************************************** operator> *******************************
-     ********************************************************************************
-     */
     template <typename FUNCTION_SIGNATURE>
     inline bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) > 0;
     }
-
-    /*
-     ********************************************************************************
-     ************************************* operator>= *******************************
-     ********************************************************************************
-     */
     template <typename FUNCTION_SIGNATURE>
     inline bool operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
 
 }

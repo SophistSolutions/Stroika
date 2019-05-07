@@ -88,13 +88,16 @@ namespace Stroika::Foundation::Execution {
         nonvirtual result_type operator() (Args... args) const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          *  Note - this has nothing todo with the actual value of the 'target' function passed in.
          *  This is just magic associated with the object so it can be stored in a map.
          *      @todo DOCUMENT BETTER
          */
-        nonvirtual int Compare (const Function& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{} () instead")]] int Compare (const Function& rhs) const;
 
     private:
         STDFUNCTION fFun_;
@@ -102,42 +105,30 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+     *  @see Common::ThreeWayComparer<> template
+     */
+    template <typename FUNCTION_SIGNATURE>
+    struct Function<FUNCTION_SIGNATURE>::ThreeWayComparer {
+        nonvirtual int operator() (const Function& lhs, const Function& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Function<FUNCTION_SIGNATURE>::ThreeWayComparer ()
      */
     template <typename FUNCTION_SIGNATURE>
     bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
-     */
     template <typename FUNCTION_SIGNATURE>
     bool operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
-     */
     template <typename FUNCTION_SIGNATURE>
     bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
     template <typename FUNCTION_SIGNATURE>
     bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t);
-
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
-     */
     template <typename FUNCTION_SIGNATURE>
     bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
     template <typename FUNCTION_SIGNATURE>
     bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t);
-
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
-     */
     template <typename FUNCTION_SIGNATURE>
     bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
-     */
     template <typename FUNCTION_SIGNATURE>
     bool operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
 
