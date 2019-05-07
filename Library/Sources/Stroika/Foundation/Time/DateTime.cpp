@@ -978,26 +978,10 @@ int DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime&
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
-        int cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ());
-        if (cmp == 0) {
-#if 1
-            cmp = Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
-#elif 1
-            // @todo - fixup - lost simple impl when I lost use of Memory::Optional and swithc to new style compare logic
-            // --LGP 2018-07-03
-            if (not lhs.GetTimeOfDay ().has_value ()) {
-                return rhs.GetTimeOfDay ().has_value () ? -1 : 0; // arbitrary choice - but assume if lhs is empty thats less than any T value
-            }
-            Assert (lhs.GetTimeOfDay ().has_value ());
-            if (not rhs.GetTimeOfDay ().has_value ()) {
-                return 1;
-            }
-            cmp = Common::ThreeWayComparer<TimeOfDay>{}(*lhs.GetTimeOfDay (), *rhs.GetTimeOfDay ());
-#else
-            cmp = GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());
-#endif
+        if (int cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ())) {
+            return cmp;
         }
-        return cmp;
+        return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
     }
     else {
         return this->operator() (lhs.AsUTC (), rhs.AsUTC ());
