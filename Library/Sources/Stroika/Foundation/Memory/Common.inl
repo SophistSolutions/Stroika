@@ -39,10 +39,8 @@ namespace Stroika::Foundation::Memory {
         const uint8_t* li = lhs;
         const uint8_t* ri = rhs;
         for (; count--; li++, ri++) {
-            uint8_t lv = *li;
-            uint8_t rv = *ri;
-            if (lv != rv) {
-                return (lv - rv);
+            if (int cmp = static_cast<int> (*li) - static_cast<int> (*ri)) {
+                return cmp;
             }
         }
         return 0;
