@@ -431,6 +431,23 @@ namespace Stroika::Foundation::Common {
     template <typename BASE_COMPARER>
     constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>;
 
+    /**
+     *  constexpr version of std::equal, which is constexpr as of C++20.
+     */
+    template <class InputIt1, class InputIt2>
+    constexpr bool COMPARE_EQUAL (InputIt1 first1, InputIt1 last1, InputIt2 first2)
+    {
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_20
+        return std::equal (first1, last1, first2);
+#else
+        for (; first1 != last1; ++first1, ++first2) {
+            if (!(*first1 == *first2)) {
+                return false;
+            }
+        }
+        return true;
+#endif
+    }
 }
 
 /*
