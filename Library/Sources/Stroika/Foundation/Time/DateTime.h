@@ -539,6 +539,8 @@ namespace Stroika::Foundation::Time {
      *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
      *  considered different. If either one is unknown, they will both be treated as the same timezone. 
      *  Otherwise, they will BOTH be converted to GMT, and compared as GMT.
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct DateTime::ThreeWayComparer {
         nonvirtual int operator() (const DateTime& lhs, const DateTime& rhs) const;
@@ -546,6 +548,8 @@ namespace Stroika::Foundation::Time {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Date::ThreeWayComparer ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const DateTime& lhs, const DateTime& rhs);
     bool operator<= (const DateTime& lhs, const DateTime& rhs);

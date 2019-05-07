@@ -106,6 +106,8 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  @see Common::ThreeWayComparer<> template
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename FUNCTION_SIGNATURE>
     struct Function<FUNCTION_SIGNATURE>::ThreeWayComparer {
@@ -114,6 +116,8 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Function<FUNCTION_SIGNATURE>::ThreeWayComparer ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename FUNCTION_SIGNATURE>
     bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);

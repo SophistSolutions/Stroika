@@ -68,6 +68,8 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  @see Common::ThreeWayComparer<> template
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct InternetMediaType::ThreeWayComparer {
         nonvirtual int operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
@@ -75,6 +77,8 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);

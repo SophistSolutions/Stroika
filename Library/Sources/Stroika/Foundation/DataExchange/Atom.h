@@ -182,6 +182,8 @@ namespace Stroika::Foundation::DataExchange {
      *  Atom's are compared in a way that will NOT in general be the same as print name compare. The smaller values
      *  will probably be the ones added earlier to the ATOM_MANAGER. But in general, their comparison will persist forever,
      *  and be well-defined (though not documented in this API).
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename ATOM_MANAGER>
     struct Atom<ATOM_MANAGER>::ThreeWayComparer {
@@ -190,6 +192,8 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename ATOM_MANAGER>
     bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);

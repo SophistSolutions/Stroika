@@ -55,6 +55,8 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  @see Common::ThreeWayComparer<> template
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct GUID::ThreeWayComparer {
         nonvirtual int operator() (const GUID& lhs, const GUID& rhs) const;
@@ -62,6 +64,8 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @GUID::ThreeWayComparer ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const GUID& lhs, const GUID& rhs);
     bool operator<= (const GUID& lhs, const GUID& rhs);

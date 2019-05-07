@@ -387,6 +387,8 @@ namespace Stroika::Foundation::DataExchange {
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
      *  @Version::ThreeWayComparer and equal_to<VariantValue>
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const VariantValue& lhs, const VariantValue& rhs);
     bool operator<= (const VariantValue& lhs, const VariantValue& rhs);

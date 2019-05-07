@@ -335,6 +335,8 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct InternetAddress::ThreeWayComparer {
         constexpr int operator() (const InternetAddress& lhs, const InternetAddress& rhs) const;
@@ -342,6 +344,8 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetAddress::ThreeWayComparer ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);

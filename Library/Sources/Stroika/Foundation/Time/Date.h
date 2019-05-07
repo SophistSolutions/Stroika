@@ -497,6 +497,8 @@ namespace Stroika::Foundation::Time {
 
     /**
      *  @see Common::ThreeWayComparer<> template
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Date::ThreeWayComparer {
         nonvirtual int operator() (const Date& lhs, const Date& rhs) const;
@@ -504,6 +506,8 @@ namespace Stroika::Foundation::Time {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Date::ThreeWayComparer ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Date& lhs, const Date& rhs);
     bool operator<= (const Date& lhs, const Date& rhs);
