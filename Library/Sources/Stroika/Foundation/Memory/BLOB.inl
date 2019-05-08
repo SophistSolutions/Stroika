@@ -296,8 +296,11 @@ namespace Stroika::Foundation::Memory {
     }
     inline int BLOB::compare (const BLOB& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return Compare (rhs);
+        return Common::ThreeWayCompare (*this, rhs);
+    }
+    inline int BLOB::Compare (const BLOB& rhs) const
+    {
+        return Common::ThreeWayCompare (*this, rhs);
     }
     inline size_t BLOB::length () const
     {
@@ -316,12 +319,22 @@ namespace Stroika::Foundation::Memory {
     }
     inline bool BLOB::Equals (const BLOB& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
-        if (fRep_ == rhs.fRep_) {
+        return EqualsComparer{}(*this, rhs);
+    }
+
+    /*
+     ********************************************************************************
+     ************************* BLOB::EqualsComparer *********************************
+     ********************************************************************************
+     */
+    inline int BLOB::EqualsComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        shared_lock<const AssertExternallySynchronizedLock> critSecR{rhs};
+        if (lhs.fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
-        pair<const byte*, const byte*> l     = fRep_->GetBounds ();
+        pair<const byte*, const byte*> l     = lhs.fRep_->GetBounds ();
         pair<const byte*, const byte*> r     = rhs.fRep_->GetBounds ();
         size_t                         lSize = l.second - l.first;
         size_t                         rSize = r.second - r.first;
@@ -336,32 +349,56 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ************************* BLOB::ThreeWayComparer *******************************
+     ********************************************************************************
+     */
+    inline int BLOB::ThreeWayComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        shared_lock<const AssertExternallySynchronizedLock> critSecR{rhs};
+        pair<const byte*, const byte*>                      l            = lhs.fRep_->GetBounds ();
+        pair<const byte*, const byte*>                      r            = rhs.fRep_->GetBounds ();
+        size_t                                              lSize        = l.second - l.first;
+        size_t                                              rSize        = r.second - r.first;
+        size_t                                              nCommonBytes = min (lSize, rSize);
+        if (int tmp = ::memcmp (l.first, r.first, nCommonBytes)) {
+            return tmp;
+        }
+        // if tmp is zero, and same size - its really zero. But if lhs shorter than right, say lhs < right
+        if (lSize == rSize) {
+            return 0;
+        }
+        return (lSize < rSize) ? -1 : 1;
+    }
+
+    /*
+     ********************************************************************************
      ****************************** BLOB operators **********************************
      ********************************************************************************
      */
     inline bool operator< (const BLOB& lhs, const BLOB& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const BLOB& lhs, const BLOB& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const BLOB& lhs, const BLOB& rhs)
     {
-        return lhs.Equals (rhs);
+        return BLOB::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const BLOB& lhs, const BLOB& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not BLOB::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator>= (const BLOB& lhs, const BLOB& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const BLOB& lhs, const BLOB& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }

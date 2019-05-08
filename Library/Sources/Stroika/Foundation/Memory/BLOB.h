@@ -278,12 +278,13 @@ namespace Stroika::Foundation::Memory {
         nonvirtual size_t GetSize () const;
 
     public:
-        /**
-         *  Return true iff the BLOBs compare bytewise equal.
-         *
-         *  This is like memcmp() == 0.
-         */
-        nonvirtual bool Equals (const BLOB& rhs) const;
+        struct EqualsComparer;
+
+    public:
+        struct ThreeWayComparer;
+
+    public:
+        [[deprecated ("in Stroika v2.1d24 - use a == b instead (or EqualsComparer)")]] bool Equals (const BLOB& rhs) const;
 
     public:
         /**
@@ -291,13 +292,13 @@ namespace Stroika::Foundation::Memory {
          *  returns < 0 if the first byte where the two regions differ is less than the first byte
          *  of the RHS (where they differ).
          */
-        nonvirtual int Compare (const BLOB& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const BLOB& rhs) const;
 
     public:
         /**
          *  Trivial alias for @see Compare()
          */
-        nonvirtual int compare (const BLOB& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int compare (const BLOB& rhs) const;
 
     public:
         /**
@@ -376,34 +377,33 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  operator indirects to BLOB::Compare()
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     *
+     *  Like ThreeWayComparer checking for 0, but often faster
+     */
+    struct BLOB::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual int operator() (const BLOB& lhs, const BLOB& rhs) const;
+    };
+
+    /**
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     *
+     *  This is like memcmp() - bytewise unsigned comparison
+     */
+    struct BLOB::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        nonvirtual int operator() (const BLOB& lhs, const BLOB& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @BLOB::ThreeWayComparer ()
      */
     bool operator< (const BLOB& lhs, const BLOB& rhs);
-
-    /**
-     *  operator indirects to BLOB::Compare()
-     */
     bool operator<= (const BLOB& lhs, const BLOB& rhs);
-
-    /**
-     *  operator indirects to BLOB::Equals()
-     */
     bool operator== (const BLOB& lhs, const BLOB& rhs);
-
-    /**
-     *  operator indirects to BLOB::Equals()
-     */
     bool operator!= (const BLOB& lhs, const BLOB& rhs);
-
-    /**
-     *  operator indirects to BLOB::Compare()
-     */
     bool operator>= (const BLOB& lhs, const BLOB& rhs);
-
-    /**
-     *  operator indirects to BLOB::Compare()
-     */
     bool operator> (const BLOB& lhs, const BLOB& rhs);
+
 }
 
 /*
