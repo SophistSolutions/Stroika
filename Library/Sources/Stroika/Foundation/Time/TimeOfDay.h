@@ -315,8 +315,8 @@ namespace Stroika::Foundation::Time {
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-    struct TimeOfDay::ThreeWayComparer {
-        nonvirtual int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
+    struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
     };
 
     /**

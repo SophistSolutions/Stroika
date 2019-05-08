@@ -186,7 +186,7 @@ namespace Stroika::Foundation::DataExchange {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename ATOM_MANAGER>
-    struct Atom<ATOM_MANAGER>::ThreeWayComparer {
+    struct Atom<ATOM_MANAGER>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr int operator() (const Atom& lhs, const Atom& rhs) const;
     };
 

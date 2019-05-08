@@ -71,7 +71,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-    struct InternetMediaType::ThreeWayComparer {
+    struct InternetMediaType::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual int operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
     };
 

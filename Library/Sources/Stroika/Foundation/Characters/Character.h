@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Enumeration.h"
+#include "../Common/Compare.h"
 
 /**
  * TODO:
@@ -159,7 +160,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-    struct Character::ThreeWayComparer {
+    struct Character::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
         constexpr int  operator() (const Character& lhs, const Character& rhs) const;
         CompareOptions fCompareOptions;

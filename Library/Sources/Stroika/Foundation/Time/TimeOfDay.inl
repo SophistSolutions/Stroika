@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Time {
      *************************** TimeOfDay::ThreeWayComparer ************************
      ********************************************************************************
      */
-    inline int TimeOfDay::ThreeWayComparer::operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const
+    constexpr int TimeOfDay::ThreeWayComparer::operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const
     {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")

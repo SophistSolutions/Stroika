@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Execution {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename FUNCTION_SIGNATURE>
-    struct Function<FUNCTION_SIGNATURE>::ThreeWayComparer {
+    struct Function<FUNCTION_SIGNATURE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual int operator() (const Function& lhs, const Function& rhs) const;
     };
 

@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Time {
      ***************************** Date::ThreeWayComparer ***************************
      ********************************************************************************
      */
-    inline int Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
+    constexpr int Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
     {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")

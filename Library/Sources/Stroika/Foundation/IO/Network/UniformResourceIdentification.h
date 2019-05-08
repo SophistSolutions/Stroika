@@ -533,22 +533,22 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 namespace Stroika::Foundation::Common {
 
     template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> {
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& rhs) const;
     };
     template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo> {
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& rhs) const;
     };
     template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> {
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& rhs) const;
     };
     template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Query> {
+    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Query> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer () = default;
         int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& rhs) const;
     };

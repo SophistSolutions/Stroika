@@ -184,6 +184,7 @@ namespace Stroika::Foundation::Characters {
     {
         return Character::ThreeWayComparer{}(lhs, rhs) > 0;
     }
+
 }
 
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/

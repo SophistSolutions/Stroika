@@ -500,8 +500,8 @@ namespace Stroika::Foundation::Time {
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-    struct Date::ThreeWayComparer {
-        nonvirtual int operator() (const Date& lhs, const Date& rhs) const;
+    struct Date::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr int operator() (const Date& lhs, const Date& rhs) const;
     };
 
     /**

@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Common {
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-    struct GUID::ThreeWayComparer {
+    struct GUID::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual int operator() (const GUID& lhs, const GUID& rhs) const;
     };
 

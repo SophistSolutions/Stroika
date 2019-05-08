@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Time {
      *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
      * this comparison function - see the notes about 'empty' in the class description.
      */
-    struct Duration::ThreeWayComparer {
+    struct Duration::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual int operator() (const Duration& lhs, const Duration& rhs) const;
     };
 

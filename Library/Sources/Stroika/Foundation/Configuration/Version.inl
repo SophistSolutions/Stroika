@@ -83,27 +83,27 @@ public:
      */
     constexpr bool operator< (const Version& lhs, const Version& rhs)
     {
-        return Version::ThreeWayComparer{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     constexpr bool operator<= (const Version& lhs, const Version& rhs)
     {
-        return Version::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     constexpr bool operator== (const Version& lhs, const Version& rhs)
     {
-        return Version::ThreeWayComparer{}(lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     constexpr bool operator!= (const Version& lhs, const Version& rhs)
     {
-        return Version::ThreeWayComparer{}(lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     constexpr bool operator>= (const Version& lhs, const Version& rhs)
     {
-        return Version::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     constexpr bool operator> (const Version& lhs, const Version& rhs)
     {
-        return Version::ThreeWayComparer{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 #endif
 
