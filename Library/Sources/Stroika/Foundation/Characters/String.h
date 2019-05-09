@@ -1496,43 +1496,23 @@ namespace Stroika::Foundation::Characters {
     wostream& operator<< (wostream& out, const String& s);
 
     /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @String::ThreeWayComparer
      */
     bool operator< (const String& lhs, const String& rhs);
     bool operator< (const String& lhs, const wchar_t* rhs);
     bool operator< (const wchar_t* lhs, const String& rhs);
-
-    /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
-     */
     bool operator<= (const String& lhs, const String& rhs);
     bool operator<= (const String& lhs, const wchar_t* rhs);
     bool operator<= (const wchar_t* lhs, const String& rhs);
-
-    /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
-     */
     bool operator== (const String& lhs, const String& rhs);
     bool operator== (const String& lhs, const wchar_t* rhs);
     bool operator== (const wchar_t* lhs, const String& rhs);
-
-    /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
-     */
     bool operator!= (const String& lhs, const String& rhs);
     bool operator!= (const String& lhs, const wchar_t* rhs);
     bool operator!= (const wchar_t* lhs, const String& rhs);
-
-    /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
-     */
     bool operator>= (const String& lhs, const String& rhs);
     bool operator>= (const String& lhs, const wchar_t* rhs);
     bool operator>= (const wchar_t* lhs, const String& rhs);
-
-    /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
-     */
     bool operator> (const String& lhs, const String& rhs);
     bool operator> (const String& lhs, const wchar_t* rhs);
     bool operator> (const wchar_t* lhs, const String& rhs);
