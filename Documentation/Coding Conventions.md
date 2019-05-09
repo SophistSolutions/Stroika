@@ -121,17 +121,23 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 
 ## Compare () and operator\&lt;, operator\&gt;, etc…
 
-For types Stroika defines, it generally uses the convention of providing a compare function:
+- Note this has materially changed in Stroika v2.1, due to the upcoming
+  changes in C++20 to support the spaceship operator and automatic compare
+  operation functions from it.
 
- int T::Compare (T rhs); // sometimes with additional optional
+For types Stroika defines, it generally uses the convention of providing a ThreeWayComparer function object (generally fully constexpr).
 
-// arguments for how to compare
+e.g.
+~~~C++
+    struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
+    };
+~~~
 
-and provides
-
+and provides non-member (#if __cpp_lib_three_way_comparison < 201711)
  bool operator\&lt;, operator\&lt;=, operator\&gt;, operator\&gt;=, operator==, operator!= which inline trivially maps to this.
 
-Stroika code which COUNTS on comparison doesn&#39;t directly call Compare(), but instead uses &#39;a \&lt; b&#39;, etc. This applies to things  like Stroika containers. The reason for this later choice include:
+Stroika code which COUNTS on comparison doesn&#39;t directly call Compare(), but instead uses &#39;a \&lt; b&#39; or Common::ThreeWayCompare, or Common:ThreeWayComparer.
 
 - Working with builtin types (e.g. in)
 - Working with STL types, and 3rd-party libraries
