@@ -547,7 +547,7 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Date::ThreeWayComparer ()
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */

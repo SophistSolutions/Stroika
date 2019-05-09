@@ -6,8 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../Configuration/Enumeration.h"
 #include "../Common/Compare.h"
+#include "../Configuration/Enumeration.h"
 
 /**
  * TODO:

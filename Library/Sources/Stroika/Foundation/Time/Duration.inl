@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ****************** Duration comparison operators *******************************
+     ********************** Duration comparison operators ***************************
      ********************************************************************************
      */
     inline bool operator< (const Duration& lhs, const Duration& rhs)

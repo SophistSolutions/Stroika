@@ -262,29 +262,29 @@ namespace Stroika::Foundation::Time {
      ************************* Time::Date operators *********************************
      ********************************************************************************
      */
-    inline bool operator< (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator< (const Date& lhs, const Date& rhs)
     {
-        return Date::ThreeWayComparer{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
-    inline bool operator<= (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator<= (const Date& lhs, const Date& rhs)
     {
-        return Date::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
-    inline bool operator== (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator== (const Date& lhs, const Date& rhs)
     {
-        return Date::ThreeWayComparer{}(lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
-    inline bool operator!= (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator!= (const Date& lhs, const Date& rhs)
     {
-        return Date::ThreeWayComparer{}(lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
-    inline bool operator>= (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator>= (const Date& lhs, const Date& rhs)
     {
-        return Date::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
-    inline bool operator> (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator> (const Date& lhs, const Date& rhs)
     {
-        return Date::ThreeWayComparer{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 }
 

@@ -505,16 +505,16 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Date::ThreeWayComparer ()
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-    bool operator< (const Date& lhs, const Date& rhs);
-    bool operator<= (const Date& lhs, const Date& rhs);
-    bool operator== (const Date& lhs, const Date& rhs);
-    bool operator!= (const Date& lhs, const Date& rhs);
-    bool operator>= (const Date& lhs, const Date& rhs);
-    bool operator> (const Date& lhs, const Date& rhs);
+    constexpr bool operator< (const Date& lhs, const Date& rhs);
+    constexpr bool operator<= (const Date& lhs, const Date& rhs);
+    constexpr bool operator== (const Date& lhs, const Date& rhs);
+    constexpr bool operator!= (const Date& lhs, const Date& rhs);
+    constexpr bool operator>= (const Date& lhs, const Date& rhs);
+    constexpr bool operator> (const Date& lhs, const Date& rhs);
 
     Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
     int                       YearDifference (const Date& lhs, const Date& rhs);

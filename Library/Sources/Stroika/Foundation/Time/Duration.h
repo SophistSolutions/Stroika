@@ -425,40 +425,22 @@ namespace Stroika::Foundation::Time {
      *  @see Common::ThreeWayComparer<> template
      *
      *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-     * this comparison function - see the notes about 'empty' in the class description.
+     *	this comparison function - see the notes about 'empty' in the class description.
      */
     struct Duration::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual int operator() (const Duration& lhs, const Duration& rhs) const;
     };
 
     /**
-     *  operator indirects to Duration::Compare()
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Duration& lhs, const Duration& rhs);
-
-    /**
-     *  operator indirects to Duration::Compare()
-     */
     bool operator<= (const Duration& lhs, const Duration& rhs);
-
-    /**
-     *  operator indirects to Duration::Compare()
-     */
     bool operator== (const Duration& lhs, const Duration& rhs);
-
-    /**
-     *  operator indirects to Duration::Compare()
-     */
     bool operator!= (const Duration& lhs, const Duration& rhs);
-
-    /**
-     *  operator indirects to Duration::Compare()
-     */
     bool operator>= (const Duration& lhs, const Duration& rhs);
-
-    /**
-     *  operator indirects to Duration::Compare()
-     */
     bool operator> (const Duration& lhs, const Duration& rhs);
 
     /**

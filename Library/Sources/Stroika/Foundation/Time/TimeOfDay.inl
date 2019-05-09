@@ -151,29 +151,29 @@ namespace Stroika::Foundation::Time {
      ************************* TimeOfDay operators **********************************
      ********************************************************************************
      */
-    inline bool operator< (TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
-    inline bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
-    inline bool operator== (TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator== (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
-    inline bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
-    inline bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
-    inline bool operator> (TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator> (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return TimeOfDay::ThreeWayComparer{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }
