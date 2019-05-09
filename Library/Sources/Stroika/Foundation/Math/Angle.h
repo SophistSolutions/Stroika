@@ -62,32 +62,30 @@ namespace Stroika::Foundation::Math {
         nonvirtual const Angle& operator*= (double rhs);
         nonvirtual const Angle& operator/= (double rhs);
 
+    public:
+        struct ThreeWayComparer;
+
     private:
         double fAngleInRadians_;
     };
 
     /**
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct Angle::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr int operator() (const Angle& lhs, const Angle& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare ()
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     constexpr bool operator< (const Angle& lhs, const Angle& rhs);
-
-    /**
-     */
     constexpr bool operator<= (const Angle& lhs, const Angle& rhs);
-
-    /**
-     */
     constexpr bool operator== (const Angle& lhs, const Angle& rhs);
-
-    /**
-     */
     constexpr bool operator!= (const Angle& lhs, const Angle& rhs);
-
-    /**
-     */
     constexpr bool operator>= (const Angle& lhs, const Angle& rhs);
-
-    /**
-     */
     constexpr bool operator> (const Angle& lhs, const Angle& rhs);
 
     /**

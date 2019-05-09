@@ -72,33 +72,49 @@ namespace Stroika::Foundation::Math {
 
     /*
      ********************************************************************************
-     ************************* Math::Angle operators ********************************
+     ************************* Angle::ThreeWayComparer ******************************
+     ********************************************************************************
+     */
+    constexpr int Angle::ThreeWayComparer::operator() (const Angle& lhs, const Angle& rhs) const
+    {
+        return lhs.AsRadians () - rhs.AsRadians ();
+    }
+
+    /*
+     ********************************************************************************
+     ******************** Math::Angle relationship operators ************************
      ********************************************************************************
      */
     constexpr bool operator< (const Angle& lhs, const Angle& rhs)
     {
-        return lhs.AsRadians () < rhs.AsRadians ();
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     constexpr bool operator<= (const Angle& lhs, const Angle& rhs)
     {
-        return lhs.AsRadians () <= rhs.AsRadians ();
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     constexpr bool operator== (const Angle& lhs, const Angle& rhs)
     {
-        return lhs.AsRadians () == rhs.AsRadians ();
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     constexpr bool operator!= (const Angle& lhs, const Angle& rhs)
     {
-        return lhs.AsRadians () != rhs.AsRadians ();
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     constexpr bool operator>= (const Angle& lhs, const Angle& rhs)
     {
-        return lhs.AsRadians () >= rhs.AsRadians ();
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     constexpr bool operator> (const Angle& lhs, const Angle& rhs)
     {
-        return lhs.AsRadians () > rhs.AsRadians ();
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+
+    /*
+     ********************************************************************************
+     ************************* Math::Angle operators ********************************
+     ********************************************************************************
+     */
     constexpr Angle operator+ (const Angle& lhs, const Angle& rhs)
     {
         return Angle (lhs.AsRadians () + rhs.AsRadians ());
