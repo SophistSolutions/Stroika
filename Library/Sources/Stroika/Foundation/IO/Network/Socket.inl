@@ -139,32 +139,51 @@ namespace Stroika::Foundation::IO::Network {
 
     /*
      ********************************************************************************
+     ************************* Socket::Ptr::ThreeWayComparer ************************
+     ********************************************************************************
+     */
+    inline int Socket::Ptr::ThreeWayComparer::operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec1{lhs}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+        /* 
+         *  Used to check Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
+         *  but this is better. It practically always amounts to the same thing (since one typically constructs
+         *  a Socket object, and copies that as a Ref - thought it CAN be differnt if you manually attach
+         *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
+         *  being careful about null ptrs.
+         */
+        return Common::ThreeWayCompareNormalizer (lhs._GetSharedRep (), rhs._GetSharedRep ());
+    }
+
+    /*
+     ********************************************************************************
      ****************************** Socket operators ********************************
      ********************************************************************************
      */
     inline bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return lhs.Compare (rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return lhs.Compare (rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return lhs.Equals (rhs);
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     inline bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return not lhs.Equals (rhs);
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return lhs.Compare (rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return lhs.Compare (rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 #if qPlatform_Windows

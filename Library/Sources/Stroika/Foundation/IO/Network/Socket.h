@@ -317,6 +317,9 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual bool IsOpen () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  Return true iff the sOCKETS are the same.
          *
@@ -325,7 +328,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
          *          This means you can have two Socket objects which compare equal by use of Attach().
          */
-        nonvirtual bool Equals (const Ptr& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] bool Equals (const Ptr& rhs) const;
 
     public:
         /**
@@ -333,7 +336,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
          *          This means you can have two Socket objects which compare equal by use of Attach().
          */
-        nonvirtual int Compare (const Ptr& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Ptr& rhs) const;
 
     public:
         /**
@@ -398,33 +401,28 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
-     *  operator indirects to Socket::Ptr::Compare()
+     *  \note   Socket::Ptr objects are compared (relative or equality) by their underlying object.
+     *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
+     *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
+     *          the same thing, but can be different in the case of multiple objects attached to the same
+     *          socket. This is probably a better defintiion, and definitely more efficient.
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct Socket::Ptr::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
-
-    /**
-     *  operator indirects to Socket::Ptr::Compare()
-     */
     bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
-
-    /**
-     *  operator indirects to Socket::Ptr::Equals()
-     */
     bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
-
-    /**
-     *  operator indirects to Socket::Ptr::Equals()
-     */
     bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
-
-    /**
-     *  operator indirects to Socket::Ptr::Compare()
-     */
     bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
-
-    /**
-     *  operator indirects to Socket::Ptr::Compare()
-     */
     bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
 
     /**
