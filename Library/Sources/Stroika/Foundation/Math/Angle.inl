@@ -141,19 +141,19 @@ namespace Stroika::Foundation::Math {
     }
     constexpr Angle operator""_deg (long double n) noexcept
     {
-        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eDegrees};
+        return Angle{static_cast<Angle::RepType> (n), Angle::eDegrees};
     }
     constexpr Angle operator""_deg (unsigned long long int n) noexcept
     {
-        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eDegrees};
+        return Angle{static_cast<Angle::RepType> (n), Angle::eDegrees};
     }
     constexpr Angle operator""_rad (long double n) noexcept
     {
-        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eRadians};
+        return Angle{static_cast<Angle::RepType> (n), Angle::eRadians};
     }
     constexpr Angle operator""_rad (unsigned long long int n) noexcept
     {
-        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eRadians};
+        return Angle{static_cast<Angle::RepType> (n), Angle::eRadians};
     }
 
     /*

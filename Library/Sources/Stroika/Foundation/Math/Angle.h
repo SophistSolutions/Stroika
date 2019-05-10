@@ -18,6 +18,7 @@
 namespace Stroika::Foundation::Math {
 
     /**
+	 *	\todo Consider if this class should automatically normalize (0..2pi) or at least have a normalize method.
      */
     class Angle {
     public:
@@ -61,8 +62,8 @@ namespace Stroika::Foundation::Math {
     public:
         nonvirtual const Angle& operator+= (const Angle& rhs);
         nonvirtual const Angle& operator-= (const Angle& rhs);
-        nonvirtual const Angle& operator*= (double rhs);
-        nonvirtual const Angle& operator/= (double rhs);
+        nonvirtual const Angle& operator*= (RepType rhs);
+        nonvirtual const Angle& operator/= (RepType rhs);
 
     public:
         struct ThreeWayComparer;
