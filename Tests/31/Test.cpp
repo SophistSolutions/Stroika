@@ -635,7 +635,7 @@ namespace {
 
         struct SharedContactsConfig_ {
             int                   fInt1;
-            Memory::Optional<int> fInt2;
+            optional<int> fInt2;
             Mapping<int, int>     fMapping1;
             Sequence<int>         fSequence1;
             int                   fBasicArray1[5];

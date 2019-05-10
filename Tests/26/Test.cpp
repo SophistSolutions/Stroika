@@ -32,7 +32,7 @@ namespace {
         typedef typename CONCRETE_CONTAINER::value_type T;
         auto                                            testFunc = [&] (const SortedSet<T>& s) {
             // verify in sorted order
-            Memory::Optional<T> last;
+            optional<T> last;
             for (T i : s) {
                 if (last.has_value ()) {
                     VerifyTestResult (inorderComparer (*last, i));
