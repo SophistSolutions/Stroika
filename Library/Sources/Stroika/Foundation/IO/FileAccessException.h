@@ -10,7 +10,7 @@
 
 #include "../Characters/String.h"
 #include "../Execution/Exceptions.h"
-#include "../Memory/Optional.h"
+//#include "../Memory/Optional.h"
 
 #include "FileAccessMode.h"
 

@@ -327,8 +327,12 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     template <typename T, typename TRAITS = Optional_Traits_Default<T>>
-    class Optional : private conditional_t<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex> {
+    class [[deprecated ("in Stroika v2.1d24 - use std::optional<> instead")]] Optional : private conditional_t<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>
+    {
     private:
         using inherited = conditional_t<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>;
 
@@ -359,7 +363,7 @@ namespace Stroika::Foundation::Memory {
         {
         }
         constexpr Optional (const Optional& from);
-        constexpr Optional (Optional&& from);
+        constexpr Optional (Optional && from);
         /*
          *  Note - in C++17, std::optional checks
          *      is_convertible_v<const T2&, T>
@@ -399,7 +403,7 @@ namespace Stroika::Foundation::Memory {
                 not Private_::IsOptional_<T2, TRAITS2>::value and
                 is_constructible_v<T, T2&&> and
                 is_same_v<typename decay<T>::type, typename common_type<T, T2>::type>>>
-        Optional (Optional<T2, TRAITS2>&& from);
+        Optional (Optional<T2, TRAITS2> && from);
         template <
             typename T2,
             typename TRAITS2,
@@ -407,7 +411,7 @@ namespace Stroika::Foundation::Memory {
                 not Private_::IsOptional_<T2, TRAITS2>::value and
                 is_constructible_v<T, T2&&> and
                 not is_same_v<typename decay<T>::type, typename common_type<T, T2>::type>>>
-        explicit Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+        explicit Optional (Optional<T2, TRAITS2> && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
         // @todo  more SFINAE checks needed
         template <
             typename U                       = T,
@@ -415,14 +419,14 @@ namespace Stroika::Foundation::Memory {
                 not is_same_v<Optional<T, TRAITS>, U> and
                 is_constructible_v<T, U&&> and
                 is_convertible_v<U&&, T>>>
-        constexpr Optional (U&& from);
+        constexpr Optional (U && from);
         template <
             typename U                         = T,
             typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                 not is_same_v<Optional<T, TRAITS>, U> and
                 is_constructible_v<T, U&&> and
                 not is_convertible_v<U&&, T>>>
-        constexpr explicit Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
+        constexpr explicit Optional (U && from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
     public:
         /**
@@ -604,7 +608,7 @@ namespace Stroika::Foundation::Memory {
          *  @see Value
          */
         template <typename CONVERTABLE_TO_TYPE = T>
-        nonvirtual void CopyToIf (CONVERTABLE_TO_TYPE* to) const;
+        nonvirtual void CopyToIf (CONVERTABLE_TO_TYPE * to) const;
 
     public:
         /**
@@ -859,6 +863,27 @@ namespace Stroika::Foundation::Memory {
     optional<T> OptionalValue (const optional<T>& l, const optional<T>& r);
 
     /**
+         *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
+         *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
+         *  derefrence and copy.
+         *
+         *  \par Example Usage
+         *      \code
+         *      float*  d1  =   nullptr;
+         *      double* d2  =   nullptr;
+         *      Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
+         *      Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
+         *      \endcode
+         *
+         *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
+         *          URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
+         *          VerifyTestResult (url.GetScheme () == L"dyn");
+         *          // wchar_t* overload is optional gets STRING with value "d";
+         */
+    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>>
+    optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
+
+    /**
      *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
      */
     template <typename T, typename TRAITS>
@@ -963,6 +988,10 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T>
     using Optional_Indirect_Storage = Optional<T, Optional_Traits_Blockallocated_Indirect_Storage<T>>;
+
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
 }
 

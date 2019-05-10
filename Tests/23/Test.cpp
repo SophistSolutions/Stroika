@@ -24,8 +24,6 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::SortedCollection_LinkedList;
 
-using Memory::Optional;
-
 namespace {
     template <typename CONCRETE_CONTAINER, typename INORDER_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
     void RunTests_ (const INORDER_COMPARER& inorderComparer, CONCRETE_CONTAINER_FACTORY factory)
@@ -33,7 +31,7 @@ namespace {
         typedef typename CONCRETE_CONTAINER::value_type T;
         auto                                            testFunc = [&] (const SortedCollection<T>& s) {
             // verify in sorted order
-            Memory::Optional<T> last;
+            optional<T> last;
             for (T i : s) {
                 if (last.has_value ()) {
                     VerifyTestResult (inorderComparer (*last, i));

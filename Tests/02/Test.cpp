@@ -1307,8 +1307,8 @@ namespace {
 namespace {
     void Test49_SetOfStringCTORIssue_ ()
     {
-        Memory::Optional<String> optString{String ()};
-        Containers::Set<String>  s{*optString};
+        optional<String>        optString{String ()};
+        Containers::Set<String> s{*optString};
     }
 }
 

@@ -810,11 +810,10 @@ namespace Stroika::Foundation::DataExchange {
         static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;
         static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;
 
-        StructFieldMetaInfo fFieldMetaInfo;
-        String              fSerializedFieldName;
-        // nb: we use Optional_Indirect_Storage - both to save space in the overwhelmingly most common case - not used
-        Memory::Optional_Indirect_Storage<TypeMappingDetails> fOverrideTypeMapper;
-        NullFieldHandling                                     fNullFields;
+        StructFieldMetaInfo          fFieldMetaInfo;
+        String                       fSerializedFieldName;
+        optional<TypeMappingDetails> fOverrideTypeMapper;
+        NullFieldHandling            fNullFields;
 
         /**
          *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array

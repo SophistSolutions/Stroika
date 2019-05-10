@@ -33,11 +33,11 @@ namespace {
     {
         {
             using Characters::String;
-            Optional<String> x;
+            optional<String> x;
             x = String{L"x"};
         }
         {
-            Optional<int> x;
+            optional<int> x;
             VerifyTestResult (not x.has_value ());
             x = 1;
             VerifyTestResult (x.has_value ());
@@ -45,40 +45,40 @@ namespace {
         }
         {
             // Careful about self-assignment
-            Optional<int> x;
+            optional<int> x;
             x = 3;
             x = max (*x, 1);
             VerifyTestResult (x == 3);
         }
         auto testOptionalOfThingNotCopyable = [] () {
             {
-                Optional<NotCopyable> n1;
+                optional<NotCopyable> n1;
                 VerifyTestResult (not n1.has_value ());
-                Optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
+                optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
                 VerifyTestResult (n2.has_value ());
             }
             {
-                Optional<NotCopyable> a;
-                Optional<NotCopyable> a1{NotCopyable ()};
+                optional<NotCopyable> a;
+                optional<NotCopyable> a1{NotCopyable ()};
                 a1 = NotCopyable ();
             }
         };
         testOptionalOfThingNotCopyable ();
         {
-            Optional<int> x;
+            optional<int> x;
             if (x) {
                 VerifyTestResult (false);
             }
         }
         {
-            Optional<int> x;
-            if (Optional<int> y = x) {
+            optional<int> x;
+            if (optional<int> y = x) {
                 VerifyTestResult (false);
             }
         }
         {
-            Optional<int> x = 3;
-            if (Optional<int> y = x) {
+            optional<int> x = 3;
+            if (optional<int> y = x) {
                 VerifyTestResult (y == 3);
             }
             else {
@@ -88,38 +88,31 @@ namespace {
         {
             float*  d1 = nullptr;
             double* d2 = nullptr;
-            VerifyTestResult (not Optional<double>::OptionalFromNullable (d1).has_value ());
-            VerifyTestResult (not Optional<double>::OptionalFromNullable (d2).has_value ());
+            VerifyTestResult (not OptionalFromNullable (d1).has_value ());
+            VerifyTestResult (not OptionalFromNullable (d2).has_value ());
         }
         {
-            constexpr Optional<int> x{1};
+            constexpr optional<int> x{1};
             VerifyTestResult (x == 1);
         }
         {
-            Optional<int>    d;
-            Optional<double> t1 = d;                    // no warnings - this direction OK
-            Optional<double> t2 = Optional<double> (d); // ""
+            optional<int>    d;
+            optional<double> t1 = d;                    // no warnings - this direction OK
+            optional<double> t2 = optional<double> (d); // ""
         }
         {
-            Optional<double> d;
+            optional<double> d;
             //Optional<uint64_t> t1 = d;                      // should generate warning or error
-            Optional<uint64_t> t2 = Optional<uint64_t> (d); // should not
+            // SKIP SINCE SWITCH TO C++ optional - generates warning - optional<uint64_t> t2 = optional<uint64_t> (d); // should not
         }
         {
-            struct objWithoutOpAssign_ {
-                const int a{};
-            };
-            Optional<objWithoutOpAssign_> x{objWithoutOpAssign_{}};
-            x = objWithoutOpAssign_{};
-        }
-        {
-            Optional<int> x = 1;
+            optional<int> x = 1;
             VerifyTestResult (Characters::ToString (x) == L"1");
         }
         {
             // empty optional < any other value
-            VerifyTestResult (Optional<int>{} < -9999);
-            VerifyTestResult (Optional<int>{-9999} > Optional<int>{});
+            VerifyTestResult (optional<int>{} < -9999);
+            VerifyTestResult (optional<int>{-9999} > optional<int>{});
         }
     }
     void Test2_SharedByValue ()
@@ -137,15 +130,15 @@ namespace {
         Mapping<int, float> ml1, ml2;
         ml1 = ml2;
 
-        Optional<Mapping<int, float>> ol1, ol2;
+        optional<Mapping<int, float>> ol1, ol2;
         if (ol2.has_value ()) {
             ml1 = *ol2;
         }
         ol1 = ml1;
-        Optional<Mapping<int, float>> xxxx2 (ml1);
+        optional<Mapping<int, float>> xxxx2 (ml1);
 
         // fails to compile prior to 2013-09-09
-        Optional<Mapping<int, float>> xxxx1 (ol1);
+        optional<Mapping<int, float>> xxxx1 (ol1);
         // fails to compile prior to 2013-09-09
         ol1 = ol2;
     }
@@ -350,14 +343,6 @@ namespace {
             }
         }
     }
-    void Test8_OptionalStorageTraits_ ()
-    {
-        using namespace Test8PRIVATE_;
-        BasicOTest_<Optional<int, InPlace_Traits<int>>> ();
-        BasicOTest_<Optional<int, Indirect_Traits<int>>> ();
-        BasicOTest_<Optional<wstring, InPlace_Traits<wstring>>> ();
-        BasicOTest_<Optional<wstring, Indirect_Traits<wstring>>> ();
-    }
 }
 
 namespace {
@@ -400,19 +385,19 @@ namespace {
 #endif
                 // ASSIGN
                 {
-                    Optional<int> x;
+                    optional<int> x;
                     x = x;
                 }
                 {
-                    Optional<Characters::String> x;
+                    optional<Characters::String> x;
                     x = x;
                 }
                 {
-                    Optional<int> x{1};
+                    optional<int> x{1};
                     x = x;
                 }
                 {
-                    Optional<Characters::String> x{L"x"};
+                    optional<Characters::String> x{L"x"};
                     x = x;
                 }
             }
@@ -434,7 +419,6 @@ namespace {
         Test_5_SharedPtr ();
         Test_6_Bits_ ();
         Test_7_BLOB_ ();
-        Test8_OptionalStorageTraits_ ();
         Test9_SmallStackBuffer_::DoTest ();
         Test10_OptionalSelfAssign_::DoTest ();
     }

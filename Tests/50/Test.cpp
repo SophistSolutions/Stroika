@@ -1138,16 +1138,16 @@ namespace {
             void T1_ ()
             {
                 for (int i = 0; i < 1000; ++i) {
-                    Optional<T> x;
-                    Optional<T> y = x;
+                    optional<T> x;
+                    optional<T> y = x;
                 }
             }
             template <typename T>
             void T2_ ()
             {
                 for (int i = 0; i < 1000; ++i) {
-                    Optional<T> x = T{};
-                    Optional<T> y = x;
+                    optional<T> x = T{};
+                    optional<T> y = x;
                 }
             }
             template <typename T>
@@ -1513,7 +1513,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         sShowOutput_             = MatchesCommandLineArgument (cmdLine, L"show");
 
         {
-            Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
+            optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
             if (arg.has_value ()) {
                 sTimeMultiplier_ = String2Float<double> (*arg);
             }

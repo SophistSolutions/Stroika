@@ -16,6 +16,10 @@
 
 namespace Stroika::Foundation::Memory {
 
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+
     /*
      ********************************************************************************
      ********************* Optional_Traits_Inplace_Storage<T> ***********************
@@ -773,6 +777,17 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ************************ OptionalFromNullable **********************************
+     ********************************************************************************
+     */
+    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T, typename SFINAE_SAFE_CONVERTIBLE>
+    inline optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
+    {
+        return from == nullptr ? optional<T>{} : optional<T>{static_cast<T> (*from)};
+    }
+
+    /*
+     ********************************************************************************
      ******************************** AccumulateIf **********************************
      ********************************************************************************
      */
@@ -1072,5 +1087,10 @@ namespace Stroika::Foundation::Memory {
         AccumulateIf (&result, rhs, divides{});
         return result;
     }
+
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+
 }
 #endif /*_Stroika_Foundation_Memory_Optional_inl_*/

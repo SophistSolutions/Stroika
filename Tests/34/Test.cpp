@@ -78,7 +78,7 @@ namespace {
                 }
                 DB (const DB&)         = delete;
                 nonvirtual DB& operator= (const DB&) = delete;
-                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const Optional<String>& ScanLabel, ScanKindType_ scanKind, const Optional<SpectrumType_>& rawSpectrum)
+                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
                 {
                     String insertSQL = [&] () {
                         StringBuilder sb;
@@ -105,7 +105,7 @@ namespace {
                     fDB_->Exec (L"%s", insertSQL.c_str ());
                     Statement s{fDB_.get (), L"SELECT MAX(ScanId) FROM Scans;"};
 
-                    if (Optional<Statement::RowType> r = s.GetNextRow ()) {
+                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
@@ -114,16 +114,16 @@ namespace {
                     AssertNotReached ();
                     return ScanIDType_{};
                 }
-                nonvirtual Optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
+                nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
                 {
                     Statement s{fDB_.get (), L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
-                    if (Optional<Statement::RowType> r = s.GetNextRow ()) {
+                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
                         return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
                     }
-                    return Optional<ScanIDType_>{};
+                    return optional<ScanIDType_>{};
                 }
                 static void InitialSetup_ (Database::SQLite::Connection& db)
                 {
@@ -189,7 +189,7 @@ namespace {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
                     Statement s{db.fDB_.get (), L"select * from ScanTypes;"};
-                    while (Optional<Statement::RowType> r = s.GetNextRow ()) {
+                    while (optional<Statement::RowType> r = s.GetNextRow ()) {
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
                     }
                 }

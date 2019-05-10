@@ -18,7 +18,7 @@
 namespace Stroika::Foundation::Math {
 
     /**
-	 *	\todo Consider if this class should automatically normalize (0..2pi) or at least have a normalize method.
+     *  \todo Consider if this class should automatically normalize (0..2pi) or at least have a normalize method.
      */
     class Angle {
     public:

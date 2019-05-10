@@ -113,6 +113,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *  already occurred. The reaosn for Optional<> part is because the caller had an optional
      *  element which might never have triggered the invocation of this class.
      */
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
     template <typename T>
     class Registry::OldOptionalTypesReader_ : public IElementConsumer {
     public:
@@ -161,6 +164,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         T                            fProxyValue_{};
         shared_ptr<IElementConsumer> fActualReader_{};
     };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     /*
      ********************************************************************************
