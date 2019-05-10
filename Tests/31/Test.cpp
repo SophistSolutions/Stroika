@@ -634,15 +634,15 @@ namespace {
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            int                   fInt1;
-            optional<int> fInt2;
-            Mapping<int, int>     fMapping1;
-            Sequence<int>         fSequence1;
-            int                   fBasicArray1[5];
-            Set<int>              fSet1_;
-            vector<int>           fVector1_;
-            IO::Network::URI      fURL1_;
-            IO::Network::URI      fURL2_;
+            int               fInt1;
+            optional<int>     fInt2;
+            Mapping<int, int> fMapping1;
+            Sequence<int>     fSequence1;
+            int               fBasicArray1[5];
+            Set<int>          fSet1_;
+            vector<int>       fVector1_;
+            IO::Network::URI  fURL1_;
+            IO::Network::URI  fURL2_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
