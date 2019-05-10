@@ -18,9 +18,11 @@
 namespace Stroika::Foundation::Math {
 
     /**
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */
     class Angle {
+    public:
+        using RepType = double;
+
     public:
         enum class AngleFormat : uint8_t {
             eRadians,
@@ -39,22 +41,22 @@ namespace Stroika::Foundation::Math {
         /**
          */
         constexpr Angle ();
-        constexpr Angle (double angle, AngleFormat angleFormat = AngleFormat::eRadians);
+        constexpr Angle (RepType angle, AngleFormat angleFormat);
 
     public:
         /**
          */
-        nonvirtual constexpr double AsRadians () const;
+        nonvirtual constexpr RepType AsRadians () const;
 
     public:
         /**
          */
-        nonvirtual constexpr double AsDegrees () const;
+        nonvirtual constexpr RepType AsDegrees () const;
 
     public:
         /**
          */
-        nonvirtual constexpr double AsGradians () const;
+        nonvirtual constexpr RepType AsGradians () const;
 
     public:
         nonvirtual const Angle& operator+= (const Angle& rhs);
@@ -99,12 +101,22 @@ namespace Stroika::Foundation::Math {
     /**
      */
     constexpr Angle operator* (double lhs, const Angle& rhs);
-    constexpr Angle operator* (const Angle& lhs, double rhs);
+    constexpr Angle operator* (const Angle& lhs, Angle::RepType rhs);
     constexpr Angle operator* (const Angle& lhs, Angle& rhs);
 
     /**
      */
-    constexpr Angle operator/ (const Angle& lhs, double rhs);
+    constexpr Angle operator/ (const Angle& lhs, Angle::RepType rhs);
+
+    /**
+     */
+    constexpr Angle operator"" _deg (long double n) noexcept;
+    constexpr Angle operator"" _deg (unsigned long long int n) noexcept;
+
+    /**
+     */
+    constexpr Angle operator"" _rad (long double n) noexcept;
+    constexpr Angle operator"" _rad (unsigned long long int n) noexcept;
 
     /**
      */

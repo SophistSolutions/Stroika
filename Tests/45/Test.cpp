@@ -61,10 +61,10 @@ namespace {
     void Test3_Angle_ ()
     {
         // really could use more cases!!!
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (2.3));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (360, Angle::AngleFormat::eDegrees));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
+        VerifyTestResult (1.1_rad + 1.1_rad < 2.3_rad);
+        VerifyTestResult (1.1_rad + 1.1_rad < 360_deg);
+        VerifyTestResult (1.1_rad + 1.1_rad < 180_deg);
+        VerifyTestResult (1.1_rad + 1.1_rad > 120_deg);
     }
     void Test4_OddEvenPrime_ ()
     {

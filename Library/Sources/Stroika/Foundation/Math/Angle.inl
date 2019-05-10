@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Math {
         : fAngleInRadians_{0}
     {
     }
-    inline constexpr Angle::Angle (double angle, AngleFormat angleFormat)
+    inline constexpr Angle::Angle (RepType angle, AngleFormat angleFormat)
         : fAngleInRadians_{
               (angleFormat == AngleFormat::eRadians)
                   ? angle
@@ -37,15 +37,15 @@ namespace Stroika::Foundation::Math {
         using namespace Configuration;
         Require (ToInt (AngleFormat::eSTART) <= ToInt (angleFormat) and ToInt (angleFormat) < ToInt (AngleFormat::eEND));
     }
-    inline constexpr double Angle::AsRadians () const
+    inline constexpr Angle::RepType Angle::AsRadians () const
     {
         return fAngleInRadians_;
     }
-    inline constexpr double Angle::AsDegrees () const
+    inline constexpr Angle::RepType Angle::AsDegrees () const
     {
         return fAngleInRadians_ * 360.0 / (2 * kPi);
     }
-    inline constexpr double Angle::AsGradians () const
+    inline constexpr Angle::RepType Angle::AsGradians () const
     {
         return fAngleInRadians_ * 400.0 / (2 * kPi);
     }
@@ -59,12 +59,12 @@ namespace Stroika::Foundation::Math {
         fAngleInRadians_ -= rhs.AsRadians ();
         return *this;
     }
-    inline const Angle& Angle::operator*= (double rhs)
+    inline const Angle& Angle::operator*= (RepType rhs)
     {
         fAngleInRadians_ *= rhs;
         return *this;
     }
-    inline const Angle& Angle::operator/= (double rhs)
+    inline const Angle& Angle::operator/= (RepType rhs)
     {
         fAngleInRadians_ /= rhs;
         return *this;
@@ -117,27 +117,43 @@ namespace Stroika::Foundation::Math {
      */
     constexpr Angle operator+ (const Angle& lhs, const Angle& rhs)
     {
-        return Angle (lhs.AsRadians () + rhs.AsRadians ());
+        return Angle (lhs.AsRadians () + rhs.AsRadians (), Angle::eRadians);
     }
     constexpr Angle operator- (const Angle& lhs, const Angle& rhs)
     {
-        return Angle (lhs.AsRadians () - rhs.AsRadians ());
+        return Angle (lhs.AsRadians () - rhs.AsRadians (), Angle::eRadians);
     }
-    constexpr Angle operator* (const Angle& lhs, double rhs)
+    constexpr Angle operator* (const Angle& lhs, Angle::RepType rhs)
     {
-        return Angle (lhs.AsRadians () * rhs);
+        return Angle (lhs.AsRadians () * rhs, Angle::eRadians);
     }
-    constexpr Angle operator/ (const Angle& lhs, double rhs)
+    constexpr Angle operator/ (const Angle& lhs, Angle::RepType rhs)
     {
-        return Angle (lhs.AsRadians () / rhs);
+        return Angle (lhs.AsRadians () / rhs, Angle::eRadians);
     }
     constexpr Angle operator* (double lhs, const Angle& rhs)
     {
-        return Angle (lhs * rhs.AsRadians ());
+        return Angle (lhs * rhs.AsRadians (), Angle::eRadians);
     }
     constexpr Angle operator* (const Angle& lhs, const Angle& rhs)
     {
-        return Angle (lhs.AsRadians () * rhs.AsRadians ());
+        return Angle (lhs.AsRadians () * rhs.AsRadians (), Angle::eRadians);
+    }
+    constexpr Angle operator""_deg (long double n) noexcept
+    {
+        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eDegrees};
+    }
+    constexpr Angle operator""_deg (unsigned long long int n) noexcept
+    {
+        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eDegrees};
+    }
+    constexpr Angle operator""_rad (long double n) noexcept
+    {
+        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eRadians};
+    }
+    constexpr Angle operator""_rad (unsigned long long int n) noexcept
+    {
+        return Angle{static_cast<Angle::RepType> (n), Angle::AngleFormat::eRadians};
     }
 
     /*
