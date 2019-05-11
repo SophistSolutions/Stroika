@@ -678,8 +678,8 @@ namespace {
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                Memory::Optional<String> aaa = DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
-                DbgTrace (L"reverselookup %s", ValueOrDefault (aaa).c_str ());
+                optional<String> aaa = DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
+                DbgTrace (L"reverselookup %s", Memory::ValueOrDefault (aaa).c_str ());
             }
         }
     }

@@ -236,11 +236,11 @@ namespace {
             Debug::TraceContextBumper traceCtx ("{}::Test3_SynchronizedOptional_::DoIt ()");
             using namespace Memory;
             try {
-                Synchronized<Optional<int>> sharedValue{0};
+                Synchronized<optional<int>> sharedValue{0};
                 static const bool           kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
                 static const int            kMaxVal_          = kRunningValgrind_ ? 5 : 100000;
                 Thread::Ptr                 reader            = Thread::New ([&sharedValue] () {
-                    Optional<int> prevValue;
+                    optional<int> prevValue;
                     unsigned int  repeatCount{};
                     while ((prevValue = sharedValue.load ()) < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
@@ -325,15 +325,14 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper traceCtx ("{}::Test6_OverloadsWithSyncMethods_::DoIt ()");
-            using Memory::Optional;
             String               xx;
             Synchronized<String> yy;
             if (xx != yy) {
             }
-            Optional<String> xxo;
+            optional<String> xxo;
 #if 0
             //////@todo FIX various operator overloads so this works more seemlessly. See
-            //      template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            //      template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
             //      bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             // and related failed attempts
             if (xxo != yy.load ()) {
@@ -448,13 +447,13 @@ namespace {
                     x.cget ().cref ()->const_method ();
                 }
                 {
-                    Synchronized<Memory::Optional<NotCopyable>> x;
-                    x.store (Memory::Optional<NotCopyable>{NotCopyable{}});
+                    Synchronized<optional<NotCopyable>> x;
+                    x.store (optional<NotCopyable>{NotCopyable{}});
                     x.rwget ().rwref ()->method ();
                     x.cget ().cref ()->const_method ();
                 }
                 {
-                    Synchronized<Memory::Optional<NotCopyable>> x;
+                    Synchronized<optional<NotCopyable>> x;
                     auto                                        l = x.rwget ();
                     l.store ({});
                 }

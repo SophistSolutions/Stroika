@@ -1086,7 +1086,7 @@ namespace {
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
                 while (not q.QAtEOF ()) {
-                    if (Memory::Optional<function<void ()>> of = q.RemoveHeadIfPossible ()) {
+                    if (optional<function<void ()>> of = q.RemoveHeadIfPossible ()) {
                         function<void ()> f = *of;
                         f ();
                     }

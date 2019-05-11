@@ -668,7 +668,7 @@ namespace {
 
         ObjectVariantMapper mapper;
 
-        mapper.AddCommonType<Memory::Optional<int>> ();
+        mapper.AddCommonType<optional<int>> ();
         mapper.AddCommonType<Mapping<int, int>> ();
         mapper.AddCommonType<Sequence<int>> ();
         mapper.AddCommonType<vector<int>> ();

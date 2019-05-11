@@ -120,8 +120,6 @@ namespace {
             Stroika_Define_Enum_Bounds (red, green)
         };
 
-        using Memory::Optional;
-
         {
             Color min1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kLowerBound;
             Color max1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kUpperBound;
@@ -139,7 +137,7 @@ namespace {
         }
         {
             int             nItemsHit = 0;
-            Optional<Color> lastItemHit;
+            optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
@@ -150,7 +148,7 @@ namespace {
         }
         {
             int             nItemsHit = 0;
-            Optional<Color> lastItemHit;
+            optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ().Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
@@ -161,8 +159,8 @@ namespace {
         }
         {
             int             nItemsHit = 0;
-            Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
+            optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
@@ -172,8 +170,8 @@ namespace {
         }
         {
             int             nItemsHit = 0;
-            Optional<Color> lastItemHit;
-            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit] (Color i) {
+            optional<Color> lastItemHit;
+            DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit](Color i) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
@@ -247,12 +245,12 @@ namespace {
                 VerifyTestResult (r[0] == 6 and r[1] == 8);
             }
             {
-                Memory::Optional<int> answer =
+                optional<int> answer =
                     FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool { return i == 1; });
                 VerifyTestResult (*answer == 1);
             }
             {
-                Memory::Optional<int> answer =
+                optional<int> answer =
                     FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool { return i == 8; });
                 VerifyTestResult (not answer.has_value ());
             }
@@ -319,10 +317,10 @@ namespace {
             constexpr int kMin      = 1;
             constexpr int kMax      = 10;
             auto          myContext = shared_ptr<int> (new int (kMin - 1));
-            auto          getNext   = [myContext] () -> Memory::Optional<int> {
+            auto          getNext   = [myContext]() -> optional<int> {
                 (*myContext)++;
                 if (*myContext > 10) {
-                    return Memory::Optional<int> ();
+                    return optional<int> ();
                 }
                 return *myContext;
             };
