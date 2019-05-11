@@ -171,7 +171,7 @@ namespace {
         {
             int             nItemsHit = 0;
             optional<Color> lastItemHit;
-            DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit](Color i) {
+            DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit] (Color i) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
@@ -317,7 +317,7 @@ namespace {
             constexpr int kMin      = 1;
             constexpr int kMax      = 10;
             auto          myContext = shared_ptr<int> (new int (kMin - 1));
-            auto          getNext   = [myContext]() -> optional<int> {
+            auto          getNext   = [myContext] () -> optional<int> {
                 (*myContext)++;
                 if (*myContext > 10) {
                     return optional<int> ();

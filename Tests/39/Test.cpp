@@ -325,8 +325,8 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper traceCtx ("{}::Test6_OverloadsWithSyncMethods_::DoIt ()");
-            String               xx;
-            Synchronized<String> yy;
+            String                    xx;
+            Synchronized<String>      yy;
             if (xx != yy) {
             }
             optional<String> xxo;
@@ -454,7 +454,7 @@ namespace {
                 }
                 {
                     Synchronized<optional<NotCopyable>> x;
-                    auto                                        l = x.rwget ();
+                    auto                                l = x.rwget ();
                     l.store ({});
                 }
             }
