@@ -4,6 +4,8 @@
 #ifndef _Stroika_Foundation_Common_KeyValuePair_inl_
 #define _Stroika_Foundation_Common_KeyValuePair_inl_ 1
 
+#include "Compare.h"
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -170,7 +172,7 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator>= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayCompare{} (lhs, rhs) >= 0;
+        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayCompare{}(lhs, rhs) >= 0;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator> (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
