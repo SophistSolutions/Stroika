@@ -138,10 +138,10 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr int KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer::operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const
     {
-        if (int cmp = Common::ThreeWayCompare<KEY_TYPE>{}(lhs.fKey, rhs.fKey)) {
+        if (int cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey)) {
             return cmp;
         }
-        return Common::ThreeWayCompare<VALUE_TYPE>{}(lhs.fValue, rhs.fValue);
+        return Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
     }
 
     /*
@@ -152,12 +152,12 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayCompare{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayCompare{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
@@ -172,12 +172,12 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator>= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayCompare{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator> (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayCompare{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }
