@@ -88,23 +88,50 @@ namespace Stroika::Foundation::Common {
         ValueType fValue{};
 
     public:
+        struct EqualsComparer;
+
+    public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
          */
-        nonvirtual bool Equals (const KeyValuePair<KeyType, ValueType>& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] bool Equals (const KeyValuePair<KeyType, ValueType>& rhs) const;
     };
 
     /**
-     *  operator indirects to KeyValuePair<>::Equals ()
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    struct KeyValuePair<KEY_TYPE, VALUE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr bool operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const;
+    };
 
     /**
-     *  operator indirects to KeyValuePair<>::Equals ()
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
+    struct KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr int operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    template <typename KEY_TYPE, typename VALUE_TYPE>
     bool operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    bool operator>= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    bool operator> (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
 
 }
 
