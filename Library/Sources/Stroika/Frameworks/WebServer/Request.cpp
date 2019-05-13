@@ -55,10 +55,11 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     static const String_Constant                       kLabeled_10_{L"HTTP/1.0"};
     static const String_Constant                       kLabeled_11_{L"HTTP/1.1"};
-    if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionOrVersionLabel.Equals (kLabeled_11_, Characters::CompareOptions::eCaseInsensitive)) {
+    auto                                               versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+    if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
         fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
     }
-    else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or versionOrVersionLabel.Equals (kLabeled_10_, Characters::CompareOptions::eCaseInsensitive)) {
+    else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
         fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
     }
     else if (versionOrVersionLabel.StartsWith (L"HTTP/", Characters::CompareOptions::eCaseInsensitive)) {

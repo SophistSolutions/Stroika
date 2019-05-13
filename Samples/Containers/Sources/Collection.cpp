@@ -23,6 +23,8 @@ using namespace std;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
+using Characters::CompareOptions;
+
 namespace {
     void SimplestCollectionTest_ ()
     {
@@ -197,7 +199,7 @@ namespace {
             Assert (fruits.size () == 4);
         }
         for (Iterator<String> i = fruits.begin (); i != fruits.end (); ++i) {
-            if (i->Equals (L"apple", Characters::CompareOptions::eCaseInsensitive)) {
+            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
                 fruits.Remove (i);
                 // with STL containers, it would be illegal to reference i again, as in i++.
                 // However, with Stroika iterators, they are smart about doing the right thing,

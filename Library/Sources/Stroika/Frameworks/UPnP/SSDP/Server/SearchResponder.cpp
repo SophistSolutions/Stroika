@@ -76,16 +76,17 @@ namespace {
                 }
             }
 
-            bool matches = false;
-            if (da.fTarget.Equals (kTarget_UPNPRootDevice, Characters::CompareOptions::eCaseInsensitive)) {
+            bool matches          = false;
+            auto targetEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+            if (targetEqComparer (da.fTarget, kTarget_UPNPRootDevice)) {
                 matches = true;
             }
-            else if (da.fTarget.Equals (kTarget_SSDPAll, Characters::CompareOptions::eCaseInsensitive)) {
+            else if (targetEqComparer (da.fTarget, kTarget_SSDPAll)) {
                 matches = true;
             }
             else {
                 for (auto a : advertisements) {
-                    if (a.fTarget.Equals (da.fTarget, Characters::CompareOptions::eCaseInsensitive)) {
+                    if (targetEqComparer (a.fTarget, da.fTarget)) {
                         matches = true;
                         break;
                     }
@@ -100,11 +101,11 @@ namespace {
                     a.fAlive = nullopt; // in responder we don't set alive flag
 
                     bool includeThisAdvertisement = false;
-                    if (da.fTarget.Equals (kTarget_SSDPAll, Characters::CompareOptions::eCaseInsensitive)) {
+                    if (targetEqComparer (da.fTarget, kTarget_SSDPAll)) {
                         includeThisAdvertisement = true;
                     }
                     else {
-                        includeThisAdvertisement = a.fTarget.Equals (da.fTarget, Characters::CompareOptions::eCaseInsensitive);
+                        includeThisAdvertisement = targetEqComparer (a.fTarget, da.fTarget);
                     }
 
                     if (includeThisAdvertisement) {
