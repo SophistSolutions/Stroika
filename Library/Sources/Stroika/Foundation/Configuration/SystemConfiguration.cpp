@@ -586,7 +586,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         if (tmp.fShortPrettyName.empty ()) {
             try {
                 String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/centos-release"sv)).ReadAll ().Trim ();
-                tmp.fShortPrettyName            = L"Centos";
+                tmp.fShortPrettyName            = L"Centos"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
                 if (tokens.size () >= 3) {
@@ -600,7 +600,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         if (tmp.fShortPrettyName.empty ()) {
             try {
                 String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/redhat-release"sv)).ReadAll ().Trim ();
-                tmp.fShortPrettyName            = L"RedHat";
+                tmp.fShortPrettyName            = L"RedHat"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
                 if (tokens.size () >= 3) {
@@ -621,9 +621,9 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fPrettyNameWithVersionDetails = tmp.fPrettyNameWithMajorVersion;
         }
         if (tmp.fRFC1945CompatProductTokenWithVersion.empty ()) {
-            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
+            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" "sv, L"-"sv);
             if (not tmp.fMajorMinorVersionString.empty ()) {
-                tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
+                tmp.fRFC1945CompatProductTokenWithVersion += L"/"sv + tmp.fMajorMinorVersionString;
             }
         }
 
@@ -649,11 +649,12 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 
         // No good way I can find to tell...
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
-            if (tmp.fShortPrettyName.Equals (L"Centos", CompareOptions::eCaseInsensitive) or
-                tmp.fShortPrettyName.Equals (L"RedHat", CompareOptions::eCaseInsensitive)) {
+            auto nameEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+            if (nameEqComparer (tmp.fShortPrettyName, L"Centos"sv) or
+                nameEqComparer (tmp.fShortPrettyName, L"RedHat"sv)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
-            else if (tmp.fShortPrettyName.Equals (L"Ubuntu", CompareOptions::eCaseInsensitive)) {
+            else if (nameEqComparer (tmp.fShortPrettyName, L"Ubuntu"sv)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
         }
