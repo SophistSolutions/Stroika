@@ -38,7 +38,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return String::LessCI{}(lhs, rhs);
+        return String::LessComparer{Characters::CompareOptions::eCaseInsensitive}(lhs, rhs);
     }
     inline bool operator<= (const SchemeType& lhs, const SchemeType& rhs)
     {
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator== (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return String::EqualToCI{}(lhs, rhs);
+        return String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}(lhs, rhs);
     }
     inline bool operator!= (const SchemeType& lhs, const SchemeType& rhs)
     {

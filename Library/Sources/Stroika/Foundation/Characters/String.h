@@ -1173,6 +1173,15 @@ namespace Stroika::Foundation::Characters {
         nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
+        struct EqualsComparer;
+
+    public:
+        struct LessComparer;
+
+    public:
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          */
@@ -1187,17 +1196,14 @@ namespace Stroika::Foundation::Characters {
          * @brief   Return true of the two argument strings are equal. This is equivalent to
          *              lhs.Compare (rhs, co);
          */
-        nonvirtual bool Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
 
     public:
         struct EqualToCI;
 
     public:
         struct LessCI;
-
-    public:
-        struct ThreeWayComparer;
 
     public:
         /**
@@ -1339,14 +1345,16 @@ namespace Stroika::Foundation::Characters {
     /*
      *  Equivilent to std::equal_to<String>, except doing case insensitive compares
      */
-    struct String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{eCaseInsensative} ()")]] String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals>
+    {
         nonvirtual bool operator() (const String& lhs, const String& rhs) const;
     };
 
     /*
      *  Equivilent to std::less<String>, except doing case insensitive compares
      */
-    struct String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+    struct [[deprecated ("in Stroika v2.1d24 - use LessComparer{eCaseInsensative} ()")]] String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder>
+    {
         nonvirtual bool operator() (const String& lhs, const String& rhs) const;
     };
 
@@ -1377,6 +1385,48 @@ namespace Stroika::Foundation::Characters {
         static pair<const Character*, const Character*> Access_ (const wstring_view& s);
         static pair<const Character*, const Character*> Access_ (const Character* lhs);
         static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
+    };
+
+    /**
+     *  \brief very similar to ThreeWayComparer but returns true if equals, and slightly more performant than ThreeWayComparer
+     */
+    struct String::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (CompareOptions co = CompareOptions::eWithCase);
+        // Extra overloads a slight performance improvement
+        nonvirtual bool operator() (const String& lhs, const String& rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const Character* lhs, const String& rhs) const;
+        nonvirtual bool operator() (const Character* lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const String& lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const Character* lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const String& rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const String& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+
+        CompareOptions fCompareOptions;
+
+    private:
+        template <typename LT, typename RT>
+        bool                                            Cmp_ (LT lhs, RT rhs) const;
+        static pair<const Character*, const Character*> Access_ (const String& s);
+        static pair<const Character*, const Character*> Access_ (const wstring_view& s);
+        static pair<const Character*, const Character*> Access_ (const Character* lhs);
+        static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
+    };
+
+    /**
+     *  \brief very similar to ThreeWayComparer but returns true if less
+     */
+    struct String::LessComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+        constexpr LessComparer (CompareOptions co = CompareOptions::eWithCase);
+        template <typename T1, typename T2>
+        nonvirtual bool operator() (T1 lhs, T2 rhs) const;
+
+    private:
+        String::ThreeWayComparer fComparer_;
     };
 
     /**

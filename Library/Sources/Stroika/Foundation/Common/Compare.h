@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Example Usage
      *      \code
-     *          struct String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+     *          struct String::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
      *              nonvirtual bool operator() (const String& lhs, const String& rhs) const;
      *           };
      *      \endcode

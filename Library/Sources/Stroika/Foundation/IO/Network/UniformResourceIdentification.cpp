@@ -77,7 +77,7 @@ optional<PortType> SchemeType::GetDefaultPort () const
 {
     // From http://www.iana.org/assignments/port-numbers
     static const Mapping<String, PortType> kPredefined_{
-        String::EqualToCI{},
+        String::EqualsComparer{CompareOptions::eCaseInsensitive},
         initializer_list<Common::KeyValuePair<String, PortType>>{
             {L"http"sv, static_cast<PortType> (80)},
             {L"https"sv, static_cast<PortType> (443)},
@@ -175,7 +175,7 @@ bool UniformResourceIdentification::operator== (const Host& lhs, const Host& rhs
     }
     Assert (lhs.AsRegisteredName ()); // must be one or the other
     Assert (rhs.AsRegisteredName ());
-    return lhs.AsRegisteredName ()->Equals (*rhs.AsRegisteredName (), Characters::CompareOptions::eCaseInsensitive);
+    return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*lhs.AsRegisteredName (), *rhs.AsRegisteredName ());
 }
 
 /*
@@ -189,7 +189,7 @@ int Common::ThreeWayComparer<Host>::operator() (const Host& lhs, const Host& rhs
         return cmp;
     }
     return Common::OptionalThreeWayCompare<String, String::ThreeWayComparer>{
-        String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
+        String::ThreeWayComparer{CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
 }
 
 /*

@@ -660,17 +660,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline bool String::Equals (const String& rhs, CompareOptions co) const
     {
-        // OK in two steps because length test doesn't affect correctness - just performance
-        //
-        // @todo - reconsider and test - not sure this helps performance
-        if (GetLength () != rhs.GetLength ()) {
-            return false;
-        }
-        return Compare (rhs, co) == 0;
+        return EqualsComparer{co}(*this, rhs);
     }
     inline bool String::Equals (const wchar_t* rhs, CompareOptions co) const
     {
-        return Compare (rhs, co) == 0;
+        return EqualsComparer{co}(*this, rhs);
     }
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
@@ -707,6 +701,112 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_END (4996);
+
+    /*
+     ********************************************************************************
+     ************************** String::EqualsComparer ******************************
+     ********************************************************************************
+     */
+    constexpr String::EqualsComparer::EqualsComparer (CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring_view& s)
+    {
+        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*s.begin ()), reinterpret_cast<const Character*> (&*s.begin () + s.size ()));
+    }
+    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const Character* s)
+    {
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
+    }
+    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wchar_t* s)
+    {
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
+    }
+    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const String& s)
+    {
+        return _SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
+    }
+    template <typename LT, typename RT>
+    inline bool String::EqualsComparer::Cmp_ (LT lhs, RT rhs) const
+    {
+        pair<const Character*, const Character*> l = Access_ (lhs);
+        pair<const Character*, const Character*> r = Access_ (rhs);
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions) == 0;
+    }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const String& rhs) const
+    {
+        if (lhs.GetLength () != rhs.GetLength ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const Character* lhs, const String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const Character* lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const Character* lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+
+    /*
+     ********************************************************************************
+     **************************** String::LessComparer ******************************
+     ********************************************************************************
+     */
+    constexpr String::LessComparer::LessComparer (CompareOptions co)
+        : fComparer_{co}
+    {
+    }
+    template <typename T1, typename T2>
+    inline bool String::LessComparer::operator() (T1 lhs, T2 rhs) const
+    {
+        return fComparer_ (lhs, rhs) < 0;
+    }
 
     /*
      ********************************************************************************
@@ -849,16 +949,16 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator== (const String& lhs, const String& rhs)
     {
-        return lhs.Equals (rhs);
+        return String::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator== (const String& lhs, const wchar_t* rhs)
     {
-        return lhs.Equals (rhs);
+        return String::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator== (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
-        return rhs.Equals (lhs); // revsered to avoid construction and because operator== is commutative
+        return String::EqualsComparer{}(lhs, rhs);
     }
 
     /*
@@ -868,16 +968,15 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator!= (const String& lhs, const String& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not String::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const String& lhs, const wchar_t* rhs)
     {
-        return not lhs.Equals (rhs);
+        return not String::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const wchar_t* lhs, const String& rhs)
     {
-        RequireNotNull (lhs);
-        return not rhs.Equals (lhs); // revsered to avoid construction and because operator== is commutative
+        return not String::EqualsComparer{}(lhs, rhs);
     }
 
     /*

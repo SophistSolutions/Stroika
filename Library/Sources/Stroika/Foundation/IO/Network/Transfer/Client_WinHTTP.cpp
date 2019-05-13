@@ -455,8 +455,9 @@ RetryWithAuth:
         if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost () or not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()) {
             Execution::Throw (Execution::RuntimeErrorException (L"Cannot validate TLS without a host name"));
         }
-        if (not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()->Equals (resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
-            not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()->Equals (L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)) {
+        auto equalsComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+        if (not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), resultSSLInfo.fSubjectCommonName) and
+            not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), L"www." + resultSSLInfo.fSubjectCommonName)) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }
 

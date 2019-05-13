@@ -36,7 +36,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool InternetMediaType::Equals (const InternetMediaType& rhs) const
     {
-        return fType_.Equals (rhs.fType_);
+        return String::EqualsComparer{}(fType_, rhs.fType_);
     }
     inline int InternetMediaType::Compare (const InternetMediaType& rhs) const
     {

@@ -113,7 +113,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \note schemes cannot include a ':' character
      *
-     *  \note Schemes should generally be treated as case insensitive, so compare with String::EqualToCI{}
+     *  \note Schemes should generally be treated as case insensitive, so compare with String::EqualsComparer{eCaseInsensitive}
      *
      * TODO:
      *      @todo   MABYE add "SCHEME REGISTER"
