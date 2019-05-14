@@ -1836,7 +1836,7 @@ sub PostProcessOptions_ ()
 			if (!$STATIC_LINK_GCCRUNTIME ) {
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
 			}
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9') {
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9') {	## directly included as of gcc-9 in stdc++lib
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 			}
 			if ($STATIC_LINK_GCCRUNTIME == 1) {
