@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline void Set<T>::AddAll (CONTAINER_OF_ADDABLE&& s)
     {
-        // Note - unlike Collection<T, TRAITS> - we don't need to check for this != &s because if we
+        // Note - unlike Collection<T> - we don't need to check for this != &s because if we
         // attempt to add items that already exist, it would do nothing, and not lead to
         // an infinite loop
         AddAll (std::begin (s), std::end (s));
@@ -377,12 +377,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::EqualsComparer::operator() (const Set<T>& lhs, const Iterable<T>& rhs) const
     {
-        return operator() (lhs, Set<T>{rhs}); // @todo fix unperformant impl
+        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
     template <typename T>
     bool Set<T>::EqualsComparer::operator() (const Iterable<T>& lhs, const Set<T>& rhs) const
     {
-        return operator() (Set<T>{lhs}, rhs); // @todo fix unperformant impl
+        return _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ());
     }
 
     /*
@@ -396,27 +396,7 @@ namespace Stroika::Foundation::Containers {
         return typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
-    inline bool operator== (const Set<T>& lhs, const Iterable<T>& rhs)
-    {
-        return typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator== (const Iterable<T>& lhs, const Set<T>& rhs)
-    {
-        return typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
     inline bool operator!= (const Set<T>& lhs, const Set<T>& rhs)
-    {
-        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs)
-    {
-        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs)
     {
         return not typename Set<T>::EqualsComparer{}(lhs, rhs);
     }

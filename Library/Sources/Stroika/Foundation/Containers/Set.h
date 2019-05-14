@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *      Synonym for *this = *this ^ Set<T,TRAITS> {items }
+         *      Synonym for *this = *this ^ Set<T> {items }
          */
         nonvirtual Set<T>& operator^= (const Iterable<T>& items);
 
@@ -419,7 +419,7 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual EqualityComparerType GetEqualsComparer () const                             = 0;
         virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual bool                 Equals (const _IRep& rhs) const                        = 0;
+        virtual bool                 Equals (const typename Iterable<T>::_IRep& rhs) const  = 0;
         virtual bool                 Contains (ArgByValueType<T> item) const                = 0;
         virtual optional<T>          Lookup (ArgByValueType<T> item) const                  = 0;
         virtual void                 Add (ArgByValueType<T> item)                           = 0;
@@ -429,7 +429,7 @@ namespace Stroika::Foundation::Containers {
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
-	/*
+        /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
      *  quickie backends).
      *
@@ -446,10 +446,10 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \brief Compare Set<>s or Iterable<>s for equality. 
      *
-     *  Two Sets are considered equal if they contain the same elements (by comparing them with TRAITS::EqualsCompareFunctionType (defaults to operator==)).
+     *  Two Sets are considered equal if they contain the same elements (by comparing them with EqualsCompareFunctionType (defaults to operator==)).
      *  Note, if two equalsComparer functions are provided, they must produce the same result comparing elements.
      *
-     *  Equals is commutative ().
+     *  EqualsComparer is commutative ().
      *
      *  @todo - document computational complexity
      *
@@ -470,15 +470,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool operator== (const Set<T>& lhs, const Set<T>& rhs);
     template <typename T>
-    bool operator== (const Set<T>& lhs, const Iterable<T>& rhs);
-    template <typename T>
-    bool operator== (const Iterable<T>& lhs, const Set<T>& rhs);
-    template <typename T>
     bool operator!= (const Set<T>& lhs, const Set<T>& rhs);
-    template <typename T>
-    bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs);
-    template <typename T>
-    bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs);
 
     /**
      *  Alias for Set<>::Union

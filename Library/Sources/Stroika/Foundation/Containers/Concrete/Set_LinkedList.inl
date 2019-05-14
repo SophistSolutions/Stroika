@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return Iterable<T>::template MakeSmartPtr<Rep_> (fEqualsComparer_);
             }
         }
-        virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
+        virtual bool Equals (const typename Iterable<T>::_IRep& rhs) const override
         {
             return this->_Equals_Reference_Implementation (rhs);
         }
