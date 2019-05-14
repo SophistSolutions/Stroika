@@ -377,12 +377,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::EqualsComparer::operator() (const Set<T>& lhs, const Iterable<T>& rhs) const
     {
-        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
+        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<typename Iterable<T>::_IRep>{&rhs}._ConstGetRep ());
     }
     template <typename T>
     bool Set<T>::EqualsComparer::operator() (const Iterable<T>& lhs, const Set<T>& rhs) const
     {
-        return _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ());
+        return _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<typename Iterable<T>::_IRep>{&lhs}._ConstGetRep ());
     }
 
     /*
