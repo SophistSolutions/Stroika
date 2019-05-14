@@ -77,7 +77,7 @@ namespace {
             Assert (fruits.SequnceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
 
             // But, we can do the same thing with a compare function that sorts case insensitively
-            fruits = SortedCollection<String>{String::LessCI{}, fruits};
+            fruits = SortedCollection<String>{String::LessComparer{CompareOptions::eCaseInsensitive}, fruits};
             DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.SequnceEquals (initializer_list<String>{L"apple", L"APPLE", L"bananas", L"cherries"}) or
                     fruits.SequnceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
@@ -153,8 +153,8 @@ namespace {
             fruits += L"APPLE";
             fruits += L"bananas";
             fruits += L"cherries";
-            DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (String::EqualToCI{})).c_str ());
-            Assert (fruits.Distinct (String::EqualToCI{}).size () == 3); // only one apple or the other (case squished)
+            DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive})).c_str ());
+            Assert (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive}).size () == 3); // only one apple or the other (case squished)
         }
     }
 }
