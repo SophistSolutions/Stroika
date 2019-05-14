@@ -173,12 +173,6 @@
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
  *              Stroika Range type?
  *
- *      @todo   Migrate most of the StringUtils stuff here like:
- *              > Contains- with CI optin
- *overload so can be string arg OR lambda!
- *              > Compare () - returns < less > more =0 for equal- with CI optin
- *              > Equals() - with CI optin
- *
  *      @todo   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
  *
  *      @todo   Add NormalizeSpace (Character useSpaceCharacter = ' ');
