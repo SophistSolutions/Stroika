@@ -429,19 +429,18 @@ namespace Stroika::Foundation::Containers {
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
-        /*
+	/*
      *  Reference Implementations (often not used except for ensure's, but can be used for
      *  quickie backends).
      *
      *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
      *  the sucblass refers to the method in a subclass virtual override.
      */
-
     protected:
         /**
          *  \note - this doesn't require a Compare function argument because it indirects to 'Contains'
          */
-        nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
+        nonvirtual bool _Equals_Reference_Implementation (const typename Iterable<T>::_IRep& rhs) const;
     };
 
     /**

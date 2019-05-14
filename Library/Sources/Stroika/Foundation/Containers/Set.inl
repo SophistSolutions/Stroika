@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T>
-    bool Set<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+    bool Set<T>::_IRep::_Equals_Reference_Implementation (const typename Iterable<T>::_IRep& rhs) const
     {
         if (this == &rhs) {
             return true;
@@ -354,8 +354,8 @@ namespace Stroika::Foundation::Containers {
             return false;
         }
         // Note - no need to iterate over rhs because we checked sizes the same
-        for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-            if (not rhs.Contains (*i)) {
+        for (auto i = rhs.MakeIterator (&rhs); not i.Done (); ++i) {
+            if (not Contains (*i)) {
                 return false;
             }
         }
