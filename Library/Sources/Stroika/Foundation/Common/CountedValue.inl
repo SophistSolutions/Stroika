@@ -4,6 +4,8 @@
 #ifndef _Stroika_Foundation_Common_CountedValue_inl_
 #define _Stroika_Foundation_Common_CountedValue_inl_ 1
 
+#include "Compare.h"
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -76,12 +78,12 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return not typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
@@ -96,12 +98,12 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator>= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator> (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return not typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }
