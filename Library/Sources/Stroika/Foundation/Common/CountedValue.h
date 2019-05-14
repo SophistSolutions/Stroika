@@ -16,8 +16,6 @@
  *      @todo   add default CTOR iff VALUE_TYPE has default CTOR, and same for other
  *              ops like assignment.
  *
- *      @todo   Add Compare/operator< support
- *
  *      @todo   Use typename Configuration::ArgByValueType<> more (one missing CTOR and Equals). On VS2k13 generates
  *              compiler errors I don't understand. Low pri...
  */
