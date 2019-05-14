@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Debug {
     {
 #if qDebug
         try {
-            lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
-            lock_guard<mutex>                                  sharedLockProtect{GetSharedLockMutexThreads_ ()};
+            shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
+            lock_guard<mutex>                                   sharedLockProtect{GetSharedLockMutexThreads_ ()};
             if (this == &rhs) {
                 Require (fLocks_ == 1 and fSharedLockThreads_->empty ()); // we locked ourselves above
             }
@@ -93,13 +93,6 @@ namespace Stroika::Foundation::Debug {
         unlock_shared_ ();
 #endif
     }
-#if qDebug
-    inline mutex& AssertExternallySynchronizedLock::GetSharedLockMutexThreads_ ()
-    {
-        static mutex sMutex_;
-        return sMutex_;
-    }
-#endif
 
 }
 

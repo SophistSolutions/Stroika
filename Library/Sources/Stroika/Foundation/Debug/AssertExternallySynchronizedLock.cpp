@@ -86,4 +86,11 @@ void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
         AssertNotReached ();
     }
 }
+
+mutex& AssertExternallySynchronizedLock::GetSharedLockMutexThreads_ ()
+{
+    static mutex sMutex_; // must be out-of-line so we can have just one mutex object. Could use static member, but then trouble using
+                          // AssertExternallySynchronizedLock before main
+    return sMutex_;
+}
 #endif
