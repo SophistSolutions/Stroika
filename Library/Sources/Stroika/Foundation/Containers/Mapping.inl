@@ -580,12 +580,12 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
     {
-        return typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer{}(lhs, rhs);
+        return typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
     {
-        return not typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer{}(lhs, rhs);
+        return not typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
     }
 
 }
