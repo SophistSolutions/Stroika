@@ -64,7 +64,7 @@ namespace {
             //DbgTrace (L"kTestSubDir_=%s", kTestSubDir_.c_str ());
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
-            VerifyTestResult (kFileNamesForDir_ == DirectoryIterable (kTestSubDir_));
+            VerifyTestResult (Containers::Set<String>::EqualsComparer{}(kFileNamesForDir_, DirectoryIterable (kTestSubDir_)));
             {
                 Containers::Set<String>     answers1;
                 Containers::Set<String>     answers2;

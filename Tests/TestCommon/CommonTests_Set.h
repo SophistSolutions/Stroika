@@ -125,11 +125,11 @@ namespace CommonTests {
                 applyToContainer (s2);
                 applyToContainer (s3);
                 VerifyTestResult (s == s3);
-                VerifyTestResult (s.Equals (s3));
+                VerifyTestResult (typename USING_SET_CONTAINER::EqualsComparer{}(s, s3));
                 VerifyTestResult (not(s != s3));
 
                 VerifyTestResult (s != s2);
-                VerifyTestResult (not s.Equals (s2));
+                VerifyTestResult (not typename USING_SET_CONTAINER::EqualsComparer{}(s, s2));
                 VerifyTestResult (not(s == s2));
             }
         }
