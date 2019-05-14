@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Common {
         /**
          * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
          */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] bool Equals (const KeyValuePair<KeyType, ValueType>& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () instead")]] bool Equals (const KeyValuePair<KeyType, ValueType>& rhs) const;
     };
 
     /**
