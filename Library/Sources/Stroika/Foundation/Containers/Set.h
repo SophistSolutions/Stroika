@@ -108,6 +108,8 @@ namespace Stroika::Foundation::Containers {
         /**
          *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
+         *
+         *  \note   @see also EqualsComparer{} to compare whole Set<>s
          */
         using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 
@@ -188,6 +190,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Return the function used to compare if two elements are equal
+         *
+         *  \note   @see also EqualsComparer{} to compare whole Set<>s
          */
         nonvirtual EqualityComparerType GetEqualsComparer () const;
 
@@ -303,17 +307,11 @@ namespace Stroika::Foundation::Containers {
         nonvirtual Set<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
-        /**
-         *  Two Sets are considered equal if they contain the same elements (by comparing them with TRAITS::EqualsCompareFunctionType (defaults to operator==)).
-         *
-         *  Equals is commutative ().
-         *
-         *  @todo - document computational complexity
-         *
-         *  \note   If RHS is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
-         */
-        nonvirtual bool Equals (const Set<T>& rhs) const;
-        nonvirtual bool Equals (const Iterable<T>& rhs) const;
+        struct EqualsComparer;
+
+    public:
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const Set<T>& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const Iterable<T>& rhs) const;
 
     public:
         /**
@@ -447,7 +445,28 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  operator indirects to Set<>::Equals()
+     *  \brief Compare Set<>s or Iterable<>s for equality. 
+     *
+     *  Two Sets are considered equal if they contain the same elements (by comparing them with TRAITS::EqualsCompareFunctionType (defaults to operator==)).
+     *  Note, if two equalsComparer functions are provided, they must produce the same result comparing elements.
+     *
+     *  Equals is commutative ().
+     *
+     *  @todo - document computational complexity
+     *
+     *  \note   If any argument is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
+     *
+     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Set<T> for equality.
+     */
+    template <typename T>
+    struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual bool operator() (const Set<T>& lhs, const Set<T>& rhs) const;
+        nonvirtual bool operator() (const Set<T>& lhs, const Iterable<T>& rhs) const;
+        nonvirtual bool operator() (const Iterable<T>& lhs, const Set<T>& rhs) const;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Set<T>::EqualsComparer
      */
     template <typename T>
     bool operator== (const Set<T>& lhs, const Set<T>& rhs);
@@ -455,10 +474,6 @@ namespace Stroika::Foundation::Containers {
     bool operator== (const Set<T>& lhs, const Iterable<T>& rhs);
     template <typename T>
     bool operator== (const Iterable<T>& lhs, const Set<T>& rhs);
-
-    /**
-     *  operator indirects to Set<>::Equals()
-     */
     template <typename T>
     bool operator!= (const Set<T>& lhs, const Set<T>& rhs);
     template <typename T>

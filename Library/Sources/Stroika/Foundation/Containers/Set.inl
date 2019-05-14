@@ -364,39 +364,68 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ******************************* Set<T> operators *******************************
+     ************************* Set<T>::EqualsComparer *******************************
+     ********************************************************************************
+     */
+    template <typename T>
+    bool Set<T>::EqualsComparer::operator() (const Set<T>& lhs, const Set<T>& rhs) const
+    {
+        bool result = _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
+        Ensure (result == _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ()));
+        return result;
+    }
+    template <typename T>
+    bool Set<T>::EqualsComparer::operator() (const Set<T>& lhs, const Iterable<T>& rhs) const
+    {
+        return operator() (lhs, Set<T>{rhs}); // @todo fix unperformant impl
+    }
+    template <typename T>
+    bool Set<T>::EqualsComparer::operator() (const Iterable<T>& lhs, const Set<T>& rhs) const
+    {
+        return operator() (Set<T>{lhs}, rhs); // @todo fix unperformant impl
+    }
+
+    /*
+     ********************************************************************************
+     ************************* Set<T> comparison operators **************************
      ********************************************************************************
      */
     template <typename T>
     inline bool operator== (const Set<T>& lhs, const Set<T>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator== (const Set<T>& lhs, const Iterable<T>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator== (const Iterable<T>& lhs, const Set<T>& rhs)
     {
-        return rhs.Equals (lhs);
+        return typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator!= (const Set<T>& lhs, const Set<T>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs)
     {
-        return not rhs.Equals (lhs);
+        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
+
+    /*
+     ********************************************************************************
+     ******************************* Set<T> operators *******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Set<T> operator+ (const Set<T>& lhs, const Iterable<T>& rhs)
     {
