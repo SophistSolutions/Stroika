@@ -412,6 +412,10 @@ namespace Stroika::Foundation::Containers {
         nonvirtual CONTAINER_OF_Key_T As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesDefaultIterableImpl = 0) const;
 
     public:
+        template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
+        struct EqualsComparer;
+
+    public:
         /**
          *  Two Associations are considered equal if they contain the same elements (keys) and each key is associated
          *  with the same value. There is no need for the items to appear in the same order for the two Associations to
@@ -423,7 +427,7 @@ namespace Stroika::Foundation::Containers {
          *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
          */
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
-        nonvirtual bool Equals (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
     public:
         /**
@@ -537,14 +541,32 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *      Syntactic sugar on Equals()
+     *  \brief Compare Associations<>s for equality. 
+     *
+     *  Two Associations are considered equal if they contain the same elements (keys) and each key is associated
+     *  with the same value. There is no need for the items to appear in the same order for the two Associations to
+     *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+     *  vers linkedlist).
+     *
+     *  EqualsComparer is commutative ().
+     *
+     *  @todo - document computational complexity
+     *
+     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Associations<T> for equality.
+     */
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename VALUE_EQUALS_COMPARER>
+    struct Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
+        nonvirtual bool       operator() (const Association& lhs, const Association& rhs) const;
+        VALUE_EQUALS_COMPARER fValueEqualsComparer;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Set<T>::EqualsComparer
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
-
-    /**
-     *      Syntactic sugar on not Equals()
-     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator!= (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
 
