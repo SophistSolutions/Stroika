@@ -161,11 +161,11 @@ namespace CommonTests {
                     testingSchema.ApplyToContainerExtraTest (m2);
                     testingSchema.ApplyToContainerExtraTest (m3);
                     //VerifyTestResult (m == m3);
-                    VerifyTestResult ((Mapping<key_type, mapped_type>::EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m3)));
+                    VerifyTestResult ((typename Mapping<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m3)));
                     //VerifyTestResult (not (m != m3));
 
                     //VerifyTestResult (m != m2);
-                    VerifyTestResult ((not Mapping<key_type, mapped_type>::EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m2)));
+                    VerifyTestResult ((not typename Mapping<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m2)));
                     //VerifyTestResult (not (m == m2));
                 }
             }
