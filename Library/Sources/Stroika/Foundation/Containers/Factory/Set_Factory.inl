@@ -34,12 +34,12 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Set<T> Set_Factory<T, EQUALS_COMPARER>::operator() () const
     {
         /*
-            *  Would have been more performant to just and assure always properly set, but to initialize
-            *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-            *  with containers constructed before main.
-            *
-            *  This works more generally (and with hopefully modest enough performance impact).
-            */
+         *  Would have been more performant to just and assure always properly set, but to initialize
+         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+         *  with containers constructed before main.
+         *
+         *  This works more generally (and with hopefully modest enough performance impact).
+         */
         if (auto f = sFactory_.load ()) {
             return f (fEqualsComparer_);
         }
