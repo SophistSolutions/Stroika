@@ -147,11 +147,12 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test4_Equals"};
-                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
-                    using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType m     = testingSchema.Factory ();
-                    ConcreteContainerType m2    = m;
+                    using key_type                       = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using mapped_type                    = typename DEFAULT_TESTING_SCHEMA::mapped_type;
+                    using ConcreteContainerType          = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
+                    using ValueEqualsCompareFunctionType = typename DEFAULT_TESTING_SCHEMA::ValueEqualsCompareFunctionType;
+                    ConcreteContainerType m              = testingSchema.Factory ();
+                    ConcreteContainerType m2             = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
                     VerifyTestResult (m.size () == 2);
@@ -160,11 +161,11 @@ namespace CommonTests {
                     testingSchema.ApplyToContainerExtraTest (m2);
                     testingSchema.ApplyToContainerExtraTest (m3);
                     //VerifyTestResult (m == m3);
-                    VerifyTestResult (m.Equals (m3, testingSchema.fValueEqualsComparer));
+                    VerifyTestResult ((Mapping<key_type, mapped_type>::EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m3)));
                     //VerifyTestResult (not (m != m3));
 
                     //VerifyTestResult (m != m2);
-                    VerifyTestResult (not m.Equals (m2, testingSchema.fValueEqualsComparer));
+                    VerifyTestResult ((not Mapping<key_type, mapped_type>::EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m2)));
                     //VerifyTestResult (not (m == m2));
                 }
             }

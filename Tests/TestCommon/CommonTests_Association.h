@@ -130,11 +130,11 @@ namespace CommonTests {
                 applyToContainer (m2);
                 applyToContainer (m3);
                 //VerifyTestResult (m == m3);
-                VerifyTestResult (m.template Equals<VALUE_EQUALS_COMPARER_TYPE> (m3));
+                VerifyTestResult (USING_ASSOCIATION_CONTAINER::EqualsComparer<VALUE_EQUALS_COMPARER_TYPE>{}(m, m3));
                 //VerifyTestResult (not (m != m3));
 
                 //VerifyTestResult (m != m2);
-                VerifyTestResult (not m.template Equals<VALUE_EQUALS_COMPARER_TYPE> (m2));
+                VerifyTestResult (not USING_ASSOCIATION_CONTAINER::EqualsComparer<VALUE_EQUALS_COMPARER_TYPE>{}(m, m2));
                 //VerifyTestResult (not (m == m2));
             }
         }

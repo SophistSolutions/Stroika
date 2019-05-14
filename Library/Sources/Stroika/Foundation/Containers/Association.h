@@ -417,20 +417,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Two Associations are considered equal if they contain the same elements (keys) and each key is associated
-         *  with the same value. There is no need for the items to appear in the same order for the two Associations to
-         *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-         *  vers linkedlist).
-         *
-         *  Equals is commutative().
-         *
-         *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-         */
-        template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
-
-    public:
-        /**
          */
         nonvirtual void Accumulate (
             ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});

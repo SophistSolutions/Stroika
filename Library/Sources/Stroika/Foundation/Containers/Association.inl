@@ -299,54 +299,6 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename VALUE_EQUALS_COMPARER>
-    bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Equals (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
-    {
-        /*
-        *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
-        */
-        _SafeReadRepAccessor<_IRep> lhs{this};
-        _SafeReadRepAccessor<_IRep> rhsR{&rhs};
-        if (&lhs._ConstGetRep () == &rhsR._ConstGetRep ()) {
-            // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
-            return true;
-        }
-        // Check length, so we don't need to check both iterators for end/done
-        if (lhs._ConstGetRep ().GetLength () != rhsR._ConstGetRep ().GetLength ()) {
-            return false;
-        }
-        /*
-         *  Two Associations compare equal, if they have the same domain, and map each element of that domain to the same range.
-         *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
-         *  If they miss, we need to fall back to a slower strategy.
-         */
-        auto li = lhs._ConstGetRep ().MakeIterator (this);
-        auto ri = rhs.MakeIterator ();
-        while (not li.Done ()) {
-            bool keysEqual = GetKeyEqualsComparer () (li->fKey, ri->fKey);
-            if (keysEqual and valueEqualsComparer (li->fValue, ri->fValue)) {
-                // then this element matches
-            }
-            else {
-                // check if li maps to right value in rhs
-                auto o = rhs.Lookup (li->fKey);
-                if (not o.has_value () or not valueEqualsComparer (*o, li->fValue)) {
-                    return false;
-                }
-                // if the keys were differnt, we must check the reverse direction too
-                if (not keysEqual) {
-                    if (not lhs._ConstGetRep ().Lookup (ri->fKey, &o) or not valueEqualsComparer (*o, ri->fValue)) {
-                        return false;
-                    }
-                }
-            }
-            // if we got this far, all compared OK so far, so keep going
-            ++li;
-            ++ri;
-        }
-        return li.Done ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
     {
         Add (key, f (LookupValue (key, initialValue), newValue));
@@ -398,7 +350,7 @@ namespace Stroika::Foundation::Containers {
 
     /*
     ********************************************************************************
-    ****************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
+    ************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
     ********************************************************************************
     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -498,6 +450,69 @@ namespace Stroika::Foundation::Containers {
     }
 
     /*
+     ********************************************************************************
+     ********** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer ************
+     ********************************************************************************
+     */
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename VALUE_EQUALS_COMPARER>
+    constexpr Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer)
+        : fValueEqualsComparer (valueEqualsComparer)
+    {
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename VALUE_EQUALS_COMPARER>
+    bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::operator() (const Association& lhs, const Association& rhs) const
+    {
+        /*
+         *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
+         */
+        _SafeReadRepAccessor<_IRep> lhsR{&lhs};
+        _SafeReadRepAccessor<_IRep> rhsR{&rhs};
+        if (&lhsR._ConstGetRep () == &rhsR._ConstGetRep ()) {
+            // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
+            return true;
+        }
+        // Check length, so we don't need to check both iterators for end/done
+        if (lhsR._ConstGetRep ().GetLength () != rhsR._ConstGetRep ().GetLength ()) {
+            return false;
+        }
+        /*
+         *  Two Mappings compare equal, if they have the same domain, and map each element of that domain to the same range.
+         *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
+         *  If they miss, we need to fall back to a slower strategy.
+         */
+        auto li                = lhsR._ConstGetRep ().MakeIterator (this);
+        auto ri                = rhs.MakeIterator ();
+        auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
+        while (not li.Done ()) {
+            Assert (not ri.Done ()); // cuz move at same time and same size
+            bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
+            if (keysEqual and fValueEqualsComparer (li->fValue, ri->fValue)) {
+                // then this element matches
+            }
+            else {
+                // check if li maps to right value in rhs
+                auto o = rhs.Lookup (li->fKey);
+                if (not o.has_value () or not fValueEqualsComparer (*o, li->fValue)) {
+                    return false;
+                }
+                // if the keys were differnt, we must check the reverse direction too
+                if (not keysEqual) {
+                    if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
+                        return false;
+                    }
+                }
+            }
+            // if we got this far, all compared OK so far, so keep going
+            ++li;
+            ++ri;
+        }
+        Assert (ri.Done ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
+        return true;
+    }
+
+    /*
     ********************************************************************************
     ************************** Association operators *******************************
     ********************************************************************************
@@ -505,12 +520,12 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool operator!= (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
     }
 
 }
