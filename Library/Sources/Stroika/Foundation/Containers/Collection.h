@@ -85,8 +85,8 @@ namespace Stroika::Foundation::Containers {
      *      since a Collection<> intrinsically has no ordering, I'm not totally sure what it would
      *      mean to Shake/change its ordering?
      *
-     *  \note   Equals (operator==, operator!=)
-     *          We do not provide a notion of Equals() or operator==, operator!=, because
+     *  \note   EqualsComparer (operator==, operator!=)
+     *          We do not provide a notion of 'Equals' or operator==, operator!=, because
      *          its not clear how to compare collections.
      *
      *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequnceEquals()
@@ -326,6 +326,7 @@ namespace Stroika::Foundation::Containers {
     Collection<T> operator+ (const Collection<T>& lhs, const Iterable<T>& rhs);
     template <typename T>
     Collection<T> operator+ (const Collection<T>& lhs, const Collection<T>& rhs);
+
 }
 
 /*

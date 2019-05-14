@@ -459,9 +459,9 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const Set<T>& lhs, const Set<T>& rhs) const;
-        nonvirtual bool operator() (const Set<T>& lhs, const Iterable<T>& rhs) const;
-        nonvirtual bool operator() (const Iterable<T>& lhs, const Set<T>& rhs) const;
+        nonvirtual bool operator() (const Set& lhs, const Set& rhs) const;
+        nonvirtual bool operator() (const Set& lhs, const Iterable<T>& rhs) const;
+        nonvirtual bool operator() (const Iterable<T>& lhs, const Set& rhs) const;
     };
 
     /**
