@@ -44,40 +44,67 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
+        constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
         template <
             typename VALUE2_TYPE,
             typename COUNTER2_TYPE,
             enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
-        CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
+        constexpr CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
         template <
             typename VALUE2_TYPE,
             typename COUNTER2_TYPE,
             enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
-        CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
+        constexpr CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
 
     public:
         ValueType   fValue;
         CounterType fCount;
 
     public:
+        struct EqualsComparer;
+
+    public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
          */
-        nonvirtual bool Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () instead")]] bool Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const;
     };
 
     /**
-     *  operator indirects to CountedValue<>::Equals ()
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    struct CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr bool operator() (const CountedValue& lhs, const CountedValue& rhs) const;
+    };
 
     /**
-     *  operator indirects to CountedValue<>::Equals ()
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    struct CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr int operator() (const CountedValue& lhs, const CountedValue& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @CountedValue<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
     bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator> (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator>= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
 
 }
 
