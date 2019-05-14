@@ -356,7 +356,7 @@ namespace Stroika::Foundation::Containers {
     template <typename VALUE_EQUALS_COMPARER>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
     {
-        return typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>{valueEqualsComparer}(*this, rhs);
+        return typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<VALUE_EQUALS_COMPARER>{valueEqualsComparer}(*this, rhs);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
