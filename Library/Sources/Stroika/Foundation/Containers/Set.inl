@@ -396,7 +396,27 @@ namespace Stroika::Foundation::Containers {
         return typename Set<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
+    inline bool operator== (const Set<T>& lhs, const Iterable<T>& rhs)
+    {
+        return typename Set<T>::EqualsComparer{}(lhs, rhs);
+    }
+    template <typename T>
+    inline bool operator== (const Iterable<T>& lhs, const Set<T>& rhs)
+    {
+        return typename Set<T>::EqualsComparer{}(lhs, rhs);
+    }
+    template <typename T>
     inline bool operator!= (const Set<T>& lhs, const Set<T>& rhs)
+    {
+        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
+    }
+    template <typename T>
+    inline bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs)
+    {
+        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
+    }
+    template <typename T>
+    inline bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs)
     {
         return not typename Set<T>::EqualsComparer{}(lhs, rhs);
     }

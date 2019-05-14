@@ -466,11 +466,24 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Set<T>::EqualsComparer
+	 *
+	 *	\note It remains questionable whether or not we should have overloads for comparting Set<> and Iterable<>. When
+	 *		  also done with other containers like Sequence, this could produce ambiguity. (like comparing Set with Sequence).
+	 *		  But thats probably OK, becase when we have ambiguity, we can always explicitly resolve it. So keep these
+	 *		  overloads which are pretty convenient.
      */
     template <typename T>
     bool operator== (const Set<T>& lhs, const Set<T>& rhs);
     template <typename T>
+    bool operator== (const Set<T>& lhs, const Iterable<T>& rhs);
+    template <typename T>
+    bool operator== (const Iterable<T>& lhs, const Set<T>& rhs);
+    template <typename T>
     bool operator!= (const Set<T>& lhs, const Set<T>& rhs);
+    template <typename T>
+    bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs);
+    template <typename T>
+    bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs);
 
     /**
      *  Alias for Set<>::Union
