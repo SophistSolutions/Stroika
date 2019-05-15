@@ -424,7 +424,7 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \brief Compare MultiSet<>s for equality. 
      *
-     *  Two MultiSet are considered equal if they contain the same elements (by comparing them with operator==)
+     *  Two MultiSet are considered equal if they contain the same elements (by comparing them with GetEqualsComparer ())
      *  with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
      *  the same item in the RHS.
      *
