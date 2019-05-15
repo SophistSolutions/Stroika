@@ -544,12 +544,12 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
     }
 
 }

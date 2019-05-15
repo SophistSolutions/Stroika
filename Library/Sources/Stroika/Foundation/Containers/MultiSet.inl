@@ -525,18 +525,29 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
+     **************** MultiSet<T, TRAITS>::EqualsComparer ***************************
+     ********************************************************************************
+     */
+    template <typename T, typename TRAITS>
+    inline bool MultiSet<T, TRAITS>::EqualsComparer::operator() (const MultiSet& lhs, const MultiSet& rhs) const
+    {
+        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
+    }
+
+    /*
+     ********************************************************************************
      **************************** MultiSet operators ********************************
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
     inline bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename MultiSet<T, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T, typename TRAITS>
     inline bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename MultiSet<T, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
 
 }

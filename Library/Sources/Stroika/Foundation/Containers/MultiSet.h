@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * This is like the MultiSet was a Bag<T>. If something is in there N times,
+         * This is like the MultiSet was a Collection<T> (or plain Iterable<T>). If something is in there N times,
          *  it will show up in iteration N times. No guarnatee is made as to order of iteration.
          *
          *  \par Example Usage
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          *
          *  UniqueElements () makes no guarantess about whether or not modifications to the underlying MultiSet<>
-         *  will appear in the UniqueElements() Iterable<T>.
+         *  will appear in the UniqueElements() Iterable<T> (so no guarantee if live copy or when copy made).
          */
         nonvirtual Iterable<T> UniqueElements () const;
 
@@ -314,23 +314,19 @@ namespace Stroika::Foundation::Containers {
         nonvirtual EqualityComparerType GetEqualsComparer () const;
 
     public:
+        struct EqualsComparer;
+
+    public:
         /*
-         *  Two MultiSet are considered equal if they contain the same elements (by comparing them with operator==)
-         *  with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
-         *  the same item in the RHS.
-         *
-         *  Equals is commutative.
-         *
-         *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
          */
-        nonvirtual bool Equals (const MultiSet& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const MultiSet& rhs) const;
 
     public:
         /**
          *  Synonym for Add (), or AddAll() (depending on argument);
          */
-        nonvirtual MultiSet<T, TRAITS>& operator+= (ArgByValueType<T> item);
-        nonvirtual MultiSet<T, TRAITS>& operator+= (const MultiSet<T, TRAITS>& t);
+        nonvirtual MultiSet& operator+= (ArgByValueType<T> item);
+        nonvirtual MultiSet& operator+= (const MultiSet& t);
 
     protected:
         /**
@@ -370,10 +366,10 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     protected:
-        using _MultiSetRepSharedPtr = typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr;
+        using _MultiSetRepSharedPtr = typename MultiSet::_MultiSetRepSharedPtr;
 
     public:
-        using CounterType = typename MultiSet<T, TRAITS>::CounterType;
+        using CounterType = typename MultiSet::CounterType;
 
     protected:
         _IRep () = default;
@@ -426,7 +422,27 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  Synonym for Equals() (or !Equals());
+     *  \brief Compare MultiSet<>s for equality. 
+     *
+     *  Two MultiSet are considered equal if they contain the same elements (by comparing them with operator==)
+     *  with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
+     *  the same item in the RHS.
+     *
+     *  Equals is commutative().
+     *
+     *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+     *
+     *  @todo - document computational complexity
+     *
+     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of MultiSet<T> for equality.
+     */
+    template <typename T, typename TRAITS>
+    struct MultiSet<T, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual bool operator() (const MultiSet& lhs, const MultiSet& rhs) const;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @MultiSet<>::EqualsComparer
      */
     template <typename T, typename TRAITS>
     bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);

@@ -511,12 +511,12 @@ namespace Stroika::Foundation::Containers {
 #endif
 
         /*
-     *  Reference Implementations (often not used except for ensure's, but can be used for
-     *  quickie backends).
-     *
-     *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
-     *  the sucblass refers to the method in a subclass virtual override.
-     */
+         *  Reference Implementations (often not used except for ensure's, but can be used for
+         *  quickie backends).
+         *
+         *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
+         *  the sucblass refers to the method in a subclass virtual override.
+         */
     protected:
         nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
 
@@ -539,7 +539,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  @todo - document computational complexity
      *
-     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Associations<T> for equality.
+     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Bijection<> for equality.
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     struct Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
