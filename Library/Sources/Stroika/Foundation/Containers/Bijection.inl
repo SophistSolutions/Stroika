@@ -527,7 +527,18 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     **************************** Bijection operators *******************************
+     *********** Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer *****************
+     ********************************************************************************
+     */
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer::operator() (const Bijection& lhs, const Bijection& rhs) const
+    {
+        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
+    }
+
+    /*
+     ********************************************************************************
+     ******************** Bijection comparison operators ****************************
      ********************************************************************************
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>

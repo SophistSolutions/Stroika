@@ -420,17 +420,12 @@ namespace Stroika::Foundation::Containers {
         nonvirtual CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
     public:
+        struct EqualsComparer;
+
+    public:
         /**
-         *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
-         *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
-         *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-         *  vers linkedlist).
-         *
-         *  Equals is commutative().
-         *
-         *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
          */
-        nonvirtual bool Equals (const Bijection& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Bijection& rhs) const;
 
     public:
         /**
@@ -531,16 +526,34 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *      Syntactic sugar on Equals()
+     *  \brief Compare Bijection<>s for equality. 
+     *
+     *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
+     *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
+     *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+     *  vers linkedlist).
+     *
+     *  Equals is commutative().
+     *
+     *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+     *
+     *  @todo - document computational complexity
+     *
+     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Associations<T> for equality.
+     */
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    struct Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual bool operator() (const Bijection& lhs, const Bijection& rhs) const;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     nonvirtual bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
-
-    /**
-     *      Syntactic sugar on not Equals()
-     */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
+
 }
 
 /*
