@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     bool Stack<T>::Equals (const Stack& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
+        return this->SequnceEquals (rhs, equalsComparer);
     }
     template <typename T>
     inline void Stack<T>::clear ()
@@ -95,18 +95,36 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     **************************** Stack operators ***********************************
+     **************************** Stack<T>::EqualsComparer **************************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    constexpr Stack<T>::EqualsComparer<T_EQUALS_COMPARER>::EqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer)
+        : fElementComparer{elementEqualsComparer}
+    {
+    }
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    inline bool Stack<T>::EqualsComparer<T_EQUALS_COMPARER>::operator() (const Stack& lhs, const Stack& rhs) const
+    {
+        return lhs.SequnceEquals (rhs, fElementComparer);
+    }
+
+    /*
+     ********************************************************************************
+     **************************** Stack compare operators ***************************
      ********************************************************************************
      */
     template <typename T>
     inline bool operator== (const Stack<T>& lhs, const Stack<T>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Stack<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator!= (const Stack<T>& lhs, const Stack<T>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Stack<T>::EqualsComparer{}(lhs, rhs);
     }
 
 }
