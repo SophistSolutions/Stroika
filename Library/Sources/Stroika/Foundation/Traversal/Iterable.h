@@ -434,20 +434,20 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      for (Iterator<T> i = c.begin (); i != c.end (); ++i) {
-         *          if (*i = T{}) {
-         *              break;
+         *          for (Iterator<T> i = c.begin (); i != c.end (); ++i) {
+         *              if (*i = T{}) {
+         *                  break;
+         *              }
          *          }
-         *      }
          *      \endcode
          *
          * OR
          *      \code
-         *      for (T& i : c) {
-         *          if (*i = T{}) {
-         *              break;
+         *          for (T& i : c) {
+         *              if (*i = T{}) {
+         *                  break;
+         *              }
          *          }
-         *      }
          *      \endcode
          *
          */
