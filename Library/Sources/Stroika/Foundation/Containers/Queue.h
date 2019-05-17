@@ -200,20 +200,12 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void clear ();
 
     public:
-        /**
-         *  Two Queues are considered equal if they contain the same elements (by comparing them
-         *  with EQUALS_COMPARER (which defaults to operator== (T,T))
-         *  in exactly the same order (iteration).
-         *
-         *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-         *  to compare with an alternative comparer, just pass it as a template parameter.
-         *
-         *  Equals is commutative().
-         *
-         *  Computational Complexity: O(N)
-         */
+        template <typename T_EQUALS_COMPARER = equal_to<T>>
+        struct EqualsComparer;
+
+    public:
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Equals (const Queue& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Queue& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
     protected:
         /**
@@ -266,20 +258,32 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *      Syntactic sugar for Equals()
+     *  \brief Compare Queue<>s for equality. 
      *
-     *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
-     *          use a different comparer, call Equals() directly.
+     *  Two Queues are considered equal if they contain the same elements (by comparing them
+     *  with EQUALS_COMPARER (which defaults to operator== (T,T))
+     *  in exactly the same order (iteration).
+     *
+     *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+     *  to compare with an alternative comparer, just pass it as a template parameter.
+     *
+     *  Equals is commutative().
+     *
+     *  Computational Complexity: O(N)
+     */
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    struct Queue<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer = {});
+        nonvirtual bool   operator() (const Queue& lhs, const Queue& rhs) const;
+        T_EQUALS_COMPARER fElementComparer;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
     template <typename T>
     bool operator== (const Queue<T>& lhs, const Queue<T>& rhs);
-
-    /**
-     *      Syntactic sugar for not Equals()
-     *
-     *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
-     *          use a different comparer, call Equals() directly.
-     */
     template <typename T>
     bool operator!= (const Queue<T>& lhs, const Queue<T>& rhs);
 

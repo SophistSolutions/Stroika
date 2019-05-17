@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     bool Queue<T>::Equals (const Queue<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
+        return EqualsComparer<EQUALS_COMPARER>{equalsComparer}(*this, rhs);
     }
     template <typename T>
     inline void Queue<T>::_AssertRepValidType () const noexcept
@@ -151,18 +151,36 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
+     **************************** Queue<T>::EqualsComparer **************************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    constexpr Queue<T>::EqualsComparer<T_EQUALS_COMPARER>::EqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer)
+        : fElementComparer{elementEqualsComparer}
+    {
+    }
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    inline bool Queue<T>::EqualsComparer<T_EQUALS_COMPARER>::operator() (const Queue& lhs, const Queue& rhs) const
+    {
+        return lhs.SequnceEquals (rhs, fElementComparer);
+    }
+
+    /*
+     ********************************************************************************
      ***************************** Queue operators **********************************
      ********************************************************************************
      */
     template <typename T>
     inline bool operator== (const Queue<T>& lhs, const Queue<T>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename Queue<T>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T>
     inline bool operator!= (const Queue<T>& lhs, const Queue<T>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename Queue<T>::EqualsComparer{}(lhs, rhs);
     }
 
 }

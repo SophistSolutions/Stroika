@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline bool Sequence<T>::Equals (const Sequence<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
+        return typename Sequence<T>::template EqualsComparer<EQUALS_COMPARER>{equalsComparer}(*this, rhs);
     }
     template <typename T>
     inline void Sequence<T>::RemoveAll ()
@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Containers {
     template <typename ELEMENT_EQUALS_COMPARER>
     int Sequence<T>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const
     {
-        return Private::Equals_<T, ELEMENT_EQUALS_COMPARER> (lhs, rhs, fElementComparer_);
+        return lhs.SequnceEquals (rhs, fElementComparer_);
     }
 
     /*
