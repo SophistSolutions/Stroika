@@ -55,11 +55,11 @@ namespace CommonTests {
                 VerifyTestResult (s.size () == 2);
                 CONCRETE_CONTAINER s3 = s;
                 //VerifyTestResult (s == s3);
-                VerifyTestResult (s.template Equals<EQUALS_COMPARER> (s3));
+                VerifyTestResult (typename CONCRETE_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
                 //VerifyTestResult (not (s != s3));
 
                 //VerifyTestResult (s != s2);
-                VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
+                VerifyTestResult (not typename CONCRETE_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
                 //VerifyTestResult (not (s == s2));
             }
         }
