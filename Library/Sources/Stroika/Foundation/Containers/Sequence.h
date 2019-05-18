@@ -289,28 +289,6 @@ namespace Stroika::Foundation::Containers {
         struct ThreeWayComparer;
 
     public:
-        /**
-         *  A Sequence<T> doesn't generally require a comparison for individual elements
-         *  be be defined, but obviously to compare if the containers are equal, you must
-         *  compare the individual elements (at least sometimes).
-         *
-         *  If operator==(T,T) is predefined, you can just call:
-         *  \par Example Usage
-         *      \code
-         *          Sequence<int> a, b;
-         *          if (a == b) {
-         *          }
-         *      \endcode
-         *
-         *  or
-         *      \code
-         *          Sequence<int> a, b;
-         *          if (Sequence<int>::EqualsComparer{eletComparer} (a, b)) {
-         *          }
-         *      \endcode
-         *
-         *  to compare with an alternative comparer.
-         */
         template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
         struct EqualsComparer;
 
@@ -565,12 +543,32 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
+     *  A Sequence<T> doesn't generally require a comparison for individual elements
+     *  be be defined, but obviously to compare if the containers are equal, you must
+     *  compare the individual elements (at least sometimes).
+     *
+     *  If operator==(T,T) is predefined, you can just call:
+     *  \par Example Usage
+     *      \code
+     *          Sequence<int> a, b;
+     *          if (a == b) {
+     *          }
+     *      \endcode
+     *
+     *  or
+     *      \code
+     *          Sequence<int> a, b;
+     *          if (Sequence<int>::EqualsComparer{eletComparer} (a, b)) {
+     *          }
+     *      \endcode
+     *
+     *  to compare with an alternative comparer.
      */
     template <typename T>
     template <typename ELEMENT_EQUALS_COMPARER>
     struct Sequence<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer = {});
-        nonvirtual int          operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const;
+        nonvirtual int          operator() (const Sequence& lhs, const Sequence& rhs) const;
         ELEMENT_EQUALS_COMPARER fElementComparer_;
     };
 
