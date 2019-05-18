@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline bool DataHyperRectangle<T, INDEXES...>::Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
+        return this->SequentialEquals (*this, rhs, equalsComparer);
     }
     template <typename T, typename... INDEXES>
     inline void DataHyperRectangle<T, INDEXES...>::_AssertRepValidType () const
