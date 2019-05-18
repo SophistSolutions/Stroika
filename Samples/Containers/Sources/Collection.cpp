@@ -74,13 +74,13 @@ namespace {
             DbgTrace (L"sorted fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // only one apple or the other (case squished)
             // note they must now be in alphabetic order
-            Assert (fruits.SequenceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
+            Assert (fruits.SequentialEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
 
             // But, we can do the same thing with a compare function that sorts case insensitively
             fruits = SortedCollection<String>{String::LessComparer{CompareOptions::eCaseInsensitive}, fruits};
             DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
-            Assert (fruits.SequenceEquals (initializer_list<String>{L"apple", L"APPLE", L"bananas", L"cherries"}) or
-                    fruits.SequenceEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
+            Assert (fruits.SequentialEquals (initializer_list<String>{L"apple", L"APPLE", L"bananas", L"cherries"}) or
+                    fruits.SequentialEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
         }
     }
 }
@@ -94,7 +94,7 @@ namespace {
         // CANNOT guarantee the ordering is the same, as Collection guarantees it keeps all the same elements,
         // but does not guarantee maintaining order.
         Assert (c.SetEquals (aVector));
-        Assert (c.SequenceEquals (aVector) or not c.SequenceEquals (aVector));
+        Assert (c.SequentialEquals (aVector) or not c.SequentialEquals (aVector));
 
         vector<int> v2 = c.As<vector<int>> ();
         // V will contain all the same elements as aVector, but maybe not in the same order.

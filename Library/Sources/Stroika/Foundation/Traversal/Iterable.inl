@@ -370,8 +370,8 @@ namespace Stroika::Foundation::Traversal {
         return li == le and ri == re;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-    bool Iterable<T>::SequenceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    template <typename EQUALS_COMPARER>
+    bool Iterable<T>::SequenceEquals (const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
         if (GetLength () != rhs.GetLength ()) {
             return false;

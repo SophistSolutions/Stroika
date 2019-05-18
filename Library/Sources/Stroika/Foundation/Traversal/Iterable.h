@@ -419,8 +419,12 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  SequentialEquals () - very measures if iteration over the two containers produces identical sequences
+         *  SequentialEquals () - measures if iteration over the two containers produces identical sequences
          *  of elements (identical by compare with EQUALS_COMPARER). It does not call 'GetLength' - but just iterates.
+         *
+         *  \note - RHS_CONTAINER_TYPE can be any iterable, including an STL container like vector or initializer_list
+         *
+         *  @see also SequenceEquals
          *
          *  \em Performance:
          *      This algorithm is O(N)
@@ -430,15 +434,17 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  SequenceEquals () - very measures if iteration over the two containers produces identical sequences
+         *  SequenceEquals () - measures if iteration over the two containers produces identical sequences
          *  of elements (identical by compare with EQUALS_COMPARER). It calls GetLength, and uses this as an optimization
          *  in iterating, and so REQUIRES GetLength doesn't change during its execution (see Iterable::GetLength () and consider directory iterator).
+         *
+         *  @see also SequentialEquals
          *
          *  \em Performance:
          *      This algorithm is O(N)
          */
-        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool SequenceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual bool SequenceEquals (const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
