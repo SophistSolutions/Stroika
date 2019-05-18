@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T_EQUALS_COMPARER>
     inline bool Queue<T>::EqualsComparer<T_EQUALS_COMPARER>::operator() (const Queue& lhs, const Queue& rhs) const
     {
-        return lhs.SequnceEquals (rhs, fElementComparer);
+        return lhs.SequenceEquals (rhs, fElementComparer);
     }
 
     /*

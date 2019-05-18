@@ -680,12 +680,12 @@ namespace {
         Debug::TraceContextBumper ctx{L"{}::Test16_LinqLikeFunctions_"};
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int>{2, 4, 6}));
-            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 1; }).SequnceEquals (Iterable<int>{1, 3, 5}));
+            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequenceEquals (Iterable<int>{2, 4, 6}));
+            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 1; }).SequenceEquals (Iterable<int>{1, 3, 5}));
             {
                 Iterable<int> w = c.Where ([] (int i) { return i % 2 == 0; });
-                VerifyTestResult (w.SequnceEquals (Iterable<int>{2, 4, 6}));
-                VerifyTestResult (w.SequnceEquals (Iterable<int>{2, 4, 6}));
+                VerifyTestResult (w.SequenceEquals (Iterable<int>{2, 4, 6}));
+                VerifyTestResult (w.SequenceEquals (Iterable<int>{2, 4, 6}));
             }
         }
         {
@@ -700,12 +700,12 @@ namespace {
         }
         {
             Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
-            VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).SequnceEquals (Iterable<int>{1, 2, 3}));
+            VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).SequenceEquals (Iterable<int>{1, 2, 3}));
         }
         {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
-            VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequnceEquals (Iterable<String>{L"3", L"4", L"7"}));
+            VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequenceEquals (Iterable<String>{L"3", L"4", L"7"}));
         }
         {
             Iterable<int> c = {1, 2, 3, 4, 5, 6};
@@ -714,7 +714,7 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int>{4, 5, 6}));
+            VerifyTestResult (c.Skip (3).SequenceEquals (Iterable<int>{4, 5, 6}));
         }
         {
             using Containers::Sequence;
@@ -725,18 +725,18 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int>{1, 2, 3}));
+            VerifyTestResult (c.Take (3).SequenceEquals (Iterable<int>{1, 2, 3}));
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            VerifyTestResult (c.Slice (3, 5).SequnceEquals (Iterable<int>{4, 5}));
-            VerifyTestResult (c.Slice (3, 9999).SequnceEquals (Iterable<int>{4, 5, 6}));
+            VerifyTestResult (c.Slice (3, 5).SequenceEquals (Iterable<int>{4, 5}));
+            VerifyTestResult (c.Slice (3, 9999).SequenceEquals (Iterable<int>{4, 5, 6}));
         }
         {
             Iterable<int> c{3, 5, 9, 38, 3, 5};
-            VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
-            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }).SequnceEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
-            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs > rhs; }).SequnceEquals (Iterable<int>{38, 9, 5, 5, 3, 3}));
+            VerifyTestResult (c.OrderBy ().SequenceEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
+            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }).SequenceEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
+            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs > rhs; }).SequenceEquals (Iterable<int>{38, 9, 5, 5, 3, 3}));
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};

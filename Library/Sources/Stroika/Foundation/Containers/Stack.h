@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Containers {
      *  \brief Compare Stack<>s for equality. 
      *
      *  Two Stack are considered equal if they contain the same elements in the same order.
-     *  That is - @Iterable<T>::SequnceEquals.
+     *  That is - @Iterable<T>::SequenceEquals.
      *
      *  EqualsComparer is commutative().
      *

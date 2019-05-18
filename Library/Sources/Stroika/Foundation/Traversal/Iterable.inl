@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-    bool Iterable<T>::SequnceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
         Iterator<T> li{MakeIterator ()};
         Iterator<T> le{end ()};
@@ -368,6 +368,27 @@ namespace Stroika::Foundation::Traversal {
         }
         // only true if we get to end at the same time
         return li == le and ri == re;
+    }
+    template <typename T>
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
+    bool Iterable<T>::SequenceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    {
+        if (GetLength () != rhs.GetLength ()) {
+            return false;
+        }
+        auto li = MakeIterator ();
+        auto ri = rhs.MakeIterator ();
+        Assert (li.Done () == ri.Done ()); // cuz same length, and this requires GetLength cannot change during call
+        while (not li.Done ()) {
+            if (not equalsComparer (*li, *ri)) {
+                return false;
+            }
+            ++li;
+            ++ri;
+            Assert (li.Done () == ri.Done ()); // cuz same length, and this requires GetLength cannot change during call
+        }
+        Assert (li.Done () and ri.Done ());
+        return true;
     }
     template <typename T>
     Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const

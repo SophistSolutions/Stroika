@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Traversal {
      *      their values were the same. In other words, the meaning of 'equals' varies between different kinds of
      *      iterables (over the same type).
      *
-     *      We DO have methods SetEquals/MultiSetEquals/SequnceEquals (see below).
+     *      We DO have methods SetEquals/MultiSetEquals/SequenceEquals (see below).
      *
      *  *Important Design Note*:
      *      Probably important - for performance??? - that all these methods are const,
@@ -346,6 +346,9 @@ namespace Stroika::Foundation::Traversal {
          * and visited all items. In practice, as the actual number might vary as the underlying
          * iterable could change while being iterated over.
          *
+         *  For example, a filesystem directory iterable could return a different length each time it was
+         *  called, as files are added and removed from the filesystem.
+         *
          *  Also note that GetLength () can return a ridiculous number - like numeric_limits<size_t>::max () -
          *  for logically infinite sequences... like a sequence of random numbers.
          *
@@ -416,14 +419,26 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  SequnceEquals () - very measures if iteration over the two containers produces identical sequences
-         *  of elements (identical by compare with EQUALS_COMPARER).
+         *  SequentialEquals () - very measures if iteration over the two containers produces identical sequences
+         *  of elements (identical by compare with EQUALS_COMPARER). It does not call 'GetLength' - but just iterates.
          *
          *  \em Performance:
          *      This algorithm is O(N)
          */
         template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool SequnceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+
+    public:
+        /**
+         *  SequenceEquals () - very measures if iteration over the two containers produces identical sequences
+         *  of elements (identical by compare with EQUALS_COMPARER). It calls GetLength, and uses this as an optimization
+         *  in iterating, and so REQUIRES GetLength doesn't change during its execution (see Iterable::GetLength () and consider directory iterator).
+         *
+         *  \em Performance:
+         *      This algorithm is O(N)
+         */
+        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual bool SequenceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -594,7 +609,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
+         *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequenceEquals (Iterable<int> { 2, 4, 6 }));
          *      \endcode
          *
          *  \note   Could have been called EachWith, EachWhere, or EachThat ().
@@ -640,14 +655,14 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-         *          VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
+         *          VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequenceEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  This can also easily be used to TRANSFORM an iterable.
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequnceEquals (Iterable<String> { L"3", L"4", L"7" }));
+         *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequenceEquals (Iterable<String> { L"3", L"4", L"7" }));
          *      \endcode
          *
          *  \par Example Usage
@@ -681,7 +696,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
+         *          VerifyTestResult (c.Skip (3).SequenceEquals (Iterable<int> { 4, 5, 6 }));
          *      \endcode
          *
          *  @see https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -700,7 +715,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
+         *          VerifyTestResult (c.Take (3).SequenceEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  @see    https://msdn.microsoft.com/en-us/library/bb503062(v=vs.110).aspx
@@ -717,7 +732,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Slice (3, 5).SequnceEquals (Iterable<int> { 4, 5 }));
+         *          VerifyTestResult (c.Slice (3, 5).SequenceEquals (Iterable<int> { 4, 5 }));
          *      \endcode
          *
          *  \req from <= to
@@ -738,13 +753,13 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ().SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ([](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }).SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ([](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }).SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          * \note alias for Sort ()

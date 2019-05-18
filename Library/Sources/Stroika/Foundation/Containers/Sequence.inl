@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Containers {
     template <typename ELEMENT_EQUALS_COMPARER>
     int Sequence<T>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const
     {
-        return lhs.SequnceEquals (rhs, fElementComparer_);
+        return lhs.SequenceEquals (rhs, fElementComparer_);
     }
 
     /*

@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     bool Stack<T>::Equals (const Stack& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return this->SequnceEquals (rhs, equalsComparer);
+        return this->SequenceEquals (rhs, equalsComparer);
     }
     template <typename T>
     inline void Stack<T>::clear ()
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T_EQUALS_COMPARER>
     inline bool Stack<T>::EqualsComparer<T_EQUALS_COMPARER>::operator() (const Stack& lhs, const Stack& rhs) const
     {
-        return lhs.SequnceEquals (rhs, fElementComparer);
+        return lhs.SequenceEquals (rhs, fElementComparer);
     }
 
     /*
