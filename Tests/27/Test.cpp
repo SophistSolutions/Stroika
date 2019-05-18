@@ -106,11 +106,11 @@ namespace Test4_Equals {
         VerifyTestResult (s.size () == 2);
         USING_STACK_CONTAINER s3 = s;
         //VerifyTestResult (s == s3);
-        VerifyTestResult (typename USING_STACK_CONTAINER::EqualsComparer<EQUALS_COMPARER>{}(s, s3));
+        VerifyTestResult (typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
         //VerifyTestResult (not (s != s3));
 
         //VerifyTestResult (s != s2);
-        VerifyTestResult (not typename USING_STACK_CONTAINER::EqualsComparer<EQUALS_COMPARER>{}(s, s2));
+        VerifyTestResult (not typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
         //VerifyTestResult (not (s == s2));
     }
 }
