@@ -450,9 +450,9 @@ namespace Stroika::Foundation::Traversal {
          *      This algorithm is O(N)
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        static bool SequenceEquals (const Iterable<T>& lhs, const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
+        static bool SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool SequenceEquals (const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual bool SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
