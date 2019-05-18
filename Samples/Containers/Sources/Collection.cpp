@@ -94,7 +94,7 @@ namespace {
         // CANNOT guarantee the ordering is the same, as Collection guarantees it keeps all the same elements,
         // but does not guarantee maintaining order.
         Assert (c.SetEquals (aVector));
-        Assert (c.SequnceEquals (aVector) or not c.SequnceEquals (aVector));
+        Assert (c.SequenceEquals (aVector) or not c.SequenceEquals (aVector));
 
         vector<int> v2 = c.As<vector<int>> ();
         // V will contain all the same elements as aVector, but maybe not in the same order.
