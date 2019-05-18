@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline bool DataHyperRectangle<T, INDEXES...>::Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return this->SequentialEquals (*this, rhs, equalsComparer);
+        return EqualsComparer<EQUALS_COMPARER>{equalsComparer}(*this, rhs);
     }
     template <typename T, typename... INDEXES>
     inline void DataHyperRectangle<T, INDEXES...>::_AssertRepValidType () const
@@ -66,18 +66,36 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ********************* DataHyperRectangle operators *****************************
+     ************* DataHyperRectangle<T, INDEXES...>::EqualsComparer ****************
+     ********************************************************************************
+     */
+    template <typename T, typename... INDEXES>
+    template <typename ELEMENT_EQUALS_COMPARER>
+    constexpr DataHyperRectangle<T, INDEXES...>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer)
+        : fElementComparer_{elementComparer}
+    {
+    }
+    template <typename T, typename... INDEXES>
+    template <typename ELEMENT_EQUALS_COMPARER>
+    inline bool DataHyperRectangle<T, INDEXES...>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::operator() (const DataHyperRectangle& lhs, const DataHyperRectangle& rhs) const
+    {
+        return lhs.SequenceEquals (rhs, fElementComparer_);
+    }
+
+    /*
+     ********************************************************************************
+     *************** DataHyperRectangle comparison operators ************************
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
     inline bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs)
     {
-        return lhs.Equals (rhs);
+        return typename DataHyperRectangle<T, INDEXES...>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T, typename... INDEXES>
     inline bool operator!= (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not typename DataHyperRectangle<T, INDEXES...>::EqualsComparer{}(lhs, rhs);
     }
 
 }

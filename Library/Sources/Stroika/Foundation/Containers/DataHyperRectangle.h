@@ -111,21 +111,13 @@ namespace Stroika::Foundation::Containers {
         nonvirtual TemporarySliceReference_<REST_OF_INDEXES...> operator[] (INDEX i1) const;
 
     public:
+        template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
+        struct EqualsComparer;
+
+    public:
         /**
-         *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with EQUALS_COMPARER)
-         *  in exactly the same order.
-         *
-         *  Equals is commutative().
-         *
-         *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
-         *  be be defined, but obviously to compare if the containers are equal, you must
-         *  compare the individual elements (at least sometimes).
-         *
-         *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-         *  to compare with an alternative comparer, just pass it as a template parameter.
-         */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () instead")]] bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
     protected:
         /**
@@ -177,6 +169,27 @@ namespace Stroika::Foundation::Containers {
         virtual void                            SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
     };
 
+	/**
+	 *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)
+	 *  in exactly the same order.
+	 *
+	 *  EqualsComparer is commutative().
+	 *
+	 *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
+	 *  be be defined, but obviously to compare if the containers are equal, you must
+	 *  compare the individual elements (at least sometimes).
+	 *
+	 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+	 *  to compare with an alternative comparer, just pass it as a template parameter.
+	 */
+    template <typename T, typename... INDEXES>
+    template <typename ELEMENT_EQUALS_COMPARER>
+    struct DataHyperRectangle<T, INDEXES...>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer = {});
+        nonvirtual bool         operator() (const DataHyperRectangle& lhs, const DataHyperRectangle& rhs) const;
+        ELEMENT_EQUALS_COMPARER fElementComparer_;
+    };
+
 #if 0
     template <typename T, size_t N>
     using DataHyperRectangleN = void;
@@ -203,20 +216,13 @@ namespace Stroika::Foundation::Containers {
     using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 
     /**
-     *      Syntactic sugar for Equals()
+     *  Basic operator overloads with the obivous meaning, and simply indirect to 
+     *  @Sequence<>::EqualsComparer
      *
-     *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
-     *          use a different comparer, call Equals() directly.
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename T, typename... INDEXES>
     bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
-
-    /**
-     *      Syntactic sugar for not Equals()
-     *
-     *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
-     *          use a different comparer, call Equals() directly.
-     */
     template <typename T, typename... INDEXES>
     bool operator!= (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
 
