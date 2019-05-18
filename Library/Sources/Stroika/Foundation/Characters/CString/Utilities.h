@@ -62,6 +62,10 @@ namespace Stroika::Foundation::Characters::CString {
      */
     template <typename T>
     bool Equals (const T* lhs, const T* rhs);
+#if __cpp_char8_t >= 201811L
+    template <>
+    bool Equals (const char8_t* lhs, const char8_t* rhs);
+#endif
     template <>
     bool Equals (const char* lhs, const char* rhs);
     template <>
