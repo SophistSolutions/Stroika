@@ -391,7 +391,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    bool Iterable<T>::SequenceEquals (const Iterable<T>& lhs, const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer) 
+    bool Iterable<T>::SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer)
     {
         if (lhs.GetLength () != rhs.GetLength ()) {
             return false;
@@ -412,7 +412,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline bool Iterable<T>::SequenceEquals (const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
+    inline bool Iterable<T>::SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
         return SequenceEquals (*this, rhs, equalsComparer);
     }
