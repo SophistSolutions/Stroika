@@ -291,14 +291,14 @@ namespace Stroika::Foundation::Traversal {
         }));
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-    bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    bool Iterable<T>::SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer)
     {
         /*
-         *  An extremely in-efficient but space-constant implementation. N^2 and check
+         *  An extremely inefficient but space-constant implementation. N^2 and check
          *  a contains b and b contains a
          */
-        for (auto ti : *this) {
+        for (auto&& ti : lhs) {
             bool contained = false;
             for (auto ri : rhs) {
                 if (equalsComparer (ti, ri)) {
@@ -310,9 +310,9 @@ namespace Stroika::Foundation::Traversal {
                 return false;
             }
         }
-        for (auto ri : rhs) {
+        for (auto&& ri : rhs) {
             bool contained = false;
-            for (auto ti : *this) {
+            for (auto ti : lhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;
@@ -325,10 +325,16 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-    bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    inline bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        auto tallyOf = [equalsComparer] (const Iterable& c, T item) -> size_t {
+        return SetEquals (*this, rhs, equalsComparer);
+    }
+    template <typename T>
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    bool Iterable<T>::MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer)
+    {
+        auto tallyOf = [&equalsComparer] (const auto& c, T item) -> size_t {
             size_t total = 0;
             for (auto ti : c) {
                 if (equalsComparer (ti, item)) {
@@ -341,42 +347,56 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely in-efficient but space-constant implementation. N^3 and check
          *  a contains b and b contains a
          */
-        for (auto ti : *this) {
-            if (tallyOf (*this, ti) != tallyOf (rhs, ti)) {
+        for (auto&& ti : lhs) {
+            if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
         }
-        for (auto ti : rhs) {
-            if (tallyOf (*this, ti) != tallyOf (rhs, ti)) {
+        for (auto&& ti : rhs) {
+            if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
         }
         return true;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-    bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    inline bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        Iterator<T> li{MakeIterator ()};
-        Iterator<T> le{end ()};
-        auto        ri = rhs.begin ();
-        auto        re = rhs.end ();
+        return MultiSetEquals (*this, rhs, equalsComparer);
+    }
+    template <typename T>
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer)
+    {
+        auto li{lhs.begin ()};
+        auto le{lhs.end ()};
+        auto ri{rhs.begin ()};
+        auto re{rhs.end ()};
         for (; li != le and ri != re; ++ri, ++li) {
             if (not equalsComparer (*li, *ri)) {
                 return false;
             }
         }
+        // one caused us to end (or more likely both)
+        Assert (li == le or ri == re);
         // only true if we get to end at the same time
         return li == le and ri == re;
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
-    bool Iterable<T>::SequenceEquals (const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        if (GetLength () != rhs.GetLength ()) {
+        return SequentialEquals (*this, rhs, equalsComparer);
+    }
+    template <typename T>
+    template <typename EQUALS_COMPARER>
+    bool Iterable<T>::SequenceEquals (const Iterable<T>& lhs, const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer) 
+    {
+        if (lhs.GetLength () != rhs.GetLength ()) {
             return false;
         }
-        auto li = MakeIterator ();
+        auto li = lhs.MakeIterator ();
         auto ri = rhs.MakeIterator ();
         Assert (li.Done () == ri.Done ()); // cuz same length, and this requires GetLength cannot change during call
         while (not li.Done ()) {
@@ -389,6 +409,12 @@ namespace Stroika::Foundation::Traversal {
         }
         Assert (li.Done () and ri.Done ());
         return true;
+    }
+    template <typename T>
+    template <typename EQUALS_COMPARER>
+    inline bool Iterable<T>::SequenceEquals (const Iterable<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
+    {
+        return SequenceEquals (*this, rhs, equalsComparer);
     }
     template <typename T>
     Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
@@ -477,7 +503,6 @@ namespace Stroika::Foundation::Traversal {
         };
         return CreateGenerator (getNext);
     }
-
     template <typename T>
     template <typename T1, typename RESULT>
     Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1) const
@@ -861,6 +886,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return defaultValue;
     }
+
 }
 
 #endif /* _Stroika_Foundation_Traversal_Iterable_inl_ */
