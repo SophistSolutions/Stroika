@@ -115,7 +115,6 @@ namespace Stroika::Foundation::Containers {
         struct EqualsComparer;
 
     public:
-        /**
         template <typename EQUALS_COMPARER = equal_to<T>>
         [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () instead")]] bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
@@ -169,19 +168,19 @@ namespace Stroika::Foundation::Containers {
         virtual void                            SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
     };
 
-	/**
-	 *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)
-	 *  in exactly the same order.
-	 *
-	 *  EqualsComparer is commutative().
-	 *
-	 *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
-	 *  be be defined, but obviously to compare if the containers are equal, you must
-	 *  compare the individual elements (at least sometimes).
-	 *
-	 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-	 *  to compare with an alternative comparer, just pass it as a template parameter.
-	 */
+    /**
+     *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)
+     *  in exactly the same order.
+     *
+     *  EqualsComparer is commutative().
+     *
+     *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
+     *  be be defined, but obviously to compare if the containers are equal, you must
+     *  compare the individual elements (at least sometimes).
+     *
+     *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+     *  to compare with an alternative comparer, just pass it as a template parameter.
+     */
     template <typename T, typename... INDEXES>
     template <typename ELEMENT_EQUALS_COMPARER>
     struct DataHyperRectangle<T, INDEXES...>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
@@ -203,17 +202,32 @@ namespace Stroika::Foundation::Containers {
     template <typename T, 4>
     using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 #endif
+    namespace Private_DataHyperRectangle_ {
+        template <typename, typename>
+        struct AHelper;
+        template <typename T, size_t... S>
+        struct AHelper<T, index_sequence<S...>> {
+            using DataHyperRectangleN = DataHyperRectangle<T, decltype (S)...>;
+        };
+    }
+    template <typename T, size_t N>
+    using DataHyperRectangleN = typename Private_DataHyperRectangle_::AHelper<T, make_index_sequence<N>>::DataHyperRectangleN;
+
     /**
      *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
      */
     template <typename T>
-    using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
+    //using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
+    using DataHyperRectangle1 = DataHyperRectangleN<T, 1>;
     template <typename T>
-    using DataHyperRectangle2 = DataHyperRectangle<T, size_t, size_t>;
+    //using DataHyperRectangle2 = DataHyperRectangle<T, size_t, size_t>;
+    using DataHyperRectangle2 = DataHyperRectangleN<T, 2>;
     template <typename T>
-    using DataHyperRectangle3 = DataHyperRectangle<T, size_t, size_t, size_t>;
+    //using DataHyperRectangle3 = DataHyperRectangle<T, size_t, size_t, size_t>;
+    using DataHyperRectangle3 = DataHyperRectangleN<T, 3>;
     template <typename T>
-    using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+   // using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+    using DataHyperRectangle4 = DataHyperRectangleN<T, 4>;
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
