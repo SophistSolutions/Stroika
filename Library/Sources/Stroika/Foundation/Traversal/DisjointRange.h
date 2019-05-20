@@ -111,12 +111,11 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual RangeType GetBounds () const;
 
     public:
-        /**
-         *  This returns true if the constituent subranges are all equal. This amounts to checking
-         *  if the 'covered points' are all equal.
-         */
+        struct EqualsComparer;
+
+    public:
         template <typename T2, typename RANGE_TYPE2>
-        nonvirtual bool Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const;
 
     public:
         /**
@@ -159,6 +158,23 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     *  This returns true if the constituent subranges are all equal. This amounts to checking
+     *  if the 'covered points' are all equal.
+     */
+    template <typename T, typename RANGE_TYPE>
+    struct DisjointRange<T, RANGE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual bool operator() (const DisjointRange& lhs, const DisjointRange& rhs) const;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @DisjointRange<T, RANGE_TYPE>::EqualsComparer
+     */
+    template <typename T, typename RANGE_TYPE>
+    bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
+    template <typename T, typename RANGE_TYPE>
+    bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
+
+    /**
      */
     template <typename T, typename RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE> operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
@@ -167,16 +183,6 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE> operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
-
-    /**
-     */
-    template <typename T, typename RANGE_TYPE>
-    bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
-
-    /**
-     */
-    template <typename T, typename RANGE_TYPE>
-    bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
 }
 
