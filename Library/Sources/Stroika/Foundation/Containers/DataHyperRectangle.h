@@ -217,16 +217,12 @@ namespace Stroika::Foundation::Containers {
      *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
      */
     template <typename T>
-    //using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
     using DataHyperRectangle1 = DataHyperRectangleN<T, 1>;
     template <typename T>
-    //using DataHyperRectangle2 = DataHyperRectangle<T, size_t, size_t>;
     using DataHyperRectangle2 = DataHyperRectangleN<T, 2>;
     template <typename T>
-    //using DataHyperRectangle3 = DataHyperRectangle<T, size_t, size_t, size_t>;
     using DataHyperRectangle3 = DataHyperRectangleN<T, 3>;
     template <typename T>
-   // using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
     using DataHyperRectangle4 = DataHyperRectangleN<T, 4>;
 
     /**
