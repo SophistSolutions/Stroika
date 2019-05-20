@@ -199,10 +199,10 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *              Range<double> r1 (3, 5);
-         *              VerifyTestResult (r1.Contains (3) or not r1.Contains (3));  // depends on TRAITS openness
-         *              Range<double> r2 { 3, 5, Openness::eOpen, Openness::eOpen };
-         *              VerifyTestResult (not r2.Contains (3));
+         *          Range<double> r1 (3, 5);
+         *          VerifyTestResult (r1.Contains (3) or not r1.Contains (3));  // depends on TRAITS openness
+         *          Range<double> r2 { 3, 5, Openness::eOpen, Openness::eOpen };
+         *          VerifyTestResult (not r2.Contains (3));
          *      \endcode
          */
         constexpr explicit Range ();
@@ -310,11 +310,11 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     public:
-        /**
-         *  If two ranges are both empty, they will both be equal.
-         */
+        struct EqualsComparer;
+
+    public:
         template <typename T2, typename TRAITS2>
-        nonvirtual bool Equals (const Range<T2, TRAITS2>& rhs) const;
+        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Range<T2, TRAITS2>& rhs) const;
 
     public:
         /**
@@ -379,8 +379,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Assert (Range<int> (3, 4).ToString () == L"[3 ... 4)");
-         *      Assert (Range<int> (3, 4).ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+         *          Assert (Range<int> (3, 4).ToString () == L"[3 ... 4)");
+         *          Assert (Range<int> (3, 4).ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
          *      \endcode
          *
          *  @see Characters::ToString ();
@@ -395,6 +395,21 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     */
+    template <typename T, typename TRAITS>
+    struct Range<T, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual bool operator() (const Range& lhs, const Range& rhs) const;
+    };
+
+    /**
+     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Range<T, TRAITS>::EqualsComparer
+     */
+    template <typename T, typename TRAITS>
+    bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+    template <typename T, typename TRAITS>
+    bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+
+    /**
      *  Alias forlhs.Union (rhs)
      */
     template <typename T, typename TRAITS>
@@ -405,18 +420,6 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS>
     Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-
-    /**
-     *      Syntactic sugar on Equals()
-     */
-    template <typename T, typename TRAITS>
-    bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-
-    /**
-     *      Syntactic sugar on Equals()
-     */
-    template <typename T, typename TRAITS>
-    bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
 }
 

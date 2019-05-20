@@ -382,6 +382,36 @@ namespace Stroika::Foundation::Traversal {
 
     /*
      ********************************************************************************
+     ************************ Range<T, TRAITS>::EqualsComparer **********************
+     ********************************************************************************
+     */
+    template <typename T, typename TRAITS>
+    inline bool Range<T, TRAITS>::EqualsComparer::operator() (const Range& lhs, const Range& rhs) const
+    {
+        if (lhs.empty ()) {
+            return rhs.empty ();
+        }
+        return lhs.GetLowerBound () == rhs.GetLowerBound () and lhs.GetUpperBound () == rhs.GetUpperBound () and lhs.GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and lhs.GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
+    }
+
+    /*
+     ********************************************************************************
+     ********************* Range<T,TRAITS> Comparisons Operators ********************
+     ********************************************************************************
+     */
+    template <typename T, typename TRAITS>
+    inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+    {
+        return typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+    }
+    template <typename T, typename TRAITS>
+    inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+    {
+        return not typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+    }
+
+    /*
+     ********************************************************************************
      *************************** Range<T,TRAITS> Operators **************************
      ********************************************************************************
      */
@@ -395,18 +425,6 @@ namespace Stroika::Foundation::Traversal {
     inline Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Intersection (rhs);
-    }
-
-    template <typename T, typename TRAITS>
-    inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
-    {
-        return lhs.Equals (rhs);
-    }
-
-    template <typename T, typename TRAITS>
-    inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
-    {
-        return not lhs.Equals (rhs);
     }
 
 }
