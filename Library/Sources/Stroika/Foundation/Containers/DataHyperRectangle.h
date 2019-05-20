@@ -189,41 +189,32 @@ namespace Stroika::Foundation::Containers {
         ELEMENT_EQUALS_COMPARER fElementComparer_;
     };
 
-#if 0
-    template <typename T, size_t N>
-    using DataHyperRectangleN = void;
-    // @todo - use generator to do this automatically/genrally
-    template <typename T>
-    using DataHyperRectangleN<T,1> = DataHyperRectangle<T, size_t>;
-    template <typename T>
-    using DataHyperRectangleN<T, 2> = DataHyperRectangle<T, size_t, size_t>;
-    template <typename T, 3>
-    using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t>;
-    template <typename T, 4>
-    using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
-#endif
     namespace Private_DataHyperRectangle_ {
         template <typename, typename>
-        struct AHelper;
+        struct Helper_;
         template <typename T, size_t... S>
-        struct AHelper<T, index_sequence<S...>> {
+        struct Helper_<T, index_sequence<S...>> {
             using DataHyperRectangleN = DataHyperRectangle<T, decltype (S)...>;
         };
     }
+	
+	/**
+	 *	using DataHyperRectangleN = DataHyperRectangle<T, size_t N REPEATED TIMES>
+	 */
     template <typename T, size_t N>
-    using DataHyperRectangleN = typename Private_DataHyperRectangle_::AHelper<T, make_index_sequence<N>>::DataHyperRectangleN;
+    using DataHyperRectangleN = typename Private_DataHyperRectangle_::Helper_<T, make_index_sequence<N>>::DataHyperRectangleN;
 
     /**
      *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
      */
     template <typename T>
-    using DataHyperRectangle1 = DataHyperRectangleN<T, 1>;
+    using DataHyperRectangle1 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 1>;
     template <typename T>
-    using DataHyperRectangle2 = DataHyperRectangleN<T, 2>;
+    using DataHyperRectangle2 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 2>;
     template <typename T>
-    using DataHyperRectangle3 = DataHyperRectangleN<T, 3>;
+    using DataHyperRectangle3 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 3>;
     template <typename T>
-    using DataHyperRectangle4 = DataHyperRectangleN<T, 4>;
+    using DataHyperRectangle4 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 4>;
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 

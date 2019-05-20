@@ -29,14 +29,14 @@ namespace {
         void RunTests ()
         {
             {
-                SparseDataHyperRectangle2<int> x;
+                SparseDataHyperRectangleN<int, 2> x;
                 VerifyTestResult (x.empty ());
                 VerifyTestResult (x.GetAt (2, 2) == 0);
                 x.SetAt (2, 2, 4);
                 VerifyTestResult (x.GetAt (2, 2) == 4);
             }
             {
-                DataHyperRectangle2<int> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+                DataHyperRectangleN<int, 2> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
                 }
@@ -53,7 +53,7 @@ namespace {
         void RunTests ()
         {
             {
-                DataHyperRectangle2<int> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+                DataHyperRectangleN<int, 2> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
                 }
@@ -84,7 +84,7 @@ namespace {
         template <typename CONCRETE_CONTAINER2>
         void RunTests ()
         {
-            DataHyperRectangle2<int> x = CONCRETE_CONTAINER2{3, 4};
+            DataHyperRectangleN<int, 2> x = CONCRETE_CONTAINER2{3, 4};
             Verify (x.GetAt (2, 2) == 0);
             for (auto t : x) {
             }
@@ -97,7 +97,7 @@ namespace {
     {
         Test1_BasicSparseHyperCubeTest_::RunTests ();
         Test2_BasicDenseHyperCubeTest_::RunTests ();
-        Test3_BasicSparseHCTest_::RunTests<SparseDataHyperRectangle2<int>> ();
+        Test3_BasicSparseHCTest_::RunTests<SparseDataHyperRectangleN<int, 2>> ();
         Test3_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
         Test4_BasicDenseHCTest_::RunTests<Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>> ();
     }
