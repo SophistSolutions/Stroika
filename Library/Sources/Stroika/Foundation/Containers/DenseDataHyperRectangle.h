@@ -52,16 +52,22 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
+     *  using DenseDataHyperRectangleN = DenseDataHyperRectangle<T, size_t REPEATED N TIMES>
+     */
+    template <typename T, size_t N>
+    using DenseDataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, DenseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
+
+    /**
      *  @todo see if there is a way to define this genericly using templates/sequences - DenseDataHyperRectangleN<N>
      */
     template <typename T>
-    using DenseDataHyperRectangle1 = DenseDataHyperRectangle<T, size_t>;
+    using DenseDataHyperRectangle1 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = DenseDataHyperRectangleN<T, 1>;
     template <typename T>
-    using DenseDataHyperRectangle2 = DenseDataHyperRectangle<T, size_t, size_t>;
+    using DenseDataHyperRectangle2 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = DenseDataHyperRectangleN<T, 2>;
     template <typename T>
-    using DenseDataHyperRectangle3 = DenseDataHyperRectangle<T, size_t, size_t, size_t>;
+    using DenseDataHyperRectangle3 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = DenseDataHyperRectangleN<T, 3>;
     template <typename T>
-    using DenseDataHyperRectangle4 = DenseDataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+    using DenseDataHyperRectangle4 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = DenseDataHyperRectangleN<T, 4>;
 
 }
 

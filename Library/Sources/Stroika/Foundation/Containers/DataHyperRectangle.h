@@ -190,19 +190,22 @@ namespace Stroika::Foundation::Containers {
     };
 
     namespace Private_DataHyperRectangle_ {
-        template <typename, typename>
-        struct Helper_;
-        template <typename T, size_t... S>
-        struct Helper_<T, index_sequence<S...>> {
-            using DataHyperRectangleN = DataHyperRectangle<T, decltype (S)...>;
+        template <typename T, template <typename, typename...> class BASE_TEMPLATE>
+        struct NTemplate {
+            template <typename>
+            struct Helper_;
+            template <size_t... S>
+            struct Helper_<index_sequence<S...>> {
+                using CombinedType = BASE_TEMPLATE<T, decltype (S)...>;
+            };
         };
     }
-	
-	/**
-	 *	using DataHyperRectangleN = DataHyperRectangle<T, size_t N REPEATED TIMES>
-	 */
+
+    /**
+     *  using DataHyperRectangleN = DataHyperRectangle<T, size_t N REPEATED TIMES>
+     */
     template <typename T, size_t N>
-    using DataHyperRectangleN = typename Private_DataHyperRectangle_::Helper_<T, make_index_sequence<N>>::DataHyperRectangleN;
+    using DataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, DataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
 
     /**
      *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>

@@ -57,32 +57,23 @@ namespace Stroika::Foundation::Containers {
         nonvirtual SparseDataHyperRectangle<T, INDEXES...>& operator= (const SparseDataHyperRectangle<T, INDEXES...>& rhs) = default;
     };
 
-    namespace Private_SparseDataHyperRectangle_ {
-        template <typename, typename>
-        struct Helper_;
-        template <typename T, size_t... S>
-        struct Helper_<T, index_sequence<S...>> {
-            using SparseDataHyperRectangleN = SparseDataHyperRectangle<T, decltype (S)...>;
-        };
-    }
-
     /**
-	 *	using SparseDataHyperRectangleN = SparseDataHyperRectangle<T, size_t REPEATED N TIMES>
+     *  using SparseDataHyperRectangleN = SparseDataHyperRectangle<T, size_t REPEATED N TIMES>
      */
     template <typename T, size_t N>
-    using SparseDataHyperRectangleN = typename Private_SparseDataHyperRectangle_::Helper_<T, make_index_sequence<N>>::SparseDataHyperRectangleN;
+    using SparseDataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, SparseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
 
     /**
      *  @todo see if there is a way to define this genericly using templates/sequences - SparseDataHyperRectangleN<N>
      */
     template <typename T>
-    using SparseDataHyperRectangle1 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangle<T, size_t>;
+    using SparseDataHyperRectangle1 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 1>;
     template <typename T>
-    using SparseDataHyperRectangle2 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangle<T, size_t, size_t>;
+    using SparseDataHyperRectangle2 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 2>;
     template <typename T>
-    using SparseDataHyperRectangle3 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangle<T, size_t, size_t, size_t>;
+    using SparseDataHyperRectangle3 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 3>;
     template <typename T>
-    using SparseDataHyperRectangle4 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+    using SparseDataHyperRectangle4 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 4>;
 
 }
 
