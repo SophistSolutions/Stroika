@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <typename ENUM>
-    inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned ()
+    constexpr make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned ()
     {
         return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ENUM::eCOUNT);
     }
