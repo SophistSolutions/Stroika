@@ -51,57 +51,51 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
     /*
      ********************************************************************************
-     ******************** StructuredStreamEvents::Name operators ********************
+     ************** StructuredStreamEvents::Name::ThreeWayComparer ******************
+     ********************************************************************************
+     */
+    inline int Name::ThreeWayComparer::operator() (const Name& lhs, const Name& rhs) const
+    {
+        // Treat EITHER side missing namespace as 'wildcard' matching any namespace
+        if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
+            if (int cmp = Common::ThreeWayCompare (*lhs.fNamespaceURI, *rhs.fNamespaceURI)) {
+                return cmp;
+            }
+        }
+        if (int cmp = Common::ThreeWayCompare (lhs.fLocalName, rhs.fLocalName)) {
+            return cmp;
+        }
+        return Common::ThreeWayCompare (lhs.fType, rhs.fType);
+    }
+
+    /*
+     ********************************************************************************
+     ************** StructuredStreamEvents::Name comparison operators ***************
      ********************************************************************************
      */
     inline bool operator< (const Name& lhs, const Name& rhs)
     {
-        if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            if (int cmp = String::ThreeWayComparer{}(*lhs.fNamespaceURI, *rhs.fNamespaceURI)) {
-                return cmp < 0;
-            }
-        }
-        if (int cmp = String::ThreeWayComparer{}(lhs.fLocalName, rhs.fLocalName)) {
-            return cmp < 0;
-        }
-        return (lhs.fType < rhs.fType);
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const Name& lhs, const Name& rhs)
     {
-        if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            if (int cmp = String::ThreeWayComparer{}(*lhs.fNamespaceURI, *rhs.fNamespaceURI)) {
-                return cmp < 0;
-            }
-        }
-        if (int cmp = String::ThreeWayComparer{}(lhs.fLocalName, rhs.fLocalName)) {
-            return cmp < 0;
-        }
-        return (lhs.fType <= rhs.fType);
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const Name& lhs, const Name& rhs)
     {
-        if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value () and lhs.fNamespaceURI != rhs.fNamespaceURI) {
-            return false;
-        }
-        if (lhs.fLocalName != rhs.fLocalName) {
-            return false;
-        }
-        if (lhs.fType != rhs.fType) {
-            return false;
-        }
-        return true;
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     inline bool operator!= (const Name& lhs, const Name& rhs)
     {
-        return not(lhs == rhs);
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const Name& lhs, const Name& rhs)
     {
-        return not(lhs < rhs);
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const Name& lhs, const Name& rhs)
     {
-        return not(lhs <= rhs);
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }

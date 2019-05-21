@@ -57,6 +57,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         Name (const String& localName, NameType type = eElement);
         Name (const String& namespaceURI, const String& localName, NameType type = eElement);
 
+        struct ThreeWayComparer;
+
         /**
          *  Purely for debugging / diagnostic purposes. Don't count on this format.
          */
@@ -64,33 +66,22 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     };
 
     /**
-     *  Basic operator< with the obivous meaning.
+     *  Treat EITHER side missing namespace as 'wildcard' matching any namespace
+     */
+    struct Name::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const Name& lhs, const Name& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Name& lhs, const Name& rhs);
-
-    /**
-     *  Basic operator<= with the obivous meaning
-     */
     bool operator<= (const Name& lhs, const Name& rhs);
-
-    /**
-     *  Basic operator== with the obivous meaning
-     */
     bool operator== (const Name& lhs, const Name& rhs);
-
-    /**
-     *  Basic operator!= with the obivous meaning
-     */
     bool operator!= (const Name& lhs, const Name& rhs);
-
-    /**
-     *  Basic operator>= with the obivous meaning
-     */
     bool operator>= (const Name& lhs, const Name& rhs);
-
-    /**
-     *  Basic operator> with the obivous meaning
-     */
     bool operator> (const Name& lhs, const Name& rhs);
 
 }
