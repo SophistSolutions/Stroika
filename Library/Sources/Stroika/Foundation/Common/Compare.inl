@@ -39,7 +39,22 @@ namespace Stroika::Foundation::Common {
 #endif
     }
     template <typename T, typename... ARGS>
-    template <typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q>>*>
+    template <typename Q, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>*>
+    constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    {
+#if qCompilerAndStdLib_make_from_tuple_Buggy
+        if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
+            return typename Q::template ThreeWayComparer<>{}(lhs, rhs);
+        }
+        else {
+            return make_from_tuple<typename Q::template ThreeWayComparer<>> (fArgs_) (lhs, rhs);
+        }
+#else
+        return make_from_tuple<typename Q::template ThreeWayComparer<>> (fArgs_) (lhs, rhs);
+#endif
+    }
+    template <typename T, typename... ARGS>
+    template <typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
     constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);

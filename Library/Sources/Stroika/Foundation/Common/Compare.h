@@ -25,6 +25,7 @@ namespace Stroika::Foundation::Common {
 
     namespace Private_ {
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ThreeWayComparer, (typename X::ThreeWayComparer{}(x, x)));
+        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ThreeWayComparerTemplate, (typename X::template ThreeWayComparer<>{}(x, x)));
     }
 
     /**
@@ -63,7 +64,9 @@ namespace Stroika::Foundation::Common {
         constexpr ThreeWayComparer (ARGS... args);
         template <typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
         constexpr int operator() (const T& lhs, const T& rhs) const;
-        template <typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q>>* = nullptr>
+        template <typename Q = T, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
+        constexpr int operator() (const T& lhs, const T& rhs) const;
+        template <typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
         constexpr int  operator() (const T& lhs, const T& rhs) const;
         tuple<ARGS...> fArgs_;
     };
