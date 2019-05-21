@@ -300,7 +300,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String AsString_ () const;
 
     public:
-        struct ThreeWayComparer ;
+        struct ThreeWayComparer;
 
     public:
         /**
@@ -383,7 +383,6 @@ namespace Stroika::Foundation::DataExchange {
     vector<VariantValue> VariantValue::As () const;
     template <>
     Sequence<VariantValue> VariantValue::As () const;
-
 
     struct VariantValue::ThreeWayComparer {
         int operator() (const VariantValue& lhs, const VariantValue& rhs) const;

@@ -149,7 +149,6 @@ namespace Stroika::Foundation::DataExchange {
         return ThreeWayComparer{}(*this, rhs);
     }
 
-
     /*
      ********************************************************************************
      ************************* VariantValue operators *******************************
