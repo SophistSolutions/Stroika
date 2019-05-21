@@ -1168,7 +1168,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
@@ -1620,7 +1619,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h" />
@@ -2059,7 +2057,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Makefile" />
