@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
-        using ThreeWayComparer = typename Iterable<T>::SequentialThreeWayComparer<ELEMENT_COMPARER>;
+        using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
     public:
         template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
@@ -294,7 +294,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
-        [[deprecated ("in Stroika v2.1d24 - use Sequence<T>::ThreeWayComparer{} () instead")]] int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
+        [[deprecated ("in Stroika v2.1d24 - use Sequence<T>::ThreeWayComparer{} () or Common::ThreeWayComparer{} instead")]] int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
 
     public:
         template <typename EQUALS_COMPARER = equal_to<T>>

@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers {
     template <typename ELEMENT_COMPARER>
     inline int Sequence<T>::Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer) const
     {
-        return Private::ThreeWayCompare_<T, ELEMENT_COMPARER> (*this, rhs, comparer);
+        return typename Common::ThreeWayComparer<ELEMENT_COMPARER>{comparer}(*this, rhs);
     }
     template <typename T>
     inline Sequence<T> Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const
@@ -444,12 +444,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     template <typename T>
     inline bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     template <typename T>
     inline bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs)
@@ -464,12 +464,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     template <typename T>
     inline bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }
