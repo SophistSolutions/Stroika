@@ -558,7 +558,7 @@ namespace Stroika::Foundation::Containers {
      *  or
      *      \code
      *          Sequence<int> a, b;
-     *          if (Sequence<int>::EqualsComparer{eletComparer} (a, b)) {
+     *          if (Sequence<int>::EqualsComparer{eltComparer} (a, b)) {
      *          }
      *      \endcode
      *
