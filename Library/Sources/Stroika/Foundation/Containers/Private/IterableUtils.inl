@@ -8,44 +8,6 @@
 
 namespace Stroika::Foundation::Containers::Private {
 
-    DISABLE_COMPILER_MSC_WARNING_START (4701)
-    template <typename T, typename ELEMENT_COMPARER_TYPE>
-    int ThreeWayCompare_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_COMPARER_TYPE& threeWayComparer)
-    {
-        auto li = lhs.begin ();
-        auto le = lhs.end ();
-        auto ri = rhs.begin ();
-        auto re = rhs.end ();
-        DISABLE_COMPILER_MSC_WARNING_START (6001)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
-        // no need for c' initialization cuz only used in else return at end, but never get there
-        // unless set at least once
-        int c;
-        while ((li != le) and (ri != re) and (c = threeWayComparer (*li, *ri)) == 0) {
-            ++li;
-            ++ri;
-        }
-        if (li == le) {
-            if (ri == re) {
-                return 0; // all items same and loop ended with both things at end
-            }
-            else {
-                return -1; // lhs shorter but an initial sequence of rhs
-            }
-        }
-        else if (ri == re) {
-            return 1; // rhs shorter but an initial sequence of lhs
-        }
-        else {
-            Assert (li != le and ri != re);
-            Assert (c == threeWayComparer (*li, *ri));
-            return c;
-        }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
-        DISABLE_COMPILER_MSC_WARNING_END (6001)
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4701)
-
     template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
     optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer)
     {

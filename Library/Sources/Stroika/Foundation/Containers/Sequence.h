@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
-        struct ThreeWayComparer;
+        using ThreeWayComparer = typename Iterable<T>::SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
     public:
         template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
@@ -529,18 +529,6 @@ namespace Stroika::Foundation::Containers {
     };
 
     using Traversal::IteratorOwnerID;
-
-    /**
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
-     */
-    template <typename T>
-    template <typename ELEMENT_COMPARER>
-    struct Sequence<T>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer (const ELEMENT_COMPARER& elementComparer = {});
-        nonvirtual int   operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const;
-        ELEMENT_COMPARER fElementComparer_;
-    };
 
     /**
      *  A Sequence<T> doesn't generally require a comparison for individual elements

@@ -420,24 +420,6 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     *************************** Sequence<T>::ThreeWayComparer **********************
-     ********************************************************************************
-     */
-    template <typename T>
-    template <typename ELEMENT_COMPARER>
-    constexpr Sequence<T>::ThreeWayComparer<ELEMENT_COMPARER>::ThreeWayComparer (const ELEMENT_COMPARER& elementComparer)
-        : fElementComparer_{elementComparer}
-    {
-    }
-    template <typename T>
-    template <typename ELEMENT_COMPARER>
-    int Sequence<T>::ThreeWayComparer<ELEMENT_COMPARER>::operator() (const Sequence<T>& lhs, const Sequence<T>& rhs) const
-    {
-        return Private::ThreeWayCompare_<T, ELEMENT_COMPARER> (lhs, rhs, fElementComparer_);
-    }
-
-    /*
-     ********************************************************************************
      *************************** Sequence<T>::EqualsComparer ************************
      ********************************************************************************
      */

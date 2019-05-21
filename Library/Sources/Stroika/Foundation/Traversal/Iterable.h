@@ -439,6 +439,10 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
+        template <typename T_THREEWAY_COMPARER = Common::ThreeWayComparer<T>>
+        struct SequentialThreeWayComparer;
+
+    public:
         /**
          *  SequenceEquals () - like SequentialEquals - measures if iteration over the two containers produces identical sequences
          *  of elements (identical by compare with EQUALS_COMPARER), but it calls GetLength, and uses this as an optimization
@@ -1259,6 +1263,21 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual void _Apply (_APPLY_ARGTYPE doToElement) const;
         nonvirtual Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
     };
+
+    /**
+     *  Compare any two iterables as a sequence of elements that can themselves be compared - like strcmp().
+     *  The first pair which is unequally compared - defines the ordering relationship between the two iterables.
+     *  And if one ends before the other, if the LHS ends first, treat that as less (like with alphabetizing) and
+     *  if the right ends first, treat that as >.
+     */
+    template <typename T>
+    template <typename T_THREEWAY_COMPARER>
+    struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
+        nonvirtual int      operator() (const Iterable& lhs, const Iterable& rhs) const;
+        T_THREEWAY_COMPARER fElementComparer;
+    };
+
 }
 
 /*
