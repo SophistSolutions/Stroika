@@ -15,7 +15,6 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Matrix${OBJ_SUFFIX}\
-	$(ObjDir)Tensor${OBJ_SUFFIX}\
 	$(ObjDir)Vector${OBJ_SUFFIX}\
 
 

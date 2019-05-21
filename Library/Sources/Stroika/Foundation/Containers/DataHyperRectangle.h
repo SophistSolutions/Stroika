@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
+     *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube, Tensor, Matrix, Vector
      */
     template <typename T, typename... INDEXES>
     class DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {

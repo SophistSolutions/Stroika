@@ -744,9 +744,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp">
-      <Filter>Sources\Math\LinearAlgebra</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -1902,9 +1899,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.h">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.h">
-      <Filter>Sources\Math\LinearAlgebra</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.h">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClInclude>
@@ -3043,9 +3037,6 @@
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.inl">
-      <Filter>Sources\Math\LinearAlgebra</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.inl">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.inl">
