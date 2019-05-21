@@ -149,6 +149,7 @@ namespace Stroika::Foundation::DataExchange {
         return ThreeWayComparer{}(*this, rhs);
     }
 
+
     /*
      ********************************************************************************
      ************************* VariantValue operators *******************************
@@ -156,11 +157,11 @@ namespace Stroika::Foundation::DataExchange {
      */
     inline bool operator< (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs, rhs) < 0;
     }
     inline bool operator<= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
     inline bool operator== (const VariantValue& lhs, const VariantValue& rhs)
     {
@@ -172,11 +173,11 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool operator>= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs, rhs) >= 0;
     }
     inline bool operator> (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 
 }

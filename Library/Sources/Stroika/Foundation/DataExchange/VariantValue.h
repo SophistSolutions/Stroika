@@ -300,7 +300,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String AsString_ () const;
 
     public:
-        using ThreeWayComparer = Common::ThreeWayComparer<VariantValue>;
+        struct ThreeWayComparer ;
 
     public:
         /**
@@ -384,6 +384,11 @@ namespace Stroika::Foundation::DataExchange {
     template <>
     Sequence<VariantValue> VariantValue::As () const;
 
+
+    struct VariantValue::ThreeWayComparer {
+        int operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+    };
+
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
      *  @Version::ThreeWayComparer and equal_to<VariantValue>
@@ -397,12 +402,6 @@ namespace Stroika::Foundation::DataExchange {
     bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
     bool operator> (const VariantValue& lhs, const VariantValue& rhs);
 
-}
-namespace Stroika::Foundation::Common {
-    template <>
-    struct ThreeWayComparer<Stroika::Foundation::DataExchange::VariantValue> {
-        int operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const;
-    };
 }
 
 namespace std {
