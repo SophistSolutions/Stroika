@@ -29,14 +29,22 @@ namespace {
         void RunTests ()
         {
             {
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+                SparseDataHyperRectangle<int, size_t, size_t> x;
+#else
                 SparseDataHyperRectangleN<int, 2> x;
+#endif
                 VerifyTestResult (x.empty ());
                 VerifyTestResult (x.GetAt (2, 2) == 0);
                 x.SetAt (2, 2, 4);
                 VerifyTestResult (x.GetAt (2, 2) == 4);
             }
             {
-                DataHyperRectangleN<int, 2> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+                DataHyperRectangle<int, size_t, size_t> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+#else
+                DataHyperRectangleN<int, 2>       x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+#endif
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
                 }
@@ -53,7 +61,11 @@ namespace {
         void RunTests ()
         {
             {
-                DataHyperRectangleN<int, 2> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+                DataHyperRectangle<int, size_t, size_t> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+#else
+                DataHyperRectangleN<int, 2>       x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+#endif
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
                 }
@@ -84,7 +96,11 @@ namespace {
         template <typename CONCRETE_CONTAINER2>
         void RunTests ()
         {
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+            DataHyperRectangle<int, size_t, size_t> x = CONCRETE_CONTAINER2{3, 4};
+#else
             DataHyperRectangleN<int, 2> x = CONCRETE_CONTAINER2{3, 4};
+#endif
             Verify (x.GetAt (2, 2) == 0);
             for (auto t : x) {
             }
@@ -97,7 +113,11 @@ namespace {
     {
         Test1_BasicSparseHyperCubeTest_::RunTests ();
         Test2_BasicDenseHyperCubeTest_::RunTests ();
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+        Test3_BasicSparseHCTest_::RunTests<SparseDataHyperRectangle<int, size_t, size_t>> ();
+#else
         Test3_BasicSparseHCTest_::RunTests<SparseDataHyperRectangleN<int, 2>> ();
+#endif
         Test3_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
         Test4_BasicDenseHCTest_::RunTests<Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>> ();
     }
