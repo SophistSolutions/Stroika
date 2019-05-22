@@ -893,6 +893,7 @@ namespace Stroika::Foundation::Traversal {
         : fElementComparer{elementComparer}
     {
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4701)
     template <typename T>
     template <typename T_THREEWAY_COMPARER>
     inline int Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
@@ -929,7 +930,7 @@ namespace Stroika::Foundation::Traversal {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
         DISABLE_COMPILER_MSC_WARNING_END (6001)
     }
-
+    DISABLE_COMPILER_MSC_WARNING_END (4701)
 }
 
 #endif /* _Stroika_Foundation_Traversal_Iterable_inl_ */
