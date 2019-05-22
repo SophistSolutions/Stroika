@@ -772,8 +772,8 @@ namespace Stroika::Foundation::Traversal {
         return Sum ().Value (defaultValue);
     }
     template <typename T>
-    template <typename RESULT_TYPE>
-    optional<RESULT_TYPE> Iterable<T>::Median (const function<bool (T, T)>& compare) const
+    template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
+    optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
         vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
         sort (tmp.begin (), tmp.end (), compare);

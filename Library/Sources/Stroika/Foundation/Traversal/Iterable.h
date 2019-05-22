@@ -1003,8 +1003,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *      VerifyTestResult (c.Sum () == 24);
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+         *          VerifyTestResult (c.Sum () == 24);
          *      \endcode
          *
          *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return lhs + rhs; })
@@ -1030,14 +1030,16 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 1, 2, 9, 4, 5, 3 };
-         *      VerifyTestResult (NearlyEquals (c.Median (), 3.5));
+         *          Iterable<int> c { 1, 2, 9, 4, 5, 3 };
+         *          VerifyTestResult (NearlyEquals (c.Median (), 3.5));
          *      \endcode
          *
          *  \note   returns nullopt if empty list
+         *
+         *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
          */
-        template <typename RESULT_TYPE = T>
-        nonvirtual optional<RESULT_TYPE> Median (const function<bool (T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+        template <typename RESULT_TYPE = T, typename INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+        nonvirtual optional<RESULT_TYPE> Median (const INORDER_COMPARE_FUNCTION& compare) const;
 
     public:
         /**
