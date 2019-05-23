@@ -132,6 +132,10 @@
 #define _MS_VS_2k19_16Pt0Pt0pre43_ 192027508
 #define _MS_VS_2k19_16Pt0Pt0_ 192027508
 
+// _MSC_VER=1921
+#define _MSC_VER_2k19_16Pt1_ 1921
+#define _MS_VS_2k19_16Pt1Pt0_ 192127702
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -147,15 +151,15 @@
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 15.9.x - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
-#elif _MSC_VER <= _MSC_VER_2k19_16Pt0_
-// check which pointer-version of MSVC2k17 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt0Pt0_
+#elif _MSC_VER <= _MSC_VER_2k19_16Pt1_
+// check which pointer-version of MSVC2k19 (15.9.x)
+#if _MSC_FULL_VER > _MS_VS_2k19_16Pt1Pt0_
 // @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.0.0 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.1.0 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (> 15.9) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (> 16.1) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
@@ -339,7 +343,8 @@ ABORTING...
 // still broken in _MSC_VER_2k17_15Pt8_
 // VERIFIED STILL BROKEN in _MSC_VER_2k17_15Pt9_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt0_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -371,6 +376,30 @@ ABORTING...
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
+#endif
+
+#endif
+
+/*
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(317,33): error C2672:  'Stroika::Foundation::Memory::NEltsOf_REAL_': no matching overloaded function found
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): error C2893:  Failed to specialize function template 'size_t Stroika::Foundation::Memory::NEltsOf_REAL_(const ARRAY_TYPE (&)[SIZE_OF_ARRAY])'
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  With the following template arguments:
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  'ARRAY_TYPE=Stroika::Foundation::Common::KeyValuePair<double,unsigned int>'
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  'SIZE_OF_ARRAY=0'
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): error C3316:  'const Stroika::Foundation::Common::KeyValuePair<double,unsigned int> []': an array of unknown size cannot be used in a range-based for statement
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(319,78): error C2065:  'i': undeclared identifier
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(319,49): error C2064:  term does not evaluate to a function taking 1 arguments
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  class does not define an 'operator()' or a user defined conversion operator to a pointer-to-function or reference-to-function that takes appropriate number of arguments
+    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(321,75): error C2065:  'i': undeclared identifier
+*/
+#ifndef qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy
+
+#if defined(_MSC_VER)
+// WORKS anytime before _MS_VS_2k19_16Pt1Pt0_
+// First broken in _MS_VS_2k19_16Pt1Pt0_
+#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+#else
+#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy 0
 #endif
 
 #endif
@@ -691,7 +720,8 @@ lose those deprecated interfaces.
 // verified broken _MS_VS_2k19_16Pt0Pt0pre3_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre4_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -921,12 +951,17 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 #endif
 
+/*
+ MUST RUN TEST    Foundation::Execution::Other
+ and see if it passes/fails - maybe review log text
+ */
 #ifndef qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy
 
 #if defined(_MSC_VER)
 
 // verified broken in _MSC_VER_2k19_16Pt0_ (debug builds only)
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified broken in _MSC_VER_2k19_16Pt1_ (debug builds only)
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
 #endif
@@ -966,7 +1001,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
 // still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_) (running from visual studio gui)
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0_)
+// still broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -1017,7 +1053,8 @@ WORKAROUND:
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified still broken _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
@@ -1049,6 +1086,7 @@ clang says:
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
 // verified broken _MS_VS_2k19_16Pt0Pt0_
+// verified FIXED in _MSC_VER_2k19_16Pt1_
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_make_from_tuple_Buggy 0
@@ -1113,7 +1151,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // verified still broken in _MSC_VER_2k17_15Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified still broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1304,7 +1343,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified still broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
 #endif
@@ -1321,7 +1361,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #ifndef qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// Verified still broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -1431,7 +1472,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
 // VERIFIED BROKEN IN _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -1463,7 +1505,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // first noticed broken in _MSC_VER_2k17_15Pt8_
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
-#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// verified still broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
 #endif
@@ -1558,7 +1601,8 @@ namespace {
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
 // UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+// VERIFIED still broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
 #endif
