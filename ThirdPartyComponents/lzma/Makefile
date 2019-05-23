@@ -213,7 +213,7 @@ endif
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
-	@7z x -o$@ $(ZIPPEDFILE) > /dev/null
+	@7za x -o$@ $(ZIPPEDFILE) > /dev/null
 	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)" ] ; then \
 		cp Subdir-Makefile $@/Makefile;\
 	fi
