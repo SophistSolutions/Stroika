@@ -7,6 +7,98 @@ to be aware of when upgrading.
 History
 =======
 
+## 2.1d24x {2019-05-24}
+
+- https://github.com/SophistSolutions/Stroika/compare/v2.1d23...v2.1d24
+
+- Threeway Compare (and EqualsComparer)
+  - Threeway compare is work in progress for c++20 and not yet avail anyhow.  But move in that direction as I understand it. That means move towards each class owning its own TWC (spaceship) function.
+  - Toward that end, each class I want comparable, now has a ThreeWayComparer member (and sometimes if more performant an EqualsComparer member).
+  - Occasionally – like with String class – these take extra optional parameters in comparer CTOR.
+  - These DEPRECATE existing methods CLASS::Compare() and CLASS::Equals()
+  - Each class – for now – defines global (in containg namespace) operator==, operator< etc functions that vector to Common::ThreeWayCompare(), or to CLASS:EqualsComparer{} if its better. These will soon be ifdefed so only there before C++20 – see https://stroika.atlassian.net/browse/STK-692 and #if __cpp_lib_three_way_comparison < 201711
+  - New class Common::ThreeWayComparer<T> meant to be called NEARLY ALWAYS – when you want to three way compare. It automatically delegates to T::ThreeWayComparer if available (and eventually in C++20 to spaceship operator). New function Common::ThreeWayCompare which is trivaial wrapper on Common::ThreeWayComparer helping with argument deduction issue (but only usable when no extra args needed to threewaycomparer).
+  - Misc
+    - performance tweek - String::ThreeWayComparer takes overloads with wstring_view
+    - string equals/etc comparison cleanups: deprecated LessCI, EqualsCI, and replaced with LessComparer and EqualsComparer that take (constexpr) comparison arg
+  - Backward compatabilty
+    Generally there is nothing todo. If you compare with <, or == etc - no change. But if you called Equals() or Compare() explicitly, these are deprecated and now you should use Common::ThreeWayCompare - probably, or T::ThreeWayComparer perhaps if you need to pass arguments. For example, use of String::LessCI should be replaced with String::Less<ComparerOptions::eCaseInsitive>
+
+- Cache
+  - Simplify Cache::Memoizer<> code to use apply - instead of manual implementation of something similar
+
+- Characters
+  - more __cpp_char8_t support
+
+- Common
+  - Refactored Concept/ConceptBase modules (mutual include friendliness)
+  - use constexpr in CountedValue(); and refactored Equals (deprecated) in that class to EqualsComparer and ThreeWayComparer, and added operator relops for the class
+
+- Containers
+  - Improved Set<T>::_IRep::_Equals_Reference_Implementation - now takes weaker argument, and slightly more performant
+  - DataHyperRectangleN support (variadic) and same for other hyperrectangle subclasses, deprecating stuff like DataHyperRectangle1, 2, etc
+
+- Debug
+  - minor code cleanups of Debug/AssertExternallySynchronizedLock: move GetSharedLockMutexThreads_ () to CPP file so one copy of static mutex
+
+- Docs
+  - docs on Debugging
+
+- Math
+  - lose Math::Angle/1 overload and instead require using stuff like _deg or _rad to be more explicit (or Angle::eDegrees etc arg)
+  - delete obsolete Math_LinearAlgebra_Tensor - just use DataHyperRectangle
+
+- Memory
+  - new Memory::MemCmp () utility (a constexpr std::memcmp)
+  - deprecate Memory::Optional
+
+- Traversal
+  - Iterable<> - SequenceEquals, SequentialEquals, MultiSetEquals, and SetEquals all with static 2 container arg - versions, and other cleanups/docs
+  - cleanup Iterable<>::Median - to use INORDER_COMPARE function, but not requested (worksa round bug in latest VC2k19 C++ compiler)
+
+- Build/RegTests
+  - update version for centos7 image; and added make target docker-pull-base-images
+
+- Compiler Bugs/Workarounds
+  - workaround qCompilerAndStdLib_make_from_tuple_Buggy bug
+  - lose obsolete qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug bug workaround
+  - workarounds for qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+  - new bug qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy workaround; and support for vs2k19 16.1
+
+- Support Compilers
+  - VS2k19 16.1.0
+
+- ThirdPartyComponents
+  - use curl 7.65.0
+
+- HistoricalPerformanceRegressionTestResults/
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, Ubuntu1904_x86_64, MacOS_XCode10}-2.1d24.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
+        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10}-2.1d24-OUT.txt
+  - vc++2k17 (15.9.12)
+  - vc++2k19 (16.1.0)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10, Ubuntu 19.04
+  - gcc 7, gcc 8, gcc 9
+  - clang++-6, clang++-7, clang++-8 (ubuntu) {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, gcc9 (gcc9 not passing tests cuz libc version mismatch on test machine) and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy)
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+
+----
+
 ## 2.1d23 {2019-04-27}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d22...v2.1d23

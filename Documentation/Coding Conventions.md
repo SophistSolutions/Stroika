@@ -119,7 +119,7 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 
 ---
 
-## Compare () and operator\&lt;, operator\&gt;, etc…
+## Compare () and operator<, operator>, etc…
 
 - Note this has materially changed in Stroika v2.1, due to the upcoming
   changes in C++20 to support the spaceship operator and automatic compare
@@ -135,10 +135,13 @@ e.g.
 ~~~
 
 and provides non-member (#if __cpp_lib_three_way_comparison < 201711)
- bool operator\&lt;, operator\&lt;=, operator\&gt;, operator\&gt;=, operator==, operator!= which inline trivially maps to this.
+ bool operator<, operator<=, operator>, operator>=, operator==, operator!= which inline trivially maps to this.
 
-Stroika code which COUNTS on comparison doesn&#39;t directly call Compare(), but instead uses &#39;a \&lt; b&#39; or Common::ThreeWayCompare, or Common:ThreeWayComparer.
+Stroika code which COUNTS on comparison doesn't directly call T::ThreeWayCompare{}(), but instead uses **a < b** or **Common::ThreeWayCompare**, or **Common:ThreeWayComparer**.
 
+Note - Stroika classes will occasionally define T::EqualsComparer - very similer to T::ThreeWayComparer. This will ONLY be done when it provides a more efficient implementation than the ThreeWayComparer. In those cases, operator== and operator!= will map to that.
+
+Reasons:
 - Working with builtin types (e.g. in)
 - Working with STL types, and 3rd-party libraries
 - Probably more likely to seamlessly fit with user code
@@ -147,9 +150,10 @@ Note that we choose to use non-member operator overloads for these comparison fu
 
 So for example:
 
- if (L&quot;aa&quot; \&lt; String (L&quot;ss&quot;)) {
-
- }
+~~~C++
+    if (L"aa" < String (L"ss")) {
+    }
+~~~
 
 Works as expected, so long as either the left or right side is a String class, and the other side is convertible to a String.
 
