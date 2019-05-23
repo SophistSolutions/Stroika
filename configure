@@ -9,7 +9,7 @@
 
 use strict;
 use warnings;
-no warnings 'experimental::smartmatch';
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
 
 BEGIN{ @INC = ( "./", @INC ); }
 
