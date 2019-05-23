@@ -1,6 +1,6 @@
 ﻿About
 =====
-These release notes are incomplete. They are merely a summary of
+These release notes are a summary of
 major user (developer)-impactful changes - especially those they need
 to be aware of when upgrading.
 
@@ -57,7 +57,7 @@ History
   - cleanup Iterable<>::Median - to use INORDER_COMPARE function, but not requested (worksa round bug in latest VC2k19 C++ compiler)
 
 - Build/RegTests
-  - update version for centos7 image; and added make target docker-pull-base-images
+  - update version for centos7 image; and added make target docker-pull-base-images; almost have building under centos7 (pita cuz somes with gcc4)
 
 - Compiler Bugs/Workarounds
   - workaround qCompilerAndStdLib_make_from_tuple_Buggy bug
