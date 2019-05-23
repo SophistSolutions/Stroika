@@ -43,7 +43,7 @@ namespace {
 #if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
                 DataHyperRectangle<int, size_t, size_t> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
 #else
-                DataHyperRectangleN<int, 2>       x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+                DataHyperRectangleN<int, 2>       x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
 #endif
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
@@ -64,7 +64,7 @@ namespace {
 #if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
                 DataHyperRectangle<int, size_t, size_t> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
 #else
-                DataHyperRectangleN<int, 2>       x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+                DataHyperRectangleN<int, 2>       x = Concrete::DenseDataHyperRectangle_VectorN<int, 2>{3, 4};
 #endif
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {

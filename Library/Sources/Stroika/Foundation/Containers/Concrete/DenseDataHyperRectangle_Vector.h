@@ -41,6 +41,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         nonvirtual void AssertRepValidType_ () const;
     };
+
+    /**
+     *  using DenseDataHyperRectangle_VectorN = DenseDataHyperRectangle_Vector<T, size_t REPEATED N TIMES>
+     */
+    template <typename T, size_t N>
+    using DenseDataHyperRectangle_VectorN = typename Private_DataHyperRectangle_::template NTemplate<T, DenseDataHyperRectangle_Vector>::template Helper_<make_index_sequence<N>>::CombinedType;
+
 }
 
 /*
