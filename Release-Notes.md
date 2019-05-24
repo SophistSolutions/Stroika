@@ -7,7 +7,7 @@ to be aware of when upgrading.
 History
 =======
 
-## 2.1d24x {2019-05-24}
+## 2.1d24 {2019-05-24}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d23...v2.1d24
 
@@ -57,7 +57,7 @@ History
   - cleanup Iterable<>::Median - to use INORDER_COMPARE function, but not requested (worksa round bug in latest VC2k19 C++ compiler)
 
 - Build/RegTests
-  - update version for centos7 image; and added make target docker-pull-base-images; almost have building under centos7 (pita cuz somes with gcc4)
+  - update version for centos7 image; and added make target docker-pull-base-images; almost have building under centos7 (pita cuz comes with gcc4)
 
 - Compiler Bugs/Workarounds
   - workaround qCompilerAndStdLib_make_from_tuple_Buggy bug
@@ -65,7 +65,7 @@ History
   - workarounds for qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
   - new bug qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy workaround; and support for vs2k19 16.1
 
-- Support Compilers
+- Support Compilers Changes
   - VS2k19 16.1.0
 
 - ThirdPartyComponents
