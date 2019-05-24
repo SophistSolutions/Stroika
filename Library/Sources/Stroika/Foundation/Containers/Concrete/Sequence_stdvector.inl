@@ -33,8 +33,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         static constexpr size_t _kSentinalLastItemIndex = inherited::_kSentinalLastItemIndex;
 
     public:
-        Rep_ ()                 = default;
-        Rep_ (const Rep_& from) = delete;
+        Rep_ ()                = default;
+        Rep_ (const Rep_& src) = delete;
+        Rep_ (vector<T>&& src)
+            : inherited ()
+            , fData_ (move (src))
+        {
+        }
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
             : inherited ()
             , fData_ (&from->fData_, forIterableEnvelope)
@@ -202,6 +207,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     inline Sequence_stdvector<T>::Sequence_stdvector ()
         : inherited (inherited::template MakeSmartPtr<Rep_> ())
+    {
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    inline Sequence_stdvector<T>::Sequence_stdvector (vector<T>&& src)
+        : inherited (inherited::template MakeSmartPtr<Rep_> (move (src)))
     {
         AssertRepValidType_ ();
     }
