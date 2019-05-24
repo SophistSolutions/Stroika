@@ -806,6 +806,23 @@ namespace {
 }
 
 namespace {
+    namespace ExampleOrderBy_Test19_ {
+        void DoTest ()
+        {
+            // From Sequence<> CTOR docs
+            {
+                Sequence<int> c{3, 5, 9, 38, 3, 5};
+                VerifyTestResult ((c.OrderBy () == Sequence<int>{3, 3, 5, 5, 9, 38}));
+            }
+            {
+                Sequence<int> c{3, 5, 9, 38, 3, 5};
+                VerifyTestResult ((c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int>{3, 3, 5, 5, 9, 38}));
+            }
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -856,6 +873,7 @@ namespace {
 
         ExampleCTORS_Test_17_::DoTest ();
         ExampleCompare_Test_18_::DoTest ();
+        ExampleOrderBy_Test19_::DoTest ();
     }
 }
 

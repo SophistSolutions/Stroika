@@ -5,6 +5,7 @@
 #define _Stroika_Foundation_Containers_Sequence_inl_
 
 #include "../Debug/Assertions.h"
+#include "Concrete/Sequence_stdvector.h"
 #include "Factory/Sequence_Factory.h"
 #include "Private/IterableUtils.h"
 
@@ -152,9 +153,17 @@ namespace Stroika::Foundation::Containers {
         return typename Common::ThreeWayComparer<ELEMENT_COMPARER>{comparer}(*this, rhs);
     }
     template <typename T>
-    inline Sequence<T> Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const
+    inline auto Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const -> Sequence
     {
         return Iterable<T>::Where (doToElement, Sequence<T>{});
+    }
+    template <typename T>
+    template <typename INORDER_COMPARER_TYPE>
+    auto Sequence<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const -> Sequence
+    {
+        vector<T> tmp (begin (), end ()); // due to move constructor, a not very expensive implementation
+        sort (tmp.begin (), tmp.end (), inorderComparer);
+        return Sequence_stdvector<T>{move (tmp)};
     }
     template <typename T>
     template <typename EQUALS_COMPARER>

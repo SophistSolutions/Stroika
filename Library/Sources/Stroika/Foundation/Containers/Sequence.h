@@ -282,7 +282,31 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Sequence<T> Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
+        nonvirtual Sequence Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
+
+    public:
+        /**
+         *
+         *  \par Example Usage
+         *      \code
+         *          Sequence<int> c { 3, 5, 9, 38, 3, 5 };
+         *          VerifyTestResult (c.OrderBy () == Sequence<int> { 3, 3, 5, 5, 9, 38 });
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          Sequence<int> c { 3, 5, 9, 38, 3, 5 };
+         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int> { 3, 3, 5, 5, 9, 38 });
+         *      \endcode
+         *
+         * \note hides Iterable<T>::OrderBy since provides more specific types
+         *
+         * \note alias for Sort ()
+         *
+         *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
+         */
+        template <typename INORDER_COMPARER_TYPE = less<T>>
+        nonvirtual Sequence OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
     public:
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
