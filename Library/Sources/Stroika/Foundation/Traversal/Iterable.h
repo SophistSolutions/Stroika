@@ -630,7 +630,7 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequenceEquals (Iterable<int> { 2, 4, 6 }));
          *      \endcode
          *
-         *  \note   Could have been called EachWith, EachWhere, or EachThat ().
+         *  \note   Could have been called EachWith, EachWhere, EachThat (), Filter, or SubsetWhere.
          */
         nonvirtual Iterable<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
         template <typename RESULT_CONTAINER>
@@ -777,7 +777,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ([](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }).SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          * \note alias for Sort ()
