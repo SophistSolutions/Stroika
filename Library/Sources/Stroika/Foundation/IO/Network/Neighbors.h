@@ -27,8 +27,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  \brief Monitor - either immediately or in the background fetches a list of network neighbors.
      *
-     *  Class normalal syncroniniztion rules - C++ sync - so can read list of objs from any thread
-     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class NeighborsMonitor {
     public:
@@ -61,7 +60,7 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual Containers::Collection<Neighbor> GetNeighbors () const;
 
     private:
-        struct Rep_;
+        class Rep_;
         shared_ptr<Rep_> fRep_;
     };
 

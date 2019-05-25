@@ -29,6 +29,9 @@ using Neighbor = NeighborsMonitor::Neighbor;
 //  - ip - 6 neigh show
 //  - cat / proc / net / arp
 //  - use that to fill in new devices / info for discovery
+//
+// @todo perhaps add ability - background thread - to monitor, and always report up to date list?
+//
 namespace {
     Collection<Neighbor> ArpDashA_ ()
     {
@@ -91,74 +94,3 @@ Collection<NeighborsMonitor::Neighbor> NeighborsMonitor::GetNeighbors () const
     return fRep_->GetNeighbors ();
 }
 
-#if 0
-namespace {
-    /*
-     ********************************************************************************
-     *************************** MyNeighborDiscoverer_ ******************************
-     ********************************************************************************
-     */
-
-    struct MyNeighborDiscoverer_ {
-        MyNeighborDiscoverer_ ()
-            : fMyThread_ (
-                  Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New (DiscoveryChecker_, Thread::eAutoStart, L"MyNeighborDiscoverer"))
-        {
-        }
-
-    private:
-        static void DiscoveryChecker_ ()
-        {
-            static constexpr Activity kDiscovering_NetNeighbors_{L"discovering this network neighbors"sv};
-            while (true) {
-                try {
-                    DeclareActivity da{&kDiscovering_NetNeighbors_};
-                    for (ArpRec_ i : ArpDashA_ ()) {
-                        // soon store/pay attention to macaddr as better indicator of unique device id than ip addr
-
-                        // ignore multicast addresses as they are not real devices(???always???)
-                        if (i.ia.IsMulticastAddress ()) {
-                            //DbgTrace (L"ignoring arped multicast address %s", Characters::ToString (i.ia).c_str ());
-                            continue;
-                        }
-#if qPlatform_Windows
-                        if (i.fHardwareAddress == L"ff-ff-ff-ff-ff-ff") {
-                            //DbgTrace (L"ignoring arped fake(broadcast) address %s", Characters::ToString (i.ia).c_str ());
-                            continue;
-                        }
-#endif
-
-                        // merge in data
-                        auto           l  = sDiscoveredDevices_.rwget ();
-                        DiscoveryInfo_ di = [&] () {
-                            DiscoveryInfo_ tmp{};
-                            tmp.ipAddresses += i.ia;
-                            if (optional<DiscoveryInfo_> o = FindMatchingDevice_ (l, tmp)) {
-                                return *o;
-                            }
-                            else {
-                                // Generate GUID - based on ipaddrs
-                                tmp.fGUID = LookupPersistentDeviceID_ (tmp);
-                                return tmp;
-                            }
-                        }();
-
-                        di.PatchDerivedFields ();
-                        l->Add (di.fGUID, di);
-                    }
-                }
-                catch (const Thread::InterruptException&) {
-                    Execution::ReThrow ();
-                }
-                catch (...) {
-                    Execution::Logger::Get ().LogIfNew (Execution::Logger::Priority::eError, 5min, L"%s", Characters::ToString (current_exception ()).c_str ());
-                }
-                Execution::Sleep (1min); // unsure of right interval - maybe able to epoll or something so no actual polling needed
-            }
-        }
-        Thread::CleanupPtr fMyThread_;
-    };
-
-    unique_ptr<MyNeighborDiscoverer_> sNeighborDiscoverer_;
-}
-#endif
