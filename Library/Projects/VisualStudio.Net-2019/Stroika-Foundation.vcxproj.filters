@@ -840,6 +840,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2081,6 +2084,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\ConceptsBase.h">
       <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3373,6 +3379,9 @@
       <Filter>Sources\IO\Network</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>

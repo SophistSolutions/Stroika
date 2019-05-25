@@ -1054,6 +1054,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)\IO-Network-Listener.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
@@ -1597,6 +1598,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket-Private_.h" />
@@ -2027,6 +2029,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.inl" />
