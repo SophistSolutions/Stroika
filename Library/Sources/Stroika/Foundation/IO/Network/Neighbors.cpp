@@ -93,4 +93,3 @@ Collection<NeighborsMonitor::Neighbor> NeighborsMonitor::GetNeighbors () const
 {
     return fRep_->GetNeighbors ();
 }
-
