@@ -27,7 +27,7 @@ using Neighbor = NeighborsMonitor::Neighbor;
 //  -arp - a
 //  - ip neigh show
 //  - ip - 6 neigh show
-//  - cat / proc / net / arp
+//  - cat /proc/net/arp
 //  - use that to fill in new devices / info for discovery
 //
 // @todo perhaps add ability - background thread - to monitor, and always report up to date list?
@@ -50,7 +50,7 @@ namespace {
                 // raspberrypi.34ChurchStreet.sophists.com (192.168.244.32) at b8:27:eb:cc:c7:80 [ether] on enp0s31f6
                 // ? (192.168.244.173) at b8:3e:59:88:71:06 [ether] on enp0s31f6
                 if (s[1].StartsWith (L"(") and s[1].EndsWith (L")")) {
-                    result += ArpRec_{InternetAddress{s[1].SubString (1, -1)}, s[3]};
+                    result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3]};
                 }
             }
 #elif qPlatform_Windows
