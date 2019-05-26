@@ -37,7 +37,7 @@ modern, reliable and threaded applications easier to write.
 * Stroika v2.0
     <br/>Regularly tested on x86, arm, gcc5 thru gcc8, clang 3 thru clang 6, XCode 8 thru 9.
 * Stroika v2.1
-    <br/>Regularly tested on x86, arm, gcc7 thru gcc8, clang 6 thru clang 7, XCode 10.
+    <br/>Regularly tested on x86, arm, gcc7 thru gcc9, clang 6 thru clang 8, XCode 10.
 
 ### Random Features
 
