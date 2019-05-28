@@ -15,11 +15,13 @@
 #endif
 
 #include "Stroika/Foundation/Characters/String_Constant.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
+#include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
@@ -686,6 +688,19 @@ namespace {
 }
 
 namespace {
+    namespace Test5_CIDR_ {
+        void DoTests_ ()
+        {
+            {
+                CIDR cidr{L"10.70.0.0/15"};
+                VerifyTestResult (cidr.GetNumberOfSignificantBits () == 15);
+                VerifyTestResult ((cidr.GetRange () == InternetAddressRange{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_DEPRECATED_URL_Parsing_::DoTests_ ();
@@ -693,6 +708,7 @@ namespace {
         Test2_InternetAddress_ ();
         Test3_NetworkInterfaceList_ ();
         Test4_DNS_::DoTests_ ();
+        Test5_CIDR_::DoTests_ ();
     }
 }
 

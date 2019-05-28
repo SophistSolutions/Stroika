@@ -41,7 +41,7 @@ namespace {
                 sigBitsLeft -= 8;
             }
             else {
-                r.push_back (BitSubstring<uint8_t> (b, 8 - sigBitsLeft, 8));
+                r.push_back (BitSubstring<uint8_t> (b, 0, sigBitsLeft));
                 sigBitsLeft = 0;
             }
         }
@@ -65,7 +65,7 @@ namespace {
                 {
                     Execution::Throw (Execution::RuntimeErrorException (L"CIDR format exception: cannot use CIDR notation with that type of internet address"sv));
                 }
-            if (*ia.GetAddressSize () * 8 > nBits)
+            if (*ia.GetAddressSize () * 8 < nBits)
                 [[UNLIKELY_ATTR]]
                 {
                     Execution::Throw (Execution::RuntimeErrorException (L"CIDR format exception: number of significant bits too large"sv));
