@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << L"{";
-            sb << L"'" << ToString (t.first) << L"': " << ToString (t.second);
+            sb << ToString (t.first) << L": " << ToString (t.second);
             sb << L"}";
             return sb.str ();
         }
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << L"{";
-            sb << L"'" << ToString (t.fKey) << L"': " << ToString (t.fValue);
+            sb << ToString (t.fKey) << L": " << ToString (t.fValue);
             sb << L"}";
             return sb.str ();
         }
