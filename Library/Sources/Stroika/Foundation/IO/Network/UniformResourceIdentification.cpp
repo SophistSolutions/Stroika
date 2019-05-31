@@ -158,42 +158,6 @@ String Host::ToString () const
 
 /*
  ********************************************************************************
- ********************************** Host operators ******************************
- ********************************************************************************
- */
-bool UniformResourceIdentification::operator== (const Host& lhs, const Host& rhs)
-{
-    auto loi = lhs.AsInternetAddress ();
-    auto roi = rhs.AsInternetAddress ();
-    if (loi != roi) {
-        return false;
-    }
-    if (loi) {
-        Assert (not lhs.AsRegisteredName ());
-        Assert (not rhs.AsRegisteredName ());
-        return true; // if they are equal and defined, then NOT AsRegisteredName
-    }
-    Assert (lhs.AsRegisteredName ()); // must be one or the other
-    Assert (rhs.AsRegisteredName ());
-    return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*lhs.AsRegisteredName (), *rhs.AsRegisteredName ());
-}
-
-/*
- ********************************************************************************
- ************************** ThreeWayComparer<Host> ******************************
- ********************************************************************************
- */
-int Common::ThreeWayComparer<Host>::operator() (const Host& lhs, const Host& rhs) const
-{
-    if (int cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ())) {
-        return cmp;
-    }
-    return Common::OptionalThreeWayCompare<String, String::ThreeWayComparer>{
-        String::ThreeWayComparer{CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
-}
-
-/*
- ********************************************************************************
  ************************************ UserInfo **********************************
  ********************************************************************************
  */
@@ -216,16 +180,6 @@ String UserInfo::EncodeAsRawURL_ (const String& decodedName)
 String UserInfo::ToString () const
 {
     return Characters::ToString (AsDecoded ());
-}
-
-/*
- ********************************************************************************
- *********************** ThreeWayComparer<UserInfo> *****************************
- ********************************************************************************
- */
-int Common::ThreeWayComparer<UserInfo>::operator() (const UserInfo& lhs, const UserInfo& rhs) const
-{
-    return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
 }
 
 /*
@@ -286,54 +240,6 @@ String Authority::As () const
 String Authority::ToString () const
 {
     return Characters::ToString (As<String> ());
-}
-
-/*
- ********************************************************************************
- **************************** Authority::operators ******************************
- ********************************************************************************
- */
-bool UniformResourceIdentification::operator== (const Authority& lhs, const Authority& rhs)
-{
-    if (lhs.GetUserInfo () != rhs.GetUserInfo ()) {
-        return false;
-    }
-    if (lhs.GetHost () != rhs.GetHost ()) {
-        return false;
-    }
-#if qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
-    if (lhs.GetPort () and rhs.GetPort ()) {
-        if (lhs.GetPort () != rhs.GetPort ()) {
-            return false;
-        }
-    }
-    else {
-        if (lhs.GetPort ().has_value () != rhs.GetPort ().has_value ()) {
-            return false;
-        }
-    }
-#else
-    if (lhs.GetPort () != rhs.GetPort ()) {
-        return false;
-    }
-#endif
-    return true;
-}
-
-/*
- ********************************************************************************
- ************************ ThreeWayComparer<Authority> ***************************
- ********************************************************************************
- */
-int Common::ThreeWayComparer<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
-{
-    if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
-        return cmp;
-    }
-    if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
-        return cmp;
-    }
-    return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
 }
 
 /*
@@ -418,30 +324,16 @@ String Query::ToString () const
 
 /*
  ********************************************************************************
- ********************************* Query operators ******************************
+ *************************** Query::ThreeWayComparer ****************************
  ********************************************************************************
  */
-bool UniformResourceIdentification::operator== (const Query& lhs, const Query& rhs)
-{
-    // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
-    return lhs.GetMap () == rhs.GetMap ();
-}
-
-/*
- ********************************************************************************
- *************************** ThreeWayComparer<Query> ****************************
- ********************************************************************************
- */
-int Common::ThreeWayComparer<Query>::operator() (const Query& lhs, const Query& rhs) const
+int Query::ThreeWayComparer::operator() (const Query& lhs, const Query& rhs) const
 {
     // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
 
     // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
     // So pick a preferred ordering (alphabetical) - and compare one after the other
-    // @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
-    vector<String> combinedKeys = (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).As<vector<String>> ();
-    sort (combinedKeys.begin (), combinedKeys.end ());
-    for (String i : combinedKeys) {
+    for (String i : (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).OrderBy (less<String>{})) {
         optional<String> lhsVal = lhs.GetMap ().Lookup (i);
         optional<String> rhsVal = rhs.GetMap ().Lookup (i);
         int              cmp    = Common::ThreeWayCompare (lhsVal, rhsVal);

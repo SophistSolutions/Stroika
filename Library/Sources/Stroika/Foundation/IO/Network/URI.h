@@ -298,6 +298,9 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual URI Combine (const URI& uri) const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  For debugging purposes: don't count on the format.
          */
@@ -335,6 +338,16 @@ namespace Stroika::Foundation::IO::Network {
     optional<String> URI::GetAbsPath () const;
 
     /**
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct URI::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const URI& lhs, const URI& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const URI& lhs, const URI& rhs);
     bool operator<= (const URI& lhs, const URI& rhs);
@@ -342,16 +355,6 @@ namespace Stroika::Foundation::IO::Network {
     bool operator!= (const URI& lhs, const URI& rhs);
     bool operator>= (const URI& lhs, const URI& rhs);
     bool operator> (const URI& lhs, const URI& rhs);
-
-}
-
-namespace Stroika::Foundation::Common {
-
-    template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::URI> {
-        constexpr ThreeWayComparer () = default;
-        int operator() (const Stroika::Foundation::IO::Network::URI& lhs, const Stroika::Foundation::IO::Network::URI& rhs) const;
-    };
 
 }
 

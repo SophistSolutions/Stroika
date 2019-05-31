@@ -113,8 +113,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \note schemes cannot include a ':' character
      *
-     *  \note Schemes should generally be treated as case insensitive, so compare with String::EqualsComparer{eCaseInsensitive}
-     *
      * TODO:
      *      @todo   MABYE add "SCHEME REGISTER"
      *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
@@ -145,12 +143,23 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool IsSecure () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         nonvirtual optional<PortType> GetDefaultPort () const;
     };
 
     /**
-     *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
-     *  @see https://tools.ietf.org/html/rfc3986#section-3.1
+     *  schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct SchemeType::ThreeWayComparer : String::ThreeWayComparer {
+        constexpr ThreeWayComparer ();
+    };
+
+    /**
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const SchemeType& lhs, const SchemeType& rhs);
     bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
@@ -238,6 +247,9 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual RESULT_TYPE AsEncoded () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  For debugging purposes: don't count on the format.
          *  @see Characters::ToString ()
@@ -266,6 +278,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     /**
      *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
      *  @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct Host::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const Host& lhs, const Host& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Host& lhs, const Host& rhs);
     bool operator<= (const Host& lhs, const Host& rhs);
@@ -325,6 +348,9 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual RESULT_TYPE AsEncoded () const;
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  For debugging purposes: don't count on the format.
          *  @see Characters::ToString ()
@@ -351,6 +377,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     /**
      *  Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
      *  These are compared as case-senstive strings.
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct UserInfo::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const UserInfo& lhs, const UserInfo& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const UserInfo& lhs, const UserInfo& rhs);
     bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
@@ -436,6 +473,9 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual void SetUserInfo (const optional<UserInfo>& userInfo);
 
     public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  For debugging purposes: don't count on the format.
          *  @see Characters::ToString ()
@@ -447,6 +487,19 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<PortType> fPort_;
         optional<UserInfo> fUserInfo_;
     };
+
+    /**
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct Authority::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const Authority& lhs, const Authority& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
     bool operator< (const Authority& lhs, const Authority& rhs);
     bool operator<= (const Authority& lhs, const Authority& rhs);
     bool operator== (const Authority& lhs, const Authority& rhs);
@@ -485,6 +538,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual String ComputeQueryString () const;
 
     public:
+        struct EqualsComparer;
+
+    public:
+        struct ThreeWayComparer;
+
+    public:
         /**
          *  For debugging purposes: don't count on the format.
          *  @see Characters::ToString ()
@@ -495,6 +554,39 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         Containers::Mapping<String, String> fMap_;
     };
 
+    /**
+     *  Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
+     *
+     * comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
+     * So pick a preferred ordering (alphabetical) - and compare one after the other
+     * @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
+     *
+     *  \note provided equals comparer cuz commonly used and significant performance benefit
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct Query::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        int operator() (const Query& lhs, const Query& rhs) const;
+    };
+
+    /**
+     *  Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
+     *
+     * comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
+     * So pick a preferred ordering (alphabetical) - and compare one after the other
+     * @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
+    struct Query::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        int operator() (const Query& lhs, const Query& rhs) const;
+    };
+
+    /**
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
+     *
+     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     */
     bool operator< (const Query& lhs, const Query& rhs);
     bool operator<= (const Query& lhs, const Query& rhs);
     bool operator== (const Query& lhs, const Query& rhs);
@@ -537,31 +629,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     string PCTDecode (const string& s);
     String PCTDecode2String (const string& s);
     String PCTDecode2String (const String& s);
-
-}
-
-namespace Stroika::Foundation::Common {
-
-    template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer () = default;
-        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& rhs) const;
-    };
-    template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer () = default;
-        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo& rhs) const;
-    };
-    template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer () = default;
-        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority& rhs) const;
-    };
-    template <>
-    struct ThreeWayComparer<Stroika::Foundation::IO::Network::UniformResourceIdentification::Query> : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer () = default;
-        int operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& lhs, const Stroika::Foundation::IO::Network::UniformResourceIdentification::Query& rhs) const;
-    };
 
 }
 

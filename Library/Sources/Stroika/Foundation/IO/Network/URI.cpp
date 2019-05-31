@@ -334,35 +334,10 @@ URI URI::Combine (const URI& uri) const
 
 /*
  ********************************************************************************
- ******************************** URI operators *********************************
+ **************************** URI::ThreeWayComparer *****************************
  ********************************************************************************
  */
-bool Network::operator== (const URI& lhs, const URI& rhs)
-{
-    if (lhs.GetScheme () != rhs.GetScheme ()) {
-        return false;
-    }
-    if (lhs.GetAuthority () != rhs.GetAuthority ()) {
-        return false;
-    }
-    if (lhs.GetPath () != rhs.GetPath ()) {
-        return false;
-    }
-    if (lhs.GetQuery () != rhs.GetQuery ()) {
-        return false;
-    }
-    if (lhs.GetFragment () != rhs.GetFragment ()) {
-        return false;
-    }
-    return true;
-}
-
-/*
- ********************************************************************************
- **************************** ThreeWayComparer<URI> *****************************
- ********************************************************************************
- */
-int Common::ThreeWayComparer<URI>::operator() (const URI& lhs, const URI& rhs) const
+int URI::ThreeWayComparer::operator() (const URI& lhs, const URI& rhs) const
 {
     using namespace UniformResourceIdentification;
     if (int cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ())) {

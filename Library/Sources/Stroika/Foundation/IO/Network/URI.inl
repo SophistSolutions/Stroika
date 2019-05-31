@@ -173,9 +173,13 @@ namespace Stroika::Foundation::IO::Network {
     {
         return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
+    inline bool operator== (const URI& lhs, const URI& rhs)
+    {
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
+    }
     inline bool operator!= (const URI& lhs, const URI& rhs)
     {
-        return not(lhs == rhs);
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const URI& lhs, const URI& rhs)
     {
