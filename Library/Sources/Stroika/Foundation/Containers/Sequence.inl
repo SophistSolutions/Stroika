@@ -161,9 +161,9 @@ namespace Stroika::Foundation::Containers {
     template <typename INORDER_COMPARER_TYPE>
     auto Sequence<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const -> Sequence
     {
-        vector<T> tmp (begin (), end ()); // due to move constructor, a not very expensive implementation
+        vector<T> tmp (begin (), end ()); // due to Sequence_stdvector move constructor, a not very expensive implementation
         sort (tmp.begin (), tmp.end (), inorderComparer);
-        return Sequence_stdvector<T>{move (tmp)};
+        return Concrete::Sequence_stdvector<T>{move (tmp)};
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
