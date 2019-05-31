@@ -409,6 +409,13 @@ String Query::ComputeQueryString () const
     return ASCIIStringToWide (result);
 }
 
+String Query::ToString () const
+{
+    // could use ComputeQueryString, Characters::ToString (ComputeQueryString), or Characters::ToString (fMap_)
+    // Chose this representation because it shows most characters 'decoded' (%xy)
+    return Characters::ToString (fMap_);
+}
+
 /*
  ********************************************************************************
  ********************************* Query operators ******************************

@@ -240,6 +240,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         /**
          *  For debugging purposes: don't count on the format.
+         *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
 
@@ -326,6 +327,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         /**
          *  For debugging purposes: don't count on the format.
+         *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
 
@@ -436,6 +438,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         /**
          *  For debugging purposes: don't count on the format.
+         *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
 
@@ -480,6 +483,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         // Return wide string, but all ascii characters
         // http://tools.ietf.org/html/rfc3986
         nonvirtual String ComputeQueryString () const;
+
+    public:
+        /**
+         *  For debugging purposes: don't count on the format.
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
 
     private:
         Containers::Mapping<String, String> fMap_;
