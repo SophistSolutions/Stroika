@@ -313,7 +313,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator!= (const Authority& lhs, const Authority& rhs)
     {
-        return not Common::ThreeWayCompare (lhs, rhs) == 0;
+        return  Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const Authority& lhs, const Authority& rhs)
     {
