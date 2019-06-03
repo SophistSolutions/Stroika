@@ -162,9 +162,9 @@ namespace Stroika::Foundation::Configuration {
     const ENUM_TYPE* EnumNames<ENUM_TYPE>::PeekValue (const wchar_t* name) const
     {
         /*
-            *  NB: this is only safe returning an internal pointer, because the pointer is internal to
-            *  static, immudatable data - the basic_array associated with this EnumNames<> structure.
-            */
+         *  NB: this is only safe returning an internal pointer, because the pointer is internal to
+         *  static, immudatable data - the basic_array associated with this EnumNames<> structure.
+         */
         RequireNotNull (name);
         for (const_iterator i = fEnumNames_.begin (); i != fEnumNames_.end (); ++i) {
             if (::wcscmp (i->second, name) == 0) {
