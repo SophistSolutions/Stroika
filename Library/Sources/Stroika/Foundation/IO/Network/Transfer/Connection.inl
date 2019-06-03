@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Configuration {
                     {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eProactivelySendAuthentication, L"Proactively-Send-Authenitcation"},
                     {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eRespondToWWWAuthenticate, L"Respond-To-WWW-Authenticate"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> (k)
         {
         }

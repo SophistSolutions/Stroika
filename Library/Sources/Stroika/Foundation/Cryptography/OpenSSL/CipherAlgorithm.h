@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Configuration {
                     {Cryptography::OpenSSL::CipherAlgorithm::eRC2_OFB, L"RC2_OFB"},
                     {Cryptography::OpenSSL::CipherAlgorithm::eRC4, L"RC4"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> (k)
         {
         }

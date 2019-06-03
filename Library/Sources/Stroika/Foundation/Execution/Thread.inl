@@ -363,6 +363,7 @@ namespace Stroika::Foundation::Execution {
                 CheckForThreadInterruption ();
             }
     }
+
 }
 
 namespace Stroika::Foundation::Configuration {
@@ -377,7 +378,7 @@ namespace Stroika::Foundation::Configuration {
                     {Execution::Thread::Status::eAborting, L"Aborting"},
                     {Execution::Thread::Status::eCompleted, L"Completed"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Execution::Thread::Status> (k)
         {
         }
@@ -393,7 +394,7 @@ namespace Stroika::Foundation::Configuration {
                     {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
                     {Execution::Thread::Priority::eHighest, L"Highest"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Execution::Thread::Priority> (k)
         {
         }

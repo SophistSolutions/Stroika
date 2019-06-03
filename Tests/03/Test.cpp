@@ -98,11 +98,20 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"{}::Test2_EnumNames_"};
         using namespace Test2_EnumNames_Private_;
-        VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>::k.GetName (fooEnum::eOne));
-        VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>::k.GetName (fooEnum::eTwo));
+        VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
+        VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
         {
-            VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum> ().GetName (fooEnum::eOne));
-            VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum> ().GetName (fooEnum::eTwo));
+            VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
+            VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
+        }
+        {
+            VerifyTestResult ((DefaultNames<fooEnum>{}.GetValue (L"eTwo", Execution::Exception<> (L"OutOfRange")) == fooEnum::eTwo));
+            try {
+                DefaultNames<fooEnum>{}.GetValue (L"missing", Execution::Exception<> (L"OutOfRange"));
+                VerifyTestResult (false); // above should throw
+            }
+            catch (Execution::Exception<> e) {
+            }
         }
     }
 }

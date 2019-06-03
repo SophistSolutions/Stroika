@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Configuration {
                     {Execution::Logger::Priority::eAlertError, L"AlertError"},
                     {Execution::Logger::Priority::eEmergency, L"Emergency"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Execution::Logger::Priority> (k)
         {
         }

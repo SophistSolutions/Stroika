@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Configuration {
                     {Foundation::IO::FileSystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable"},
                     {Foundation::IO::FileSystem::BlockDeviceKind::eSystemInformation, L"System-Information"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Foundation::IO::FileSystem::BlockDeviceKind> (k)
         {
         }

@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Configuration {
                     {Execution::SignalHandler::Type::eDirect, L"Direct"},
                     {Execution::SignalHandler::Type::eSafe, L"Safe"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Execution::SignalHandler::Type> (k)
         {
         }

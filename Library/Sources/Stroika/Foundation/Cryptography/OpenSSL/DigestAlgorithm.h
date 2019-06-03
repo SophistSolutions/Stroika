@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Configuration {
                     {Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224"},
                     {Cryptography::OpenSSL::DigestAlgorithm::eSHA256, L"eSHA256"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Cryptography::OpenSSL::DigestAlgorithm> (k)
         {
         }

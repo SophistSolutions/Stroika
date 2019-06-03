@@ -302,7 +302,7 @@ namespace Stroika::Foundation::Configuration {
                     {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
                     {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::DayOfWeek> (k)
         {
         }
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Configuration {
                     {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
                     {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::MonthOfYear> (k)
         {
         }
@@ -346,7 +346,7 @@ namespace Stroika::Foundation::Configuration {
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::Date::ParseFormat> (k)
         {
         }
@@ -368,7 +368,7 @@ namespace Stroika::Foundation::Configuration {
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Stroika::Foundation::Time::Date::PrintFormat> (k)
         {
         }

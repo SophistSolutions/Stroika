@@ -212,6 +212,8 @@ namespace Stroika::Foundation::Configuration {
          *  The argument 'e' must be a valid enumerator entry between eSTART, and eEND (not including eEND).
          *  It returns a pointer to a valid const wchar_t* string of the name of the enumerator.
          *
+         *  \req ENUM_TYPE::eStart <= e and e < ENUM_TYPE::eEnd
+         *
          *  @see PeekName ();
          */
         nonvirtual const wchar_t* GetName (ENUM_TYPE e) const;
@@ -247,55 +249,59 @@ namespace Stroika::Foundation::Configuration {
      *
      *  \par Example Usage
      *      \code
-     *      enum class Priority {
-     *          a, b, c
-     *          Stroika_Define_Enum_Bounds(a, c)
-     *      };
-     *
-     *      // this template specialization must be located in the Stroika::Configuration namespace
-     *      namespace Stroika::Foundation::Configuration {
-     *          template<>
-     *          const EnumNames<Priority>   DefaultNames<Priority>::k {
-     *              { Priority::a, L"a" },
-     *              { Priority::b, L"b" },
-     *              { Priority::c, L"c" },
+     *          enum class Priority {
+     *              a, b, c
+     *              Stroika_Define_Enum_Bounds(a, c)
      *          };
-     *      }
-     *      \endcode
      *
-     *  \par OR
-     *      \code
-     *      namespace Stroika::Foundation::Configuration {
-     *          template<>
-     *          const EnumNames<Priority>   DefaultNames<Priority>::k {
-     *              initializer_list<EnumName<AccessMode>> {
+     *          // this template specialization must be located in the Stroika::Configuration namespace
+     *          namespace Stroika::Foundation::Configuration {
+     *              template<>
+     *              const EnumNames<Priority>   DefaultNames<Priority>::k {
      *                  { Priority::a, L"a" },
      *                  { Priority::b, L"b" },
      *                  { Priority::c, L"c" },
-     *              }
-     *          };
-     *      }
+     *              };
+     *          }
+     *
+     *          // Then use
+     *          const wchar_t* aStr = DefaultNames<Priority>{}.PeekName (Priority::a);
+     *          Priority p = DefaultNames<Priority>{}.GetValue (L"invalid", Execution::Exception<> (L"OutOfRange"));   // this will throw - out of range
      *      \endcode
      *
      *  \par OR
      *      \code
-     *      namespace Stroika::Foundation::Configuration {
-     *          template<>
-     *          const EnumNames<AccessMode>   DefaultNames<AccessMode>::k {
-     *              Configuration::EnumNames<AccessMode>::BasicArrayInitializer {{
-     *                  { AccessMode::eNoAccess, L"No-Access" },
-     *                  { AccessMode::eRead, L"Read" },
-     *                  { AccessMode::eWrite, L"Write" },
-     *                  { AccessMode::eReadWrite, L"Read-Write" },
-     *              }}
-     *          };
-     *      }
+     *          namespace Stroika::Foundation::Configuration {
+     *              template<>
+     *              const EnumNames<Priority>   DefaultNames<Priority>::k {
+     *                  initializer_list<EnumName<Priority>> {
+     *                      { Priority::a, L"a" },
+     *                      { Priority::b, L"b" },
+     *                      { Priority::c, L"c" },
+     *                  }
+     *              };
+     *          }
+     *      \endcode
+     *
+     *  \par OR
+     *      \code
+     *          namespace Stroika::Foundation::Configuration {
+     *              template<>
+     *              const EnumNames<AccessMode>   DefaultNames<AccessMode>::k {
+     *                  Configuration::EnumNames<AccessMode>::BasicArrayInitializer {{
+     *                      { AccessMode::eNoAccess, L"No-Access" },
+     *                      { AccessMode::eRead, L"Read" },
+     *                      { AccessMode::eWrite, L"Write" },
+     *                      { AccessMode::eReadWrite, L"Read-Write" },
+     *                  }}
+     *              };
+     *          }
      *      \endcode
      */
     template <typename ENUM_TYPE>
     struct DefaultNames : EnumNames<ENUM_TYPE> {
         static const EnumNames<ENUM_TYPE> k;
-        DefaultNames ();
+        constexpr DefaultNames ();
     };
 
 }

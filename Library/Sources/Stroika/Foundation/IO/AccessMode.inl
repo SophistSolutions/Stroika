@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Configuration {
                     {IO::AccessMode::eWrite, L"Write"},
                     {IO::AccessMode::eReadWrite, L"Read-Write"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<IO::AccessMode> (k)
         {
         }

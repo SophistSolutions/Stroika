@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Configuration {
                     {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
                     {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> (k)
         {
         }

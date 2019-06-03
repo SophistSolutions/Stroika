@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Configuration {
                     {DataExchange::VariantValue::eArray, L"Array"},
                     {DataExchange::VariantValue::eMap, L"Map"},
                 }}};
-        DefaultNames ()
+        constexpr DefaultNames ()
             : EnumNames<DataExchange::VariantValue::Type> (k)
         {
         }

@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <typename ENUM_TYPE>
-    inline DefaultNames<ENUM_TYPE>::DefaultNames ()
+    constexpr DefaultNames<ENUM_TYPE>::DefaultNames ()
         : EnumNames<ENUM_TYPE> (k)
     {
     }
