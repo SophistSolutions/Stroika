@@ -157,6 +157,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     constexpr InternetAddress InternetAddress::max ()
     {
+        // @todo - consider if this is really the max (could have longer address at some point in the future - IPV8, 9, 10??)
         return InternetAddress{array<uint8_t, 16>{
             0xff,
             0xff,

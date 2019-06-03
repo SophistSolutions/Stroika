@@ -29,6 +29,7 @@ Objs	=	\
 	$(ObjDir)InternetAddress${OBJ_SUFFIX}\
 	$(ObjDir)LinkMonitor${OBJ_SUFFIX}\
 	$(ObjDir)Listener${OBJ_SUFFIX}\
+	$(ObjDir)Neighbors${OBJ_SUFFIX}\
 	$(ObjDir)Socket${OBJ_SUFFIX}\
 	$(ObjDir)SocketAddress${OBJ_SUFFIX}\
 	$(ObjDir)SocketStream${OBJ_SUFFIX}\
