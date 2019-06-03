@@ -687,9 +687,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.cpp">
-      <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>

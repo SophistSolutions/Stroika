@@ -151,6 +151,31 @@ namespace Stroika::Foundation::IO::Network {
                 return nullopt;
         }
     }
+    constexpr InternetAddress InternetAddress::min ()
+    {
+        return InternetAddress{};
+    }
+    constexpr InternetAddress InternetAddress::max ()
+    {
+        return InternetAddress{array<uint8_t, 16>{
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+            0xff,
+        }};
+    }
     template <>
     String InternetAddress::As<String> () const;
 #if qPlatform_POSIX

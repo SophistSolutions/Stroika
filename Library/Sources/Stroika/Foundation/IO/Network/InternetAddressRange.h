@@ -24,10 +24,13 @@ namespace Stroika::Foundation::IO::Network {
 
     namespace Private_ {
         struct InternetAddressRangeTraits_ : Traversal::RangeTraits::ExplicitRangeTraitsWithoutMinMax<InternetAddress, Traversal::Openness::eClosed, Traversal::Openness::eClosed, int, unsigned int> {
-            static InternetAddress GetNext (InternetAddress n);
-            using RangeTraitsType = InternetAddressRangeTraits_;
-            static const InternetAddress kLowerBound;
-            static const InternetAddress kUpperBound;
+            static InternetAddress GetNext (InternetAddress n)
+            {
+                return n == kUpperBound ? n : n.Offset (1);
+            }
+            using RangeTraitsType                        = InternetAddressRangeTraits_;
+            static constexpr InternetAddress kLowerBound = InternetAddress::min ();
+            static constexpr InternetAddress kUpperBound = InternetAddress::max ();
         };
     }
 

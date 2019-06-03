@@ -27,7 +27,6 @@ Objs	=	\
 	$(ObjDir)DNS${OBJ_SUFFIX}\
 	$(ObjDir)Interface${OBJ_SUFFIX}\
 	$(ObjDir)InternetAddress${OBJ_SUFFIX}\
-	$(ObjDir)InternetAddressRange${OBJ_SUFFIX}\
 	$(ObjDir)LinkMonitor${OBJ_SUFFIX}\
 	$(ObjDir)Listener${OBJ_SUFFIX}\
 	$(ObjDir)Socket${OBJ_SUFFIX}\

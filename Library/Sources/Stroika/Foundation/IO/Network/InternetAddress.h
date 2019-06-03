@@ -218,6 +218,20 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  InternetAddress::min () is the smallest allowed InternetAddress. This is mostly useful as a sentinal (better to use optional)
+         *  or for sorting.
+         */
+        static constexpr InternetAddress min ();
+
+    public:
+        /**
+         *  InternetAddress::min () is the smallest allowed InternetAddress. This is mostly useful as a sentinal (better to use optional)
+         *  or for sorting.
+         */
+        static constexpr InternetAddress max ();
+
+    public:
+        /**
          *  Only specifically specialized variants are supported. As<T> supported variants include:
          *      As<String> ();
          *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY
