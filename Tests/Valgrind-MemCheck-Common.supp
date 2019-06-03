@@ -89,3 +89,8 @@
    fun:_ZN12_GLOBAL__N_129Test1_DEPRECATED_URL_Parsing_8Private_21BasicTests_AsOf21d22_Ev.lto_priv.805
    fun:main
 }
+{
+   https://stroika.atlassian.net/browse/STK-695
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation2IO7Network29UniformResourceIdentification9Authority16ThreeWayComparerclERKS4_S7_.constprop.197
+}
