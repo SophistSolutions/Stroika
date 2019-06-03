@@ -26,7 +26,7 @@ using Neighbor = NeighborsMonitor::Neighbor;
 //-http ://man7.org/linux/man-pages/man8/ip-neighbour.8.html
 //  -arp - a
 //  - ip neigh show
-//  - ip - 6 neigh show
+//  - ip -6 neigh show
 //  - cat /proc/net/arp
 //  - use that to fill in new devices / info for discovery
 //

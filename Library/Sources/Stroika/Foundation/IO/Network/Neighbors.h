@@ -25,7 +25,8 @@
 namespace Stroika::Foundation::IO::Network {
 
     /**
-     *  \brief Monitor - either immediately or in the background fetches a list of network neighbors.
+     *  \brief Monitor - either immediately or in the background fetches a list of network neighbors (1 hop away network devices).
+     *         Also fetches their hardware address (so like 'arp' kind of but may employ other means)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

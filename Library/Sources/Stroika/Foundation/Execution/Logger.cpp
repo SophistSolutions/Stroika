@@ -443,7 +443,7 @@ public:
     void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>::k.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
+        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
     }
 
 private:
