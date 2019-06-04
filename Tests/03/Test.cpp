@@ -110,7 +110,8 @@ namespace {
                 DefaultNames<fooEnum>{}.GetValue (L"missing", Execution::Exception<> (L"OutOfRange"));
                 VerifyTestResult (false); // above should throw
             }
-            catch (Execution::Exception<> e) {
+            catch (const Execution::Exception<>& e) {
+                // good
             }
         }
     }
