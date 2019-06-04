@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Containers {
     auto Sequence<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const -> Sequence
     {
         vector<T> tmp (this->begin (), this->end ()); // due to Sequence_stdvector move constructor, a not very expensive implementation
-        sort (tmp.begin (), tmp.end (), inorderComparer);
+        stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         return Concrete::Sequence_stdvector<T>{move (tmp)};
     }
     template <typename T>

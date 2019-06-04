@@ -607,7 +607,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const
     {
         vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
-        sort (tmp.begin (), tmp.end (), inorderComparer);
+        stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ()) {

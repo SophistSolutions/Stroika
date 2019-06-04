@@ -780,7 +780,10 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
-         * \note alias for Sort ()
+         *  \note This performs a stable sort (preserving the relative order of items that compare equal).
+         *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
+         *
+         *  \note alias for Sort ()
          *
          *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
          *
