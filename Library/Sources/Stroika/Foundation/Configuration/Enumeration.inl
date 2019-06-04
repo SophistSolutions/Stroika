@@ -86,11 +86,15 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ENUM_TYPE>
     inline EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
-        : fEnumNames_{origEnumNames}
-    {
 #if 0
+        : fEnumNames_{origEnumNames}
+#endif
+    {
+#if 1
         // @todo find some way to INITIALZIE the static array.... - needed for constexpr function!
         // @see qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
+        //
+        // Tried fEnumNames_{origEnumNames} and tried template <typename... E> CTOR
         auto oi = fEnumNames_.begin ();
         for (EnumName<ENUM_TYPE> i : origEnumNames) {
             Require (oi != fEnumNames_.end ());

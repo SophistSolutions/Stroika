@@ -166,6 +166,15 @@ namespace Stroika::Foundation::Configuration {
         constexpr EnumNames (const EnumNames& src) = default;
         constexpr EnumNames (EnumNames&& src)      = default;
         constexpr EnumNames (const BasicArrayInitializer& init);
+#if 0
+        // https://stackoverflow.com/questions/6893700/how-to-construct-stdarray-object-with-initializer-list 
+        // suggests this might work, but didn't quite - but maybe a promising approach
+        template <typename... E>
+        EnumNames (E&&... e)
+            : fEnumNames_{{std::forward<E> (e)...}}
+        {
+        }
+#endif
         EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
         template <size_t N>
         constexpr EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
