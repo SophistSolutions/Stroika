@@ -155,49 +155,39 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Stroika::Foundation::Time::DateTime::ParseFormat> : EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> {
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        static constexpr EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> k{
-            EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat>::BasicArrayInitializer{
-                {
-                    {Stroika::Foundation::Time::DateTime::ParseFormat::eCurrentLocale, L"Current-Locale"},
-                    {Stroika::Foundation::Time::DateTime::ParseFormat::eISO8601, L"ISO-8601"},
-                    {Stroika::Foundation::Time::DateTime::ParseFormat::eXML, L"XML"},
-                    {Stroika::Foundation::Time::DateTime::ParseFormat::eRFC1123, L"RFC-1123"},
-                }}};
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DefaultNames ()
-            : EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> DefaultNames<Stroika::Foundation::Time::DateTime::ParseFormat>::k{
+        EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::DateTime::ParseFormat::eCurrentLocale, L"Current-Locale"},
+            {Stroika::Foundation::Time::DateTime::ParseFormat::eISO8601, L"ISO-8601"},
+            {Stroika::Foundation::Time::DateTime::ParseFormat::eXML, L"XML"},
+            {Stroika::Foundation::Time::DateTime::ParseFormat::eRFC1123, L"RFC-1123"},
+        }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Stroika::Foundation::Time::DateTime::PrintFormat> : EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> {
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        static constexpr EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> k{
-            EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat>::BasicArrayInitializer{
-                {
-                    {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale, L"Current-Locale"},
-                    {Stroika::Foundation::Time::DateTime::PrintFormat::eISO8601, L"ISO-8601"},
-                    {Stroika::Foundation::Time::DateTime::PrintFormat::eXML, L"XML"},
-                    {Stroika::Foundation::Time::DateTime::PrintFormat::eRFC1123, L"RFC-1123"},
-                    {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
-                }}};
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DefaultNames ()
-            : EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat> DefaultNames<Stroika::Foundation::Time::DateTime::PrintFormat>::k{
+        EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale, L"Current-Locale"},
+            {Stroika::Foundation::Time::DateTime::PrintFormat::eISO8601, L"ISO-8601"},
+            {Stroika::Foundation::Time::DateTime::PrintFormat::eXML, L"XML"},
+            {Stroika::Foundation::Time::DateTime::PrintFormat::eRFC1123, L"RFC-1123"},
+            {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+        }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
 
 }
 

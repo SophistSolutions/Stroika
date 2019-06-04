@@ -182,28 +182,24 @@ namespace Stroika::Foundation::DataExchange {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<DataExchange::VariantValue::Type> : EnumNames<DataExchange::VariantValue::Type> {
-        static constexpr EnumNames<DataExchange::VariantValue::Type> k{
-            EnumNames<DataExchange::VariantValue::Type>::BasicArrayInitializer{
-                {
-                    {DataExchange::VariantValue::eNull, L"Null"},
-                    {DataExchange::VariantValue::eBLOB, L"BLOB"},
-                    {DataExchange::VariantValue::eBoolean, L"Boolean"},
-                    {DataExchange::VariantValue::eInteger, L"Integer"},
-                    {DataExchange::VariantValue::eUnsignedInteger, L"Unsigned-Integer"},
-                    {DataExchange::VariantValue::eFloat, L"Float"},
-                    {DataExchange::VariantValue::eDate, L"Date"},
-                    {DataExchange::VariantValue::eDateTime, L"DateTime"},
-                    {DataExchange::VariantValue::eString, L"String"},
-                    {DataExchange::VariantValue::eArray, L"Array"},
-                    {DataExchange::VariantValue::eMap, L"Map"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<DataExchange::VariantValue::Type> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k{
+        EnumNames<DataExchange::VariantValue::Type>::BasicArrayInitializer{
+            {
+                {DataExchange::VariantValue::eNull, L"Null"},
+                {DataExchange::VariantValue::eBLOB, L"BLOB"},
+                {DataExchange::VariantValue::eBoolean, L"Boolean"},
+                {DataExchange::VariantValue::eInteger, L"Integer"},
+                {DataExchange::VariantValue::eUnsignedInteger, L"Unsigned-Integer"},
+                {DataExchange::VariantValue::eFloat, L"Float"},
+                {DataExchange::VariantValue::eDate, L"Date"},
+                {DataExchange::VariantValue::eDateTime, L"DateTime"},
+                {DataExchange::VariantValue::eString, L"String"},
+                {DataExchange::VariantValue::eArray, L"Array"},
+                {DataExchange::VariantValue::eMap, L"Map"},
+            }}};
 }
 namespace std {
     /*

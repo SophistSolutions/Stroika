@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Configuration {
         // SHOULD BE ABLE TO USE CONST HERE qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
         // but then one CTOR doesn't compile
         //const EnumNamesHolderType_   fEnumNames_;
-        EnumNamesHolderType_ fEnumNames_;
+        const EnumNamesHolderType_ fEnumNames_;
     };
 
     /**
@@ -257,11 +257,12 @@ namespace Stroika::Foundation::Configuration {
      *          // this template specialization must be located in the Stroika::Configuration namespace
      *          namespace Stroika::Foundation::Configuration {
      *              template<>
-     *              const EnumNames<Priority>   DefaultNames<Priority>::k {
-     *                  { Priority::a, L"a" },
-     *                  { Priority::b, L"b" },
-     *                  { Priority::c, L"c" },
-     *              };
+     *              constexpr EnumNames<Priority> DefaultNames<Priority>::k{
+     *                  EnumNames<Priority>::BasicArrayInitializer{{
+     *                          {Priority::a, L"Debug"},
+     *                          {Priority::b, L"Info"},
+     *                          {Priority::eNotice, L"Notice"},
+     *                      }}};
      *          }
      *
      *          // Then use
@@ -269,34 +270,6 @@ namespace Stroika::Foundation::Configuration {
      *          Priority p = DefaultNames<Priority>{}.GetValue (L"invalid", Execution::Exception<> (L"OutOfRange"));   // this will throw - out of range
      *      \endcode
      *
-     *  \par OR
-     *      \code
-     *          namespace Stroika::Foundation::Configuration {
-     *              template<>
-     *              const EnumNames<Priority>   DefaultNames<Priority>::k {
-     *                  initializer_list<EnumName<Priority>> {
-     *                      { Priority::a, L"a" },
-     *                      { Priority::b, L"b" },
-     *                      { Priority::c, L"c" },
-     *                  }
-     *              };
-     *          }
-     *      \endcode
-     *
-     *  \par OR
-     *      \code
-     *          namespace Stroika::Foundation::Configuration {
-     *              template<>
-     *              const EnumNames<AccessMode>   DefaultNames<AccessMode>::k {
-     *                  Configuration::EnumNames<AccessMode>::BasicArrayInitializer {{
-     *                      { AccessMode::eNoAccess, L"No-Access" },
-     *                      { AccessMode::eRead, L"Read" },
-     *                      { AccessMode::eWrite, L"Write" },
-     *                      { AccessMode::eReadWrite, L"Read-Write" },
-     *                  }}
-     *              };
-     *          }
-     *      \endcode
      */
     template <typename ENUM_TYPE>
     struct DefaultNames : EnumNames<ENUM_TYPE> {

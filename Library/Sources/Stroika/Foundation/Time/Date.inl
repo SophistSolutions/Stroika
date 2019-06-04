@@ -289,90 +289,71 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Stroika::Foundation::Time::DayOfWeek> : EnumNames<Stroika::Foundation::Time::DayOfWeek> {
-        static constexpr EnumNames<Stroika::Foundation::Time::DayOfWeek> k{
-            EnumNames<Stroika::Foundation::Time::DayOfWeek>::BasicArrayInitializer{
-                {
-                    {Stroika::Foundation::Time::DayOfWeek::eSunday, L"Sunday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eMonday, L"Monday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eTuesday, L"Tuesday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eWednesday, L"Wednesday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eThursday, L"Thursday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
-                    {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Stroika::Foundation::Time::DayOfWeek> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Stroika::Foundation::Time::DayOfWeek> DefaultNames<Stroika::Foundation::Time::DayOfWeek>::k{
+        EnumNames<Stroika::Foundation::Time::DayOfWeek>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::DayOfWeek::eSunday, L"Sunday"},
+            {Stroika::Foundation::Time::DayOfWeek::eMonday, L"Monday"},
+            {Stroika::Foundation::Time::DayOfWeek::eTuesday, L"Tuesday"},
+            {Stroika::Foundation::Time::DayOfWeek::eWednesday, L"Wednesday"},
+            {Stroika::Foundation::Time::DayOfWeek::eThursday, L"Thursday"},
+            {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
+            {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
+        }}};
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Stroika::Foundation::Time::MonthOfYear> : EnumNames<Stroika::Foundation::Time::MonthOfYear> {
-        static constexpr EnumNames<Stroika::Foundation::Time::MonthOfYear> k{
-            EnumNames<Stroika::Foundation::Time::MonthOfYear>::BasicArrayInitializer{
-                {
-                    {Stroika::Foundation::Time::MonthOfYear::eJanuary, L"January"},
-                    {Stroika::Foundation::Time::MonthOfYear::eFebruary, L"February"},
-                    {Stroika::Foundation::Time::MonthOfYear::eMarch, L"March"},
-                    {Stroika::Foundation::Time::MonthOfYear::eApril, L"April"},
-                    {Stroika::Foundation::Time::MonthOfYear::eMay, L"May"},
-                    {Stroika::Foundation::Time::MonthOfYear::eJune, L"June"},
-                    {Stroika::Foundation::Time::MonthOfYear::eJuly, L"July"},
-                    {Stroika::Foundation::Time::MonthOfYear::eAugust, L"August"},
-                    {Stroika::Foundation::Time::MonthOfYear::eSeptember, L"September"},
-                    {Stroika::Foundation::Time::MonthOfYear::eOctober, L"October"},
-                    {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
-                    {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Stroika::Foundation::Time::MonthOfYear> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Stroika::Foundation::Time::MonthOfYear> DefaultNames<Stroika::Foundation::Time::MonthOfYear>::k{
+        EnumNames<Stroika::Foundation::Time::MonthOfYear>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::MonthOfYear::eJanuary, L"January"},
+            {Stroika::Foundation::Time::MonthOfYear::eFebruary, L"February"},
+            {Stroika::Foundation::Time::MonthOfYear::eMarch, L"March"},
+            {Stroika::Foundation::Time::MonthOfYear::eApril, L"April"},
+            {Stroika::Foundation::Time::MonthOfYear::eMay, L"May"},
+            {Stroika::Foundation::Time::MonthOfYear::eJune, L"June"},
+            {Stroika::Foundation::Time::MonthOfYear::eJuly, L"July"},
+            {Stroika::Foundation::Time::MonthOfYear::eAugust, L"August"},
+            {Stroika::Foundation::Time::MonthOfYear::eSeptember, L"September"},
+            {Stroika::Foundation::Time::MonthOfYear::eOctober, L"October"},
+            {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
+            {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
+        }}};
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Stroika::Foundation::Time::Date::ParseFormat> : EnumNames<Stroika::Foundation::Time::Date::ParseFormat> {
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        static constexpr EnumNames<Stroika::Foundation::Time::Date::ParseFormat> k{
-            EnumNames<Stroika::Foundation::Time::Date::ParseFormat>::BasicArrayInitializer{
-                {
-                    {Stroika::Foundation::Time::Date::ParseFormat::eCurrentLocale, L"Current-Locale"},
-                    {Stroika::Foundation::Time::Date::ParseFormat::eISO8601, L"ISO-8601"},
-                    {Stroika::Foundation::Time::Date::ParseFormat::eXML, L"XML"},
-                    {Stroika::Foundation::Time::Date::ParseFormat::eJavascript, L"Javascript"},
-                }}};
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        constexpr DefaultNames ()
-            : EnumNames<Stroika::Foundation::Time::Date::ParseFormat> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Stroika::Foundation::Time::Date::ParseFormat> DefaultNames<Stroika::Foundation::Time::Date::ParseFormat>::k{
+        EnumNames<Stroika::Foundation::Time::Date::ParseFormat>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::Date::ParseFormat::eCurrentLocale, L"Current-Locale"},
+            {Stroika::Foundation::Time::Date::ParseFormat::eISO8601, L"ISO-8601"},
+            {Stroika::Foundation::Time::Date::ParseFormat::eXML, L"XML"},
+            {Stroika::Foundation::Time::Date::ParseFormat::eJavascript, L"Javascript"},
+        }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Stroika::Foundation::Time::Date::PrintFormat> : EnumNames<Stroika::Foundation::Time::Date::PrintFormat> {
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        static constexpr EnumNames<Stroika::Foundation::Time::Date::PrintFormat> k{
-            EnumNames<Stroika::Foundation::Time::Date::PrintFormat>::BasicArrayInitializer{
-                {
-                    {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale, L"Current-Locale"},
-                    {Stroika::Foundation::Time::Date::PrintFormat::eISO8601, L"ISO-8601"},
-                    {Stroika::Foundation::Time::Date::PrintFormat::eXML, L"XML"},
-                    {Stroika::Foundation::Time::Date::PrintFormat::eJavascript, L"Javascript"},
-                    {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
-                }}};
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        constexpr DefaultNames ()
-            : EnumNames<Stroika::Foundation::Time::Date::PrintFormat> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Stroika::Foundation::Time::Date::PrintFormat> DefaultNames<Stroika::Foundation::Time::Date::PrintFormat>::k{
+        EnumNames<Stroika::Foundation::Time::Date::PrintFormat>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale, L"Current-Locale"},
+            {Stroika::Foundation::Time::Date::PrintFormat::eISO8601, L"ISO-8601"},
+            {Stroika::Foundation::Time::Date::PrintFormat::eXML, L"XML"},
+            {Stroika::Foundation::Time::Date::PrintFormat::eJavascript, L"Javascript"},
+            {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+        }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
 
 }
 

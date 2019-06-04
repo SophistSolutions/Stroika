@@ -74,8 +74,10 @@ public:
 
 //NB CANNOT CHANGE VALUES LIGHTLY - WRITTEN TO config files
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    const EnumNames<Options::SyntaxColoringOption> DefaultNames<Options::SyntaxColoringOption>::k{
+#endif
+    constexpr EnumNames<Options::SyntaxColoringOption> DefaultNames<Options::SyntaxColoringOption>::k{
         Configuration::EnumNames<Options::SyntaxColoringOption>::BasicArrayInitializer{{
             {Options::SyntaxColoringOption::eSyntaxColoringNone, L"None"},
             {Options::SyntaxColoringOption::eSyntaxColoringCPlusPlus, L"C++"},

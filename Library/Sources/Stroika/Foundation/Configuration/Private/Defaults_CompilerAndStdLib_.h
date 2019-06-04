@@ -404,6 +404,27 @@ ABORTING...
 
 #endif
 
+/*
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001:  An internal error has occurred in the compiler.
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001: (compiler file 'd:\agent\_work\4\s\src\vctools\Compiler\CxxFE\sl\p1\c\yyaction.cpp', line 1187)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001:  To work around this problem, try simplifying or changing the program near the locations listed above.
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001: Please choose the Technical Support command on the Visual C++
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001:  Help menu, or open the Technical Support help file for more information (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(199): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Execution::Logger::Priority>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(105): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Execution::Logger::Priority>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.h(184): message :  see reference to class template instantiation 'std::array<std::pair<ENUM_TYPE,const wchar_t *>,2>' being compiled
+*/
+#ifndef qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
+
+#if defined(_MSC_VER)
+// First noticed broken in _MSC_VER_2k19_16Pt1_
+#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+#else
+#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy 0
+#endif
+
+#endif
+
 /**
  * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
  */

@@ -68,20 +68,16 @@ namespace Stroika::Foundation::Configuration {
 
 namespace Stroika::Foundation::Configuration {
 
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> : EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> {
-        static constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> k{
-            EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::BasicArrayInitializer{
-                {
-                    {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
-                    {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
-                    {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{
+        EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::BasicArrayInitializer{
+            {
+                {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
+                {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
+                {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
+            }}};
 
 }
 

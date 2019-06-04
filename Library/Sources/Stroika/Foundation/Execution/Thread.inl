@@ -367,38 +367,28 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Execution::Thread::Status> : EnumNames<Execution::Thread::Status> {
-        static constexpr EnumNames<Execution::Thread::Status> k{
-            EnumNames<Execution::Thread::Status>::BasicArrayInitializer{
-                {
-                    {Execution::Thread::Status::eNull, L"Null"},
-                    {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
-                    {Execution::Thread::Status::eRunning, L"Running"},
-                    {Execution::Thread::Status::eAborting, L"Aborting"},
-                    {Execution::Thread::Status::eCompleted, L"Completed"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Execution::Thread::Status> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{
+        EnumNames<Execution::Thread::Status>::BasicArrayInitializer{{
+            {Execution::Thread::Status::eNull, L"Null"},
+            {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
+            {Execution::Thread::Status::eRunning, L"Running"},
+            {Execution::Thread::Status::eAborting, L"Aborting"},
+            {Execution::Thread::Status::eCompleted, L"Completed"},
+        }}};
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Execution::Thread::Priority> : EnumNames<Execution::Thread::Priority> {
-        static constexpr EnumNames<Execution::Thread::Priority> k{
-            EnumNames<Execution::Thread::Priority>::BasicArrayInitializer{
-                {
-                    {Execution::Thread::Priority::eLowest, L"Lowest"},
-                    {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
-                    {Execution::Thread::Priority::eNormal, L"Normal"},
-                    {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
-                    {Execution::Thread::Priority::eHighest, L"Highest"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Execution::Thread::Priority> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Execution::Thread::Priority> DefaultNames<Execution::Thread::Priority>::k{
+        EnumNames<Execution::Thread::Priority>::BasicArrayInitializer{{
+            {Execution::Thread::Priority::eLowest, L"Lowest"},
+            {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
+            {Execution::Thread::Priority::eNormal, L"Normal"},
+            {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
+            {Execution::Thread::Priority::eHighest, L"Highest"},
+        }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_Thread_inl_*/

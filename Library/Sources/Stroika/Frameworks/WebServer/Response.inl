@@ -95,20 +95,16 @@ namespace Stroika::Frameworks::WebServer {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Frameworks::WebServer::Response::State> : EnumNames<Frameworks::WebServer::Response::State> {
-        static constexpr EnumNames<Frameworks::WebServer::Response::State> k{
-            EnumNames<Frameworks::WebServer::Response::State>::BasicArrayInitializer{
-                {
-                    {Frameworks::WebServer::Response::State::eInProgress, L"InProgress"},
-                    {Frameworks::WebServer::Response::State::eInProgressHeaderSentState, L"InProgressHeaderSentState"},
-                    {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
-                }}};
-        DefaultNames ()
-            : EnumNames<Frameworks::WebServer::Response::State> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{
+        EnumNames<Frameworks::WebServer::Response::State>::BasicArrayInitializer{
+            {
+                {Frameworks::WebServer::Response::State::eInProgress, L"InProgress"},
+                {Frameworks::WebServer::Response::State::eInProgressHeaderSentState, L"InProgressHeaderSentState"},
+                {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
+            }}};
 }
 
 #endif /*_Stroika_Frameworks_WebServer_Response_inl_*/

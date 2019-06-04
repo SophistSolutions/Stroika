@@ -78,19 +78,15 @@ namespace {
     }
 }
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Test2_EnumNames_Private_::fooEnum> : EnumNames<Test2_EnumNames_Private_::fooEnum> {
-        static constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> k{
-            EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{
-                {
-                    {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
-                    {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
-                }}};
-        DefaultNames ()
-            : EnumNames<Test2_EnumNames_Private_::fooEnum> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{
+        EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{
+            {
+                {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
+                {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
+            }}};
     constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k;
 }
 namespace {

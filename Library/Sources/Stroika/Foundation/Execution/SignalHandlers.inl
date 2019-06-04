@@ -67,19 +67,15 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Execution::SignalHandler::Type> : EnumNames<Execution::SignalHandler::Type> {
-        static constexpr EnumNames<Execution::SignalHandler::Type> k{
-            EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer{
-                {
-                    {Execution::SignalHandler::Type::eDirect, L"Direct"},
-                    {Execution::SignalHandler::Type::eSafe, L"Safe"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Execution::SignalHandler::Type> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k{
+        EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer{
+            {
+                {Execution::SignalHandler::Type::eDirect, L"Direct"},
+                {Execution::SignalHandler::Type::eSafe, L"Safe"},
+            }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_SignalHandlers_inl_*/
