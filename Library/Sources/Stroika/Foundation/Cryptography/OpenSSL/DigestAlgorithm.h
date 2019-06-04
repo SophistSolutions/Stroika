@@ -61,22 +61,17 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 //#include    "DigestAlgorithm.inl"
 #if qHasFeature_OpenSSL
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Cryptography::OpenSSL::DigestAlgorithm> : EnumNames<Cryptography::OpenSSL::DigestAlgorithm> {
-        static constexpr EnumNames<Cryptography::OpenSSL::DigestAlgorithm> k{
-            EnumNames<Cryptography::OpenSSL::DigestAlgorithm>::BasicArrayInitializer{
-                {
-                    //{ Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
-                    {Cryptography::OpenSSL::DigestAlgorithm::eMD5, L"eMD5"},
-                    {Cryptography::OpenSSL::DigestAlgorithm::eSHA1, L"eSHA1"},
-                    {Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224"},
-                    {Cryptography::OpenSSL::DigestAlgorithm::eSHA256, L"eSHA256"},
-                }}};
-        constexpr DefaultNames ()
-            : EnumNames<Cryptography::OpenSSL::DigestAlgorithm> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<Cryptography::OpenSSL::DigestAlgorithm> DefaultNames<Cryptography::OpenSSL::DigestAlgorithm>::k{
+        EnumNames<Cryptography::OpenSSL::DigestAlgorithm>::BasicArrayInitializer{{
+            //{ Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
+            {Cryptography::OpenSSL::DigestAlgorithm::eMD5, L"eMD5"},
+            {Cryptography::OpenSSL::DigestAlgorithm::eSHA1, L"eSHA1"},
+            {Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224"},
+            {Cryptography::OpenSSL::DigestAlgorithm::eSHA256, L"eSHA256"},
+        }}};
 }
 #endif
 

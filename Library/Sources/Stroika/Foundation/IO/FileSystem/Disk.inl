@@ -17,15 +17,14 @@ namespace Stroika::Foundation::Configuration {
     template <>
 #endif
     constexpr EnumNames<Foundation::IO::FileSystem::BlockDeviceKind> DefaultNames<Foundation::IO::FileSystem::BlockDeviceKind>::k{
-        EnumNames<Foundation::IO::FileSystem::BlockDeviceKind>::BasicArrayInitializer{
-            {
-                {Foundation::IO::FileSystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk"},
-                {Foundation::IO::FileSystem::BlockDeviceKind::eLocalDisk, L"Local-Disk"},
-                {Foundation::IO::FileSystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive"},
-                {Foundation::IO::FileSystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files"},
-                {Foundation::IO::FileSystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable"},
-                {Foundation::IO::FileSystem::BlockDeviceKind::eSystemInformation, L"System-Information"},
-            }}};
+        EnumNames<Foundation::IO::FileSystem::BlockDeviceKind>::BasicArrayInitializer{{
+            {Foundation::IO::FileSystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk"},
+            {Foundation::IO::FileSystem::BlockDeviceKind::eLocalDisk, L"Local-Disk"},
+            {Foundation::IO::FileSystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive"},
+            {Foundation::IO::FileSystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files"},
+            {Foundation::IO::FileSystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable"},
+            {Foundation::IO::FileSystem::BlockDeviceKind::eSystemInformation, L"System-Information"},
+        }}};
 }
 
 #endif /*_Stroika_Foundation_IO_FileSystem_Disk_inl_*/

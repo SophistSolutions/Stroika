@@ -82,12 +82,10 @@ namespace Stroika::Foundation::Configuration {
     template <>
 #endif
     constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{
-        EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{
-            {
-                {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
-                {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
-            }}};
-    constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k;
+        EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{{
+            {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
+            {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
+        }}};
 }
 namespace {
     void Test2_EnumNames_ ()

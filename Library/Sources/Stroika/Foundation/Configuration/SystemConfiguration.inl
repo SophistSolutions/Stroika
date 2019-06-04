@@ -72,8 +72,7 @@ namespace Stroika::Foundation::Configuration {
     template <>
 #endif
     constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{
-        EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::BasicArrayInitializer{
-            {
+        EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::BasicArrayInitializer{{
                 {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
                 {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
                 {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},

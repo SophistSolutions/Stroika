@@ -13,19 +13,14 @@ namespace Stroika::Foundation::IO::FileSystem {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy> : EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> {
-        static constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> k{
-            EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy>::BasicArrayInitializer{
-                {
-                    {IO::FileSystem::FileStream::AdoptFDPolicy::eCloseOnDestruction, L"Close-On-Destruction"},
-                    {IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction, L"Disconnect-On-Destruction"},
-                }}};
-        DefaultNames ()
-            : EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy>::k{
+        EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy>::BasicArrayInitializer{{
+            {IO::FileSystem::FileStream::AdoptFDPolicy::eCloseOnDestruction, L"Close-On-Destruction"},
+            {IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction, L"Disconnect-On-Destruction"},
+        }}};
 }
 
 #endif /*_Stroika_Foundation_IO_FileSystem_FileStream_inl_*/

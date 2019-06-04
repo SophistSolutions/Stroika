@@ -71,8 +71,7 @@ namespace Stroika::Foundation::Configuration {
     template <>
 #endif
     constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k{
-        EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer{
-            {
+        EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer{{
                 {Execution::SignalHandler::Type::eDirect, L"Direct"},
                 {Execution::SignalHandler::Type::eSafe, L"Safe"},
             }}};

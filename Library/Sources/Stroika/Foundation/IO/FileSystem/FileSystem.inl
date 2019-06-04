@@ -13,19 +13,14 @@ namespace Stroika::Foundation::IO::FileSystem {
 }
 
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<IO::FileSystem::RemoveDirectoryPolicy> : EnumNames<IO::FileSystem::RemoveDirectoryPolicy> {
-        static constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> k{
-            EnumNames<IO::FileSystem::RemoveDirectoryPolicy>::BasicArrayInitializer{
-                {
-                    {IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty, L"Fail-If-Not-Empty"},
-                    {IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles, L"Remove-Any-Contained-Files"},
-                }}};
-        DefaultNames ()
-            : EnumNames<IO::FileSystem::RemoveDirectoryPolicy> (k)
-        {
-        }
-    };
+#endif
+    constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::RemoveDirectoryPolicy>::k{
+        EnumNames<IO::FileSystem::RemoveDirectoryPolicy>::BasicArrayInitializer{{
+            {IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty, L"Fail-If-Not-Empty"},
+            {IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles, L"Remove-Any-Contained-Files"},
+        }}};
 }
 
 #endif /*_Stroika_Foundation_IO_FileSystem_FileSystem_inl_*/

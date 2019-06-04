@@ -86,11 +86,11 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 //#include    "CipherAlgorithm.inl"
 #if qHasFeature_OpenSSL
 namespace Stroika::Foundation::Configuration {
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-    struct DefaultNames<Cryptography::OpenSSL::CipherAlgorithm> : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> {
-        static constexpr EnumNames<Cryptography::OpenSSL::CipherAlgorithm> k{
-            EnumNames<Cryptography::OpenSSL::CipherAlgorithm>::BasicArrayInitializer{
-                {
+#endif
+         constexpr EnumNames<Cryptography::OpenSSL::CipherAlgorithm> DefaultNames<Cryptography::OpenSSL::CipherAlgorithm>::k{
+            EnumNames<Cryptography::OpenSSL::CipherAlgorithm>::BasicArrayInitializer{{
                     {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_CBC, L"AES_128_CBC"},
                     {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_ECB, L"AES_128_ECB"},
                     {Cryptography::OpenSSL::CipherAlgorithm::eAES_128_OFB, L"AES_128_OFB"},
@@ -119,11 +119,6 @@ namespace Stroika::Foundation::Configuration {
                     {Cryptography::OpenSSL::CipherAlgorithm::eRC2_OFB, L"RC2_OFB"},
                     {Cryptography::OpenSSL::CipherAlgorithm::eRC4, L"RC4"},
                 }}};
-        constexpr DefaultNames ()
-            : EnumNames<Cryptography::OpenSSL::CipherAlgorithm> (k)
-        {
-        }
-    };
 }
 #endif
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_h_*/
