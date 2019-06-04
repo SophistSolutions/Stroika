@@ -238,9 +238,9 @@ namespace Stroika::Foundation::Configuration {
 
     private:
         // SHOULD BE ABLE TO USE CONST HERE qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
-        // but then one CTOR doesn't compile
+        // but then one (std::initializer_list) CTOR doesn't compile
         //const EnumNamesHolderType_   fEnumNames_;
-        const EnumNamesHolderType_ fEnumNames_;
+        EnumNamesHolderType_ fEnumNames_;
     };
 
     /**
