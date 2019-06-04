@@ -86,8 +86,9 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ENUM_TYPE>
     inline EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
-        : fEnumNames_ ()
+        : fEnumNames_{origEnumNames}
     {
+#if 0
         // @todo find some way to INITIALZIE the static array.... - needed for constexpr function!
         // @see qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
         auto oi = fEnumNames_.begin ();
@@ -96,18 +97,19 @@ namespace Stroika::Foundation::Configuration {
             *oi = i;
             ++oi;
         }
+#endif
         RequireItemsOrderedByEnumValue_ ();
     }
     template <typename ENUM_TYPE>
-    inline constexpr EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
-        : fEnumNames_ (init)
+    constexpr EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
+        : fEnumNames_{init}
     {
         RequireItemsOrderedByEnumValue_ ();
     }
     template <typename ENUM_TYPE>
     template <size_t N>
-    inline constexpr EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
-        : fEnumNames_ (origEnumNames)
+    constexpr EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
+        : fEnumNames_{origEnumNames}
     {
         RequireItemsOrderedByEnumValue_ ();
     }
@@ -127,12 +129,12 @@ namespace Stroika::Foundation::Configuration {
         return fEnumNames_.end ();
     }
     template <typename ENUM_TYPE>
-    inline constexpr size_t EnumNames<ENUM_TYPE>::size () const
+    constexpr size_t EnumNames<ENUM_TYPE>::size () const
     {
         return fEnumNames_.size ();
     }
     template <typename ENUM_TYPE>
-    inline constexpr const wchar_t* EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
+    constexpr const wchar_t* EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
     {
         if (e == ENUM_TYPE::eEND) {
             return nullptr;
@@ -195,7 +197,7 @@ namespace Stroika::Foundation::Configuration {
         return *tmp;
     }
     template <typename ENUM_TYPE>
-    inline constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
+    constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
     {
         Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
         using IndexType = make_unsigned_t<typename underlying_type<ENUM_TYPE>::type>;
