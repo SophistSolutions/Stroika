@@ -132,7 +132,7 @@ checkin from one spot.
 
 * $TEST_TARGET=Centos7_x86_64
 
-    (remote execute on machine hercules using docker and copy back results; takes about ? HRs)
+    (remote execute on machine hercules using docker and copy back results; takes about 30 minutes)
 
     ~~~bash
     RUN_IN_DOCKER=1 \
