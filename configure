@@ -690,7 +690,7 @@ sub	SetDefaultForCompilerDriver_
 			elsif (!$sanitizerFlagsNoneSet) {
 				my %already = map { $_ => 1 } @sanitizerFlags;
 				if(!exists($already{'address'})) {
-					if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release`) =~ /CentOS/) {
+					if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
 						#skip cuz broken on Centos7  - spurrious address-use-after-scope errors (I THINK)
 					}
 					else {
@@ -845,7 +845,7 @@ sub	SetDefaultForCompilerDriver_
 	}
 
 	#https://stroika.atlassian.net/browse/STK-696
-	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release`) =~ /CentOS/) {
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release > /dev/null`) =~ /CentOS/) {
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
 	}
 	else {
