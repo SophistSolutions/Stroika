@@ -85,6 +85,8 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+     *  @todo replace this with https://en.cppreference.com/w/cpp/algorithm/compare_3way when available
+     *
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
      *      \code
      *          ThreeWayComparer<T>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
