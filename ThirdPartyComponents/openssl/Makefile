@@ -23,7 +23,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-VERSION=1.1.1b
+VERSION=1.1.1c
+#VERSION=1.1.1b
 #VERSION=1.1.1a
 #VERSION=1.1.1
 #VERSION=1.1.1-pre9
