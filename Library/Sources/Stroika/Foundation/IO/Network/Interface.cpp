@@ -18,6 +18,8 @@
 #include <linux/ethtool.h>
 #include <linux/sockios.h>
 #include <linux/wireless.h>
+#elif qPlatform_MacOS
+#include <net/if.h>
 #endif
 #elif qPlatform_Windows
 #include <WinSock2.h>
