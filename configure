@@ -845,7 +845,7 @@ sub	SetDefaultForCompilerDriver_
 	}
 
 	#https://stroika.atlassian.net/browse/STK-696
-	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release > /dev/null`) =~ /CentOS/) {
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
 	}
 	else {
