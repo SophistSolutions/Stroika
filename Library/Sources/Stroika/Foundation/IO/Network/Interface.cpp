@@ -19,7 +19,7 @@
 #if qPlatform_Linux
 #include <linux/ethtool.h>
 #include <linux/sockios.h>
-#include <linux/types.h> // needed on RedHat5
+//#include <linux/types.h> // needed on RedHat5 (we no longer support redhat5)
 #include <linux/wireless.h>
 #endif
 #elif qPlatform_Windows
@@ -224,11 +224,15 @@ namespace {
         };
         int flags = getFlags (sd, i->ifr_name);
 #if qPlatform_Linux
-        auto getWirelessFlag = [] (int sd, const char* name) {
+        auto getWirelessFlag = [] (int sd, const char* name) -> bool {
+#if defined(SIOCGIWNAME)
             iwreq pwrq{};
             Characters::CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIWNAME, (char*)&pwrq);
             return r == 0;
+#else
+            return false;
+#endif
         };
 #endif
         if (flags & IFF_LOOPBACK) {
