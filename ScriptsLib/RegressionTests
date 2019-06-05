@@ -41,7 +41,7 @@ if [ "$(uname -s)" == "Darwin" ] ; then
 fi
 if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_VS2k17"; fi
-    echo "USING VS2k17 ($USE_TEST_BASENAME)..."
+    echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
 
 
