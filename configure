@@ -690,7 +690,12 @@ sub	SetDefaultForCompilerDriver_
 			elsif (!$sanitizerFlagsNoneSet) {
 				my %already = map { $_ => 1 } @sanitizerFlags;
 				if(!exists($already{'address'})) {
-					push @sanitizerFlags, 'address';
+					if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release`) =~ /CentOS/) {
+						#skip cuz broken on Centos7  - spurrious address-use-after-scope errors (I THINK)
+					}
+					else {
+						push @sanitizerFlags, 'address';
+					}
 				}
 				if(!exists($already{'undefined'})) {
 					push @sanitizerFlags, 'undefined';
