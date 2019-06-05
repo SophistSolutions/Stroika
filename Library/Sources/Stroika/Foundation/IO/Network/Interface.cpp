@@ -7,9 +7,7 @@
 #include <random>
 
 #if qPlatform_POSIX
-//@todo see how many of these includes are needed
 #include <arpa/inet.h>
-#include <net/if.h>
 #include <net/if_arp.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -19,7 +17,6 @@
 #if qPlatform_Linux
 #include <linux/ethtool.h>
 #include <linux/sockios.h>
-//#include <linux/types.h> // needed on RedHat5 (we no longer support redhat5)
 #include <linux/wireless.h>
 #endif
 #elif qPlatform_Windows
