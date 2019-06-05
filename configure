@@ -136,7 +136,7 @@ my $FEATUREFLAG_OpenSSL = "";
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_Xerces = undef;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
@@ -837,6 +837,14 @@ sub	SetDefaultForCompilerDriver_
 		else {
 			$Linker = $COMPILER_DRIVER_CPlusPlus;
 		}
+	}
+
+	#https://stroika.atlassian.net/browse/STK-696
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release`) =~ /CentOS/) {
+		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
+	}
+	else {
+		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 	}
 }
 
