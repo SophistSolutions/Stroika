@@ -247,6 +247,7 @@ echo "$PREFIX_OUT_LABEL" "Configurations DETAILS ($NUM_CONFIGURATIONS):" >>$TEST
 for i in `ScriptsLib/GetConfigurations`; do
 	echo "   $i:"  >>$TEST_OUT_FILE 2>&1;
 	sed 's/^/      /' ConfigurationFiles/$i.xml >>$TEST_OUT_FILE
+	echo >>$TEST_OUT_FILE 2>&1
 done
 
 echo >>$TEST_OUT_FILE 2>&1
