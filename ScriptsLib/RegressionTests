@@ -239,7 +239,14 @@ echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TES
 for i in `ScriptsLib/GetConfigurations`; do
 	echo "   $i";
 	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
-	sed 's/^/     /' ConfigurationFiles/$i.xml >>$TEST_OUT_FILE
+done
+
+echo >>$TEST_OUT_FILE 2>&1
+echo >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "Configurations DETAILS ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
+for i in `ScriptsLib/GetConfigurations`; do
+	echo "   $i:"  >>$TEST_OUT_FILE 2>&1;
+	sed 's/^/      /' ConfigurationFiles/$i.xml >>$TEST_OUT_FILE
 done
 
 echo >>$TEST_OUT_FILE 2>&1
