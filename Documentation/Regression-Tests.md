@@ -130,6 +130,19 @@ checkin from one spot.
         ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
+* $TEST_TARGET=Centos7_x86_64
+
+    (remote execute on machine hercules using docker and copy back results; takes about ? HRs)
+
+    ~~~bash
+    RUN_IN_DOCKER=1 \
+        USE_TEST_BASENAME=Centos7_x86_64 \
+        CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-centos-7-small \
+        MACHINE=Hercules \
+        CMD2RUN="scl enable devtoolset-8 ScriptsLib/RegressionTests" \
+        ./ScriptsLib/RunRemoteRegressionTests
+    ~~~
+
 ## Checkin results
 
 ~~~bash
