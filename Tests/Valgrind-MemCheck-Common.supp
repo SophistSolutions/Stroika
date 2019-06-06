@@ -94,3 +94,176 @@
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation2IO7Network29UniformResourceIdentification9Authority16ThreeWayComparerclERKS4_S7_.constprop.197
 }
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:drbg_ctr_generate
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:state_machine
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:state_machine
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   fun:sha512_block_data_order_avx2
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   fun:sha1_block_data_order_avx2
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   fun:sha*_block_*_avx2
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   fun:sha*_block_*_avx2
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:tls_process_server_certificate
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:tls_process_server_certificate
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:*ASN1_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:*ASN1_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:*asn1_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:*asn1_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:BN_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:BN_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:bn_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:bn_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:ossl_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:ossl_*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:curl_multi_perform
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:curl_multi_perform
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:_ZN12_GLOBAL__N_130Test_1_SimpleConnnectionTests_8Private_32Test_2_SimpleFetch_SSL_Google_C_EN7Stroika10Foundation2IO7Network8Transfer10ConnectionE
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:_ZN12_GLOBAL__N_130Test_1_SimpleConnnectionTests_8Private_32Test_2_SimpleFetch_SSL_Google_C_EN7Stroika10Foundation2IO7Network8Transfer10ConnectionE
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Cond
+   ...
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8DoTests_Ev
+   ...
+   fun:main
+}
+{
+   https://stroika.atlassian.net/browse/STK-697
+   Memcheck:Value8
+   ...
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8DoTests_Ev
+   ...
+   fun:main
+}
