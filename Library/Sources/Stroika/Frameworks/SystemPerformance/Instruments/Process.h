@@ -346,14 +346,13 @@ namespace Stroika::Foundation::Configuration {
     template <>
 #endif
     constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::k{
-        EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer{
-            {
-                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eRunning, L"Running"},
-                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSleeping, L"Sleeping"},
-                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk"},
-                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging"},
-                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eZombie, L"Zombie"},
-                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSuspended, L"Suspended"},
-            }}};
+        EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer{{
+            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eRunning, L"Running"},
+            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSleeping, L"Sleeping"},
+            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk"},
+            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging"},
+            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eZombie, L"Zombie"},
+            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSuspended, L"Suspended"},
+        }}};
 }
 #endif /*_Stroika_Framework_SystemPerformance_Instruments_Process_h_*/

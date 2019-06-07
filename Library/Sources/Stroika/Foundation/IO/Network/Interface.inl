@@ -102,11 +102,10 @@ namespace Stroika::Foundation::Configuration {
     template <>
 #endif
     constexpr EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k{
-        EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer{
-            {
-                {IO::Network::Interface::Status::eConnected, L"Connected"},
-                {IO::Network::Interface::Status::eRunning, L"Running"},
-            }}};
+        EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer{{
+            {IO::Network::Interface::Status::eConnected, L"Connected"},
+            {IO::Network::Interface::Status::eRunning, L"Running"},
+        }}};
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
