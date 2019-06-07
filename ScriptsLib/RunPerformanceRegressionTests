@@ -21,6 +21,7 @@ if [ "$(uname -s)" == "Darwin" ] ; then
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     EXE=${EXE-"Builds/g++-optimized/Tests/Test50"}
+	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/Test50"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
