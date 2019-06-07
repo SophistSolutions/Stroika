@@ -8,7 +8,7 @@ to be aware of when upgrading.
 
 ## 2.1d25 {2019-06-07}
 
-- <https://github.com/SophistSolutions/Stroika/compare/v2.1d24...v2.25>
+- <https://github.com/SophistSolutions/Stroika/compare/v2.1d24...v2.1d25>
 
 - Characters
   - in ToString() for pair/keyvaluepair no need to put QUOTES on first item, as its tostring generally already does that if appropriate
@@ -61,7 +61,7 @@ to be aware of when upgrading.
         Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
         Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
         Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
-        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1d24-OUT.txt
+        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1d25-OUT.txt
   - vc++2k17 (15.9.12)
   - vc++2k19 (16.1.2)
   - MacOS, XCode 10
