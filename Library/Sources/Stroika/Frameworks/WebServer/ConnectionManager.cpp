@@ -197,7 +197,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                 continue;
             }
             Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
-            for (auto readyFD : sockSetPoller.WaitQuietly ().value_or (Set<Execution::WaitForIOReady::FileDescriptorType>{})) {
+            for (auto readyFD : sockSetPoller.WaitQuietly ()) {
                 shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
 
                 Execution::Thread::SuppressInterruptionInContext suppressInterruption;
