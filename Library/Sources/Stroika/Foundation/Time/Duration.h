@@ -447,6 +447,7 @@ namespace Stroika::Foundation::Time {
      *  Return the sum of the two durations.
      */
     Duration operator+ (const Duration& lhs, const Duration& rhs);
+    Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs);
 
     /**
      *  Return the difference of the two durations.

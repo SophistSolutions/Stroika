@@ -338,6 +338,10 @@ namespace Stroika::Foundation::Time {
     {
         return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
     }
+    inline Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs)
+    {
+        return Duration{lhs + rhs.As<DurationSecondsType> ()};
+    }
     inline Duration operator- (const Duration& lhs, const Duration& rhs)
     {
         return Duration (lhs.As<Time::DurationSecondsType> () - rhs.As<DurationSecondsType> ());
