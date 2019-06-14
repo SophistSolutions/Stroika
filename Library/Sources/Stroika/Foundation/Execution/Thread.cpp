@@ -670,7 +670,9 @@ void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
         if (not fTLSInterruptFlag_->compare_exchange_strong (v, InterruptFlagState_::eInterrupted)) {
             Assert (v == InterruptFlagState_::eInterrupted or v == InterruptFlagState_::eAborted);
         }
-        Assert (fTLSInterruptFlag_->load () == InterruptFlagState_::eInterrupted or fTLSInterruptFlag_->load () == InterruptFlagState_::eAborted);
+        // Weak assert because this COULD fail - you could stop just before this check and the handling thread could handle the interruption and
+        // clear the flag. I've seen this once (2019-06-13)
+        WeakAssert (fTLSInterruptFlag_->load () == InterruptFlagState_::eInterrupted or fTLSInterruptFlag_->load () == InterruptFlagState_::eAborted);
     }
 
     if (GetCurrentThreadID () == GetID ()) {
