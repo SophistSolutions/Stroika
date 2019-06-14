@@ -41,9 +41,17 @@ namespace Stroika::Foundation::Execution {
     {
         return WaitUntil (waitFor + Time::GetTickCount ());
     }
-    inline auto WaitForIOReady::WaitQuietly (Time::DurationSecondsType waitFor) -> optional<Containers::Set<FileDescriptorType>>
+    inline auto WaitForIOReady::Wait (const Time::Duration& waitFor) -> Containers::Set<FileDescriptorType>
+    {
+        return WaitUntil (waitFor.As<Time::DurationSecondsType> () + Time::GetTickCount ());
+    }
+    inline auto WaitForIOReady::WaitQuietly (Time::DurationSecondsType waitFor) -> Containers::Set<FileDescriptorType>
     {
         return WaitQuietlyUntil (waitFor + Time::GetTickCount ());
+    }
+    inline auto WaitForIOReady::WaitQuietly (const Time::Duration& waitFor) -> Containers::Set<FileDescriptorType>
+    {
+        return WaitQuietly (waitFor.As<Time::DurationSecondsType> ());
     }
 
 }

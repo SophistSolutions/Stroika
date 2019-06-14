@@ -11,6 +11,7 @@
 #include "../Containers/Set.h"
 #include "../Execution/Synchronized.h"
 #include "../IO/Network/Socket.h"
+#include "../Time/Duration.h"
 
 /**
  *  \file
@@ -192,60 +193,62 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-            *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
-            *
-            *  \note   Throws TimeOutException () on timeout.
-            *  
-            *  \note   ***Cancelation Point***
-            *
-            *  @see WaitQuietly
-            *  @see WaitUntil
-            *  @see WaitQuietlyUntil
-            */
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *  \note   Throws TimeOutException () on timeout.
+         *  
+         *  \note   ***Cancelation Point***
+         *
+         *  @see WaitQuietly
+         *  @see WaitUntil
+         *  @see WaitQuietlyUntil
+         */
         nonvirtual Containers::Set<FileDescriptorType> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<FileDescriptorType> Wait (const Time::Duration& waitFor);
 
     public:
         /*
-            *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
-            *
-            *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
-            *
-            *  \note   ***Cancelation Point***
-            *
-            *  @see Wait
-            *  @see WaitUntil
-            *  @see WaitQuietlyUntil
-            */
-        nonvirtual optional<Containers::Set<FileDescriptorType>> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *   Returns set of file descriptors which are ready, or empty set if timeout.
+         *
+         *  \note   ***Cancelation Point***
+         *
+         *  @see Wait
+         *  @see WaitUntil
+         *  @see WaitQuietlyUntil
+         */
+        nonvirtual Containers::Set<FileDescriptorType> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<FileDescriptorType> WaitQuietly (const Time::Duration& waitFor);
 
     public:
         /*
-            *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
-            *
-            *  \note   Throws TimeOutException () on timeout.
-            *
-            *  \note   ***Cancelation Point***
-            *
-            *  @see Wait
-            *  @see WaitQuietly
-            *  @see WaitQuietlyUntil
-            */
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *  \note   Throws TimeOutException () on timeout.
+         *
+         *  \note   ***Cancelation Point***
+         *
+         *  @see Wait
+         *  @see WaitQuietly
+         *  @see WaitQuietlyUntil
+         */
         nonvirtual Containers::Set<FileDescriptorType> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
     public:
         /*
-            *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
-            *
-            *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
-            *
-            *  if timeout is <= 0, this will not wait (but may still find some file desciptors ready).
-            *
-            *  \note   ***Cancelation Point***
-            *
-            *  @see Wait
-            *  @see WaitQuietly
-            *  @see WaitUntil
-            */
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
+         *
+         *  if timeout is <= 0, this will not wait (but may still find some file desciptors ready).
+         *
+         *  \note   ***Cancelation Point***
+         *
+         *  @see Wait
+         *  @see WaitQuietly
+         *  @see WaitUntil
+         */
         nonvirtual Containers::Set<FileDescriptorType> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
     private:
