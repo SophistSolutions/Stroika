@@ -718,8 +718,9 @@ namespace Stroika::Foundation::DataExchange {
                 if (p.size () != 2)
                     [[UNLIKELY_ATTR]]
                     {
+						using namespace std;
                         DbgTrace (L"Container with Key/Value pair ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)).c_str (), static_cast<int> (p.size ()));
-                        Execution::Throw (BadFormatException (L"Container with Key/Value pair element with item count other than 2"_k));
+                        Execution::Throw (BadFormatException (L"Container with Key/Value pair element with item count other than 2"sz));
                     }
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
             }
