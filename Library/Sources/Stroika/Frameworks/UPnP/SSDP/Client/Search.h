@@ -40,11 +40,12 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
     class Search {
     public:
         /**
-         * see @see Start () for possible values for initialSearch
+         * see @see Start () for possible values for initialSearch and autoRetryInterval
          */
         Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         Search (Search&&)      = default;
         Search (const Search&) = delete;
 
@@ -111,12 +112,12 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *      \endcode
          *
          */
-        nonvirtual void Start (const String& serviceType);
+        nonvirtual void Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval = nullopt);
 
     public:
         /**
          *  Stop an already running search. Not an error to call if not already started (just does nothing).
-         *  This will block until the listner is stopped.
+         *  This will block until the searcher has stopped (typically milliseconds).
          */
         nonvirtual void Stop ();
 

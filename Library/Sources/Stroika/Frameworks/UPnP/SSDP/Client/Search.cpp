@@ -60,12 +60,12 @@ public:
         [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
         fFoundCallbacks_.push_back (callOnFinds);
     }
-    void Start (const String& serviceType)
+    void Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
         }
-        fThread_ = Execution::Thread::New ([this, serviceType] () { DoRun_ (serviceType); }, Execution::Thread::eAutoStart, String_Constant{L"SSDP Searcher"});
+        fThread_ = Execution::Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Execution::Thread::eAutoStart, L"SSDP Searcher"sv);
     }
     void Stop ()
     {
@@ -73,9 +73,11 @@ public:
             fThread_.AbortAndWaitForDone ();
         }
     }
-    void DoRun_ (const String& serviceType)
+    void DoRun_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
         // MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
+    Retry:
+        Time::Duration lastSendsAt{Time::GetTickCount ()};
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Sending M-SEARCH");
@@ -108,9 +110,9 @@ public:
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
         WaitForSocketIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
-            for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
+            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietly (autoRetryInterval.value_or (Time::Duration{Time::kInfinite}))) {
                 try {
-                    byte          buf[3 * 1024]; // not sure of max packet size
+                    byte          buf[4 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
@@ -125,6 +127,9 @@ public:
                     // but avoid wasting too much time if we get into an error storm
                     Execution::Sleep (1s);
                 }
+            }
+            if (autoRetryInterval.has_value () and Time::GetTickCount () + *autoRetryInterval > lastSendsAt) {
+                goto Retry;
             }
         }
     }
@@ -150,23 +155,21 @@ public:
                 }
 
                 // Need to simplify this code (stroika string util)
-                String label;
-                String value;
                 if (optional<size_t> n = line.Find (':')) {
-                    label = line.SubString (0, *n);
-                    value = line.SubString (*n + 1).Trim ();
-                }
-                if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Location") == 0) {
-                    d.fLocation = IO::Network::URI{value};
-                }
-                else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"ST") == 0) {
-                    d.fTarget = value;
-                }
-                else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"USN") == 0) {
-                    d.fUSN = value;
-                }
-                else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Server") == 0) {
-                    d.fServer = value;
+                    String label = line.SubString (0, *n);
+                    String value = line.SubString (*n + 1).Trim ();
+                    if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Location") == 0) {
+                        d.fLocation = IO::Network::URI{value};
+                    }
+                    else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"ST") == 0) {
+                        d.fTarget = value;
+                    }
+                    else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"USN") == 0) {
+                        d.fUSN = value;
+                    }
+                    else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Server") == 0) {
+                        d.fServer = value;
+                    }
                 }
             }
             {
@@ -211,6 +214,12 @@ Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds
     Start (initialSearch);
 }
 
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    : Search (callOnFinds, ipVersion)
+{
+    Start (initialSearch, autoRetryInterval);
+}
+
 Search::~Search ()
 {
     IgnoreExceptionsForCall (fRep_->Stop ());
@@ -221,9 +230,9 @@ void Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement&
     fRep_->AddOnFoundCallback (callOnFinds);
 }
 
-void Search::Start (const String& serviceType)
+void Search::Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
 {
-    fRep_->Start (serviceType);
+    fRep_->Start (serviceType, autoRetryInterval);
 }
 
 void Search::Stop ()
