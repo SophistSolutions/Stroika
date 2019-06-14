@@ -123,7 +123,7 @@ public:
                 catch (...) {
                     // ignore errors - and keep on trucking
                     // but avoid wasting too much time if we get into an error storm
-                    Execution::Sleep (1.0);
+                    Execution::Sleep (1s);
                 }
             }
         }

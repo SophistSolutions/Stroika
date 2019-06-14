@@ -49,7 +49,7 @@ namespace {
             : fSomeOtherTaskDoingRealWork_ (Thread::CleanupPtr::eAbortBeforeWaiting,
                                             Thread::New (
                                                 [] () {
-                                                    Execution::Sleep (1 * 24 * 60 * 60); // wait 1 day ... simple test....
+                                                    Execution::Sleep (24h); // wait 1 day ... simple test....
                                                 },
                                                 Thread::eAutoStart))
         {

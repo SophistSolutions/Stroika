@@ -107,7 +107,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Caught/ignored exception for SSDP advertisement packet: %s", Characters::ToString (current_exception ()).c_str ());
 #endif
-                    Execution::Sleep (1.0);
+                    Execution::Sleep (1s);
                 }
             }
         }

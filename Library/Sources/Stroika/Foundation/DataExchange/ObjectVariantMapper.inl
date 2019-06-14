@@ -719,7 +719,7 @@ namespace Stroika::Foundation::DataExchange {
                     [[UNLIKELY_ATTR]]
                     {
                         DbgTrace (L"Container with Key/Value pair ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)).c_str (), static_cast<int> (p.size ()));
-                        Execution::Throw (BadFormatException (String_Constant (L"Container with Key/Value pair element with item count other than 2")));
+                        Execution::Throw (BadFormatException (L"Container with Key/Value pair element with item count other than 2"sz));
                     }
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
             }
@@ -748,7 +748,7 @@ namespace Stroika::Foundation::DataExchange {
                 [[UNLIKELY_ATTR]]
                 {
                     DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
-                    Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"sv));
                 }
             *intoObjOfTypeT = *optVal;
         };
@@ -787,7 +787,7 @@ namespace Stroika::Foundation::DataExchange {
                 [[UNLIKELY_ATTR]]
                 {
                     DbgTrace (L"Enumeration ('%s') value %d out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), static_cast<int> (*intoObjOfTypeT));
-                    Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"sz));
                 }
         };
         return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};

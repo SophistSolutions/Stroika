@@ -14,8 +14,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Characters;
 
-using Characters::String_Constant;
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 

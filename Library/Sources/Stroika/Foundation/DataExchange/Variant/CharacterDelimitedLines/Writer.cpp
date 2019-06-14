@@ -3,7 +3,6 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextWriter.h"
 
 #include "Writer.h"
@@ -11,11 +10,11 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
-using Characters::String_Constant;
 
 /*
  * TODO:
@@ -35,7 +34,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return String_Constant (L".txt");
+        return L".txt"sv;
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {

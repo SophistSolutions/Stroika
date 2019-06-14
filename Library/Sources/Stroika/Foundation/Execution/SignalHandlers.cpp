@@ -422,7 +422,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
                 fDirectSignalHandlersCache_[signal] = shs;
             }
             else {
-                Execution::Sleep (0.001); // not sure how long 2 wait
+                Execution::Sleep (1ms); // not sure how long 2 wait
                 goto Again;
             }
         }

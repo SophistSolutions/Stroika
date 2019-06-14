@@ -37,7 +37,7 @@ namespace {
         }
         if (fileOffset.has_value ()) {
             if (not result.empty ()) {
-                result += String_Constant (L"; ");
+                result += L"; "_k;
             }
             result += Format (L"; FileOffset %d", *fileOffset);
         }

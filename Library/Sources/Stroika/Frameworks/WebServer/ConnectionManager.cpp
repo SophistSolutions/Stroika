@@ -193,7 +193,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
             // This will wake up early if another thread adds an inactive connection (thread gets interruppted)
             if (seeIfReady.Image ().empty ()) {
-                Execution::Sleep (Time::DurationSecondsType{2 * 60 * 60}); // can be any amount of time, since we will be interuppted
+                Execution::Sleep (2h); // can be any amount of time, since we will be interuppted
                 continue;
             }
             Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
