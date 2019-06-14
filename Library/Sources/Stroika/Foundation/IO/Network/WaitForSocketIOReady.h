@@ -8,6 +8,7 @@
 
 #include "../../Containers/Bijection.h"
 #include "../../Execution/WaitForIOReady.h"
+#include "../../Time/Duration.h"
 
 #include "Socket.h"
 
@@ -76,6 +77,15 @@ namespace Stroika::Foundation::IO::Network {
          *  \note   ***Cancelation Point***
          */
         nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> Wait (const Time::Duration& waitFor);
+
+    public:
+        /**
+         *  No throw if timeout, but just return an empty list.
+         *
+         *  \note   ***Cancelation Point***
+         */
+        nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> WaitQuietly (const Time::Duration& waitFor);
 
     public:
         /**
