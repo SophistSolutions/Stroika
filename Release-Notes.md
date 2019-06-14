@@ -1,15 +1,88 @@
-﻿About
-=====
+﻿# About
+
 These release notes are a summary of
 major user (developer)-impactful changes - especially those they need
 to be aware of when upgrading.
 
-History
-=======
+# History
+
+## 2.1d25 {2019-06-07}
+
+- <https://github.com/SophistSolutions/Stroika/compare/v2.1d24...v2.1d25>
+
+- Characters
+  - in ToString() for pair/keyvaluepair no need to put QUOTES on first item, as its tostring generally already does that if appropriate
+
+- Common
+  - Docs, examples and constexpr cleanups on EnumNames/DefaultNames usage
+  - Failed attempt to simplify CTOR issue with EnumNames<> initializing fEnumNames_: 
+    disable but comment on possible fixes for EnumNames<> CTOR / std::array initializer issue (only prevents constexpr)
+
+- Containers
+  - Add Sequence_stdvector MOVE CTOR taking std::vector arg
+  - new Sequence<>::OrderBy method and rettest
+
+- IO
+  - IO::Network::Neighbors module
+  - fixed bug with CIDR class when number of significant bits != 0 mod 8; and added regression test for this case
+  - Query::ToString () (In URI class) implemented
+  - URI and UniformResourceIdentification namespace helper classes now use the new ThreeWayComparer pattern more fully (sb no real difference sematnically for users)
+  - support InternetAddress::min/max constexpr functions and use that to simplify (constexpr) InterntAddressRangeTraits
+
+- Traversal
+  - Define Iterable::OrderBy and Sequence::OrderBy to use stable_sort (and document why)
+
+- Build/RegTests
+  - https://stroika.atlassian.net/browse/STK-695 valgrind suppression
+  - Update RunRemoteRegressionTests to pass along optional CMD2RUN, and document how to use that
+    in Regression-Tests.md to run centos7 regtests
+  - dump details of each configuration to TEST_OUT_FILE in running RegressionTests so easier to see changes in configs between regression tests
+
+- Compiler Bugs/Workarounds
+  - defined new bug workaround qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy; and used it to simplify all DefaultNames<> definitions. Still could use more simplification but cannot see how yet - https://stroika.atlassian.net/browse/STK-440
+
+- Support building for Centos7
+  - improved readme file for centos7 (getting started in docker instance)
+  - Added to regression tests
+  - worakround https://stroika.atlassian.net/browse/STK-696 - disable build of xerces on centos by default
+  - lose includes <net/if.h> (cuz failed on centos6 and not needed) and a few others unneeded on Foundation/IO/Network/Interface.cpp
+  - missing libraries added to DockerBuildContainers/Centos-7-Small/Dockerfile
+  - dont set Address sanitizer on for centos by default, cuz appears broken
+
+- ThirdPartyComponents
+  - TRIED openssl 1.1.1c, but failed, due to https://stroika.atlassian.net/browse/STK-697  - too many valgrind failures. Have to disable almost everything. Wait for next openssl release.
+
+- HistoricalPerformanceRegressionTestResults/
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, Ubuntu1904_x86_64, MacOS_XCode10}-2.1d24.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
+        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1d25-OUT.txt
+  - vc++2k17 (15.9.12)
+  - vc++2k19 (16.1.2)
+  - MacOS, XCode 10
+  - Ubuntu 18.04, Ubuntu 18.10, Ubuntu 19.04, Centos 7
+  - gcc 7, gcc 8, gcc 9
+  - clang++-6, clang++-7, clang++-8 {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, gcc9 (gcc9 not passing tests cuz libc version mismatch on test machine) and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy)
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+
+----
 
 ## 2.1d24 {2019-05-24}
 
-- https://github.com/SophistSolutions/Stroika/compare/v2.1d23...v2.1d24
+- <https://github.com/SophistSolutions/Stroika/compare/v2.1d23...v2.1d24>
 
 - Threeway Compare (and EqualsComparer)
   - Threeway compare is work in progress for c++20 and not yet avail anyhow.  But move in that direction as I understand it. That means move towards each class owning its own TWC (spaceship) function.

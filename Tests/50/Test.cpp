@@ -1475,7 +1475,7 @@ namespace {
             Test_WString2UTF8_win32API, L"win32API",
             Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
             3150000,
-            3.0,
+            3.1,
             &failedTests);
 #endif
 
@@ -1486,10 +1486,10 @@ namespace {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
-                Stroika::TestHarness::WarnTestIssue ((L"At least one test failed expected time constaint (see above): " + listAsMsg).AsNarrowSDKString ().c_str ());
+                Stroika::TestHarness::WarnTestIssue ((L"At least one test did not meet expected time constaint (see above): " + listAsMsg).AsNarrowSDKString ().c_str ());
             }
             else {
-                Stroika::TestHarness::WarnTestIssue ((Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())).AsNarrowSDKString ().c_str ());
+                Stroika::TestHarness::WarnTestIssue ((Format (L"At least one test (%s) did not meet expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())).AsNarrowSDKString ().c_str ());
             }
         }
     }
