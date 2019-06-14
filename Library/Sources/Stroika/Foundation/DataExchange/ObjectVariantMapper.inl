@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <string_view>
+
 #include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Adapters/Adder.h"
@@ -792,6 +794,7 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
     }
+    er with Key / Value pair element with                 item
     template <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
     {
