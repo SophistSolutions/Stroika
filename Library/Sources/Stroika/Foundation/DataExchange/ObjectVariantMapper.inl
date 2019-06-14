@@ -787,8 +787,9 @@ namespace Stroika::Foundation::DataExchange {
             if (not(ENUM_TYPE::eSTART <= *intoObjOfTypeT and *intoObjOfTypeT < ENUM_TYPE::eEND))
                 [[UNLIKELY_ATTR]]
                 {
+                    using namespace Characters;
                     DbgTrace (L"Enumeration ('%s') value %d out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), static_cast<int> (*intoObjOfTypeT));
-                    Execution::Throw (BadFormatException (L"Enumeration value out of range"sz));
+                    Execution::Throw (BadFormatException (L"Enumeration value out of range"_k));
                 }
         };
         return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
