@@ -75,7 +75,7 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
 #### For Windows
 
 - Visual Studio.net 2017 (or later)
-  - Currently tested with 15.9.6 and 16.0.0
+  - Currently tested with Visual Studio.net 2017 and Visual Studio.net 2019 (see release notes for details)
 - Cygwin
    Including
   - dos2unix
@@ -85,9 +85,9 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
 
 - Compiler
   - gcc 7 or later OR
-    - Stroika v2.1 is currently tested with gcc7, and gcc8
+    - Stroika v2.1 is currently tested with gcc7, gcc8, and gcc9
   - llvm (clang++) 6 or later
-    - Stroika v2.1 is currently tested with clang6, and clang7
+    - Stroika v2.1 is currently tested with clang6, clang7, and clang8
 - automake  (if building curl)
 - libtool (gnu version) – (if building curl)
 
