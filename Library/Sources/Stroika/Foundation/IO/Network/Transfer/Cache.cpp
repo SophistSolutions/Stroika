@@ -62,6 +62,7 @@ namespace {
          */
         virtual void ClearCache () override
         {
+            fCache_.clear ();
         }
 
         virtual optional<Element> Lookup (const URI& url) const override
