@@ -29,6 +29,12 @@ namespace {
         {
             // @todo -- see if its in cache, and if so, maybe add conditional if-modfied-since or -if-etag
             // and under somecircumstances, just return the correct answer if its cachable without any call
+            // @todo TRICKY - must somehow lockdown (or stick into response) a copy of the response to generate IF
+            // we get a NOT-MODIFIED, because the data COULD be gone from the cache by the time we get the not-modified.
+            // ? OR - we need to be able to re - request ) a less desirable workaround (and maybe harder todo as well)
+            //
+            // Maybe have 'CONTEXT' object which also must be passed in as a parameter here so we can store the context
+            // in our parents stackframe (so gets cleaned up at right time)
             return nullopt;
         }
 
