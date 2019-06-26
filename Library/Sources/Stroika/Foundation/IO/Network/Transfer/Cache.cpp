@@ -44,6 +44,10 @@ namespace {
                 case HTTP::StatusCodes::kOK: {
                     // @todo add result to cache
                     // but must look at headers closely first
+#if 0
+     *          fCache_.Add (request->GetURI (), Element{*response});
+     *          tmp.Add ("b", "2");
+#endif
                 } break;
                 case HTTP::StatusCodes::kNotModified: {
                     // @todo replaces response value with right answer on 304
