@@ -23,8 +23,6 @@ namespace {
 
         using Element = Transfer::Cache::Element;
 
-        /**
-         */
         virtual optional<Response> OnBeforeFetch (Request* request) override
         {
             // @todo -- see if its in cache, and if so, maybe add conditional if-modfied-since or -if-etag
@@ -57,9 +55,6 @@ namespace {
             }
         }
 
-        /**
-         * if not cleared, external cache can be re-used
-         */
         virtual void ClearCache () override
         {
             fCache_.clear ();
