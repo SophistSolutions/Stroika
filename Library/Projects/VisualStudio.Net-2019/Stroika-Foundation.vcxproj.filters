@@ -840,6 +840,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2084,6 +2087,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.h">
       <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3380,6 +3386,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -1059,6 +1059,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
@@ -1604,6 +1605,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h" />
@@ -2037,6 +2039,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl" />

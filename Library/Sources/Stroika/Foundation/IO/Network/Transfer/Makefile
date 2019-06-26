@@ -14,6 +14,7 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
+	$(ObjDir)Cache${OBJ_SUFFIX}\
 	$(ObjDir)Client${OBJ_SUFFIX}\
 	$(ObjDir)Client_libcurl${OBJ_SUFFIX}\
 	$(ObjDir)Client_WinHTTP${OBJ_SUFFIX}\
