@@ -38,15 +38,15 @@ namespace {
             RequireNotNull (response);
             switch (response->GetStatus ()) {
                 case HTTP::StatusCodes::kOK: {
-					// @todo add result to cache
-					// but must look at headers closely first
+                    // @todo add result to cache
+                    // but must look at headers closely first
                 } break;
                 case HTTP::StatusCodes::kNotModified: {
                     // @todo replaces response value with right answer on 304
                     // lookup cache value and return it - updating any needed http headers stored in cache
                 } break;
                 default: {
-					// ignored
+                    // ignored
                 } break;
             }
         }
@@ -77,7 +77,7 @@ namespace {
      *      \endcode
 #endif
         SynchronizedLRUCache<URI, Element> fCache_{101};
-	 // we want to use hash stuff but then need hash<URI>
+        // we want to use hash stuff but then need hash<URI>
         ///pair<string, string>{}, 3, 10, hash<string>{}
     };
 

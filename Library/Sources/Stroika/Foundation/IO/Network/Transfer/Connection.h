@@ -19,6 +19,7 @@
 #include "../ConnectionOrientedStreamSocket.h"
 #include "../URI.h"
 
+#include "Cache.h"
 #include "Exception.h"
 #include "Request.h"
 #include "Response.h"
@@ -241,7 +242,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
         /**
          */
-        String fUserAgent{Characters::String_Constant{L"Stroika/2.1"}};
+        String fUserAgent{L"Stroika/2.1"sv};
 
         /**
          */
@@ -322,6 +323,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          * matters for long connections
          */
         optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
+
+        /**
+         *  The cache object defaults to nullptr, but to have cached HTTP GETs, create a static Options object and have
+         *  that object contain the Cache object reference, and then any Connections you create from that options
+         *  object will share the same cache.
+         */
+        Cache::Ptr fCache{nullptr};
     };
 
     /**
