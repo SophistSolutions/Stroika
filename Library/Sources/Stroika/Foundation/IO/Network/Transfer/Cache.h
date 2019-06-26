@@ -77,8 +77,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         virtual optional<Response> OnBeforeFetch (Request* request) = 0;
 
         /**
-         * replaces response value with right answer on 304
-         // after any possibly cachable calls (typiucally just Get) - was called AfterGet
+         * replaces response value with right answer on 304, and caches results from successful fetch calls.
+         * was called AfterGet
          */
         virtual void OnAfterFetch (Request* request, Response* response) = 0;
 
