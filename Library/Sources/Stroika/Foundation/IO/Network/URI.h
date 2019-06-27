@@ -106,16 +106,6 @@ namespace Stroika::Foundation::IO::Network {
          *  These will raise exceptions if anything illegal in the URL specification.
          *
          *  Constructor from String(or string) and no other arguments, is equivilent to calling URI::Parse ()
-         *
-         *  The overload taking 'const URI& schemeAndAuthority, const URI& authorityRelativeURL'
-         *      throws if !(schemeAndAuthority.GetScheme () and schemeAndAuthority.GetAuthority ())
-         *      throws if (schemeAndAuthority.GetPath != "", etc...)
-         *      throws if authorityRelativeURL.GetScheme () or authorityRelativeURL.GetAuthority ()
-         *
-         *		This is for the case of HTTP request, where we associate schemeAndAuthority with the connection, and the rest can vary per Send() call
-         *		to the connection.
-		 *
-		 *		This is similar to the Combine () API but more restrictive.
          */
         URI () = default;
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
@@ -128,7 +118,6 @@ namespace Stroika::Foundation::IO::Network {
         DISABLE_COMPILER_MSC_WARNING_END (4996);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
-        URI (const URI& schemeAndAuthority, const URI& authorityRelativeURL);
 
     public:
         /**
@@ -208,6 +197,13 @@ namespace Stroika::Foundation::IO::Network {
          *  \note - the path is a UNICODE string, and should not be url-encoded.
          */
         nonvirtual void SetPath (const String& path);
+
+    public:
+        /**
+         *  Return just the scheme and authority part of the URI (as a URI). This is useful for HTTP for example,
+         *  as it was what is needed to define/create the connection.
+         */
+        nonvirtual URI GetSchemeAndAuthority () const;
 
     public:
         /**
