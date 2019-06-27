@@ -37,8 +37,7 @@ namespace {
     {
         try {
             IO::Network::Transfer::Connection c = IO::Network::Transfer::CreateConnection ();
-            c.SetURL (deviceDescriptionURL);
-            IO::Network::Transfer::Response r = c.GET ();
+            IO::Network::Transfer::Response r = c.GET (deviceDescriptionURL);
             if (r.GetSucceeded ()) {
                 DeviceDescription deviceInfo = DeSerialize (r.GetData ());
                 cout << "\t\tDevice-Decsciption: " << Characters::ToString (deviceInfo).AsNarrowSDKString () << endl;
