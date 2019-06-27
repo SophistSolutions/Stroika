@@ -308,6 +308,10 @@ namespace Stroika::Foundation::IO::Network {
          *  to be a full url, in which case this returns its argument (taking no properties from 'this')
          *
          *      @see https://tools.ietf.org/html/rfc3986#section-5.2
+         *
+         *  Note - one special case - if the source URI is empty (if !u) - then just return the argument URI as the result (avoiding
+         *  issues with having to always check if the source URI has a scheme. NOT - if you pass in a BAD src URI as 'this' - one without
+         *  a scheme for example - you still get an exception thrown.
          */
         nonvirtual URI Combine (const URI& uri) const;
 

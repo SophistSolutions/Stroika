@@ -286,6 +286,20 @@ URI URI::Combine (const URI& uri) const
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 
     /*
+     *  This is not stricly according to Hoyle, but it avoids a common inconvenience with the Scheme check below. And avoids having to write alot of
+     *  code like:
+     *      if (l) {
+     *          return l.Combine (r);
+     *      }
+     *      else {
+     *          return r;
+     *      }
+     */
+    if (not*this) {
+        return uri;
+    }
+
+    /*
      *  From https://tools.ietf.org/html/rfc3986#section-5
      *      "Note that only the scheme component is required to be present in a base URI; the other components may be empty or undefined."
      */

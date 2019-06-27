@@ -78,12 +78,7 @@ String Connection::Options::Authentication::ToString () const
  */
 URI Connection::GetURL () const
 {
-    if (URI u = fRep_->GetSchemeAndAuthority ()) {
-        return u.Combine (fRep_->DeprecatedGetAuthorityRelativeURL ());
-    }
-    else {
-        return fRep_->DeprecatedGetAuthorityRelativeURL ();
-    }
+    return fRep_->GetSchemeAndAuthority ().Combine (fRep_->DeprecatedGetAuthorityRelativeURL ());
 }
 
 void Connection::SetURL (const URI& url)
@@ -162,7 +157,7 @@ namespace {
 
 Response Connection::Send (const Request& r)
 {
-    const LazyEvalActivity activity{[&] () { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (GetURL ()); }};
+    const LazyEvalActivity activity{[&] () { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL)); }};
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
     Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ())
