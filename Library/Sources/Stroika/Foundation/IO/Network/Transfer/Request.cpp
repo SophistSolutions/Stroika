@@ -40,6 +40,7 @@ String Request::ToString () const
     StringBuilder sb;
     sb += L"{";
     sb += L"Method: " + Characters::ToString (fMethod) + L",";
+    sb += L"fAuthorityRelativeURL: " + Characters::ToString (fAuthorityRelativeURL) + L",";
     sb += L"fOverrideHeaders: " + Characters::ToString (fOverrideHeaders) + L",";
     sb += L"fData: " + Characters::ToString (fData) + L",";
     sb += L"}";

@@ -41,9 +41,18 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *      @todo maybe reconsider?
      */
     struct Request {
-        String                  fMethod;
+        String fMethod;
+
+        /*
+         * an HTTP request contains an authority-relative URL (basically path + query - maybe also fragment but that will be ignored)
+         */
+        URI                     fAuthorityRelativeURL;
         Mapping<String, String> fOverrideHeaders;
-        BLOB                    fData; // usually empty, but provided for some methods like POST
+
+        /*
+         *  usually empty, but provided for some methods like POST
+         */
+        BLOB fData;
 
         /**
          *  Scans fOverrideHeaders
