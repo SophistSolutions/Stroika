@@ -24,7 +24,7 @@
 namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
-     *  This cache is a generic API, allowing users of the IO::Transfer::Connection code to
+     *  This cache is a generic HTTP fetch cache API, allowing users of the IO::Transfer::Connection code to
      *  use different cache implementations (e.g. one storing to disk, and one to RAM).
      *
      *  It is hopefully done in such a way that you can do alot of code sharing among these implementations,
@@ -59,16 +59,17 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     };
 
     /**
-     *  This is the basic element of data stored in the cache for any cached URL.
+     *  This is the basic element of data stored in the cache for any cached URL. Some implementations may store more or less,
+     *  But this provides the rough outline of what is expected to cache, and utility apis to extract the cache control policy data.
      */
     struct Cache::Element {
     public:
         Element () = default;
         Element (const Response& response);
 
+    public:
         /**
          */
-    public:
         nonvirtual Mapping<String, String> GetCombinedHeaders () const;
 
     public:
@@ -88,6 +89,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     };
 
     /**
+     *  Used internally by Connection::Rep subclasses to call the Cache::Rep API. The reason for this is we want some information
+     *  snapshotted from before the request to be used after the request (when someone else may have deleted the item from the cache).
      */
     struct Cache::EvalContext {
         EvalContext () = default;

@@ -26,10 +26,7 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- *
- * TODO:
+ *  \version    <a href="Code-Status.md#Alpha-Late">Beta</a>
  *
  */
 
@@ -53,8 +50,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  \par Example Usage
      *      \code
      *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-     *          c.SetURL (URI::Parse (L"http://www.google.com"));
-     *          Response    r   =   c.GET ();
+     *          Response    r   =   c.GET (URI {L"http://www.google.com"});
      *          Assert (r.GetSucceeded ());
      *          VerifyTestResult (r.GetData ().size () > 1);
      *      \endcode
@@ -158,7 +154,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.POST (URI{L"https://www.sophists.com/"}, data);
+         *          Request r = conn.POST (URI{L"https://www.sophists.com/obj/"}, data);
          *          ...
          *      \endcode
          *
@@ -173,7 +169,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.Delete (URI{L"https://www.sophists.com/"});
+         *          Request r = conn.Delete (URI{L"https://www.sophists.com/obj/{id}"});
          *          ...
          *      \endcode
          *
@@ -188,7 +184,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.PUT (URI{L"https://www.sophists.com/"}, data);
+         *          Request r = conn.PUT (URI{L"https://www.sophists.com/obj/{id}"}, data);
          *          ...
          *      \endcode
          *
