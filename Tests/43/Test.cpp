@@ -166,7 +166,7 @@ namespace {
                 [[maybe_unused]] unsigned int tryCount{1};
             again:
                 try {
-                    optResp = c.POST (URI{L"/post"} ,roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
+                    optResp = c.POST (URI{L"/post"}, roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
