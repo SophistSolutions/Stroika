@@ -31,7 +31,7 @@ namespace {
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
                     URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
-                    context->fFullURI = fullURI;	// only try to cache GETs (for now)
+                    context->fFullURI = fullURI; // only try to cache GETs (for now)
                     if (optional<Element> o = fCache_.Lookup (fullURI)) {
                         // check if cacheable - and either return directly or
                         bool canReturnDirectly = false;
