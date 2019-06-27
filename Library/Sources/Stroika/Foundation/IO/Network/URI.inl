@@ -38,6 +38,13 @@ namespace Stroika::Foundation::IO::Network {
         : URI (Parse (encodedURI))
     {
     }
+    inline URI::URI (const URI& schemeAndAuthority, const URI& authorityRelativeURL)
+        : URI{schemeAndAuthority.GetScheme (), schemeAndAuthority.GetAuthority (), authorityRelativeURL.GetPath (), authorityRelativeURL.GetQuery<String> (), authorityRelativeURL.GetFragment ()}
+    {
+        Require (schemeAndAuthority.GetScheme () and schemeAndAuthority.GetAuthority ());
+        Require (schemeAndAuthority.GetPath ().empty () and not schemeAndAuthority.GetQuery<String> () and not schemeAndAuthority.GetFragment ());
+        Require (not authorityRelativeURL.GetScheme () and not authorityRelativeURL.GetAuthority ());
+    }
     inline bool URI::IsRelativeReference () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
