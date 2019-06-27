@@ -218,6 +218,23 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
+URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const
+{
+    return fURL_.GetSchemeAndAuthority ();
+}
+
+void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Connection_LibCurl::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (url).c_str ());
+#endif
+    fURL_.SetScheme (schemeAndAuthority.GetScheme ());
+    fURL_.SetAuthority (schemeAndAuthority.GetAuthority ());
+    if (fCurlHandle_ != nullptr) {
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fURL_.As<string> ().c_str ()));
+    }
+}
+
 URI Connection_LibCurl::Rep_::GetURL () const
 {
     return fURL_;

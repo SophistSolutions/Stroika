@@ -91,11 +91,28 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
+         *  Returns a URI with only the scheme/authority part set (the part defining the connection)
+         *      \ens result.GetPath ().empty () and not result.GetQuery<> and not result.GetFragment () 
+         */
+        nonvirtual URI GetSchemeAndAuthority () const;
+
+    public:
+        /**
+         *  Set a URI with only the scheme/authority part set (the part defining the connection)
+         *      \req url.GetScheme () and url.GetAuthority () 
+         *      \req url.GetPath ().empty () and not url.GetQuery<> and not url.GetFragment () 
+         */
+        nonvirtual void SetSchemeAndAuthority (const URI& url);
+
+    public:
+        /**
+         to be deprecated
          */
         nonvirtual URI GetURL () const;
 
     public:
         /**
+         to be deprecated
          */
         nonvirtual void SetURL (const URI& url);
 
@@ -344,13 +361,15 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual _IRep& operator= (const _IRep&) = delete;
 
     public:
-        virtual Options             GetOptions () const                      = 0;
-        virtual URI                 GetURL () const                          = 0;
-        virtual void                SetURL (const URI& url)                  = 0;
-        virtual DurationSecondsType GetTimeout () const                      = 0;
-        virtual void                SetTimeout (DurationSecondsType timeout) = 0;
-        virtual void                Close ()                                 = 0;
-        virtual Response            Send (const Request& r)                  = 0;
+        virtual Options             GetOptions () const                                   = 0;
+        virtual URI                 GetURL () const                                       = 0;
+        virtual void                SetURL (const URI& url)                               = 0;
+        virtual URI                 GetSchemeAndAuthority () const                        = 0;
+        virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
+        virtual DurationSecondsType GetTimeout () const                                   = 0;
+        virtual void                SetTimeout (DurationSecondsType timeout)              = 0;
+        virtual void                Close ()                                              = 0;
+        virtual Response            Send (const Request& r)                               = 0;
     };
 
 }

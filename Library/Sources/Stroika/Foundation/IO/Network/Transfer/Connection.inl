@@ -58,6 +58,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     {
         fRep_->SetURL (url);
     }
+    inline URI Connection::GetSchemeAndAuthority () const
+    {
+        return fRep_->GetSchemeAndAuthority ();
+    }
+    inline void Connection::SetSchemeAndAuthority (const URI& url)
+    {
+        fRep_->SetSchemeAndAuthority (url);
+    }
     inline void Connection::Close ()
     {
         fRep_->Close ();

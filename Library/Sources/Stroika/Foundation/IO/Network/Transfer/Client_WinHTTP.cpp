@@ -108,6 +108,8 @@ public:
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URI                 GetURL () const override;
     virtual void                SetURL (const URI& url) override;
+    virtual URI                 GetSchemeAndAuthority () const override;
+    virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
     virtual void                Close () override;
     virtual Response            Send (const Request& request) override;
 
@@ -178,6 +180,22 @@ void Connection_WinHTTP::Rep_::SetURL (const URI& url)
     if (fURL_ != url) {
         fConnectionHandle_.reset ();
         fURL_ = url;
+    }
+}
+
+URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const
+{
+    return fURL_.GetSchemeAndAuthority ();
+}
+
+void Connection_WinHTTP::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
+{
+    URI newURL = fURL_;
+    newURL.SetScheme (schemeAndAuthority.GetScheme ());
+    newURL.SetAuthority (schemeAndAuthority.GetAuthority ());
+    if (fURL_ != newURL) {
+        fConnectionHandle_.reset ();
+        fURL_ = newURL;
     }
 }
 
