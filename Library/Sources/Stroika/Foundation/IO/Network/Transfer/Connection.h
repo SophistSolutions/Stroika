@@ -212,6 +212,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
         [[deprecated ("Since v2.1d27, use GET (url - but can be relative url - relative to scehme/authority)")]] Response GET (const Mapping<String, String>& extraHeaders)
         {
             return GET (GetURL (), extraHeaders);
@@ -232,6 +235,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         {
             return DELETE (GetURL (), extraHeaders);
         }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     private:
         shared_ptr<_IRep> fRep_;
