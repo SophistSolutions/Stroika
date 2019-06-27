@@ -100,6 +100,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      */
     struct Cache::Rep {
 
+        virtual ~Rep () = default;
+
         /**
          *  was called BeforeGet - but can decide internally - and callers can decide to only use on get
          */
