@@ -150,7 +150,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          */
-        nonvirtual Response GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
+        nonvirtual Response GET (const Mapping<String, String>& extraHeaders = {});
 
     public:
         /*
@@ -165,6 +166,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          */
+        nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
         nonvirtual Response POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
@@ -195,6 +197,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          */
+        nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
         nonvirtual Response PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:

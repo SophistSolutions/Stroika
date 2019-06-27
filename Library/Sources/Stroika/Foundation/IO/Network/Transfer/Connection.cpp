@@ -79,9 +79,32 @@ String Connection::Options::Authentication::ToString () const
 Response Connection::GET (const Mapping<String, String>& extraHeaders)
 {
     Request r;
-    r.fMethod          = HTTP::Methods::kGet;
-    r.fOverrideHeaders = extraHeaders;
+    r.fAuthorityRelativeURL = GetURL ().GetAuthorityRelativeResource<URI> ();
+    r.fMethod               = HTTP::Methods::kGet;
+    r.fOverrideHeaders      = extraHeaders;
     return Send (r);
+}
+
+Response Connection::GET (const URI& l, const Mapping<String, String>& extraHeaders)
+{
+    if (URI u = GetURL ()) {
+        SetURL (GetURL ().Combine (l));
+    }
+    else {
+        SetURL (l);
+    }
+    return GET (extraHeaders);
+}
+
+Response Connection::POST (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+{
+    if (URI u = GetURL ()) {
+        SetURL (GetURL ().Combine (l));
+    }
+    else {
+        SetURL (l);
+    }
+    return POST (data, contentType, extraHeaders);
 }
 
 Response Connection::POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
@@ -100,6 +123,17 @@ Response Connection::DELETE (const Mapping<String, String>& extraHeaders)
     r.fMethod          = HTTP::Methods::kDelete;
     r.fOverrideHeaders = extraHeaders;
     return Send (r);
+}
+
+Response Connection::PUT (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+{
+    if (URI u = GetURL ()) {
+        SetURL (GetURL ().Combine (l));
+    }
+    else {
+        SetURL (l);
+    }
+    return PUT (data, contentType, extraHeaders);
 }
 
 Response Connection::PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
