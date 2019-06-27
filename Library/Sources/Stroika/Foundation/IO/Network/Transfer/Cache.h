@@ -6,6 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/ToString.h"
 #include "../../../Containers/Set.h"
 #include "../../../Time/DateTime.h"
 
@@ -43,6 +44,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         struct Element;
 
     public:
+        struct EvalContext;
+
+    public:
         /**
          *  Creates a default-styled HTTP cache object. Note - you still must associate this cache object with
          *  any cache connections you create (typically by assigning it to the Connection creation factory)
@@ -58,6 +62,22 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  This is the basic element of data stored in the cache for any cached URL.
      */
     struct Cache::Element {
+    public:
+        Element () = default;
+        Element (const Response& response);
+
+        /**
+         */
+    public:
+        nonvirtual Mapping<String, String> GetCombinedHeaders () const;
+
+    public:
+        /**
+             *  @see Characters::ToString ();
+             */
+        nonvirtual String ToString () const;
+
+    public:
         optional<String>                          fETag;
         optional<Time::DateTime>                  fExpires;
         optional<Time::DateTime>                  fLastModified;
@@ -69,18 +89,24 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
      */
+    struct Cache::EvalContext {
+        optional<Element> fCachedElement;
+    };
+
+    /**
+     */
     struct Cache::Rep {
 
         /**
          *  was called BeforeGet - but can decide internally - and callers can decide to only use on get
          */
-        virtual optional<Response> OnBeforeFetch (Request* request) = 0;
+        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI::Authority& authority, Request* request) = 0;
 
         /**
          * replaces response value with right answer on 304, and caches results from successful fetch calls.
          * was called AfterGet
          */
-        virtual void OnAfterFetch (Request* request, Response* response) = 0;
+        virtual void OnAfterFetch (const EvalContext& context, Request* request, Response* response) = 0;
 
         /**
          * if not cleared, external cache can be re-used

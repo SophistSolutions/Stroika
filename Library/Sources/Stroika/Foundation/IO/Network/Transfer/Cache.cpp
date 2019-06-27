@@ -4,6 +4,8 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Cache/SynchronizedLRUCache.h"
+#include "../HTTP/Headers.h"
+#include "../HTTP/Methods.h"
 
 #include "Cache.h"
 
@@ -21,22 +23,38 @@ namespace {
 
     struct DefaultCacheRep_ : Transfer::Cache::Rep {
 
-        using Element = Transfer::Cache::Element;
+        using Element     = Transfer::Cache::Element;
+        using EvalContext = Transfer::Cache::EvalContext;
 
-        virtual optional<Response> OnBeforeFetch (Request* request) override
+        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI::Authority& authority, Request* request) override
         {
-            // @todo -- see if its in cache, and if so, maybe add conditional if-modfied-since or -if-etag
-            // and under somecircumstances, just return the correct answer if its cachable without any call
-            // @todo TRICKY - must somehow lockdown (or stick into response) a copy of the response to generate IF
-            // we get a NOT-MODIFIED, because the data COULD be gone from the cache by the time we get the not-modified.
-            // ? OR - we need to be able to re - request ) a less desirable workaround (and maybe harder todo as well)
-            //
-            // Maybe have 'CONTEXT' object which also must be passed in as a parameter here so we can store the context
-            // in our parents stackframe (so gets cleaned up at right time)
+            if (request->fMethod == HTTP::Methods::kGet) {
+                if (optional<Element> o = fCache_.Lookup (URI{} /*request->*/)) {
+                    // check if cacheable - and either return directly or
+                    bool canReturnDirectly = false;
+                    if (canReturnDirectly) {
+                        // fill in response and return short-circuiting
+                        return Response{o->fBody, HTTP::StatusCodes::kOK, o->GetCombinedHeaders ()};
+                    }
+                    bool canCheckCacheETAG = false;
+                    if (canCheckCacheETAG) {
+                        // @todo - modify request to check etag
+                        context->fCachedElement = *o;
+                        return nullopt; // keep processing with request changes
+                    }
+                    bool canCheckModifiedSince = false;
+                    if (canCheckModifiedSince) {
+                        //  @todo - modify request to check last modfieid for maxage
+                        context->fCachedElement = *o;
+                        return nullopt; // keep processing with request changes
+                    }
+                }
+            }
+            // In this case, no caching is possible - nothing todo
             return nullopt;
         }
 
-        virtual void OnAfterFetch (Request* request, Response* response) override
+        virtual void OnAfterFetch (const EvalContext& context, Request* request, Response* response) override
         {
             RequireNotNull (request);
             RequireNotNull (response);
@@ -69,25 +87,76 @@ namespace {
             return fCache_.Lookup (url);
         }
 
-#if 0
-     *  \par Example Usage
-     *      \code
-     *          LRUCache<string, string> tmp (3);
-     *          tmp.Add ("a", "1");
-     *          tmp.Add ("b", "2");
-     *          tmp.Add ("c", "3");
-     *          tmp.Add ("d", "4");
-     *          VerifyTestResult (not tmp.Lookup ("a").has_value ());
-     *          VerifyTestResult (tmp.Lookup ("b") == "2");
-     *          VerifyTestResult (tmp.Lookup ("d") == "4");
-     *      \endcode
-#endif
-        SynchronizedLRUCache<URI, Element> fCache_{101};
         // we want to use hash stuff but then need hash<URI>
         ///pair<string, string>{}, 3, 10, hash<string>{}
+        SynchronizedLRUCache<URI, Element> fCache_{101};
     };
 
 }
+
+/*
+ ********************************************************************************
+ ******************* Transfer::Cache::Element ***********************************
+ ********************************************************************************
+ */
+Transfer::Cache::Element::Element (const Response& response)
+{
+    Mapping<String, String> headers = response.GetHeaders ();
+    for (auto i = headers.begin (); i != headers.end (); ++i) {
+        if (i->fKey == HTTP::HeaderName::kETag) {
+            if (i->fValue.size () < 2 or not i->fValue.StartsWith (L"\"") or not i->fValue.EndsWith (L"\"")) {
+                Execution::Throw (Execution::Exception (L"malformed etag"sv));
+            }
+            fETag = i->fValue.SubString (1, -1);
+            headers.erase (i);
+        }
+        else if (i->fKey == HTTP::HeaderName::kExpires) {
+            fExpires = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+            headers.erase (i);
+        }
+        else if (i->fKey == HTTP::HeaderName::kLastModified) {
+            fLastModified = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+            headers.erase (i);
+        }
+        else if (i->fKey == HTTP::HeaderName::kCacheControl) {
+            fCacheControl = Set<String>{i->fValue.Tokenize (Set<Character>{','})};
+            headers.erase (i);
+        }
+        else if (i->fKey == HTTP::HeaderName::kContentType) {
+            fContentType = DataExchange::InternetMediaType{i->fValue};
+            headers.erase (i);
+        }
+    }
+    fOtherHeaders = headers;
+}
+
+Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
+{
+    Mapping<String, String> result = fOtherHeaders;
+    if (fETag) {
+        result.Add (HTTP::HeaderName::kETag, L"\"" + *fETag + L"\"");
+    }
+    if (fExpires) {
+        result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::PrintFormat::eRFC1123));
+    }
+    if (fLastModified) {
+        result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::PrintFormat::eRFC1123));
+    }
+    if (fCacheControl) {
+        function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String { return lhs.empty () ? rhs : (lhs + L"," + rhs); };
+        result.Add (HTTP::HeaderName::kCacheControl, fCacheControl->Accumulate (a).value_or (String{}));
+    }
+    if (fContentType) {
+        result.Add (HTTP::HeaderName::kContentType, fContentType->As<String> ());
+    }
+    return result;
+}
+
+String Transfer::Cache::Element::ToString () const
+{
+    return Characters::ToString (GetCombinedHeaders ());
+}
+
 /*
  ********************************************************************************
  **************************** Transfer::Cache ***********************************

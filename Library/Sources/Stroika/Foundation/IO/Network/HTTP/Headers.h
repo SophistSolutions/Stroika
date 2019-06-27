@@ -22,16 +22,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     // standard HTTP headers one might want to access/retrieve
     namespace HeaderName {
 
+        constexpr wchar_t kCacheControl[]                  = L"Cache-Control";
         constexpr wchar_t kContentType[]                   = L"Content-Type";
         constexpr wchar_t kContentLength[]                 = L"Content-Length";
         constexpr wchar_t kConnection[]                    = L"Connection";
         constexpr wchar_t kServer[]                        = L"Server";
         constexpr wchar_t kDate[]                          = L"Date";
+        constexpr wchar_t kETag[]                          = L"ETag";
         constexpr wchar_t kLastModified[]                  = L"Last-Modified";
         constexpr wchar_t kUserAgent[]                     = L"User-Agent";
         constexpr wchar_t kSOAPAction[]                    = L"SOAPAction";
         constexpr wchar_t kAcceptEncoding[]                = L"Accept-Encoding";
         constexpr wchar_t kExpect[]                        = L"Expect";
+        constexpr wchar_t kExpires[]                       = L"Expires";
         constexpr wchar_t kTransferEncoding[]              = L"Transfer-Encoding";
         constexpr wchar_t kAccessControlAllowCredentials[] = L"Access-Control-Allow-Credentials";
         constexpr wchar_t kAccessControlAllowOrigin[]      = L"Access-Control-Allow-Origin";
