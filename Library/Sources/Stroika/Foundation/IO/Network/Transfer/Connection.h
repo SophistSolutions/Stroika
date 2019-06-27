@@ -212,11 +212,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
-        [[deprecated ("Since v2.1d27, use GET (url - but can be relative url - relative to scehme/authority)")]] Response Connection::GET (const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use GET (url - but can be relative url - relative to scehme/authority)")]] Response GET (const Mapping<String, String>& extraHeaders)
         {
             return GET (GetURL (), extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use PUT (url - but can be relative url - relative to scehme/authority)")]] Response Connection::PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use PUT (url - but can be relative url - relative to scehme/authority)")]] Response PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
         {
             return PUT (GetURL (), data, contentType, extraHeaders);
         }
