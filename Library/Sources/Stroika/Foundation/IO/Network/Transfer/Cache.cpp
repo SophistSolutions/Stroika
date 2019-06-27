@@ -29,7 +29,7 @@ namespace {
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) override
         {
             if (request->fMethod == HTTP::Methods::kGet) {
-                URI fullURI = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
+                URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
                 context->fFullURI = fullURI;
                 if (optional<Element> o = fCache_.Lookup (fullURI)) {
                     // check if cacheable - and either return directly or
@@ -72,11 +72,11 @@ namespace {
                     // @todo replaces response value with right answer on 304
                     // lookup cache value and return it - updating any needed http headers stored in cache
                     if (context.fCachedElement) {
-                        * response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, context.fCachedElement->GetCombinedHeaders (), response->GetSSLResultInfo ()};
+                        *response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, context.fCachedElement->GetCombinedHeaders (), response->GetSSLResultInfo ()};
                     }
                     else {
                         Execution::Throw (Execution::Exception (L"unexpected NOT-MODIFIED result when nothing was in the cache"sv));
-					}
+                    }
                 } break;
                 default: {
                     // ignored
