@@ -215,23 +215,23 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_START (4996);
-        [[deprecated ("Since v2.1d27, use GET (url - but can be relative url - relative to scehme/authority)")]] Response GET (const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use GET (url - but can be relative url - relative to scehme/authority)")]] Response GET (const Mapping<String, String>& extraHeaders = {})
         {
             return GET (GetURL (), extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use PUT (url - but can be relative url - relative to scehme/authority)")]] Response PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use PUT (url - but can be relative url - relative to scehme/authority)")]] Response PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = {})
         {
             return PUT (GetURL (), data, contentType, extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use OPTIONS (url - but can be relative url - relative to scehme/authority)")]] Response OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ())
+        [[deprecated ("Since v2.1d27, use OPTIONS (url - but can be relative url - relative to scehme/authority)")]] Response OPTIONS (const Mapping<String, String>& extraHeaders = {})
         {
             return OPTIONS (GetURL (), extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use POST (url - but can be relative url - relative to scehme/authority)")]] Response POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use POST (url - but can be relative url - relative to scehme/authority)")]] Response POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = {})
         {
             return POST (GetURL (), data, contentType, extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use DELETE (url - but can be relative url - relative to scehme/authority)")]] Response DELETE (const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use DELETE (url - but can be relative url - relative to scehme/authority)")]] Response DELETE (const Mapping<String, String>& extraHeaders = {})
         {
             return DELETE (GetURL (), extraHeaders);
         }
