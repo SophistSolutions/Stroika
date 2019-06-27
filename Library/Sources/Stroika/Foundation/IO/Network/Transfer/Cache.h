@@ -73,6 +73,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual Mapping<String, String> GetCombinedHeaders () const;
 
     public:
+        nonvirtual bool IsCachable () const;
+
+    public:
+        nonvirtual Time::DateTime IsValidUntil () const;
+
+    public:
         /**
          *  @see Characters::ToString ();
          */
@@ -108,13 +114,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          *  was called BeforeGet - but can decide internally - and callers can decide to only use on get
          */
-        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) = 0;
+        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept = 0;
 
         /**
          * replaces response value with right answer on 304, and caches results from successful fetch calls.
          * was called AfterGet
          */
-        virtual void OnAfterFetch (const EvalContext& context, Response* response) = 0;
+        virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept = 0;
 
         /**
          * if not cleared, external cache can be re-used

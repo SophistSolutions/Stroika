@@ -26,55 +26,75 @@ namespace {
         using Element     = Transfer::Cache::Element;
         using EvalContext = Transfer::Cache::EvalContext;
 
-        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) override
+        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
             if (request->fMethod == HTTP::Methods::kGet) {
-                URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
-                context->fFullURI = fullURI;
-                if (optional<Element> o = fCache_.Lookup (fullURI)) {
-                    // check if cacheable - and either return directly or
-                    bool canReturnDirectly = false;
-                    if (canReturnDirectly) {
-                        // fill in response and return short-circuiting
-                        return Response{o->fBody, HTTP::StatusCodes::kOK, o->GetCombinedHeaders ()};
+                try {
+                    URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
+                    context->fFullURI = fullURI;	// only try to cache GETs (for now)
+                    if (optional<Element> o = fCache_.Lookup (fullURI)) {
+                        // check if cacheable - and either return directly or
+                        bool canReturnDirectly = false;
+                        if (canReturnDirectly) {
+                            // fill in response and return short-circuiting
+                            return Response{o->fBody, HTTP::StatusCodes::kOK, o->GetCombinedHeaders ()};
+                        }
+                        bool canCheckCacheETAG = false;
+                        if (canCheckCacheETAG) {
+                            // @todo - modify request to check etag
+                            context->fCachedElement = *o;
+                            return nullopt; // keep processing with request changes
+                        }
+                        bool canCheckModifiedSince = false;
+                        if (canCheckModifiedSince) {
+                            //  @todo - modify request to check last modfieid for maxage
+                            context->fCachedElement = *o;
+                            return nullopt; // keep processing with request changes
+                        }
                     }
-                    bool canCheckCacheETAG = false;
-                    if (canCheckCacheETAG) {
-                        // @todo - modify request to check etag
-                        context->fCachedElement = *o;
-                        return nullopt; // keep processing with request changes
-                    }
-                    bool canCheckModifiedSince = false;
-                    if (canCheckModifiedSince) {
-                        //  @todo - modify request to check last modfieid for maxage
-                        context->fCachedElement = *o;
-                        return nullopt; // keep processing with request changes
-                    }
+                }
+                catch (...) {
+                    DbgTrace (L"Cache::OnBeforeFetch::oops: %s", Characters::ToString (current_exception ()).c_str ()); // ignore...
                 }
             }
             // In this case, no caching is possible - nothing todo
             return nullopt;
         }
 
-        virtual void OnAfterFetch (const EvalContext& context, Response* response) override
+        virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept override
         {
             RequireNotNull (response);
             switch (response->GetStatus ()) {
                 case HTTP::StatusCodes::kOK: {
-                    // @todo add result to cache
-                    // but must look at headers closely first - LIKE PRAGMA NO-CACHE!
                     if (context.fFullURI) {
-                        fCache_.Add (*context.fFullURI, Element{*response});
+                        try {
+                            Element cacheElement{*response};
+                            //DbgTrace (L"context.fFullURI=%s", Characters::ToString (context.fFullURI).c_str ());
+                            //DbgTrace (L"cacheElement=%s", Characters::ToString (cacheElement).c_str ());
+                            if (cacheElement.IsCachable ()) {
+                                fCache_.Add (*context.fFullURI, cacheElement);
+                            }
+                        }
+                        catch (...) {
+                            DbgTrace (L"Cache::OnAfterFetch::oops(ok): %s", Characters::ToString (current_exception ()).c_str ()); // ignore...
+                        }
                     }
                 } break;
                 case HTTP::StatusCodes::kNotModified: {
-                    // @todo replaces response value with right answer on 304
-                    // lookup cache value and return it - updating any needed http headers stored in cache
-                    if (context.fCachedElement) {
-                        *response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, context.fCachedElement->GetCombinedHeaders (), response->GetSSLResultInfo ()};
+                    try {
+                        // @todo replaces response value with right answer on 304
+                        // lookup cache value and return it - updating any needed http headers stored in cache
+                        /// DEFINE A CACHE HEADER TO STICK IN TO HEADERS FOR STUFF RETRUNED FROM CACHE
+                        if (context.fCachedElement) {
+                            Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
+                            *response                       = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, headers, response->GetSSLResultInfo ()};
+                        }
+                        else {
+                            DbgTrace (L"Cache::OnAfterFetch::oops: unexpected NOT-MODIFIED result when nothing was in the cache"); // ignore...
+                        }
                     }
-                    else {
-                        Execution::Throw (Execution::Exception (L"unexpected NOT-MODIFIED result when nothing was in the cache"sv));
+                    catch (...) {
+                        DbgTrace (L"Cache::OnAfterFetch::oops(ok): %s", Characters::ToString (current_exception ()).c_str ()); // ignore...
                     }
                 } break;
                 default: {
@@ -117,7 +137,14 @@ Transfer::Cache::Element::Element (const Response& response)
             headers.erase (i);
         }
         else if (i->fKey == HTTP::HeaderName::kExpires) {
-            fExpires = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+            try {
+                fExpires = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+            }
+            catch (...) {
+                // treat invalid dates as if the resource has already exipred
+                //fExpires = DateTime::min ();  // better but cannot convert back to date - fix stk date stuff so this works
+                fExpires = DateTime::Now ();
+            }
             headers.erase (i);
         }
         else if (i->fKey == HTTP::HeaderName::kLastModified) {
@@ -156,6 +183,21 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
         result.Add (HTTP::HeaderName::kContentType, fContentType->As<String> ());
     }
     return result;
+}
+
+bool Transfer::Cache::Element::IsCachable () const
+{
+    static const String kNoStore_{L"no-store"sv};
+    if (fCacheControl) {
+        return not fCacheControl->Contains (kNoStore_);
+    }
+    return true;
+}
+
+Time::DateTime Transfer::Cache::Element::IsValidUntil () const
+{
+    ////
+    return Time::DateTime::Now ();
 }
 
 String Transfer::Cache::Element::ToString () const

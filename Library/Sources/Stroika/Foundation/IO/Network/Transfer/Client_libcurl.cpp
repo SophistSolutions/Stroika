@@ -423,7 +423,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 
     long resultCode = 0;
     ThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
-    Response result{fResponseData_, resultCode, fResponseHeaders_};
+    Response result{fResponseData_, static_cast<HTTP::Status> (resultCode), fResponseHeaders_};
     if (fOptions_.fCache != nullptr) {
         fOptions_.fCache->OnAfterFetch (cacheContext, &result);
     }

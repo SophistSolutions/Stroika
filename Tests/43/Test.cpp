@@ -505,6 +505,56 @@ namespace {
 }
 
 namespace {
+    namespace Test_6_TestWithCache_ {
+        namespace Private_ {
+            void SimpleGetFetch_T1 (Connection c)
+            {
+                Debug::TraceContextBumper ctx ("{}::...SimpleGetFetch_T1");
+                Response                  r = c.GET (URI{L"http://www.google.com"});
+                VerifyTestResult (r.GetSucceeded ());
+                VerifyTestResult (r.GetData ().size () > 1);
+                Response r2 = c.GET (URI{L"http://www.google.com"});
+                VerifyTestResult (r.GetData () == r2.GetData ());
+            }
+            void DoRegressionTests_ForConnectionFactory_ (function<Connection ()> factory)
+            {
+                SimpleGetFetch_T1 (factory ());
+            }
+        }
+        void DoTests_ ()
+        {
+            Debug::TraceContextBumper     ctx ("{}::Test_6_TestWithCache_");
+            constexpr Execution::Activity kActivity_{L"running Test_6_TestWithCache_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
+            using namespace Private_;
+            try {
+                DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
+                    Connection::Options options = kDefaultTestOptions_;
+                    Cache::Ptr          cache   = Cache::CreateDefault ();
+                    options.fCache              = cache;
+                    return CreateConnection (options);
+                });
+            }
+            catch (const Execution::RequiredComponentMissingException&) {
+#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+// This is more like the absence of a feature beacuse of the missing component.
+#else
+                Execution::ReThrow ();
+#endif
+            }
+
+#if qHasFeature_LibCurl
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+#endif
+#if qHasFeature_WinHTTP
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+#endif
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test_1_SimpleConnnectionTests_::DoTests_ ();
@@ -518,6 +568,7 @@ namespace {
 #else
         Test_5_SSLCertCheckTests_::DoTests_ ();
 #endif
+        Test_6_TestWithCache_::DoTests_ ();
     }
 }
 
