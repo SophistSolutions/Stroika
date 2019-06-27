@@ -73,8 +73,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-             *  @see Characters::ToString ();
-             */
+         *  @see Characters::ToString ();
+         */
         nonvirtual String ToString () const;
 
     public:
@@ -90,7 +90,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     /**
      */
     struct Cache::EvalContext {
+        EvalContext () = default;
+
         optional<Element> fCachedElement;
+        optional<URI>     fFullURI;
     };
 
     /**
@@ -100,7 +103,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          *  was called BeforeGet - but can decide internally - and callers can decide to only use on get
          */
-        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI::Authority& authority, Request* request) = 0;
+        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) = 0;
 
         /**
          * replaces response value with right answer on 304, and caches results from successful fetch calls.

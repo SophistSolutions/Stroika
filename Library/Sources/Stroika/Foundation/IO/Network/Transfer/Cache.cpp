@@ -26,10 +26,12 @@ namespace {
         using Element     = Transfer::Cache::Element;
         using EvalContext = Transfer::Cache::EvalContext;
 
-        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI::Authority& authority, Request* request) override
+        virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) override
         {
             if (request->fMethod == HTTP::Methods::kGet) {
-                if (optional<Element> o = fCache_.Lookup (URI{} /*request->*/)) {
+                URI fullURI = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
+                context->fFullURI = fullURI;
+                if (optional<Element> o = fCache_.Lookup (fullURI)) {
                     // check if cacheable - and either return directly or
                     bool canReturnDirectly = false;
                     if (canReturnDirectly) {
@@ -61,15 +63,20 @@ namespace {
             switch (response->GetStatus ()) {
                 case HTTP::StatusCodes::kOK: {
                     // @todo add result to cache
-                    // but must look at headers closely first
-#if 0
-     *          fCache_.Add (request->GetURI (), Element{*response});
-     *          tmp.Add ("b", "2");
-#endif
+                    // but must look at headers closely first - LIKE PRAGMA NO-CACHE!
+                    if (context.fFullURI) {
+                        fCache_.Add (*context.fFullURI, Element{*response});
+                    }
                 } break;
                 case HTTP::StatusCodes::kNotModified: {
                     // @todo replaces response value with right answer on 304
                     // lookup cache value and return it - updating any needed http headers stored in cache
+                    if (context.fCachedElement) {
+                        * response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, context.fCachedElement->GetCombinedHeaders (), response->GetSSLResultInfo ()};
+                    }
+                    else {
+                        Execution::Throw (Execution::Exception (L"unexpected NOT-MODIFIED result when nothing was in the cache"sv));
+					}
                 } break;
                 default: {
                     // ignored
