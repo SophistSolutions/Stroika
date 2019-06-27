@@ -127,8 +127,10 @@ public:
     }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
-    virtual URI                 GetURL () const override;
-    virtual void                SetURL (const URI& url) override;
+    virtual URI                 GetSchemeAndAuthority () const override;
+    virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
+    virtual URI                 DeprecatedGetAuthorityRelativeURL () const override;
+    virtual void                DeprecatedSetAuthorityRelativeURL (const URI& url) override;
     virtual void                Close () override;
     virtual Response            Send (const Request& request) override;
 
@@ -235,20 +237,23 @@ void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthor
     }
 }
 
-URI Connection_LibCurl::Rep_::GetURL () const
+URI Connection_LibCurl::Rep_::DeprecatedGetAuthorityRelativeURL () const
 {
     return fURL_;
 }
 
-void Connection_LibCurl::Rep_::SetURL (const URI& url)
+void Connection_LibCurl::Rep_::DeprecatedSetAuthorityRelativeURL (const URI& url)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Connection_LibCurl::Rep_::SetURL ('%s')", Characters::ToString (url).c_str ());
 #endif
+    URI newURL = url;
+    newURL.SetScheme (fURL_.GetScheme ());
+    newURL.SetAuthority (fURL_.GetAuthority ());
     if (fCurlHandle_ != nullptr) {
-        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, url.As<string> ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, newURL.As<string> ().c_str ()));
     }
-    fURL_ = url;
+    fURL_ = newURL;
 }
 
 void Connection_LibCurl::Rep_::Close ()
@@ -321,6 +326,8 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str ()};
 #endif
+    DeprecatedSetAuthorityRelativeURL (request.fAuthorityRelativeURL);
+
     MakeHandleIfNeeded_ ();
     fUploadData_       = request.fData.As<vector<byte>> ();
     fUploadDataCursor_ = 0;

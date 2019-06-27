@@ -106,8 +106,8 @@ public:
     }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
-    virtual URI                 GetURL () const override;
-    virtual void                SetURL (const URI& url) override;
+    virtual URI                 DeprecatedGetAuthorityRelativeURL () const override;
+    virtual void                DeprecatedSetAuthorityRelativeURL (const URI& url) override;
     virtual URI                 GetSchemeAndAuthority () const override;
     virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
     virtual void                Close () override;
@@ -170,16 +170,19 @@ void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
     fTimeout_ = timeout; // affects subsequent calls to send...
 }
 
-URI Connection_WinHTTP::Rep_::GetURL () const
+URI Connection_WinHTTP::Rep_::DeprecatedGetAuthorityRelativeURL () const
 {
     return fURL_;
 }
 
-void Connection_WinHTTP::Rep_::SetURL (const URI& url)
+void Connection_WinHTTP::Rep_::DeprecatedSetAuthorityRelativeURL (const URI& url)
 {
+    URI newURL = url;
+    newURL.SetScheme (fURL_.GetScheme ());
+    newURL.SetAuthority (fURL_.GetAuthority ());
     if (fURL_ != url) {
         fConnectionHandle_.reset ();
-        fURL_ = url;
+        fURL_ = newURL;
     }
 }
 
@@ -210,6 +213,9 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s", Characters::ToString (request).c_str ())};
 #endif
+
+    DeprecatedSetAuthorityRelativeURL (request.fAuthorityRelativeURL);
+
     BLOB                              data; // usually empty, but provided for some methods like POST
     Mapping<String, String>           headers;
     HTTP::Status                      status{};

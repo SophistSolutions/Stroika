@@ -50,20 +50,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     {
         return fRep_->GetOptions ();
     }
-    inline URI Connection::GetURL () const
-    {
-        return fRep_->GetURL ();
-    }
-    inline void Connection::SetURL (const URI& url)
-    {
-        fRep_->SetURL (url);
-    }
     inline URI Connection::GetSchemeAndAuthority () const
     {
+        Ensure (fRep_->GetSchemeAndAuthority ().GetSchemeAndAuthority () == fRep_->GetSchemeAndAuthority ());
         return fRep_->GetSchemeAndAuthority ();
     }
     inline void Connection::SetSchemeAndAuthority (const URI& url)
     {
+        Require (url.GetSchemeAndAuthority () == url);
         fRep_->SetSchemeAndAuthority (url);
     }
     inline void Connection::Close ()

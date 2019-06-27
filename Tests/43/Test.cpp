@@ -153,7 +153,7 @@ namespace {
 
                 static mt19937 sRNG_;
 
-                c.SetSchemeAndAuthority (URI{L"http://httpbin.org/"});
+                c.SetSchemeAndAuthority (URI{L"http://httpbin.org"});
                 BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {

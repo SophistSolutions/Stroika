@@ -92,29 +92,22 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         /**
          *  Returns a URI with only the scheme/authority part set (the part defining the connection)
-         *      \ens result.GetPath ().empty () and not result.GetQuery<> and not result.GetFragment () 
+         *      \ens (url.GetSchemeAndAuthority () == url);
          */
         nonvirtual URI GetSchemeAndAuthority () const;
 
     public:
         /**
          *  Set a URI with only the scheme/authority part set (the part defining the connection)
-         *      \req url.GetScheme () and url.GetAuthority () 
-         *      \req url.GetPath ().empty () and not url.GetQuery<> and not url.GetFragment () 
+         *      \req (url.GetSchemeAndAuthority () == url);
          */
         nonvirtual void SetSchemeAndAuthority (const URI& url);
 
     public:
-        /**
-         to be deprecated
-         */
-        nonvirtual URI GetURL () const;
+        [[deprecated ("Since v2.1d27, use GetSchemeAndAuthority")]] URI GetURL () const;
 
     public:
-        /**
-         to be deprecated
-         */
-        nonvirtual void SetURL (const URI& url);
+        [[deprecated ("Since v2.1d27, use SetSchemeAndAuthority, or use the URL argument to GET/POST/etc")]] void SetURL (const URI& url);
 
     public:
         /**
@@ -126,14 +119,21 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /*
          *  This returns a response object, which possibly contains an http error.
          *
+         *  Call this->SetSchemeAndAuthority() first, or use a wrapper let GET/POST that does this automatically.
+         *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.Send (Request (...));
+         *          if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
+         *              SetSchemeAndAuthority (schemeAndAuthority);
+         *          }
+         *          Response r = conn.Send (Request (...));
          *          ...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
+         *
+         *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
          */
         nonvirtual Response Send (const Request& r);
 
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.GET ();
+         *          Request r = conn.GET (URI{L"https://www.sophists.com/"});
          *          ...
          *      \endcode
          *
@@ -151,7 +151,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          at e.GetResponse ()
          */
         nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
-        nonvirtual Response GET (const Mapping<String, String>& extraHeaders = {});
 
     public:
         /*
@@ -159,7 +158,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.POST (data);
+         *          Request r = conn.POST (URI{L"https://www.sophists.com/"}, data);
          *          ...
          *      \endcode
          *
@@ -167,7 +166,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          at e.GetResponse ()
          */
         nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-        nonvirtual Response POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*
@@ -175,14 +173,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.Delete ();
+         *          Request r = conn.Delete (URI{L"https://www.sophists.com/"});
          *          ...
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          */
-        nonvirtual Response DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*
@@ -190,7 +188,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.PUT (data);
+         *          Request r = conn.PUT (URI{L"https://www.sophists.com/"}, data);
          *          ...
          *      \endcode
          *
@@ -198,7 +196,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          at e.GetResponse ()
          */
         nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-        nonvirtual Response PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*
@@ -206,13 +203,35 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.OPTIONS ();
+         *          Request r = conn.OPTIONS (URI{L"https://www.sophists.com/"});
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          */
-        nonvirtual Response OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+    public:
+        [[deprecated ("Since v2.1d27, use GET (url - but can be relative url - relative to scehme/authority)")]] Response Connection::GET (const Mapping<String, String>& extraHeaders)
+        {
+            return GET (GetURL (), extraHeaders);
+        }
+        [[deprecated ("Since v2.1d27, use PUT (url - but can be relative url - relative to scehme/authority)")]] Response Connection::PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+        {
+            return PUT (GetURL (), data, contentType, extraHeaders);
+        }
+        [[deprecated ("Since v2.1d27, use OPTIONS (url - but can be relative url - relative to scehme/authority)")]] Response OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ())
+        {
+            return OPTIONS (GetURL (), extraHeaders);
+        }
+        [[deprecated ("Since v2.1d27, use POST (url - but can be relative url - relative to scehme/authority)")]] Response Connection::POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+        {
+            return POST (GetURL (), data, contentType, extraHeaders);
+        }
+        [[deprecated ("Since v2.1d27, use DELETE (url - but can be relative url - relative to scehme/authority)")]] Response Connection::DELETE (const Mapping<String, String>& extraHeaders)
+        {
+            return DELETE (GetURL (), extraHeaders);
+        }
 
     private:
         shared_ptr<_IRep> fRep_;
@@ -365,8 +384,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         virtual Options             GetOptions () const                                   = 0;
-        virtual URI                 GetURL () const                                       = 0;
-        virtual void                SetURL (const URI& url)                               = 0;
+        virtual URI                 DeprecatedGetAuthorityRelativeURL () const            = 0;
+        virtual void                DeprecatedSetAuthorityRelativeURL (const URI& url)    = 0;
         virtual URI                 GetSchemeAndAuthority () const                        = 0;
         virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
         virtual DurationSecondsType GetTimeout () const                                   = 0;
