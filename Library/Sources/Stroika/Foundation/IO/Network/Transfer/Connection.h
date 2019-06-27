@@ -224,11 +224,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         {
             return OPTIONS (GetURL (), extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use POST (url - but can be relative url - relative to scehme/authority)")]] Response Connection::POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use POST (url - but can be relative url - relative to scehme/authority)")]] Response POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
         {
             return POST (GetURL (), data, contentType, extraHeaders);
         }
-        [[deprecated ("Since v2.1d27, use DELETE (url - but can be relative url - relative to scehme/authority)")]] Response Connection::DELETE (const Mapping<String, String>& extraHeaders)
+        [[deprecated ("Since v2.1d27, use DELETE (url - but can be relative url - relative to scehme/authority)")]] Response DELETE (const Mapping<String, String>& extraHeaders)
         {
             return DELETE (GetURL (), extraHeaders);
         }
