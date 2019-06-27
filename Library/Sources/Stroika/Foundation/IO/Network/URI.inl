@@ -101,12 +101,17 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI{GetScheme (), GetAuthority ()};
     }
-
     template <>
     inline string URI::GetAuthorityRelativeResource () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return GetAuthorityRelativeResource<String> ().AsASCII ();
+    }
+    template <>
+    inline URI URI::GetAuthorityRelativeResource () const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
     }
     template <>
     inline optional<String> URI::GetAbsPath () const

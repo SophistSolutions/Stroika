@@ -207,7 +207,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Return the (PCT etc encoded) string AFTER the authority, but not including the fragment
+         *  Return the (PCT etc encoded if a string) data AFTER the authority, but not including the fragment
          *
          *  \note Alias - this used to be called GetHostRelativePathPlusQuery
          *
@@ -216,6 +216,7 @@ namespace Stroika::Foundation::IO::Network {
          *  RETURN_TYPE may be:
          *      o   String (default)
          *      o   string (because its all ASCII return since ENCODED)
+         *      o   URI (in which case it just copies the path, and query elements)
          */
         template <typename RETURN_TYPE = String>
         nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const;
@@ -297,6 +298,12 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  Returns true iff one or more sub-elements have a value
+         */
+        nonvirtual operator bool () const;
+
+    public:
+        /**
          *  Combine a full URI with a (possibly) relative URI, to produce a new URI. Note - its completely legal for the argument uri
          *  to be a full url, in which case this returns its argument (taking no properties from 'this')
          *
@@ -338,6 +345,8 @@ namespace Stroika::Foundation::IO::Network {
     String URI::GetAuthorityRelativeResource () const;
     template <>
     string URI::GetAuthorityRelativeResource () const;
+    template <>
+    URI URI::GetAuthorityRelativeResource () const;
 
     template <>
     String URI::GetAbsPath () const;

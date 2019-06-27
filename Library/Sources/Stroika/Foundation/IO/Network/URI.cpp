@@ -189,6 +189,27 @@ string URI::As () const
     return As<String> ().AsASCII ();
 }
 
+URI::operator bool () const
+{
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    if (fScheme_) {
+        return true;
+    }
+    if (fAuthority_) {
+        return true;
+    }
+    if (not fPath_.empty ()) {
+        return true;
+    }
+    if (fQuery_) {
+        return true;
+    }
+    if (fFragment_) {
+        return true;
+    }
+    return false;
+}
+
 template <>
 String URI::GetAuthorityRelativeResource () const
 {
