@@ -213,8 +213,9 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s", Characters::ToString (request).c_str ())};
 #endif
+    Request useRequest = request;
 
-    DeprecatedSetAuthorityRelativeURL (request.fAuthorityRelativeURL);
+    DeprecatedSetAuthorityRelativeURL (useRequest.fAuthorityRelativeURL);
 
     BLOB                              data; // usually empty, but provided for some methods like POST
     Mapping<String, String>           headers;
@@ -231,11 +232,18 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
      *
      */
     String                  userAgent     = fOptions_.fUserAgent;
-    Mapping<String, String> useHeadersMap = request.fOverrideHeaders;
+    Mapping<String, String> useHeadersMap = useRequest.fOverrideHeaders;
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
         // appears to not decode (and neither do I).
         useHeadersMap.Add (String_Constant (HeaderName::kAcceptEncoding), String{});
+    }
+    Cache::EvalContext cacheContext;
+    if (fOptions_.fCache != nullptr) {
+        if (auto r = fOptions_.fCache->OnBeforeFetch (&cacheContext, fURL_.GetSchemeAndAuthority (), &useRequest)) {
+            // shortcut - we already have a cached answer
+            return *r;
+        }
     }
     {
         if (useHeadersMap.Lookup (String_Constant (HeaderName::kUserAgent), &userAgent)) {
@@ -267,7 +275,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
     bool useSecureHTTP = fURL_.GetScheme () and fURL_.GetScheme ()->IsSecure ();
 
     AutoWinHINTERNET_ hRequest (
-        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetAuthorityRelativeResource ().c_str (),
+        ::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.c_str (), fURL_.GetAuthorityRelativeResource ().c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
                               useSecureHTTP ? WINHTTP_FLAG_SECURE : 0));
@@ -308,15 +316,15 @@ RetryWithNoCERTCheck:
 
 RetryWithAuth:
     try {
-        if (request.fData.size () > numeric_limits<DWORD>::max ()) {
+        if (useRequest.fData.size () > numeric_limits<DWORD>::max ()) {
             Throw (Execution::Exception (L"Too large a message to send using WinHTTP"sv));
         }
         DISABLE_COMPILER_MSC_WARNING_START (4267)
         ThrowIfZeroGetLastError (::WinHttpSendRequest (
             hRequest,
             useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
-            const_cast<byte*> (request.fData.begin ()), request.fData.size (),
-            request.fData.size (),
+            const_cast<byte*> (useRequest.fData.begin ()), useRequest.fData.size (),
+            useRequest.fData.size (),
             NULL));
         DISABLE_COMPILER_MSC_WARNING_END (4267)
 
@@ -513,7 +521,13 @@ RetryWithAuth:
             i = endOfRegion + 1;
         }
     }
-    return Response (data, status, headers, serverEndpointSSLInfo);
+
+    Response result{data, status, headers, serverEndpointSSLInfo};
+    if (fOptions_.fCache != nullptr) {
+        fOptions_.fCache->OnAfterFetch (cacheContext, &result);
+    }
+
+    return result;
 }
 
 void Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)

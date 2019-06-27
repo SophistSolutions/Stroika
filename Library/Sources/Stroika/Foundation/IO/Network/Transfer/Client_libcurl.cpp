@@ -326,10 +326,20 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str ()};
 #endif
-    DeprecatedSetAuthorityRelativeURL (request.fAuthorityRelativeURL);
+    Request useRequest = request;
+
+    DeprecatedSetAuthorityRelativeURL (useRequest.fAuthorityRelativeURL);
+
+    Cache::EvalContext cacheContext;
+    if (fOptions_.fCache != nullptr) {
+        if (auto r = fOptions_.fCache->OnBeforeFetch (&cacheContext, fURL_.GetSchemeAndAuthority (), &useRequest)) {
+            // shortcut - we already have a cached answer
+            return *r;
+        }
+    }
 
     MakeHandleIfNeeded_ ();
-    fUploadData_       = request.fData.As<vector<byte>> ();
+    fUploadData_       = useRequest.fData.As<vector<byte>> ();
     fUploadDataCursor_ = 0;
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
@@ -341,7 +351,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
     }
 
-    Mapping<String, String> overrideHeaders = request.fOverrideHeaders;
+    Mapping<String, String> overrideHeaders = useRequest.fOverrideHeaders;
     if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
         static const Mapping<String, String> kSilenceTheseHeaders_{
             {pair<String, String>{L"Expect"sv, {}},
@@ -358,14 +368,14 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 2L : 0L);
     }
 
-    if (request.fMethod == HTTP::Methods::kGet) {
+    if (useRequest.fMethod == HTTP::Methods::kGet) {
         if (fDidCustomMethod_) {
             ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fDidCustomMethod_ = false;
         }
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 1));
     }
-    else if (request.fMethod == HTTP::Methods::kPost) {
+    else if (useRequest.fMethod == HTTP::Methods::kPost) {
         if (fDidCustomMethod_) {
             ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fDidCustomMethod_ = false;
@@ -373,7 +383,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
     }
-    else if (request.fMethod == HTTP::Methods::kPut) {
+    else if (useRequest.fMethod == HTTP::Methods::kPut) {
         if (fDidCustomMethod_) {
             ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, nullptr));
             fDidCustomMethod_ = false;
@@ -386,7 +396,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 0));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 0));
-        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, request.fMethod.AsUTF8 ().c_str ()));
+        ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, useRequest.fMethod.AsUTF8 ().c_str ()));
     }
 
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
@@ -413,10 +423,14 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 
     long resultCode = 0;
     ThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
+    Response result{fResponseData_, resultCode, fResponseHeaders_};
+    if (fOptions_.fCache != nullptr) {
+        fOptions_.fCache->OnAfterFetch (cacheContext, &result);
+    }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning status = %d, dataLen = %d", resultCode, fResponseData_.size ());
+    DbgTrace (L"returning status = %d, dataLen = %d", result.GetStatus (), result.GetData ().size ());
 #endif
-    return Response (fResponseData_, resultCode, fResponseHeaders_);
+    return result;
 }
 
 void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()

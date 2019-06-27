@@ -114,7 +114,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          * replaces response value with right answer on 304, and caches results from successful fetch calls.
          * was called AfterGet
          */
-        virtual void OnAfterFetch (const EvalContext& context, Request* request, Response* response) = 0;
+        virtual void OnAfterFetch (const EvalContext& context, Response* response) = 0;
 
         /**
          * if not cleared, external cache can be re-used

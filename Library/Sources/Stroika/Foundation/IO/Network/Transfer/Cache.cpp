@@ -56,9 +56,8 @@ namespace {
             return nullopt;
         }
 
-        virtual void OnAfterFetch (const EvalContext& context, Request* request, Response* response) override
+        virtual void OnAfterFetch (const EvalContext& context, Response* response) override
         {
-            RequireNotNull (request);
             RequireNotNull (response);
             switch (response->GetStatus ()) {
                 case HTTP::StatusCodes::kOK: {
