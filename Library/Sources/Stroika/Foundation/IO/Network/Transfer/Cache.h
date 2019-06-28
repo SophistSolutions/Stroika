@@ -57,11 +57,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
             optional<Time::Duration> fDefaultResourceTTL; // if not specified via expires header, or max-age etc...
 
             /**
-            *This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.
-            */
+             *This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.
+             */
             optional<String> fCachedResultHeader{kCachedResultHeaderDefault};
 
-            static String kCachedResultHeaderDefault;
+             /**
+              */
+            static const inline String kCachedResultHeaderDefault{L"X-Stroika-Cached-Result"sv};
         };
 
     public:
