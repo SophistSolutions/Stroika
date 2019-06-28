@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
+         *  Like Windows UuidCreate, or CoCreateGuid - create a random GUID (but portably).
          */
         static GUID GenerateNew ();
 

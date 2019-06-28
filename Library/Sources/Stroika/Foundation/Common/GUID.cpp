@@ -68,9 +68,9 @@ Common::GUID Common::GUID::GenerateNew ()
     array<uint8_t, 16>                randomData;
     random_device                     rd;
     mt19937                           gen (rd ()); //Standard mersenne_twister_engine seeded with rd()
-    uniform_int_distribution<>        dis (0, 255);
+    uniform_int_distribution<>        uniformDist (0, 255);
     for (size_t i = 0; i < 16; ++i) {
-        randomData[i] = static_cast<uint8_t> (dis (gen));
+        randomData[i] = static_cast<uint8_t> (uniformDist (gen));
     }
     return GUID{randomData};
 }
