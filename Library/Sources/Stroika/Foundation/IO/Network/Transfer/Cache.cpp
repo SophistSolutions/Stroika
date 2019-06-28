@@ -288,6 +288,10 @@ String Transfer::Cache::Element::ToString () const
  **************************** Transfer::Cache ***********************************
  ********************************************************************************
  */
+Transfer::Cache::Ptr Transfer::Cache::CreateDefault ()
+{
+    return CreateDefault (DefaultOptions{});
+}
 Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options)
 {
     return Ptr{make_shared<DefaultCacheRep_> (options)};

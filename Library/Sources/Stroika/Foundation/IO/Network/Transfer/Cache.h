@@ -61,7 +61,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
             static const inline String kCachedResultHeaderDefault{L"X-Stroika-Cached-Result"sv};
 
             /**
-             *This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.
+             *  This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.
              */
             optional<String> fCachedResultHeader{kCachedResultHeaderDefault};
         };
@@ -75,7 +75,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  internally synchonized. This means you can re-use it with multiple connections and run those connection requests from as
          *  many threads as desired.
          */
-        static Ptr CreateDefault (const DefaultOptions& options = DefaultOptions{});
+        static Ptr CreateDefault ();
+        static Ptr CreateDefault (const DefaultOptions& options);
     };
 
     /**
@@ -86,6 +87,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         Element () = default;
         Element (const Response& response);
+
+	public:
+        virtual ~Element () = default;
 
     public:
         /**
