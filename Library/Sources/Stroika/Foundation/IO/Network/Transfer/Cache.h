@@ -88,7 +88,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         Element () = default;
         Element (const Response& response);
 
-	public:
+    public:
         virtual ~Element () = default;
 
     public:

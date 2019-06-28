@@ -271,14 +271,14 @@ String Transfer::Cache::Element::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
-    sb += L", fETag: " + Characters::ToString (fETag);
-    sb += L", fExpires: " + Characters::ToString (fExpires);
-    sb += L", fExpiresDueToMaxAge: " + Characters::ToString (fExpiresDueToMaxAge);
-    sb += L", fLastModified: " + Characters::ToString (fLastModified);
-    sb += L", fCacheControl: " + Characters::ToString (fCacheControl);
-    sb += L", fContentType: " + Characters::ToString (fContentType);
-    sb += L", fOtherHeaders: " + Characters::ToString (fOtherHeaders);
-    sb += L", fBody: " + Characters::ToString (fBody);
+    sb += L", ETag: " + Characters::ToString (fETag);
+    sb += L", Expires: " + Characters::ToString (fExpires);
+    sb += L", ExpiresDueToMaxAge: " + Characters::ToString (fExpiresDueToMaxAge);
+    sb += L", LastModified: " + Characters::ToString (fLastModified);
+    sb += L", CacheControl: " + Characters::ToString (fCacheControl);
+    sb += L", ContentType: " + Characters::ToString (fContentType);
+    sb += L", OtherHeaders: " + Characters::ToString (fOtherHeaders);
+    sb += L", Body: " + Characters::ToString (fBody);
     sb += L"}";
     return sb.str ();
 }
