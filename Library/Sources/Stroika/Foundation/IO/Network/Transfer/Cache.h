@@ -53,8 +53,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         struct DefaultOptions {
             DefaultOptions () = default;
 
-            optional<size_t>         fCacheSize;
-            optional<Time::Duration> fDefaultResourceTTL; // if not specified via expires header, or max-age etc...
+            optional<size_t> fCacheSize;
+
+            /**
+             *  if not specified via expires header, or max-age etc...
+             */
+            optional<Time::Duration> fDefaultResourceTTL;
 
             /**
              */
@@ -100,11 +104,17 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual Mapping<String, String> GetCombinedHeaders () const;
 
     public:
+        /**
+         *  Check - based on incoming http headers - whether this resoure is cachable.
+         */
         virtual bool IsCachable () const;
 
     public:
         /**
          *  return nullopt if unknown (so invokes some sort of default)
+         *
+         *  Invalid doesn't mean you must throw away. Just that you must validate (conditional get) to see if this can be re-used.
+         *  This returns the amount of time you dont even need to bother revalidating with a conditional get.
          */
         virtual optional<Time::DateTime> IsValidUntil () const;
 
