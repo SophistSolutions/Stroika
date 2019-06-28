@@ -44,6 +44,11 @@ namespace Stroika::Foundation::Common {
         static constexpr GUID Zero ();
 
     public:
+        /**
+         */
+        static GUID GenerateNew ();
+
+    public:
         struct ThreeWayComparer;
 
     public:

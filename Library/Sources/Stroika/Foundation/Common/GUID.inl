@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Common {
     }
     constexpr GUID GUID::Zero ()
     {
-        return GUID ();
+        return GUID{};
     }
 
     /*

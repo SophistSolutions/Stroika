@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cinttypes>
+#include <random>
 
 #include "../Characters/Format.h"
 #include "../DataExchange/CheckedConverter.h"
@@ -60,4 +61,16 @@ Characters::String Common::GUID::ToString () const
     return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                                Data1, Data2, Data3,
                                Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
+}
+
+Common::GUID Common::GUID::GenerateNew ()
+{
+    array<uint8_t, 16>                randomData;
+    random_device                     rd;
+    mt19937                           gen (rd ()); //Standard mersenne_twister_engine seeded with rd()
+    uniform_int_distribution<>        dis (0, 255);
+    for (size_t i = 0; i < 16; ++i) {
+        randomData[i] = static_cast<uint8_t> (dis (gen));
+    }
+    return GUID{randomData};
 }
