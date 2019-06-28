@@ -74,6 +74,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  NOTE - thoguh the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
          *  internally synchonized. This means you can re-use it with multiple connections and run those connection requests from as
          *  many threads as desired.
+         *
+         *  @todo - redo with default argument, but messed up on gcc/clang/not sure why -- LGP 2019-06-27
+         *  @todo - maybe rename New ()
          */
         static Ptr CreateDefault ();
         static Ptr CreateDefault (const DefaultOptions& options);
