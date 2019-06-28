@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Memory {
          *          Assert (TextReader::New (blob).ReadAll () == L"hello world");
          *      \endcode
          */
-        nonvirtual Characters::String ToString (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
+        nonvirtual Characters::String ToString (size_t maxBytesToShow = 80) const;
 
     public:
         /**
