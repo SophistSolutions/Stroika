@@ -71,8 +71,8 @@ namespace {
                     context->fFullURI = fullURI; // only try to cache GETs (for now)
                     if (optional<MyElement_> o = fCache_.Lookup (fullURI)) {
                         // check if cacheable - and either return directly or
-                        DateTime now = DateTime::Now ();
-                        bool canReturnDirectly = o->IsValidUntil ().value_or (now) > now;
+                        DateTime now               = DateTime::Now ();
+                        bool     canReturnDirectly = o->IsValidUntil ().value_or (now) > now;
                         if (canReturnDirectly) {
                             // fill in response and return short-circuiting normal full web fetch
                             Mapping<String, String> headers = o->GetCombinedHeaders ();
@@ -126,9 +126,11 @@ namespace {
                 } break;
                 case HTTP::StatusCodes::kNotModified: {
                     try {
-                        // @todo replaces response value with right answer on 304
-                        // lookup cache value and return it - updating any needed http headers stored in cache
-                        /// DEFINE A CACHE HEADER TO STICK IN TO HEADERS FOR STUFF RETRUNED FROM CACHE
+                        /*
+						 *	Not 100% clear what to return here as status. Mostly want 200. But also want to know - sometimes - that the result
+						 *	was from cache. For now - return 200, but mark it with header fOptions_.fCachedResultHeader
+						 *		-- LGP 2019-06-27
+						 */
                         if (context.fCachedElement) {
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
                             if (fOptions_.fCachedResultHeader) {

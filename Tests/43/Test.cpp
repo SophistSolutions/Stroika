@@ -534,24 +534,23 @@ namespace {
             using namespace Private_;
 #if qHasFeature_LibCurl
             DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
-                    Cache::DefaultOptions cacheOptions{};
+                Cache::DefaultOptions cacheOptions{};
                 cacheOptions.fDefaultResourceTTL = 300s;
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
                 Connection::Options options      = kDefaultTestOptions_;
                 options.fCache                   = cache;
                 return Connection_LibCurl (options);
-		});
+            });
 #endif
 #if qHasFeature_WinHTTP
             DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
-                    Cache::DefaultOptions cacheOptions{};
+                Cache::DefaultOptions cacheOptions{};
                 cacheOptions.fDefaultResourceTTL = 300s;
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
                 Connection::Options options      = kDefaultTestOptions_;
                 options.fCache                   = cache;
                 return Connection_WinHTTP (options);
-				
-				});
+            });
 #endif
         }
     }

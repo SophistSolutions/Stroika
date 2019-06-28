@@ -73,7 +73,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  internally synchonized. This means you can re-use it with multiple connections and run those connection requests from as
          *  many threads as desired.
          */
-        static Ptr CreateDefault (const DefaultOptions& options = {});
+        static Ptr CreateDefault (const DefaultOptions& options = DefaultOptions{});
     };
 
     /**
