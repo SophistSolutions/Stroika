@@ -4,6 +4,8 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Cache/SynchronizedLRUCache.h"
+#include "../../../Time/Duration.h"
+
 #include "../HTTP/Headers.h"
 #include "../HTTP/Methods.h"
 
@@ -23,8 +25,43 @@ namespace {
 
     struct DefaultCacheRep_ : Transfer::Cache::Rep {
 
-        using Element     = Transfer::Cache::Element;
-        using EvalContext = Transfer::Cache::EvalContext;
+        using Element        = Transfer::Cache::Element;
+        using EvalContext    = Transfer::Cache::EvalContext;
+        using DefaultOptions = Transfer::Cache::DefaultOptions;
+
+        struct MyElement_ : Element {
+            MyElement_ () = default;
+            MyElement_ (const Response& response)
+                : Element (response)
+            {
+            }
+
+            virtual optional<DateTime> IsValidUntil () const override
+            {
+                if (auto tmp = Element::IsValidUntil ()) {
+                    return *tmp;
+                }
+                if (fExpiresDefault) {
+                    return *fExpiresDefault;
+                }
+                return nullopt;
+            }
+
+            nonvirtual String ToString () const
+            {
+                StringBuilder sb = Element::ToString ().SubString (0, -1);
+                sb += L", fExpiresDefault: " + Characters::ToString (fExpiresDefault);
+                sb += L"}";
+                return sb.str ();
+            }
+            optional<Time::DateTime> fExpiresDefault;
+        };
+
+        DefaultCacheRep_ (const DefaultOptions& options)
+            : fOptions_{options}
+            , fCache_{options.fCacheSize.value_or (101)}
+        {
+        }
 
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
@@ -32,12 +69,17 @@ namespace {
                 try {
                     URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
                     context->fFullURI = fullURI; // only try to cache GETs (for now)
-                    if (optional<Element> o = fCache_.Lookup (fullURI)) {
+                    if (optional<MyElement_> o = fCache_.Lookup (fullURI)) {
                         // check if cacheable - and either return directly or
-                        bool canReturnDirectly = false;
+                        DateTime now = DateTime::Now ();
+                        bool canReturnDirectly = o->IsValidUntil ().value_or (now) > now;
                         if (canReturnDirectly) {
-                            // fill in response and return short-circuiting
-                            return Response{o->fBody, HTTP::StatusCodes::kOK, o->GetCombinedHeaders ()};
+                            // fill in response and return short-circuiting normal full web fetch
+                            Mapping<String, String> headers = o->GetCombinedHeaders ();
+                            if (fOptions_.fCachedResultHeader) {
+                                headers.Add (*fOptions_.fCachedResultHeader, String{});
+                            }
+                            return Response{o->fBody, HTTP::StatusCodes::kOK, headers};
                         }
                         bool canCheckCacheETAG = false;
                         if (canCheckCacheETAG) {
@@ -68,10 +110,12 @@ namespace {
                 case HTTP::StatusCodes::kOK: {
                     if (context.fFullURI) {
                         try {
-                            Element cacheElement{*response};
-                            //DbgTrace (L"context.fFullURI=%s", Characters::ToString (context.fFullURI).c_str ());
-                            //DbgTrace (L"cacheElement=%s", Characters::ToString (cacheElement).c_str ());
+                            MyElement_ cacheElement{*response};
+                            if (fOptions_.fDefaultResourceTTL) {
+                                cacheElement.fExpiresDefault = DateTime::Now () + *fOptions_.fDefaultResourceTTL;
+                            }
                             if (cacheElement.IsCachable ()) {
+                                //DbgTrace (L"Add2Cache: uri=%s, cacheElement=%s", Characters::ToString (*context.fFullURI).c_str (), Characters::ToString (cacheElement).c_str ());
                                 fCache_.Add (*context.fFullURI, cacheElement);
                             }
                         }
@@ -87,7 +131,10 @@ namespace {
                         /// DEFINE A CACHE HEADER TO STICK IN TO HEADERS FOR STUFF RETRUNED FROM CACHE
                         if (context.fCachedElement) {
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
-                            *response                       = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, headers, response->GetSSLResultInfo ()};
+                            if (fOptions_.fCachedResultHeader) {
+                                headers.Add (*fOptions_.fCachedResultHeader, String{});
+                            }
+                            *response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, headers, response->GetSSLResultInfo ()};
                         }
                         else {
                             DbgTrace (L"Cache::OnAfterFetch::oops: unexpected NOT-MODIFIED result when nothing was in the cache"); // ignore...
@@ -113,12 +160,21 @@ namespace {
             return fCache_.Lookup (url);
         }
 
+        DefaultOptions fOptions_;
+
         // we want to use hash stuff but then need hash<URI>
         ///pair<string, string>{}, 3, 10, hash<string>{}
-        SynchronizedLRUCache<URI, Element> fCache_{101};
+        SynchronizedLRUCache<URI, MyElement_> fCache_;
     };
 
 }
+
+/*
+ ********************************************************************************
+ ******************* Transfer::Cache::DefaultOptions ****************************
+ ********************************************************************************
+ */
+String Transfer::Cache::DefaultOptions::kCachedResultHeaderDefault = L"X-Stroika-Cached-Result"sv;
 
 /*
  ********************************************************************************
@@ -126,6 +182,7 @@ namespace {
  ********************************************************************************
  */
 Transfer::Cache::Element::Element (const Response& response)
+    : fBody{response.GetData ()}
 {
     Mapping<String, String> headers = response.GetHeaders ();
     for (auto i = headers.begin (); i != headers.end (); ++i) {
@@ -154,6 +211,12 @@ Transfer::Cache::Element::Element (const Response& response)
         else if (i->fKey == HTTP::HeaderName::kCacheControl) {
             fCacheControl = Set<String>{i->fValue.Tokenize (Set<Character>{','})};
             headers.erase (i);
+            static const String kMaxAgeEquals_{L"max-age="sv};
+            for (String cci : *fCacheControl) {
+                if (cci.StartsWith (kMaxAgeEquals_)) {
+                    fExpiresDueToMaxAge = DateTime::Now () + Duration{Characters::String2Float (cci.SubString (kMaxAgeEquals_.size ()))};
+                }
+            }
         }
         else if (i->fKey == HTTP::HeaderName::kContentType) {
             fContentType = DataExchange::InternetMediaType{i->fValue};
@@ -194,15 +257,35 @@ bool Transfer::Cache::Element::IsCachable () const
     return true;
 }
 
-Time::DateTime Transfer::Cache::Element::IsValidUntil () const
+optional<DateTime> Transfer::Cache::Element::IsValidUntil () const
 {
-    ////
-    return Time::DateTime::Now ();
+    if (fExpires) {
+        return *fExpires;
+    }
+    if (fExpiresDueToMaxAge) {
+        return *fExpiresDueToMaxAge;
+    }
+    static const String kNoCache_{L"no-cache"sv};
+    if (fCacheControl and fCacheControl->Contains (kNoCache_)) {
+        return DateTime::Now ().AddSeconds (-1);
+    }
+    return nullopt;
 }
 
 String Transfer::Cache::Element::ToString () const
 {
-    return Characters::ToString (GetCombinedHeaders ());
+    StringBuilder sb;
+    sb += L"{";
+    sb += L", fETag: " + Characters::ToString (fETag);
+    sb += L", fExpires: " + Characters::ToString (fExpires);
+    sb += L", fExpiresDueToMaxAge: " + Characters::ToString (fExpiresDueToMaxAge);
+    sb += L", fLastModified: " + Characters::ToString (fLastModified);
+    sb += L", fCacheControl: " + Characters::ToString (fCacheControl);
+    sb += L", fContentType: " + Characters::ToString (fContentType);
+    sb += L", fOtherHeaders: " + Characters::ToString (fOtherHeaders);
+    sb += L", fBody: " + Characters::ToString (fBody);
+    sb += L"}";
+    return sb.str ();
 }
 
 /*
@@ -210,7 +293,7 @@ String Transfer::Cache::Element::ToString () const
  **************************** Transfer::Cache ***********************************
  ********************************************************************************
  */
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault ()
+Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options)
 {
-    return Ptr{make_shared<DefaultCacheRep_> ()};
+    return Ptr{make_shared<DefaultCacheRep_> (options)};
 }

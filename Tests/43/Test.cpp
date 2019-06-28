@@ -510,11 +510,16 @@ namespace {
             void SimpleGetFetch_T1 (Connection c)
             {
                 Debug::TraceContextBumper ctx ("{}::...SimpleGetFetch_T1");
-                Response                  r = c.GET (URI{L"http://www.google.com"});
-                VerifyTestResult (r.GetSucceeded ());
-                VerifyTestResult (r.GetData ().size () > 1);
-                Response r2 = c.GET (URI{L"http://www.google.com"});
-                VerifyTestResult (r.GetData () == r2.GetData ());
+                for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}) {
+                    Response r = c.GET (u);
+                    VerifyTestResult (r.GetSucceeded ());
+                    VerifyTestResult (r.GetData ().size () > 1);
+                    Response r2           = c.GET (u);
+                    bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
+                    VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
+                    VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
+                    DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
+                }
             }
             void DoRegressionTests_ForConnectionFactory_ (function<Connection ()> factory)
             {
@@ -527,28 +532,26 @@ namespace {
             constexpr Execution::Activity kActivity_{L"running Test_6_TestWithCache_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
-            try {
-                DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
-                    Connection::Options options = kDefaultTestOptions_;
-                    Cache::Ptr          cache   = Cache::CreateDefault ();
-                    options.fCache              = cache;
-                    return CreateConnection (options);
-                });
-            }
-            catch (const Execution::RequiredComponentMissingException&) {
-#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-// This is more like the absence of a feature beacuse of the missing component.
-#else
-                Execution::ReThrow ();
-#endif
-            }
-
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
+                    Cache::DefaultOptions cacheOptions{};
+                cacheOptions.fDefaultResourceTTL = 300s;
+                Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
+                Connection::Options options      = kDefaultTestOptions_;
+                options.fCache                   = cache;
+                return Connection_LibCurl (options);
+		});
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
+                    Cache::DefaultOptions cacheOptions{};
+                cacheOptions.fDefaultResourceTTL = 300s;
+                Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
+                Connection::Options options      = kDefaultTestOptions_;
+                options.fCache                   = cache;
+                return Connection_WinHTTP (options);
+				
+				});
 #endif
         }
     }

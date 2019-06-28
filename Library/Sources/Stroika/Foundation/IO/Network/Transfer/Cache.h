@@ -9,6 +9,7 @@
 #include "../../../Characters/ToString.h"
 #include "../../../Containers/Set.h"
 #include "../../../Time/DateTime.h"
+#include "../../../Time/Duration.h"
 
 #include "Request.h"
 #include "Response.h"
@@ -48,6 +49,23 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
+         */
+        struct DefaultOptions {
+            DefaultOptions () = default;
+
+            optional<size_t>         fCacheSize;
+            optional<Time::Duration> fDefaultResourceTTL; // if not specified via expires header, or max-age etc...
+
+            /**
+            *This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.
+            */
+            optional<String> fCachedResultHeader{kCachedResultHeaderDefault};
+
+            static String kCachedResultHeaderDefault;
+        };
+
+    public:
+        /**
          *  Creates a default-styled HTTP cache object. Note - you still must associate this cache object with
          *  any cache connections you create (typically by assigning it to the Connection creation factory)
          *
@@ -55,7 +73,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  internally synchonized. This means you can re-use it with multiple connections and run those connection requests from as
          *  many threads as desired.
          */
-        static Ptr CreateDefault ();
+        static Ptr CreateDefault (const DefaultOptions& options = {});
     };
 
     /**
@@ -73,10 +91,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual Mapping<String, String> GetCombinedHeaders () const;
 
     public:
-        nonvirtual bool IsCachable () const;
+        virtual bool IsCachable () const;
 
     public:
-        nonvirtual Time::DateTime IsValidUntil () const;
+        /**
+         *  return nullopt if unknown (so invokes some sort of default)
+         */
+        virtual optional<Time::DateTime> IsValidUntil () const;
 
     public:
         /**
@@ -87,6 +108,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         optional<String>                          fETag;
         optional<Time::DateTime>                  fExpires;
+        optional<Time::DateTime>                  fExpiresDueToMaxAge;
         optional<Time::DateTime>                  fLastModified;
         optional<Containers::Set<String>>         fCacheControl; // parsed/split rep
         Memory::BLOB                              fBody;         // no point in a cache entry without this
