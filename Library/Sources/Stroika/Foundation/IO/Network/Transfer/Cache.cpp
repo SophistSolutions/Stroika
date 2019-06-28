@@ -127,10 +127,10 @@ namespace {
                 case HTTP::StatusCodes::kNotModified: {
                     try {
                         /*
-						 *	Not 100% clear what to return here as status. Mostly want 200. But also want to know - sometimes - that the result
-						 *	was from cache. For now - return 200, but mark it with header fOptions_.fCachedResultHeader
-						 *		-- LGP 2019-06-27
-						 */
+                         *  Not 100% clear what to return here as status. Mostly want 200. But also want to know - sometimes - that the result
+                         *  was from cache. For now - return 200, but mark it with header fOptions_.fCachedResultHeader
+                         *      -- LGP 2019-06-27
+                         */
                         if (context.fCachedElement) {
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
                             if (fOptions_.fCachedResultHeader) {
