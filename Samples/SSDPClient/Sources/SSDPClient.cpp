@@ -37,7 +37,7 @@ namespace {
     {
         try {
             using namespace IO::Network::Transfer;
-            Connection::Ptr c = IO::Network::Transfer::CreateConnection ();
+            Connection::Ptr c = Connection::New ();
             Response        r = c.GET (deviceDescriptionURL);
             if (r.GetSucceeded ()) {
                 DeviceDescription deviceInfo = DeSerialize (r.GetData ());
