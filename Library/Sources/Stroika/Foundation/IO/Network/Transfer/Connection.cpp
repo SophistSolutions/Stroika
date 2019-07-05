@@ -15,6 +15,13 @@
 
 #include "Connection.h"
 
+#if qHasFeature_LibCurl
+#include "Client_libcurl.h"
+#endif
+#if qHasFeature_WinHTTP
+#include "Client_WinHTTP.h"
+#endif
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
@@ -166,4 +173,20 @@ Response Connection::Ptr::Send (const Request& r)
             Throw (Exception (response));
         }
     return response;
+}
+
+/*
+ ********************************************************************************
+ **************************** Transfer::Connection ******************************
+ ********************************************************************************
+ */
+Connection::Ptr Transfer::Connection::New (const Connection::Options& options)
+{
+#if qHasFeature_LibCurl
+    return Connection_LibCurl::New (options);
+#endif
+#if qHasFeature_WinHTTP
+    return Connection_WinHTTP::New (options);
+#endif
+    Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
 }

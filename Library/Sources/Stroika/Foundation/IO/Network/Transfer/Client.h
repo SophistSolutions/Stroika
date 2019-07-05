@@ -57,28 +57,10 @@
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 
-    /**
-     * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
-     * to construct an unconnected object.
-     *
-     *  \par Example Usage
-     *      \code
-     *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-     *          c.SetURL (URI::Parse (L"http://www.google.com"));
-     *          Response    r   =   c.GET ();
-     *          Assert (r.GetSucceeded ());
-     *          String result = r.GetDataTextInputStream ().ReadAll ();
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          auto&&             connection = IO::Network::Transfer::CreateConnection ();
-     *          connection.SetURL (IO::Network::URI::Parse (L"http://myexternalip.com/raw"));
-     *          auto&&             response = connection.GET ();
-     *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
-     *      \endcode
-     */
-    Connection::Ptr CreateConnection (const Connection::Options& options = {});
+    [[deprecated ("Since v2.1d27, use Connection::New")]] inline Connection::Ptr CreateConnection (const Connection::Options& options = {})
+    {
+        return Connection::New (options);
+    }
 
 }
 

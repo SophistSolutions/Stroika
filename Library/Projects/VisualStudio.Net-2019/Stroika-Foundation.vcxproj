@@ -1060,26 +1060,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)IO-Network-Transfer-Client.obj</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.cpp">

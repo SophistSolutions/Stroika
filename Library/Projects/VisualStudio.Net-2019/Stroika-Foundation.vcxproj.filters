@@ -288,9 +288,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>

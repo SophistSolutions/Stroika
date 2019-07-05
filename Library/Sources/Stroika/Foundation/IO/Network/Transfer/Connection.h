@@ -7,7 +7,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/String.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../DataExchange/InternetMediaType.h"
@@ -68,6 +67,29 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         class Ptr;
+
+    public:
+        /**
+         * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
+         * to construct an unconnected object.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
+         *          Response    r   =   c.GET (IO::Network::URI {L"http://www.google.com"});
+         *          Assert (r.GetSucceeded ());
+         *          String result = r.GetDataTextInputStream ().ReadAll ();
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          auto&&             connection = IO::Network::Transfer::New ();
+         *          auto&&             response = connection.GET (IO::Network::URI{L"http://myexternalip.com/raw"});
+         *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
+         *      \endcode
+         */
+        static Ptr New ();
+        static Ptr New (const Options& options);
     };
 
     /**

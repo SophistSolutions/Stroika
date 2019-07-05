@@ -107,7 +107,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -315,7 +315,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -364,7 +364,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -390,7 +390,7 @@ namespace {
         namespace Private_ {
             void T1_get_ ()
             {
-                Connection::Ptr c = IO::Network::Transfer::CreateConnection (kDefaultTestOptions_);
+                Connection::Ptr c = IO::Network::Transfer::Connection::New (kDefaultTestOptions_);
                 Response        r = c.GET (URI{L"http://www.google.com"});
                 VerifyTestResultWarning (r.GetSucceeded ());
                 VerifyTestResultWarning (r.GetData ().size () > 1);
@@ -421,7 +421,7 @@ namespace {
         namespace Private_ {
             void T1_get_ (Connection::Options o)
             {
-                Connection::Ptr c = IO::Network::Transfer::CreateConnection (o);
+                Connection::Ptr c = IO::Network::Transfer::Connection::New (o);
                 try {
                     Response r = c.GET (URI{L"https://testssl-valid.disig.sk/index.en.html"});
                     VerifyTestResultWarning (r.GetSucceeded ());
@@ -539,7 +539,7 @@ namespace {
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
                 Connection::Options options      = kDefaultTestOptions_;
                 options.fCache                   = cache;
-                return Connection_LibCurl (options);
+                return Connection_LibCurl::New (options);
             });
 #endif
 #if qHasFeature_WinHTTP

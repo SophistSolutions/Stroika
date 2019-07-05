@@ -24,22 +24,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *
      *  \par Example Usage
      *      \code
-     *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-     *          c.SetURL (URI::Parse (L"http://www.google.com"));
-     *          Response    r   =   c.GET ();
-     *          Assert (r.GetSucceeded ());
-     *          String result = r.GetDataTextInputStream ().ReadAll ();
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          auto&&             connection = IO::Network::Transfer::CreateConnection ();
-     *          connection.SetURL (IO::Network::URI::Parse (L"http://myexternalip.com/raw"));
-     *          auto&&             response = connection.GET ();
+     *          ConnectionPool  connectionPool {3};
+     *          auto&&             connection = connectionPool.New (URI{L"http://myexternalip.com/});
+     *          auto&&             response = connection.GET (L"http://myexternalip.com/raw");
      *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
      *      \endcode
      */
-
     class ConnectionPool {
     public:
         ConnectionPool (size_t maxConnections);
@@ -47,15 +37,18 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         * Only ‘schemeAndAuthority looked at from hint
-         * its optional (empty OK)
-         * if timeout, throw as usual (if no connections become available in time
-         * If AllocateGloballyIfTimeout given, and timeout, then instead of allocating from the throwing, allocate a global connection object (caller cannot really tell for the most part, unless they call get, but if they just say what they want, they cannot tell).
+         * Only ‘schemeAndAuthority looked at from (optional) hint.
+         *
+         * If timeout allocating connection (because all busy/in use), 
+         *      throw TimeoutException
+         * UNLESS
+         *      If AllocateGloballyIfTimeout given argument, then instead of throwing, allocate a global connection object (Connection::New ())
+         *      Caller cannot really tell for the most part, unless they call get, but if they just say what they want, they cannot tell.
          */
-        nonvirtual Connection::Ptr New (URI hint);
-        nonvirtual Connection::Ptr New (URI hint, const Time::Duration& timeout);
+        nonvirtual Connection::Ptr New (URI hint = {});
+        nonvirtual Connection::Ptr New (const Time::Duration& timeout, URI hint = {});
         enum AllocateGloballyIfTimeout { eAllocateGloballyIfTimeout };
-        nonvirtual Connection::Ptr New (URI hint, const Time::Duration& timeout, AllocateGloballyIfTimeout);
+        nonvirtual Connection::Ptr New (AllocateGloballyIfTimeout, const Time::Duration& timeout, URI hint = {});
     };
 
 }
