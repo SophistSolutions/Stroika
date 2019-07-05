@@ -9,25 +9,29 @@
 #include "Client.h"
 
 /**
- * TODO:
- *      (o)     Very rough draft. This code is completely untested, and really only about 1/2 written. Even the high level
- *              usage (container) pattern is just a draft. Its based on HTTPSupport.cpp code in R4LLib (2012-05-08)
- *
  *
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_WinHTTP
-    // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
-    // LibCurl connection rep objects
+    /**
+     *  'Connection_WinHTTP' is a quasi-namespace - just for the 'WinHTTP' based Connection factory
+     */
     class Connection_WinHTTP : public Connection {
     public:
-        Connection_WinHTTP (const Options& options = Options ());
+        // when we lose this CTOR, then Connection_WinHTTP inherits from Connection
+        [[deprecated ("in Stroika v2.1d27 - use Connection::Ptr conn = Connection_WinHTTP::New () instead")]] Connection_WinHTTP (const Options& options = Options ());
+
+    public:
+        /**
+         */
+        static Connection::Ptr New (const Options& options = {});
 
     private:
         class Rep_;
     };
+
 #endif
 
 }

@@ -73,21 +73,21 @@ String Connection::Options::Authentication::ToString () const
 
 /*
  ********************************************************************************
- **************************** Transfer::Connection ******************************
+ ************************ Transfer::Connection::Ptr *****************************
  ********************************************************************************
  */
-URI Connection::GetURL () const
+URI Connection::Ptr::GetURL () const
 {
     return fRep_->GetSchemeAndAuthority ().Combine (fRep_->DeprecatedGetAuthorityRelativeURL ());
 }
 
-void Connection::SetURL (const URI& url)
+void Connection::Ptr::SetURL (const URI& url)
 {
     fRep_->SetSchemeAndAuthority (url.GetSchemeAndAuthority ());
     fRep_->DeprecatedSetAuthorityRelativeURL (url.GetAuthorityRelativeResource<URI> ());
 }
 
-Response Connection::GET (const URI& l, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::GET (const URI& l, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -99,7 +99,7 @@ Response Connection::GET (const URI& l, const Mapping<String, String>& extraHead
     return Send (r);
 }
 
-Response Connection::POST (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::POST (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -113,7 +113,7 @@ Response Connection::POST (const URI& l, const Memory::BLOB& data, const Interne
     return Send (r);
 }
 
-Response Connection::DELETE (const URI& l, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::DELETE (const URI& l, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -125,7 +125,7 @@ Response Connection::DELETE (const URI& l, const Mapping<String, String>& extraH
     return Send (r);
 }
 
-Response Connection::PUT (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::PUT (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -139,7 +139,7 @@ Response Connection::PUT (const URI& l, const Memory::BLOB& data, const Internet
     return Send (r);
 }
 
-Response Connection::OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -155,7 +155,7 @@ namespace {
     constexpr bool kDeclareActivitiesFlag_Default_{true};
 }
 
-Response Connection::Send (const Request& r)
+Response Connection::Ptr::Send (const Request& r)
 {
     const LazyEvalActivity activity{[&] () { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL)); }};
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};

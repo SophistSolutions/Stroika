@@ -25,13 +25,13 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
  ************************ Transfer::CreateConnection ****************************
  ********************************************************************************
  */
-Connection Transfer::CreateConnection (const Connection::Options& options)
+Connection::Ptr Transfer::CreateConnection (const Connection::Options& options)
 {
 #if qHasFeature_LibCurl
-    return Connection_LibCurl (options);
+    return Connection_LibCurl::New (options);
 #endif
 #if qHasFeature_WinHTTP
-    return Connection_WinHTTP (options);
+    return Connection_WinHTTP::New (options);
 #endif
     Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
 }

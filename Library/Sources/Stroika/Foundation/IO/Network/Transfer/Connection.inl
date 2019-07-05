@@ -39,36 +39,36 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /*
      ********************************************************************************
-     ********************************** Connection **********************************
+     ******************************* Connection::Ptr ********************************
      ********************************************************************************
      */
-    inline Connection::Connection (const shared_ptr<_IRep>& rep)
+    inline Connection::Ptr::Ptr (const shared_ptr<IRep>& rep)
         : fRep_ (rep)
     {
     }
-    inline Connection::Options Connection::GetOptions () const
+    inline Connection::Options Connection::Ptr::GetOptions () const
     {
         return fRep_->GetOptions ();
     }
-    inline URI Connection::GetSchemeAndAuthority () const
+    inline URI Connection::Ptr::GetSchemeAndAuthority () const
     {
         Ensure (fRep_->GetSchemeAndAuthority ().GetSchemeAndAuthority () == fRep_->GetSchemeAndAuthority ());
         return fRep_->GetSchemeAndAuthority ();
     }
-    inline void Connection::SetSchemeAndAuthority (const URI& url)
+    inline void Connection::Ptr::SetSchemeAndAuthority (const URI& url)
     {
         Require (url.GetSchemeAndAuthority () == url);
         fRep_->SetSchemeAndAuthority (url);
     }
-    inline void Connection::Close ()
+    inline void Connection::Ptr::Close ()
     {
         fRep_->Close ();
     }
-    inline DurationSecondsType Connection::GetTimeout () const
+    inline DurationSecondsType Connection::Ptr::GetTimeout () const
     {
         return fRep_->GetTimeout ();
     }
-    inline void Connection::SetTimeout (DurationSecondsType timeout)
+    inline void Connection::Ptr::SetTimeout (DurationSecondsType timeout)
     {
         fRep_->SetTimeout (timeout);
     }

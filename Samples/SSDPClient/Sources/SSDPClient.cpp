@@ -36,8 +36,9 @@ namespace {
     void DoPrintDeviceDescription_ (const URI& deviceDescriptionURL)
     {
         try {
-            IO::Network::Transfer::Connection c = IO::Network::Transfer::CreateConnection ();
-            IO::Network::Transfer::Response   r = c.GET (deviceDescriptionURL);
+            using namespace IO::Network::Transfer;
+            Connection::Ptr c = IO::Network::Transfer::CreateConnection ();
+            Response        r = c.GET (deviceDescriptionURL);
             if (r.GetSucceeded ()) {
                 DeviceDescription deviceInfo = DeSerialize (r.GetData ());
                 cout << "\t\tDevice-Decsciption: " << Characters::ToString (deviceInfo).AsNarrowSDKString () << endl;

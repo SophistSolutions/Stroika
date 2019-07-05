@@ -78,7 +78,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
      *      \endcode
      */
-    Connection CreateConnection (const Connection::Options& options = {});
+    Connection::Ptr CreateConnection (const Connection::Options& options = {});
 
 }
 

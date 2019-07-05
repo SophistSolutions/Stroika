@@ -43,30 +43,40 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     using Time::DurationSecondsType;
 
     /**
-     * TODO:
-     *     @todo    Unclear about copyability - maybe if its a smartptr OK to copy - but would be copy-by-reference?
-     *              Could be confusing! CONSIDER
-     *
      *  \par Example Usage
      *      \code
-     *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-     *          Response    r   =   c.GET (URI {L"http://www.google.com"});
+     *          Connection::Ptr c   =   IO::Network::Transfer::CreateConnection ();
+     *          Response        r   =   c.GET (URI {L"http://www.google.com"});
      *          Assert (r.GetSucceeded ());
      *          VerifyTestResult (r.GetData ().size () > 1);
      *      \endcode
      *
      */
     class Connection {
-    protected:
-        class _IRep;
+    public:
+        /**
+         *  'Connection' is a quasi-namespace (probably use Connection::Ptr)
+         */
+        Connection ()                  = delete;
+        Connection (const Connection&) = delete;
+
+    public:
+        class IRep;
 
     public:
         struct Options;
 
-    protected:
+    public:
+        class Ptr;
+    };
+
+    /**
+     */
+    class Connection::Ptr {
+    public:
         /**
          */
-        Connection (const shared_ptr<_IRep>& rep);
+        Ptr (const shared_ptr<IRep>& rep);
 
     public:
         /**
@@ -236,7 +246,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     private:
-        shared_ptr<_IRep> fRep_;
+        shared_ptr<IRep> fRep_;
     };
 
     /**
@@ -375,14 +385,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
      */
-    class Connection::_IRep {
+    class Connection::IRep {
     public:
-        _IRep ()             = default;
-        _IRep (const _IRep&) = delete;
-        virtual ~_IRep ()    = default;
+        IRep ()            = default;
+        IRep (const IRep&) = delete;
+        virtual ~IRep ()   = default;
 
     public:
-        nonvirtual _IRep& operator= (const _IRep&) = delete;
+        nonvirtual IRep& operator= (const IRep&) = delete;
 
     public:
         virtual Options             GetOptions () const                                   = 0;

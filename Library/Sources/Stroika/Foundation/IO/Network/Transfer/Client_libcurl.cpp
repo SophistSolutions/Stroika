@@ -105,7 +105,7 @@ const std::error_category& Transfer::LibCurl_error_category () noexcept
 #endif
 
 #if qHasFeature_LibCurl
-class Connection_LibCurl::Rep_ : public _IRep {
+class Connection_LibCurl::Rep_ : public Connection::IRep {
 private:
     Connection::Options fOptions_;
 
@@ -503,8 +503,8 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************** Transfer::Connection_LibCurl ****************************
  ********************************************************************************
  */
-Connection_LibCurl::Connection_LibCurl (const Options& options)
-    : Connection (make_shared<Rep_> (options))
+Connection::Ptr Connection_LibCurl::New (const Options& options)
 {
+    return Connection::Ptr{make_shared<Rep_> (options)};
 }
 #endif

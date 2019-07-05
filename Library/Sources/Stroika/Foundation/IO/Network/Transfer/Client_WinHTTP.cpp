@@ -87,7 +87,7 @@ namespace {
 #endif
 
 #if qHasFeature_WinHTTP
-class Connection_WinHTTP::Rep_ : public _IRep {
+class Connection_WinHTTP::Rep_ : public Connection::IRep {
 public:
     Rep_ (const Connection::Options& options)
         : fOptions_ (options)
@@ -571,8 +571,8 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
  ********************** Transfer::Connection_WinHTTP ****************************
  ********************************************************************************
  */
-Connection_WinHTTP::Connection_WinHTTP (const Options& options)
-    : Connection (make_shared<Rep_> (options))
+Connection::Ptr Connection_WinHTTP::New (const Options& options)
 {
+    return Connection::Ptr{make_shared<Rep_> (options)};
 }
 #endif

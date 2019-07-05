@@ -19,15 +19,8 @@
 
 /*
  * TODO:
- *      @todo   Must do basic METHOD support - setting CURLOPT_GET for gets, etc.
- *              Need extended MEHTOD support for DELETE (just specify string)
- *              And for PUT/POST special setopt(CURLOPT_POST/PUT, and do reader function for pUT ajnd direct data pass for Post -
- *              since I THINK thats what curl requires - use common API if I can find a way).
- *
- *      @todo   Handle pass in of headers. Treat special headers like content type proeprly. Same for content-length.
- *
  *      @todo   Consider if curl global init/global_free stuff safe (look at curl code). May run into issue if other
- *              librraries lusing curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
+ *              libraries using curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {
@@ -45,12 +38,17 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     void ThrowIfError (CURLcode status);
 
     /**
-     *  Just object-slice the smart pointer to get a regular connection object - this is just a factory for
-     *  LibCurl connection rep objects
+     *  'Connection_LibCurl' is a quasi-namespace - just for the 'libcurl' based Connection factory
      */
     class Connection_LibCurl : public Connection {
     public:
-        Connection_LibCurl (const Options& options = Options ());
+        // when we lose this CTOR, then Connection_LibCurl inherits from Connection
+        [[deprecated ("in Stroika v2.1d27 - use Connection::Ptr conn = Connection_LibCurl::New () instead")]] Connection_LibCurl (const Options& options = Options ());
+
+    public:
+        /**
+         */
+        static Connection::Ptr New (const Options& options = {});
 
     private:
         class Rep_;

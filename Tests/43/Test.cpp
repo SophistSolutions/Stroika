@@ -52,14 +52,14 @@ namespace {
 namespace {
     namespace Test_1_SimpleConnnectionTests_ {
         namespace Private_ {
-            void Test_1_SimpleFetch_Google_C_ (Connection c)
+            void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx ("{}::...Test_1_SimpleFetch_Google_C_");
                 Response                  r = c.GET (URI{L"http://www.google.com"});
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
             }
-            void Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
+            void Test_2_SimpleFetch_SSL_Google_C_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx ("{}::...Test_2_SimpleFetch_SSL_Google_C_");
                 try {
@@ -88,7 +88,7 @@ namespace {
                     Execution::ReThrow ();
                 }
             }
-            void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
                 Test_1_SimpleFetch_Google_C_ (factory ());
 #if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
@@ -107,7 +107,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -119,10 +119,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -131,7 +131,7 @@ namespace {
 namespace {
     namespace Test_2_SimpleFetch_httpbin_ {
         namespace Private_ {
-            void T1_httpbin_SimpleGET_ (Connection c)
+            void T1_httpbin_SimpleGET_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx ("T1_httpbin_SimpleGET_");
                 Response                  r = c.GET (URI{L"http://httpbin.org/get"});
@@ -146,7 +146,7 @@ namespace {
             }
             DISABLE_COMPILER_MSC_WARNING_START (4102);
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"")
-            void T2_httpbin_SimplePOST_ (Connection c)
+            void T2_httpbin_SimplePOST_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx ("T2_httpbin_SimplePOST_");
                 using Memory::BLOB;
@@ -220,7 +220,7 @@ namespace {
             }
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"")
             DISABLE_COMPILER_MSC_WARNING_END (4102);
-            void T3_httpbin_SimplePUT_ (Connection c)
+            void T3_httpbin_SimplePUT_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx ("T3_httpbin_SimplePUT_");
                 using Memory::BLOB;
@@ -254,7 +254,7 @@ namespace {
                     VerifyTestResult (resultBLOB == roundTripTestData);
                 }
             }
-            void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
                 Debug::TraceContextBumper ctx ("{}::...DoRegressionTests_ForConnectionFactory_");
                 // Ignore some server-side errors, because this service we use (http://httpbin.org/) sometimes fails
@@ -271,7 +271,7 @@ namespace {
                     }
                     {
                         // Connection re-use
-                        Connection conn = factory ();
+                        Connection::Ptr conn = factory ();
                         T1_httpbin_SimpleGET_ (conn);
 #if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
                         if (not Debug::IsRunningUnderValgrind ()) {
@@ -315,7 +315,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -327,10 +327,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -339,7 +339,7 @@ namespace {
 namespace {
     namespace Test3_TextStreamResponse_ {
         namespace Private_ {
-            void Test_1_SimpleFetch_Google_C_ (Connection c)
+            void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
                 Response r = c.GET (URI{L"http://www.google.com"});
                 VerifyTestResultWarning (r.GetSucceeded ());
@@ -352,7 +352,7 @@ namespace {
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
                 VerifyTestResultWarning (responseText.Contains (L"google", Characters::CompareOptions::eCaseInsensitive));
             }
-            void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
                 Test_1_SimpleFetch_Google_C_ (factory ());
             }
@@ -364,7 +364,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return CreateConnection (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -376,10 +376,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -390,8 +390,8 @@ namespace {
         namespace Private_ {
             void T1_get_ ()
             {
-                Connection c = IO::Network::Transfer::CreateConnection (kDefaultTestOptions_);
-                Response   r = c.GET (URI{L"http://www.google.com"});
+                Connection::Ptr c = IO::Network::Transfer::CreateConnection (kDefaultTestOptions_);
+                Response        r = c.GET (URI{L"http://www.google.com"});
                 VerifyTestResultWarning (r.GetSucceeded ());
                 VerifyTestResultWarning (r.GetData ().size () > 1);
             }
@@ -421,7 +421,7 @@ namespace {
         namespace Private_ {
             void T1_get_ (Connection::Options o)
             {
-                Connection c = IO::Network::Transfer::CreateConnection (o);
+                Connection::Ptr c = IO::Network::Transfer::CreateConnection (o);
                 try {
                     Response r = c.GET (URI{L"https://testssl-valid.disig.sk/index.en.html"});
                     VerifyTestResultWarning (r.GetSucceeded ());
@@ -507,7 +507,7 @@ namespace {
 namespace {
     namespace Test_6_TestWithCache_ {
         namespace Private_ {
-            void SimpleGetFetch_T1 (Connection c)
+            void SimpleGetFetch_T1 (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx ("{}::...SimpleGetFetch_T1");
                 for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}) {
@@ -521,7 +521,7 @@ namespace {
                     DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                 }
             }
-            void DoRegressionTests_ForConnectionFactory_ (function<Connection ()> factory)
+            void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory)
             {
                 SimpleGetFetch_T1 (factory ());
             }
@@ -543,13 +543,13 @@ namespace {
             });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
+            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
                 Cache::DefaultOptions cacheOptions{};
                 cacheOptions.fDefaultResourceTTL = 300s;
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
                 Connection::Options options      = kDefaultTestOptions_;
                 options.fCache                   = cache;
-                return Connection_WinHTTP (options);
+                return Connection_WinHTTP::New (options);
             });
 #endif
         }
