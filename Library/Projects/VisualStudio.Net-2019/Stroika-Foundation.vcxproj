@@ -1102,6 +1102,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)IO-Network-Transfer-Connection.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)IO-Network-Transfer-Connection.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)IO-Network-Transfer-Exception.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)IO-Network-Transfer-Exception.obj</ObjectFileName>
@@ -1610,6 +1611,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h" />
@@ -2044,6 +2046,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.inl" />

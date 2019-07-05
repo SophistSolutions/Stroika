@@ -19,6 +19,7 @@ Objs	=	\
 	$(ObjDir)Client_libcurl${OBJ_SUFFIX}\
 	$(ObjDir)Client_WinHTTP${OBJ_SUFFIX}\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
+	$(ObjDir)ConnectionPool${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)Request${OBJ_SUFFIX}\
 	$(ObjDir)Response${OBJ_SUFFIX}\
