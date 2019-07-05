@@ -27,7 +27,10 @@
  *
  *
  * TODO:
- *
+ *      @todo   Consider if Response::GetSucceeded () should return true or false for 3xx responses.
+ *              I think its correct due to https://developer.mozilla.org/en-US/docs/Web/HTTP/Status 
+ *              But maybe add GetFailed () as a return value for 400/500 responses and use that
+ *              in Connection::Send()
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {
@@ -111,8 +114,19 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
+         *  Returns true iff response is in the 200 range - indicating success. Even 3xx responses return false.
+         *
+         *  \note - for 300 and 100 responses, both GetSucceeded and GetFailed return false.
          */
         nonvirtual bool GetSucceeded () const;
+
+    public:
+        /**
+         *  Returns true iff response is in the 4xx-5xxx range - indicating failure.
+         *
+         *  \note - for 300 and 100 responses, both GetSucceeded and GetFailed return false.
+         */
+        nonvirtual bool GetFailed () const;
 
     public:
         /**

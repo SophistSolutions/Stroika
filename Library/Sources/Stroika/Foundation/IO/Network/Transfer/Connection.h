@@ -27,6 +27,44 @@
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Beta</a>
  *
+ *
+ * TODO:
+ *      @todo   FIXUP Docs and code so on thrown response, and open stream in the response is replaced by
+ *              a FULLY REALIZED STREAM (MEMORY STREAM)
+ *
+ *      @todo   Probably should redo Request so it can optionally use a BLOB or
+ *              Stream (like Response). DO NOW the header / class changes - making
+ *              CTOR/accessors, so easiser to change funcitonality later!!!
+ *
+ *      @todo   Add thread safety (locks/semaphores)
+ *
+ *                  Decide on and DOCUMENT threading policy. For example - do we need
+ *                  locks internally in the connection object or DEFINE that its
+ *                  the callers resposabiltiy. PROBABLY best to do in the Connection object itself?
+ *
+ *                  ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+ *
+ *      @todo   Add (optionally callable) Connect() method. Send etc connect on-demand as needed
+ *              but sometimes its useful to pre-create connections (to reduce latnecy).
+ *
+ *      @todo   Add factory for 'CreateConnection'  - so you can do 'dependnecy injection' or other
+ *              way to configure http client support library (winhttp versus libcurl or other).
+ *
+ *      @todo   Redo Response to fully/properly support incremental read through streams. Must do
+ *              CTOR on response object taking a stream, and then reasonably (tbd) how to handle
+ *              calls to getResponseBLOB? (probably assert or except?)
+ *
+ *      @todo   Progress Callbacks?
+ *
+ *      @todo   Add Client side certs
+ *
+ *      @todo   Refine server-side-cert checking mechanism (review LIBCURL to see what makes sense)
+ *              PROBABLY just a callback mechanism - with a few default callabcks you can plugin (like reject bad certs)
+ *              MAYBE just add FLAG saying whether to VALIDATE_HOST? Maybe callback API"?
+ *
+ *                        //  This COULD be expanded to include either a BOOL to CHECK remote SSL info, or a callback (which can throw)
+ *                        //  if invalid SSL INFO from server side. Thats probably best. callback whcih throws, and set it to such a callback by default!
+ *                        //      -- LGP 2012-06-26
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {
@@ -161,6 +199,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          *
+         *  \note   We considered having 1xx and 3xx responses not throw. However, they are generally fairly rare, and mostly
+         *          need to be treated like errors anyhow (cannot just read response) - so best to have this as the behavior, and catch
+         *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
+         *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
+         *
+         *  @see Response::GetSucceeded
+         *
          *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
          */
         nonvirtual Response Send (const Request& r);
@@ -176,7 +221,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
+         *          at e.GetResponse ().
+         *
+         *  @see Response::GetSucceeded
          */
         nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
 
@@ -192,6 +239,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
+         *
+         *  @see Response::GetSucceeded
          */
         nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -207,6 +256,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
+         *
+         *  @see Response::GetSucceeded
          */
         nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -222,6 +273,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
+         *
+         *  @see Response::GetSucceeded
          */
         nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -236,6 +289,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
+         *
+         *  @see Response::GetSucceeded
          */
         nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 

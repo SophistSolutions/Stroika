@@ -30,7 +30,7 @@
 #include "../HTTP/Exception.h"
 #include "../HTTP/Headers.h"
 
-#include "Client_WinHTTP.h"
+#include "Connection_WinHTTP.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

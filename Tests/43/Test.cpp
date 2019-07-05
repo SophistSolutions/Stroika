@@ -107,7 +107,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -315,7 +315,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -364,7 +364,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -533,7 +533,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection {
+            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
                 Cache::DefaultOptions cacheOptions{};
                 cacheOptions.fDefaultResourceTTL = 300s;
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);

@@ -396,12 +396,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -838,6 +832,12 @@
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_WinHTTP.cpp">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_libcurl.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2094,6 +2094,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_WinHTTP.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_libcurl.h">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2204,9 +2210,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
       <Filter>Sources\IO</Filter>
     </None>
@@ -2258,14 +2261,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl">
-      <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl">
       <Filter>Sources\Characters</Filter>
@@ -3394,6 +3391,12 @@
       <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_WinHTTP.inl">
+      <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_libcurl.inl">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </None>
   </ItemGroup>

@@ -18,7 +18,7 @@
 #include "../HTTP/Headers.h"
 #include "../HTTP/Methods.h"
 
-#include "Client_libcurl.h"
+#include "Connection_libcurl.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

@@ -12,5 +12,6 @@
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 }
+ddd
 
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Client_inl_*/
