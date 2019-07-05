@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Execution {
     class Thread {
     public:
         /**
-         *  'Thread' is a quasi-namespace.
+         *  'Thread' is a quasi-namespace (probably use Thread::Ptr)
          */
         Thread ()              = delete;
         Thread (const Thread&) = delete;
