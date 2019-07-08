@@ -74,40 +74,40 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage (RegressionTest10_BlockingQueue_)
      *      \code
-     *      enum { START = 0, END = 100 };
-     *      int expectedValue = (START + END) * (END - START + 1) / 2;
-     *      int counter =   0;
-     *      BlockingQueue<function<void()>> q;
+     *          enum { START = 0, END = 100 };
+     *          int expectedValue = (START + END) * (END - START + 1) / 2;
+     *          int counter =   0;
+     *          BlockingQueue<function<void()>> q;
      *
-     *      Verify (q.GetLength () == 0);
+     *          Verify (q.GetLength () == 0);
      *
-     *      Thread::Ptr  producerThread = Thread::New (
-     *          [&q, &counter] () {
-     *              for (int incBy = START; incBy <= END; ++incBy) {
-     *                  q.AddTail ([&counter, incBy] () { counter += incBy; });
-     *              }
-     *              q.EndOfInput ();
-     *          },
-     *          Thread::eAutoStart,
-     *          String { L"Producer" }
-     *      );
-     *      Thread::Ptr  consumerThread = Thread::New (
-     *          [&q] () {
-     *              while (true) {
-     *                  function<void()>    f   =   q.RemoveHead ();
-     *                  f();
-     *              }
-     *          },
-     *          Thread::eAutoStart,
-     *          String { L"Consumer" }
-     *      );
-     *      Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
-     *      while (counter != expectedValue and Time::GetTickCount () < killAt) {
-     *          Execution::Sleep (500ms);
-     *      }
-     *      Verify (counter == expectedValue);
-     *      producerThread.WaitForDone ();      // producer already set to run off the end...
-     *      consumerThread.WaitForDone ();      // consumer will end due to exception reading from end
+     *          Thread::Ptr  producerThread = Thread::New (
+     *              [&q, &counter] () {
+     *                  for (int incBy = START; incBy <= END; ++incBy) {
+     *                      q.AddTail ([&counter, incBy] () { counter += incBy; });
+     *                  }
+     *                  q.EndOfInput ();
+     *              },
+     *              Thread::eAutoStart,
+     *              String { L"Producer" }
+     *          );
+     *          Thread::Ptr  consumerThread = Thread::New (
+     *              [&q] () {
+     *                  while (true) {
+     *                      function<void()>    f   =   q.RemoveHead ();
+     *                      f();
+     *                  }
+     *              },
+     *              Thread::eAutoStart,
+     *              String { L"Consumer" }
+     *          );
+     *          Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
+     *          while (counter != expectedValue and Time::GetTickCount () < killAt) {
+     *              Execution::Sleep (500ms);
+     *          }
+     *          Verify (counter == expectedValue);
+     *          producerThread.WaitForDone ();      // producer already set to run off the end...
+     *          consumerThread.WaitForDone ();      // consumer will end due to exception reading from end
      *      \endcode
      */
     template <typename T>
