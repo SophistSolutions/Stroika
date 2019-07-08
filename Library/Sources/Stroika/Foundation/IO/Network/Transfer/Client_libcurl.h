@@ -12,5 +12,4 @@
 /*** FILE DEPRECATED ****/
 //////////////// **** DEPRECATED ************
 
-
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_*/

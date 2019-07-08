@@ -14,6 +14,8 @@
  *
  *
  * TODO:
+ *      @todo   Add an auto-timeout feature, so connections disappear when not used for a certain
+ *              period of time (to save memory, and networking resources).
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {
@@ -32,7 +34,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      */
     class ConnectionPool {
     public:
-        ConnectionPool (size_t maxConnections);
+        /**
+         *  A ConnectionPool is a fixed, not copyable/movable object, containing a bunch of other
+         *  (typically http)IO::Transfer::Connection objects. The idea is that its cheaper to
+         *  re-use these objects if you happen to want to connect to one that is already open.
+         */
+        ConnectionPool (size_t maxConnections, const Connection::Options& optionsForEachConnection = {});
         ConnectionPool (const ConnectionPool&) = delete;
 
     public:
@@ -49,6 +56,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual Connection::Ptr New (const Time::Duration& timeout, URI hint = {});
         enum AllocateGloballyIfTimeout { eAllocateGloballyIfTimeout };
         nonvirtual Connection::Ptr New (AllocateGloballyIfTimeout, const Time::Duration& timeout, URI hint = {});
+
+    private:
+        class Rep_;
+        unique_ptr<Rep_> fRep_;
     };
 
 }
