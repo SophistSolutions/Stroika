@@ -99,18 +99,18 @@ public:
         // MAYBE add ConnectionPool::Options class - probably - cuz many options
         // maxConnections, optionsForEachConnection, more???
 
-		// how todo?
+        // how todo?
 
-		// Keep conventional LRU cache
-		// REMOVE item from LRU Cache when 'allocated' (in use)
-		// Put back (and recently used) when done with use
-		// need a condition variable when cache changed. When added and then 
-		// if you have a timeout, and cannot find answer on first try wait on that condition variable and recheck on each wakeup.
-		// then if you finally wakeup and time expired look at expiry policy and throw or return global new connection.
+        // Keep conventional LRU cache
+        // REMOVE item from LRU Cache when 'allocated' (in use)
+        // Put back (and recently used) when done with use
+        // need a condition variable when cache changed. When added and then
+        // if you have a timeout, and cannot find answer on first try wait on that condition variable and recheck on each wakeup.
+        // then if you finally wakeup and time expired look at expiry policy and throw or return global new connection.
 
-		// maybe make this AllocateGloballyIfTimeout policy part of CONNECTION POOL OPTIONS - instead of parameter? Or document
-		// why not. I THINK it may depend on CALL point what you want to do and you may want to re-use the smae connection pool 
-		// for differnet purposes, and for some using a global makes sense (critical) and others not (advisory/unimportant).
+        // maybe make this AllocateGloballyIfTimeout policy part of CONNECTION POOL OPTIONS - instead of parameter? Or document
+        // why not. I THINK it may depend on CALL point what you want to do and you may want to re-use the smae connection pool
+        // for differnet purposes, and for some using a global makes sense (critical) and others not (advisory/unimportant).
         return Connection::New (); //tmphack
     }
 };
