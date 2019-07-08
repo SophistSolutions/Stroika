@@ -35,11 +35,26 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     class ConnectionPool {
     public:
         /**
+         */
+        struct Options {
+            /**
+             *  Default options for each connection
+             */
+            optional<unsigned int> fMaxConnections;
+
+            /**
+             *  Default options for each connection
+             */
+            Connection::Options fConnectionOptions;
+        };
+
+    public:
+        /**
          *  A ConnectionPool is a fixed, not copyable/movable object, containing a bunch of other
          *  (typically http)IO::Transfer::Connection objects. The idea is that its cheaper to
          *  re-use these objects if you happen to want to connect to one that is already open.
          */
-        ConnectionPool (size_t maxConnections, const Connection::Options& optionsForEachConnection = {});
+        ConnectionPool (const Options& options = {});
         ConnectionPool (const ConnectionPool&) = delete;
 
     public:

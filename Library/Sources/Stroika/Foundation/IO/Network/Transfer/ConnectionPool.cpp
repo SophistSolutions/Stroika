@@ -3,10 +3,15 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Containers/Collection.h"
+#include "../../../Execution/ConditionVariable.h"
+
 #include "ConnectionPool.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
@@ -15,17 +20,24 @@ namespace {
     using Ptr     = Connection::Ptr;
     using Options = Connection::Options;
 
-    struct Rep_ : Connection::IRep {
+    /**
+     *  Dynamically wrap this around a connection pool entry, so that when its destroyed, it returns
+     *  the underlying entry to the pool
+     */
+    struct Rep_ : Connection::IRep, enable_shared_from_this<Rep_> {
 
-        Ptr fDelegateTo;
+        Ptr                               fDelegateTo;
+        function<void (shared_ptr<Rep_>)> fDeleter; // call on delete
 
-        Rep_ (const Ptr& delegateTo)
+        Rep_ (const Ptr& delegateTo, function<void (shared_ptr<Rep_>)> deleter)
             : fDelegateTo (delegateTo)
+            , fDeleter (deleter)
         {
         }
         Rep_ (const Rep_&) = delete;
         virtual ~Rep_ ()
         {
+            fDeleter (shared_from_this ());
         }
 
     public:
@@ -90,10 +102,13 @@ namespace {
  */
 class ConnectionPool::Rep_ {
 public:
-    Rep_ (size_t maxConnections, const Connection::Options& optionsForEachConnection)
+    Options fOptions;
+
+    Rep_ (const Options& options)
+        : fOptions (options)
     {
     }
-    Connection::Ptr New (const optional<Time::Duration>& timeout, optional<URI> hint, optional<AllocateGloballyIfTimeout> allocateGloballyFlag)
+    Connection::Ptr New (const optional<Time::Duration>& timeout, optional<URI> hint, optional<AllocateGloballyIfTimeout> allocateGloballyOnTimeoutFlag)
     {
         // @todo - real caching impl... including throwing away old items
         // MAYBE add ConnectionPool::Options class - probably - cuz many options
@@ -113,6 +128,14 @@ public:
         // for differnet purposes, and for some using a global makes sense (critical) and others not (advisory/unimportant).
         return Connection::New (); //tmphack
     }
+
+    // Use a collection instead of an LRUCache, because the 'key' can change as the connection is used, and this
+    // isn't handled well by LRUCache code (moving buckets etc automatically). And it doesn't handle the case
+    // where there is no URL/hint
+    Collection<Connection::Ptr> fAvailableConnections;
+    unsigned int                fOutstandingConnections; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
+                                                         // then don't actually allocate extra connections until/unless needed
+    ConditionVariable<> fAvailableConnectionsChanged;
 };
 
 /*
@@ -120,8 +143,8 @@ public:
  ************************** Transfer::ConnectionPool ****************************
  ********************************************************************************
  */
-ConnectionPool::ConnectionPool (size_t maxConnections, const Connection::Options& optionsForEachConnection)
-    : fRep_ (make_unique<Rep_> (maxConnections, optionsForEachConnection))
+ConnectionPool::ConnectionPool (const Options& options)
+    : fRep_ (make_unique<Rep_> (options))
 {
 }
 
