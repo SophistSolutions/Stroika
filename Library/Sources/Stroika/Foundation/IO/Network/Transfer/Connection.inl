@@ -45,6 +45,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     inline Connection::Ptr::Ptr (const shared_ptr<IRep>& rep)
         : fRep_ (rep)
     {
+        RequireNotNull (rep);
     }
     inline Connection::Options Connection::Ptr::GetOptions () const
     {

@@ -135,6 +135,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     class Connection::Ptr {
     public:
         /**
+         *  \req rep != nullptr
          */
         Ptr (const shared_ptr<IRep>& rep);
 

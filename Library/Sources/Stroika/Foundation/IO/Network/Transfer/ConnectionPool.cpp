@@ -5,6 +5,7 @@
 
 #include "../../../Containers/Collection.h"
 #include "../../../Execution/ConditionVariable.h"
+#include "../../../Execution/TimeOutException.h"
 
 #include "ConnectionPool.h"
 
@@ -24,24 +25,24 @@ namespace {
      *  Dynamically wrap this around a connection pool entry, so that when its destroyed, it returns
      *  the underlying entry to the pool
      */
-    struct Rep_ : Connection::IRep, enable_shared_from_this<Rep_> {
+    struct DelegatingConnectionRepWithDeleteHook_ : Connection::IRep, enable_shared_from_this<DelegatingConnectionRepWithDeleteHook_> {
 
-        Ptr                               fDelegateTo;
-        function<void (shared_ptr<Rep_>)> fDeleter; // call on delete
+        Ptr                                                                 fDelegateTo;
+        function<void (shared_ptr<DelegatingConnectionRepWithDeleteHook_>)> fDeleter; // call on delete
 
-        Rep_ (const Ptr& delegateTo, function<void (shared_ptr<Rep_>)> deleter)
+        DelegatingConnectionRepWithDeleteHook_ (const Ptr& delegateTo, function<void (shared_ptr<DelegatingConnectionRepWithDeleteHook_>)> deleter)
             : fDelegateTo (delegateTo)
             , fDeleter (deleter)
         {
         }
-        Rep_ (const Rep_&) = delete;
-        virtual ~Rep_ ()
+        DelegatingConnectionRepWithDeleteHook_ (const DelegatingConnectionRepWithDeleteHook_&) = delete;
+        virtual ~DelegatingConnectionRepWithDeleteHook_ ()
         {
             fDeleter (shared_from_this ());
         }
 
     public:
-        nonvirtual Rep_& operator= (const Rep_&) = delete;
+        nonvirtual DelegatingConnectionRepWithDeleteHook_& operator= (const DelegatingConnectionRepWithDeleteHook_&) = delete;
 
     public:
         virtual Options GetOptions () const override
@@ -108,30 +109,100 @@ public:
         : fOptions (options)
     {
     }
+    ~Rep_ ()
+    {
+        Require (fOutstandingConnections == 0); // otherwise when they are destroyed, they will try to add to a list that
+                                                // no longer exists...
+    }
     Connection::Ptr New (const optional<Time::Duration>& timeout, optional<URI> hint, optional<AllocateGloballyIfTimeout> allocateGloballyOnTimeoutFlag)
     {
-        // @todo - real caching impl... including throwing away old items
-        // MAYBE add ConnectionPool::Options class - probably - cuz many options
-        // maxConnections, optionsForEachConnection, more???
+        /*
+		 *	Maintain an LRU(like) list. Not strictly LRU, because we want to walk/pick not arbitrarily, but by URI matching.
+		 *	This is why we cannot use the Stroika LRUCache class.
+		 *
+		 *	Add items dynamically to the list, but never more than the max.
+		 *
+		 *	If failed to find a match, wait (if argument given).
+		 *
+		 *	If still failed, either throw or allocate new connection (again depending on function argument).
+		 */
+        Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout.value_or (0s).As<Time::DurationSecondsType> ();
+        optional<Connection::Ptr> poolEntryResult;
+    again:
+        if (hint) {
+            poolEntryResult = FindAndAllocateFromAvailableByURIMatch_ (hint->GetSchemeAndAuthority ());
+        }
+        if (not poolEntryResult) {
+            poolEntryResult = FindAndAllocateFromAvailable_ ();
+        }
+        if (not poolEntryResult) {
+            lock_guard   critSec{fAvailableConnectionsChanged.fMutex};
+            unsigned int totalAllocated = fAvailableConnections.size () + fOutstandingConnections;
+            if (totalAllocated < fOptions.fMaxConnections) {
+                fAvailableConnections += Connection::New (fOptions.fConnectionOptions);
+                goto again; // multithreaded, someone else could allocate, or return a better match
+                            // no need to notify_all () since we will try again anyhow
+            }
+        }
+        if (not poolEntryResult and Time::GetTickCount () > timeoutAt) {
+            // Let's see if we can wait a little
+            unique_lock lock (fAvailableConnectionsChanged.fMutex);
+            if (fAvailableConnectionsChanged.wait_until (lock, timeoutAt) == cv_status::no_timeout) {
+                goto again; // a new one maybe available
+            }
+        }
+        if (not poolEntryResult) {
+            // Here the rubber hits the road. We didn't find a free entry so we allocate, or throw
+            if (allocateGloballyOnTimeoutFlag) {
+                return Connection::New (fOptions.fConnectionOptions);
+            }
+            else {
+                Execution::Throw (TimeOutException::kThe);
+            }
+        }
+        // wrap the connection-ptr in an envelope that will restore the connection to the pool
+        return Connection::Ptr{
+            make_shared<DelegatingConnectionRepWithDeleteHook_> (
+                *poolEntryResult,
+                [this] (const shared_ptr<DelegatingConnectionRepWithDeleteHook_>& p) {
+                    this->AddConnection_ (p->fDelegateTo);
+                })};
+    }
 
-        // how todo?
-
-        // Keep conventional LRU cache
-        // REMOVE item from LRU Cache when 'allocated' (in use)
-        // Put back (and recently used) when done with use
-        // need a condition variable when cache changed. When added and then
-        // if you have a timeout, and cannot find answer on first try wait on that condition variable and recheck on each wakeup.
-        // then if you finally wakeup and time expired look at expiry policy and throw or return global new connection.
-
-        // maybe make this AllocateGloballyIfTimeout policy part of CONNECTION POOL OPTIONS - instead of parameter? Or document
-        // why not. I THINK it may depend on CALL point what you want to do and you may want to re-use the smae connection pool
-        // for differnet purposes, and for some using a global makes sense (critical) and others not (advisory/unimportant).
-        return Connection::New (); //tmphack
+    optional<Connection::Ptr> FindAndAllocateFromAvailableByURIMatch_ (const URI& matchScemeAndAuthority)
+    {
+        lock_guard critSec{fAvailableConnectionsChanged.fMutex};
+        for (auto i = fAvailableConnections.begin (); i != fAvailableConnections.end (); ++i) {
+            if (i->GetSchemeAndAuthority () == matchScemeAndAuthority) {
+                fAvailableConnections.Remove (i);
+                ++fOutstandingConnections;
+                return *i;
+            }
+        }
+        return nullopt;
+    }
+    optional<Connection::Ptr> FindAndAllocateFromAvailable_ ()
+    {
+        lock_guard critSec{fAvailableConnectionsChanged.fMutex};
+        for (auto i = fAvailableConnections.begin (); i != fAvailableConnections.end (); ++i) {
+            fAvailableConnections.Remove (i);
+            ++fOutstandingConnections;
+            return *i;
+        }
+        return nullopt;
+    }
+    void AddConnection_ (const Connection::Ptr p)
+    {
+        lock_guard critSec{fAvailableConnectionsChanged.fMutex};
+        fAvailableConnections.Add (p);
+        --fOutstandingConnections;
+        fAvailableConnectionsChanged.notify_all ();
     }
 
     // Use a collection instead of an LRUCache, because the 'key' can change as the connection is used, and this
     // isn't handled well by LRUCache code (moving buckets etc automatically). And it doesn't handle the case
     // where there is no URL/hint
+
     Collection<Connection::Ptr> fAvailableConnections;
     unsigned int                fOutstandingConnections; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
                                                          // then don't actually allocate extra connections until/unless needed
