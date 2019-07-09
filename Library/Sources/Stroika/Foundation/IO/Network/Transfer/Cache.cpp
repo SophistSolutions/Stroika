@@ -181,6 +181,14 @@ Transfer::Cache::Element::Element (const Response& response)
 {
     Mapping<String, String> headers = response.GetHeaders ();
     for (auto i = headers.begin (); i != headers.end (); ++i) {
+        // HTTP Date formats:
+        //
+        // According to https://tools.ietf.org/html/rfc7234#section-5.3
+        //      The Expires value is an HTTP-date timestamp, as defined in Section 7.1.1.1 of[RFC7231].
+        // From https://tools.ietf.org/html/rfc7231#section-7.1.1.1
+        //      The preferred format is
+        //      a fixed - length and single - zone subset of the date and time specification used by the Internet Message Format[RFC5322].
+        //
         if (i->fKey == HTTP::HeaderName::kETag) {
             if (i->fValue.size () < 2 or not i->fValue.StartsWith (L"\"") or not i->fValue.EndsWith (L"\"")) {
                 Execution::Throw (Execution::Exception (L"malformed etag"sv));
@@ -196,11 +204,17 @@ Transfer::Cache::Element::Element (const Response& response)
                 // treat invalid dates as if the resource has already exipred
                 //fExpires = DateTime::min ();  // better but cannot convert back to date - fix stk date stuff so this works
                 fExpires = DateTime::Now ();
+                DbgTrace (L"Malformed expires (%s) treated as expires immediately", Characters::ToString (i->fValue).c_str ());
             }
             headers.erase (i);
         }
         else if (i->fKey == HTTP::HeaderName::kLastModified) {
-            fLastModified = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+            try {
+                fLastModified = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+            }
+            catch (...) {
+                DbgTrace (L"Malformed last-modfied (%s) treated as ignored", Characters::ToString (i->fValue).c_str ());
+            }
             headers.erase (i);
         }
         else if (i->fKey == HTTP::HeaderName::kCacheControl) {
