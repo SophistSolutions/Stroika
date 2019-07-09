@@ -205,7 +205,7 @@ public:
 
     Collection<Connection::Ptr> fAvailableConnections;
     unsigned int                fOutstandingConnections{}; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
-                                                         // then don't actually allocate extra connections until/unless needed
+                                                           // then don't actually allocate extra connections until/unless needed
     ConditionVariable<> fAvailableConnectionsChanged;
 };
 
