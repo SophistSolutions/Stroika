@@ -117,15 +117,15 @@ public:
     Connection::Ptr New (const optional<Time::Duration>& timeout, optional<URI> hint, optional<AllocateGloballyIfTimeout> allocateGloballyOnTimeoutFlag)
     {
         /*
-		 *	Maintain an LRU(like) list. Not strictly LRU, because we want to walk/pick not arbitrarily, but by URI matching.
-		 *	This is why we cannot use the Stroika LRUCache class.
-		 *
-		 *	Add items dynamically to the list, but never more than the max.
-		 *
-		 *	If failed to find a match, wait (if argument given).
-		 *
-		 *	If still failed, either throw or allocate new connection (again depending on function argument).
-		 */
+         *  Maintain an LRU(like) list. Not strictly LRU, because we want to walk/pick not arbitrarily, but by URI matching.
+         *  This is why we cannot use the Stroika LRUCache class.
+         *
+         *  Add items dynamically to the list, but never more than the max.
+         *
+         *  If failed to find a match, wait (if argument given).
+         *
+         *  If still failed, either throw or allocate new connection (again depending on function argument).
+         */
         Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout.value_or (0s).As<Time::DurationSecondsType> ();
         optional<Connection::Ptr> poolEntryResult;
     again:
@@ -204,7 +204,7 @@ public:
     // where there is no URL/hint
 
     Collection<Connection::Ptr> fAvailableConnections;
-    unsigned int                fOutstandingConnections; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
+    unsigned int                fOutstandingConnections{}; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
                                                          // then don't actually allocate extra connections until/unless needed
     ConditionVariable<> fAvailableConnectionsChanged;
 };
