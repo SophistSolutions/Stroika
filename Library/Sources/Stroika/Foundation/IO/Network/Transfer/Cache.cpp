@@ -4,6 +4,8 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Cache/SynchronizedLRUCache.h"
+#include "../../../Characters/ToString.h"
+#include "../../../Debug/Trace.h"
 #include "../../../Time/Duration.h"
 
 #include "../HTTP/Headers.h"
@@ -20,6 +22,9 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Time;
 
 using Stroika::Foundation::Cache::SynchronizedLRUCache;
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
 
@@ -65,6 +70,9 @@ namespace {
 
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OnBeforeFetch", L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
+#endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
                     URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
@@ -105,6 +113,9 @@ namespace {
 
         virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept override
         {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OnAfterFetch", L"context.fFullURI=%s", Characters::ToString (context.fFullURI).c_str ())};
+#endif
             RequireNotNull (response);
             switch (response->GetStatus ()) {
                 case HTTP::StatusCodes::kOK: {
