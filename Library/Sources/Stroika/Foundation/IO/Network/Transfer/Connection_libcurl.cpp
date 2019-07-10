@@ -228,7 +228,7 @@ URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const
 void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Connection_LibCurl::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (url).c_str ());
+    DbgTrace (L"Connection_LibCurl::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
 #endif
     fURL_.SetScheme (schemeAndAuthority.GetScheme ());
     fURL_.SetAuthority (schemeAndAuthority.GetAuthority ());
@@ -245,7 +245,7 @@ URI Connection_LibCurl::Rep_::DeprecatedGetAuthorityRelativeURL () const
 void Connection_LibCurl::Rep_::DeprecatedSetAuthorityRelativeURL (const URI& url)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Connection_LibCurl::Rep_::SetURL ('%s')", Characters::ToString (url).c_str ());
+    DbgTrace (L"Connection_LibCurl::Rep_::DeprecatedSetAuthorityRelativeURL (%s)", Characters::ToString (url).c_str ());
 #endif
     URI newURL = url;
     newURL.SetScheme (fURL_.GetScheme ());

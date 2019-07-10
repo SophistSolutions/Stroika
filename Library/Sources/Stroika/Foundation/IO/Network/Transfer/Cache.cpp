@@ -71,7 +71,7 @@ namespace {
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OnBeforeFetch", L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DefaultCacheRep_::OnBeforeFetch", L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
 #endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
@@ -114,7 +114,7 @@ namespace {
         virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OnAfterFetch", L"context.fFullURI=%s", Characters::ToString (context.fFullURI).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DefaultCacheRep_::OnAfterFetch", L"context.fFullURI=%s", Characters::ToString (context.fFullURI).c_str ())};
 #endif
             RequireNotNull (response);
             switch (response->GetStatus ()) {
