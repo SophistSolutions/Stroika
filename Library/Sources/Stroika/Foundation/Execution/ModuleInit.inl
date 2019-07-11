@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline ModuleDependency::ModuleDependency (void (*start) (), void (*end) ())
-        : fEnd_ (end)
+        : fEnd_{end}
     {
         (*start) ();
     }
