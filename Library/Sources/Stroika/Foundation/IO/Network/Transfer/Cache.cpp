@@ -89,17 +89,19 @@ namespace {
                             }
                             return Response{o->fBody, HTTP::StatusCodes::kOK, headers};
                         }
-                        bool canCheckCacheETAG = false;
+                        // @todo - UNCLEAR if we should always include both etag/iflastmodiifeid if both available? Also may want to consider MAXAGE etc.
+                        // AND maybe fOptions control over how we do this?
+                        // -- LGP 2019-07-10
+                        bool canCheckCacheETAG = o->fETag.has_value ();
                         if (canCheckCacheETAG) {
-                            // @todo - modify request to check etag
                             context->fCachedElement = *o;
-                            return nullopt; // keep processing with request changes
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, L"\"" + *o->fETag + L"\"");
+                            // keep going as we can combine If-None-Match/If-Modified-Since
                         }
-                        bool canCheckModifiedSince = false;
+                        bool canCheckModifiedSince = o->fLastModified.has_value ();
                         if (canCheckModifiedSince) {
-                            //  @todo - modify request to check last modfieid for maxage
                             context->fCachedElement = *o;
-                            return nullopt; // keep processing with request changes
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, L"\"" + o->fLastModified->Format (DateTime::PrintFormat::eRFC1123) + L"\"");
                         }
                     }
                 }

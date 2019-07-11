@@ -136,8 +136,8 @@ public:
             poolEntryResult = FindAndAllocateFromAvailable_ ();
         }
         if (not poolEntryResult) {
-            lock_guard   critSec{fAvailableConnectionsChanged.fMutex};
-            unsigned int totalAllocated = fAvailableConnections.size () + fOutstandingConnections;
+            lock_guard critSec{fAvailableConnectionsChanged.fMutex};
+            size_t     totalAllocated = fAvailableConnections.size () + fOutstandingConnections;
             if (totalAllocated < fOptions.fMaxConnections) {
                 fAvailableConnections += Connection::New (fOptions.fConnectionOptions);
                 goto again; // multithreaded, someone else could allocate, or return a better match
@@ -168,7 +168,6 @@ public:
                     this->AddConnection_ (p->fDelegateTo);
                 })};
     }
-
     optional<Connection::Ptr> FindAndAllocateFromAvailableByURIMatch_ (const URI& matchScemeAndAuthority)
     {
         lock_guard critSec{fAvailableConnectionsChanged.fMutex};
@@ -204,7 +203,7 @@ public:
     // where there is no URL/hint
 
     Collection<Connection::Ptr> fAvailableConnections;
-    unsigned int                fOutstandingConnections{}; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
+    size_t                      fOutstandingConnections{}; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
                                                            // then don't actually allocate extra connections until/unless needed
     ConditionVariable<> fAvailableConnectionsChanged;
 };

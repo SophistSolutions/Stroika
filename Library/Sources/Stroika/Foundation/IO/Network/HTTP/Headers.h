@@ -45,6 +45,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wchar_t kAllow[]                         = L"Allow";
         constexpr wchar_t kKeepAlive[]                     = L"Keep-Alive";
         constexpr wchar_t kReferrer[]                      = L"Referer"; // intentionally spelled this way - misspelled in the HTTP RFC
+        constexpr wchar_t kIfNoneMatch[]                   = L"If-None-Match";
+        constexpr wchar_t kIfModifiedSince[]               = L"If-Modified-Since";
+
     }
 
 }
