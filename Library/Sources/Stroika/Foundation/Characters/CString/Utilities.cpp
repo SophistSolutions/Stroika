@@ -29,7 +29,7 @@ using namespace Stroika::Foundation::Characters::CString;
 
 /*
  ********************************************************************************
- ************************************* Format ***********************************
+ ************************* Characters::CString::FormatV *************************
  ********************************************************************************
  */
 string Characters::CString::FormatV (const char* format, va_list argsList)
@@ -58,15 +58,6 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
     va_end (argListCopy);
     Assert (::strlen (msgBuf) < msgBuf.GetSize ());
     return string (msgBuf);
-}
-
-string Characters::CString::Format (const char* format, ...)
-{
-    va_list argsList;
-    va_start (argsList, format);
-    string tmp = FormatV (format, argsList);
-    va_end (argsList);
-    return tmp;
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262)
@@ -158,6 +149,20 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
     return wstring (msgBuf);
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
+
+/*
+ ********************************************************************************
+ ************************* Characters::CString::Format **************************
+ ********************************************************************************
+ */
+string Characters::CString::Format (const char* format, ...)
+{
+    va_list argsList;
+    va_start (argsList, format);
+    string tmp = FormatV (format, argsList);
+    va_end (argsList);
+    return tmp;
+}
 
 wstring Characters::CString::Format (const wchar_t* format, ...)
 {
