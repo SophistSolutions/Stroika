@@ -60,6 +60,11 @@
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem.so
 }
 {
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Cond
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
+}
+{
    https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation4Time8DateTime10AddSecondsEx
@@ -86,5 +91,19 @@
    https://stroika.atlassian.net/browse/STK-695
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation2IO7Network29UniformResourceIdentification9Authority16ThreeWayComparerclERKS4_S7_.constprop.*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-698 - raspberrypi only - 
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Characters7CString7FormatVB5cxx11EPKcSt9__va_list.constprop.*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-698 - raspberrypi only - 
+   Memcheck:Value4
+   ...
+   fun:_ZN7Stroika10Foundation10Characters7CString7FormatVB5cxx11EPKcSt9__va_list.constprop.*
    ...
 }
