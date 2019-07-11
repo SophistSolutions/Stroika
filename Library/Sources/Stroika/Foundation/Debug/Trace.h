@@ -23,7 +23,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  */
 
@@ -78,7 +78,8 @@ namespace Stroika::Foundation::Debug {
      */
     class Emitter {
     private:
-        Emitter () = default;
+        Emitter ()               = default;
+        Emitter (const Emitter&) = delete;
 
     public:
         static Emitter& Get () noexcept;
