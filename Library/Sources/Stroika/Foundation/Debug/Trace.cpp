@@ -262,16 +262,6 @@ Execution::ModuleDependency Debug::MakeModuleDependency_Trace ()
  ************************************ Emitter ***********************************
  ********************************************************************************
  */
-Emitter::Emitter ()
-    : fLastNCharBufCharCount_ (0)
-    //  , fLastNCharBuf_CHAR_ ()
-    //  , fLastNCharBuf_WCHAR_ ()
-    , fLastNCharBuf_WCHARFlag_ (false)
-    , fLastNCharBuf_Token_ (0)
-    , fLastNCharBuf_WriteTickcount_ (0.0f)
-{
-}
-
 /*
 @DESCRIPTION:   <p>This function takes a 'format' argument and then any number of additional arguments - exactly
             like std::printf (). It calls std::vsprintf () internally. This can be called directly - regardless of the
@@ -357,7 +347,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t buffe
 }
 
 template <typename CHARTYPE>
-Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
+Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e)
 {
     [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
     FlushBufferedCharacters_ ();
@@ -399,13 +389,13 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
     }
 #endif
     if (bufferLastNChars == 0) {
-        DoEmit_ (p, e);
+        DoEmit_ (s, e);
         fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
     }
     else {
-        Assert ((e - p) > static_cast<ptrdiff_t> (bufferLastNChars));
+        Assert ((e - s) > static_cast<ptrdiff_t> (bufferLastNChars));
         BufferNChars_ (bufferLastNChars, e - bufferLastNChars);
-        DoEmit_ (p, e - bufferLastNChars);
+        DoEmit_ (s, e - bufferLastNChars);
         fLastNCharBuf_WriteTickcount_ = curRelativeTime;
         fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
     }
@@ -416,11 +406,7 @@ void Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
     Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
-#if __STDC_WANT_SECURE_LIB__
-    strcpy_s (fLastNCharBuf_CHAR_, p);
-#else
-    strcpy (fLastNCharBuf_CHAR_, p);
-#endif
+    memcpy (fLastNCharBuf_CHAR_, p, bufferLastNChars); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = false;
 }
 
@@ -428,11 +414,7 @@ void Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
     Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
-#if __STDC_WANT_SECURE_LIB__
-    ::wcscpy_s (fLastNCharBuf_WCHAR_, p);
-#else
-    ::wcscpy (fLastNCharBuf_WCHAR_, p);
-#endif
+    memcpy (fLastNCharBuf_WCHAR_, p, bufferLastNChars * sizeof (wchar_t)); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = true;
 }
 
@@ -440,10 +422,10 @@ void Emitter::FlushBufferedCharacters_ ()
 {
     if (fLastNCharBufCharCount_ != 0) {
         if (fLastNCharBuf_WCHARFlag_) {
-            DoEmit_ (fLastNCharBuf_WCHAR_);
+            DoEmit_ (fLastNCharBuf_WCHAR_, fLastNCharBuf_WCHAR_ + fLastNCharBufCharCount_);
         }
         else {
-            DoEmit_ (fLastNCharBuf_CHAR_);
+            DoEmit_ (fLastNCharBuf_CHAR_, fLastNCharBuf_CHAR_ + fLastNCharBufCharCount_);
         }
         fLastNCharBufCharCount_ = 0;
     }

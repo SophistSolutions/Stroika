@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Debug {
      */
     class Emitter {
     private:
-        Emitter ();
+        Emitter () = default;
 
     public:
         static Emitter& Get () noexcept;
@@ -116,12 +116,12 @@ namespace Stroika::Foundation::Debug {
         nonvirtual TraceLastBufferedWriteTokenType DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e);
 
     private:
-        size_t                          fLastNCharBufCharCount_;
-        char                            fLastNCharBuf_CHAR_[10];
+        size_t                          fLastNCharBufCharCount_{0}; // len of valid data in fLastNCharBuf_CHAR_ or fLastNCharBuf_WCHAR_
+        char                            fLastNCharBuf_CHAR_[10];    // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
         wchar_t                         fLastNCharBuf_WCHAR_[10];
-        bool                            fLastNCharBuf_WCHARFlag_;
-        TraceLastBufferedWriteTokenType fLastNCharBuf_Token_;
-        Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_;
+        bool                            fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
+        TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
+        Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_{0.0};
 
         nonvirtual void BufferNChars_ (size_t nChars, const char* p);
         nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);
