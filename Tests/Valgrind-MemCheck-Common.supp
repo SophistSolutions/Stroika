@@ -65,6 +65,11 @@
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
 }
 {
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Addr8
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
+}
+{
    https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation4Time8DateTime10AddSecondsEx
@@ -88,6 +93,21 @@
    fun:sock_write
 }
 {
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, ssl/curl related
+   Memcheck:Cond
+   fun:dprintf_formatf
+}
+{
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, curl related
+   Memcheck:Cond
+   fun:curl_url_set
+}
+{
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, curl related
+   Memcheck:Cond
+   fun:seturl
+}
+{
    https://stroika.atlassian.net/browse/STK-695
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation2IO7Network29UniformResourceIdentification9Authority16ThreeWayComparerclERKS4_S7_.constprop.*
@@ -97,13 +117,43 @@
    https://stroika.atlassian.net/browse/STK-698 - raspberrypi only - 
    Memcheck:Cond
    ...
-   fun:_ZN7Stroika10Foundation10Characters7CString7FormatVB5cxx11EPKcSt9__va_list.constprop.*
+   fun:_ZN7Stroika10Foundation10Characters7CString7FormatV*9__va_list*
    ...
 }
 {
    https://stroika.atlassian.net/browse/STK-698 - raspberrypi only - 
    Memcheck:Value4
    ...
-   fun:_ZN7Stroika10Foundation10Characters7CString7FormatVB5cxx11EPKcSt9__va_list.constprop.*
+   fun:_ZN7Stroika10Foundation10Characters7CString7FormatV*9__va_list*
    ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation5Debug8Private_16TraceModuleData_C2Ev*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt6locale5_ImplC1EPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt11__timepunctI*EC1EP15__locale_structPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt7__cxx118messagesI*EC1EP15__locale_structPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt8messagesI*EC1EP15__locale_structPKcj
 }
