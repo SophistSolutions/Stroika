@@ -30,13 +30,22 @@ namespace Stroika::Foundation::DataExchange {
     /**
      * Default is single global registey. Implemnt using compact storage - with strings allocated
      *  in memory blcoks next to one another (not full string objects)
-     *  and then return String_Constant objectst hat point into it.
+     *  and then return String_Constant objects that point into it.
      *
-     * like blockallocation - gains in performacne dueto not ever having to free anything
+     * like blockallocation - gains in performacne due to not ever having to free anything
      *
      *  @todo - CLEANUP DOCS
      */
     struct AtomManager_Default {
+        typedef ptrdiff_t                 AtomInternalType;
+        static constexpr AtomInternalType kEmpty = -1;
+        // This API must accept an empty string as argument and return kEmpty
+        static AtomInternalType Intern (const String& s);
+        // if given kEmpty, Extract will return an empty String{} object
+        static String Extract (AtomInternalType atomI);
+    };
+
+    struct AtomManager_CaseInsensitive {
         typedef ptrdiff_t                 AtomInternalType;
         static constexpr AtomInternalType kEmpty = -1;
         static AtomInternalType           Intern (const String& s);
@@ -118,6 +127,7 @@ namespace Stroika::Foundation::DataExchange {
         constexpr Atom ();
         Atom (const wchar_t* src);
         Atom (const wstring& src);
+        Atom (const wstring_view& src);
         Atom (const String& src);
         constexpr Atom (const Atom& src) = default;
 
@@ -142,11 +152,17 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  This corresponds to an empty string. An 'empty' Atom can be constructed with:
+         *      \code
+         *          Atom<> a1;
+         *          Atom<> a2 = L"";
+         *      \endcode
          */
         nonvirtual constexpr bool empty () const;
 
     public:
         /**
+         *  Set the state to empty
          */
         nonvirtual void clear ();
 
@@ -170,7 +186,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual wstring As_ (type_<wstring>) const;
 
     protected:
-        /*
+        /**
          */
         nonvirtual _AtomInternalType _GetInternalRep () const;
 
@@ -180,8 +196,8 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  Atom's are compared in a way that will NOT in general be the same as print name compare. The smaller values
-     *  will probably be the ones added earlier to the ATOM_MANAGER. But in general, their comparison will persist forever,
-     *  and be well-defined (though not documented in this API).
+     *  will probably be the ones added earlier to the ATOM_MANAGER. But in general, their comparison will persist 
+     *  forever (app lifetime), and be well-defined (though not documented in this API).
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
