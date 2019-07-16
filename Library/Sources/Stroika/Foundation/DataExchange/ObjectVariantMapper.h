@@ -133,43 +133,43 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *      struct  SharedContactsConfig_ {
-     *          bool                    fEnabled = false;
-     *          optional<DateTime>      fLastSynchronizedAt;
-     *          Mapping<String,String>  fThisPHRsIDToSharedContactID;
-     *      };
+     *          struct  SharedContactsConfig_ {
+     *              bool                    fEnabled = false;
+     *              optional<DateTime>      fLastSynchronizedAt;
+     *              Mapping<String,String>  fThisPHRsIDToSharedContactID;
+     *          };
      *
-     *      ObjectVariantMapper mapper;
+     *          ObjectVariantMapper mapper;
      *
-     *      // register each of your mappable (even private) types
-     *      mapper.AddClass<SharedContactsConfig_> ({
-     *          ObjectVariantMapper::StructFieldInfo { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
-     *          ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
-     *          ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
-     *      });
+     *          // register each of your mappable (even private) types
+     *          mapper.AddClass<SharedContactsConfig_> ({
+     *              ObjectVariantMapper::StructFieldInfo { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
+     *              ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
+     *              ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
+     *          });
      *
-     *      // OR Equivilently
-     *      mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-     *          { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
-     *          { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
-     *          { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
-     *      });
+     *          // OR Equivilently
+     *          mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+     *              { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
+     *              { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
+     *              { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
+     *          });
      *
-     *      SharedContactsConfig_   tmp;
-     *      tmp.fEnabled = enabled;
-     *      VariantValue v = mapper.Serialize  (tmp);
+     *          SharedContactsConfig_   tmp;
+     *          tmp.fEnabled = enabled;
+     *          VariantValue v = mapper.Serialize  (tmp);
      *
-     *      // at this point - we should have VariantValue object with "Enabled" field.
-     *      // This can then be serialized using
+     *          // at this point - we should have VariantValue object with "Enabled" field.
+     *          // This can then be serialized using
      *
-     *      Streams::MemoryStream<byte>   tmpStream;
-     *      DataExchange::JSON::PrettyPrint (v, tmpStream);
+     *          Streams::MemoryStream<byte>   tmpStream;
+     *          DataExchange::JSON::PrettyPrint (v, tmpStream);
      *
-     *      // THEN deserialized, and mapped back to C++ object form
-     *      tmp = mapper.ToObject<SharedContactsConfig_> (DataExchange::JSON::Reader (tmpStream));
-     *      if (tmp.fEnabled) {
-     *          ...
-     *      }
+     *          // THEN deserialized, and mapped back to C++ object form
+     *          tmp = mapper.ToObject<SharedContactsConfig_> (DataExchange::JSON::Reader (tmpStream));
+     *          if (tmp.fEnabled) {
+     *              ...
+     *          }
      *      \endcode
      */
     class ObjectVariantMapper {
@@ -333,11 +333,20 @@ namespace Stroika::Foundation::DataExchange {
          *
          */
         nonvirtual void Add (const TypeMappingDetails& s);
-        nonvirtual void Add (const Set<TypeMappingDetails>& s);
+        nonvirtual void Add (const Traversal::Iterable<TypeMappingDetails>& s);
         nonvirtual void Add (const TypesRegistry& s);
         nonvirtual void Add (const ObjectVariantMapper& s);
         template <typename T>
         nonvirtual void Add (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
+
+    public:
+        /**
+         *  Alias for Add ()
+         */
+        nonvirtual void operator+= (const TypeMappingDetails& rhs);
+        nonvirtual void operator+= (const Traversal::Iterable<TypeMappingDetails>& rhs);
+        nonvirtual void operator+= (const TypesRegistry& rhs);
+        nonvirtual void operator+= (const ObjectVariantMapper& rhs);
 
     public:
         /**
@@ -414,30 +423,30 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \par Example Usage
          *      \code
-         *      struct  MyConfig_ {
-         *          IO::Network::URI        fURL1_;
-         *          IO::Network::URI        fURL2_;
-         *      };
+         *          struct  MyConfig_ {
+         *              IO::Network::URI        fURL1_;
+         *              IO::Network::URI        fURL2_;
+         *          };
          *
-         *      ObjectVariantMapper mapper;
-         *      mapper.AddCommonType<IO::Network::URI> ();      // add default type mapper (using default URL parse)
+         *          ObjectVariantMapper mapper;
+         *          mapper.AddCommonType<IO::Network::URI> ();      // add default type mapper (using default URL parse)
          *
-         *      // register each of your mappable (even private) types
-         *      mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-         *          { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_) },        // use default parser
-         *          // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
-         *          { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
-         *      });
+         *          // register each of your mappable (even private) types
+         *          mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+         *              { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_) },        // use default parser
+         *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
+         *              { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
+         *          });
          *
-         *      MyConfig_   tmp;
-         *      tmp.fURL2_ = IO::Network::URI (L"http://localhost:1234");
-         *      VariantValue v = mapper.Serialize  (tmp);
+         *          MyConfig_   tmp;
+         *          tmp.fURL2_ = IO::Network::URI (L"http://localhost:1234");
+         *          VariantValue v = mapper.Serialize  (tmp);
          *
-         *      Streams::MemoryStream<byte>   tmpStream;
-         *      DataExchange::JSON::PrettyPrint (v, tmpStream);
+         *          Streams::MemoryStream<byte>   tmpStream;
+         *          DataExchange::JSON::PrettyPrint (v, tmpStream);
          *
-         *      // THEN deserialized, and mapped back to C++ object form
-         *      tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader (tmpStream));
+         *          // THEN deserialized, and mapped back to C++ object form
+         *          tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader (tmpStream));
          *      \endcode
          */
         template <typename CLASS>
@@ -758,9 +767,17 @@ namespace Stroika::Foundation::DataExchange {
 
         public:
             nonvirtual void Add (const TypeMappingDetails& typeMapDetails);
+            nonvirtual void Add (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails);
 
         public:
             nonvirtual Traversal::Iterable<TypeMappingDetails> GetMappers () const;
+
+        public:
+            /**
+             *  Alias for Add ()
+             */
+            nonvirtual void operator+= (const TypeMappingDetails& typeMapDetails);
+            nonvirtual void operator+= (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails);
 
         public:
             /**
@@ -769,7 +786,7 @@ namespace Stroika::Foundation::DataExchange {
             nonvirtual String ToString () const;
 
         private:
-            Mapping<type_index, TypeMappingDetails> fSerializers;
+            Mapping<type_index, TypeMappingDetails> fSerializers_;
         };
 
     private:

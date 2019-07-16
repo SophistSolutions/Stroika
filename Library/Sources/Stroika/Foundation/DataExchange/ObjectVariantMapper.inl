@@ -107,24 +107,36 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src)
-        : fSerializers (src)
+        : fSerializers_ (src)
     {
     }
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Set<TypeMappingDetails>& src)
     {
-        src.Apply ([this] (const TypeMappingDetails& t) { fSerializers.Add (t.fForType, t); });
+        src.Apply ([this] (const TypeMappingDetails& t) { fSerializers_.Add (t.fForType, t); });
     }
     inline optional<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const
     {
-        return fSerializers.Lookup (t);
+        return fSerializers_.Lookup (t);
     }
     inline void ObjectVariantMapper::TypesRegistry::Add (const TypeMappingDetails& typeMapDetails)
     {
-        fSerializers.Add (typeMapDetails.fForType, typeMapDetails);
+        fSerializers_.Add (typeMapDetails.fForType, typeMapDetails);
+    }
+    inline void ObjectVariantMapper::TypesRegistry::Add (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails)
+    {
+        typeMapDetails.Apply ([this] (auto i) { fSerializers_.Add (i.fForType, i); });
+    }
+    inline void ObjectVariantMapper::TypesRegistry::operator+= (const TypeMappingDetails& typeMapDetails)
+    {
+        Add (typeMapDetails);
+    }
+    inline void ObjectVariantMapper::TypesRegistry::operator+= (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails)
+    {
+        Add (typeMapDetails);
     }
     inline Traversal::Iterable<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::GetMappers () const
     {
-        return fSerializers.MappedValues ();
+        return fSerializers_.MappedValues ();
     }
 
     /*
@@ -145,6 +157,23 @@ namespace Stroika::Foundation::DataExchange {
     {
         Add (TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper});
     }
+    inline void ObjectVariantMapper::operator+= (const TypeMappingDetails& rhs)
+    {
+        Add (rhs);
+    }
+    inline void ObjectVariantMapper::operator+= (const Traversal::Iterable<TypeMappingDetails>& rhs)
+    {
+        Add (rhs);
+    }
+    inline void ObjectVariantMapper::operator+= (const TypesRegistry& rhs)
+    {
+        Add (rhs);
+    }
+    inline void ObjectVariantMapper::operator+= (const ObjectVariantMapper& rhs)
+    {
+        Add (rhs);
+    }
+
     template <typename T>
     inline void ObjectVariantMapper::AddCommonType ()
     {

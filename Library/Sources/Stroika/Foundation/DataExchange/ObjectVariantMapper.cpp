@@ -62,7 +62,7 @@ String ObjectVariantMapper::TypesRegistry::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"type-mappers: " + Characters::ToString (fSerializers.Keys ()); // for now the values are not interesting
+    sb += L"type-mappers: " + Characters::ToString (fSerializers_.Keys ()); // for now the values are not interesting
     sb += L"}";
     return sb.str ();
 }
@@ -407,7 +407,7 @@ void ObjectVariantMapper::Add (const TypeMappingDetails& s)
     fTypeMappingRegistry_.Add (s);
 }
 
-void ObjectVariantMapper::Add (const Set<TypeMappingDetails>& s)
+void ObjectVariantMapper::Add (const Traversal::Iterable<TypeMappingDetails>& s)
 {
     s.Apply ([this] (const TypeMappingDetails& arg) { Add (arg); });
 }
