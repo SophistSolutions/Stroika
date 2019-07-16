@@ -76,7 +76,7 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
+     *  Basic operator overloads with the obvious meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
