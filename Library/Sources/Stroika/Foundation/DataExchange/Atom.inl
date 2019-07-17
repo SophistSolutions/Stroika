@@ -47,9 +47,10 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     template <typename ATOM_MANAGER>
-    inline constexpr Atom<ATOM_MANAGER>::Atom (const _AtomInternalType& src)
+    inline constexpr Atom<ATOM_MANAGER>::Atom (const AtomInternalType& src)
         : fValue_{src}
     {
+        // IF NOT CONSTEXPR (can do in C++20) validate src is already in ATOM_MANAGER
     }
     template <typename ATOM_MANAGER>
     inline String Atom<ATOM_MANAGER>::GetPrintName () const
@@ -88,9 +89,14 @@ namespace Stroika::Foundation::DataExchange {
         return GetPrintName ().template As<wstring> ();
     }
     template <typename ATOM_MANAGER>
-    inline typename Atom<ATOM_MANAGER>::_AtomInternalType Atom<ATOM_MANAGER>::_GetInternalRep () const
+    inline typename Atom<ATOM_MANAGER>::AtomInternalType Atom<ATOM_MANAGER>::_GetInternalRep () const
     {
         return fValue_;
+    }
+    template <typename ATOM_MANAGER>
+    inline String Atom<ATOM_MANAGER>::ToString () const
+    {
+        return GetPrintName ();
     }
 
     /*

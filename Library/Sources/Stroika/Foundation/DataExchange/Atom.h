@@ -118,11 +118,12 @@ namespace Stroika::Foundation::DataExchange {
      */
     template <typename ATOM_MANAGER = AtomManager_Default>
     class Atom {
-    protected:
-        using _AtomInternalType = typename ATOM_MANAGER::AtomInternalType;
+    public:
+        using AtomInternalType = typename ATOM_MANAGER::AtomInternalType;
 
     public:
         /**
+         *  with the Atom (AtomInternalType) CTOR, we \req the value already be interned in the ATOM_MANAGER.
          */
         constexpr Atom ();
         Atom (const wchar_t* src);
@@ -130,9 +131,7 @@ namespace Stroika::Foundation::DataExchange {
         Atom (const wstring_view& src);
         Atom (const String& src);
         constexpr Atom (const Atom& src) = default;
-
-    protected:
-        constexpr Atom (const _AtomInternalType& src);
+        constexpr Atom (const AtomInternalType& src);
 
     public:
         /**
@@ -175,6 +174,12 @@ namespace Stroika::Foundation::DataExchange {
         template <typename T>
         nonvirtual T As () const;
 
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
     private:
         template <typename T>
         struct type_ {
@@ -188,10 +193,10 @@ namespace Stroika::Foundation::DataExchange {
     protected:
         /**
          */
-        nonvirtual _AtomInternalType _GetInternalRep () const;
+        nonvirtual AtomInternalType _GetInternalRep () const;
 
     private:
-        _AtomInternalType fValue_;
+        AtomInternalType fValue_;
     };
 
     /**
