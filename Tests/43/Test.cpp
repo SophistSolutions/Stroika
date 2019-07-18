@@ -166,7 +166,7 @@ namespace {
                 [[maybe_unused]] unsigned int tryCount{1};
             again:
                 try {
-                    optResp = c.POST (URI{L"/post"}, roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
+                    optResp = c.POST (URI{L"/post"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
@@ -234,7 +234,7 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                Response r = c.PUT (URI{L"http://httpbin.org/put"}, roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
+                Response r = c.PUT (URI{L"http://httpbin.org/put"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
                 VerifyTestResult (r.GetSucceeded ()); // because throws on failure
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());

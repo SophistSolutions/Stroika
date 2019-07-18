@@ -72,17 +72,21 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool InternetMediaType::Match (const InternetMediaType& rhs) const
     {
-        if (this->GetType<AtomType> () != rhs.GetType<AtomType> ()) {
+        if (GetType<AtomType> () != rhs.GetType<AtomType> ()) {
             return false;
         }
-        if (this->GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()) {
+        if (GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()) {
             return false;
         }
         return true;
     }
+    inline bool InternetMediaType::Match (const AtomType& rhsType) const
+    {
+        return (GetType<AtomType> () == rhsType);
+    }
     inline bool InternetMediaType::IsA (const InternetMediaType& moreGeneralType) const
     {
-        if (this->GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
+        if (GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
             return false;
         }
         // compare just the subtypes, for prefix equals
@@ -157,6 +161,7 @@ namespace Stroika::Foundation::DataExchange::Private_ {
 
         const InternetMediaType::AtomType kText_Type;
         const InternetMediaType::AtomType kImage_Type;
+        const InternetMediaType::AtomType kApplication_Type;
 
         const InternetMediaType kOctetStream_CT;
 
@@ -192,37 +197,8 @@ namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVAT
 
     inline const InternetMediaType::AtomType& Text_Type () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_Type; }
     inline const InternetMediaType::AtomType& Image_Type () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_Type; }
+    inline const InternetMediaType::AtomType& Application_Type () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_Type; }
 
-    inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
-
-    inline const InternetMediaType& Image_PNG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_PNG_CT; }
-    inline const InternetMediaType& Image_GIF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_GIF_CT; }
-    inline const InternetMediaType& Image_JPEG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_JPEG_CT; }
-
-    inline const InternetMediaType& Text_HTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_HTML_CT; }
-    inline const InternetMediaType& Text_XHTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XHTML_CT; }
-    inline const InternetMediaType& Text_XML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XML_CT; }
-    inline const InternetMediaType& Text_PLAIN_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_PLAIN_CT; }
-    inline const InternetMediaType& Text_CSV_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_CSV_CT; }
-
-    inline const InternetMediaType& JSON_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kJSON_CT; }
-
-    inline const InternetMediaType& PDF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kPDF_CT; }
-
-    inline const InternetMediaType& URL_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kURL_CT; }
-
-    inline const InternetMediaType& XML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kXML_CT; }
-
-    inline const InternetMediaType& XSLT_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kXSLT_CT; }
-
-    inline const InternetMediaType& JavaArchive_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kJavaArchive_CT; }
-
-    inline const InternetMediaType& Application_RTF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_RTF_CT; }
-
-    inline const InternetMediaType& Application_Zip_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_Zip_CT; }
-}
-
-namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType {
     inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
 
     inline const InternetMediaType& Image_PNG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_PNG_CT; }

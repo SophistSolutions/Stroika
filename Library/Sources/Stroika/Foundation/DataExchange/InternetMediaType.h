@@ -15,6 +15,7 @@
  * TODO:
  *      @todo   Need some registration mechanism so IsTextFormat() results can be extended.
  *              For example, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
+ *		@todo	Perhaps use optional for mapping as performance hack (but makes object larger so not clearly good idea)
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -76,9 +77,13 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual T As () const;
 
     public:
+        /**
+         */
         nonvirtual bool empty () const;
 
     public:
+        /**
+         */
         nonvirtual void clear ();
 
     public:
@@ -97,8 +102,9 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Like 'Equals' but only comparing type/subtype
+         *  Like 'Equals' but only comparing type/subtype (or for AtomType overload only matching type)
          */
+        nonvirtual bool Match (const AtomType& type) const;
         nonvirtual bool Match (const InternetMediaType& rhs) const;
 
     public:
@@ -219,6 +225,7 @@ namespace Stroika::Foundation::DataExchange {
 
             const InternetMediaType::AtomType& Text_Type ();
             const InternetMediaType::AtomType& Image_Type ();
+            const InternetMediaType::AtomType& Application_Type ();
 
             const InternetMediaType& OctetStream_CT ();
             const InternetMediaType& Image_PNG_CT ();
@@ -313,14 +320,25 @@ namespace Stroika::Foundation::DataExchange {
     namespace InternetMediaTypes::Types {
 
         /**
+		 *	\brief 'text'
+		 *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
         constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
 
         /**
+		 *	\brief 'image'
+		 *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
         constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Image_Type> kImage;
+
+        /**
+		 *	\brief 'image'
+		 *
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Application_Type> kApplication;
 
     }
 
