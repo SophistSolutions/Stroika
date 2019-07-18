@@ -72,7 +72,7 @@ public:
 
                   Route{MethodsRegularExpressions::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
                             response->write (L"FRED");
-                            response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
+                            response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_PLAIN);
                         }},
 
                   /*
@@ -90,7 +90,7 @@ public:
                             // demo getting argument from the body
                             if (not number) {
                                 // read if content-type is text (not json)
-                                if (m->PeekRequest ()->GetContentType () and m->PeekRequest ()->GetContentType ()->IsA (Stroika::Foundation::DataExchange::PredefinedInternetMediaType::Text_CT ())) {
+                                if (m->PeekRequest ()->GetContentType () and m->PeekRequest ()->GetContentType ()->IsA (Stroika::Foundation::DataExchange::PredefinedInternetMediaType::kText_PLAIN ())) {
                                     String argsAsString = Streams::TextReader::New (m->PeekRequest ()->GetBody ()).ReadAll ();
                                     number              = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
                                 }

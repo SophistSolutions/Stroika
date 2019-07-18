@@ -50,7 +50,7 @@ namespace {
                       Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
                       Route{L"GET"_RegEx, L"FRED"_RegEx, [] (Request*, Response* response) {
                                 response->write (L"FRED");
-                                response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
+                                response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_PLAIN);
                             }},
                       Route{
                           L"Files/.*"_RegEx,

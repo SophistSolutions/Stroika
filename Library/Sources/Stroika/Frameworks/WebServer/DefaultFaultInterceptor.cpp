@@ -33,12 +33,12 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             catch (const IO::Network::HTTP::Exception& ee) {
                 response->SetStatus (ee.GetStatus (), ee.GetReason ());
                 response->writeln (Characters::ToString (ee).c_str ());
-                response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
+                response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
             }
             catch (...) {
                 response->SetStatus (IO::Network::HTTP::StatusCodes::kInternalError);
                 response->writeln (Characters::ToString (e).c_str ());
-                response->SetContentType (DataExchange::PredefinedInternetMediaType::kText);
+                response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
             }
         }
         catch (...) {

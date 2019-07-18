@@ -7,7 +7,8 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/String.h"
-
+#include "../Containers/Mapping.h"
+#include "../DataExchange/Atom.h"
 #include "../Execution/VirtualConstant.h"
 
 /**
@@ -21,25 +22,98 @@ namespace Stroika::Foundation::DataExchange {
     using Characters::String;
 
     /**
-     *  MIME content-types are also sometimes referred to as 'Internet media type'
+     *  MIME content-types are also sometimes referred to as 'Internet media type'.
+     *
+     *  \note - this class stores the type, subtype, and parameters, but it does NOT store any comments from the content-type
      */
     class InternetMediaType {
     public:
+        using AtomType = DataExchange::Atom<DataExchange::AtomManager_CaseInsensitive>;
+
+    public:
+        /**
+         *  Note that according to https://tools.ietf.org/html/rfc2045#page-10, these types
+         *  are compared in a case insensitive manner (by type/subtype) and the case constructed with
+         *  in the string may not be preserved.
+         *      "Matching of media type and subtype; is ALWAYS case-insensitive"
+         *
+         *  If type provided, subType must be as well (require). And no paramters allowed if type is empty.
+         *  The one-argument String overload parses the Content-Type in the usual way.
+         */
         InternetMediaType ()                         = default;
         InternetMediaType (const InternetMediaType&) = default;
         explicit InternetMediaType (const String& ct);
+        explicit InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters = {});
+        explicit InternetMediaType (const String& type, const String& subType, const Containers::Mapping<String, String>& parameters = {});
 
     public:
+        /**
+         *  Supported RETURN_TYPES:
+         *      o   String
+         *      o   AtomType
+         */
+        template <typename RETURN_TYPE = String>
+        nonvirtual RETURN_TYPE GetType () const;
+
+    public:
+        /**
+         *  Supported RETURN_TYPES:
+         *      o   String
+         *      o   AtomType
+         */
+        template <typename RETURN_TYPE = String>
+        nonvirtual RETURN_TYPE GetSubType () const;
+
+    public:
+        /**
+         */
+        nonvirtual Containers::Mapping<String, String> GetParameters () const;
+
+    public:
+        /**
+         */
         template <typename T>
-        nonvirtual T    As () const;
+        nonvirtual T As () const;
+
+    public:
         nonvirtual bool empty () const;
+
+    public:
         nonvirtual void clear ();
 
-        // handy helpers -
     public:
-        nonvirtual bool IsTextFormat () const;                                // returns true if you can expect to treat as some sort of text and reasonably view - like text/html, application/x-ccr, application/x-url, etc...
-        nonvirtual bool IsImageFormat () const;                               // subtype of image/*
-        nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const; // synonym for IsSubTypeOfOrEqualTo ()
+        /**
+         *  \brief returns true if you can expect to treat as some sort of text and reasonably view - like text/html, application/x-ccr, application/x-url, etc...
+         *
+         *  See also PredefinedInternetMediaType::kText
+         */
+        nonvirtual bool IsTextFormat () const;
+
+    public:
+        /**
+         * subtype of image/*
+         */
+        nonvirtual bool IsImageFormat () const;
+
+    public:
+        /**
+         *  Like 'Equals' but only comparing type/subtype
+         */
+        nonvirtual bool Match (const InternetMediaType& rhs) const;
+
+    public:
+        /**
+         *  \brief This function compares similar types, like 
+         *         application/healthframe-PHR-Format and
+         *         application/healthframe-PHR-Format-2 etc
+         *         and returns true iff the given type is a prefix (case insensitive)
+         *         of the argument more general one. The types must match, and the
+         *         parameters are ignored.
+         *
+         *  \note Change as of Stroika v2.1d27 - now only checks prefix of
+         *        subtype - type must match - and now ignores parameters.
+         */
+        nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const;
 
     public:
         struct ThreeWayComparer;
@@ -59,7 +133,9 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual String ToString () const;
 
     private:
-        String fType_;
+        AtomType                            fType_;
+        AtomType                            fSubType_;
+        Containers::Mapping<String, String> fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
     };
     template <>
     nonvirtual String InternetMediaType::As () const;
@@ -68,6 +144,9 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  @see Common::ThreeWayComparer<> template
+     *
+     *  \note NO GUARANTEE about the meaning of the ordering? for now. May use atom ordering
+     *        or case insensitive string ordering, or other. Just legal total ordering.
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
@@ -89,11 +168,26 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      */
-    bool IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType);
+    [[deprecated ("in Stroika v2.1d27 - use (slightly differnt but probably better) InternetMediaType{}.IsA ()")]] inline bool IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+    {
+        if (moreSpecificType.As<wstring> ().length () <= moreGeneralType.As<wstring> ().length ()) {
+            return false;
+        }
+        return moreGeneralType.As<wstring> () == moreSpecificType.As<wstring> ().substr (0, moreGeneralType.As<wstring> ().length ());
+    }
 
     /**
      */
-    bool IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType);
+    [[deprecated ("in Stroika v2.1d27 - this never made sense and always has been equivilent to IsSubTypeOf")]] inline bool IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+    {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        return moreSpecificType == moreGeneralType or IsSubTypeOf (moreSpecificType, moreGeneralType);
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+    }
 
     /**
      */
@@ -122,12 +216,14 @@ namespace Stroika::Foundation::DataExchange {
      */
     namespace PredefinedInternetMediaType {
         namespace PRIVATE_ {
+
+            const InternetMediaType::AtomType& Text_Type ();
+            const InternetMediaType::AtomType& Image_Type ();
+
             const InternetMediaType& OctetStream_CT ();
-            const InternetMediaType& Image_CT ();
             const InternetMediaType& Image_PNG_CT ();
             const InternetMediaType& Image_GIF_CT ();
             const InternetMediaType& Image_JPEG_CT ();
-            const InternetMediaType& Text_CT ();
             const InternetMediaType& Text_HTML_CT ();
             const InternetMediaType& Text_XHTML_CT ();
             const InternetMediaType& Text_XML_CT ();
@@ -144,80 +240,160 @@ namespace Stroika::Foundation::DataExchange {
         }
 
         /**
+         *  application/octet-stream
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kOctetStream")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_CT> kImage;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kImage_PNG")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_PNG_CT> kImage_PNG;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_PNG_CT> kImage_PNG;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kImage_GIF")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_GIF_CT> kImage_GIF;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_GIF_CT> kImage_GIF;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kImage_JPEG")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_JPEG_CT> kImage_JPEG;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_JPEG_CT> kImage_JPEG;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_HTML")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_HTML_CT> kText_HTML;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_CT> kText;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_XHTML")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_XHTML_CT> kText_XHTML;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_HTML_CT> kText_HTML;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_XML")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_XML_CT> kText_XML;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_XHTML_CT> kText_XHTML;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_PLAIN")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_XML_CT> kText_XML;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_CSV")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_CSV_CT> kText_CSV;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kJSON")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::JSON_CT> kJSON;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_CSV_CT> kText_CSV;
-
-        /**
-         */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::JSON_CT> kJSON;
-
-        /**
-         */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::PDF_CT> kPDF;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kPDF")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::PDF_CT> kPDF;
 
         /**
          * very unclear what to use, no clear standard!
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::URL_CT> kURL;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kURL")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::URL_CT> kURL;
 
         /**
          *  application/x-xslt
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::XSLT_CT> kApplication_XSLT;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kApplication_XSLT")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::XSLT_CT> kApplication_XSLT;
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::JavaArchive_CT> kJavaArchive;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kJavaArchive")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::JavaArchive_CT> kJavaArchive;
 
         /**
          * Microsoft RTF - Rich Text Format
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_RTF_CT> kApplication_RTF;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kApplication_RTF")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_RTF_CT> kApplication_RTF;
 
         /**
          *  application/zip
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
+        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kApplication_Zip")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
+
+    }
+
+    namespace InternetMediaTypes::Types {
+
+        /**
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
+
+        /**
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Image_Type> kImage;
+
+    }
+
+    namespace InternetMediaTypes {
+
+        /**
+         *  application/octet-stream
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::OctetStream_CT> kOctetStream;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_PNG_CT> kImage_PNG;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_GIF_CT> kImage_GIF;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_JPEG_CT> kImage_JPEG;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_HTML_CT> kText_HTML;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XHTML_CT> kText_XHTML;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XML_CT> kText_XML;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSV_CT> kText_CSV;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JSON_CT> kJSON;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::PDF_CT> kPDF;
+
+        /**
+         * very unclear what to use, no clear standard!
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::URL_CT> kURL;
+
+        /**
+         *  application/x-xslt
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::XSLT_CT> kApplication_XSLT;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JavaArchive_CT> kJavaArchive;
+
+        /**
+         * Microsoft RTF - Rich Text Format
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_RTF_CT> kApplication_RTF;
+
+        /**
+         *  application/zip
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_Zip_CT> kApplication_Zip;
 
     }
 

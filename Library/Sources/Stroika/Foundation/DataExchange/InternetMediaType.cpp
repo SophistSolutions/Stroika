@@ -3,8 +3,10 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/String_Constant.h"
+#include "../Characters/RegularExpression.h"
 #include "../Characters/ToString.h"
+#include "../Containers/SortedMapping.h"
+#include "../DataExchange/BadFormatException.h"
 
 #include "InternetMediaType.h"
 
@@ -19,14 +21,15 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
-    : kOctetStream_CT (L"application/octet-stream"sv)
+    : kText_Type{L"text"sv}
+    , kImage_Type{L"image"sv}
 
-    , kImage_CT (L"image"sv)
+    , kOctetStream_CT (L"application/octet-stream"sv)
+
     , kImage_PNG_CT (L"image/png"sv)
     , kImage_GIF_CT (L"image/gif"sv)
     , kImage_JPEG_CT (L"image/jpeg"sv)
 
-    , kText_CT (L"text"sv)
     , kText_HTML_CT (L"text/html"sv)
     , kText_XHTML_CT (L"text/xhtml"sv)
     , kText_XML_CT (L"text/xml"sv)
@@ -49,63 +52,124 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
 {
 }
 
-DataExchange::Private_::InternetMediaType_ModuleData_::~InternetMediaType_ModuleData_ ()
-{
-}
-
 /*
  ********************************************************************************
  ************************** InternetMediaType ***********************************
  ********************************************************************************
  */
+InternetMediaType::InternetMediaType (const String& ct)
+{
+    static const RegularExpression kTopLevelMatcher_ = L"([_\\-[:alnum:]]+|\\*)/([_\\-[:alnum:]]+|\\*)(.*)"_RegEx;
+    Containers::Sequence<String>   matches;
+    if (ct.Match (kTopLevelMatcher_, &matches) and matches.length () >= 2) {
+        fType_    = matches[0];
+        fSubType_ = matches[1];
+        if (matches.length () == 3) {
+            String moreParameters = matches[2];
+            while (not moreParameters.empty ()) {
+                static const RegularExpression kParameterMatcher_ = L"\\s*;\\s*([_\\-[:alnum:]]+)\\s*=\\s*(\\S+)(.*)"_RegEx;
+                matches.clear ();
+                if (moreParameters.Match (kParameterMatcher_, &matches)) {
+                    String pName  = matches[0];
+                    String pValue = matches[1];
+                    if (pValue.StartsWith (L"\"") and pValue.EndsWith (L"\"")) {
+                        pValue = pValue.SubString (1, -1);
+                    }
+                    fParameters_.Add (pName, pValue);
+                    if (matches.length () == 3) {
+                        moreParameters = matches[2];
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    break;	// rest allowed - treated as comments
+                }
+            }
+        }
+    }
+    else {
+        Execution::Throw (DataExchange::BadFormatException{L"Badly formatted InternetMediaType"sv});
+    }
+}
+
 bool InternetMediaType::IsTextFormat () const
 {
+    if (fType_ == InternetMediaTypes::Types::kText ()) {
+        return true;
+    }
     /*
      * TODO:
      *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES - EG HelathFrameWorks PHR FORMATS
      *              -- LGP 2011-10-04
      */
-    return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::kText) or
-           IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::kJSON);
+    if (Match (InternetMediaTypes::kJSON)) {
+        return true;
+    }
+    if (Match (InternetMediaTypes::kURL)) {
+        return true;
+    }
+    if (Match (InternetMediaTypes::kApplication_XSLT)) {
+        return true;
+    }
+    if (Match (InternetMediaTypes::kApplication_RTF)) {
+        return true;
+    }
+    return false;
 }
 
 bool InternetMediaType::IsImageFormat () const
 {
+    if (fType_ == InternetMediaTypes::Types::kImage ()) {
+        return true;
+    }
     /*
      * TODO:
      *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
      */
-    return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::kImage);
+    return false;
 }
 
 String InternetMediaType::ToString () const
 {
-    return Characters::ToString (fType_); // format this string as any other normal string
+    return Characters::ToString (As<String> ()); // format this string as any other normal string
 }
 
-/*
- ********************************************************************************
- ******************************** IsSubTypeOf ***********************************
- ********************************************************************************
- */
-bool DataExchange::IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+template <>
+String InternetMediaType::As () const
 {
-    /*
-     * TODO:
-     *      o   This could be simpler and clearer using Stroika strings...
-     */
-    if (moreSpecificType.As<wstring> ().length () <= moreGeneralType.As<wstring> ().length ()) {
-        return false;
+    if (empty ()) {
+        return String{};
     }
-    return moreGeneralType.As<wstring> () == moreSpecificType.As<wstring> ().substr (0, moreGeneralType.As<wstring> ().length ());
+    StringBuilder sb;
+    sb += fType_.GetPrintName ();
+    sb += L"/";
+    sb += fSubType_.GetPrintName ();
+    for (auto&& p : fParameters_) {
+        sb += L"; " + p.fKey + L": " + p.fValue;
+    }
+    return sb.str ();
 }
 
 /*
  ********************************************************************************
- *************************** IsSubTypeOfOrEqualTo *******************************
+ ********************** InternetMediaType::ThreeWayComparer *********************
  ********************************************************************************
  */
-bool DataExchange::IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+int InternetMediaType::ThreeWayComparer::operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const
 {
-    return moreSpecificType == moreGeneralType or IsSubTypeOf (moreSpecificType, moreGeneralType);
+    if (int cmp = Common::ThreeWayCompare (lhs.fType_, rhs.fType_)) {
+        return cmp;
+    }
+    if (int cmp = Common::ThreeWayCompare (lhs.fSubType_, rhs.fSubType_)) {
+        return cmp;
+    }
+    using namespace Common;
+    using namespace Containers;
+    using namespace Traversal;
+    // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
+    return Iterable<KeyValuePair<String, String>>::SequentialThreeWayComparer{}(
+        SortedMapping<String, String>{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, lhs.fParameters_},
+        SortedMapping<String, String>{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, rhs.fParameters_});
 }

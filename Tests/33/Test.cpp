@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -132,12 +133,41 @@ namespace Test4_VariantValue_ {
 }
 
 namespace {
+    namespace Test5_InternetMediaType_ {
+        void RunTests ()
+        {
+            {
+                InternetMediaType ct1{L"text/plain;charset=ascii"};
+                VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
+
+                InternetMediaType ct2{L"text/plain; charset = ascii"};
+                VerifyTestResult (ct1 == ct2);
+
+                InternetMediaType ct3{L"text/plain; charset = \"ascii\""};
+                VerifyTestResult (ct1 == ct3);
+
+                InternetMediaType ct4{L"text/plain; charset = \"ASCII\""};	// case insensitive compare key, but not value
+                VerifyTestResult (ct1 != ct4);
+            }
+            {
+                // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
+                InternetMediaType ct1{L"text/plain; charset=us-ascii (Plain text)"};
+                InternetMediaType ct2{L"text/plain; charset=\"us-ascii\""};
+                VerifyTestResult (ct1 == ct2);
+                VerifyTestResult (ct1.IsTextFormat ());
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_Atom_ ();
         Test2_OptionsFile_ ();
         Test3_ModuleGetterSetter_ ();
         Test4_VariantValue_::RunTests ();
+        Test5_InternetMediaType_::RunTests ();
     }
 }
 

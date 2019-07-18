@@ -18,49 +18,88 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** InternetMediaType *****************************
      ********************************************************************************
      */
-    inline InternetMediaType::InternetMediaType (const String& ct)
-        : fType_ (ct)
+    inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters)
+        : fType_ (type)
+        , fSubType_ (subType)
+        , fParameters_ (parameters)
     {
+        Require (type.empty () == subType.empty ());
+        Require (not type.empty () or parameters.empty ());
+    }
+    inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const Containers::Mapping<String, String>& parameters)
+        : fType_ (type)
+        , fSubType_ (subType)
+        , fParameters_ (parameters)
+    {
+        Require (type.empty () == subType.empty ());
+        Require (not type.empty () or parameters.empty ());
     }
     inline bool InternetMediaType::empty () const
     {
+        Assert (fType_.empty () == fSubType_.empty ());
+        Assert (not fType_.empty () or fParameters_.empty ());
         return fType_.empty ();
     }
     inline void InternetMediaType::clear ()
     {
         fType_.clear ();
-    }
-    inline bool InternetMediaType::IsA (const InternetMediaType& moreGeneralType) const
-    {
-        return IsSubTypeOfOrEqualTo (*this, moreGeneralType);
-    }
-    inline bool InternetMediaType::Equals (const InternetMediaType& rhs) const
-    {
-        return String::EqualsComparer{}(fType_, rhs.fType_);
-    }
-    inline int InternetMediaType::Compare (const InternetMediaType& rhs) const
-    {
-        return String::ThreeWayComparer{}(fType_, rhs.fType_);
+        fSubType_.clear ();
+        fParameters_.clear ();
     }
     template <>
-    inline String InternetMediaType::As () const
+    inline auto InternetMediaType::GetType () const -> AtomType
     {
         return fType_;
     }
     template <>
+    inline auto InternetMediaType::GetType () const -> String
+    {
+        return fType_.GetPrintName ();
+    }
+    template <>
+    inline auto InternetMediaType::GetSubType () const -> AtomType
+    {
+        return fSubType_;
+    }
+    template <>
+    inline auto InternetMediaType::GetSubType () const -> String
+    {
+        return fSubType_.GetPrintName ();
+    }
+    inline Containers::Mapping<String, String> InternetMediaType::GetParameters () const
+    {
+        return fParameters_;
+    }
+    inline bool InternetMediaType::Match (const InternetMediaType& rhs) const
+    {
+        if (this->GetType<AtomType> () != rhs.GetType<AtomType> ()) {
+            return false;
+        }
+        if (this->GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()) {
+            return false;
+        }
+        return true;
+    }
+    inline bool InternetMediaType::IsA (const InternetMediaType& moreGeneralType) const
+    {
+        if (this->GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
+            return false;
+        }
+        // compare just the subtypes, for prefix equals
+        return GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::CompareOptions::eCaseInsensitive);
+    }
+    inline bool InternetMediaType::Equals (const InternetMediaType& rhs) const
+    {
+        return fType_ == rhs.fType_ and fSubType_ == rhs.fSubType_ and fParameters_ == rhs.fParameters_;
+    }
+    inline int InternetMediaType::Compare (const InternetMediaType& rhs) const
+    {
+        return InternetMediaType::ThreeWayComparer{}(*this, rhs);
+    }
+    template <>
     inline wstring InternetMediaType::As () const
     {
-        return fType_.As<wstring> ();
-    }
-
-    /*
-     ********************************************************************************
-     ********************** InternetMediaType::ThreeWayComparer *********************
-     ********************************************************************************
-     */
-    inline int InternetMediaType::ThreeWayComparer::operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const
-    {
-        return String::ThreeWayComparer{}(lhs.fType_, rhs.fType_);
+        return As<String> ().As<wstring> ();
     }
 
     /*
@@ -114,16 +153,17 @@ namespace Stroika::Foundation::DataExchange {
 namespace Stroika::Foundation::DataExchange::Private_ {
     struct InternetMediaType_ModuleData_ {
         InternetMediaType_ModuleData_ ();
-        ~InternetMediaType_ModuleData_ ();
+        ~InternetMediaType_ModuleData_ () = default;
+
+        const InternetMediaType::AtomType kText_Type;
+        const InternetMediaType::AtomType kImage_Type;
 
         const InternetMediaType kOctetStream_CT;
 
-        const InternetMediaType kImage_CT;
         const InternetMediaType kImage_PNG_CT;
         const InternetMediaType kImage_GIF_CT;
         const InternetMediaType kImage_JPEG_CT;
 
-        const InternetMediaType kText_CT;
         const InternetMediaType kText_HTML_CT;
         const InternetMediaType kText_XHTML_CT;
         const InternetMediaType kText_XML_CT;
@@ -149,14 +189,16 @@ namespace {
 }
 
 namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVATE_ {
+
+    inline const InternetMediaType::AtomType& Text_Type () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_Type; }
+    inline const InternetMediaType::AtomType& Image_Type () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_Type; }
+
     inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
 
-    inline const InternetMediaType& Image_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_CT; }
     inline const InternetMediaType& Image_PNG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_PNG_CT; }
     inline const InternetMediaType& Image_GIF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_GIF_CT; }
     inline const InternetMediaType& Image_JPEG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_JPEG_CT; }
 
-    inline const InternetMediaType& Text_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_CT; }
     inline const InternetMediaType& Text_HTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_HTML_CT; }
     inline const InternetMediaType& Text_XHTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XHTML_CT; }
     inline const InternetMediaType& Text_XML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XML_CT; }
@@ -183,12 +225,10 @@ namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVAT
 namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType {
     inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
 
-    inline const InternetMediaType& Image_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_CT; }
     inline const InternetMediaType& Image_PNG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_PNG_CT; }
     inline const InternetMediaType& Image_GIF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_GIF_CT; }
     inline const InternetMediaType& Image_JPEG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_JPEG_CT; }
 
-    inline const InternetMediaType& Text_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_CT; }
     inline const InternetMediaType& Text_HTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_HTML_CT; }
     inline const InternetMediaType& Text_XHTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XHTML_CT; }
     inline const InternetMediaType& Text_XML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XML_CT; }

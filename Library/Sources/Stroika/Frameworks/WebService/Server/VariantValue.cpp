@@ -49,8 +49,8 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType)
 {
     using namespace Characters;
-    static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
-    if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
+    static const InternetMediaType kDefaultCT_ = DataExchange::InternetMediaTypes::kJSON;
+    if (bodyContentType.value_or (kDefaultCT_) == DataExchange::InternetMediaTypes::kJSON) {
         return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&] () { return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> (); });
     }
     Execution::Throw (ClientErrorException (L"Unrecognized content-type"sv));
@@ -169,13 +169,13 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON () or webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kText_PLAIN ())); // all we support for now
+    Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON () or webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN ())); // all we support for now
     if (webServiceDescription.fResponseType) {
-        if (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON ()) {
+        if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON ()) {
             response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
             response->SetContentType (*webServiceDescription.fResponseType);
         }
-        else if (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kText_PLAIN ()) {
+        else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN ()) {
             response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
             response->SetContentType (*webServiceDescription.fResponseType);
         }

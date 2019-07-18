@@ -67,7 +67,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *      \endcode
      *
      *  Supported BODY formats:
-     *      o   DataExchange::PredefinedInternetMediaType::kJSON
+     *      o   DataExchange::InternetMediaTypes::kJSON
      *      o   application/x-www-form-urlencoded           *** @todo NOT YET IMPLEMENTED - BUT SHOULD BE SUPPORTED ***
      *
      *  @see PickoutParamValuesFromURL () to just pickout params from URL
@@ -147,8 +147,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \note   Supported Response Types (For the VariantValue response type overload)
      *          o  nullopt (no response written)
-     *          o  DataExchange::PredefinedInternetMediaType::JSON_CT ()
-     *          o  DataExchange::PredefinedInternetMediaType::kText_PLAIN ()
+     *          o  DataExchange::InternetMediaTypes::JSON_CT ()
+     *          o  DataExchange::InternetMediaTypes::kText_PLAIN ()
      */
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription);
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue);

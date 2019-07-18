@@ -70,7 +70,7 @@ String Connection::Remaining::ToString () const
 Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream)
     : Message (
           Request (socketStream),
-          Response (socket, socketStream, DataExchange::PredefinedInternetMediaType::kOctetStream),
+          Response (socket, socketStream, DataExchange::InternetMediaTypes::kOctetStream),
           socket.GetPeerAddress ())
     , fMsgHeaderInTextStream (MessageStartTextInputStreamBinaryAdapter::New (PeekRequest ()->GetInputStream ()))
 {

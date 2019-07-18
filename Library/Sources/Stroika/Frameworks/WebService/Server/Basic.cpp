@@ -103,5 +103,5 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->writeln (L"</ul>");
     response->writeln (L"</body>");
     response->writeln (L"</html>");
-    response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_HTML);
+    response->SetContentType (DataExchange::InternetMediaTypes::kText_HTML);
 }
