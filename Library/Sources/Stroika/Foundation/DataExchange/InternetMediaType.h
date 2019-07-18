@@ -15,7 +15,7 @@
  * TODO:
  *      @todo   Need some registration mechanism so IsTextFormat() results can be extended.
  *              For example, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
- *		@todo	Perhaps use optional for mapping as performance hack (but makes object larger so not clearly good idea)
+ *      @todo   Perhaps use optional for mapping as performance hack (but makes object larger so not clearly good idea)
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -320,22 +320,22 @@ namespace Stroika::Foundation::DataExchange {
     namespace InternetMediaTypes::Types {
 
         /**
-		 *	\brief 'text'
-		 *
+         *  \brief 'text'
+         *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
         constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
 
         /**
-		 *	\brief 'image'
-		 *
+         *  \brief 'image'
+         *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
         constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Image_Type> kImage;
 
         /**
-		 *	\brief 'image'
-		 *
+         *  \brief 'image'
+         *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
         constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Application_Type> kApplication;
