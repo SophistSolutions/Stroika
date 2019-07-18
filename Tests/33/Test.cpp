@@ -146,7 +146,7 @@ namespace {
                 InternetMediaType ct3{L"text/plain; charset = \"ascii\""};
                 VerifyTestResult (ct1 == ct3);
 
-                InternetMediaType ct4{L"text/plain; charset = \"ASCII\""};	// case insensitive compare key, but not value
+                InternetMediaType ct4{L"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
                 VerifyTestResult (ct1 != ct4);
             }
             {

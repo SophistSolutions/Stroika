@@ -84,7 +84,7 @@ InternetMediaType::InternetMediaType (const String& ct)
                     }
                 }
                 else {
-                    break;	// rest allowed - treated as comments
+                    break; // rest allowed - treated as comments
                 }
             }
         }
