@@ -72,7 +72,7 @@ public:
 
                   Route{MethodsRegularExpressions::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
                             response->write (L"FRED");
-                            response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_PLAIN);
+                            response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
                         }},
 
                   /*
@@ -90,7 +90,7 @@ public:
                             // demo getting argument from the body
                             if (not number) {
                                 // read if content-type is text (not json)
-                                if (m->PeekRequest ()->GetContentType () and m->PeekRequest ()->GetContentType ()->IsA (Stroika::Foundation::DataExchange::PredefinedInternetMediaType::kText_PLAIN ())) {
+                                if (m->PeekRequest ()->GetContentType () and m->PeekRequest ()->GetContentType ()->IsA (Stroika::Foundation::DataExchange::InternetMediaTypes::kText_PLAIN ())) {
                                     String argsAsString = Streams::TextReader::New (m->PeekRequest ()->GetBody ()).ReadAll ();
                                     number              = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
                                 }
@@ -164,7 +164,7 @@ public:
     {
         String argsAsString = Streams::TextReader::New (message->PeekRequest ()->GetBody ()).ReadAll ();
         message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-        message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::kText_HTML);
+        message->PeekResponse ()->SetContentType (DataExchange::InternetMediaTypes::kText_HTML);
     }
 };
 
@@ -174,7 +174,7 @@ public:
 const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     L"variables"_k,
     Set<String>{Methods::kGet, Methods::kPost, Methods::kDelete},
-    DataExchange::PredefinedInternetMediaType::kJSON,
+    DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl http://localhost:8080/variables -v --output -",
@@ -188,7 +188,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
     Set<String>{String_Constant{Methods::kPost}},
-    DataExchange::PredefinedInternetMediaType::kJSON,
+    DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
@@ -198,7 +198,7 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
 const WebServiceMethodDescription WebServer::Rep_::kMinus{
     L"minus"_k,
     Set<String>{String_Constant{Methods::kPost}},
-    DataExchange::PredefinedInternetMediaType::kJSON,
+    DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
@@ -208,7 +208,7 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus{
 const WebServiceMethodDescription WebServer::Rep_::kTimes{
     L"times"_k,
     Set<String>{String_Constant{Methods::kPost}},
-    DataExchange::PredefinedInternetMediaType::kJSON,
+    DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
@@ -219,7 +219,7 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
 const WebServiceMethodDescription WebServer::Rep_::kDivide{
     L"divide"_k,
     Set<String>{String_Constant{Methods::kPost}},
-    DataExchange::PredefinedInternetMediaType::kJSON,
+    DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
