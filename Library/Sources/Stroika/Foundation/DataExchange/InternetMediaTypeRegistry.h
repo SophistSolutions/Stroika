@@ -9,19 +9,24 @@
 #include <optional>
 
 #include "../Characters/String.h"
+#include "../Containers/Set.h"
 
 #include "InternetMediaType.h"
 
 /**
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
  */
 
 namespace Stroika::Foundation::DataExchange {
 
     using Characters::String;
-    using Containers::Sequence;
+    using Containers::Set;
 
     /**
-     *  This leverages the os-dependent mime/databases
+     *  This leverages the os-dependent MIME databases
      *
      *  @todo maybe virtualize interface and provide other implementations (which is why we have Default () API).
      *        and much more - see https://stroika.atlassian.net/browse/STK-576
@@ -57,17 +62,35 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Some types can be more general or more specific versions of a given type.
+         *  Return those more general (including argument).
          */
-        nonvirtual Sequence<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct, bool includeMoreGeneralTypes = true) const;
+        nonvirtual Set<InternetMediaType> GetMoreGeneralTypes (const InternetMediaType& ct) const;
 
     public:
         /**
+         *  Some types can be more general or more specific versions of a given type.
+         *  Return those more specific (including argument).
+         */
+        nonvirtual Set<InternetMediaType> GetMoreSpecificTypes (const InternetMediaType& ct) const;
+
+    public:
+        /**
+         *  There can be more than one file suffix associated with a content type. Note that this returns file
+         *  suffixes from more general InternetMediaTypes as well as the given one.
+         */
+        nonvirtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const;
+        nonvirtual Set<FileSuffixType> GetAssociatedFileSuffixes (const Traversal::Iterable<InternetMediaType>& cts) const;
+
+    public:
+        /**
+         * return nullopt if not found
          */
         nonvirtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const;
 
     public:
         /**
-         * return empty string if not found
+         * return nullopt if not found
          */
         nonvirtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const;
     };

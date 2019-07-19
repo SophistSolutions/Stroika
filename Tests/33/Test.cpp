@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/DataExchange/Atom.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -57,7 +58,7 @@ namespace {
         };
         OptionsFile of{
             L"MyModule",
-            [] () -> ObjectVariantMapper {
+            []() -> ObjectVariantMapper {
                 ObjectVariantMapper mapper;
                 mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
                     {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
@@ -66,7 +67,7 @@ namespace {
                 return mapper;
             }(),
             OptionsFile::kDefaultUpgrader,
-            [] (const String& moduleName, const String& fileSuffix) -> String {
+            [](const String& moduleName, const String& fileSuffix) -> String {
                 return IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
             }};
         MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
@@ -83,7 +84,7 @@ namespace {
         ModuleGetterSetter_Implementation_MyData_ ()
             : fOptionsFile_{
                   L"MyModule",
-                  [] () -> ObjectVariantMapper {
+                  []() -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
                           {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
@@ -91,7 +92,7 @@ namespace {
                       });
                       return mapper;
                   }(),
-                  OptionsFile::kDefaultUpgrader, [] (const String& moduleName, const String& fileSuffix) -> String {
+                  OptionsFile::kDefaultUpgrader, [](const String& moduleName, const String& fileSuffix) -> String {
                 // for regression tests write to /tmp
                 return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix; }}
             , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
@@ -155,6 +156,22 @@ namespace {
                 InternetMediaType ct2{L"text/plain; charset=\"us-ascii\""};
                 VerifyTestResult (ct1 == ct2);
                 VerifyTestResult (ct1.IsTextFormat ());
+            }
+            {
+                InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
+                DbgTrace (L"SUFFIX(JSON)=%s", Characters::ToString (r.GetPreferredAssociatedFileSuffix (InternetMediaTypes::kJSON)).c_str ());
+                DbgTrace (L"MOREGEN(JSON)=%s", Characters::ToString (r.GetMoreGeneralTypes (InternetMediaTypes::kJSON)).c_str ());
+                DbgTrace (L"MORESPECIFIC(JSON)=%s", Characters::ToString (r.GetMoreSpecificTypes (InternetMediaTypes::kJSON)).c_str ());
+                DbgTrace (L"ASSOCFILESUFFIXES(JSON)=%s", Characters::ToString (r.GetAssociatedFileSuffixes (InternetMediaTypes::kJSON)).c_str ());
+                DbgTrace (L"GetAssociatedPrettyName(JSON)=%s", Characters::ToString (r.GetAssociatedPrettyName (InternetMediaTypes::kJSON)).c_str ());
+            }
+            {
+                InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
+                DbgTrace (L"SUFFIX(PNG)=%s", Characters::ToString (r.GetPreferredAssociatedFileSuffix (InternetMediaTypes::kImage_PNG)).c_str ());
+                DbgTrace (L"MOREGEN(PNG)=%s", Characters::ToString (r.GetMoreGeneralTypes (InternetMediaTypes::kImage_PNG)).c_str ());
+                DbgTrace (L"MORESPECIFIC(PNG)=%s", Characters::ToString (r.GetMoreSpecificTypes (InternetMediaTypes::kImage_PNG)).c_str ());
+                DbgTrace (L"ASSOCFILESUFFIXES(PNG)=%s", Characters::ToString (r.GetAssociatedFileSuffixes (InternetMediaTypes::kImage_PNG)).c_str ());
+                DbgTrace (L"GetAssociatedPrettyName(PNG)=%s", Characters::ToString (r.GetAssociatedPrettyName (InternetMediaTypes::kImage_PNG)).c_str ());
             }
         }
     }
