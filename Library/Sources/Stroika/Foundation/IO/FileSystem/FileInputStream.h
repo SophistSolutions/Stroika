@@ -98,8 +98,10 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     public:
         /**
+         *  \note - prior to v2.1d27, this defaulted to unseekable, but for files, it makes way more sense to default to seekable, since
+         *        doing so typically costs nothing, and is pretty commonly useful.
          */
-        static constexpr SeekableFlag kSeekableFlag_DEFAULT = SeekableFlag::eNotSeekable;
+        static constexpr SeekableFlag kSeekableFlag_DEFAULT = SeekableFlag::eSeekable;
 
     public:
         class Ptr;
