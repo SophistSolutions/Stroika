@@ -26,6 +26,10 @@ using Stroika::Foundation::Cache::SynchronizedLRUCache;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+const String Transfer::Cache::DefaultOptions::kCachedResultHeaderDefault{L"X-Stroika-Cached-Result"sv};
+#endif
+
 namespace {
 
     struct DefaultCacheRep_ : Transfer::Cache::Rep {

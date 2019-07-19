@@ -858,6 +858,16 @@ In file included from ./ObjectVariantMapper.h:883:
 #endif
 #endif
 
+// You get double delete/shared_ptr failure on Test43 - IO:Transfer::Cache regression test
+#ifndef qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+#if defined(_MSC_VER)
+// first broken in in _MS_VS_2k17_15Pt9Pt7_
+#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy 0
+#endif
+#endif
+
 /**
  * 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\sharedstaticdata.h(113): fatal error C1001: An internal error has occurred in the compiler.
 1>(compiler file 'f:\dd\vctools\compiler\cxxfe\sl\p1\c\symbols.c', line 24193)

@@ -62,7 +62,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
             /**
              */
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+            static const String kCachedResultHeaderDefault;
+#else
             static const inline String kCachedResultHeaderDefault{L"X-Stroika-Cached-Result"sv};
+#endif
 
             /**
              *  This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.
@@ -177,7 +181,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      */
     struct Cache::Ptr : shared_ptr<Cache::Rep> {
     };
-
 }
 
 /*
