@@ -61,7 +61,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      * If the fail has no trailing suffix, it returns the empty string. Also - on Windows, if the source file is a 8.3 encoded name, the
      * function automatically maps to a fullname to retrieve the full prefix.
      *
-     *      (( The windows behaviro is that the code did - I'm not sure its wise, or even needed anymore?))
+     *      (( The windows behavior is that the code did - I'm not sure its wise, or even needed anymore?))
      *      (( -- LGP 2011-09-29)
      */
     String GetFileSuffix (const String& fileName);
