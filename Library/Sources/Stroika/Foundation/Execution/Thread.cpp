@@ -1210,7 +1210,7 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
          *
          *  However, I don't see any reliable way to tell this is the case, so don't bother for now. A trouble with checking on
          *  a per-thread-id basis is that often the MAIN THREAD is 0, which is < 0xffff. Then we get one size and then
-         *  on the rest a differnt size, so the layout in the debug trace log looks funny.
+         *  on the rest a different size, so the layout in the debug trace log looks funny.
          */
         constexpr bool kUse16BitThreadIDsIfTheyFit_{false};
         const bool     kUse16Bit_ = kUse16BitThreadIDsIfTheyFit_ and threadIDInt <= 0xffff;

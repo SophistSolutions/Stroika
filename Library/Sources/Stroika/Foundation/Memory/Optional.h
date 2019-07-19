@@ -51,7 +51,7 @@
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
- *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
+ *              since COMPARE is part of traits we do NOT want to allow compare with different traits (so MUST FIX EUQalas as well)
  *
  *      @todo   COULD make operator==, operator<, etc compares more efficeint when comparing with T
  *              by adding a slew (3x) more overloads. (DID TO SOME EXTENT BUT COULD IMPROVE); And could improve iterop
@@ -543,7 +543,7 @@ namespace Stroika::Foundation::Memory {
          *  @see CheckedValue
          *  @see OptionalValue ()
          *
-         *  Notably differnt from @see http://en.cppreference.com/w/cpp/utility/optional/value - see CheckedValue () for optional::value() equivilent
+         *  Notably different from @see http://en.cppreference.com/w/cpp/utility/optional/value - see CheckedValue () for optional::value() equivilent
          *
          *  \note 1-arg version of this is equivilent to optional<>::value_or (defaultValue);
          */

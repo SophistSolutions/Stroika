@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Streams {
      *          This pattern is widely copied, and somewhat of a compelling default choice.
      *
      *          But - it sufers from the grave flaw that when you write generic code or routines, you must write it
-     *          to handle both blocking and non-blocking cases, and these are really quite differnt.
+     *          to handle both blocking and non-blocking cases, and these are really quite different.
      *
      *          Mostly - blocking is MUCH simpler to read/write/debug. But you NEED non-blocking sometimes for efficeincy
      *          reasons (to manage progress through a long operation).

@@ -246,7 +246,7 @@ namespace {
         if (salt and salt->GetSize () != 8)
             [[UNLIKELY_ATTR]]
             {
-                // Could truncate and fill to adapt to differnt sized salt...
+                // Could truncate and fill to adapt to different sized salt...
                 Execution::Throw (Execution::Exception (L"only 8-byte salt with EVP_BytesToKey"sv));
             }
         int i = ::EVP_BytesToKey (

@@ -576,7 +576,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *
      *          When we encounter a close tag, we end that reading, and so pop.
      *
-     *          This means that the start and end tags for a given pair, go to differnt 'IElementConsumer'
+     *          This means that the start and end tags for a given pair, go to different 'IElementConsumer'
      *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
      *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
      *

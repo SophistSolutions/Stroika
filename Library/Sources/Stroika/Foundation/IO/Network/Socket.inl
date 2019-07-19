@@ -118,7 +118,7 @@ namespace Stroika::Foundation::IO::Network {
         /* 
          *  Used to check GetNativeSocket () == rhs.GetNativeSocket ();
          *  but this is better. It practically always amounts to the same thing (since one typically constructs
-         *  a Socket object, and copies that as a Ref - thought it CAN be differnt if you manually attach
+         *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
          *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
          *  being careful about null ptrs.
          */
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::IO::Network {
         /* 
          *  Used to check Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
          *  but this is better. It practically always amounts to the same thing (since one typically constructs
-         *  a Socket object, and copies that as a Ref - thought it CAN be differnt if you manually attach
+         *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
          *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
          *  being careful about null ptrs.
          */
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::IO::Network {
         /* 
          *  Used to check Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
          *  but this is better. It practically always amounts to the same thing (since one typically constructs
-         *  a Socket object, and copies that as a Ref - thought it CAN be differnt if you manually attach
+         *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
          *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
          *  being careful about null ptrs.
          */

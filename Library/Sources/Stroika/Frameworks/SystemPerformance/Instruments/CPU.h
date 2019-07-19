@@ -27,7 +27,7 @@
  *
  *      @todo   GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () is cached on Linux, but CAN change while running (crazy - right?)
  *              But so rare and so costly to recompute. Find a way to compromise.
- *              MAYBE the issue is differnt - hot plug cpu - CPU online/offline. Maybe total cannot change, but just number
+ *              MAYBE the issue is different - hot plug cpu - CPU online/offline. Maybe total cannot change, but just number
  *              online?
  *
  *              @see /sys/devices/system/cpu/online

@@ -74,7 +74,7 @@
  *              but celanup safety/use uninitalized_copy and stl destroy funcitons.
  *
  *              NOTE - CAN USE realloc() if is_trivially_copyable<T>::value, so maybe do SFINAE
- *              differnt impls...
+ *              different impls...
  *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
  *

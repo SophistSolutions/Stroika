@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Time {
     DurationSecondsType GetTickCount () noexcept;
 
     /**
-     *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinite differntly - no arithmatic, just no timeout
+     *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinite differently - no arithmatic, just no timeout
      */
     constexpr DurationSecondsType kInfinite = numeric_limits<DurationSecondsType>::infinity ();
 

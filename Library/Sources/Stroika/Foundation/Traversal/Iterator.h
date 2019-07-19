@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *      4.      In STL, reverse iterators are a special type, incompatible with regular iterators.
      *              In Stroika, reverse iterators are also created with rbegin(), rend (), but
-     *              their type is no differnt than regular iterators.
+     *              their type is no different than regular iterators.
      *              <<<< NYI >>>>
      *
      * Some Rules about Iterators:

@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Containers {
                     if (not o.has_value () or not VALUE_EQUALS_COMPARER::Equals (*o, li->fValue)) {
                         return false;
                     }
-                    // if the keys were differnt, we must check the reverse direction too
+                    // if the keys were different, we must check the reverse direction too
                     if (not keysEqual) {
                         if (not lhs._ConstGetRep ().Lookup (ri->fKey, &o) or not VALUE_EQUALS_COMPARER::Equals (*o, ri->fValue)) {
                             return false;

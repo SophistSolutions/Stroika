@@ -306,7 +306,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
          *   This coerces types.
-         *   @todo - thinkout bettter and document what it means for differnt types
+         *   @todo - thinkout bettter and document what it means for different types
          *           FOR NOW - just key off first type and convert RHS to same type as LHS, where possible
          */
         [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const VariantValue& rhs) const;

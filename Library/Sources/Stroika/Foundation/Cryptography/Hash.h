@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Cryptography {
      *
      *  A hash makes NO EFFORT to rem
      *
-     *  So this class uses the Digist mechanism to allow users to easily map differnt types to
+     *  So this class uses the Digist mechanism to allow users to easily map different types to
      *  a sequence of 'bytes' in normalized form, and then allows them to be digested, and then the digest
      *  mapped to a (typically) small number (32-bit integer for example).
      *

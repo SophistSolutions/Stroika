@@ -20,7 +20,7 @@
  *  \file
  *
  *  TODO:
- *      @todo   Consider allowingmultiple loggers (with differnt configs/params).
+ *      @todo   Consider allowingmultiple loggers (with different configs/params).
  *              Still wish to retain the magic singleton, but then you use Logger::Get ().
  *
  *              Then make possible to create (construct) own logger objects (possibly for various purposes)... like one to file, and one to syslog?

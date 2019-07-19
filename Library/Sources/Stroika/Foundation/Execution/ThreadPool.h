@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Execution {
          *      to first create a variable, and then do the add task, you can just do them together. And it avoids mistakes like:
          *          function<void()> f = ...;
          *          p.AddTask(f);
-         *          p.RemoveTask (p);   // fails cuz differnt 'TaskType' added - f converted to TaskType twice!
+         *          p.RemoveTask (p);   // fails cuz different 'TaskType' added - f converted to TaskType twice!
          */
         nonvirtual TaskType AddTask (const TaskType& task);
 

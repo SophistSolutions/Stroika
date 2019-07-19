@@ -81,7 +81,7 @@ namespace Stroika::Foundation::DataExchange {
      *  Note - for floating point ElementType - if the value ('val') is 'really close' to an edge - it
      *  will be pinned to the range edge, not treated as out of range.
      *
-     *  The returned value is always at least nearly identical to the 'val' passed in, but could be slightly differnt due to
+     *  The returned value is always at least nearly identical to the 'val' passed in, but could be slightly different due to
      *  the above floating point near-edge adjustment.
      */
     template <typename RANGE_TYPE>

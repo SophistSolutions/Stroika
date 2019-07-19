@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  @see SharedByValue_State.
          *
-         *  Note that two subsequent calls on an object CAN return differnt answers, without any calls to 'this' object.
+         *  Note that two subsequent calls on an object CAN return different answers, without any calls to 'this' object.
          *  Thats because another shared copy can lose a reference. So - if this once returns 'shared', it might later return
          *  solo, without any change to THIS object.
          */

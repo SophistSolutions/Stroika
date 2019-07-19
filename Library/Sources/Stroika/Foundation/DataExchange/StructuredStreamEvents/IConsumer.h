@@ -33,7 +33,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      *      @todo SEE   http://jackson.codehaus.org/Tutorial
      *      @todo SEE Stax API
      *
-     *  \note   It MAYBE pointless and hopeless to unify SAX/JSON here... they are very differnt - but try and review these others
+     *  \note   It MAYBE pointless and hopeless to unify SAX/JSON here... they are very different - but try and review these others
      *
      *  \note   What we call here an "Element" really corresponds more closely to a "Node" in XML. We essentuially include attributes
      *          (and may soon include processing instructions or other ignored thigns) as special type elements).

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Memory {
      *  Simple variant-value object, but unlike @VariantValue, this can contain ANY type. That both
      *  limits its usefulness (cannot use it for stuff like streaming to XML because not enough is
      *  known about the constituent types), but expands cases of usefulness - like for example - to
-     *  implement a @BlockingQueue<> of Command objects, where you have a bunch of differnt kinds of
+     *  implement a @BlockingQueue<> of Command objects, where you have a bunch of different kinds of
      *  commands (objects). The party enquing messages needs to know the types, and the party dequing them
      *  does, but nobody else.
      *

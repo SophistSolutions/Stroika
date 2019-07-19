@@ -20,7 +20,7 @@
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-636
  *              Enhance Timezone class to support real timezones (e.g. American/NewYork) and handle all the cases
- *              of mapping offsets (applying all teh rules for differnt dates)
+ *              of mapping offsets (applying all teh rules for different dates)
  *
  *              Could use boost or  http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz  or other.
  *

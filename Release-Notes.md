@@ -364,7 +364,7 @@ to be aware of when upgrading.
     Redo various bits of code that had custom registry access to vector to this; redo
     sample apps that used Led::OptionsFileXXX to use DataExchange::OptionsFile
   - Deprecated fOperatingSystem and GetSystemConfiguration_OperatingSystem () functions: replaced wtih fActualOperatingSystem and fApparentOperatingSystem, and GetSystemConfiguration_ActualOperatingSystem () and GetSystemConfiguration_ApparentOperatingSystem ()
-  - added fPrettyNameWithVersionDetails to Configuraiton::OperatingSystem object; and print it in debug output; and decent cut at printing differnt os versions/info for actual versus apparent (on windows)
+  - added fPrettyNameWithVersionDetails to Configuraiton::OperatingSystem object; and print it in debug output; and decent cut at printing different os versions/info for actual versus apparent (on windows)
   - static_assert on EnumNames to try and make for clearer compiler error messages
 
 - Foundation::DataExchange
@@ -1349,7 +1349,7 @@ to be aware of when upgrading.
 				<li>Makefile
 					<ul>
 						<li>Mostly faster, parallel make</li>
-						<li>restructured ThirdPartyComponents makefile so differnt parts can run in parallel: now build time (time make CONFIGURATION=Debug third-party-components -j20) - realtime - dropped from 8:44  minutes to 4:20 minutes. Output looks uglier (can try to cleanup next). But appears to still work as  well (and keep the CPU warm).</li>
+						<li>restructured ThirdPartyComponents makefile so different parts can run in parallel: now build time (time make CONFIGURATION=Debug third-party-components -j20) - realtime - dropped from 8:44  minutes to 4:20 minutes. Output looks uglier (can try to cleanup next). But appears to still work as  well (and keep the CPU warm).</li>
 						<li>added ScriptsLib/Makefile-Common.mk with helpful makefile macro function refactored/structured output of the thirdpartycomponents makefiles so it looks better with -jN - lots of lines running at once</li>
 						<li>Lose some extra parameters to submakefiles which are already taken care of by $(MAKE)</li>
 						<li> In Foundation/Framework top level makefiles, changed them to use same SUBDIRS trick (not foreach but make all the subdirs with .phony etc) - so we get faster makes with -j25 (time make CONFIGURATION=Debug libraries -j25 went from 3:35 to 1:50)</li>
@@ -3058,7 +3058,7 @@ to be aware of when upgrading.
                 <li>new Foundation/Debug/Sanitizer module</li>
                 <li>https://stroika.atlassian.net/browse/STK-500 - qCompiler_SanitizerVPtrTemplateTypeEraseureBug to workaround issue with address - santizer vptr subfeature. </li>
                 <li>makefile doc comment about Compiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500</li>
-                <li>https://stroika.atlassian.net/browse/STK-500 - differnt workaround for (now) stack-use-after... on ARM only - disabled use of address sanitizer as workaround - not worth finding better kludge / workaround (hard)</li>
+                <li>https://stroika.atlassian.net/browse/STK-500 - different workaround for (now) stack-use-after... on ARM only - disabled use of address sanitizer as workaround - not worth finding better kludge / workaround (hard)</li>
                 <li>remove qCompiler_SanitizerVPtrTemplateTypeEraseureBug workaround - for reasons I don't follow - it doesn't appear needed anymore</li>
                 <li>qCompiler_SanitizerFunctionPtrConversionSuppressionBug - re-enabled the ./configure workaround;  better documented the bug in ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (); better documetned / linkd to JIRA ticket https://stroika.atlassian.net/browse/STK-601 ; and removed some hacks used to debug/track this issue down</li>
                 <li>suppress warning about stack-use-after-scope - qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy</li>
@@ -4007,7 +4007,7 @@ to be aware of when upgrading.
         <li>WebService
             <ul>
                 <li>Lose some unused overloads of Server::VariantValue::PickoutParamValues
-    added docs, deprecated PickoutParamValues_NEW and lost deprecated (older differnt) PickoutParamValues_NEW</li>
+    added docs, deprecated PickoutParamValues_NEW and lost deprecated (older different) PickoutParamValues_NEW</li>
                 <li>rename PickoutParamValuesBody to PickoutParamValuesFromBody () - and deprecate mapper from oldname to new name</li>
             </ul>
         </li>
@@ -4126,7 +4126,7 @@ to be aware of when upgrading.
         <li>Support NEW Visual Studio.net 2017 15.3.1 - _MS_VS_2k17_15Pt3Pt1_</li>
         <li>Framework WebServer
             <ul>
-                <li>Fixed serious / subtle regression/bug with Frameworks/WebServer/Router: CallFAndWriteConvertedResponse - had to be more careful about bind () return and how to delegate that to 2 differnt templates for void/non-void return case</li>
+                <li>Fixed serious / subtle regression/bug with Frameworks/WebServer/Router: CallFAndWriteConvertedResponse - had to be more careful about bind () return and how to delegate that to 2 different templates for void/non-void return case</li>
                 <li>USE_NOISY_TRACE_IN_THIS_MODULE_ tweaks for Frameworks/WebServer/Router</li>
                 <li>WebServer::Message print/write/writleln () overloads - trivial forward to response object</li>
                 <li>Properly support 'Method Not Allowed (405) in WebServer framework router - along with Allowed header response - if we get someting that matches uri but not method</li>
@@ -4374,7 +4374,7 @@ to be aware of when upgrading.
         </li>
         <li>Build System
             <ul>
-                <li>use  --directory CURRENT --strip-components=1 for tar instead of extract and then move (sadly must do slightly differntly for macos)</li>
+                <li>use  --directory CURRENT --strip-components=1 for tar instead of extract and then move (sadly must do slightly differently for macos)</li>
                 <li>include realpath.cpp in top level sln, and make format-code, and fix to support extra arg used by curl (sort of - hopefully enough)</li>
                 <li>fixed macos-specific realpath override implementation so works with --canonicalize-missing - enough</li>
                 <li>change install-realpath line to use g++ so it gets stdc++ libs</li>
@@ -4765,7 +4765,7 @@ to be aware of when upgrading.
                 <li>Big improvement to WebServices/Server/VariantValue/mkRequestHandler (not backward compat).
                     <div>
                         Added list of strings arg to one overload of mkRequestHandler () each each named
-                        parameter, and did various templates with differnt number of args - to map that named
+                        parameter, and did various templates with different number of args - to map that named
                         param to the in order typed param.
                     </div>
                     <div>
@@ -4871,7 +4871,7 @@ to be aware of when upgrading.
         <li>URL::Compare () and operator<><=>=</li>
         <li>more tweaks to FileAccessMode change</li>
         <li>Added HTTP::Status::kRequestTimeout = 408 define</li>
-        <li>Changes to NearlyEquals(is_float_type version) - so when diff is infinity, compare a little differntly. Not 100% sure this is right, but coerrce to TC first. This fixes an issue where called NearlyEquals(sequence[i] and sequence[i] returns a special temporary type (that cannot be assigned to); Logic looks OK</li>
+        <li>Changes to NearlyEquals(is_float_type version) - so when diff is infinity, compare a little differently. Not 100% sure this is right, but coerrce to TC first. This fixes an issue where called NearlyEquals(sequence[i] and sequence[i] returns a special temporary type (that cannot be assigned to); Logic looks OK</li>
         <li>/bigobj in windows project files (vs2k17) for one more file</li>
         <li>New CodePage::LookupCodeConverter</li>
         <li>workaround clang bug qCompilerAndStdLib_DefaultCTORNotAutoGeneratedSometimes_Buggy</li>
@@ -4976,7 +4976,7 @@ to be aware of when upgrading.
         <li>DataHyperRectangle
             <ul>
                 <li>Draft implementation (not yet useable) with notes about how to improve. </li>
-                <li>Should support both dense and sparse representations (probably differnt baseclasses cuz differnt behavior expected for iterable/size)</li>
+                <li>Should support both dense and sparse representations (probably different baseclasses cuz different behavior expected for iterable/size)</li>
             </ul>
         </li>
         <li>Makefile/Build System improvements
@@ -5136,7 +5136,7 @@ to be aware of when upgrading.
                 <li>fixed traceroute compute of hop time for TTL expired and dest-unreachables</li>
                 <li>major refactoring of Frameworks/NetworkMonitor code - Pinger helper class and separate sample from single ping - and start factoring out ICMP specific parts (so we can do udp/etc/ pings)</li>
                 <li>pass in options to Traceroute::Run in sample</li>
-                <li>fixed several names in IPV4 IP PacketHeader to match the linux defs - linux field names - no standards for this but no need to differ without a reason; and added namespaces for V4 on IP and ICMP stuff - cuz all fairly differnt form IPV6</li>
+                <li>fixed several names in IPV4 IP PacketHeader to match the linux defs - linux field names - no standards for this but no need to differ without a reason; and added namespaces for V4 on IP and ICMP stuff - cuz all fairly different form IPV6</li>
                 <li>Now have decent - 90% - traceroute functionality.<br/>
                     (timing broken but that will be easy to fix).<br/>
                     Mostly added address etc params to TTLExiored and DestinationUnreachable excetpions.<br/>
@@ -5715,7 +5715,7 @@ to be aware of when upgrading.
         <li>DbgTrace improvements to IO/FileSystem/DirectoryIterator</li>
         <li>added missing Collection<T>::Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)</li>
         <li>Fixed assertion error and releated docs (internal) to String class (concactenate)</li>
-        <li>improved error reporting in errno_ErrorException::LookupMessage - differnt meaninsg for return value of 0 - meanign worked or didnt work - and use decimal now not hex for reporting #</li>
+        <li>improved error reporting in errno_ErrorException::LookupMessage - different meanings for return value of 0 - meanign worked or didnt work - and use decimal now not hex for reporting #</li>
         <li>fixed bug john reported with MeanValue () - and added regression test</li>
         <li>Tested (passed regtests)
             <ul>
@@ -8794,7 +8794,7 @@ with:
             </ul>
         </li>
         <li>FOR AIX, we just add -latomic to StroikaFoundationSupportLibs to avoid ld: 0711-317 ERROR: Undefined symbol: .__atomic_load_8</li>
-        <li>DataExchange/OptionsFile - docs, and Write and WriteRaw() does noting (no file change) if no actual changes; OptionsFile::WriteRaw () optimizaiton to not write doesnt apply when read/write paths are differnt! - like in upgrade!</li>
+        <li>DataExchange/OptionsFile - docs, and Write and WriteRaw() does noting (no file change) if no actual changes; OptionsFile::WriteRaw () optimizaiton to not write doesnt apply when read/write paths are different! - like in upgrade!</li>
         <li>Added exceedingly preliminary/primitive SOAP support (just parse some kinds of partial) SOAPFault objects</li>
         <li>
             Logger
@@ -9419,7 +9419,7 @@ with:
         <li>added operator +/-/*/// for two Optional&lt&gt; objects</li>
         <li>WebServer framework
             <ul>
-                <li>Modest progress on WebServer framework: enhanced exmaple so that showed looking for differnt urls, exception handling, and POST (and input args handling)</li>
+                <li>Modest progress on WebServer framework: enhanced exmaple so that showed looking for different urls, exception handling, and POST (and input args handling)</li>
                 <li>Added Cruddy but usable Request::GetBody () in Stroika/Frameworks/WebServer</li>
                 <li>Kludged around bug in reading WebServer headers - so now allows reading web request body (but must rewrite that code)</li>
             </ul>
@@ -9480,7 +9480,7 @@ with:
         Cleanup Float2StringOptions; new - little tested - semantics for handling NAN and INF values</li>
         <li>lose qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy because we redid NearlyEquals() using overloading - much simpler. 
         And now facteored out epsilon calc to private routine, where we can try being smarter; and use Math::NearlyEquals () and added overload for DateTime;
-        Redid Math::NearlyEquals() templates, so works with differnt argument types/li>
+        Redid Math::NearlyEquals() templates, so works with different argument types/li>
         <li>redefined GetTickCount() to zero at app start to minimize problems with overflow</li>
         <li>allow Optional<> to assign common assignable types</li>
         <li>Fixed a number of things so we CAN set DurationSecondsType to long double, but dont leave it that way until we can performance test</li>
@@ -10300,7 +10300,7 @@ with:
 <ul>
     <li>Added new (draft) JSON readwrite and object-variant-mapper performacne test (and made 2.5x faster with below changes)</li>
     <li>Started a variety of performance tweaks based on the realization that constructing codecvt_utf8<wchar_t> was extremely slow (so do statically) and can re-use it from 
-    differnt threads cuz with STL and const methods, this is guaranteed thread safe
+    different threads cuz with STL and const methods, this is guaranteed thread safe
     (see http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf 17.6.5.9 Data race avoidance: A C++ standard library function shall not directly or indirectly modify objects (1.10) accessible by threads
 other than the current thread unless the objects are accessed directly or indirectly via the function’s non-const
 arguments, including this)

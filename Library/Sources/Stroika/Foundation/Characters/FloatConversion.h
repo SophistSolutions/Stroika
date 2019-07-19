@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Characters {
          *
          *      eScientific corresponds to ios_base::scientific
          *      eFixedPoint corresponds to ios_base::fixed
-         *      eDefaultFloat corresponds to unsetf (floatfield) - which may be differnt than scientific or fixed point
+         *      eDefaultFloat corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
          */
         enum class FloatFormatType {
             eScientific,

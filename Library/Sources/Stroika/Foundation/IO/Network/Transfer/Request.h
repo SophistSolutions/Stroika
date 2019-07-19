@@ -36,7 +36,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  \note  DESIGN-NOTE:
      *      Chose not move request/repsonse stuff to HTTP module- so re-usable in framework
      *      code which does webserver, because though the abstract API is identical, we
-     *      have very differnt needs about to what to specify/retrieve in one case or the other.
+     *      have very different needs about to what to specify/retrieve in one case or the other.
      *
      *      @todo maybe reconsider?
      */

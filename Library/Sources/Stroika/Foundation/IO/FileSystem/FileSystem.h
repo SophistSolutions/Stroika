@@ -286,7 +286,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     /**
      *  \note   Design Note: why method 'Default ()' instead of just sThe, or something like that?
-     *          There is one special interesting filesystem, but the intention was to someday allow differnt filesystems
+     *          There is one special interesting filesystem, but the intention was to someday allow different filesystems
      *          to be accessed. For example, treating a zipfile as a filesystem.
      */
     Ptr Default ();

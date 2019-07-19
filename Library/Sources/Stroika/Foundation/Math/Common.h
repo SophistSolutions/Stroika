@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Math {
      *  the largest value that would.
      *
      *  This is handy for stuff like ::write() system calls, where you might be given a ptrdiff_t, and have to
-     *  call something taking int, and given how these types might be differnt sizes, it simplifies picking
+     *  call something taking int, and given how these types might be different sizes, it simplifies picking
      *  the right size to call write with.
      *
      *  \par Example Usage

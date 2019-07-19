@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note
      *       Assuming the compiler is able to inline the mapping from type T, to which sized pool, there is really no cost in adding more. The reason
-     *       to have differnt type T objects share the same BlockAllocationPool_ is to reduce fragmentation.
+     *       to have different type T objects share the same BlockAllocationPool_ is to reduce fragmentation.
      *
      *  \note
      *      To make BlockAllocator more of a plug-replacement for the std-c++ free-pool allocator, neither Allocate nor Deallocate () are cancelation

@@ -113,7 +113,7 @@ OLD/OBSOLETE
   ***todo - CLEANUP THESE DOCS *** MAKE SURE WE HANDLE THE CASE OF STREAMS - ENVOLEOPE MUST BE PROTECTED, BUT INSIDE STREAM
      CLASS DEPERNEDN - DOC/CLARIFY***
 
-  This is a very weak form of thread safety promise. It means that two separate instances can be safely used from two differnt threads.
+  This is a very weak form of thread safety promise. It means that two separate instances can be safely used from two different threads.
 
  Execpt if you copy one to another. This is for envelope/letter classes that act as smart pointers, and where the underlying internal
  object is not synchronized.

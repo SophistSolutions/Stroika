@@ -1852,7 +1852,7 @@ namespace {
 //  generates this warning:
 //       warning C4702: unreachable code
 // and we do this all over the place. The issue is that the assert if debug is true expands to [[noreturn]]
-//  and if debug is false, expands to nothing. So the compiler sees differnt expectations of whether you ever get the the line
+//  and if debug is false, expands to nothing. So the compiler sees different expectations of whether you ever get the the line
 //  return x;
 #pragma warning(disable : 4702)
 #endif

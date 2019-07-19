@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Execution {
         using ReadLockType  = READ_LOCK_TYPE;
         using WriteLockType = WRITE_LOCK_TYPE;
 
-        // Used internally for assertions that the synchronized object is used safely. If you mean to use differntly, specialize
+        // Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
         static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;
 
         static constexpr bool kSupportSharedLocks = SUPPORTS_SHARED_LOCKS;

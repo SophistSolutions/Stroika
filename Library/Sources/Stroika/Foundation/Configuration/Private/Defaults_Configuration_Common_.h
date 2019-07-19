@@ -106,7 +106,7 @@
 #endif
 
 #if qPlatform_Windows
-// Too many differnt compoents have quirky dependencies about what to include in what order.
+// Too many different compoents have quirky dependencies about what to include in what order.
 // This define helps mittigate that problem.
 // (especially see MFC vs winsock, and stroikas use of winsock2, windows.h including winsock.h etc)
 #define WIN32_LEAN_AND_MEAN 1

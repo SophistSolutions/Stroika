@@ -174,7 +174,7 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      */
-    [[deprecated ("in Stroika v2.1d27 - use (slightly differnt but probably better) InternetMediaType{}.IsA ()")]] inline bool IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+    [[deprecated ("in Stroika v2.1d27 - use (slightly different but probably better) InternetMediaType{}.IsA ()")]] inline bool IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
     {
         if (moreSpecificType.As<wstring> ().length () <= moreGeneralType.As<wstring> ().length ()) {
             return false;

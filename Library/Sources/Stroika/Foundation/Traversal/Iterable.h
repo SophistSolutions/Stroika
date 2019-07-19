@@ -28,7 +28,7 @@
  *  TODO:
  *      @todo   For methods similar to Iterable<T>::Where() (did for where),
  *              consider a TEMPLATED PARAMETER for the resulting Container type, so you can create a "Set" or whatever by doing
- *              Where... But tricky to unformly add to differnt container types. Maybe only ones you can say add, or the adder is
+ *              Where... But tricky to unformly add to different container types. Maybe only ones you can say add, or the adder is
  *              a template paraM?
  *
  *      @todo   SUBCLASSES of Iterable<> need to overload/replace several of these functions taking
@@ -41,7 +41,7 @@
  *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
  *              original source, and which force a pull (like where doesn't but max does).
  *
- *      @todo   Add more 'linq' overloads, like groupBy taking differnt kinds of compare functions, and field selectors.
+ *      @todo   Add more 'linq' overloads, like groupBy taking different kinds of compare functions, and field selectors.
  *
  *      @todo   Consider having Linq-like functions do DELAYED EVALUATION, so the computation only
  *              happens when you iterate. Maybe to some degree this already happens, but could do
@@ -388,7 +388,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  SetEquals () - very inefficiently - but with constant small memory overhead - returns true if
-         *  each element in the each iterable is contained in the other. They lengths CAN be differnt
+         *  each element in the each iterable is contained in the other. They lengths CAN be different
          *  and the two Iterables<> be SetEquals().
          *
          *  \em Performance:
@@ -410,7 +410,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  MultiSetEquals () - very inefficiently - but with constant small memory overhead - returns true if
-         *  each element in the each iterable is contained in the other. They lengths CAN be differnt
+         *  each element in the each iterable is contained in the other. They lengths CAN be different
          *  and the two Iterables<> be SetEquals().
          *
          *  \em Performance:

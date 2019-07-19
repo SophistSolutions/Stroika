@@ -170,7 +170,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         }
 
         /*
-         * Handle differnt response messages differntly - but looking for ICMP_ECHO_REPLY, or ICMP_TTL_EXPIRE (for traceroute)
+         * Handle different response messages differently - but looking for ICMP_ECHO_REPLY, or ICMP_TTL_EXPIRE (for traceroute)
          */
         switch (replyICMPHeader->type) {
             case ICMP::V4::ICMP_ECHO_REPLY: {

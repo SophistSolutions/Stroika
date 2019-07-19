@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
         /**
          *  These algorithms treat a password as just a BLOB - bunch of bytes. Typically, its an
-         *  ascii string. But to this easier to work with in Stroika, we allow passing in differnt
+         *  ascii string. But to this easier to work with in Stroika, we allow passing in different
          *  formats for the password, and provide standardized (within stroika) ways to produce the
          *  BLOB that is used as the crytopgraphic password. The only IMPORTANT thing about this algorithm
          *  is that it is repeatable, and that it maps ASCII characters to what everyone expects - those
