@@ -129,7 +129,7 @@ namespace {
                             onContentElt = true;
                         }
                     }
-                    virtual void EndElement ([[maybe_unused]]const StructuredStreamEvents::Name& name) override
+                    virtual void EndElement ([[maybe_unused]] const StructuredStreamEvents::Name& name) override
                     {
                         if (onContentElt) {
                             Assert (not fResult);
