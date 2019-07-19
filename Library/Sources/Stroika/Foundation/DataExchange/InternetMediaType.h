@@ -12,6 +12,10 @@
 #include "../Execution/VirtualConstant.h"
 
 /**
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
  * TODO:
  *      @todo   Need some registration mechanism so IsTextFormat() results can be extended.
  *              For example, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
