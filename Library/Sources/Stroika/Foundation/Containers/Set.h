@@ -449,6 +449,8 @@ namespace Stroika::Foundation::Containers {
      *  Two Sets are considered equal if they contain the same elements (by comparing them with EqualsCompareFunctionType (defaults to operator==)).
      *  Note, if two equalsComparer functions are provided, they must produce the same result comparing elements.
      *
+     *  \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *
      *  EqualsComparer is commutative ().
      *
      *  @todo - document computational complexity

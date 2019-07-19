@@ -548,8 +548,12 @@ namespace Stroika::Foundation::Containers {
         while (not li.Done ()) {
             Assert (not ri.Done ()); // cuz move at same time and same size
             bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
-            if (keysEqual and fValueEqualsComparer (li->fValue, ri->fValue)) {
-                // then this element matches
+            Require (keysEqual == rhs.GetKeyEqualsComparer () (li->fKey, ri->fKey)); // if fails, cuz rhs/lhs keys equals comparers disagree
+            if (keysEqual) {
+                // then we are doing in same order so can do quick impl
+                if (not fValueEqualsComparer (li->fValue, ri->fValue)) {
+                    return false;
+                }
             }
             else {
                 // check if li maps to right value in rhs
@@ -558,10 +562,8 @@ namespace Stroika::Foundation::Containers {
                     return false;
                 }
                 // if the keys were differnt, we must check the reverse direction too
-                if (not keysEqual) {
-                    if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
-                        return false;
-                    }
+                if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
+                    return false;
                 }
             }
             // if we got this far, all compared OK so far, so keep going
@@ -587,7 +589,6 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
     }
-
 }
 
 #endif /* _Stroika_Foundation_Containers_Mapping_inl_ */

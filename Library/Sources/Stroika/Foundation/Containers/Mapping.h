@@ -571,7 +571,7 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  \brief Compare Associations<>s for equality. 
+     *  \brief Compare Mappings<>s for equality. 
      *
      *  Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
      *  with the same value. There is no need for the items to appear in the same order for the two Mappings to
@@ -579,6 +579,8 @@ namespace Stroika::Foundation::Containers {
      *  vers linkedlist).
      *
      *  EqualsComparer is commutative ().
+     *
+     *  \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
      *
      *  @todo - document computational complexity
      *

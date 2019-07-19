@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Containers {
     inline bool Set<T>::EqualsComparer::operator() (const Set& lhs, const Set& rhs) const
     {
         bool result = _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
-        Ensure (result == _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ()));
+        Ensure (result == _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ())); // if this fails caller probably provided incompatible LHS/RHS comparers
         return result;
     }
     template <typename T>

@@ -536,6 +536,8 @@ namespace Stroika::Foundation::Containers {
      *
      *  EqualsComparer is commutative ().
      *
+     *  \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *
      *  @todo - document computational complexity
      *
      *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Associations<T> for equality.
