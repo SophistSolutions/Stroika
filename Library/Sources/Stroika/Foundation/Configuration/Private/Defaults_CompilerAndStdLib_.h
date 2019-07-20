@@ -425,12 +425,24 @@ ABORTING...
 
 #endif
 
+#ifndef qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// VERIFIED BROKEN IN GCC8
+// UNTESTED IN GCC9
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#else
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
+#endif
+
+#endif
+
 /**
  * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
  */
 #ifndef qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC8
 // VERIFIED FIXED in GCC9
 #define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
@@ -447,7 +459,7 @@ ABORTING...
 // Run regtest 35 (Foundation::Execution::Exceptions) to see if fails
 #ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 // https://stackoverflow.com/questions/44405394/how-to-portably-compare-stdsystem-error-exceptions-to-stderrc-values
 #if __GNUC__ <= 7
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC_MINOR__ <= 3)

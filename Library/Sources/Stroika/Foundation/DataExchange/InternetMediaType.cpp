@@ -166,11 +166,18 @@ int InternetMediaType::ThreeWayComparer::operator() (const InternetMediaType& lh
     if (int cmp = Common::ThreeWayCompare (lhs.fSubType_, rhs.fSubType_)) {
         return cmp;
     }
-    using namespace Common;
-    using namespace Containers;
-    using namespace Traversal;
-    // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
-    return Iterable<KeyValuePair<String, String>>::SequentialThreeWayComparer{}(
-        SortedMapping<String, String>{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, lhs.fParameters_},
-        SortedMapping<String, String>{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, rhs.fParameters_});
+    if (lhs.fParameters_.empty () and rhs.fParameters_.empty ()) {
+        return 0; // very common case, shortcut
+    }
+    else {
+        // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
+        using namespace Containers;
+        using namespace Characters;
+        auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
+#if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
+        return Mapping<String, String>::SequentialThreeWayComparer{Common::ThreeWayComparer<KeyValuePair<String, String>>{}}(sortedMapping (lhs.fParameters_), sortedMapping (rhs.fParameters_));
+#else
+        return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (lhs.fParameters_), sortedMapping (rhs.fParameters_));
+#endif
+    }
 }
