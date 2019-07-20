@@ -47,9 +47,9 @@ namespace {
                                         Interceptor (
                                             [=] (Message* m) {
                                                 Response* response = m->PeekResponse ();
-                                                response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
+                                                response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo"sv);
                                                 response->write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                                response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_XML);
+                                                response->SetContentType (DataExchange::InternetMediaTypes::kText_XML);
                                             })}};
                     conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
                     conn.ReadAndProcessMessage ();
