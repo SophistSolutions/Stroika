@@ -44,7 +44,7 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 namespace {
     const Connection::Options kDefaultTestOptions_ = [] () {
         Connection::Options o;
-        o.fMaxAutomaticRedirects = 1;
+        o.fMaxAutomaticRedirects = 2;
         return o;
     }();
 }
