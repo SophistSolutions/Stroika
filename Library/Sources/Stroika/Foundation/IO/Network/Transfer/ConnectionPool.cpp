@@ -25,12 +25,12 @@ namespace {
      *  Dynamically wrap this around a connection pool entry, so that when its destroyed, it returns
      *  the underlying entry to the pool
      */
-    struct DelegatingConnectionRepWithDeleteHook_ : Connection::IRep, enable_shared_from_this<DelegatingConnectionRepWithDeleteHook_> {
+    struct DelegatingConnectionRepWithDeleteHook_ : Connection::IRep {
 
-        Ptr                                                                 fDelegateTo;
-        function<void (shared_ptr<DelegatingConnectionRepWithDeleteHook_>)> fDeleter; // call on delete
+        Ptr                  fDelegateTo;
+        function<void (Ptr)> fDeleter; // call on delete
 
-        DelegatingConnectionRepWithDeleteHook_ (const Ptr& delegateTo, function<void (shared_ptr<DelegatingConnectionRepWithDeleteHook_>)> deleter)
+        DelegatingConnectionRepWithDeleteHook_ (const Ptr& delegateTo, function<void (Ptr)> deleter)
             : fDelegateTo (delegateTo)
             , fDeleter (deleter)
         {
@@ -38,7 +38,7 @@ namespace {
         DelegatingConnectionRepWithDeleteHook_ (const DelegatingConnectionRepWithDeleteHook_&) = delete;
         virtual ~DelegatingConnectionRepWithDeleteHook_ ()
         {
-            fDeleter (shared_from_this ());
+            fDeleter (fDelegateTo);
         }
 
     public:
@@ -98,6 +98,17 @@ namespace {
 
 /*
  ********************************************************************************
+ ********************* Transfer::ConnectionPool::Options ************************
+ ********************************************************************************
+ */
+ConnectionPool::Options::Options (const optional<unsigned int>& maxConnections, const function<Connection::Ptr ()>& connectionFactory)
+    : fMaxConnections{maxConnections}
+    , fConnectionFactory{connectionFactory}
+{
+}
+
+/*
+ ********************************************************************************
  ************************ Transfer::ConnectionPool::Rep_ ************************
  ********************************************************************************
  */
@@ -139,7 +150,7 @@ public:
             lock_guard critSec{fAvailableConnectionsChanged.fMutex};
             size_t     totalAllocated = fAvailableConnections.size () + fOutstandingConnections;
             if (totalAllocated < fOptions.fMaxConnections) {
-                fAvailableConnections += Connection::New (fOptions.fConnectionOptions);
+                fAvailableConnections += fOptions.fConnectionFactory ();
                 goto again; // multithreaded, someone else could allocate, or return a better match
                             // no need to notify_all () since we will try again anyhow
             }
@@ -154,7 +165,7 @@ public:
         if (not poolEntryResult) {
             // Here the rubber hits the road. We didn't find a free entry so we allocate, or throw
             if (allocateGloballyOnTimeoutFlag) {
-                return Connection::New (fOptions.fConnectionOptions);
+                return fOptions.fConnectionFactory ();
             }
             else {
                 Execution::Throw (TimeOutException::kThe);
@@ -164,8 +175,8 @@ public:
         return Connection::Ptr{
             make_shared<DelegatingConnectionRepWithDeleteHook_> (
                 *poolEntryResult,
-                [this] (const shared_ptr<DelegatingConnectionRepWithDeleteHook_>& p) {
-                    this->AddConnection_ (p->fDelegateTo);
+                [this] (const Ptr& p) {
+                    this->AddConnection_ (p);
                 })};
     }
     optional<Connection::Ptr> FindAndAllocateFromAvailableByURIMatch_ (const URI& matchScemeAndAuthority)
@@ -215,6 +226,10 @@ public:
  */
 ConnectionPool::ConnectionPool (const Options& options)
     : fRep_ (make_unique<Rep_> (options))
+{
+}
+
+ConnectionPool::~ConnectionPool ()
 {
 }
 

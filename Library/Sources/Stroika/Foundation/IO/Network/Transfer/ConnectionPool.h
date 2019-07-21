@@ -26,7 +26,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *
      *  \par Example Usage
      *      \code
-     *          ConnectionPool  connectionPool {3};
+     *          ConnectionPool  connectionPool {ConnectionPool::Options{3}};
      *          auto&&             connection = connectionPool.New (URI{L"http://myexternalip.com/});
      *          auto&&             response = connection.GET (L"http://myexternalip.com/raw");
      *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
@@ -37,25 +37,33 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          */
         struct Options {
+            Options (const optional<unsigned int>& maxConnections = nullopt, const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ()) & Connection::New);
+
             /**
              *  Default options for each connection
              */
             optional<unsigned int> fMaxConnections;
 
             /**
-             *  Default options for each connection
+             *  Factory to use for underlying connectionpool connections
+             *
+             *  \todo figure out why cast needed on New on g++ and clang++
              */
-            Connection::Options fConnectionOptions;
+            function<Connection::Ptr ()> fConnectionFactory;
         };
 
     public:
         /**
-         *  A ConnectionPool is a fixed, not copyable/movable object, containing a bunch of other
+         *  A ConnectionPool is a fixed, not copyable/movable, object, containing a bunch of other
          *  (typically http)IO::Transfer::Connection objects. The idea is that its cheaper to
-         *  re-use these objects if you happen to want to connect to one that is already open.
+         *  re-use these objects if you happen to want to connect to an HTTP endpoint that is already connected.
          */
         ConnectionPool (const Options& options = {});
         ConnectionPool (const ConnectionPool&) = delete;
+        ~ConnectionPool ();
+
+    public:
+        nonvirtual ConnectionPool& operator= (const ConnectionPool&) = delete;
 
     public:
         /**

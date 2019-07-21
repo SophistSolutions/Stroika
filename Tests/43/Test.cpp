@@ -21,14 +21,13 @@
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/IO/Network/Transfer/Client.h"
 #if qHasFeature_LibCurl
-#include "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
 #endif
 #if qHasFeature_WinHTTP
-#include "Stroika/Foundation/IO/Network/Transfer/Client_WinHTTP.h"
+#include "Stroika/Foundation/IO/Network/Transfer/Connection_WinHTTP.h"
 #endif
-#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/IO/Network/Transfer/ConnectionPool.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "../TestHarness/TestHarness.h"
@@ -563,6 +562,71 @@ namespace {
 }
 
 namespace {
+    namespace Test_7_TestWithConnectionPool_ {
+        namespace Private_ {
+            void SimpleGetFetch_T1 (function<Connection::Ptr (const URI& uriHint)> factory)
+            {
+                Debug::TraceContextBumper ctx ("{}::...SimpleGetFetch_T1");
+                for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}) {
+#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                    // Not SURE this is the same bug (openssl related) but could be due to redirect?) Anyhow - both are raspberrypi only - and valgrind only
+                    if (u == URI{L"http://www.cnn.com"} and Debug::IsRunningUnderValgrind ()) {
+                        continue; // sigill in c.GET (u) under valgrind, just on raspberrypi. just with valgrind, inside libcurl code, so not obviously our bug
+                    }
+#endif
+                    Connection::Ptr c = factory (u);
+                    Response        r = c.GET (u);
+                    VerifyTestResult (r.GetSucceeded ());
+                    VerifyTestResult (r.GetData ().size () > 1);
+                    Response r2           = c.GET (u);
+                    bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
+                    VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache);                                                           // if not from cache, sources can give different answers
+                    DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
+                }
+            }
+            void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr (const URI& uriHint)> factory)
+            {
+                SimpleGetFetch_T1 (factory);
+                SimpleGetFetch_T1 (factory);
+            }
+        }
+        void DoTests_ ()
+        {
+            Debug::TraceContextBumper     ctx ("{}::Test_7_TestWithConnectionPool_");
+            constexpr Execution::Activity kActivity_{L"running Test_7_TestWithConnectionPool_"sv};
+            Execution::DeclareActivity    declareActivity{&kActivity_};
+            using namespace Private_;
+
+            Cache::DefaultOptions cacheOptions{};
+            cacheOptions.fDefaultResourceTTL = 300s;
+            Cache::Ptr cache                 = Cache::CreateDefault (cacheOptions);
+
+            ConnectionPool connectionPoolWithCache{
+                ConnectionPool::Options{
+                    3,
+                    [&] () -> Connection::Ptr {
+                        Connection::Options connOpts = kDefaultTestOptions_;
+                        connOpts.fCache              = cache;
+                        return Connection::New (connOpts);
+                    }}};
+            ConnectionPool connectionPoolWithoutCache{
+                ConnectionPool::Options{
+                    3,
+                    [] () -> Connection::Ptr {
+                        return Connection::New (kDefaultTestOptions_);
+                    }}};
+
+            DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
+                return connectionPoolWithoutCache.New (uriHint);
+            });
+            DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
+                return connectionPoolWithCache.New (uriHint);
+            });
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test_1_SimpleConnnectionTests_::DoTests_ ();
@@ -577,6 +641,7 @@ namespace {
         Test_5_SSLCertCheckTests_::DoTests_ ();
 #endif
         Test_6_TestWithCache_::DoTests_ ();
+        Test_7_TestWithConnectionPool_::DoTests_ ();
     }
 }
 
