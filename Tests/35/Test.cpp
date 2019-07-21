@@ -14,7 +14,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/ToString.h"
-
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #if qPlatform_Windows
@@ -29,6 +29,7 @@ using namespace Stroika::Foundation::Execution;
 namespace {
     void Test2_ThrowCatchStringException_ ()
     {
+        Debug::TraceContextBumper ctx{ L"Test2_ThrowCatchStringException_"};
         {
             try {
                 Throw (Exception (L"HiMom"));
@@ -127,6 +128,7 @@ namespace {
         }
         void TestAll_ ()
         {
+            Debug::TraceContextBumper ctx{L"Test3_SystemErrorException_"};
             Private_::T1_system_error_ ();
             Private_::T2_TestTimeout_ ();
         }
@@ -175,6 +177,7 @@ namespace {
         }
         void TestAll_ ()
         {
+            Debug::TraceContextBumper ctx{L"Test4_Activities_"};
             Private::T1_Basics_ ();
         }
     }
@@ -255,6 +258,7 @@ namespace {
         }
         void TestAll_ ()
         {
+            Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
             Private::Bug1_ ();
 #if qPlatform_Windows
             Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
@@ -267,6 +271,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
+        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
         Test2_ThrowCatchStringException_ ();
         Test3_SystemErrorException_::TestAll_ ();
         Test4_Activities_::TestAll_ ();
