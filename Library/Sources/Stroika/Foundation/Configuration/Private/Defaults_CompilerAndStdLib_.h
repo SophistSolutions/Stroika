@@ -169,6 +169,26 @@
 
 #endif
 
+/* 
+ * to find glibc version
+
+        g++-8 foo.cpp
+
+foo.cpp:
+    #include <iostream>
+
+    int main ()
+    {
+    using namespace std;
+    cerr << "__GLIBCXX__=" << __GLIBCXX__ << "\n";
+    return 0;
+    }
+
+ prints __GLIBCXX__=20180728
+ */
+#define GLIBCXX_7x_ 20180720
+#define GLIBCXX_8x_ 20180728
+
 /*
  *
  *  Stroika supports a wide variety of compilers with a wide variety of bugs and degrees of C++ standards conformance.
@@ -469,6 +489,8 @@ ABORTING...
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
 #endif
+#elif defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_8x_
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy 1
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
 #endif
