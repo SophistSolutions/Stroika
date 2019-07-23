@@ -648,8 +648,11 @@ namespace {
 
                 wInfo.fSignalQuality = pConnectInfo->wlanAssociationAttributes.wlanSignalQuality;
 
-                wInfo.fTransmitSpeedBaud    = pConnectInfo->wlanAssociationAttributes.ulTxRate;
-                wInfo.fReceiveLinkSpeedBaud = pConnectInfo->wlanAssociationAttributes.ulRxRate;
+                {
+                    const ULONG kMagicFactor_{1000}; // empirical, so we get same answers from IP_ADAPTER_ADDRESSES_LH::TransmitLinkSpeed
+                    wInfo.fTransmitSpeedBaud    = pConnectInfo->wlanAssociationAttributes.ulTxRate * kMagicFactor_;
+                    wInfo.fReceiveLinkSpeedBaud = pConnectInfo->wlanAssociationAttributes.ulRxRate * kMagicFactor_;
+                }
 
                 wInfo.fSecurityEnabled = pConnectInfo->wlanSecurityAttributes.bSecurityEnabled;
                 wInfo.f8021XEnabled    = pConnectInfo->wlanSecurityAttributes.bOneXEnabled;
