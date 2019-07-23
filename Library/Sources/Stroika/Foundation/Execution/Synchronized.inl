@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Execution {
     void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UpgradeLock2", L"&fLock_=%p", &fLock_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fLock_=%p", &fLock_};
 #endif
         RequireNotNull (lockBeingUpgraded);
         //Require (lockBeingUpgraded->fSharedLock_ == &fLock_);
@@ -180,6 +180,23 @@ namespace Stroika::Foundation::Execution {
         });
         doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
     }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>
+    void Synchronized<T, TRAITS>::UpgradeLockAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock)
+    {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fLock_=%p", &fLock_};
+#endif
+        RequireNotNull (lockBeingUpgraded);
+        //Require (lockBeingUpgraded->fSharedLock_ == &fLock_);
+        //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
+        fLock_.try_unlock_shared_and_lock_upgrade ();
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
+            fLock_.unlock_upgrade_and_lock_shared ();
+        });
+        doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
+    }
+
 
     /*
      ********************************************************************************

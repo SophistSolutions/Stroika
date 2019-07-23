@@ -11,6 +11,10 @@
 #include <shared_mutex>
 #include <type_traits>
 
+#if __has_include(<boost/thread/shared_mutex.hpp>)
+#include <boost/thread/shared_mutex.hpp> 
+#endif
+
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
 
@@ -91,10 +95,20 @@ namespace Stroika::Foundation::Execution {
      *        @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
      */
     template <typename MUTEX             = recursive_mutex,
-              bool IS_RECURSIVE          = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
-              bool SUPPORTS_SHARED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>,
+              bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
+
+#if __has_include(<boost/thread/shared_mutex.hpp>)
+              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, boost::shared_mutex>,
+#else
+              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
+#endif
+              bool SUPPORTS_SHARED_LOCKS = 
+				is_same_v<MUTEX, shared_timed_mutex> 
+				or is_same_v<MUTEX, shared_mutex> or IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE
+              ,
               typename READ_LOCK_TYPE    = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-              typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>>
+              typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>
+	>
     struct Synchronized_Traits {
         using MutexType = MUTEX;
 
@@ -105,6 +119,8 @@ namespace Stroika::Foundation::Execution {
         static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;
 
         static constexpr bool kSupportSharedLocks = SUPPORTS_SHARED_LOCKS;
+
+        static constexpr bool kIsUpgradableSharedToExclusive = IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE;
     };
 
     /**
@@ -407,9 +423,39 @@ namespace Stroika::Foundation::Execution {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
          *              });
          *          }
+         *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock);
+
+
+    public:
+        /**
+         *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
+         *  true in the upgrade lock (since we unlock and then re-lock).
+         *
+         *  But other than that, this approach seems pretty usable/testable.
+         *
+         *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
+         *
+         *  \note - the 'readableReferennce' must be shared_locked coming in, and will be identically shared_locked on return.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Execution::UpgradableRWSynchronized<Status_> fStatus_;
+         *          auto lockedStatus = fStatus_.cget ();
+         *          // do a bunch of code that only needs read access
+         *          if (some rare event) {
+         *              fStatus_.UpgradeLockAtomically ([=](auto&& writeLock) {
+         *                  writeLock.rwref ().fCompletedScans.Add (scan);
+         *              });
+         *          }
+         *      \endcode
+         */
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
+        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock);
+
+    public:
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void (WritableReference&&)>& doWithWriteLock)
         {
@@ -643,6 +689,24 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T>
     using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;
+
+
+#if __has_include(<boost/thread/shared_mutex.hpp>)
+    /**
+     * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
+     * Typically, using boost::shared_mutex.
+     *
+     *  \note UpgradableRWSynchronized is ONLY available when using boost.
+	 *
+	 *	\note UpgradableRWSynchronized allows AtomicallyUpgradeLock() - which allows for converting a shared lock (read lock)
+	 *		  into a write lock without ever giving up the read lock (so the data/computed so far doesnt get invalidating in the conversion).
+	 *
+     *  \note Use of UpgradableRWSynchronized has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
+     *        read locks held for a long time (and multiple threads doing so)
+     */
+    template <typename T>
+    using UpgradableRWSynchronized = Synchronized<T, Synchronized_Traits<boost::shared_mutex>>;
+#endif
 
 }
 
