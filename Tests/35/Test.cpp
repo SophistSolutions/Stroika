@@ -29,7 +29,7 @@ using namespace Stroika::Foundation::Execution;
 namespace {
     void Test2_ThrowCatchStringException_ ()
     {
-        Debug::TraceContextBumper ctx{ L"Test2_ThrowCatchStringException_"};
+        Debug::TraceContextBumper ctx{L"Test2_ThrowCatchStringException_"};
         {
             try {
                 Throw (Exception (L"HiMom"));
