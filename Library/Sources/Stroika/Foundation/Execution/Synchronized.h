@@ -11,8 +11,9 @@
 #include <shared_mutex>
 #include <type_traits>
 
-#if __has_include(<boost/thread/shared_mutex.hpp>)
-#include <boost/thread/shared_mutex.hpp> 
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#include <boost/thread/lock_types.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #endif
 
 #include "../Configuration/Common.h"
@@ -37,18 +38,6 @@
  *      @todo   Tons of cleanups, orthoganiality, docs, etc.
  *
  *      @todo   consider/doc choice on explicit operator T ()
- *
- *      @todo   Consider an UpgradeLock API like:
- *              nonvirtual optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
- *              {
- *                  AssertNotImplemented ();
- *                  return WritableReference (&fProtectedValue_, &fLock_);
- *              }
- *              // But tricky because as of C++17, shared_mutex and shared_timed_mutex don't allow you to BOTH have a shared_lock and lock()
- *              // at the same time, with the same mutex.
- *              //
- *              // boost upgrade-lock?
- *              //
  *
  */
 
@@ -94,7 +83,7 @@ namespace Stroika::Foundation::Execution {
      *
      *        @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
      */
-    template <typename MUTEX             = recursive_mutex,
+    template <typename MUTEX    = recursive_mutex,
               bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
 
 #if __has_include(<boost/thread/shared_mutex.hpp>)
@@ -102,18 +91,17 @@ namespace Stroika::Foundation::Execution {
 #else
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
 #endif
-              bool SUPPORTS_SHARED_LOCKS = 
-				is_same_v<MUTEX, shared_timed_mutex> 
-				or is_same_v<MUTEX, shared_mutex> or IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE
-              ,
+              bool SUPPORTS_SHARED_LOCKS =
+                  is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex> or IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE,
               typename READ_LOCK_TYPE    = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-              typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>
-	>
+              typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>,
+              typename UPGRADE_LOCK_TYPE = conditional_t<IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE, boost::upgrade_lock<MUTEX>, void>>
     struct Synchronized_Traits {
         using MutexType = MUTEX;
 
-        using ReadLockType  = READ_LOCK_TYPE;
-        using WriteLockType = WRITE_LOCK_TYPE;
+        using ReadLockType    = READ_LOCK_TYPE;
+        using WriteLockType   = WRITE_LOCK_TYPE;
+        using UpgradeLockType = UPGRADE_LOCK_TYPE;
 
         // Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
         static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;
@@ -328,18 +316,18 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-            *  \brief  alias for cget ()
-            *
-            *  \note   Considered deprecating, due to confusion between the const and non-const overload of operator->. That was confusing
-            *          because the overload was not based on need, but based on the constness of the underlying object.
-            *
-            *          But just having operator-> always return a const const ReadableReference is just convenient. Don't use it if
-            *          you don't like it, but it adds to clarity.
-            *
-            *          And for the more rare 'write locks' - you are forced to use rwget ().
-            *
-            *  @see load ()
-            */
+         *  \brief  alias for cget ()
+         *
+         *  \note   Considered deprecating, due to confusion between the const and non-const overload of operator->. That was confusing
+         *          because the overload was not based on need, but based on the constness of the underlying object.
+         *
+         *          But just having operator-> always return a const const ReadableReference is just convenient. Don't use it if
+         *          you don't like it, but it adds to clarity.
+         *
+         *          And for the more rare 'write locks' - you are forced to use rwget ().
+         *
+         *  @see load ()
+         */
         nonvirtual ReadableReference operator-> () const;
 
     public:
@@ -428,7 +416,6 @@ namespace Stroika::Foundation::Execution {
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock);
 
-
     public:
         /**
          *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
@@ -453,7 +440,7 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock);
+        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock);
 
     public:
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
@@ -690,17 +677,16 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;
 
-
 #if __has_include(<boost/thread/shared_mutex.hpp>)
     /**
      * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
      * Typically, using boost::shared_mutex.
      *
      *  \note UpgradableRWSynchronized is ONLY available when using boost.
-	 *
-	 *	\note UpgradableRWSynchronized allows AtomicallyUpgradeLock() - which allows for converting a shared lock (read lock)
-	 *		  into a write lock without ever giving up the read lock (so the data/computed so far doesnt get invalidating in the conversion).
-	 *
+     *
+     *  \note UpgradableRWSynchronized allows AtomicallyUpgradeLock() - which allows for converting a shared lock (read lock)
+     *        into a write lock without ever giving up the read lock (so the data/computed so far doesnt get invalidating in the conversion).
+     *
      *  \note Use of UpgradableRWSynchronized has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
      *        read locks held for a long time (and multiple threads doing so)
      */
