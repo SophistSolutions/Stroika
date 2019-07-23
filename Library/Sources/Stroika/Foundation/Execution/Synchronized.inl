@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fMutex_=%p", &fMutex_};
 #endif
         RequireNotNull (lockBeingUpgraded);
-        Require (lockBeingUpgraded->fSharedLock_ == &fMutex_);
+        Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
         typename TRAITS::UpgradeLockType upgradeLock{fMutex_};
         doWithWriteLock (WritableReference (&fProtectedValue_, nullptr));
