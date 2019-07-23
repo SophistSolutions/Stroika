@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Execution {
     template <typename MUTEX    = recursive_mutex,
               bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
 
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, boost::shared_mutex>,
 #else
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
@@ -289,14 +289,18 @@ namespace Stroika::Foundation::Execution {
          *  \note   this supports multiple readers/single writer, iff the mutex used with Synchronized<> supports it (@see Synchronized)
          *
          *  \par Example Usage
-         *      auto    lockedConfigData = fConfig_.cget ();
-         *      fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
-         *      fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);
+         *      \code
+         *          auto    lockedConfigData = fConfig_.cget ();
+         *          fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
+         *          fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);
+         *      \endcode
          *
          *  This is roughly equivilent (if using a recursive mutex) to (COUNTER_EXAMPLE):
-         *      lock_guard<Synchronized<T,TRAITS>>  critSec (fConfig_);
-         *      fCurrentCell_ = fConfig_->fCell.Value (Cell::Short);
-         *      fCurrentPressure_ = fConfig_->fPressure.Value (Pressure::Low);
+         *      \code
+         *          lock_guard<Synchronized<T,TRAITS>>  critSec (fConfig_);
+         *          fCurrentCell_ = fConfig_->fCell.Value (Cell::Short);
+         *          fCurrentPressure_ = fConfig_->fPressure.Value (Pressure::Low);
+         *      \endcode
          *
          *  Except that this works whether using a shared_mutex or regular mutex. Also - this provides only read-only access
          *  (use rwget for read-write access).
@@ -520,13 +524,19 @@ namespace Stroika::Foundation::Execution {
         const T* fT;
 
     private:
-        ReadLockType_ fSharedLock_{};
+        ReadLockType_ fSharedLock_{}; // MAYBE unused if actaul readlock held elsewhere, like in subclass
+
+    private:
+        friend class Synchronized<T, TRAITS>;
     };
 
     /**
      */
     template <typename T, typename TRAITS>
     class Synchronized<T, TRAITS>::WritableReference : public Synchronized<T, TRAITS>::ReadableReference {
+    protected:
+        WritableReference (T* t, nullptr_t);
+
     public:
         /**
          */
@@ -564,7 +574,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void store (T&& v);
 
     private:
-        WriteLockType_ fWriteLock_;
+        WriteLockType_ fWriteLock_; // can be empty if actual lock held elsewhere (like in caller/subclass)
+
+    private:
+        friend class Synchronized<T, TRAITS>;
     };
 
     /**
@@ -677,7 +690,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;
 
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
     /**
      * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
      * Typically, using boost::shared_mutex.

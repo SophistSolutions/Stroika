@@ -171,8 +171,8 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p", &fMutex_};
 #endif
         RequireNotNull (lockBeingUpgraded);
-        //Require (lockBeingUpgraded->fSharedLock_ == &fMutex_);
-        //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
+        Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
+        Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
         fMutex_.unlock_shared ();
         // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
@@ -188,10 +188,10 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fMutex_=%p", &fMutex_};
 #endif
         RequireNotNull (lockBeingUpgraded);
-        //Require (lockBeingUpgraded->fSharedLock_ == &fMutex_);
-        //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-        UpgradeLockType upgradeLock{fMutex_};
-        doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_));
+        Require (lockBeingUpgraded->fSharedLock_ == &fMutex_);
+        Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
+        typename TRAITS::UpgradeLockType upgradeLock{fMutex_};
+        doWithWriteLock (WritableReference (&fProtectedValue_, nullptr));
     }
 
     /*
@@ -264,9 +264,14 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, nullptr_t)
+        : ReadableReference (t, nullptr)
+    {
+    }
+    template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m)
         : ReadableReference (t, nullptr)
-        , fWriteLock_ (*m)
+        , fWriteLock_{*m}
     {
     }
     template <typename T, typename TRAITS>
