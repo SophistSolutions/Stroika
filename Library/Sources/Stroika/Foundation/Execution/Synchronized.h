@@ -387,7 +387,7 @@ namespace Stroika::Foundation::Execution {
                 readReference->fSharedLock_->unlock ();
             }
             // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-            return WritableReference (&fProtectedValue_, &fLock_);
+            return WritableReference (&fProtectedValue_, &fMutex_);
         }
 
     public:
@@ -446,10 +446,10 @@ namespace Stroika::Foundation::Execution {
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void (WritableReference&&)>& doWithWriteLock)
         {
-            fLock_.unlock_shared ();
+            fMutex_.unlock_shared ();
             // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
-                fLock_.lock_shared ();
+                fMutex_.lock_shared ();
             });
         }
 
@@ -461,7 +461,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         T                 fProtectedValue_;
-        mutable MutexType fLock_;
+        mutable MutexType fMutex_;
     };
 
     /**

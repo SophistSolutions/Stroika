@@ -32,10 +32,10 @@ namespace Stroika::Foundation::Execution {
         if (TRAITS::kSupportSharedLocks) {
             // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
             // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
-            ANNOTATE_RWLOCK_CREATE (&fLock_);
+            ANNOTATE_RWLOCK_CREATE (&fMutex_);
         }
         else {
-            //VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveMutex);
         }
 #endif
     }
@@ -47,10 +47,10 @@ namespace Stroika::Foundation::Execution {
         if (TRAITS::kSupportSharedLocks) {
             // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
             // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
-            ANNOTATE_RWLOCK_CREATE (&fLock_);
+            ANNOTATE_RWLOCK_CREATE (&fMutex_);
         }
         else {
-            //VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveMutex);
         }
 #endif
     }
@@ -61,10 +61,10 @@ namespace Stroika::Foundation::Execution {
         if (TRAITS::kSupportSharedLocks) {
             // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
             // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
-            ANNOTATE_RWLOCK_DESTROY (&fLock_);
+            ANNOTATE_RWLOCK_DESTROY (&fMutex_);
         }
         else {
-            //VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
+            //VALGRIND_HG_MUTEX_DESTROY_PRE (&fMutex_);
         }
     }
 #endif
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Execution {
     {
         if (&rhs != this) {
             auto                    value   = rhs.cget ().load (); // load outside the lock to avoid possible deadlock
-            [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             fProtectedValue_                = value;
         }
         return *this;
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator= (const T& rhs) -> Synchronized&
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+        [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         fProtectedValue_                = rhs;
         return *this;
     }
@@ -95,37 +95,37 @@ namespace Stroika::Foundation::Execution {
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline T Synchronized<T, TRAITS>::load () const
     {
-        ReadLockType_ fromCritSec{fLock_};
+        ReadLockType_ fromCritSec{fMutex_};
         return fProtectedValue_;
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline void Synchronized<T, TRAITS>::store (const T& v)
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+        [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         fProtectedValue_                = v;
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline void Synchronized<T, TRAITS>::store (T&& v)
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+        [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         fProtectedValue_                = move (v);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
     {
-        return ReadableReference (&fProtectedValue_, &fLock_);
+        return ReadableReference (&fProtectedValue_, &fMutex_);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::rwget () -> WritableReference
     {
-        return WritableReference (&fProtectedValue_, &fLock_);
+        return WritableReference (&fProtectedValue_, &fMutex_);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator-> () const -> ReadableReference
     {
-        return ReadableReference (&fProtectedValue_, &fLock_);
+        return ReadableReference (&fProtectedValue_, &fMutex_);
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>*>
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Execution {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::lock_shared", L"&m=%p", &m};
 #endif
-        fLock_.lock_shared ();
+        fMutex_.lock_shared ();
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>*>
@@ -143,55 +143,55 @@ namespace Stroika::Foundation::Execution {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::unlock_shared", L"&m=%p", &m};
 #endif
-        fLock_.unlock_shared ();
+        fMutex_.unlock_shared ();
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline void Synchronized<T, TRAITS>::lock () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock", L"&fLock_=%p", &fLock_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock", L"&fMutex_=%p", &fMutex_};
 #endif
-        fLock_.lock ();
+        fMutex_.lock ();
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline void Synchronized<T, TRAITS>::unlock () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock", L"&fLock_=%p", &fLock_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock", L"&fMutex_=%p", &fMutex_};
 #endif
-        fLock_.unlock ();
+        fMutex_.unlock ();
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fLock_=%p", &fLock_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p", &fMutex_};
 #endif
         RequireNotNull (lockBeingUpgraded);
-        //Require (lockBeingUpgraded->fSharedLock_ == &fLock_);
+        //Require (lockBeingUpgraded->fSharedLock_ == &fMutex_);
         //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-        fLock_.unlock_shared ();
+        fMutex_.unlock_shared ();
         // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
-            fLock_.lock_shared ();
+            fMutex_.lock_shared ();
         });
-        doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
+        doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_));
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>
     void Synchronized<T, TRAITS>::UpgradeLockAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fLock_=%p", &fLock_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fMutex_=%p", &fMutex_};
 #endif
         RequireNotNull (lockBeingUpgraded);
-        //Require (lockBeingUpgraded->fSharedLock_ == &fLock_);
+        //Require (lockBeingUpgraded->fSharedLock_ == &fMutex_);
         //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-        UpgradeLockType upgradeLock{fLock_};
-        doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
+        UpgradeLockType upgradeLock{fMutex_};
+        doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_));
     }
 
     /*
