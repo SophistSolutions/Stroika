@@ -26,6 +26,10 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   See if I can change Duration to be a SUBCLASS OF
+ *              Duration::operator chrono::duration<Duration::InternalNumericFormatType_> ()
+ *              That MIGHT (indirectly) address some of the constexpr issues below. and allow eliminating the operator conversion thing to duration
+ *
  *      @todo   See if I can get constexpr Duration working.
  *              This appears tricky because we need a DESTRUCTOR, and this cannot be constexpr which prevents
  *              you from having a constexpr object of that type. The closest I can get is that I could lose
@@ -164,6 +168,13 @@ namespace Stroika::Foundation::Time {
     public:
         nonvirtual Duration& operator= (const Duration& rhs);
         nonvirtual Duration& operator= (Duration&& rhs) noexcept;
+
+    private:
+        using InternalNumericFormatType_ = double;
+
+    public:
+        //experiment with this
+        /*explicit*/ operator chrono::duration<InternalNumericFormatType_> () const;
 
     public:
         /**
@@ -334,7 +345,6 @@ namespace Stroika::Foundation::Time {
         [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Duration& rhs) const;
 
     private:
-        using InternalNumericFormatType_ = double;
         static InternalNumericFormatType_ ParseTime_ (const string& s);
         static string                     UnParseTime_ (InternalNumericFormatType_ t);
 

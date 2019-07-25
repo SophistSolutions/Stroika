@@ -105,6 +105,10 @@ namespace Stroika::Foundation::Time {
     {
         destroy_ ();
     }
+    inline /*explicit*/ Duration::operator chrono::duration<Duration::InternalNumericFormatType_> () const
+    {
+        return As<chrono::duration<InternalNumericFormatType_>> ();
+    }
     inline void Duration::clear ()
     {
         destroy_ ();
