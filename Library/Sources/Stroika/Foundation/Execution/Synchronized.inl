@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Execution {
         else {
             // @todo CLEANUP - the only upgradeLock we support right now takes BOOST time as arg. Do subclass that converts from std::chrono::duration
             // and then can clean this up...
-            if (not upgradeLock.try_lock_for (boost::chrono::duration<Time::DurationSecondsType> (timeout.count ()))) {
+            if (not upgradeLock.try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())))) {
                 Execution::ThrowTimeOutException ();
             }
         }

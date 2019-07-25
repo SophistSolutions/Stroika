@@ -1218,7 +1218,7 @@ namespace {
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically (isEven); });
             }
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>) && 0
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
             {
                 Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized Atomically"};
                 UpgradableRWSynchronized<bool> isEven{true};
