@@ -37,8 +37,7 @@ TimeOutException::TimeOutException (const Characters::String& message)
  **************************** ThrowTimeoutException *****************************
  ********************************************************************************
  */
-
-void Execution::ThrowTimeoutException ()
+void Execution::ThrowTimeOutException ()
 {
     Throw (TimeOutException::kThe);
 }
