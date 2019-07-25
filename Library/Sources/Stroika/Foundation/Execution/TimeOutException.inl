@@ -41,8 +41,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
     {
-        static const TimeOutException kTO_ = TimeOutException ();
-        ThrowTimeoutExceptionAfter (afterTickCount, kTO_);
+        ThrowTimeoutExceptionAfter (afterTickCount, TimeOutException::kThe);
     }
 
     /*

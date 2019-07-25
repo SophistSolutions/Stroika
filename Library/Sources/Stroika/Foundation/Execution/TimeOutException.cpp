@@ -31,3 +31,14 @@ TimeOutException::TimeOutException (const Characters::String& message)
     : TimeOutException (make_error_code (errc::timed_out), message)
 {
 }
+
+/*
+ ********************************************************************************
+ **************************** ThrowTimeoutException *****************************
+ ********************************************************************************
+ */
+
+void Execution::ThrowTimeoutException ()
+{
+    Throw (TimeOutException::kThe);
+}

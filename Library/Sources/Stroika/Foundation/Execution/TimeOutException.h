@@ -71,6 +71,12 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
+     *  \brief  Execution::Throw (Execution::TimeOutException::kThe);
+     *          but can be more easily forward-declared, so no include deadly embrace
+     */
+    void ThrowTimeoutException ();
+
+    /**
      *  \brief  Throw TimeOutException if the @Time::GetTickCount () is >= the given value.
      *
      *  This function facilitates writing code like:
