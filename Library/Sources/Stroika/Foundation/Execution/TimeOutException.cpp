@@ -34,7 +34,7 @@ TimeOutException::TimeOutException (const Characters::String& message)
 
 /*
  ********************************************************************************
- **************************** ThrowTimeoutException *****************************
+ ************************ Execution::ThrowTimeOutException **********************
  ********************************************************************************
  */
 void Execution::ThrowTimeOutException ()
