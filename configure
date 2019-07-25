@@ -1868,6 +1868,7 @@ sub PostProcessOptions_ ()
 				if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
 					push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
 					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
+					push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
 				}
 			}
 			else {
@@ -1898,6 +1899,7 @@ sub PostProcessOptions_ ()
 		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
 			push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
 			push @LIB_DEPENDENCIES_ADD, "-lboost_system";
+			push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
 		}
 
 	}
