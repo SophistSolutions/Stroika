@@ -1869,6 +1869,7 @@ sub PostProcessOptions_ ()
 					push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
 					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
 					push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
+					push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
 				}
 			}
 			else {
@@ -1900,6 +1901,7 @@ sub PostProcessOptions_ ()
 			push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
 			push @LIB_DEPENDENCIES_ADD, "-lboost_system";
 			push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
+			push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
 		}
 
 	}
