@@ -17,6 +17,10 @@
 #include "../Debug/Trace.h"
 
 namespace Stroika::Foundation::Execution {
+    void ThrowTimeOutException (); // forward declare to avoid include/deadly include embrace
+}
+
+namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
@@ -165,32 +169,49 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
-    void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock)
+    void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p", &fMutex_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
 #endif
         RequireNotNull (lockBeingUpgraded);
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
         fMutex_.unlock_shared ();
-        // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
-            fMutex_.lock_shared ();
+            fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
         });
-        doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_));
+        if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
+            doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_)); // if wait 'infiniite' use waitless lock call
+        }
+        else {
+            doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_, timeout));
+        }
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>
-    void Synchronized<T, TRAITS>::UpgradeLockAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock)
+    void Synchronized<T, TRAITS>::UpgradeLockAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fMutex_=%p", &fMutex_};
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
 #endif
         RequireNotNull (lockBeingUpgraded);
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-        typename TRAITS::UpgradeLockType upgradeLock{fMutex_};
+
+        // @todo CLEANUP - the only upgradeLock we support right now takes BOOST boost::defer_lock ; subclass to map std::defer_lock to boost::defer_lock
+        //typename TRAITS::UpgradeLockType upgradeLock{fMutex_, boost::defer_lock};
+        boost::unique_lock upgradeLock{fMutex_, boost::defer_lock};
+        if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
+            upgradeLock.lock (); // if wait 'infiniite' use waitless lock call
+        }
+        else {
+            // @todo CLEANUP - the only upgradeLock we support right now takes BOOST time as arg. Do subclass that converts from std::chrono::duration
+            // and then can clean this up...
+            if (not upgradeLock.try_lock_for (boost::chrono::duration<Time::DurationSecondsType> (timeout.count ()))) {
+                Execution::ThrowTimeOutException ();
+            }
+        }
         doWithWriteLock (WritableReference (&fProtectedValue_, nullptr));
     }
 
@@ -273,6 +294,15 @@ namespace Stroika::Foundation::Execution {
         : ReadableReference (t, nullptr)
         , fWriteLock_{*m}
     {
+    }
+    template <typename T, typename TRAITS>
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m, const chrono::duration<Time::DurationSecondsType>& timeout)
+        : ReadableReference (t, nullptr)
+        , fWriteLock_{*m, timeout}
+    {
+        if (not fWriteLock_.owns_lock ()) {
+            Execution::ThrowTimeOutException ();
+        }
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)

@@ -29,6 +29,7 @@ using Containers::Sequence;
 using Execution::BlockingQueue;
 using Execution::Finally;
 using Execution::RWSynchronized;
+using Execution::UpgradableRWSynchronized;
 using Execution::SpinLock;
 using Execution::Synchronized;
 using Execution::Thread;
@@ -213,7 +214,7 @@ namespace {
             // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
             static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
             static WaitableEvent                       s_autoResetEvent_{WaitableEvent::eAutoReset};
-            auto                                       myWaitingThreadProc = [] () {
+            auto                                       myWaitingThreadProc = []() {
                 Debug::TraceContextBumper innerThreadLoopCtx{"innerThreadLoop"};
                 s_autoResetEvent_.Wait (kLONGTimeForThread2Wait_);
             };
@@ -240,7 +241,7 @@ namespace {
                 }
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_)) {
-                    DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt), double (caughtExceptAt));
+                    DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double(expectedEndAt), double(caughtExceptAt));
                 }
                 VerifyTestResult (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
@@ -340,7 +341,7 @@ namespace {
                 Time::DurationSecondsType doneAt        = Time::GetTickCount ();
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_)) {
-                    DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double (startTestAt), double (doneAt), double (expectedEndAt));
+                    DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double(startTestAt), double(doneAt), double(expectedEndAt));
                 }
                 VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
             }
@@ -423,7 +424,7 @@ namespace {
                 Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (writerDone);
                 atomic<unsigned int> readsDoneAfterWriterDone{0};
                 Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (readsDoneAfterWriterDone);
-                Thread::Ptr readerThread = Thread::New ([&] () {
+                Thread::Ptr readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
@@ -434,7 +435,7 @@ namespace {
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
                     }
                 });
-                Thread::Ptr writerThread = Thread::New ([&] () {
+                Thread::Ptr writerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
@@ -490,7 +491,7 @@ namespace {
         }
 #if qPlatform_Windows
         {
-            Thread::Ptr thread = Thread::New ([] () {
+            Thread::Ptr thread = Thread::New ([]() {
                 while (true) {
                     // test alertable sleep
                     Execution::Sleep (10000);
@@ -521,7 +522,7 @@ namespace {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
         [[maybe_unused]] auto&& cleanupReport = Finally (
-            [] () {
+            []() {
                 again:
                     auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
                     DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
@@ -581,7 +582,7 @@ namespace {
             p.SetPoolSize (1);
             int                  intVal = 3;
             ThreadPool::TaskType task{
-                [&intVal] () {
+                [&intVal]() {
                     intVal++;
                 }};
             p.AddTask (task);
@@ -596,7 +597,7 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx ("RegressionTest8_ThreadPool_");
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
-        auto doIt = [] (int* argP) {
+        auto doIt = [](int* argP) {
             for (int i = 0; i < 10; i++) {
                 [[maybe_unused]] auto&& critSect = lock_guard (sharedCriticalSection_);
                 int                     tmp      = *argP;
@@ -609,8 +610,8 @@ namespace {
             ThreadPool p;
             p.SetPoolSize (threadPoolSize);
             int                  updaterValue = 0;
-            ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
-            ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
+            ThreadPool::TaskType task1{[&updaterValue, &doIt]() { doIt (&updaterValue); }};
+            ThreadPool::TaskType task2{[&updaterValue, &doIt]() { doIt (&updaterValue); }};
             p.AddTask (task1);
             p.AddTask (task2);
             p.WaitForTask (task1);
@@ -627,10 +628,10 @@ namespace {
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         Containers::Collection<Thread::Ptr> innerThreads;
-        auto                                DoItInnerThread = [] () {
+        auto                                DoItInnerThread = []() {
             Execution::Sleep (.01);
         };
-        auto DoOuterThread = [DoItInnerThread, &innerThreads] () {
+        auto DoOuterThread = [DoItInnerThread, &innerThreads]() {
             while (true) {
                 Thread::Ptr t = Thread::New (DoItInnerThread);
                 innerThreads.Add (t);
@@ -644,7 +645,7 @@ namespace {
         thread.AbortAndWaitForDone ();
         // NB: we must call AbortAndWaitForDone on innerThreads because we could have created the thread but not started it, so
         // wait for done will never terminate
-        innerThreads.Apply ([] (Thread::Ptr t) { t.AbortAndWaitForDone (); }); // assure subthreads  complete before the text exits (else valgrind may report leak)
+        innerThreads.Apply ([](Thread::Ptr t) { t.AbortAndWaitForDone (); }); // assure subthreads  complete before the text exits (else valgrind may report leak)
     }
 }
 
@@ -654,26 +655,26 @@ namespace {
         Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
         enum { START = 0,
                END   = 100 };
-        int                              expectedValue = (START + END) * (END - START + 1) / 2;
-        int                              counter       = 0;
-        BlockingQueue<function<void ()>> q;
+        int                             expectedValue = (START + END) * (END - START + 1) / 2;
+        int                             counter       = 0;
+        BlockingQueue<function<void()>> q;
 
         Verify (q.GetLength () == 0);
 
         Thread::Ptr producerThread = Thread::New (
-            [&q, &counter] () {
+            [&q, &counter]() {
                 for (int incBy = START; incBy <= END; ++incBy) {
-                    q.AddTail ([&counter, incBy] () { counter += incBy; });
+                    q.AddTail ([&counter, incBy]() { counter += incBy; });
                 }
                 q.EndOfInput ();
             },
             Thread::eAutoStart,
             String{L"Producer"});
         Thread::Ptr consumerThread = Thread::New (
-            [&q] () {
+            [&q]() {
                 // Since we call EndOfInput () - the RemoveHead () will eventually timeout
                 while (true) {
-                    function<void ()> f = q.RemoveHead ();
+                    function<void()> f = q.RemoveHead ();
                     f ();
                 }
             },
@@ -690,12 +691,12 @@ namespace {
     void RegressionTest11_AbortSubAbort_ ()
     {
         Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
-        auto                      testFailToProperlyAbort = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () {
+        auto                      testFailToProperlyAbort = []() {
+            Thread::Ptr innerThread = Thread::New ([]() {
                 Execution::Sleep (1000);
             });
             innerThread.SetThreadName (L"innerThread");
-            Thread::Ptr testThread = Thread::New ([&innerThread] () {
+            Thread::Ptr testThread = Thread::New ([&innerThread]() {
                 innerThread.Start ();
                 Execution::Sleep (1000);
                 innerThread.AbortAndWaitForDone ();
@@ -708,15 +709,15 @@ namespace {
             VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);
             innerThread.AbortAndWaitForDone ();
         };
-        auto testInnerThreadProperlyShutDownByOuterThread = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () {
+        auto testInnerThreadProperlyShutDownByOuterThread = []() {
+            Thread::Ptr innerThread = Thread::New ([]() {
                 Execution::Sleep (1000);
             });
             innerThread.SetThreadName (L"innerThread");
-            Thread::Ptr testThread = Thread::New ([&innerThread] () {
+            Thread::Ptr testThread = Thread::New ([&innerThread]() {
                 innerThread.Start ();
                 [[maybe_unused]] auto&& cleanup = Finally (
-                    [&innerThread] () noexcept {
+                    [&innerThread]() noexcept {
                         Thread::SuppressInterruptionInContext suppressInterruptions;
                         innerThread.AbortAndWaitForDone ();
                     });
@@ -742,11 +743,11 @@ namespace {
         WaitableEvent                              we1{WaitableEvent::eAutoReset};
         WaitableEvent                              we2{WaitableEvent::eAutoReset};
         static constexpr Time::DurationSecondsType kMaxWaitTime_{5.0};
-        Thread::Ptr                                t1      = Thread::New ([&we1] () {
+        Thread::Ptr                                t1      = Thread::New ([&we1]() {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
             we1.Set ();
         });
-        Thread::Ptr                                t2      = Thread::New ([&we2] () {
+        Thread::Ptr                                t2      = Thread::New ([&we2]() {
             Execution::Sleep (0.1);
             we2.Set ();
         });
@@ -777,12 +778,12 @@ namespace {
         WaitableEvent we2{WaitableEvent::eAutoReset};
         bool          w1Fired = false;
         bool          w2Fired = false;
-        Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired] () {
+        Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired]() {
             Execution::Sleep (0.5);
             w1Fired = true;
             we1.Set ();
         });
-        Thread::Ptr   t2      = Thread::New ([&we2, &w2Fired] () {
+        Thread::Ptr   t2      = Thread::New ([&we2, &w2Fired]() {
             Execution::Sleep (0.1);
             w2Fired = true;
             we2.Set ();
@@ -805,14 +806,14 @@ namespace {
         Debug::TraceContextBumper ctx{"RegressionTest14_SpinLock_"};
         SpinLock                  lock;
         int                       sum = 0;
-        Thread::Ptr               t1  = Thread::New ([&lock, &sum] () {
+        Thread::Ptr               t1  = Thread::New ([&lock, &sum]() {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
                 sum += i;
             }
         });
-        Thread::Ptr               t2  = Thread::New ([&lock, &sum] () {
+        Thread::Ptr               t2  = Thread::New ([&lock, &sum]() {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
@@ -849,7 +850,7 @@ namespace {
             static constexpr Time::DurationSecondsType kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
             ThreadPool                                 p;
             p.SetPoolSize (kThreadPoolSize_);
-            auto doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
+            auto doItHandler = []() { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
             for (int i = 0; i < kStepsToGetTrouble_; ++i) {
                 p.AddTask (doItHandler);
@@ -880,7 +881,7 @@ namespace {
                 Thread::Ptr t;
             }
             {
-                Thread::Ptr t = Thread::New ([] () {});
+                Thread::Ptr t = Thread::New ([]() {});
             }
         }
     }
@@ -894,7 +895,7 @@ namespace {
             atomic<unsigned>          interruptCnt{};
             WaitableEvent             we{WaitableEvent::eManualReset};
             Thread::Ptr               t = Thread::New (
-                [&] () {
+                [&]() {
                     while (true) {
                         try {
                             Execution::Sleep (10);
@@ -938,7 +939,7 @@ namespace {
                 atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
                 atomic<unsigned int> countWhereTwoHoldingRead{0};
                 atomic<unsigned int> sum1{};
-                auto                 lambda = [&] () {
+                auto                 lambda = [&]() {
                     Debug::TraceContextBumper ctx{"...lambda"};
                     for (unsigned int i = 0; i < repeatCount; i++) {
                         auto holdReadOnlyLock = sharedData.cget ();
@@ -962,7 +963,7 @@ namespace {
                     // This failed once under helgrind && docker, perhaps while other tests running, so not worrisome unless we see again -- LGP 2018-12-14
                     VerifyTestResult (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
                 }
-                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double (countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
+                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
             }
             void Test2_LongWritesBlock_ ()
             {
@@ -970,7 +971,7 @@ namespace {
                 static constexpr int                       kBaseRepititionCount_ = 500;
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 RWSynchronized<int>                        syncData{0};
-                Thread::Ptr                                readerThread = Thread::New ([&] () {
+                Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
@@ -981,7 +982,7 @@ namespace {
                         }
                     }
                 });
-                Thread::Ptr                                writerThread = Thread::New ([&] () {
+                Thread::Ptr                                writerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
@@ -1025,8 +1026,8 @@ namespace {
                     START = 0,
                     END   = 100
                 };
-                atomic<uint64_t>                 counter{};
-                BlockingQueue<function<void ()>> q;
+                atomic<uint64_t>                counter{};
+                BlockingQueue<function<void()>> q;
 
                 Verify (q.GetLength () == 0);
 
@@ -1034,17 +1035,17 @@ namespace {
 
                 for (size_t i = 0; i < kTaskCounts_; ++i) {
                     producerThreadPool.AddTask (
-                        [&q, &counter] () {
+                        [&q, &counter]() {
                             for (int incBy = START; incBy <= END; ++incBy) {
-                                q.AddTail ([&counter, incBy] () {
+                                q.AddTail ([&counter, incBy]() {
                                     counter += incBy;
                                 });
                             }
                         });
                     consumerThreadPool.AddTask (
-                        [&q] () {
+                        [&q]() {
                             while (true) {
-                                function<void ()> f = q.RemoveHead ();
+                                function<void()> f = q.RemoveHead ();
                                 f ();
                             }
                         });
@@ -1077,17 +1078,17 @@ namespace {
             START = 0,
             END   = 100
         };
-        int                              expectedValue = (START + END) * (END - START + 1) / 2;
-        int                              counter       = 0;
-        BlockingQueue<function<void ()>> q;
+        int                             expectedValue = (START + END) * (END - START + 1) / 2;
+        int                             counter       = 0;
+        BlockingQueue<function<void()>> q;
 
         Verify (q.GetLength () == 0);
 
         Thread::Ptr consumerThread = Thread::New (
-            [&q] () {
+            [&q]() {
                 while (not q.QAtEOF ()) {
-                    if (optional<function<void ()>> of = q.RemoveHeadIfPossible ()) {
-                        function<void ()> f = *of;
+                    if (optional<function<void()>> of = q.RemoveHeadIfPossible ()) {
+                        function<void()> f = *of;
                         f ();
                     }
                     else {
@@ -1099,9 +1100,9 @@ namespace {
             String{L"Consumer"});
         Execution::Sleep (0.1); // so consume gets a chance to fail removehead at least once...
         Thread::Ptr producerThread = Thread::New (
-            [&q, &counter] () {
+            [&q, &counter]() {
                 for (int incBy = START; incBy <= END; ++incBy) {
-                    q.AddTail ([&counter, incBy] () { counter += incBy; });
+                    q.AddTail ([&counter, incBy]() { counter += incBy; });
                     if (incBy == (END - START) / 2) {
                         Execution::Sleep (100ms); // illogical in real app, but give time for consumer to catch up to help check no race
                     }
@@ -1121,13 +1122,13 @@ namespace {
     void RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ()
     {
         // For fixed bug - https://stroika.atlassian.net/browse/STK-622
-        Debug::TraceContextBumper        ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
-        BlockingQueue<function<void ()>> q;
+        Debug::TraceContextBumper       ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
+        BlockingQueue<function<void()>> q;
         Verify (q.GetLength () == 0);
         Thread::Ptr consumerThread = Thread::New (
-            [&q] () {
+            [&q]() {
                 while (true) {
-                    function<void ()> f = q.RemoveHead ();
+                    function<void()> f = q.RemoveHead ();
                     f ();
                 }
             },
@@ -1156,21 +1157,13 @@ namespace {
         // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
         // most likely helgrind bug - hopefully fixed soon.
         if (not kRunningValgrind_) {
-            RWSynchronized<bool> isEven{true};
-            Thread::Ptr          t1  = Thread::New ([&] () {
-                while (true) {
-                    Execution::CheckForThreadInterruption ();
-                    auto rwLock = isEven.rwget ();
-                    rwLock.store (not rwLock.load ()); // toggle back and forth
-                }
-            },
-                                          Thread::eAutoStart);
-            auto                 fun = [&] () {
+
+            auto testUpgradeLockNonAtomically = [&](auto& isEven) {
                 while (true) {
                     Execution::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
-                        isEven.UpgradeLockNonAtomically (&rLock, [&] (RWSynchronized<bool>::WritableReference&& writeLock) {
+                        isEven.UpgradeLockNonAtomically (&rLock, [&](RWSynchronized<bool>::WritableReference&& writeLock) {
                             // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
                             if (writeLock.load ()) {
                                 writeLock.store (false);
@@ -1182,10 +1175,56 @@ namespace {
                     }
                 }
             };
-            Thread::Ptr t2 = Thread::New (fun, Thread::eAutoStart);
-            Thread::Ptr t3 = Thread::New (fun, Thread::eAutoStart);
-            Execution::Sleep (2);
-            Thread::AbortAndWaitForDone ({t1, t2, t3});
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+            auto testUpgradeLockAtomically = [&](auto& isEven) {
+                while (true) {
+                    Execution::CheckForThreadInterruption ();
+                    auto rLock = isEven.cget ();
+                    if (rLock.load ()) {
+                        try {
+                            isEven.UpgradeLockAtomically (&rLock, [&](UpgradableRWSynchronized<bool>::WritableReference&& writeLock) {
+                                Assert (writeLock.load ());
+                                writeLock.store (false);
+                            },
+                                                          1s);
+                        }
+                        catch (Execution::TimeOutException) {
+                            DbgTrace ("Got timeout in testUpgradeLockAtomically - expected and ignored... (retry)");	// deadlock avoidance
+                            continue;
+                        }
+                        VerifyTestResult (not isEven.cget ()); // must be true because we upgraded lock atomically, and then we still have readlock so nobody else can update it
+                    }
+                }
+            };
+#endif
+
+            auto runSyncTest = [](auto& isEven, auto readerFun) {
+                Thread::Ptr writerThread              = Thread::New ([&]() {
+                    while (true) {
+                        Execution::CheckForThreadInterruption ();
+                        auto rwLock = isEven.rwget ();
+                        rwLock.store (not rwLock.load ()); // toggle back and forth
+                    }
+                },
+                                                               Thread::eAutoStart);
+                Thread::Ptr readerThatSometimesWritesThread1 = Thread::New (readerFun, Thread::eAutoStart);
+                Thread::Ptr readerThatSometimesWritesThread2 = Thread::New (readerFun, Thread::eAutoStart);
+                Execution::Sleep (2);
+                Thread::AbortAndWaitForDone ({writerThread, readerThatSometimesWritesThread1, readerThatSometimesWritesThread2});
+            };
+
+            {
+                Debug::TraceContextBumper ctx1{"run-test RWSynchronized NonAtomically"};
+                RWSynchronized<bool>      isEven{true};
+                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically (isEven); });
+            }
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>) && 0
+            {
+                Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized Atomically"};
+                UpgradableRWSynchronized<bool> isEven{true};
+                runSyncTest (isEven, [&]() { testUpgradeLockAtomically (isEven); });
+            }
+#endif
         }
     }
 }
@@ -1195,7 +1234,7 @@ namespace {
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Finally (
-            [] () {
+            []() {
                 auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
                 DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
                 for (Execution::Thread::IDType threadID : runningThreads) {

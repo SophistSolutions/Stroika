@@ -29,7 +29,11 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WriteableReference could be more efficent if not subclassing each other
+ *      @todo   Deadlock from two threads doing UpgradeAtomically is easily detectable, so in DEBUG builds translate that to an
+ *              assert erorr? Or maybe always detect and raise an exception in that case. (probably assert better cuz overhead
+ *              in detection would be paid by correct code)
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficent if not subclassing each other
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
  *
@@ -85,17 +89,26 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename MUTEX    = recursive_mutex,
               bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
-
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
-              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, boost::shared_mutex>,
+              bool SUPPORTS_TIMED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, boost::upgrade_mutex>,
+#else
+              bool SUPPORTS_TIMED_LOCKS                   = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
+#endif
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, boost::upgrade_mutex>,
 #else
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
 #endif
               bool SUPPORTS_SHARED_LOCKS =
                   is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex> or IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE,
-              typename READ_LOCK_TYPE    = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-              typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>,
-              typename UPGRADE_LOCK_TYPE = conditional_t<IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE, boost::upgrade_lock<MUTEX>, void>>
+              typename READ_LOCK_TYPE  = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
+              typename WRITE_LOCK_TYPE = unique_lock<MUTEX>,
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+              typename UPGRADE_LOCK_TYPE = conditional_t<IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE, boost::upgrade_lock<MUTEX>, void>
+#else
+              typename UPGRADE_LOCK_TYPE                  = void
+#endif
+              >
     struct Synchronized_Traits {
         using MutexType = MUTEX;
 
@@ -107,6 +120,8 @@ namespace Stroika::Foundation::Execution {
         static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;
 
         static constexpr bool kSupportSharedLocks = SUPPORTS_SHARED_LOCKS;
+
+        static constexpr bool kSupportsTimedLocks = SUPPORTS_TIMED_LOCKS;
 
         static constexpr bool kIsUpgradableSharedToExclusive = IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE;
     };
@@ -403,7 +418,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
          *
-         *  \note - the 'readableReferennce' must be shared_locked coming in, and will be identically shared_locked on return.
+         *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
          *
          *  \par Example Usage
          *      \code
@@ -418,7 +433,7 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock);
+        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         /**
@@ -429,7 +444,14 @@ namespace Stroika::Foundation::Execution {
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
          *
-         *  \note - the 'readableReferennce' must be shared_locked coming in, and will be identically shared_locked on return.
+         *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
+         *
+         *  \note if more than one thread MIGHT need to call this UpgradeLock, that can lead to a deadlock, so its critical in that case
+         *        to provide a timeout (which is why the timeout parameter is required). You MAY provide kInfinite if you are sure you
+         *        won't deadlock (dont have two threads trying to UpgradeLock at the same time).
+         *
+         *        If using this, its best to arrange for only one thread to be able to 'upgrade' the lock, or to provide a timeout, so
+         *        when the upgrade fails, you can cleanly backout and try again.
          *
          *  \par Example Usage
          *      \code
@@ -444,7 +466,7 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock);
+        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
@@ -541,6 +563,7 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         WritableReference (T* t, MutexType* m);
+        WritableReference (T* t, MutexType* m, const chrono::duration<Time::DurationSecondsType>& timeout);
         WritableReference (const WritableReference& src) = delete; // must move because both src and dest cannot have the unique lock
         WritableReference (WritableReference&& src);
         nonvirtual WritableReference& operator= (const WritableReference& rhs) = delete;
@@ -688,12 +711,12 @@ namespace Stroika::Foundation::Execution {
      *        read locks held for a long time (and multiple threads doing so)
      */
     template <typename T>
-    using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;
+    using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
 
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
     /**
-     * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
-     * Typically, using boost::shared_mutex.
+     * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer, and allow the UpgradeLockAtomically method
+     * (Typically, using boost:::upgrade_mutex);
      *
      *  \note UpgradableRWSynchronized is ONLY available when using boost.
      *
@@ -704,7 +727,7 @@ namespace Stroika::Foundation::Execution {
      *        read locks held for a long time (and multiple threads doing so)
      */
     template <typename T>
-    using UpgradableRWSynchronized = Synchronized<T, Synchronized_Traits<boost::shared_mutex>>;
+    using UpgradableRWSynchronized = Synchronized<T, Synchronized_Traits<boost::upgrade_mutex>>;
 #endif
 
 }
