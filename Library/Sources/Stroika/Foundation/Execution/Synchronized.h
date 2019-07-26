@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
             }
             bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
             {
-                return upgrade_mutex::try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())));
+                return unique_lock::try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())));
             }
         };
     }
