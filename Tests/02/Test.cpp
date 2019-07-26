@@ -1196,7 +1196,12 @@ namespace {
             catch (const runtime_error&) {
                 // https://en.cppreference.com/w/cpp/locale/locale/locale says must throw std::runtime_error if invalid locale
                 // if no such locale, just skip the test...
+                DbgTrace (L"e=%s", Characters::ToString (current_exception ()).c_str ());
+				#if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
+				// sigh - fails to convert unicode characters
+				#else
                 VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
+				#endif
             }
             catch (...) {
                 DbgTrace (L"error: %s", Characters::ToString (current_exception ()).c_str ());
