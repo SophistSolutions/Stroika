@@ -189,11 +189,55 @@ namespace Stroika::Foundation::Execution {
         }
     }
     template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
+    bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
+#endif
+        RequireNotNull (lockBeingUpgraded);
+        Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
+        Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
+        fMutex_.unlock_shared ();
+        [[maybe_unused]] auto&&     cleanup = Execution::Finally ([this] () {
+            fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
+        });
+        optional<WritableReference> wr;
+        if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
+            wr = WritableReference (&fProtectedValue_, &fMutex_); // if wait 'infiniite' use waitless lock call
+        }
+        else {
+            // @todo rewrite this so it avoids throwing altogether on timeout (not catch-rethrow cuz thats noisy in tracelog)
+            try {
+                wr = WritableReference (&fProtectedValue_, &fMutex_, timeout);
+            }
+            catch (const system_error& e) {
+                if (e.code () == errc::timed_out) {
+                    return false;
+                }
+                Execution::ReThrow (e);
+            }
+        }
+        doWithWriteLock (*wr);
+        return true;
+    }
+    template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>
-    void Synchronized<T, TRAITS>::UpgradeLockAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    inline void Synchronized<T, TRAITS>::UpgradeLockAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
+#endif
+        if (not UpgradeLockAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) {
+            Execution::ThrowTimeOutException ();
+        }
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>
+    bool Synchronized<T, TRAITS>::UpgradeLockAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomicallyQuietly", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
 #endif
         RequireNotNull (lockBeingUpgraded);
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
@@ -205,10 +249,12 @@ namespace Stroika::Foundation::Execution {
         }
         else {
             if (not upgradeLock.try_lock_for (timeout)) {
-                Execution::ThrowTimeOutException ();
+                return false;
             }
         }
+        Assert (upgradeLock.owns_lock ());
         doWithWriteLock (WritableReference (&fProtectedValue_, nullptr));
+        return true;
     }
 
     /*
