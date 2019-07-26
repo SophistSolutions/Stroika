@@ -24,6 +24,8 @@ using namespace Stroika::Foundation::Cryptography::Encoding;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
+using Memory::BLOB;
+
 // @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
 
 #if qHasFeature_OpenSSL && defined(_MSC_VER)
@@ -346,7 +348,7 @@ namespace {
     }
 }
 
-OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
+OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, const BLOB& initialIV)
     : fInitializer ()
 {
     bool nopad = false;
