@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
      *  It is typically provided as an optional argument to static New () methods, such as 
      *  MemoryStream<>::New ()
      *
-     *  \note soemthing marked eNotKnownInternallySynchronized - may in fact be internally synchronized.
+     *  \note something marked eNotKnownInternallySynchronized - may in fact be internally synchronized.
      */
     enum class InternallySynchronized {
         eInternallySynchronized,
@@ -62,6 +62,27 @@ namespace Stroika::Foundation::Execution {
     };
     constexpr InternallySynchronized eInternallySynchronized         = InternallySynchronized::eInternallySynchronized;
     constexpr InternallySynchronized eNotKnownInternallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized;
+
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+    /*
+     * Make the boost types place more nicely with the stdc++ types.
+     */
+    namespace PRIVATE_::BOOST_HELP_ {
+        struct UpgradeMutex : boost::upgrade_mutex {
+            bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
+            {
+                return boost::upgrade_mutex::try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())));
+            }
+        };
+        template <typename MUTEX>
+        struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
+            UNIQUE_LOCK (MUTEX& m_, std::defer_lock_t)
+                : unique_lock (m, boost::defer_lock)
+            {
+            }
+        };
+    }
+#endif
 
     /**
      *  MUTEX:
@@ -90,12 +111,12 @@ namespace Stroika::Foundation::Execution {
     template <typename MUTEX    = recursive_mutex,
               bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
-              bool SUPPORTS_TIMED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, boost::upgrade_mutex>,
+              bool SUPPORTS_TIMED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>,
 #else
               bool SUPPORTS_TIMED_LOCKS                   = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
 #endif
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
-              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, boost::upgrade_mutex>,
+              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>,
 #else
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
 #endif
@@ -104,7 +125,7 @@ namespace Stroika::Foundation::Execution {
               typename READ_LOCK_TYPE  = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
               typename WRITE_LOCK_TYPE = unique_lock<MUTEX>,
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
-              typename UPGRADE_LOCK_TYPE = conditional_t<IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE, boost::upgrade_lock<MUTEX>, void>
+              typename UPGRADE_LOCK_TYPE = conditional_t<IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE, PRIVATE_::BOOST_HELP_::UNIQUE_LOCK<MUTEX>, void>
 #else
               typename UPGRADE_LOCK_TYPE                  = void
 #endif
@@ -727,9 +748,8 @@ namespace Stroika::Foundation::Execution {
      *        read locks held for a long time (and multiple threads doing so)
      */
     template <typename T>
-    using UpgradableRWSynchronized = Synchronized<T, Synchronized_Traits<boost::upgrade_mutex>>;
+    using UpgradableRWSynchronized = Synchronized<T, Synchronized_Traits<PRIVATE_::BOOST_HELP_::UpgradeMutex>>;
 #endif
-
 }
 
 /*

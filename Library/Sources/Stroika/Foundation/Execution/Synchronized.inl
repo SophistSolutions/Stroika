@@ -199,16 +199,12 @@ namespace Stroika::Foundation::Execution {
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
 
-        // @todo CLEANUP - the only upgradeLock we support right now takes BOOST boost::defer_lock ; subclass to map std::defer_lock to boost::defer_lock
-        //typename TRAITS::UpgradeLockType upgradeLock{fMutex_, boost::defer_lock};
-        boost::unique_lock upgradeLock{fMutex_, boost::defer_lock};
+        typename TRAITS::UpgradeLockType upgradeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
             upgradeLock.lock (); // if wait 'infiniite' use waitless lock call
         }
         else {
-            // @todo CLEANUP - the only upgradeLock we support right now takes BOOST time as arg. Do subclass that converts from std::chrono::duration
-            // and then can clean this up...
-            if (not upgradeLock.try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())))) {
+            if (not upgradeLock.try_lock_for (timeout)) {
                 Execution::ThrowTimeOutException ();
             }
         }
