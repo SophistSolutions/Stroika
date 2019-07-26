@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Execution {
                 if (e.code () == errc::timed_out) {
                     return false;
                 }
-                Execution::ReThrow (e);
+                Execution::ReThrow ();
             }
         }
         doWithWriteLock (*wr);
