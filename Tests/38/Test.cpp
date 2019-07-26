@@ -29,7 +29,9 @@ using Containers::Sequence;
 using Execution::BlockingQueue;
 using Execution::Finally;
 using Execution::RWSynchronized;
+#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
 using Execution::UpgradableRWSynchronized;
+#endif
 using Execution::SpinLock;
 using Execution::Synchronized;
 using Execution::Thread;
