@@ -544,7 +544,7 @@ namespace Stroika::Foundation::Execution {
          *        If using this, its best to arrange for only one thread to be able to 'upgrade' the lock, or to provide a timeout, so
          *        when the upgrade fails, you can cleanly backout and try again.
          *
-         *  \note - throws on timeout (or detectable deadlock)
+         *  \note - returns false on timeout (or detectable deadlock); and true otherwise. May throw for other reasons;
          *
          *  \par Example Usage
          *      \code
