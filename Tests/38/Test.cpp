@@ -1188,7 +1188,7 @@ namespace {
                             },
                                                           1s);
                         }
-                        catch (Execution::TimeOutException) {
+                        catch (const Execution::TimeOutException&) {
                             DbgTrace ("Got timeout in testUpgradeLockAtomically - expected and ignored... (retry)");	// deadlock avoidance
                             continue;
                         }

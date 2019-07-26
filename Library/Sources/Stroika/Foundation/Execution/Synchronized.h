@@ -29,6 +29,8 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
+ *		@todo	Cleanup Synchronized_Traits - its a mess
+ *
  *      @todo   Deadlock from two threads doing UpgradeAtomically is easily detectable, so in DEBUG builds translate that to an
  *              assert erorr? Or maybe always detect and raise an exception in that case. (probably assert better cuz overhead
  *              in detection would be paid by correct code)
@@ -39,7 +41,7 @@
  *
  *      @todo   More operator<, and other operator overloads
  *
- *      @todo   Tons of cleanups, orthoganiality, docs, etc.
+ *      @todo   Tons of cleanups, orthoganality, docs, etc.
  *
  *      @todo   consider/doc choice on explicit operator T ()
  *
@@ -68,17 +70,16 @@ namespace Stroika::Foundation::Execution {
      * Make the boost types place more nicely with the stdc++ types.
      */
     namespace PRIVATE_::BOOST_HELP_ {
-        struct UpgradeMutex : boost::upgrade_mutex {
-            bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
-            {
-                return boost::upgrade_mutex::try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())));
-            }
-        };
+        using  UpgradeMutex = boost::upgrade_mutex;
         template <typename MUTEX>
         struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
             UNIQUE_LOCK (MUTEX& m, std::defer_lock_t)
                 : boost::unique_lock<MUTEX> (m, boost::defer_lock)
             {
+            }
+            bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
+            {
+                return boost::upgrade_mutex::try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())));
             }
         };
     }
