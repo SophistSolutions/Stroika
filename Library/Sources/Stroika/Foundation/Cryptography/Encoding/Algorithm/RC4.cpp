@@ -21,7 +21,7 @@ using Memory::BLOB;
 namespace {
     OpenSSLCryptoParams cvt_ (const BLOB& key)
     {
-        return OpenSSLCryptoParams (CipherAlgorithm::eRC4, key, BLOB ());
+        return OpenSSLCryptoParams (CipherAlgorithm::eRC4, key, BLOB{});
     }
 }
 #endif
@@ -48,11 +48,11 @@ Memory::BLOB Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
  ****************************** Algorithm::EncodeRC4 ****************************
  ********************************************************************************
  */
-Streams::InputStream<byte>::Ptr Algorithm::EncodeRC4 (const Memory::BLOB& key, const Streams::InputStream<byte>::Ptr& in)
+Streams::InputStream<byte>::Ptr Algorithm::EncodeRC4 (const BLOB& key, const Streams::InputStream<byte>::Ptr& in)
 {
     return OpenSSLInputStream::New (cvt_ (key), Direction::eEncrypt, in);
 }
-Memory::BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
+BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const BLOB& in)
 {
     return EncodeRC4 (key, in.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
 }
