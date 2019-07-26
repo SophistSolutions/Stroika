@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
         template <typename MUTEX>
         struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
             UNIQUE_LOCK (MUTEX& m, std::defer_lock_t)
-                : unique_lock<MUTEX> (m, boost::defer_lock)
+                : boost::unique_lock<MUTEX> (m, boost::defer_lock)
             {
             }
             bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
