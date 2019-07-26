@@ -36,6 +36,7 @@ help:
 	@$(ECHO) "    check:                       -    Checks everything was built properly"
 	@$(ECHO) "    clean:"
 	@$(ECHO) "    clobber:"
+	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
