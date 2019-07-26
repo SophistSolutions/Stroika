@@ -433,7 +433,7 @@ namespace Stroika::Foundation::Containers {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
-                            return optional<KEY_TYPE> ();
+                            return nullopt;
                         }
                         else {
                             auto result = (*myContext)->fKey;
@@ -480,7 +480,7 @@ namespace Stroika::Foundation::Containers {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
                         if (myContext->Done ()) {
-                            return optional<MAPPED_VALUE_TYPE> ();
+                            return nullopt;
                         }
                         else {
                             auto result = (*myContext)->fValue;

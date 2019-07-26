@@ -429,7 +429,7 @@ namespace Stroika::Foundation::Containers {
                     auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<DOMAIN_TYPE> {
                         if (myContext->Done ()) {
-                            return optional<DOMAIN_TYPE> ();
+                            return nullopt;
                         }
                         else {
                             auto result = (*myContext)->first;
@@ -476,7 +476,7 @@ namespace Stroika::Foundation::Containers {
                     auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<RANGE_TYPE> {
                         if (myContext->Done ()) {
-                            return optional<RANGE_TYPE> ();
+                            return nullopt;
                         }
                         else {
                             auto result = (*myContext)->second;
