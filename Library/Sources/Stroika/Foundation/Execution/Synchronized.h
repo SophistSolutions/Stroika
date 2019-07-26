@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Execution {
         template <typename MUTEX>
         struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
             UNIQUE_LOCK (MUTEX& m, std::defer_lock_t)
-                : boost::unique_lock<MUTEX> (m, boost::defer_lock)
+                : unique_lock (m, boost::defer_lock)
             {
             }
         };
