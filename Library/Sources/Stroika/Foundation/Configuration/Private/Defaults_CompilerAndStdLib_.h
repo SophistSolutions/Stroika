@@ -136,6 +136,10 @@
 #define _MSC_VER_2k19_16Pt1_ 1921
 #define _MS_VS_2k19_16Pt1Pt0_ 192127702
 
+// _MSC_VER=1922
+#define _MSC_VER_2k19_16Pt2_ 1922
+#define _MS_VS_2k19_16Pt2Pt0_ 192227905
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -151,11 +155,11 @@
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 15.9.x - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
-#elif _MSC_VER <= _MSC_VER_2k19_16Pt1_
+#elif _MSC_VER <= _MSC_VER_2k19_16Pt2_
 // check which pointer-version of MSVC2k19 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt1Pt0_
+#if _MSC_FULL_VER > _MS_VS_2k19_16Pt2Pt0_
 // @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.1.0 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.2.0 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -364,7 +368,8 @@ ABORTING...
 // VERIFIED STILL BROKEN in _MSC_VER_2k17_15Pt9_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt0_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -417,7 +422,8 @@ ABORTING...
 #if defined(_MSC_VER)
 // WORKS anytime before _MS_VS_2k19_16Pt1Pt0_
 // First broken in _MS_VS_2k19_16Pt1Pt0_
-#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy 0
 #endif
@@ -425,20 +431,20 @@ ABORTING...
 #endif
 
 /*
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001:  An internal error has occurred in the compiler.
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001: (compiler file 'd:\agent\_work\4\s\src\vctools\Compiler\CxxFE\sl\p1\c\yyaction.cpp', line 1187)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001:  To work around this problem, try simplifying or changing the program near the locations listed above.
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001: Please choose the Technical Support command on the Visual C++
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(202,1): error C1001:  Help menu, or open the Technical Support help file for more information (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(199): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Execution::Logger::Priority>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(105): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Execution::Logger::Priority>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.h(184): message :  see reference to class template instantiation 'std::array<std::pair<ENUM_TYPE,const wchar_t *>,2>' being compiled
+>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(111): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Cryptography::OpenSSL::CipherAlgorithm>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001:  An internal error has occurred in the compiler.
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001: (compiler file 'd:\agent\_work\3\s\src\vctools\Compiler\CxxFE\sl\p1\c\yyaction.cpp', line 1187)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001:  To work around this problem, try simplifying or changing the program near the locations listed above.
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001: Please choose the Technical Support command on the Visual C++
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001:  Help menu, or open the Technical Support help file for more information (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp)
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(205): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Cryptography::OpenSSL::DigestAlgorithm>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp)
 */
 #ifndef qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
 
 #if defined(_MSC_VER)
 // First noticed broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// VERIFIED BROKEN _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy 0
 #endif
@@ -776,7 +782,8 @@ lose those deprecated interfaces.
 // verified broken _MS_VS_2k19_16Pt0Pt0pre4_
 // verified broken _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // verified broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// verified broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -1026,7 +1033,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 // verified broken in _MSC_VER_2k19_16Pt0_ (debug builds only)
 // verified broken in _MSC_VER_2k19_16Pt1_ (debug builds only)
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// verified broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
 #endif
@@ -1067,7 +1075,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
 // still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_) (running from visual studio gui)
 // still broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// still broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -1116,10 +1125,10 @@ WORKAROUND:
 // verified still broken in _MSC_VER_2k19_16Pt0Pt0_ - preview1
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // verified still broken _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// verified still broken _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
@@ -1217,7 +1226,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// verified still broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1406,10 +1416,10 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1) - not not sure anything more than warnings - no buggy behavior seen?
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // verified still broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// verified still broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
 #endif
@@ -1427,7 +1437,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #if defined(_MSC_VER)
 // Verified still broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// Verified still broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -1535,10 +1546,10 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// UNTESTED in _MS_VS_2k19_16Pt0Pt0pre4_
 // VERIFIED BROKEN IN _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -1571,7 +1582,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+// verified still broken in _MSC_VER_2k19_16Pt2_
+#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
 #endif
@@ -1664,12 +1676,24 @@ namespace {
 // VERIFIED still broken in _MSC_VER_2k19_16Pt0_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// UNTESTED _MS_VS_2k19_16Pt0Pt0pre4_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // VERIFIED still broken in _MSC_VER_2k19_16Pt1_
+// VERIFIED FIXED _MSC_VER_2k19_16Pt2_ (FIXED BUT INSTEAD WE NOW HAVE qCompilerAndStdLib_locale_utf8_string_convert_Buggy)
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
+#endif
+
+#endif
+
+// Must run regtest 2, and see if pass/fail (or look into why not handling these unicode strings)
+#ifndef qCompilerAndStdLib_locale_utf8_string_convert_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k19_16Pt2_ (before was qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy or qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy)
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
+#else
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif
 
 #endif
