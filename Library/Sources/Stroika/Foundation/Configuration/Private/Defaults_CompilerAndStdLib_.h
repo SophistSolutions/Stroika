@@ -449,8 +449,8 @@ ABORTING...
 
 #if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC8
-// UNTESTED IN GCC9
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+// VERIFIED BROKEN IN GCC9
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 9)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
