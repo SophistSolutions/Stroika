@@ -781,7 +781,7 @@ namespace Stroika::Foundation::Traversal {
         if (sz == 0)
             [[UNLIKELY_ATTR]]
             {
-                return optional<RESULT_TYPE>{};
+                return nullopt;
             }
         if ((sz % 2) == 0) {
             return (static_cast<RESULT_TYPE> (tmp[sz / 2]) + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);

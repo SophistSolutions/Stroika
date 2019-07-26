@@ -167,7 +167,7 @@ public:
         int    pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); }));
         Assert (pollResult >= 0);
         if (pollResult == 0) {
-            return {}; // if no data available, return {}
+            return nullopt; // if no data available, return nullopt
         }
         else {
             // we don't know how much is available, but at least one byte. If not actually reading, just return 1
