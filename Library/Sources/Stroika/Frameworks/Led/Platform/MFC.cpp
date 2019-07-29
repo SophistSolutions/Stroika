@@ -7,8 +7,13 @@
 
 #if qHasFeature_ATLMFC
 
+
 #include <afxext.h>
+
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
 
 #include "MFC.h"
 
