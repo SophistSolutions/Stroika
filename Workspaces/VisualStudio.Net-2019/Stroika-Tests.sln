@@ -247,6 +247,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests {top level}", "Tests 
 		..\..\Tests\TODO.txt = ..\..\Tests\TODO.txt
 		..\..\Tests\Valgrind-Helgrind-Common.supp = ..\..\Tests\Valgrind-Helgrind-Common.supp
 		..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp = ..\..\Tests\Valgrind-MemCheck-BlockAllocation.supp
+		..\..\Tests\Valgrind-MemCheck-Common-armhf.supp = ..\..\Tests\Valgrind-MemCheck-Common-armhf.supp
 		..\..\Tests\Valgrind-MemCheck-Common.supp = ..\..\Tests\Valgrind-MemCheck-Common.supp
 	EndProjectSection
 EndProject

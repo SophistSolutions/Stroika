@@ -1,0 +1,125 @@
+{
+   DLL-LOAD-EXCEPTIONS-ISSUE-arm-rasperrypi-Conditional jump or move depends on uninitialised value(s)
+   Memcheck:Cond
+   ...
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:do_preload
+   fun:handle_ld_preload
+   fun:dl_main
+}
+{
+   https://stroika.atlassian.net/browse/STK-661 part1 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Cond
+   ...
+   fun:_dl_open
+   fun:do_dlopen
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:dlerror_run
+   fun:__libc_dlopen_mode
+}
+{
+   https://stroika.atlassian.net/browse/STK-661 part2 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Cond
+   ...
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:do_preload
+   fun:handle_ld_preload
+   fun:dl_main
+   fun:_dl_sysdep_start
+   fun:_dl_start_final
+   fun:_dl_start
+}
+{
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Addr8
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem.so
+}
+{
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Cond
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
+}
+{
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Addr8
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
+}
+{
+   https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation4Time8DateTime10AddSecondsEx
+}
+{
+   https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation4Time8DateTime2AsIlEET_v
+}
+{
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi either report of bug in openssl purify code or false positive
+   Memcheck:Param
+   write(buf)
+   ...
+   fun:sock_write
+}
+{
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, ssl/curl related
+   Memcheck:Cond
+   fun:dprintf_formatf
+}
+{
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, curl related
+   Memcheck:Cond
+   fun:curl_url_set
+}
+{
+   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, curl related
+   Memcheck:Cond
+   fun:seturl
+}
+{
+   https://stroika.atlassian.net/browse/STK-698 - raspberrypi only - 
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Characters7CString7FormatV*9__va_list*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-698 - raspberrypi only - 
+   Memcheck:Value4
+   ...
+   fun:_ZN7Stroika10Foundation10Characters7CString7FormatV*9__va_list*
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation5Debug8Private_16TraceModuleData_C2Ev*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt6locale5_ImplC1EPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt11__timepunctI*EC1EP15__locale_structPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt7__cxx118messagesI*EC1EP15__locale_structPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt8messagesI*EC1EP15__locale_structPKcj
+}

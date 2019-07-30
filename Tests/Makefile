@@ -41,20 +41,29 @@ EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
 SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 
-### @todo - rewrite the below mess so valgrind etc CONSTRUCT a RUN_PREFIX, and then unify the code a bit.
-### and change place where RUN_PREFIX set (RegressionTests) and use the RUN_PREFIX mechanism (configuration)
 
+ifeq (memcheck,$(VALGRIND))
+DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-MemCheck-Common.supp
+#DEFAULT_VALGRIND_SUPPRESSIONS_+= BlockAllocation-Valgrind.supp
+ifeq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
+DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-Common-$(ARCH).supp
+endif
+VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
+else ifeq (helgrind,$(VALGRIND))
+DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-Helgrind-Common.supp
+ifeq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
+DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
+endif
+VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
+endif
 
 ifeq (memcheck,$(VALGRIND))
 EXTRA_VALGRIND_OPTIONS=
-VALGRIND_SUPPRESSIONS?= Valgrind-MemCheck-Common.supp
-#VALGRIND_SUPPRESSIONS?= Common-Valgrind.supp BlockAllocation-Valgrind.supp
 VALGRIND_EXPANDED_SUPPRESSIONS:= $(foreach vs,$(VALGRIND_SUPPRESSIONS),--suppressions=$(vs))
 #VALGRIND_OPTIONS=-q --tool=helgrind $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
 VALGRIND_OPTIONS=-q --track-origins=yes --tool=memcheck --leak-check=full $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
 else ifeq (helgrind,$(VALGRIND))
 EXTRA_VALGRIND_OPTIONS=
-VALGRIND_SUPPRESSIONS?= Valgrind-Helgrind-Common.supp
 VALGRIND_EXPANDED_SUPPRESSIONS:= $(foreach vs,$(VALGRIND_SUPPRESSIONS),--suppressions=$(vs))
 VALGRIND_OPTIONS=-q --tool=helgrind $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
 endif
