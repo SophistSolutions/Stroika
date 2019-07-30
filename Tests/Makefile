@@ -45,13 +45,13 @@ SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 ifeq (memcheck,$(VALGRIND))
 DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-MemCheck-Common.supp
 #DEFAULT_VALGRIND_SUPPRESSIONS_+= BlockAllocation-Valgrind.supp
-ifeq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
+ifneq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-Common-$(ARCH).supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
 else ifeq (helgrind,$(VALGRIND))
 DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-Helgrind-Common.supp
-ifeq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
+ifneq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
