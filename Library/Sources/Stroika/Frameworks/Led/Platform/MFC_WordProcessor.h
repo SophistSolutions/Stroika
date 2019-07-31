@@ -18,7 +18,7 @@ static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC
 #pragma warning(push)
 #pragma warning(disable : 5054)
 #include <afxole.h>
-#pragma warning (pop)
+#pragma warning(pop)
 
 #include <afxwin.h>
 #include <oleidl.h>
