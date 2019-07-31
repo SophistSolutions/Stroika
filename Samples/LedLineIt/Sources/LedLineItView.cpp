@@ -4,7 +4,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxodlgs.h> // MFC OLE dialog classes
+#pragma warning(pop)
+
 #include <afxwin.h>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"

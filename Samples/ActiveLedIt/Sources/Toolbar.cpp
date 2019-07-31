@@ -3,7 +3,10 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxctl.h>
+#pragma warning(pop)
 
 #include <atlbase.h>
 
