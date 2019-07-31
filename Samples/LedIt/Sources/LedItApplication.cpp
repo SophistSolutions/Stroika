@@ -33,6 +33,7 @@
 #elif defined(WIN32)
 
 #include <afx.h>
+
 #elif qXWindows
 #include <gtk/gtkoptionmenu.h>
 #endif

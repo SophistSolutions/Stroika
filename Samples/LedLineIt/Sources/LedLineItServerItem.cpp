@@ -71,7 +71,7 @@ BOOL LedLineItServerItem::OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize)
 
 BOOL LedLineItServerItem::OnDraw (CDC* pDC, CSize& /*rSize*/)
 {
-    LedLineItDocument* pDoc = GetDocument ();
+    [[maybe_unused]]LedLineItDocument* pDoc = GetDocument ();
     ASSERT_VALID (pDoc);
 
     // TODO: set mapping mode and extent

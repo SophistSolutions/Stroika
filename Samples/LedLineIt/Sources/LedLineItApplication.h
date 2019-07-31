@@ -6,7 +6,10 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
 
 #include "Stroika/Frameworks/Led/Support.h"
 #include "Stroika/Frameworks/Led/TextStore.h"
