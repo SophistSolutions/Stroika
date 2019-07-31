@@ -48,6 +48,11 @@
    obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
 }
 {
+   https://stroika.atlassian.net/browse/STK-662 (ARM/DEBIAN/RASPBERRYPI)
+   Memcheck:Value4
+   obj:/usr/lib/arm-linux-gnueabihf/libarmmem-v7l.so
+}
+{
    https://stroika.atlassian.net/browse/STK-669  -- ARM ONLY
    Memcheck:Cond
    fun:_ZNK7Stroika10Foundation4Time8DateTime10AddSecondsEx
@@ -68,11 +73,6 @@
    https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, ssl/curl related
    Memcheck:Cond
    fun:dprintf_formatf
-}
-{
-   https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, curl related
-   Memcheck:Cond
-   fun:curl_url_set
 }
 {
    https://stroika.atlassian.net/browse/STK-678 -raspberrypi only, curl related
@@ -122,4 +122,414 @@
    Memcheck:Cond
    ...
    fun:_ZNSt8messagesI*EC1EP15__locale_structPKcj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation10Characters6String9FromASCIIEPKcS4_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:getaddrinfo
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:getaddrinfo
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation10Characters6String8FromUTF8EPKcS4_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_B5cxx11Ed
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_B5cxx11Ed
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPcEEvT_S7_St20forward_iterator_tag.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPcEEvT_S7_St20forward_iterator_tag.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7reserveEj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:juliandayFunc.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:sqlite3*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:sqlite3*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:malloc
+   fun:sqlite3MemMalloc.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:vdbeChangeP4Full
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:vdbeChangeP4Full
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERjj.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation12Cryptography8Encoding9Algorithm12DecodeBase64ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation12Cryptography8Private_11mkArrayFmt_B5cxx11EPKhS4_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:_ZN7Stroika10Foundation12Cryptography8Private_11mkArrayFmt_B5cxx11EPKhS4_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation12Cryptography6Digest8DigesterINS2_9Algorithm5CRC32EjE13ComputeDigestERKNS0_7Streams11InputStreamISt4byteE3PtrE
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_110MD5Update_EPNS_7MD5_CTXEPKhj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:_ZN12_GLOBAL__N_110MD5Update_EPNS_7MD5_CTXEPKhj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:vfprintf
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:vfprintf
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:_ZN7Stroika10Foundation12Cryptography8Private_11mkArrayFmt_B5cxx11EPKhS4_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_110Base64Test8PRIVATE_12_GLOBAL__N_122DO_ONE_REGTEST_BASE64_ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKSt6vectorISt4byteSaISC_EE
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:main
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_119DoCommonHasherTest_IN7Stroika10Foundation12Cryptography6Digest8DigesterINS4_9Algorithm5CRC32EjEEEEvPKSt4byteSB_j.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation6Memory4BLOBC1EPKSt4byteS5_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_114BLOBBINSTREAM_3REP4ReadEPSt4byteS3_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Param
+   exit_group(status)
+   fun:_Exit
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:_ZNK7Stroika10Foundation12DataExchange7Archive3Zip6Reader4Rep_17GetContainedFilesEv
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation7Streams32ExternallyOwnedMemoryInputStreamISt4byteE4Rep_4ReadEPS3_S6_
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNSt12_GLOBAL__N_17ucs4_inERNS_5rangeIKcLb1EEERNS0_IDiLb1EEEmSt12codecvt_mode
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNSt12_GLOBAL__N_120read_utf8_code_pointERNS_5rangeIKcLb1EEEm
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:releaseMemArray.part.287.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:releaseMemArray.part.287.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:insertCell.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:btreeParseCellPtr
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:btreeParseCellPtr
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:freeSpace.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:freeSpace.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:getCellInfo.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:clearCell.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:pageFindSlot
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:pageFindSlot
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:enlargeAndAppend.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Param
+   write(buf)
+   fun:write
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:dropCell.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:exprDup.constprop.444
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:balance
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:balance
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:copyNodeContent.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:btreeComputeFreeSpace*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:getnameinfo
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:getnameinfo
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:libunistring_mem_iconv*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   obj:/usr/lib/arm-linux-gnueabihf/libunistring.so.2.1.0
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:seturl
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:seturl
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:hostname_check.isra.1
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_137BinaryOutputStreamFromOStreamAdapter_3T1_Ev.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation6Memory4BLOB14EqualsComparerclERKS2_S5_.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation6Memory16SmallStackBufferISt4byteLj64EE8reserve_Ej
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation6Memory16SmallStackBufferISt4byteLj64EE8reserve_Ej
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Characters6String13FromSDKStringEPKc
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:_ZN7Stroika10Foundation10Characters6String13FromSDKStringEPKc
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation10Characters17CodePageConverter12MapToUNICODEEPKcjPDiPj
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:Curl_*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:Curl_*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:curl_*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Param
+   send(len)
+   ...
+   fun:send
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   obj:/tmp/Test43
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   fun:__udivmoddi4
 }
