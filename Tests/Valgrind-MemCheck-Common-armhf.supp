@@ -533,3 +533,26 @@
    Memcheck:Cond
    fun:__udivmoddi4
 }
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   fun:iconv
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   ...
+   fun:iconv
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Cond
+   ...
+   obj:/usr/lib/arm-linux-gnueabihf/libunistring.so.2.1.0
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:u8_strconv_from_encoding
+}
