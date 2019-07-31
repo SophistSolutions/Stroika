@@ -28,7 +28,7 @@
 library ACTIVELEDITLib
 {
 	importlib(STDOLE_TLB);
-	importlib(STDTYPE_TLB);
+	//importlib(STDTYPE_TLB);	// this file appears to have disappeared in VS2k19 16.2 release, and doesn't appear to be needed (at least to compile)
 
 	typedef	enum	HasScrollBarFlag { eNoScrollBar, eShowScrollBar, eShowScrollbarIfNeeded}	HasScrollBarFlag;
 
