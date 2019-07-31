@@ -7,7 +7,10 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
 
 class LedItInPlaceFrame : public COleIPFrameWnd {
     DECLARE_DYNCREATE (LedItInPlaceFrame)

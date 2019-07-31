@@ -6,7 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
+
 #include <afxwin.h>
 
 #include "Stroika/Foundation/Characters/CodePage.h"

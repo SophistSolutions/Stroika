@@ -6,8 +6,13 @@
 
 #if WIN32
 
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
+
 #include <atlconv.h>
+
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"

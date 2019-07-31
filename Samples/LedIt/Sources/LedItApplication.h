@@ -15,7 +15,10 @@
 
 #include <LDocApplication.h>
 #elif qPlatform_Windows
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
 #elif qXWindows
 #include <gtk/gtk.h>
 #endif

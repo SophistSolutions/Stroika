@@ -10,7 +10,11 @@
 #if qPlatform_MacOS
 #include <LSingleDoc.h>
 #elif defined(WIN32)
+#pragma warning(push)
+#pragma warning(disable : 5054)
 #include <afxole.h>
+#pragma warning(pop)
+
 #include <afxwin.h>
 #endif
 
