@@ -462,7 +462,7 @@ class ATL_NO_VTABLE ActiveLedIt_AcceleratorElement : public CComObjectRootEx<CCo
                                                      public IDispatchImpl<IALAcceleratorElement, &IID_IALAcceleratorElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     ActiveLedIt_AcceleratorElement ();
-    virtual ~ActiveLedIt_AcceleratorElement ();
+    virtual ~ActiveLedIt_AcceleratorElement () = default;
 
 public:
     DECLARE_NO_REGISTRY ()
