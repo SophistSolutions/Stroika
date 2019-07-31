@@ -51,7 +51,7 @@ endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
 else ifeq (helgrind,$(VALGRIND))
 DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-Helgrind-Common.supp
-ifneq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
+ifneq (,$(wildcard Valgrind-Helgrind-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
