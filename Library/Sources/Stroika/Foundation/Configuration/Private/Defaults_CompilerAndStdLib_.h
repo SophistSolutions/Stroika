@@ -465,6 +465,7 @@ ABORTING...
 
 #ifndef qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy
 
+// Generates internal compiler error
 #if defined(_MSC_VER)
 // First noticed broken _MSC_VER_2k19_16Pt2_
 #define qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
