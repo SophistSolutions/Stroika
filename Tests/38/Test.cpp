@@ -29,7 +29,7 @@ using Containers::Sequence;
 using Execution::BlockingQueue;
 using Execution::Finally;
 using Execution::RWSynchronized;
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
 using Execution::UpgradableRWSynchronized;
 #endif
 using Execution::SpinLock;
@@ -1177,7 +1177,7 @@ namespace {
                     }
                 }
             };
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
             auto testUpgradeLockAtomically = [&] (auto& isEven) {
                 while (true) {
                     Execution::CheckForThreadInterruption ();
@@ -1229,7 +1229,7 @@ namespace {
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically (isEven); });
             }
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
             {
                 Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized NonAtomically"};
                 UpgradableRWSynchronized<bool> isEven{true};

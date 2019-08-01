@@ -11,8 +11,7 @@
 #include <shared_mutex>
 #include <type_traits>
 
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
-#include <boost/thread/lock_types.hpp>
+#if __has_include(<boost/thread/shared_mutex.hpp>)
 #include <boost/thread/shared_mutex.hpp>
 #endif
 
@@ -65,7 +64,7 @@ namespace Stroika::Foundation::Execution {
     constexpr InternallySynchronized eInternallySynchronized         = InternallySynchronized::eInternallySynchronized;
     constexpr InternallySynchronized eNotKnownInternallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized;
 
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
     /*
      * Make the boost types play more nicely with the stdc++ types.
      */
@@ -117,12 +116,12 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename MUTEX    = recursive_mutex,
               bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
               bool SUPPORTS_TIMED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>,
 #else
               bool SUPPORTS_TIMED_LOCKS                   = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
 #endif
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>,
 #else
               bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
@@ -805,7 +804,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
 
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
+#if __has_include(<boost/thread/shared_mutex.hpp>)
     /**
      * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer, and allow the UpgradeLockAtomically method
      * (Typically, using boost:::upgrade_mutex);
