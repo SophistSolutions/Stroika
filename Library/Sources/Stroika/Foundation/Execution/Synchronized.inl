@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Execution {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
         });
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_)); // if wait 'infiniite' use waitless lock call
+            doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_)); // if wait 'infinite' use no-time-arg lock call
         }
         else {
             doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_, timeout));
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Execution {
         });
         optional<WritableReference> wr;
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            wr = WritableReference (&fProtectedValue_, &fMutex_); // if wait 'infiniite' use waitless lock call
+            wr = WritableReference (&fProtectedValue_, &fMutex_); // if wait 'infinite' use no-time-arg lock call
         }
         else {
             // @todo rewrite this so it avoids throwing altogether on timeout (not catch-rethrow cuz thats noisy in tracelog)
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Execution {
 
         typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            upgradeLock.lock (); // if wait 'infinite' use waitless lock call
+            upgradeLock.lock (); // if wait 'infinite' use no-time-arg lock call
         }
         else {
             if (not upgradeLock.try_lock_for (timeout)) {
