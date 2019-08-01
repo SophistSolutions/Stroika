@@ -1165,7 +1165,7 @@ namespace {
                     Execution::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
-                        isEven.UpgradeLockNonAtomically (&rLock, [&] (RWSynchronized<bool>::WritableReference&& writeLock) {
+                        isEven.UpgradeLockNonAtomically (&rLock, [&](auto&& writeLock) {
                             // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
                             if (writeLock.load ()) {
                                 writeLock.store (false);
@@ -1185,11 +1185,19 @@ namespace {
                     if (rLock.load ()) {
                         try {
                             isEven.UpgradeLockAtomically (
-                                &rLock, [&] (UpgradableRWSynchronized<bool>::WritableReference&& writeLock) {
+                                &rLock, 
+#if qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy
+                                [&](UpgradableRWSynchronized<bool>::WritableReference&& writeLock) {
                                     Assert (writeLock.load ());
                                     writeLock.store (false);
-                                },
-                                1s);
+                                }
+#else
+                                [&](auto&& writeLock) {
+                                    Assert (writeLock.load ());
+                                    writeLock.store (false);
+                                }
+#endif
+                                , 1s);
                         }
                         catch (const Execution::TimeOutException&) {
                             DbgTrace ("Got timeout in testUpgradeLockAtomically - expected and ignored... (retry)"); // deadlock avoidance
@@ -1223,9 +1231,14 @@ namespace {
             }
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
             {
+                Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized NonAtomically"};
+                UpgradableRWSynchronized<bool> isEven{true};
+				runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically (isEven); });
+            }
+            {
                 Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized Atomically"};
                 UpgradableRWSynchronized<bool> isEven{true};
-                runSyncTest (isEven, [&] () { testUpgradeLockAtomically (isEven); });
+                runSyncTest (isEven, [&]() { testUpgradeLockAtomically (isEven); });
             }
 #endif
         }
