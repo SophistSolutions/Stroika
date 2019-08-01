@@ -59,7 +59,7 @@ BOOL LedLineItServerItem::OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize)
     //  HIMETRIC units of the entire item.  The default implementation
     //  here simply returns a hard-coded number of units.
 
-    [[maybe_unused]]LedLineItDocument* pDoc = GetDocument ();
+    [[maybe_unused]] LedLineItDocument* pDoc = GetDocument ();
     ASSERT_VALID (pDoc);
 
     // TODO: replace this arbitrary size
@@ -71,7 +71,7 @@ BOOL LedLineItServerItem::OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize)
 
 BOOL LedLineItServerItem::OnDraw (CDC* pDC, CSize& /*rSize*/)
 {
-    [[maybe_unused]]LedLineItDocument* pDoc = GetDocument ();
+    [[maybe_unused]] LedLineItDocument* pDoc = GetDocument ();
     ASSERT_VALID (pDoc);
 
     // TODO: set mapping mode and extent

@@ -7,7 +7,6 @@
 
 #if qHasFeature_ATLMFC
 
-
 #include <afxext.h>
 
 #pragma warning(push)

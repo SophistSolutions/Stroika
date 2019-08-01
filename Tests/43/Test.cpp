@@ -41,7 +41,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 
 namespace {
-    const Connection::Options kDefaultTestOptions_ = []() {
+    const Connection::Options kDefaultTestOptions_ = [] () {
         Connection::Options o;
         o.fMaxAutomaticRedirects = 2;
         return o;
@@ -106,12 +106,12 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
@@ -119,10 +119,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -154,7 +154,7 @@ namespace {
                 static mt19937 sRNG_;
 
                 c.SetSchemeAndAuthority (URI{L"http://httpbin.org"});
-                BLOB roundTripTestData = []() {
+                BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
@@ -227,7 +227,7 @@ namespace {
 
                 static mt19937 sRNG_;
 
-                BLOB roundTripTestData = []() {
+                BLOB roundTripTestData = [] () {
                     Memory::SmallStackBuffer<byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
@@ -316,12 +316,12 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
@@ -329,10 +329,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -366,12 +366,12 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
+                DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
@@ -379,10 +379,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -409,8 +409,8 @@ namespace {
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
@@ -464,8 +464,8 @@ namespace {
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
@@ -480,8 +480,8 @@ namespace {
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
@@ -545,7 +545,7 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([=]() -> Connection::Ptr {
+            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
                 Cache::DefaultOptions cacheOptions{};
                 cacheOptions.fDefaultResourceTTL = 300s;
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
@@ -555,7 +555,7 @@ namespace {
             });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([=]() -> Connection::Ptr {
+            DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
                 Cache::DefaultOptions cacheOptions{};
                 cacheOptions.fDefaultResourceTTL = 300s;
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
@@ -612,7 +612,7 @@ namespace {
                 ConnectionPool connectionPoolWithCache{
                     ConnectionPool::Options{
                         3,
-                        [&]() -> Connection::Ptr {
+                        [&] () -> Connection::Ptr {
                             Connection::Options connOpts = kDefaultTestOptions_;
                             connOpts.fCache              = cache;
                             return Connection::New (connOpts);
@@ -620,21 +620,21 @@ namespace {
                 ConnectionPool connectionPoolWithoutCache{
                     ConnectionPool::Options{
                         3,
-                        []() -> Connection::Ptr {
+                        [] () -> Connection::Ptr {
                             return Connection::New (kDefaultTestOptions_);
                         }}};
 
-                DoRegressionTests_ForConnectionFactory_ ([&](const URI& uriHint) -> Connection::Ptr {
+                DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
                     return connectionPoolWithoutCache.New (uriHint);
                 });
-                DoRegressionTests_ForConnectionFactory_ ([&](const URI& uriHint) -> Connection::Ptr {
+                DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
                     return connectionPoolWithCache.New (uriHint);
                 });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-				// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-				// This is more like the absence of a feature beacuse of the missing component.
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
