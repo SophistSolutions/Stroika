@@ -28,8 +28,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Cleanup Synchronized_Traits - its a mess
- *
  *      @todo   Deadlock from two threads doing UpgradeAtomically is easily detectable, so in DEBUG builds translate that to an
  *              assert erorr? Or maybe always detect and raise an exception in that case. (probably assert better cuz overhead
  *              in detection would be paid by correct code)
@@ -113,37 +111,50 @@ namespace Stroika::Foundation::Execution {
      *        read locks held for a long time (and multiple threads doing so).
      *
      *        @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
+     *
+     *  \note To change the value of one of the constexpr or type members of Synchronized_Traits, use template
+     *        specialization (or pass a completely different traits object to Synchronized<>).
+     *
      */
-    template <typename MUTEX    = recursive_mutex,
-              bool IS_RECURSIVE = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
-#if __has_include(<boost/thread/shared_mutex.hpp>)
-              bool SUPPORTS_TIMED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>,
-#else
-              bool SUPPORTS_TIMED_LOCKS                   = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
-#endif
-#if __has_include(<boost/thread/shared_mutex.hpp>)
-              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>,
-#else
-              bool IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE = false,
-#endif
-              bool SUPPORTS_SHARED_LOCKS =
-                  is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex> or IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE,
-              typename READ_LOCK_TYPE  = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-              typename WRITE_LOCK_TYPE = unique_lock<MUTEX>>
+    template <typename MUTEX = recursive_mutex>
     struct Synchronized_Traits {
         using MutexType = MUTEX;
 
-        using ReadLockType  = READ_LOCK_TYPE;
-        using WriteLockType = WRITE_LOCK_TYPE;
+        /**
+         *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
+         */
+        static constexpr bool kIsRecursiveMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
 
-        // Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
-        static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;
+        /**
+         */
+        static constexpr bool kSupportsTimedLocks =
+            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>
+#if __has_include(<boost/thread/shared_mutex.hpp>)
+            or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>
+#endif
+            ;
 
-        static constexpr bool kSupportSharedLocks = SUPPORTS_SHARED_LOCKS;
+        /**
+         */
+        static constexpr bool kIsUpgradableSharedToExclusive =
+            false
+#if __has_include(<boost/thread/shared_mutex.hpp>)
+            or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>
+#endif
+            ;
 
-        static constexpr bool kSupportsTimedLocks = SUPPORTS_TIMED_LOCKS;
+        /**
+         */
+        static constexpr bool kSupportSharedLocks =
+            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex> or kIsUpgradableSharedToExclusive;
 
-        static constexpr bool kIsUpgradableSharedToExclusive = IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE;
+        /**
+         */
+        using ReadLockType = conditional_t<kSupportSharedLocks, shared_lock<MUTEX>, unique_lock<MUTEX>>;
+
+        /**
+         */
+        using WriteLockType = unique_lock<MUTEX>;
     };
 
     /**
