@@ -70,16 +70,45 @@ namespace Stroika::Foundation::Execution {
      * Make the boost types place more nicely with the stdc++ types.
      */
     namespace PRIVATE_::BOOST_HELP_ {
-        using UpgradeMutex = boost::upgrade_mutex;
-        template <typename MUTEX>
-        struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
-            UNIQUE_LOCK (MUTEX& m, std::defer_lock_t)
-                : boost::unique_lock<MUTEX> (m, boost::defer_lock)
+        struct UpgradeMutex : boost::upgrade_mutex {
+            using inherited = boost::upgrade_mutex;
+            template <class _Rep, class _Period>
+            bool try_lock_for (const boost::chrono::duration<_Rep, _Period>& timeout)
             {
+                return inherited::try_lock_for (timeout);
             }
             bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
             {
-                return boost::unique_lock<MUTEX>::try_lock_for (boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ())));
+                return inherited::try_lock_for (cvt_ (timeout));
+            }
+            static boost::chrono::milliseconds cvt_ (const chrono::duration<Time::DurationSecondsType>& timeout)
+            {
+                return boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ()));
+            }
+        };
+        template <typename MUTEX>
+        struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
+            using inherited = boost::unique_lock<MUTEX>;
+            UNIQUE_LOCK (MUTEX& m, std::defer_lock_t)
+                : inherited (m, boost::defer_lock)
+            {
+            }
+            UNIQUE_LOCK (MUTEX& m, const chrono::duration<Time::DurationSecondsType>& timeout)
+                : inherited (m, cvt_ (timeout))
+            {
+            }
+            template <class _Rep, class _Period>
+            bool try_lock_for (const boost::chrono::duration<_Rep, _Period>& timeout)
+            {
+                return inherited::try_lock_for (timeout);
+            }
+            bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
+            {
+                return inherited::try_lock_for (cvt_ (timeout));
+            }
+            static boost::chrono::milliseconds cvt_ (const chrono::duration<Time::DurationSecondsType>& timeout)
+            {
+                return boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ()));
             }
         };
     }
