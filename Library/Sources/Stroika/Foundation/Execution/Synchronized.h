@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Execution {
 
 #if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
     /*
-     * Make the boost types place more nicely with the stdc++ types.
+     * Make the boost types play more nicely with the stdc++ types.
      */
     namespace PRIVATE_::BOOST_HELP_ {
         struct UpgradeMutex : boost::upgrade_mutex {
@@ -83,31 +83,8 @@ namespace Stroika::Foundation::Execution {
             }
             static boost::chrono::milliseconds cvt_ (const chrono::duration<Time::DurationSecondsType>& timeout)
             {
-                return boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ()));
-            }
-        };
-        template <typename MUTEX>
-        struct UNIQUE_LOCK : boost::unique_lock<MUTEX> {
-            using inherited = boost::unique_lock<MUTEX>;
-            UNIQUE_LOCK (MUTEX& m, std::defer_lock_t)
-                : inherited (m, boost::defer_lock)
-            {
-            }
-            UNIQUE_LOCK (MUTEX& m, const chrono::duration<Time::DurationSecondsType>& timeout)
-                : inherited (m, cvt_ (timeout))
-            {
-            }
-            template <class _Rep, class _Period>
-            bool try_lock_for (const boost::chrono::duration<_Rep, _Period>& timeout)
-            {
-                return inherited::try_lock_for (timeout);
-            }
-            bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
-            {
-                return inherited::try_lock_for (cvt_ (timeout));
-            }
-            static boost::chrono::milliseconds cvt_ (const chrono::duration<Time::DurationSecondsType>& timeout)
-            {
+                // @todo better to rewrite this to match precision of incoming arguments but not sure identical APIs between
+                // boost and std (for float/double for example)
                 return boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ()));
             }
         };
@@ -153,19 +130,12 @@ namespace Stroika::Foundation::Execution {
               bool SUPPORTS_SHARED_LOCKS =
                   is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex> or IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE,
               typename READ_LOCK_TYPE  = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-              typename WRITE_LOCK_TYPE = unique_lock<MUTEX>,
-#if __has_include(<boost/thread/shared_mutex.hpp>) && __has_include(<boost/thread/lock_types.hpp>)
-              typename UPGRADE_LOCK_TYPE = conditional_t<IS_UPGRADABLE_FROM_SHARED_TO_EXCLUSIVE, PRIVATE_::BOOST_HELP_::UNIQUE_LOCK<MUTEX>, void>
-#else
-              typename UPGRADE_LOCK_TYPE                  = void
-#endif
-              >
+              typename WRITE_LOCK_TYPE = unique_lock<MUTEX>>
     struct Synchronized_Traits {
         using MutexType = MUTEX;
 
-        using ReadLockType    = READ_LOCK_TYPE;
-        using WriteLockType   = WRITE_LOCK_TYPE;
-        using UpgradeLockType = UPGRADE_LOCK_TYPE;
+        using ReadLockType  = READ_LOCK_TYPE;
+        using WriteLockType = WRITE_LOCK_TYPE;
 
         // Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
         static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;

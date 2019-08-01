@@ -243,9 +243,9 @@ namespace Stroika::Foundation::Execution {
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
 
-        typename TRAITS::UpgradeLockType upgradeLock{fMutex_, std::defer_lock};
+        typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            upgradeLock.lock (); // if wait 'infiniite' use waitless lock call
+            upgradeLock.lock (); // if wait 'infinite' use waitless lock call
         }
         else {
             if (not upgradeLock.try_lock_for (timeout)) {
