@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Execution {
      *          Synchronized<String,Synchronized_Traits<recursive_mutex>>       n;      // SAME
      *      \endcode
      *
-     *  or slightly faster, but possibly slower or less safe (depnding on usage)
+     *  or slightly faster, but possibly slower or less safe (depending on usage)
      *      \code
      *          Synchronized<String,Synchronized_Traits<SpinLock>>              n;
      *      \endcode
