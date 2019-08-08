@@ -1,18 +1,4 @@
 {
-   https://stroika.atlassian.net/browse/STK-626 PART2
-   Memcheck:Cond
-   ...
-   fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   ...
-}
-{
-   https://stroika.atlassian.net/browse/STK-626 PART3
-   Memcheck:Addr32
-   ...
-   fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   ...
-}
-{
    https://stroika.atlassian.net/browse/STK-672
    Memcheck:Cond
    fun:_ZN12_GLOBAL__N_149Float2String_OptimizedForCLocaleAndNoStreamFlags_IeEEN7Stroika10Foundation10Characters6StringET_ib*
