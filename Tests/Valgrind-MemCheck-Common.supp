@@ -1,12 +1,4 @@
 {
-   https://stroika.atlassian.net/browse/STK-548
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   ...
-   fun:getaddrinfo
-}
-{
    https://stroika.atlassian.net/browse/STK-626 PART2
    Memcheck:Cond
    ...
