@@ -64,35 +64,3 @@
    ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
-{
-   https://stroika.atlassian.net/browse/STK-644
-   Helgrind:Misc
-   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
-   fun:CRYPTO_THREAD_lock_free
-   fun:asn1_do_lock
-   fun:asn1_item_embed_free
-   fun:ASN1_item_free
-   fun:X509_OBJECT_free
-   fun:OPENSSL_sk_pop_free
-   fun:X509_STORE_free
-   fun:SSL_CTX_free
-   fun:ossl_close
-   fun:Curl_ossl_close
-   fun:Curl_ssl_close
-}
-{
-   https://stroika.atlassian.net/browse/STK-644
-   Helgrind:Misc
-   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
-   fun:CRYPTO_THREAD_lock_free
-   fun:RSA_free
-   fun:EVP_PKEY_free
-   fun:pubkey_cb
-   fun:asn1_item_embed_free
-   fun:asn1_template_free
-   fun:asn1_item_embed_free
-   fun:asn1_template_free
-   fun:asn1_item_embed_free
-   fun:ASN1_item_free
-   fun:X509_OBJECT_free
-}
