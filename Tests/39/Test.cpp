@@ -695,6 +695,9 @@ namespace {
             //
             //Test to capture regression caused by incomplete fix in
             //      https://stroika.atlassian.net/browse/STK-525 -- qContainersPrivateSyncrhonizationPolicy_
+			//
+			//	If you see hang here - see
+			//		https://stroika.atlassian.net/browse/STK-700
             //
             Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()");
             int64_t                   cnt{};
