@@ -1,0 +1,11 @@
+{
+   https://stroika.atlassian.net/browse/STK-483 (ARM - I THINK EQUIV)
+   Helgrind:Race
+   fun:_ZNSt17_Function_handlerIFviEN7Stroika10Foundation9Execution13SignalHandlerEE9_M_invokeERKSt9_Any_dataOi
+   obj:*
+}
+{
+   https://stroika.atlassian.net/browse/STK-483 (ARM - I THINK EQUIV)
+   Helgrind:Race
+   fun:_ZNSt14_Function_base13_Base_managerIPFviEE10_M_managerERSt9_Any_dataRKS4_St18_Manager_operation
+}
