@@ -25,3 +25,8 @@
    ...
    fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilERSt11unique_lockIS3_Ed
 }
+{
+   https://stroika.atlassian.net/browse/STK-680 - raspberrypi helgrind issue - with set<signals> - APPEARS false positive
+   Helgrind:Race
+   fun:_ZNSt14_Function_base13_Base_managerIPDoFviEE10_M_managerERSt9_Any_dataRKS4_St18_Manager_operation
+}

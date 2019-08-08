@@ -96,8 +96,3 @@
    fun:ASN1_item_free
    fun:X509_OBJECT_free
 }
-{
-   https://stroika.atlassian.net/browse/STK-680 - raspberrypi helgrind issue - with set<signals> - APPEARS false positive
-   Helgrind:Race
-   fun:_ZNSt14_Function_base13_Base_managerIPDoFviEE10_M_managerERSt9_Any_dataRKS4_St18_Manager_operation
-}
