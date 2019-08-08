@@ -65,22 +65,6 @@
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
 {
-   https://stroika.atlassian.net/browse/STK-628 (same but for ARM)
-   Helgrind:Misc
-   ...
-   fun:__pthread_cond_wait_common
-   ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
-}
-{
-   https://stroika.atlassian.net/browse/STK-628 (same but for ARM)--diff function optimized out of callstack
-   Helgrind:Misc
-   ...
-   fun:__pthread_cond_wait_common
-   ...
-   fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilERSt11unique_lockIS3_Ed
-}
-{
    https://stroika.atlassian.net/browse/STK-644
    Helgrind:Misc
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
