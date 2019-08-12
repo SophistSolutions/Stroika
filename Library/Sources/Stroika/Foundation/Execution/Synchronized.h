@@ -442,8 +442,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
-         *  true in the upgrade lock (since we unlock and then re-lock).
+         *  A DEFEFCT with UpgradeLockNonAtomically, is that you cannot count on values computed with the read lock to remain
+         *  valid in the upgrade lock (since we unlock and then re-lock).
          *
          *  But other than that, this approach seems pretty usable/testable.
          *
@@ -452,6 +452,9 @@ namespace Stroika::Foundation::Execution {
          *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
          *
          *  \note - throws on timeout
+         *
+         *  \note - the timeout refers ONLY the acquiring the upgrade - not the time it takes to re-acquire the shared lock or perform
+         *          the argument operation
          *
          *  \par Example Usage
          *      \code
@@ -470,16 +473,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
-         *  true in the upgrade lock (since we unlock and then re-lock).
-         *
-         *  But other than that, this approach seems pretty usable/testable.
-         *
-         *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
-         *
-         *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
-         *
-         *  \note - returns true on successfull update, and false on timeout;
+         *  @see UpgradeLockNonAtomically - same but returns false on timeout, instead of throwing; use to more quietly handle
+         *       timeout scenarios
          *
          *  \par Example Usage
          *      \code
@@ -502,23 +497,22 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
-         *  true in the upgrade lock (since we unlock and then re-lock).
-         *
-         *  But other than that, this approach seems pretty usable/testable.
+         *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK. Beware.
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
          *
+         *  @see UpgradeLockAtomicallyQuietly
+         *
          *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
          *
-         *  \note if more than one thread MIGHT need to call this UpgradeLock, that can lead to a deadlock, so its critical in that case
+         *  \note if more than one thread MIGHT need to call this UpgradeLockAtomically*, that can lead to a deadlock, so its critical in that case
          *        to provide a timeout (which is why the timeout parameter is required). You MAY provide kInfinite if you are sure you
-         *        won't deadlock (dont have two threads trying to UpgradeLock at the same time).
+         *        won't deadlock (dont have two threads trying to UpgradeLockAtomically at the same time).
          *
          *        If using this, its best to arrange for only one thread to be able to 'upgrade' the lock, or to provide a timeout, so
          *        when the upgrade fails, you can cleanly backout and try again.
          *
-         *  \note - throws on timeout (or detectable deadlock)
+         *  \note - throws on timeout (or detectable deadlock, since that would definitely timeout)
          *
          *  \par Example Usage
          *      \code
@@ -533,20 +527,17 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
 
     public:
         /**
-         *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
-         *  true in the upgrade lock (since we unlock and then re-lock).
-         *
-         *  But other than that, this approach seems pretty usable/testable.
+         *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK, so use carefully.
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
          *
          *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
          *
-         *  \note if more than one thread MIGHT need to call this UpgradeLock, that can lead to a deadlock, so its critical in that case
+         *  \note if more than one thread MIGHT need to call this UpgradeLockAtomically*, that can lead to a deadlock, so its critical in that case
          *        to provide a timeout (which is why the timeout parameter is required). You MAY provide kInfinite if you are sure you
          *        won't deadlock (dont have two threads trying to UpgradeLock at the same time).
          *
@@ -558,17 +549,21 @@ namespace Stroika::Foundation::Execution {
          *  \par Example Usage
          *      \code
          *          Execution::UpgradableRWSynchronized<Status_> fStatus_;
+         *          again:
          *          auto lockedStatus = fStatus_.cget ();
          *          // do a bunch of code that only needs read access
          *          if (some rare event) {
-         *              fStatus_.UpgradeLockAtomically ([=](auto&& writeLock) {
+         *              if (not fStatus_.UpgradeLockAtomicallyQuietly ([=](auto&& writeLock) {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              });
+         *              })) {
+         *                  Execution::Sleep (1s);
+         *                  goto again;     // re-acquire data since merge of results inadequate
+         *              }
          *          }
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        nonvirtual bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
 
     public:
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
