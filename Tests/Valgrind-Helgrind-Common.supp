@@ -64,3 +64,11 @@
    ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
+{
+   https://stroika.atlassian.net/browse/STK-628
+   Helgrind:Misc
+   ...
+   fun:__pthread_cond_wait_common
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+}
