@@ -262,6 +262,8 @@ namespace {
                 // Got another failure 2019-04-17 on raspberrypi - so change limit of kMarginOfErrorHi_==7, to kMarginOfErrorHi_Warn_ = 5.0, kMarginOfErrorHi_Error_ = 10.0
                 // and use VerifyTestResultWarning -- LGP 2019-04-17
                 //
+                // Got another warning 2019-08-12 on raspberrypi - but no change cuz about to upgrade to faster raspberrypi
+                //
                 VerifyTestResult (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Error_);
                 VerifyTestResultWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
             }
