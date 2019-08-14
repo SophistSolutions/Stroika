@@ -119,17 +119,17 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
     {
-        return ReadableReference (&fProtectedValue_, &fMutex_);
+        return ReadableReference (this);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::rwget () -> WritableReference
     {
-        return WritableReference (&fProtectedValue_, &fMutex_);
+        return WritableReference (this);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator-> () const -> ReadableReference
     {
-        return ReadableReference (&fProtectedValue_, &fMutex_);
+        return ReadableReference (this);
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>*>
@@ -203,13 +203,14 @@ namespace Stroika::Foundation::Execution {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
         });
         optional<WritableReference> wr;
+        bool                        interveningWriteLock = false; // @todo fix/compute by looking at lock counts
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            wr = WritableReference (&fProtectedValue_, &fMutex_); // if wait 'infinite' use no-time-arg lock call
+            wr = WritableReference (this); // if wait 'infinite' use no-time-arg lock call
         }
         else {
             // @todo rewrite this so it avoids throwing altogether on timeout (not catch-rethrow cuz thats noisy in tracelog)
             try {
-                wr = WritableReference (&fProtectedValue_, &fMutex_, timeout);
+                wr = WritableReference (this, timeout);
             }
             catch (const system_error& e) {
                 if (e.code () == errc::timed_out) {
@@ -253,7 +254,7 @@ namespace Stroika::Foundation::Execution {
             }
         }
         Assert (upgradeLock.owns_lock ());
-        doWithWriteLock (WritableReference (&fProtectedValue_, nullptr));
+        doWithWriteLock (WritableReference (this, WritableReference::_eExternallyLocked));
         return true;
     }
 
@@ -263,22 +264,22 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, nullptr_t)
-        : fT (t)
+    inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s, _ExternallyLocked)
+        : fT ((RequireNotNull (s), &s->fProtectedValue_))
     {
-        RequireNotNull (t);
+        RequireNotNull (s);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"ReadableReference::CTOR -- locks (nullptr_t)");
+        DbgTrace (L"ReadableReference::CTOR -- locks (_eExternallyLocked)");
 #endif
     }
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, MutexType* m)
-        : fT (t)
-        , fSharedLock_ ((RequireNotNull (m), *m))
+    inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s)
+        : fT ((RequireNotNull (s), &s->fProtectedValue_))
+        , fSharedLock_ ((RequireNotNull (s), s->fMutex_))
     {
-        RequireNotNull (t);
+        RequireNotNull (fT);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"ReadableReference::CTOR -- locks (fSharedLock_ mutex_=%p)", m);
+        DbgTrace (L"ReadableReference::CTOR -- locks (fSharedLock_ with mutex_=%p)", &s->fMutex_);
 #endif
     }
     template <typename T, typename TRAITS>
@@ -327,21 +328,23 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, nullptr_t)
-        : ReadableReference (t, nullptr)
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s)
+        : ReadableReference (s, _eExternallyLocked)
+        , fWriteLock_{s->fMutex_}
     {
     }
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m)
-        : ReadableReference (t, nullptr)
-        , fWriteLock_{*m}
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, _ExternallyLocked)
+        : ReadableReference (s, _eExternallyLocked)
     {
+        RequireNotNull (s);
     }
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m, const chrono::duration<Time::DurationSecondsType>& timeout)
-        : ReadableReference (t, nullptr)
-        , fWriteLock_{*m, timeout}
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout)
+        : ReadableReference (s, _eExternallyLocked)
+        , fWriteLock_{s->fMutex_, timeout}
     {
+        RequireNotNull (s);
         if (not fWriteLock_.owns_lock ()) {
             Execution::ThrowTimeOutException ();
         }

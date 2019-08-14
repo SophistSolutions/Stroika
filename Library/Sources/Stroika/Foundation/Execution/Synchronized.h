@@ -595,15 +595,25 @@ namespace Stroika::Foundation::Execution {
     class Synchronized<T, TRAITS>::ReadableReference {
     protected:
         /**
+         *  If specified, either subclass, or external lock used for lifetime of this object.
+         */
+        enum _ExternallyLocked {
+            _eExternallyLocked
+        };
+
+    protected:
+        /**
          *  Can construct ReadableReference with nullptr_t mutex, in which case its the subclasses responsability to manage locking
          *
          *  \req t != nullptr, and this class holds onto that pointer.
          */
-        ReadableReference (const T* t, nullptr_t);
+        ReadableReference (const Synchronized* s);
+        ReadableReference (const Synchronized* s, _ExternallyLocked);
 
     public:
-        ReadableReference (const T* t, MutexType* m);
         ReadableReference (const ReadableReference& src) = delete; // must move because both src and dest cannot have the unique lock
+
+    public:
         ReadableReference (ReadableReference&& src);
 
     public:
@@ -654,14 +664,14 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     class Synchronized<T, TRAITS>::WritableReference : public Synchronized<T, TRAITS>::ReadableReference {
     protected:
-        WritableReference (T* t, nullptr_t);
-
-    public:
         /**
          */
-        WritableReference (T* t, MutexType* m);
-        WritableReference (T* t, MutexType* m, const chrono::duration<Time::DurationSecondsType>& timeout);
+        WritableReference (Synchronized* s);
+        WritableReference (Synchronized* s, _ExternallyLocked);
+        WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout);
         WritableReference (const WritableReference& src) = delete; // must move because both src and dest cannot have the unique lock
+
+    public:
         WritableReference (WritableReference&& src);
         nonvirtual WritableReference& operator= (const WritableReference& rhs) = delete;
         nonvirtual const WritableReference& operator                           = (T rhs);
