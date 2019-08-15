@@ -329,19 +329,19 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s)
-        : ReadableReference (s, _eExternallyLocked)
+        : ReadableReference (s, _ExternallyLocked::_eExternallyLocked)
         , fWriteLock_{s->fMutex_}
     {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, _ExternallyLocked)
-        : ReadableReference (s, _eExternallyLocked)
+        : ReadableReference (s, _ExternallyLocked::_eExternallyLocked)
     {
         RequireNotNull (s);
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout)
-        : ReadableReference (s, _eExternallyLocked)
+        : ReadableReference (s, _ExternallyLocked::_eExternallyLocked)
         , fWriteLock_{s->fMutex_, timeout}
     {
         RequireNotNull (s);
