@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Execution {
             }
         }
         Assert (upgradeLock.owns_lock ());
-        doWithWriteLock (WritableReference (this, WritableReference::_eExternallyLocked));
+        doWithWriteLock (WritableReference (this, _ExternallyLocked::_eExternallyLocked));
         return true;
     }
 
