@@ -182,10 +182,10 @@ namespace Stroika::Foundation::Execution {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
         });
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_)); // if wait 'infinite' use no-time-arg lock call
+            doWithWriteLock (WritableReference (this)); // if wait 'infinite' use no-time-arg lock call
         }
         else {
-            doWithWriteLock (WritableReference (&fProtectedValue_, &fMutex_, timeout));
+            doWithWriteLock (WritableReference (&this, timeout));
         }
     }
     template <typename T, typename TRAITS>
