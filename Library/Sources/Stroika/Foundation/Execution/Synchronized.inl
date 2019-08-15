@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Execution {
             doWithWriteLock (WritableReference (this)); // if wait 'infinite' use no-time-arg lock call
         }
         else {
-            doWithWriteLock (WritableReference (&this, timeout));
+            doWithWriteLock (WritableReference (this, timeout));
         }
     }
     template <typename T, typename TRAITS>
