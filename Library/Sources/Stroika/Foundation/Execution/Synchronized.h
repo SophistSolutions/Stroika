@@ -663,6 +663,12 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     class Synchronized<T, TRAITS>::WritableReference : public Synchronized<T, TRAITS>::ReadableReference {
+    private:
+		using inherited = typename Synchronized<T, TRAITS>::ReadableReference;
+
+    protected:
+		using  _ExternallyLocked;
+
     protected:
         /**
          */
