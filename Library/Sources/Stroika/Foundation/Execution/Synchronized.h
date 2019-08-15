@@ -597,7 +597,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  If specified, either subclass, or external lock used for lifetime of this object.
          */
-        enum _ExternallyLocked {
+        enum class _ExternallyLocked {
             _eExternallyLocked
         };
 
