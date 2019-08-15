@@ -437,7 +437,7 @@ namespace Stroika::Foundation::Execution {
                 readReference->fSharedLock_->unlock ();
             }
             // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-            return WritableReference (&fProtectedValue_, &fMutex_);
+            return WritableReference (this);
         }
 
     public:
