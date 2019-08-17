@@ -78,7 +78,8 @@ namespace Stroika::Foundation::Execution {
         if (&rhs != this) {
             auto                    value   = rhs.cget ().load (); // load outside the lock to avoid possible deadlock
             [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-            fProtectedValue_                = value;
+            fWriteLockCount_++;
+            fProtectedValue_ = value;
         }
         return *this;
     }
@@ -87,6 +88,7 @@ namespace Stroika::Foundation::Execution {
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         fProtectedValue_                = rhs;
+        fWriteLockCount_++;
         return *this;
     }
     template <typename T, typename TRAITS>
@@ -107,14 +109,16 @@ namespace Stroika::Foundation::Execution {
     inline void Synchronized<T, TRAITS>::store (const T& v)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        fProtectedValue_                = v;
+        fWriteLockCount_++;
+        fProtectedValue_ = v;
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline void Synchronized<T, TRAITS>::store (T&& v)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        fProtectedValue_                = move (v);
+        fWriteLockCount_++;
+        fProtectedValue_ = move (v);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
@@ -157,6 +161,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock", L"&fMutex_=%p", &fMutex_};
 #endif
         fMutex_.lock ();
+        fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
@@ -169,28 +174,32 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
-    void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    {
+        UpgradeLockNonAtomically (
+            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (move (wRef)); }, timeout);
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
+    void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
 #endif
-        RequireNotNull (lockBeingUpgraded);
-        Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
-        Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-        fMutex_.unlock_shared ();
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
-            fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
-        });
-        if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            doWithWriteLock (WritableReference (this)); // if wait 'infinite' use no-time-arg lock call
-        }
-        else {
-            doWithWriteLock (WritableReference (this, timeout));
+        if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) {
+            Execution::ThrowTimeOutException ();
         }
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
-    bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    inline bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    {
+        return UpgradeLockNonAtomicallyQuietly (
+            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (move (wRef)); }, timeout);
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
+    bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
@@ -198,28 +207,22 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (lockBeingUpgraded);
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
+        auto writeLockCountBeforeReleasingReadLock = fWriteLockCount_;
         fMutex_.unlock_shared ();
-        [[maybe_unused]] auto&&     cleanup = Execution::Finally ([this] () {
+        [[maybe_unused]] auto&&        cleanup = Execution::Finally ([this] () {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
         });
-        optional<WritableReference> wr;
-        bool                        interveningWriteLock = false; // @todo fix/compute by looking at lock counts
+        typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            wr = WritableReference (this); // if wait 'infinite' use no-time-arg lock call
+            upgradeLock.lock (); // if wait 'infinite' use no-time-arg lock call
         }
         else {
-            // @todo rewrite this so it avoids throwing altogether on timeout (not catch-rethrow cuz thats noisy in tracelog)
-            try {
-                wr = WritableReference (this, timeout);
-            }
-            catch (const system_error& e) {
-                if (e.code () == errc::timed_out) {
-                    return false;
-                }
-                Execution::ReThrow ();
+            if (not upgradeLock.try_lock_for (timeout)) {
+                return false;
             }
         }
-        doWithWriteLock (*wr);
+        bool interveningWriteLock = this->fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
+        doWithWriteLock (WritableReference (this, WritableReference::_ExternallyLocked::_eExternallyLocked), interveningWriteLock);
         return true;
     }
     template <typename T, typename TRAITS>
@@ -254,6 +257,7 @@ namespace Stroika::Foundation::Execution {
             }
         }
         Assert (upgradeLock.owns_lock ());
+        fWriteLockCount_++;
         doWithWriteLock (WritableReference (this, WritableReference::_ExternallyLocked::_eExternallyLocked));
         return true;
     }
@@ -332,12 +336,15 @@ namespace Stroika::Foundation::Execution {
         : ReadableReference (s, _ExternallyLocked::_eExternallyLocked)
         , fWriteLock_{s->fMutex_}
     {
+        RequireNotNull (s);
+        s->fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, _ExternallyLocked)
         : ReadableReference (s, _ExternallyLocked::_eExternallyLocked)
     {
         RequireNotNull (s);
+        // dont update fWriteLockCount_ here, do where lock happens
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout)
@@ -348,6 +355,7 @@ namespace Stroika::Foundation::Execution {
         if (not fWriteLock_.owns_lock ()) {
             Execution::ThrowTimeOutException ();
         }
+        s->fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)

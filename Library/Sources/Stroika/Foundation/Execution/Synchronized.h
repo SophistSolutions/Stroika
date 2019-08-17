@@ -470,6 +470,8 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
+        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         /**
@@ -494,6 +496,8 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         /**
@@ -585,6 +589,11 @@ namespace Stroika::Foundation::Execution {
     private:
         T                 fProtectedValue_;
         mutable MutexType fMutex_;
+        /*
+         *  note: we don't need to use atomic/or extra lock for updating this because
+         *  its ONLY INCREMENETED and EXAMINED when fMutex_ is owned.
+         */
+        mutable unsigned int fWriteLockCount_;
     };
 
     /**
