@@ -676,9 +676,6 @@ namespace Stroika::Foundation::Execution {
         using inherited = typename Synchronized<T, TRAITS>::ReadableReference;
 
     protected:
-        using _ExternallyLocked = typename inherited::_ExternallyLocked;
-
-    protected:
         /**
          */
         WritableReference (Synchronized* s);
