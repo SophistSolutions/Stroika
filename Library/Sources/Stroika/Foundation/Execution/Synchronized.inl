@@ -221,8 +221,9 @@ namespace Stroika::Foundation::Execution {
                 return false;
             }
         }
-        bool interveningWriteLock = this->fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
-        doWithWriteLock (WritableReference (this, WritableReference::_ExternallyLocked::_eExternallyLocked), interveningWriteLock);
+        WritableReference wr                   = WritableReference (this, move (upgradeLock));
+        bool              interveningWriteLock = fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
+        doWithWriteLock (move (wr), interveningWriteLock);
         return true;
     }
     template <typename T, typename TRAITS>
@@ -246,19 +247,17 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (lockBeingUpgraded);
         Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-
-        typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
+        typename TRAITS::WriteLockType writeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            upgradeLock.lock (); // if wait 'infinite' use no-time-arg lock call
+            writeLock.lock (); // if wait 'infinite' use no-time-arg lock call
         }
         else {
-            if (not upgradeLock.try_lock_for (timeout)) {
+            if (not writeLock.try_lock_for (timeout)) {
                 return false;
             }
         }
-        Assert (upgradeLock.owns_lock ());
-        fWriteLockCount_++;
-        doWithWriteLock (WritableReference (this, WritableReference::_ExternallyLocked::_eExternallyLocked));
+        Assert (writeLock.owns_lock ());
+        doWithWriteLock (WritableReference (this, move (writeLock)));
         return true;
     }
 
@@ -340,11 +339,13 @@ namespace Stroika::Foundation::Execution {
         s->fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, _ExternallyLocked)
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, WriteLockType_&& writeLock)
         : ReadableReference (s, _ExternallyLocked::_eExternallyLocked)
+        , fWriteLock_{move (writeLock)}
     {
         RequireNotNull (s);
-        // dont update fWriteLockCount_ here, do where lock happens
+        s->fWriteLockCount_++; // update lock count cuz though not a new lock, new to WritableReference
+                               // and just used outside construct of WritableRefernce to control how lock acquired
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout)
@@ -362,6 +363,7 @@ namespace Stroika::Foundation::Execution {
         : ReadableReference (move (src))
         , fWriteLock_ (move (src.fWriteLock_))
     {
+        // no change to writelockcount cuz not a new lock - just moved
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::WritableReference::operator= (T rhs) -> const WritableReference&

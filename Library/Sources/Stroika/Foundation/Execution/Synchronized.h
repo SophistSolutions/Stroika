@@ -682,7 +682,7 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         WritableReference (Synchronized* s);
-        WritableReference (Synchronized* s, _ExternallyLocked);
+        WritableReference (Synchronized* s, WriteLockType_&& writeLock);
         WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout);
         WritableReference (const WritableReference& src) = delete; // must move because both src and dest cannot have the unique lock
 
