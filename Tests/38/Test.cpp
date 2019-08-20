@@ -1162,7 +1162,7 @@ namespace {
         // most likely helgrind bug - hopefully fixed soon.
         if (not kRunningValgrind_) {
 
-            auto testUpgradeLockNonAtomically = [&](auto& isEven) {
+            auto testUpgradeLockNonAtomically1 = [](auto& isEven) {
                 while (true) {
                     Execution::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
@@ -1176,6 +1176,34 @@ namespace {
                         // WE CANNOT test this - because UpgradeLockNonAtomically () releases lock before re-acuqitring readlock - but should fix that soon
                         // so we can test this!!!
                         //VerifyTestResult (not isEven.cget ());
+                    }
+                }
+            };
+            auto testUpgradeLockNonAtomically2 = [](auto& isEven) {
+                while (true) {
+                    Execution::CheckForThreadInterruption ();
+                    auto rLock = isEven.cget ();
+                    if (rLock.load ()) {
+                        isEven.UpgradeLockNonAtomically (&rLock, [&](auto&& writeLock, bool interveningWriteLock) {
+                            if (interveningWriteLock) {
+                                // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
+                                if (writeLock.load ()) {
+                                    writeLock.store (false);
+                                }
+                            }
+                            else {
+								// in this case we effectively did an atomic upgrade, because no intervening writers
+#if qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
+                                bool t = writeLock.load ();
+                                if (not t) {
+                                    DbgTrace ("***assert false");
+                                }
+#else
+                                Assert (writeLock.load ());
+#endif
+                                writeLock.store (false);
+                            }
+                        });
                     }
                 }
             };
@@ -1263,15 +1291,25 @@ namespace {
             };
 
             {
-                Debug::TraceContextBumper ctx1{"run-test RWSynchronized NonAtomically"};
+                Debug::TraceContextBumper ctx1{"run-test (1) RWSynchronized NonAtomically"};
                 RWSynchronized<bool>      isEven{true};
-                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically (isEven); });
+                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically1 (isEven); });
+            }
+            {
+                Debug::TraceContextBumper ctx1{"run-test (2) RWSynchronized NonAtomically"};
+                RWSynchronized<bool>      isEven{true};
+                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically2 (isEven); });
             }
 #if __has_include(<boost/thread/shared_mutex.hpp>)
             {
-                Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized NonAtomically"};
+                Debug::TraceContextBumper      ctx1{"run-test (1) UpgradableRWSynchronized NonAtomically"};
                 UpgradableRWSynchronized<bool> isEven{true};
-                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically (isEven); });
+                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically1 (isEven); });
+            }
+            {
+                Debug::TraceContextBumper      ctx1{"run-test (2) UpgradableRWSynchronized NonAtomically"};
+                UpgradableRWSynchronized<bool> isEven{true};
+                runSyncTest (isEven, [&]() { testUpgradeLockNonAtomically2 (isEven); });
             }
             {
                 Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized Atomically"};
