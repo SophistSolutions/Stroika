@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Execution {
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         fWriteLockCount_++;
-        fProtectedValue_ = move (v);
+        fProtectedValue_ = std::move (v);
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Execution {
     inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
         UpgradeLockNonAtomically (
-            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (move (wRef)); }, timeout);
+            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (std::move (wRef)); }, timeout);
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Execution {
     inline bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
         return UpgradeLockNonAtomicallyQuietly (
-            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (move (wRef)); }, timeout);
+            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (std::move (wRef)); }, timeout);
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
@@ -221,9 +221,9 @@ namespace Stroika::Foundation::Execution {
                 return false;
             }
         }
-        WritableReference wr                   = WritableReference (this, move (upgradeLock));
+        WritableReference wr                   = WritableReference (this, std::move (upgradeLock));
         bool              interveningWriteLock = fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
-        doWithWriteLock (move (wr), interveningWriteLock);
+        doWithWriteLock (std::move (wr), interveningWriteLock);
         return true;
     }
     template <typename T, typename TRAITS>
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Execution {
             }
         }
         Assert (writeLock.owns_lock ());
-        doWithWriteLock (WritableReference (this, move (writeLock)));
+        doWithWriteLock (WritableReference (this, std::move (writeLock)));
         return true;
     }
 
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
         : fT (src.fT)
-        , fSharedLock_{move (src.fSharedLock_)}
+        , fSharedLock_{std::move (src.fSharedLock_)}
     {
         src.fT           = nullptr;
         src.fSharedLock_ = nullptr;
@@ -341,7 +341,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, WriteLockType_&& writeLock)
         : ReadableReference (s, ReadableReference::_ExternallyLocked::_eExternallyLocked)
-        , fWriteLock_{move (writeLock)}
+        , fWriteLock_{std::move (writeLock)}
     {
         RequireNotNull (s);
         s->fWriteLockCount_++; // update lock count cuz though not a new lock, new to WritableReference
@@ -360,8 +360,8 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)
-        : ReadableReference (move (src))
-        , fWriteLock_ (move (src.fWriteLock_))
+        : ReadableReference (std::move (src))
+        , fWriteLock_ (std::move (src.fWriteLock_))
     {
         // no change to writelockcount cuz not a new lock - just moved
     }
@@ -400,7 +400,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline void Synchronized<T, TRAITS>::WritableReference::store (T&& v)
     {
-        rwref () = move (v);
+        rwref () = std::move (v);
     }
 
     /*
