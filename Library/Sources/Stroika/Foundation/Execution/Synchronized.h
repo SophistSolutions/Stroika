@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <type_traits>
 
@@ -16,6 +17,7 @@
 #endif
 
 #include "../Configuration/Common.h"
+#include "../Configuration/Empty.h"
 #include "../Configuration/TypeHints.h"
 
 #include "Common.h"
@@ -126,6 +128,11 @@ namespace Stroika::Foundation::Execution {
         static constexpr bool kIsRecursiveMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
 
         /**
+         *  If enabled, fTraceLocksName field available, and if its set, DbgTrace calls on lock/unlock.
+         */
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = qDefaultTracingOn;
+
+        /**
          */
         static constexpr bool kSupportsTimedLocks =
             is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>
@@ -156,6 +163,13 @@ namespace Stroika::Foundation::Execution {
          */
         using WriteLockType = unique_lock<MUTEX>;
     };
+
+    namespace Private_ {
+        struct DbgTraceNameObj_ {
+            // avoid use of Stroika String, due to mutual dependencies - this is low level code
+            optional<std::wstring> fDbgTraceLocksName;
+        };
+    }
 
     /**
      *  \brief  Wrap any object with Synchronized<> and it can be used similarly to the base type,
@@ -239,7 +253,8 @@ namespace Stroika::Foundation::Execution {
      *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
-    class Synchronized {
+    class Synchronized
+        : conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
     public:
         using element_type = T;
 
@@ -581,6 +596,9 @@ namespace Stroika::Foundation::Execution {
         }
 
     private:
+        nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const;
+
+    private:
         using ReadLockType_ = typename TRAITS::ReadLockType;
 
     private:
@@ -601,7 +619,8 @@ namespace Stroika::Foundation::Execution {
      *  so long as using Synchronized<> of a type that supports shared locks (@see RWSynchronized<>)
      */
     template <typename T, typename TRAITS>
-    class Synchronized<T, TRAITS>::ReadableReference {
+    class Synchronized<T, TRAITS>::ReadableReference
+        : conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
     protected:
         /**
          *  If specified, either subclass, or external lock used for lifetime of this object.
@@ -660,6 +679,9 @@ namespace Stroika::Foundation::Execution {
 
     protected:
         const T* fT;
+
+    protected:
+        nonvirtual void _NoteLockStateChanged (const wchar_t* m) const;
 
     private:
         ReadLockType_ fSharedLock_{}; // MAYBE unused if actaul readlock held elsewhere, like in subclass

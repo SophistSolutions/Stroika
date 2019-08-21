@@ -78,6 +78,8 @@ namespace Stroika::Foundation::Execution {
         if (&rhs != this) {
             auto                    value   = rhs.cget ().load (); // load outside the lock to avoid possible deadlock
             [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+            NoteLockStateChanged_ (L"Locked");
             fWriteLockCount_++;
             fProtectedValue_ = value;
         }
@@ -87,7 +89,9 @@ namespace Stroika::Foundation::Execution {
     inline auto Synchronized<T, TRAITS>::operator= (const T& rhs) -> Synchronized&
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        fProtectedValue_                = rhs;
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        NoteLockStateChanged_ (L"Locked");
+        fProtectedValue_ = rhs;
         fWriteLockCount_++;
         return *this;
     }
@@ -109,6 +113,8 @@ namespace Stroika::Foundation::Execution {
     inline void Synchronized<T, TRAITS>::store (const T& v)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        NoteLockStateChanged_ (L"Locked");
         fWriteLockCount_++;
         fProtectedValue_ = v;
     }
@@ -117,6 +123,8 @@ namespace Stroika::Foundation::Execution {
     inline void Synchronized<T, TRAITS>::store (T&& v)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        NoteLockStateChanged_ (L"Locked");
         fWriteLockCount_++;
         fProtectedValue_ = std::move (v);
     }
@@ -143,6 +151,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::lock_shared", L"&m=%p", &m};
 #endif
         fMutex_.lock_shared ();
+        NoteLockStateChanged_ (L"Locked Shared");
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>*>
@@ -152,6 +161,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::unlock_shared", L"&m=%p", &m};
 #endif
         fMutex_.unlock_shared ();
+        NoteLockStateChanged_ (L"Unlocked Shared");
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
@@ -161,6 +171,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock", L"&fMutex_=%p", &fMutex_};
 #endif
         fMutex_.lock ();
+        NoteLockStateChanged_ (L"Locked");
         fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
@@ -170,6 +181,7 @@ namespace Stroika::Foundation::Execution {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock", L"&fMutex_=%p", &fMutex_};
 #endif
+        NoteLockStateChanged_ (L"Unlocked");
         fMutex_.unlock ();
     }
     template <typename T, typename TRAITS>
@@ -211,6 +223,7 @@ namespace Stroika::Foundation::Execution {
         fMutex_.unlock_shared ();
         [[maybe_unused]] auto&&        cleanup = Execution::Finally ([this] () {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
+            NoteLockStateChanged_ (L"in UpgradeLockNonAtomicallyQuietly finally relocked shared");
         });
         typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
@@ -221,6 +234,7 @@ namespace Stroika::Foundation::Execution {
                 return false;
             }
         }
+        NoteLockStateChanged_ (L"in UpgradeLockNonAtomicallyQuietly acquired Lock"); // no need to message on unlock cuz lock transfered to WritableReference that messages on unlock
         WritableReference wr                   = WritableReference (this, std::move (upgradeLock));
         bool              interveningWriteLock = fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
         doWithWriteLock (std::move (wr), interveningWriteLock);
@@ -260,6 +274,15 @@ namespace Stroika::Foundation::Execution {
         doWithWriteLock (WritableReference (this, std::move (writeLock)));
         return true;
     }
+    template <typename T, typename TRAITS>
+    inline void Synchronized<T, TRAITS>::NoteLockStateChanged_ (const wchar_t* m) const
+    {
+        if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
+            if (this->fDbgTraceLocksName) {
+                DbgTrace (L"%s: %s", m, this->fDbgTraceLocksName->c_str ());
+            }
+        }
+    }
 
     /*
      ********************************************************************************
@@ -274,6 +297,9 @@ namespace Stroika::Foundation::Execution {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"ReadableReference::CTOR -- locks (_eExternallyLocked)");
 #endif
+        if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
+            this->fDbgTraceLocksName = s->fDbgTraceLocksName;
+        }
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s)
@@ -284,12 +310,20 @@ namespace Stroika::Foundation::Execution {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"ReadableReference::CTOR -- locks (fSharedLock_ with mutex_=%p)", &s->fMutex_);
 #endif
+        if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
+            this->fDbgTraceLocksName = s->fDbgTraceLocksName;
+        }
+        _NoteLockStateChanged (L"ReadableReference Locked");
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
         : fT (src.fT)
         , fSharedLock_{std::move (src.fSharedLock_)}
     {
+        if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
+            this->fDbgTraceLocksName = move (src.fDbgTraceLocksName);
+        }
+        _NoteLockStateChanged (L"ReadableReference move-Locked");
         src.fT           = nullptr;
         src.fSharedLock_ = nullptr;
     }
@@ -299,6 +333,9 @@ namespace Stroika::Foundation::Execution {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"ReadableReference::DTOR -- locks (fSharedLock_ mutex_=%p)", fSharedLock_);
 #endif
+        if (fSharedLock_.owns_lock ()) {
+            _NoteLockStateChanged (L"ReadableReference Unlocked");
+        }
     }
     template <typename T, typename TRAITS>
     inline const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const
@@ -324,6 +361,15 @@ namespace Stroika::Foundation::Execution {
         EnsureNotNull (fT);
         return *fT;
     }
+    template <typename T, typename TRAITS>
+    inline void Synchronized<T, TRAITS>::ReadableReference::_NoteLockStateChanged (const wchar_t* m) const
+    {
+        if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
+            if (this->fDbgTraceLocksName) {
+                DbgTrace (L"%s: %s", m, this->fDbgTraceLocksName->c_str ());
+            }
+        }
+    }
 
     /*
      ********************************************************************************
@@ -336,6 +382,7 @@ namespace Stroika::Foundation::Execution {
         , fWriteLock_{s->fMutex_}
     {
         RequireNotNull (s);
+        this->_NoteLockStateChanged (L"WritableReference Locked");
         s->fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
@@ -344,6 +391,7 @@ namespace Stroika::Foundation::Execution {
         , fWriteLock_{std::move (writeLock)}
     {
         RequireNotNull (s);
+        this->_NoteLockStateChanged (L"WritableReference move-Locked");
         s->fWriteLockCount_++; // update lock count cuz though not a new lock, new to WritableReference
                                // and just used outside construct of WritableRefernce to control how lock acquired
     }
@@ -356,6 +404,7 @@ namespace Stroika::Foundation::Execution {
         if (not fWriteLock_.owns_lock ()) {
             Execution::ThrowTimeOutException ();
         }
+        this->_NoteLockStateChanged (L"WritableReference Locked");
         s->fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
@@ -364,6 +413,7 @@ namespace Stroika::Foundation::Execution {
         , fWriteLock_ (std::move (src.fWriteLock_))
     {
         // no change to writelockcount cuz not a new lock - just moved
+        this->_NoteLockStateChanged (L"WritableReference move-Locked");
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::WritableReference::operator= (T rhs) -> const WritableReference&
