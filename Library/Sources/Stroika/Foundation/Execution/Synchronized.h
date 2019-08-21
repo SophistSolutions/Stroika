@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
     class Synchronized
-        : conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
+        : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
     public:
         using element_type = T;
 
@@ -620,7 +620,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     class Synchronized<T, TRAITS>::ReadableReference
-        : conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
+        : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
     protected:
         /**
          *  If specified, either subclass, or external lock used for lifetime of this object.
