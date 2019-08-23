@@ -41,7 +41,9 @@ namespace {
                 sigBitsLeft -= 8;
             }
             else {
-                r.push_back (BitSubstring<uint8_t> (b, 0, sigBitsLeft));
+                unsigned int topBit = 8;
+                unsigned int botBit = topBit - sigBitsLeft;
+                r.push_back (BitSubstring<uint8_t> (b, botBit, topBit) << botBit);
                 sigBitsLeft = 0;
             }
         }

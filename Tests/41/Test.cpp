@@ -569,7 +569,7 @@ namespace {
             VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
         }
         {
-            auto testRoundtrip = [] (const String& s) {
+            auto testRoundtrip = [](const String& s) {
                 InternetAddress iaddr1{s};
                 InternetAddress iaddr2{s.As<wstring> ()};
                 InternetAddress iaddr3{s.AsASCII ()};
@@ -693,8 +693,23 @@ namespace {
         {
             {
                 CIDR cidr{L"10.70.0.0/15"};
+                auto cidr2 = CIDR{InternetAddress{L"10.70.0.0"}, 15};
+                VerifyTestResult (cidr == cidr2);
+                VerifyTestResult (Characters::ToString (cidr) == L"10.70.0.0/15");
                 VerifyTestResult (cidr.GetNumberOfSignificantBits () == 15);
                 VerifyTestResult ((cidr.GetRange () == InternetAddressRange{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
+            }
+            {
+                auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
+                VerifyTestResult (Characters::ToString (cidr) == L"192.168.56.0/24");
+            }
+            {
+                auto cidr = CIDR{InternetAddress{"172.28.240.1"}, 20};
+                VerifyTestResult (Characters::ToString (cidr) == L"172.28.240.0/20");
+            }
+            {
+                auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
+                VerifyTestResult (Characters::ToString (cidr) == L"172.17.185.0/28");
             }
         }
     }
