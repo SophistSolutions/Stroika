@@ -220,6 +220,9 @@ namespace {
 
         /* pad out to 56 mod 64 */
         padLen = (mdi < 56) ? (56 - mdi) : (120 - mdi);
+        if (padLen == 64) {
+            padLen = 0;
+        }
         Assert (padLen < NEltsOf (kPADDING_));
         MD5Update_ (mdContext, kPADDING_, padLen);
 
