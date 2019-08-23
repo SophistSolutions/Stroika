@@ -9,6 +9,7 @@
 #include "../../Characters/String_Constant.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Exceptions.h"
+#include "../../Math/Common.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "CIDR.h"
@@ -92,6 +93,6 @@ IO::Network::InternetAddressRange Network::CIDR::GetRange () const
 {
     Require (fBaseAddress_.GetAddressSize ().has_value ());
     size_t               offset = *fBaseAddress_.GetAddressSize () * 8 - fSignificantBits_;
-    InternetAddressRange result{fBaseAddress_, fBaseAddress_.Offset ((1 << offset) - 1ul)};
+    InternetAddressRange result{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
     return result;
 }

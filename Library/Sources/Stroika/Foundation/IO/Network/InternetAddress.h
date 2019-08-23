@@ -274,12 +274,22 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  \brief offset this IP Address by 'o' discrete addresses (positive only).
+         *  \brief offset this IP Address by 'o' discrete addresses (positive only, unsigned offset).
          *
          * @todo support different kinds of offsets
          * @todo document/follow appropriate overflow behavior
+         *
+         *  @see PinLowOrderBitsToMax ()
          */
-        nonvirtual InternetAddress Offset (unsigned int o) const;
+        nonvirtual InternetAddress Offset (uint64_t o) const;
+
+    public:
+        /**
+         *  \brief offset this IP Address by 'o' by setting the low order 'o' bits to the maximum value
+         *
+         *  @see Offset ()
+         */
+        nonvirtual InternetAddress PinLowOrderBitsToMax (unsigned int o) const;
 
     public:
         /**

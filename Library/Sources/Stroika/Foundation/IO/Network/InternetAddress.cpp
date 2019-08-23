@@ -372,7 +372,7 @@ String InternetAddress::ToString () const
     return As<String> ();
 }
 
-InternetAddress InternetAddress::Offset (unsigned int o) const
+InternetAddress InternetAddress::Offset (uint64_t o) const
 {
     // rough draft - NEEDS TESTING - LGP 2019-02-17
     vector<uint8_t> addressAsArrayOfBytes = As<vector<uint8_t>> ();
@@ -391,6 +391,24 @@ InternetAddress InternetAddress::Offset (unsigned int o) const
             idx--;
             o >>= 8;
         }
+    }
+    return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
+}
+
+InternetAddress InternetAddress::PinLowOrderBitsToMax (unsigned int o) const
+{
+    vector<uint8_t> addressAsArrayOfBytes = As<vector<uint8_t>> ();
+    Require (addressAsArrayOfBytes.size () >= 4);
+    Require (o <= addressAsArrayOfBytes.size () * 8);
+    size_t       idx           = addressAsArrayOfBytes.size () - 1;
+    unsigned int bitsRemaining = o;
+    // set all bits, starting at low order bits - to ones
+    while (bitsRemaining != 0) {
+        Assert (idx > 0 and idx < addressAsArrayOfBytes.size ());
+        auto nBits                 = Math::AtMost (bitsRemaining, 8u);
+        addressAsArrayOfBytes[idx] = addressAsArrayOfBytes[idx] | Memory::BitSubstring<uint8_t> (0xff, 0, nBits);
+        idx--;
+        bitsRemaining -= nBits;
     }
     return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
 }
