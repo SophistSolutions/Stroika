@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Execution {
         return true;
     }
     template <typename T, typename TRAITS>
-    inline void Synchronized<T, TRAITS>::NoteLockStateChanged_ (const wchar_t* m) const
+    inline void Synchronized<T, TRAITS>::NoteLockStateChanged_ ([[maybe_unused]] const wchar_t* m) const
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {
@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Execution {
         return *fT;
     }
     template <typename T, typename TRAITS>
-    inline void Synchronized<T, TRAITS>::ReadableReference::_NoteLockStateChanged (const wchar_t* m) const
+    inline void Synchronized<T, TRAITS>::ReadableReference::_NoteLockStateChanged ([[maybe_unused]] const wchar_t* m) const
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {
