@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Execution {
         fMutex_.unlock_shared ();
         [[maybe_unused]] auto&&        cleanup = Execution::Finally ([this] () {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
-            NoteLockStateChanged_ (L"in UpgradeLockNonAtomicallyQuietly finally relocked shared");
+            NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly finally relocked shared");
         });
         typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Execution {
                 return false;
             }
         }
-        NoteLockStateChanged_ (L"in UpgradeLockNonAtomicallyQuietly acquired Lock"); // no need to message on unlock cuz lock transfered to WritableReference that messages on unlock
+        NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly acquired Lock"); // no need to message on unlock cuz lock transfered to WritableReference that messages on unlock
         WritableReference wr                   = WritableReference (this, std::move (upgradeLock));
         bool              interveningWriteLock = fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
         doWithWriteLock (std::move (wr), interveningWriteLock);
