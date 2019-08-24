@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \par Example Usage
          *      \code
-         *          ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket::New (Socket::INET, Socket::STREAM);
+         *          ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
          *          ms.Bind (addr);
          *          ms.Listen (backlog);
          *      \endcode
@@ -72,7 +72,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  \par Example Usage
      *      \code
-     *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket::New (Socket::INET, Socket::STREAM);
+     *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
      *          ms.Bind (addr);
      *          ms.Listen (backlog);
      *          Sequence<ConnectionOrientedMasterSocket::Ptr>   l;  // cannot do Sequence<ConnectionOrientedMasterSocket> cuz not copyable

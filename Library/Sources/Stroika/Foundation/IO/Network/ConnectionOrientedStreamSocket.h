@@ -17,13 +17,13 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \par Example Usage
      *      \code
-     *          ConnectionOrientedStreamSocket::Ptr  s = ConnectionOrientedStreamSocket { Socket::INET, Socket::STREAM };
+     *          ConnectionOrientedStreamSocket::Ptr  s = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
      *          s.Connect (someSocketAddress);
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ConnectionOrientedMasterSocket::Ptr ms ConnectionOrientedMasterSocket { Socket::INET, Socket::STREAM };
+     *          ConnectionOrientedMasterSocket::Ptr ms ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
      *          ms.Bind (addr);
      *          ms.Listen (backlog);
      *          ConnectionOrientedStreamSocket::Ptr      newConnection = ms.Accept ();
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  \par Example Usage
      *      \code
-     *          ConnectionOrientedStreamSocket::Ptr      s  = ConnectionOrientedStreamSocket (Socket::INET, Socket::STREAM);
+     *          ConnectionOrientedStreamSocket::Ptr      s  = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
      *          s.Connect (someSocketAddress);
      *          Sequence<ConnectionOrientedStreamSocket::Ptr> l;  // cannot do Sequence<ConnectionOrientedStreamSocket> cuz not copyable
      *          l.push_back (s);

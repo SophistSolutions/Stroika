@@ -51,7 +51,7 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \par Example Usage
      *      \code
-     *          Socket::Ptr      s  = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+     *          Socket::Ptr      s  = ConnectionlessSocket { SocketAddress::INET, Socket::DGRAM };
      *      \endcode
      *
      *  The Socket smart pointer objects can be freely assigned and passed around, but the
@@ -149,14 +149,14 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \par Example Usage
      *      \code
-     *          Socket::Ptr      s  = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+     *          Socket::Ptr      s  = ConnectionlessSocket { SocketAddress::INET, Socket::DGRAM };
      *      \endcode
      *
      *  \par Example Usage
      *      \code
      *          Socket::Ptr      s;
      *          if (s == nullptr) {
-     *              s = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
+     *              s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
      *          }
      *      \endcode
      *

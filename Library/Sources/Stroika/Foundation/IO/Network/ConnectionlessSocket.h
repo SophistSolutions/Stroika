@@ -46,7 +46,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \par Example Usage
          *      \code
-         *          ConnectionlessSocket::Ptr   s  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
+         *          ConnectionlessSocket::Ptr   s  = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
          *      \endcode
          *
          *  \req socketKind != SOCK_STREAM
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  \par Example Usage
      *      \code
-     *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket (Socket::INET, Socket::DGRAM);
+     *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
      *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
      *          l.push_back (cs);
      *      \endcode
