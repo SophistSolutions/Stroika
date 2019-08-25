@@ -189,7 +189,16 @@ namespace Stroika::Foundation::Execution {
     inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
     {
         UpgradeLockNonAtomically (
-            lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (std::move (wRef)); }, timeout);
+            lockBeingUpgraded,
+            [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) {
+                if (interveningWriteLock) {
+                    Execution::ThrowTimeOutException ();
+                }
+                else {
+                    doWithWriteLock (std::move (wRef));
+                }
+            },
+            timeout);
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
@@ -212,6 +221,9 @@ namespace Stroika::Foundation::Execution {
                    [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) {
                        if (interveningWriteLock) {
                            fakeTimeout = true;
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                           DbgTrace (L"in UpgradeLockNonAtomicallyQuietly - turning interveningWriteLock into fake timeout");
+#endif
                        }
                        else {
                            doWithWriteLock (std::move (wRef));

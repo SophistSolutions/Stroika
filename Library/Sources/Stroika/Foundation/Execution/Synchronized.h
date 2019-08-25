@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Execution {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
          *              })) {
          *                  Execution::Sleep (1s);
-         *                  goto again;	  // important to goto before we acquire readlock to avoid deadlock when multiple threads do this
+         *                  goto again;   // important to goto before we acquire readlock to avoid deadlock when multiple threads do this
          *              }
          *          }
          *      \endcode
