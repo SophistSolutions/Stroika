@@ -171,14 +171,6 @@ namespace Stroika::Foundation::Execution {
         };
     }
 
-    /** 
-     */
-    enum class NonAtomicUpgradeLockResultType {
-        eTimeout,
-        eSucceededButWithInteveningLock,
-        eSucceeded,
-    };
-
     /**
      *  \brief  Wrap any object with Synchronized<> and it can be used similarly to the base type,
      *          but safely in a thread safe manner, from multiple threads. This is similar to std::atomic.
@@ -468,6 +460,9 @@ namespace Stroika::Foundation::Execution {
          *  A DEFEFCT with UpgradeLockNonAtomically, is that you cannot count on values computed with the read lock to remain
          *  valid in the upgrade lock (since we unlock and then re-lock).
          *
+         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
+         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
+         *
          *  But other than that, this approach seems pretty usable/testable.
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
@@ -498,8 +493,11 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  @see UpgradeLockNonAtomically - same but returns false on timeout, instead of throwing; use to more quietly handle
-         *       timeout scenarios
+         *  @see UpgradeLockNonAtomically - same but returns true on success; and returns false on timeout, instead of throwing; use to more quietly handle
+         *       timeout scenarios. Note - also returns false on intevening lock IFF function<> passed in has no inteveningWriteLock parameter.
+         *
+         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
+         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
          *
          *  \par Example Usage
          *      \code
@@ -510,17 +508,17 @@ namespace Stroika::Foundation::Execution {
          *          if (some rare event) {
          *              if (not fStatus_.UpgradeLockNonAtomicallyQuietly ([=](auto&& writeLock) {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              }) != NonAtomicUpgradeLockResultType::eSucceeded) {
+         *              })) {
          *                  Execution::Sleep (1s);
-         *                  goto again;
+         *                  goto again;	  // important to goto before we acquire readlock to avoid deadlock when multiple threads do this
          *              }
          *          }
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual NonAtomicUpgradeLockResultType UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual NonAtomicUpgradeLockResultType UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         /**
