@@ -204,14 +204,14 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
-    inline bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    inline auto Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout) -> NonAtomicUpgradeLockResultType
     {
         return UpgradeLockNonAtomicallyQuietly (
             lockBeingUpgraded, [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) { doWithWriteLock (std::move (wRef)); }, timeout);
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
-    bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
+    auto Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout) -> NonAtomicUpgradeLockResultType
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
@@ -231,14 +231,14 @@ namespace Stroika::Foundation::Execution {
         }
         else {
             if (not upgradeLock.try_lock_for (timeout)) {
-                return false;
+                return NonAtomicUpgradeLockResultType::eTimeout;
             }
         }
         NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly acquired Lock"); // no need to message on unlock cuz lock transfered to WritableReference that messages on unlock
         WritableReference wr                   = WritableReference (this, std::move (upgradeLock));
         bool              interveningWriteLock = fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
         doWithWriteLock (std::move (wr), interveningWriteLock);
-        return true;
+        return interveningWriteLock ? NonAtomicUpgradeLockResultType::eSucceededButWithInteveningLock : NonAtomicUpgradeLockResultType::eSucceeded;
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>

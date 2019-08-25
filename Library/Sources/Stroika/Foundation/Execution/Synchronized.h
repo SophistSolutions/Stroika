@@ -171,6 +171,14 @@ namespace Stroika::Foundation::Execution {
         };
     }
 
+    /** 
+     */
+    enum class NonAtomicUpgradeLockResultType {
+        eTimeout,
+        eSucceededButWithInteveningLock,
+        eSucceeded,
+    };
+
     /**
      *  \brief  Wrap any object with Synchronized<> and it can be used similarly to the base type,
      *          but safely in a thread safe manner, from multiple threads. This is similar to std::atomic.
@@ -500,9 +508,9 @@ namespace Stroika::Foundation::Execution {
          *          auto lockedStatus = fStatus_.cget ();
          *          // do a bunch of code that only needs read access
          *          if (some rare event) {
-         *              if (not fStatus_.UpgradeLockNonAtomically ([=](auto&& writeLock) {
+         *              if (not fStatus_.UpgradeLockNonAtomicallyQuietly ([=](auto&& writeLock) {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              })) {
+         *              }) != NonAtomicUpgradeLockResultType::eSucceeded) {
          *                  Execution::Sleep (1s);
          *                  goto again;
          *              }
@@ -510,12 +518,14 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual NonAtomicUpgradeLockResultType UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual NonAtomicUpgradeLockResultType UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         /**
+         *  \note *** EXPERIMENTAL API *** as of Stroika 2.1d27
+         *
          *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK. Beware.
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
@@ -550,6 +560,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \note *** EXPERIMENTAL API *** as of Stroika 2.1d27
+         *
          *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK, so use carefully.
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
