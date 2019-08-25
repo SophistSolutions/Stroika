@@ -28,6 +28,19 @@ namespace Stroika::Foundation::IO::Network {
             {
                 return n == kUpperBound ? n : n.Offset (1);
             }
+
+            static constexpr auto Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+            {
+                Require (lhs.GetAddressFamily () == InternetAddress::AddressFamily::V4);
+                Require (rhs.GetAddressFamily () == InternetAddress::AddressFamily::V4); // because otherwise we need bignums to track difference
+                array<uint8_t, 4> l = lhs.As<array<uint8_t, 4>> ();
+                array<uint8_t, 4> r = rhs.As<array<uint8_t, 4>> ();
+                return (SignedDifferenceType (r[0]) - SignedDifferenceType (l[0])) * (1 << 24) +
+                       (SignedDifferenceType (r[1]) - SignedDifferenceType (l[1])) * (1 << 16) +
+                       (SignedDifferenceType (r[2]) - SignedDifferenceType (l[2])) * (1 << 8) +
+                       (SignedDifferenceType (r[3]) - SignedDifferenceType (l[3])) * (1 << 0);
+            }
+
             using RangeTraitsType                        = InternetAddressRangeTraits_;
             static constexpr InternetAddress kLowerBound = InternetAddress::min ();
             static constexpr InternetAddress kUpperBound = InternetAddress::max ();
