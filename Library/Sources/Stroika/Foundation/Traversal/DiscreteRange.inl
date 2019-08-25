@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Traversal {
             return 0;
         }
         else {
-            return this->GetDistancespanned () + 1;
+            return this->GetDistanceSpanned () + 1;
         }
     }
     template <typename T, typename TRAITS>
