@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Traversal {
             static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
 
             /**
-             *  Compute the difference between two elements of type T for the Range
+             *  Compute the difference between two elements of type T for the Range (RHS - LHS)
              */
             template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
