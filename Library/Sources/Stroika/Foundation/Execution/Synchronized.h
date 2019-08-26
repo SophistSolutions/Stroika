@@ -458,7 +458,9 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  A DEFEFCT with UpgradeLockNonAtomically, is that you cannot count on values computed with the read lock to remain
-         *  valid in the upgrade lock (since we unlock and then re-lock).
+         *  valid in the upgrade lock (since we unlock and then re-lock). We resolve this by having two versions of UpgradeLockNonAtomically,
+         *  one where the callback gets notified there was an interening writelock, and one where the entire call fails and you have to
+         *  re-run.
          *
          *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
          *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
