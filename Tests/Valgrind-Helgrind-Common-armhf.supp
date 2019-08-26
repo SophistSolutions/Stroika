@@ -22,3 +22,13 @@
    Helgrind:Race
    fun:_ZNSt14_Function_base13_Base_managerIPDoFviEE10_M_managerERSt9_Any_dataRKS4_St18_Manager_operation
 }
+{
+   https://stroika.atlassian.net/browse/STK-701
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation6Memory16SmallStackBufferIcLj4096EEC2ENS1_22SmallStackBufferCommon28UninitializedConstructorFlagEj.constprop.234
+}
+{
+   https://stroika.atlassian.net/browse/STK-701
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation12Cryptography6Digest8DigesterINS2_9Algorithm3MD5ESt5arrayIhLj16EEE13ComputeDigestEPKSt4byteSB_
+}
