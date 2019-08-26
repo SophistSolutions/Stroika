@@ -260,6 +260,7 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly acquired Lock"); // no need to message on unlock cuz lock transfered to WritableReference that messages on unlock
         WritableReference wr                   = WritableReference (this, std::move (upgradeLock));
         bool              interveningWriteLock = fWriteLockCount_ > 1 + writeLockCountBeforeReleasingReadLock;
+        // pass 'interveningWriteLock' flag to callback so IT can decide how to handle - ignore or throw
         doWithWriteLock (std::move (wr), interveningWriteLock);
         return true;
     }
