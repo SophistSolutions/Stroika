@@ -810,13 +810,8 @@ namespace {
         {
             Debug::TraceContextBumper traceCtx ("{}Test11_SynchronizedCaches_...");
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-#if defined(__arm__)
-            static constexpr bool kARM_ = true;
-#else
-            static constexpr bool kARM_ = false;
-#endif
-            if (kRunningValgrind_ and kARM_) {
-                // https://stroika.atlassian.net/browse/STK-632 - this workaround ONLY needed on ARM and HELGRIND (not memcheck)
+            if (kRunningValgrind_) {
+                // https://stroika.atlassian.net/browse/STK-632 - this workaround WAS ONLY needed on ARM and HELGRIND (not memcheck) - but now fails on ubuntu 18.10 as well -- LGP 2019-08-26
             }
             else {
                 Private_::SyncLRUCacheT1_ ();
