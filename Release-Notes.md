@@ -6,90 +6,15 @@ to be aware of when upgrading.
 
 # History
 
-
-
-
-
-
-
-## 2.1d27x {2019-08-27x}
+## 2.1d27 {2019-08-27}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d26...v2.1d27>
 
-- IO::Transfer
-  - ***NOT BACKWARD COMPATIBLE CHANGE***
-    Change all uses of Connection (object) to Connection::Ptr and change all uses of(rarer)
-    Connection_LibCurl::CTOR to Connection_LibCurl::New
-    Connection_WinHTTP::CTOR to Connection_WinHTTP::New
-  - deprecate CreateConnection () and use Connection::New () instead
-  - renamed Client_WinHTTP.cpp -> Connection_WinHTTP.cpp and Client_libcurl.cpp -> Connection_libcurl.cpp
-  - IO::Transfer::Cache module, working and integrated into WinHTTP and CURL connection subclasses
-    - support for etag/lastmodified Cache control - conditional gets
-  - IO::Transfer::Options now has an optional (really nullable) Cache object you can use to share a cache among Connections
-  - a few more http headers defined
-  - added fAuthorityRelativeURL to IO/Network/Transfer/Request
-  - added new methods Connection::GetSchemeAndAuthority () and Connection::SetSchemeAndAuthority () - still not really used
-  - Added IO::Network::Transfer::Connetion overloads for PUT, GET, etc taking URI, and combining with SchemeAndAuthority on the connection
-  - xxx
-  - xxx
-  - xxx
-  - Big changes to IO::Transfer::Connection - use GetSchemeAndAuthority/SetSchemeAndAuthority
-    in place of GetURL / SetURL () - and pass in authoritiyrelativeurl to Request in
-    SEND argument.
-  - Use helpers GET/PUT/POST etc to wrap this - you can pass full url there.
-  - xxx
-  - IO\Network\Transfer\ConnectionPool
-  - xxx
-  - xxx
-
-- IO::Network::URI
-  - URI::GetSchemeAndAuthority ()
-  - added URI URI::GetAuthorityRelativeResource () const specialization; and nonvirtual operator bool () const; for URI
-  - change semantics of URI::Combine() so allows special case of empty *this and then just returns right side argument - simplifies alot of coding so better definition
-  - xxx
-  - xxx
-  - xxx
-
 - Foundation::Common
   - Common::GUID::GenerateNew ()
-  - xxx
-  - xxx
 
-- xxxx
-  - xxx
-  - xxx
-  - xxx
-
-- xxxx
-  - xxx
-  - xxx
-  - xxx
-
-- xxxx
-  - xxx
-  - xxx
-  - xxx
-
-- xxxx
-  - xxx
-  - xxx
-  - xxx
-
-- Foundation::Memory
-  - changed default BLOB::ToString (maxBytesToShow) arg to 80 - from infinite
-  - xxx
-  - xxx
-  - xxx
-
-- Regression Tests/Bug Workarounds/Compilers
-  - another qCompilerAndStdLib_arm_openssl_valgrind_Buggy workaround for raspberrypi/valgrind
-  - new bug workaround for existing bug https://stroika.atlassian.net/browse/STK-662 (they updated dll version name in latest debian/raspbian release); and new raspberry pi valgrind workaorund needed - https://stroika.atlassian.net/browse/STK-698
-  - workaround bug qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy for VS2k17
-  - xxx
-  - xxx
-  - xxx
-  - xxx
-  - xxx
+- Foundation::Cryptography
+  - fix (i hope) corner case in Cryptography/Digest/Algorithm/MD5.cpp logic - if padding comes out to 64 bytes, none needed
 
 - Foundation::DataExchange
   - ObjectVariantMapper: docs/cleanups; and operator+= support (alias)
@@ -104,15 +29,90 @@ to be aware of when upgrading.
     - CTOR now more strict parsing
     - IsSubTypeOf, IsSubTypeOfOrEqualTo deprecated
     - New GetType/GetSubType/GetParemters methods
+  - Refactoring of InternetMediaTypeRegistry; implemented much more of it for unix/non-windows, and added regression tests (incomplete and not fully backward compatible, but probably close enuf)
 
+- Foundation::Execution
+  - Syncrhonized<>
+    - draft support for boost/thread/shared_mutex for shared locking/upgrade locking (UpgradableRWSynchronized)
+      - using boost::upgrade_mutex also appears to require -lboost_chrono
+      - **really not working yet**
+    - cleaned up Synchronized_Traits (**not backward compat**, but not likely directly used)
+    - redo CTORs for Synchronized Readable/Writable reerence to take Synchronized* as arg instead of bits and pieces (so easier to grab other pieces as needed)
+    - keep track of write count in Synchronized class; and use it to pass 'intervenningwritelock' flag to upgradelocknonatomically callback
+    - wrote/use Syncrhonized::WritableLock::CTOR overload (&&WriteLockType so cleaner and pass lock in)
+    - added optional\<std::wstring\> fDbgTraceLocksName to Syncrhonized<> class depending on TRAITS::kDbgTraceLockUnlockIfNameSet, which defaults to qTraceLog enabled (DbgTrace enabled); and use it to log lock/unlock calls on Syncrhonized objects. Turn on/off per object by setting 'name' field
+  - changed Execution::ThrowTimeoutExceptionAfter to use kThe instead of a local static object (if some reason this needs to be callable before main document it but I dont think so and since it was inline that caused object bloat)
+  - added ThrowTimeoutException () utility for use in avoiding deadly include embrace in stroika (since easier to forward declare than class)
 
-- xxxx
-  - xxx
-  - xxx
-  - xxx
+- Foundation::IO::FileSystem
+  - changed default for FileInputStream  to be seekable (not backward compat, but probably OK)
+
+- Foundation::IO::Network
+  - tweak tweak IO/Network/Interface compute of transmit/recive speed for windows - multiply by undocumented 1000x factor so numbers match
+  - URI
+    - URI::GetSchemeAndAuthority ()
+    - added URI URI::GetAuthorityRelativeResource () const specialization; and nonvirtual operator bool () const; for URI
+    - change semantics of URI::Combine() so allows special case of empty *this and then just returns right side argument - simplifies alot of coding so better definition
+  - fixed more bugs with CIDR construction (from number of bits) and added more regtests to capture
+  - InternetAddressRange::...traits..Difference
+  - InternetAddress::Offset () - upgraded to take uint64_t (but that wasnt enough to solve me problems); So added InternetAddress::PinLowOrderBitsToMax () and used that in Network::CIDR::GetRange ()
+
+- Foundation::IO::Network::Transfer
+  - ***NOT BACKWARD COMPATIBLE CHANGE***
+    Change all uses of Connection (object) to Connection::Ptr and change all uses of(rarer)
+    Connection_LibCurl::CTOR to Connection_LibCurl::New
+    Connection_WinHTTP::CTOR to Connection_WinHTTP::New
+  - deprecate CreateConnection () and use Connection::New () instead
+  - renamed Client_WinHTTP.cpp -> Connection_WinHTTP.cpp and Client_libcurl.cpp -> Connection_libcurl.cpp
+  - IO::Transfer::Cache module, working and integrated into WinHTTP and CURL connection subclasses
+    - support for etag/lastmodified Cache control - conditional gets
+  - IO::Transfer::Options now has an optional (really nullable) Cache object you can use to share a cache among Connections
+  - a few more http headers defined
+  - added fAuthorityRelativeURL to IO/Network/Transfer/Request
+  - added new methods Connection::GetSchemeAndAuthority () and Connection::SetSchemeAndAuthority () - still not really used
+  - Added IO::Network::Transfer::Connetion overloads for PUT, GET, etc taking URI, and combining with SchemeAndAuthority on the connection
+  - Big changes to IO::Transfer::Connection - use GetSchemeAndAuthority/SetSchemeAndAuthority
+    in place of GetURL / SetURL () - and pass in authoritiyrelativeurl to Request in
+    SEND argument.
+  - Use helpers GET/PUT/POST etc to wrap this - you can pass full url there.
+  - IO\Network\Transfer\ConnectionPool
+
+- Foundation::Memory
+  - changed default BLOB::ToString (maxBytesToShow) arg to 80 - from infinite
+
+- Foundation::Time
+  - Added (temporary)  Duration::operator chrono::duration\<Duration::InternalNumericFormatType_\> () and todo item saying to instead SUBCLASS from this duration<> class
+
+- Regression Tests/Compiler Bug Workarounds/Compilers Supported
+  - another qCompilerAndStdLib_arm_openssl_valgrind_Buggy workaround for raspberrypi/valgrind
+  - new bug workaround for existing bug https://stroika.atlassian.net/browse/STK-662 (they updated dll version name in latest debian/raspbian release); and new raspberry pi valgrind workaorund needed - https://stroika.atlassian.net/browse/STK-698
+  - workaround bug qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy for VS2k17
+  - set regtest max-redirects to 2 (from 1) to works with cache/cnn example
+  - qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy workaround
+  - qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy  broken in gcc9
+  - qCompilerAndStdLib_error_code_compare_condition_Buggy now depends on __GLIBCXX__ value (so catches clang++ using libstdc++)
+  - added -lboost_thread to dependencies when including boost (so can use upgrade_mutex); and changed default build flags for boost to NOT say 'without-chrono' since that doesnt cuase boost to use std::chono
+  - workaround new qCompilerAndStdLib_locale_utf8_string_convert_Buggy
+  - several cosmetic changes to Cryptography/Encoding/Algorithm/RC4.cpp to avoid an msvc internal compiler error
+  - support new compiler - _MSC_VER_2k19_16Pt2_
+  - broke Tests/Valgrind-MemCheck-Common.supp into itself and Tests/Valgrind-MemCheck-Common-armhf.supp and fixed defaults for makefile to include that extra file (Valgrind-MemCheck-Common-\$(ARCH).supp)
+  - qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy workaround, and additional regtests for new upgradelock code
+  - wrap warning suppression around include of afxole.h because of internal issue with latest MSFT compiler release (16.2) - they now warn about issues internal to their includes
+  - building activeledit we got warning (msvc2k19 only) warning MIDL2015: failed to load tlb in importlib: : olepro32.dll so remove include - not obivously need (may need to retest ocx)
+  - workaround qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy bug; and added extra UpgradableRWSynchronized<> regtest
+  - remove suppression for https://stroika.atlassian.net/browse/STK-548
+  - tweak helpgrind suppressions for https://stroika.atlassian.net/browse/STK-628
+  - https://stroika.atlassian.net/browse/STK-632 workaround now needed on x86 too
+  - https://stroika.atlassian.net/browse/STK-644 suppression not needed anymore
+  - https://stroika.atlassian.net/browse/STK-699  - valgrind raspberrypi memcheck workarounds/suppressions
+  - https://stroika.atlassian.net/browse/STK-701 helgrind suppression for arm
+
+- ThirdPartyComponents
+  - libcurl 7.65.3
+  - sqlite - use 3.29
 
 - HistoricalPerformanceRegressionTestResults/
-  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, Ubuntu1904_x86_64, MacOS_XCode10}-2.1d26.txt
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, Ubuntu1904_x86_64, MacOS_XCode10}-2.1d27.txt
 
 - Tested (passed regtests)
   - OUTPUT FILES:
@@ -120,9 +120,9 @@ to be aware of when upgrading.
         Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
         Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
         Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1d27-OUT.txt
-  - vc++2k17 (15.9.13)
-  - vc++2k19 (16.1.3)
-  - MacOS, XCode 10
+  - vc++2k17 (15.9.15)
+  - vc++2k19 (16.2.3)
+  - MacOS, XCode 10 (Apple LLVM version 10.0.1)
   - Ubuntu 18.04, Ubuntu 18.10, Ubuntu 19.04, Centos 7
   - gcc 7, gcc 8, gcc 9
   - clang++-6, clang++-7, clang++-8 {libstdc++ and libc++}
@@ -135,621 +135,6 @@ to be aware of when upgrading.
   - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
     (qIterationOnCopiedContainer_ThreadSafety_Buggy)
   - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
-
-
-
-#if 0
-
-
-
-    big refactoring of InternetMediaTypeRegistry; implemented much more of it for unix/non-windows, and added regression tests (incomplete and not fully backward compatible, but probably close enuf
-
-commit bb2294a0768378c0aed48d892c5cb657f2436a96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:48:34 2019 -0400
-
-    changed default for FileInputStream  to be seekable (not backward compat, but probably OK)
-
-
-commit 810b81a20b32d30dfa4a6a96abb9796d265c136a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 20 13:53:55 2019 -0400
-
-    set regtest max-redirects to 2 (from 1) to works with cache/cnn example
-
-commit 0f444f1c686f611eddb2b1446aa0566c2802dad3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 20 13:54:33 2019 -0400
-
-    qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy workaround
-
-commit 59fbe404fedacd8e3b09912a0f4be7fc4f2eedc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 21 10:59:32 2019 -0400
-
-    Progress cleaning up (including draft regression tests) IO::Transfer::ConnectionPool code
-
-commit 7785b4bcb667ba2c135904a7e850e54a7ca9abf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 21 11:42:37 2019 -0400
-
-    qCompilerAndStdLib_error_code_compare_condition_Buggy now depends on __GLIBCXX__ value (so catches clang++ using libstdc++)
-
-commit 5ffe1bd64169d5aa0f3d2f645557ca3d3b37e27e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 08:44:08 2019 -0400
-
-    draft support for boost/thread/shared_mutex for shared locking/upgrade locking
-
-commit 283e4504b8d79118b46d6303c2db417e0cd743ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 11:15:35 2019 -0400
-
-    tweak tweak IO/Network/Interface compute of transmit/recive speed for windows - multiply by undocumented 1000x factor so numbers match
-
-commit cc49ae46e2a5cddbfff7a3d7ffc5adbf32947ab6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 11:15:57 2019 -0400
-
-    cosmetic
-
-commit 471ceaf49813b423165859f74889f004e3995c4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 08:31:23 2019 -0400
-
-    chnaged Execution::ThrowTimeoutExceptionAfter to use kThe instead of a local static object (if some reason this needs to be callable before main document it but I dont think so and since it was inline that caused object bloat); and added ThrowTimeoutException () utility for use in avoiding deadly include embrace in stroika (since easier to forward declare than class)
-
-commit a140075b03f5b9feeacf3dcd5295f6961c85c6f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 09:29:44 2019 -0400
-
-    added -lboost_thread to dependencies when including boost (so can use upgrade_mutex); and changed default build flags for boost to NOT say 'without-chrono' since that doesnt cuase boost to use std::chono
-
-commit 32f769c2722fe387c866519e7e4f58611f805c21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 11:21:11 2019 -0400
-
-    using boost::upgrade_mutex also appears to require -lboost_chrono
-
-
-commit 050b8fbbfa69f8d9c240da181e7f54be14aebff1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 11:22:58 2019 -0400
-
-    Added (temporary)  Duration::operator chrono::duration<Duration::InternalNumericFormatType_> () and todo item saying to instead SUBCLASS from this duration<> class
-
-commit 59950eb1c8aed696ec023299854edfb398313a07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 14:23:11 2019 -0400
-
-    a little bit of (incomplete) progress on UpgradeLockAtomically () using boost shared_lock/etc code
-
-commit bcf49e6b2beb2384026ee223e41da78e4450e8de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 19:58:20 2019 -0400
-
-    more progress on syncrhonuzed  UpgradableRWSynchronized support
-
-commit b11efb93f2125ace6d33c8d28a8e07e08e0333bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 20:00:57 2019 -0400
-
-    docs on make reconfigure
-
-commit f8bcc461a930dd15dfd6d8f8245882882b09068b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:07:47 2019 -0400
-
-    cleanup wrappers on boost upgrade_mutex code to better hide dependencies
-
-commit 15d6567c05536557bea61a8a03e35fee55e43efc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:09:49 2019 -0400
-
-    cleanup wrappers on boost upgrade_mutex code to better hide dependencies
-
-commit 7921022be61881e316777bec887d13418e35b30c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:10:52 2019 -0400
-
-    cleanup wrappers on boost upgrade_mutex code to better hide dependencies
-
-commit fac89785da25be098acda990ee1949c7fb7d73be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:11:35 2019 -0400
-
-    cleanup wrappers on boost upgrade_mutex code to better hide dependencies
-
-commit b3f3e2bccb5332198cd8c0b6da11ad34720ec042
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:11:53 2019 -0400
-
-    cleanup wrappers on boost upgrade_mutex code to better hide dependencies
-
-commit 49dd7c13a39843b8d1974092db32cfe5a4b55dc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:12:19 2019 -0400
-
-    cleanup wrappers on boost upgrade_mutex code to better hide dependencies
-
-
-commit 30600b19ac2bdcb8b6608679fb7fc3bbdb7c3d0c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 22:02:10 2019 -0400
-
-    wrap UpgradableRWSynchronized in ifdefs"
-
-commit 2b3376963a4ad3d9b16d153601b600740c9219e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 22:29:04 2019 -0400
-
-    draft of UpgradeLockAtomicallyQuietly  UpgradeLockNonAtomicallyQuietly
-
-commit e800b180fed12f251c58262d9bd1e27e2a65ee3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 22:30:58 2019 -0400
-
-    docs
-
-commit 2821dbba9a9f6d2c0ae3831c2f5ccdc47b22bc7f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 22:31:56 2019 -0400
-
-    fixed typo
-
-commit 4d3d642fa16966fad76e4893024744d331593fdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 08:19:43 2019 -0400
-
-    qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy  broken in gcc9
-
-commit f7be86867f00071907ce99f8c8f34cb0f37ea008
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:22:02 2019 -0400
-
-    thirdpartycomponents - sqlite - use 3.29
-
-commit 60de32050c69446ac0cb7b38d8cba8b4c4b1a443
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:23:16 2019 -0400
-
-    libcurl 7.65.3
-
-commit de142e275d918d6578b976b00d55bf3438ba06dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:57:03 2019 -0400
-
-    workaround centos7 issue with boost (or how I build boost)
-
-commit d532aa656bdeeaba146bb6cd456acd852ce370cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 09:57:43 2019 -0400
-
-    slight cleanups that may silence a few (incorrect) warnings
-
-commit 26414a587fb3edc8737090dd94e74691e553e14a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 10:42:57 2019 -0400
-
-    minor tweak
-
-commit 85e78cbe8f6a35ccce110fad7f567bcdc41bc963
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 10:47:57 2019 -0400
-
-    workaround new qCompilerAndStdLib_locale_utf8_string_convert_Buggy
-
-commit 397359a848e6580859a5538a8ce6b442b2f20ca2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 11:38:16 2019 -0400
-
-    several cosmetic changes to Cryptography/Encoding/Algorithm/RC4.cpp to avoid an msvc internal compiler error
-
-commit c88565b339c1e6b3d4eb9c3f36805e44f6ad6b18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 12:29:08 2019 -0400
-
-    support new compiler - _MSC_VER_2k19_16Pt2_
-
-commit 9fa66bb43be8420814b3b91796d5adc58effcac1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 26 13:38:24 2019 -0400
-
-    cosmetic cleanup
-
-commit 0c5a9b2a8712e68e37226deabeb2aa954acba211
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 29 10:55:12 2019 -0400
-
-    wrap warning suppression around include of afxole.h because of internal issue with latest MSFT compiler release (16.2) - they now warn about issues internal to their includes
-
-commit c7c8a14afddc452f85f817506ba2f95fc08d235d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 29 11:03:42 2019 -0400
-
-    Cosmetic cleanups and fixed check for !qHasFeature_LibCurl && !qHasFeature_WinHTTP/const Execution::RequiredComponentMissingException& on new regtest
-
-commit 390e1aa3501abbfdbcfee7eba5ffe2ab8e4fb5c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 30 10:24:52 2019 -0400
-
-    broke Tests/Valgrind-MemCheck-Common.supp into itself and Tests/Valgrind-MemCheck-Common-armhf.supp and fixed defaults for makefile to include that extra file
-
-commit abd081bb7b22d73177cfeaced0b434ff2dd83499
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 30 19:03:59 2019 -0400
-
-    fixed typo in recent Valgrind-MemCheck-Common-\$(ARCH).supp change
-
-commit ce6d6024f43136c0be35a4c8dc14b8b430bb47ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 30 21:52:40 2019 -0400
-
-    lots more https://stroika.atlassian.net/browse/STK-699  - valgrind raspberrypi memcheck workarounds/suppressions
-
-commit 2a2c870f821035562b274bb1af835da178caba3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 30 21:57:47 2019 -0400
-
-    lots more https://stroika.atlassian.net/browse/STK-699  - valgrind raspberrypi memcheck workarounds/suppressions
-
-commit e61cc544cd2519e912634fe6290073e62aa6dcc6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 30 22:09:31 2019 -0400
-
-    building activeledit we got warning (msvc2k19 only) warning MIDL2015: failed to load tlb in importlib: : olepro32.dll so remove include - not obivously need (may need to retest ocx)
-
-commit d29abb9887ccc42919e6327475ed8c2fdabce94c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 30 22:10:24 2019 -0400
-
-    warning cleanup; and pragram warning suppress around afxole.h to address issue in msft header files msft compiler complains about
-
-commit cf113dad6789b87e808f94fb9cf989335214a3d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 31 08:33:08 2019 -0400
-
-    fix test run helgrind makefile typo
-
-commit ba10b639922dd7f0e85f99669117fb8b1fde7aef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 31 13:40:27 2019 -0400
-
-    suppress a few more new warnings ([[maybe_unused]] and #pragma warning(disable : 5054) around afxole.h for msvc new version
-
-commit 3cd427d79bd62f1fbf74936a85e6f8bafd65ff0a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 31 13:41:37 2019 -0400
-
-    cosmetic cleanups and further indent/tracectx bump in a couple regression tests
-
-commit 09ca79a95dede0d9f4487e1ba2687fdb2bc962b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 31 13:55:58 2019 -0400
-
-    wrap more afx* includes with pragma push/pop/disable 5054 (due to bug in msft headers)
-
-commit d2c9c8125fcdf475b1e98b6f614dcf3cb951a075
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 12:22:34 2019 -0400
-
-    workaround qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy bug; and added extra UpgradableRWSynchronized<> regtest
-
-commit cc6f929ee9d942ba20cea29755ddfb99fdf85479
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 12:42:50 2019 -0400
-
-    simplified Execution::Synchronized<> use of boost upgradable locks/mutex - use std::unique_lock now - dont need boost::upgrade_lock
-
-commit 7e1012ca59c3bf3d5c56c306dd28cd310a775edb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 17:57:43 2019 -0400
-
-    cleaned up Synchronized_Traits
-
-commit 12ed0fcf1c77f914629fe9149841147adc645327
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 20:24:11 2019 -0400
-
-    Comments
-
-commit 2322dd39e054af1bd37cbd16ec91b52fc17b19ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 10:21:07 2019 -0400
-
-    remove suppression for https://stroika.atlassian.net/browse/STK-548 and retest
-
-commit 4b782d5f11019fa919a3c2dfa76cca5d25a6e7d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 10:37:37 2019 -0400
-
-    removed https://stroika.atlassian.net/browse/STK-626 valgrind workaround - since seems fixed/not problem - or test more/more configs
-
-commit 766de39000f68d48e62b7e6d94896d0410362718
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 10:39:03 2019 -0400
-
-    moved 2 suppressions from Valgrind-Helgrind-Common.supp  to Valgrind-Helgrind-Common-armhf.supp
-
-commit 316779b220f3c6589490bfd6b743b9370560033e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 10:40:43 2019 -0400
-
-    moved 2 suppressions from Valgrind-Helgrind-Common.supp  to Valgrind-Helgrind-Common-armhf.supp
-
-commit 3c253a7837345830070e079c2be50d0b9eba7b67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 10:43:46 2019 -0400
-
-    moved  suppressions from Valgrind-Helgrind-Common.supp  to Valgrind-Helgrind-Common-armhf.supp
-
-commit b309761a8ace47742a0004ae147c01a9b2bd117f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 11:06:19 2019 -0400
-
-    test more widely that https://stroika.atlassian.net/browse/STK-644 suppression not needed anymore
-
-commit 358b0fdc1a640ad5a1c82130423caaeec7e5808b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 12 09:25:13 2019 -0400
-
-    re-enabled https://stroika.atlassian.net/browse/STK-626 valgrind suppression (for ubuntu 1810 and earlier)
-
-commit eef77fb05cf6facdf968dc062f67ec84611469b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 12 10:50:34 2019 -0400
-
-    improved regtests/docs for upgradelockatomically, but its still not usable
-
-commit 3f1cfa274afd1227c9394c61e555aba4a91cbd08
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 13 08:18:11 2019 -0400
-
-    tweak helpgrind suppressions for https://stroika.atlassian.net/browse/STK-628
-
-commit 6c101aca309830df5c5c4b696688ec4555878fe8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 13 08:21:47 2019 -0400
-
-    docs/notes
-
-commit 1c85d60743b629066951ef2156b4153ff8cfad6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 14 16:13:13 2019 -0400
-
-    redo CTORs for Synchronized Readable/Writable reerence to take Synchronized* as arg instead of bits and pieces (so easier to grab other pieces as needed)
-
-commit 986e1fd9edcb357145ab7a8e348f9f1e4bfcf1d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 07:51:33 2019 -0400
-
-    using _ExternallyLocked; in Synchronized<T, TRAITS>::WritableReference
-
-commit 94b0c8938bd76a9720381bd626efc45a054968bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 07:52:39 2019 -0400
-
-    fixed typo
-
-commit 997596b45133b86061a8958f4175822e17e6e0b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 08:05:01 2019 -0400
-
-    fixed typo in recent changes
-
-commit 32711eaafe7a78da25d3332d09f7d51778fc3372
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 08:06:47 2019 -0400
-
-    tweak recent Synchronized changes
-
-commit 599456c29e781bec40b95dee132e93cfb08bce4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 09:16:12 2019 -0400
-
-    fixed typo
-
-commit db2e7c9d02453715377b7d444db279aed5ba8378
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 09:17:16 2019 -0400
-
-    fixed typo
-
-commit 1bedbb71cb69c9de1101ed70d91525c6b75e1ed2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 09:18:51 2019 -0400
-
-    fixed typo
-
-commit 151ef3f82335ad7b439af972943f857fdcd51126
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 09:19:43 2019 -0400
-
-    fixed typo
-
-commit dbf2ed63a6398abf239524679325093d9ba120ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 15 09:20:19 2019 -0400
-
-    fixed typo
-
-commit f75a10e934488231c283d11313c1d40193d4dd04
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 17 10:47:43 2019 -0400
-
-    keep track of write count in Synchronized class; and use it to pass 'intervenningwritelock' flag to upgradelocknonatomically callback
-
-commit 0399e8f8d91bb47570652dcea2e89713b4d0ac2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 19 10:21:19 2019 -0400
-
-    replace Syncrhonized::WritableLock::CTOR overload (flag) with (&&WriteLockType so cleaner and pass lock in)
-
-commit 76bc5e0f5766040dd26c0ec963de647f9b65279a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 19 10:34:02 2019 -0400
-
-    replace Syncrhonized::WritableLock::CTOR overload (flag) with (&&WriteLockType so cleaner and pass lock in)
-
-commit c8b0173526619533e7ae9b632d319e7faf644d85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 19 21:52:43 2019 -0400
-
-    use std::move instead of move () in Synchronized code to avoid conflict with boost version
-
-commit d0797536b6f514824023aade8b0349cf05196a01
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 20 11:08:50 2019 -0400
-
-    qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy workaround, and additional regtests for new upgradelock code
-
-commit 73075c99294a7d7fb0f73a2f06a1e22516550dac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 12:23:41 2019 -0400
-
-    added optional<std::wstring> fDbgTraceLocksName to Syncrhonized<> class depending on TRAITS::kDbgTraceLockUnlockIfNameSet, which defaults to qTraceLog enabled (DbgTrace enabled); and use it to log lock/unlock calls on Syncrhonized objects. Turn on/off per object by setting 'name' field
-
-commit 9b742f2a0747807093f98b797a211ca894d3d852
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 21 12:54:24 2019 -0400
-
-    fixed typo
-
-commit 4f1fa81c4cc9189ee2b4b640f70fe408386734b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 22 21:24:41 2019 -0400
-
-    fixed more bugs with CIDR construction (from number of bits) and added more regtests to capture
-
-commit a275928f732740eb033f43f6602b16b0e0a0b000
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 22 21:24:55 2019 -0400
-
-    cosmetic
-
-commit d598aa90b19c683b851efeeae7af824df87be2fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 23 10:52:51 2019 -0400
-
-    InternetAddress::Offset () - upgraded to take uint64_t (but that wasnt enough to solve me problems); So added InternetAddress::PinLowOrderBitsToMax () and used that in Network::CIDR::GetRange ()
-
-commit f5384f5f49d5fdc1e344b549c55b729df91923ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 23 10:53:25 2019 -0400
-
-    cosmetic
-
-commit f9757702c58e8bf04a1f75a09a14a97a76516a38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 23 11:25:00 2019 -0400
-
-    fix (i hope) corner case in Cryptography/Digest/Algorithm/MD5.cpp logic - if padding comes out to 64 bytes, none needed
-
-commit 56ca8cfdd5c3d9207f99ee280da41b507b1a7250
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 23 11:58:48 2019 -0400
-
-    maybe_unused
-
-commit 7ca69e78f2955be0e4a3249e16edecfcaf3e0fa9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 23 20:22:46 2019 -0400
-
-    comments
-
-commit 8b1c9b65df8a462e17d8f2881a42ab3effbc9415
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 24 21:53:40 2019 -0400
-
-    draft of InternetAddressRange::...traits..Difference
-
-commit 6aa76e18e2001c9e4c871fa6df3fc148c728ac64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 24 21:54:00 2019 -0400
-
-    comments
-
-commit e5522e9010e9c991370ad1e2def7b7d42de8a0e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 24 21:54:10 2019 -0400
-
-    fixed typo
-
-commit 97795b69b0ba5f54a5034997c721f66c3458fd14
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 25 11:04:43 2019 -0400
-
-    Syncrhonized::UpgradeLockNonAtomicallyQuietly now returns NonAtomicUpgradeLockResultType instead of bool
-
-commit 3a5f7343c070a3bf81d4644c9afde13e9ef64391
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 25 11:25:06 2019 -0400
-
-    lose attempted NonAtomicUpgradeLockResultType; instead interpret return type differently depending on if  overload has interveningWriteLock argument
-
-commit 8f8de6e21bd35ea4b7c38cc2604a30f1a0403b5f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 25 12:16:06 2019 -0400
-
-    more cleanups to Synchronized upgradelocks
-
-commit cdcc4a7cf75db0a2ec3cf8d43213728bade9552a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 08:24:48 2019 -0400
-
-    comments
-
-commit bf96550d797a3ca36b27765ad002a03983426900
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 09:29:44 2019 -0400
-
-    https://stroika.atlassian.net/browse/STK-632 workaround now needed on x86 too
-
-commit 8e2454aa7235c83f3c455962677f4b751d3b727e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 09:33:28 2019 -0400
-
-    https://stroika.atlassian.net/browse/STK-701 helgrind suppression for arm
-
-commit 86e83ac12b36a3997c04932390edf079c78908f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 10:17:42 2019 -0400
-
-    Comments
-
-commit e8fcfe3ef382da9a625e0118a68e7ae1788fb7bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 10:18:00 2019 -0400
-
-    further workarounds for https://stroika.atlassian.net/browse/STK-632
-
-commit 051056f0b3a2135778e86f7d58d0056c5f19a391
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 20:30:16 2019 -0400
-
-    fixed typo in https://stroika.atlassian.net/browse/STK-701 fix
-
-commit 3338c0a9e810b8f1d82413a926c21f9c5fc7f6a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 20:30:27 2019 -0400
-
-    cosmetic
-
-commit ac0c41b87f68e95260d222824ca667dcf3821f0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 22:06:46 2019 -0400
-
-    a few [[maybe_unused]] extra uses
-
-commit 67b890a1ad2d9a1a43e83acae80fb3402b9465c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 26 22:11:00 2019 -0400
-
-    start release 2.1d27
-#endif
-
-
-
 
 ----
 
