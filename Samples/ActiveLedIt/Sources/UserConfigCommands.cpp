@@ -255,7 +255,7 @@ bool UserCommandNameNumberRegistry::Lookup (const wstring& internalName, UINT* c
 wstring UserCommandNameNumberRegistry::Lookup (UINT cmdNum)
 {
     wstring name;
-    bool    r = Lookup (cmdNum, &name);
+    [[maybe_unused]] bool r = Lookup (cmdNum, &name);
     Assert (r);
     return name;
 }

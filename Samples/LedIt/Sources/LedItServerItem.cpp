@@ -63,7 +63,7 @@ BOOL LedItServerItem::OnGetExtent (DVASPECT dwDrawAspect, CSize& rSize)
     //  HIMETRIC units of the entire item.  The default implementation
     //  here simply returns a hard-coded number of units.
 
-    LedItDocument* pDoc = GetDocument ();
+    [[maybe_unused]] LedItDocument* pDoc = GetDocument ();
     ASSERT_VALID (pDoc);
 
     // TODO: replace this arbitrary size
