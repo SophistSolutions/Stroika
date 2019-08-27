@@ -55,19 +55,19 @@ to be aware of when upgrading.
     - added URI URI::GetAuthorityRelativeResource () const specialization; and nonvirtual operator bool () const; for URI
     - change semantics of URI::Combine() so allows special case of empty *this and then just returns right side argument - simplifies alot of coding so better definition
   - fixed more bugs with CIDR construction (from number of bits) and added more regtests to capture
-  - InternetAddressRange::...traits..Difference
+  - InternetAddressRange::...traits...::Difference
   - InternetAddress::Offset () - upgraded to take uint64_t (but that wasnt enough to solve me problems); So added InternetAddress::PinLowOrderBitsToMax () and used that in Network::CIDR::GetRange ()
 
 - Foundation::IO::Network::Transfer
+  - IO::Transfer::Cache module, working and integrated into WinHTTP and CURL connection subclasses
+    - support for etag/lastmodified Cache control - conditional gets
+  - IO::Transfer::Options now has an optional (really nullable) Cache object you can use to share a cache among Connections
   - ***NOT BACKWARD COMPATIBLE CHANGE***
     Change all uses of Connection (object) to Connection::Ptr and change all uses of(rarer)
     Connection_LibCurl::CTOR to Connection_LibCurl::New
     Connection_WinHTTP::CTOR to Connection_WinHTTP::New
   - deprecate CreateConnection () and use Connection::New () instead
   - renamed Client_WinHTTP.cpp -> Connection_WinHTTP.cpp and Client_libcurl.cpp -> Connection_libcurl.cpp
-  - IO::Transfer::Cache module, working and integrated into WinHTTP and CURL connection subclasses
-    - support for etag/lastmodified Cache control - conditional gets
-  - IO::Transfer::Options now has an optional (really nullable) Cache object you can use to share a cache among Connections
   - a few more http headers defined
   - added fAuthorityRelativeURL to IO/Network/Transfer/Request
   - added new methods Connection::GetSchemeAndAuthority () and Connection::SetSchemeAndAuthority () - still not really used
