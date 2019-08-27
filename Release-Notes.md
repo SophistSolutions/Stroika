@@ -17,12 +17,41 @@ to be aware of when upgrading.
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d26...v2.1d27>
 
 - IO::Transfer
-  - IO::Transfer::Cache module
+  - ***NOT BACKWARD COMPATIBLE CHANGE***
+    Change all uses of Connection (object) to Connection::Ptr and change all uses of(rarer)
+    Connection_LibCurl::CTOR to Connection_LibCurl::New
+    Connection_WinHTTP::CTOR to Connection_WinHTTP::New
+  - deprecate CreateConnection () and use Connection::New () instead
+  - renamed Client_WinHTTP.cpp -> Connection_WinHTTP.cpp and Client_libcurl.cpp -> Connection_libcurl.cpp
+  - IO::Transfer::Cache module, working and integrated into WinHTTP and CURL connection subclasses
+    - support for etag/lastmodified Cache control - conditional gets
   - IO::Transfer::Options now has an optional (really nullable) Cache object you can use to share a cache among Connections
   - a few more http headers defined
+  - added fAuthorityRelativeURL to IO/Network/Transfer/Request
+  - added new methods Connection::GetSchemeAndAuthority () and Connection::SetSchemeAndAuthority () - still not really used
+  - Added IO::Network::Transfer::Connetion overloads for PUT, GET, etc taking URI, and combining with SchemeAndAuthority on the connection
   - xxx
   - xxx
   - xxx
+  - Big changes to IO::Transfer::Connection - use GetSchemeAndAuthority/SetSchemeAndAuthority
+    in place of GetURL / SetURL () - and pass in authoritiyrelativeurl to Request in
+    SEND argument.
+  - Use helpers GET/PUT/POST etc to wrap this - you can pass full url there.
+  - xxx
+  - IO\Network\Transfer\ConnectionPool
+  - xxx
+  - xxx
+
+- IO::Network::URI
+  - URI::GetSchemeAndAuthority ()
+  - added URI URI::GetAuthorityRelativeResource () const specialization; and nonvirtual operator bool () const; for URI
+  - change semantics of URI::Combine() so allows special case of empty *this and then just returns right side argument - simplifies alot of coding so better definition
+  - xxx
+  - xxx
+  - xxx
+
+- Foundation::Common
+  - Common::GUID::GenerateNew ()
   - xxx
   - xxx
 
@@ -46,25 +75,36 @@ to be aware of when upgrading.
   - xxx
   - xxx
 
-- xxxx
+- Foundation::Memory
+  - changed default BLOB::ToString (maxBytesToShow) arg to 80 - from infinite
   - xxx
   - xxx
   - xxx
 
-- xxxx
+- Regression Tests/Bug Workarounds/Compilers
+  - another qCompilerAndStdLib_arm_openssl_valgrind_Buggy workaround for raspberrypi/valgrind
+  - new bug workaround for existing bug https://stroika.atlassian.net/browse/STK-662 (they updated dll version name in latest debian/raspbian release); and new raspberry pi valgrind workaorund needed - https://stroika.atlassian.net/browse/STK-698
+  - workaround bug qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy for VS2k17
+  - xxx
+  - xxx
   - xxx
   - xxx
   - xxx
 
-- xxxx
-  - xxx
-  - xxx
-  - xxx
+- Foundation::DataExchange
+  - ObjectVariantMapper: docs/cleanups; and operator+= support (alias)
+  - Atom<>
+    - small cleanups to Atom<> class, and addition of supported AtomManager_CaseInsensitive
+    - InternalAtonType public, and added Atom<>::ToString() method
+  - InternetMediaType:
+    - added regressiontests
+    - Store data in parts (parsed) type/subtype, parameters (ignore comments)
+    - case insensitive treat type/subtype/parameter names
+    - renamed namespace DataExchange::PredefinedInternetMediaType -> DataExchange::InternetMediaTypes
+    - CTOR now more strict parsing
+    - IsSubTypeOf, IsSubTypeOfOrEqualTo deprecated
+    - New GetType/GetSubType/GetParemters methods
 
-- xxxx
-  - xxx
-  - xxx
-  - xxx
 
 - xxxx
   - xxx
@@ -76,11 +116,10 @@ to be aware of when upgrading.
 
 - Tested (passed regtests)
   - OUTPUT FILES:
-
         Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
         Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
         Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
-        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1d26-OUT.txt
+        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1d27-OUT.txt
   - vc++2k17 (15.9.13)
   - vc++2k19 (16.1.3)
   - MacOS, XCode 10
@@ -102,463 +141,8 @@ to be aware of when upgrading.
 #if 0
 
 
-commit 2416f88d8286163844f737fc6c9487b42e3efeec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 20:39:01 2019 -0400
-
-    Added experiemntal overload CTOR for URI (taking const URI& schemeAndAuthority, const URI& authorityRelativeURL)
-
-commit c338861bb8c792fe656382ee45e954317ba6130c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 21:11:25 2019 -0400
-
-    lose URI combine like CTOR I just added, and instead added helper URI::GetSchemeAndAuthority ()
-
-commit b36518434cc0660c63a546d54dae6a8d82f5db4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 21:12:13 2019 -0400
-
-    added fAuthorityRelativeURL to IO/Network/Transfer/Request
-
-commit 13639ff262aa3572aa85b6b51b742937920eb07f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 21:13:06 2019 -0400
-
-    slight progress on IO/Network/Transfer/Cache"
-
-commit 56b4baada5b3500dfd393edf683a2dfe8722a37b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 21:13:40 2019 -0400
-
-    added new methods Connection::GetSchemeAndAuthority () and Connection::SetSchemeAndAuthority () - still not really used
-
-commit 45226a033b6cce2e6db749e0208000591f9ed1ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 22:33:13 2019 -0400
-
-    added URI URI::GetAuthorityRelativeResource () const specialization; and nonvirtual operator bool () const; for URI
-
-commit 56a1acbf2e4dd8a0def1071da1a766a6520f17bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 22:34:02 2019 -0400
-
-    cleanup Foundation/IO/Network/Transfer/Cache
-
-commit 9b76e1795bd75f6fc3c660991b548a6f87be8589
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 22:34:52 2019 -0400
-
-    Added IO::Network::Transfer::Connetion overloads for PUT, GET, etc taking URI, and combining with SchemeAndAuthority on the connection
-
-commit a5ebd1c98108211102e4c53bd78fca6e18c99267
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 26 22:37:51 2019 -0400
-
-    cosmetic
-
-commit 3afbeb5aa15e21ac412a50f5a179ad8b87470ce7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:11:53 2019 -0400
-
-    Big changes to IO::Transfer::Connection - use GetSchemeAndAuthority/SetSchemeAndAuthority
-    in place of GetURL / SetURL () - and pass in authoritiyrelativeurl to Request in
-    SEND argument.
-    
-    Use helpers GET/PUT/POST etc to wrap this - you can pass full url there.
-
-commit ea0cc5ba4ba9809d34feea9732aa29938f478e2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:24:47 2019 -0400
-
-    change semantics of URI::Combine() so allows special case of empty *this and then just returns right side argument - simplifies alot of coding so better definition, IMHO
-
-commit 066a250b7a8a80dc42c526e513e43cf8ad9303d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:27:57 2019 -0400
-
-    fixed typo
-
-commit 0a9732177f842ba2afec84befaa4d149bb4136c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:28:46 2019 -0400
-
-    fixed typo
-
-commit 7c0be3c25514cf76c475621bd0c38290f24ac0b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:31:21 2019 -0400
-
-    suppress some warnings on use of deprecated function
-
-commit b510ef5e7bb978d479bbbea6663c96679dee3ac0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:40:16 2019 -0400
-
-    fixed missing virtual DTOR
-
-commit 646cda60e9283a62f0107ba8cdc80060475588ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:41:11 2019 -0400
-
-    fixed missing default args from deprecated backward compat GET/etc Connection functions
-
-commit df68c4eaa4733ab5ceaa3f8386b5c2ed0e6668d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 10:43:22 2019 -0400
-
-    lose use of now deprecated function
-
-commit 797a71f321c24c4fa444e4faf226ed9592853575
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 12:10:56 2019 -0400
-
-    cosmetic
-
-commit 62c3ff9308b4f8e4143ed1e634adc8c9e8b46e36
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 12:51:59 2019 -0400
-
-    doc comments
-
-commit 4a22c7663fc703bee0eaac6bab7e288ab76996ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 14:01:50 2019 -0400
-
-    Hooked cache code into WinHTTP and curl Connection objects (no cache created in any tests yet)
-
-commit e9bdd5acb8875df2c6f653abbfb34838e8df003d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 16:56:35 2019 -0400
-
-    more progress on HTTP GET / Transfer caching code
-
-commit 22ca6df6dbde416c2b60756e7a10b2994c0b1a1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 18:12:12 2019 -0400
-
-    cosmetic
-
-commit 392600ed8a425fe91c5e442f1d8cb1a29d6d79eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:08:29 2019 -0400
-
-    changed default BLOB::ToString (maxBytesToShow) arg to 80 - from infinite
-
-commit 2d843e5f6ac15266edf491c2407c81d73a232600
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:09:30 2019 -0400
-
-    more progress on IO::Transfer::Cache code - now testable/working - at least for simple cases (not conditional gets yet)
-
-commit d2e6e5123130e1fc692f7afd4c120579862e48a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:12:45 2019 -0400
-
-    docs / cosmetic
-
-commit 20e3ce6a7b19772a31c34908b3601edb202d66df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:17:12 2019 -0400
-
-    use inline for kCachedResultHeaderDefault
-
-commit 7b98a47ad22be9a12a750bfc792ab826b31048e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:22:52 2019 -0400
-
-    cosmetic
-
-commit 683aa61700db6cdf85211a9aaab69cf7520a144f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:27:19 2019 -0400
-
-    fix minor issues with Cache classes
-
-commit 7510f007358290e31e4f35a2a5ef8a3e90403a22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:28:20 2019 -0400
-
-    Cosmetic
-
-commit f98a7555131b4dfae5f031446fa12775b31e9d71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 20:41:42 2019 -0400
-
-    docs
-
-commit 4448c64b3c7af618f610801bc57a0a4e7bcf4efd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 21:00:50 2019 -0400
-
-    docs
-
-commit edbe63fe37ba679009fd8a9c1f0b0207068b1e5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 27 22:26:12 2019 -0400
-
-    Common::GUID::GenerateNew ()
-
-commit e6641630f9e9c9e5bc25db1f18177d21ad30b50a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 28 09:51:55 2019 -0400
-
-    cleanups
-
-commit fbcefab831406930c5d13e29d0c68fa4481835b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 4 21:30:00 2019 -0400
-
-    make format-code
-
-commit 95eaa16ddd0cf95d492c45b92c61a83c1bda589d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 4 21:30:15 2019 -0400
-
-    Comments
-
-commit bf6c1d150e3927760f33a4b5ad99528855dbfe82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 5 09:26:09 2019 -0400
-
-    ***NOT BACKWARD COMPATIBLE CHANGE***
-      Change all uses of Connection (object) to Connection::Ptr and change all uses of(rarer)
-      Connection_LibCurl::CTOR to Connection_LibCurl::New
-      Connection_WinHTTP::CTOR to Connection_WinHTTP::New
-
-commit d5ff59e5af5c0172e65371a3d31764a8093f7632
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 5 09:28:53 2019 -0400
-
-    Draft/incopmplete version of IO\Network\Transfer\ConnectionPool
-
-commit 50094ff2094326c7ac8c9b43a5d3c49390e55d36
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 5 09:55:00 2019 -0400
-
-    deprecate CreateConnection () and use Connection::New () instead
-
-commit b21691104961832ecffbcc7512c834949a5dae1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 5 10:23:29 2019 -0400
-
-    renamed Client_WinHTTP.cpp -> Connection_WinHTTP.cpp and Client_libcurl.cpp -> Connection_libcurl.cpp
-
-commit da9dab8323e09e403ae878dbb54af5d11eabc132
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 5 10:38:37 2019 -0400
-
-    cleanup
-
-commit 3585ff42c1bd211ceac2b8b72dd0d6f3649483b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 8 10:11:46 2019 -0400
-
-    cosmetic
-
-commit 75411d6f319d3f188c2d385c8768daf6995f6dee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 8 10:12:16 2019 -0400
-
-    small progress on IO/Network/Transfer/ConnectionPool
-
-commit 84a8ccfe64543c63895bc6009d8a01291763abef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 8 10:37:45 2019 -0400
-
-    cosmetic
-
-commit 67d850d087612048452d8031dbd2b7eef8cd2b9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 8 11:38:49 2019 -0400
-
-    small rpogress on Network/Transfer/ConnectionPool
-
-commit bdfcca945034dc01316cebf241cde33505d1cff4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 9 10:03:55 2019 -0400
-
-    completed first draft of ConnectionPool, except for testing/debugging
-
-commit 580263bfdf0fe20448f013defd25875721a76762
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 9 10:11:03 2019 -0400
-
-    cosmetic + bugfix to Network/Transfer/ConnectionPool
-
-commit 088b0728e70535fa4fe9b3c109a44810d6714510
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 9 14:27:44 2019 -0400
-
-    imporved comments/error handling/dbg message on Cache control logic parsing bad cache headers (expires: -1 appears illegal but google does it)
-
-commit e2b547d73fba25ec1ae8d68e9aea1ebecabff9b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 9 14:28:01 2019 -0400
-
-    cosmetic
-
-commit 92eae80d5fa742c28aa619447433a2d66d116b8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 10 09:36:47 2019 -0400
-
-    dbgtrace calls
-
-commit 0838c8cf66eaa4ee79aec987d3b8ae0b4a2435e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 10 10:48:54 2019 -0400
-
-    cosmetic / dbg trace cleanups
-
-commit eb7a0708498ab2dd1c94e31e98589f780f88a810
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 10 11:44:49 2019 -0400
-
-    another qCompilerAndStdLib_arm_openssl_valgrind_Buggy workaround for raspberrypi/valgrind
-
-commit 851f422eae6b339ae84da71236882a85ce2210f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 10 22:01:02 2019 -0400
-
-    preliminary support for etag/lastmodified Cache control - conditional gets (not really much tested)
-
-commit e0a92d6057d3f8dc4385cd56a0154774bff2eeda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 11 09:19:26 2019 -0400
-
-    cosmetic
-
-commit f55738d1b72d0339b98255eea0058cb50dff0a42
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 11 09:19:45 2019 -0400
-
-    cosmetic
-
-commit f20ba8e3debeac125e99a04b58ef1f0624951fe1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 11 09:21:38 2019 -0400
-
-    new bug workaround for existing bug https://stroika.atlassian.net/browse/STK-662 (they updated dll version name in latest debian/raspbian release); and new raspberry pi valgrind workaorund needed - https://stroika.atlassian.net/browse/STK-698
-
-commit a1e0f696c999c5a604e3db0743dc7acfabbdcd72
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 11 10:17:04 2019 -0400
-
-    got some warnigns (valgrind) on raspberrypi, and some some possible flaws (minor) to Debug/Trace code - so cleaned those up a bit and retest before adding supressions
-
-commit 1c31ec569b60afbb418aa290fdf856939aee8175
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 11 10:41:43 2019 -0400
-
-    minor tweaks/docs/cosmetic
-
-commit e6b669bf7b791f19f9732a998ba0a2270fa525c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 12 22:14:38 2019 -0400
-
-    a bunch of new raspberrypi valgrind spurrious warning workarounds - maybe not worht using valgrind here?
-
-commit f2d2c2a44ee3a88728a844affb974324d912a6c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 16 00:28:49 2019 -0400
-
-    ObjectVariantMapper: docs/cleanups; and operator+= support (alias)
-
-commit c3e3fe26a60302b0ac1eec17f80b5526e6033d1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 16 05:28:49 2019 -0400
-
-    small cleanups to Atom<> class, and addition of supported AtomManager_CaseInsensitive
-
-commit df918948e8d2f4db7e61ecda4212cc82331133e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 16 05:29:06 2019 -0400
-
-    fixed typo
-
-commit 751d17d3c6b2126813ff7c4b93b362695bf7fcfa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 17 10:30:19 2019 -0400
-
-    Made Atom (InternalAtonType public, and added Atom<>::ToString() method
-
-commit 049f1cb84090e112402163df8a034729fb0e19ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 18 13:57:13 2019 -0400
-
-    Big changes to InternetMediaType:
-            >       added regressiontests
-            >       Store data in parts (parsed) type/subtype, parameters (ignore comments)
-            >       case insensitive treat type/subtype/parameter names
-            >       renamed namespace DataExchange::PredefinedInternetMediaType -> DataExchange::InternetMediaTypes
-            >       CTOR now more strict parsing
-            >       IsSubTypeOf, IsSubTypeOfOrEqualTo deprecated
-            >       New GetType/GetSubType/GetParemters methods
-
-commit 8911570e9ce8fae730de44f6fe3aeb63c9c9886c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 18 14:20:52 2019 -0400
-
-    cosmetic
-
-commit 3b66036c3a754b89b88582779927a774347e5f02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 18 14:46:51 2019 -0400
-
-    small cleanups to InternetMediaType code
-
-commit f531b84d8108c71a2a02c4a17863366cc1baec2d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 18 14:47:22 2019 -0400
-
-    cosmetic
-
-commit 55be85a244958dc8b61c0ad2667801eb19ad02fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 05:04:04 2019 -0400
-
-    Comments; and tweak Mapping Equals implementation
-
-commit f8a092506e6105442c26da71a2bbcc9def9ce0a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 05:18:24 2019 -0400
-
-    workaround bug qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy for VS2k17
-
-commit 74e52dde7bca8d43ec769392d2364d4d920b057a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 07:15:48 2019 -0400
-
-    fixed typos
-
-commit 38ca11fdd9d1f8a4bc2a659a891bcefdd081a9ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:33:36 2019 -0400
-
-    fix use of deprecated names
-
-commit 6837c910bbaf52229d8db6b748246386c0e039ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:34:10 2019 -0400
-
-    docs
-
-commit 68bc9eb9d6d810c686a7576ddf4896d9ba02c709
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:34:53 2019 -0400
-
-    cosmetic
-
-commit f42ccefe3cca9c4bb4169afd788f9c17c2cdabdb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:36:23 2019 -0400
 
     big refactoring of InternetMediaTypeRegistry; implemented much more of it for unix/non-windows, and added regression tests (incomplete and not fully backward compatible, but probably close enuf
-
-commit 4e0a480333cea2a27dd2a3930d34e7124124d403
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:37:17 2019 -0400
-
-    cosmetic
 
 commit bb2294a0768378c0aed48d892c5cb657f2436a96
 Author: Lewis Pringle <lewis@sophists.com>
@@ -566,17 +150,6 @@ Date:   Fri Jul 19 11:48:34 2019 -0400
 
     changed default for FileInputStream  to be seekable (not backward compat, but probably OK)
 
-commit abe93aea2e1d9b8abed69591d6c698b88101fc85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 19 11:49:15 2019 -0400
-
-    cosmetic
-
-commit 8f7a3f9fec3afe8dbfd7e0f98e556e07bcfc71ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 20 13:53:09 2019 -0400
-
-    cleanups
 
 commit 810b81a20b32d30dfa4a6a96abb9796d265c136a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -602,41 +175,11 @@ Date:   Sun Jul 21 11:42:37 2019 -0400
 
     qCompilerAndStdLib_error_code_compare_condition_Buggy now depends on __GLIBCXX__ value (so catches clang++ using libstdc++)
 
-commit 1c8ebc5ec55875497312d0aeba602c82d4523bc6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 21 11:43:46 2019 -0400
-
-    dbgtrace calls in regtest
-
 commit 5ffe1bd64169d5aa0f3d2f645557ca3d3b37e27e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jul 23 08:44:08 2019 -0400
 
     draft support for boost/thread/shared_mutex for shared locking/upgrade locking
-
-commit 130aef97e44dcaa8d0d3479001985f6e767e320b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 09:10:37 2019 -0400
-
-    Minor porgres on support of boost upgrade_mutex to Syncrhonized code
-
-commit c3699d1b532d344ac3d9527964635ba4d1fd15ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 09:23:00 2019 -0400
-
-    cosmetic name cleanup (Synchronized class)
-
-commit 36826ef6879734428473005ace5b243b29c49469
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 11:02:44 2019 -0400
-
-    more progress on Syncrhonized support for boost::upgrade_lock
-
-commit 029f17345c7b46576b7099215f60d4aac876f00d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 23 11:14:12 2019 -0400
-
-    fixed typo
 
 commit 283e4504b8d79118b46d6303c2db417e0cd743ee
 Author: Lewis Pringle <lewis@sophists.com>
@@ -656,23 +199,11 @@ Date:   Thu Jul 25 08:31:23 2019 -0400
 
     chnaged Execution::ThrowTimeoutExceptionAfter to use kThe instead of a local static object (if some reason this needs to be callable before main document it but I dont think so and since it was inline that caused object bloat); and added ThrowTimeoutException () utility for use in avoiding deadly include embrace in stroika (since easier to forward declare than class)
 
-commit dd5488536fbc74b1f34ee02c6e948d1c604c0b9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 09:15:34 2019 -0400
-
-    cosmeitc
-
 commit a140075b03f5b9feeacf3dcd5295f6961c85c6f7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jul 25 09:29:44 2019 -0400
 
     added -lboost_thread to dependencies when including boost (so can use upgrade_mutex); and changed default build flags for boost to NOT say 'without-chrono' since that doesnt cuase boost to use std::chono
-
-commit 0499970cf70096f63c1f8620a0e15922557fbb82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 11:03:56 2019 -0400
-
-    fixed typo
 
 commit 32f769c2722fe387c866519e7e4f58611f805c21
 Author: Lewis Pringle <lewis@sophists.com>
@@ -680,11 +211,6 @@ Date:   Thu Jul 25 11:21:11 2019 -0400
 
     using boost::upgrade_mutex also appears to require -lboost_chrono
 
-commit 8b19c98d1a40e818559fc13386e386136366e549
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 11:21:50 2019 -0400
-
-    cosmetic
 
 commit 050b8fbbfa69f8d9c240da181e7f54be14aebff1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -746,41 +272,6 @@ Date:   Thu Jul 25 21:12:19 2019 -0400
 
     cleanup wrappers on boost upgrade_mutex code to better hide dependencies
 
-commit 53d961b0e3f0496ca7d17e9d6cfa0039b11ac8eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:27:42 2019 -0400
-
-    more cleanups to PRIVATE_::BOOST_HELP_ wrapper code
-
-commit 8cbd05b12f8fbde6474d0845ee349905a4dcf423
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:34:54 2019 -0400
-
-    more tweaks to PRIVATE_::BOOST_HELP_
-
-commit d71f88d07ef1446a052821623cc5315ec6cf2454
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:35:47 2019 -0400
-
-    more tweaks to PRIVATE_::BOOST_HELP_
-
-commit 8eec2dc6d565c28271d8351a49e5b044f5bb44df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:36:43 2019 -0400
-
-    more tweaks to PRIVATE_::BOOST_HELP_
-
-commit 9182a84b7d2568002f0af320489747072e4db64d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:38:16 2019 -0400
-
-    more tweaks to PRIVATE_::BOOST_HELP_
-
-commit 329a1af9ae57508d09a2415a9cf18084a83eec24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 25 21:39:18 2019 -0400
-
-    more tweaks to PRIVATE_::BOOST_HELP_
 
 commit 30600b19ac2bdcb8b6608679fb7fc3bbdb7c3d0c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -938,59 +429,17 @@ Date:   Wed Jul 31 13:55:58 2019 -0400
 
     wrap more afx* includes with pragma push/pop/disable 5054 (due to bug in msft headers)
 
-commit bd8f4c1f83986be8d586e4a2a3cb46291a1b2371
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 31 13:56:20 2019 -0400
-
-    cosmetic
-
-commit a6920e1af66c159a977831995d7f8e0dd22afe22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 31 14:03:29 2019 -0400
-
-    cosmetic
-
-commit d56fb5c92508238878456ba6039006dc360c47a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 10:59:49 2019 -0400
-
-    small incomplete fixes to boost compatability/Sychronized/updatemutex
-
-commit 3c48440d12252345d9798c2ce2323f7dcb3ac4a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 11:49:06 2019 -0400
-
-    cosmetic
-
 commit d2c9c8125fcdf475b1e98b6f614dcf3cb951a075
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 1 12:22:34 2019 -0400
 
     workaround qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy bug; and added extra UpgradableRWSynchronized<> regtest
 
-commit 99bdcce7d3b58b45df9fb9c63bad668e2b14f512
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 12:23:10 2019 -0400
-
-    Comments
-
 commit cc6f929ee9d942ba20cea29755ddfb99fdf85479
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 1 12:42:50 2019 -0400
 
     simplified Execution::Synchronized<> use of boost upgradable locks/mutex - use std::unique_lock now - dont need boost::upgrade_lock
-
-commit 60a77db3b90cd817afa8bceda60a4e3d58ffd112
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 12:48:04 2019 -0400
-
-    fix comments
-
-commit ef9a821ea70122f63247613ce6a89d47afdd20b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 1 12:58:49 2019 -0400
-
-    lose check for boost/thread/lock_types.hpp since no longer needed
 
 commit 7e1012ca59c3bf3d5c56c306dd28cd310a775edb
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1039,12 +488,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 8 11:06:19 2019 -0400
 
     test more widely that https://stroika.atlassian.net/browse/STK-644 suppression not needed anymore
-
-commit 7b223b08af6962eebfe9c52f27f9b6b56d86531d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 8 11:08:07 2019 -0400
-
-    comments
 
 commit 358b0fdc1a640ad5a1c82130423caaeec7e5808b
 Author: Lewis Pringle <lewis@sophists.com>
