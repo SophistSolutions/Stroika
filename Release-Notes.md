@@ -33,6 +33,7 @@ to be aware of when upgrading.
 
 - Foundation::Execution
   - Syncrhonized<>
+    - Much improved UpgradeLockNonAtomically () and UpgradeLockNonAtomicallySilently ()
     - draft support for boost/thread/shared_mutex for shared locking/upgrade locking (UpgradableRWSynchronized)
       - using boost::upgrade_mutex also appears to require -lboost_chrono
       - **really not working yet**
