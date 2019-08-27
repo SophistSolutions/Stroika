@@ -1009,7 +1009,8 @@ namespace {
 			// https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
             // most likely helgrind bug - hopefully fixed soon.
-            if (not kRunningValgrind_) {
+            bool hasBug632AndRunningHelgrind = kRunningValgrind_;	// not easy to check
+            if (not hasBug632AndRunningHelgrind) {
                 // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
                 Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
                 Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
@@ -1166,7 +1167,8 @@ namespace {
         // This helgrind bug ONLY happens when we run this at the end. If we run this as the only test it works fine.
         // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
         // most likely helgrind bug - hopefully fixed soon.
-        if (not kRunningValgrind_) {
+        bool hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
+        if (not hasBug632AndRunningHelgrind) {
 
             auto testUpgradeLockNonAtomically1 = [] (auto& isEven) {
                 while (true) {
