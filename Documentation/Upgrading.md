@@ -23,6 +23,7 @@ Thus the obvious upgrade process from using one verison of Stroika to another wo
 ### Example
 
 So for exmaple, if upgrading from use of 2.0b23 to v2.1d19
-  - Upgrade to v2.0a125
-  - Upgrade to v2.0b7
-  - Upgrade to v2.1d19
+
+- Upgrade to v2.0a125
+- Upgrade to v2.0b7
+- Upgrade to v2.1d19
