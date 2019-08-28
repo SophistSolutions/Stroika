@@ -223,30 +223,6 @@ namespace {
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
-#if qPlatform_Windows
-        DISABLE_COMPILER_MSC_WARNING_START (4996); // API DEPRECATED
-        {
-            wstring testCase = L"6/1/2005";
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-        }
-        {
-            wstring testCase = L"4/20/1964";
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-        }
-        {
-            wstring testCase = L"7/4/1776";
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) < Date::max ());
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) >= Date::min ());
-        }
-        {
-            wstring testCase = L"7/4/2076";
-            //  TODO:
-            //      Fails - debug soon -- LGP 2011-10-08
-            //VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-        }
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-#endif
         {
             VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
             VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
