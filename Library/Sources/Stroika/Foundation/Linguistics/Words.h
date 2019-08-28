@@ -25,20 +25,6 @@ namespace Stroika::Foundation::Linguistics {
     using Characters::String;
 
     /**
-     *  Implement current-ui-language-specific noun-pluralization logic for the given noun string (assuming the count of that noun
-     *  is given (english rules - if count != 1 - append s, but we don't wnat that logic to proliferate through the app, so
-     *  its easier to localize.
-     *
-     *  The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero
-     */
-    [[deprecated ("Use CurrentLocaleMessageUtilities::PluralizeNoun or MessageUtilities_en::PluralizeNoun instead - as of v2.1d18")]] String PluralizeNoun (const String& s, int count = 1000);
-    [[deprecated ("Use CurrentLocaleMessageUtilities::PluralizeNoun or MessageUtilities_en::PluralizeNoun instead - as of v2.1d18")]] String PluralizeNoun (const String& s, const String& sPlural, int count = 1000);
-
-    /**
-     */
-    [[deprecated ("Use CurrentLocaleMessageUtilities::MakeNounSingular or MessageUtilities_en::MakeNounSingular instead - as of v2.1d18")]] String MungeStringSoSingular (const String& s);
-
-    /**
      * e.g. 'joe smith' becomes 'Joe Smith'
      */
     String CapitalizeEachWord (const String& s);

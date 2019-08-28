@@ -161,13 +161,6 @@ Date Date::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        case ParseFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case ParseFormat::eISO8601: {
             /*
              * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
@@ -328,13 +321,6 @@ String Date::Format (PrintFormat pf) const
             }
             return tmp;
         }
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        case PrintFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
         case PrintFormat::eISO8601: {
             wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
             MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;

@@ -320,11 +320,6 @@ bool InternetAddress::IsMulticastAddress () const
     return false;
 }
 
-bool InternetAddress::Equals (const InternetAddress& rhs) const
-{
-    return Common::ThreeWayCompare (*this, rhs) == 0;
-}
-
 optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family) const
 {
     if (GetAddressFamily () == family) {
@@ -411,45 +406,6 @@ InternetAddress InternetAddress::PinLowOrderBitsToMax (unsigned int o) const
         bitsRemaining -= nBits;
     }
     return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
-}
-
-int InternetAddress::Compare (const InternetAddress& rhs) const
-{
-    if (fAddressFamily_ != rhs.fAddressFamily_) {
-        return fAddressFamily_ < rhs.fAddressFamily_ ? -1 : 1;
-    }
-    switch (fAddressFamily_) {
-        case AddressFamily::UNKNOWN: {
-            return 0;
-        } break;
-        case AddressFamily::V4: {
-            // if not equal, compare by net/host before other things so we get sensible intuitive ordering
-            if (memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_)) == 0) {
-                return 0;
-            }
-            IPv4AddressOctets lOctets = As<IPv4AddressOctets> ();
-            IPv4AddressOctets rOctets = rhs.As<IPv4AddressOctets> ();
-            if (get<0> (lOctets) != get<0> (rOctets)) {
-                return static_cast<int> (get<0> (lOctets)) - static_cast<int> (get<0> (rOctets));
-            }
-            if (get<1> (lOctets) != get<1> (rOctets)) {
-                return static_cast<int> (get<1> (lOctets)) - static_cast<int> (get<1> (rOctets));
-            }
-            if (get<2> (lOctets) != get<2> (rOctets)) {
-                return static_cast<int> (get<2> (lOctets)) - static_cast<int> (get<2> (rOctets));
-            }
-            if (get<3> (lOctets) != get<3> (rOctets)) {
-                return static_cast<int> (get<3> (lOctets)) - static_cast<int> (get<3> (rOctets));
-            }
-            AssertNotReached ();
-            return 0;
-        } break;
-        case AddressFamily::V6: {
-            return memcmp (&fV6_, &rhs.fV6_, sizeof (fV6_));
-        } break;
-    }
-    AssertNotReached ();
-    return 0;
 }
 
 /*

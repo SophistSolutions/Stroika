@@ -17,24 +17,6 @@
 namespace Stroika::Foundation::Memory {
 
     /**
-     *  \brief byte is same as defined to be a uint8_t, but more readable and clear its like 'void' for pointer types
-     *
-     *  byte is same as defined to be a uint8_t. It can be used to make much code which used void* a
-     *  bit more readable.
-     *
-     *  For example, if you have some typeless data, you can declare
-     *      std::vector<byte> d;    // cannot say vector<void> d;
-     *
-     *  and the stride is the usual stride one would expect and manually enforce with void* data.
-     *
-     *  Typically - programmers just use 'char' or 'unsigned char' for this, but this makes that
-     *  intent more clear.
-     *
-     *  C++17 update - using std::byte; NOT the way I'd like it defined, but OK...
-     */
-    [[deprecated ("use std::byte 2.1d6")]] typedef std::byte Byte;
-
-    /**
      *  \brief NEltsOf(X) returns the number of elements in array X
      *
      *      @todo   Found std::begin() could be used to replace old StartOfArray() macro -

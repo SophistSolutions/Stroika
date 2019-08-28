@@ -440,22 +440,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void unlock () const;
 
     public:
-        // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
-        // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
-        // RE-LCOK the shared_lock
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference)
-        {
-            AssertNotNull (readReference);
-            AssertNotNull (readReference->fSharedLock_);
-            if (readReference->fSharedLock_->owns_lock ()) {
-                readReference->fSharedLock_->unlock ();
-            }
-            // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-            return WritableReference (this);
-        }
-
-    public:
         /**
          *  A DEFEFCT with UpgradeLockNonAtomically, is that you cannot count on values computed with the read lock to remain
          *  valid in the upgrade lock (since we unlock and then re-lock). We resolve this by having two versions of UpgradeLockNonAtomically,
@@ -595,17 +579,6 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
         nonvirtual bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
-
-    public:
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void (WritableReference&&)>& doWithWriteLock)
-        {
-            fMutex_.unlock_shared ();
-            // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
-                fMutex_.lock_shared ();
-            });
-        }
 
     private:
         nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const;

@@ -487,37 +487,6 @@ namespace Stroika::Foundation::DataExchange {
         // the VariantValue (typically think JSON representation) as an array of Key/Value pairs, then use MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
         return MakeCommonSerializer_MappingWithStringishKey<Containers::Mapping<KEY_TYPE, VALUE_TYPE>> ();
     }
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    template <typename T, typename TRAITS>
-    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*)
-    {
-        using Memory::Optional;
-        FromObjectMapperType<Optional<T, TRAITS>> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const Optional<T, TRAITS>* fromObjOfTypeT) -> VariantValue {
-            RequireNotNull (fromObjOfTypeT);
-            if (fromObjOfTypeT->has_value ()) {
-                return mapper.FromObject<T> (**fromObjOfTypeT);
-            }
-            else {
-                return VariantValue ();
-            }
-        };
-        ToObjectMapperType<Optional<T, TRAITS>> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, Optional<T, TRAITS>* intoObjOfTypeT) -> void {
-            RequireNotNull (intoObjOfTypeT);
-            // NOTE - until v2.0a100, this read if (d.empty ()) - but thats wrong beacuse it maps empty strings to null (missing) values
-            if (d.GetType () == VariantValue::eNull) {
-                *intoObjOfTypeT = nullopt;
-            }
-            else {
-                *intoObjOfTypeT = mapper.ToObject<T> (d);
-            }
-        };
-        return TypeMappingDetails{typeid (Optional<T, TRAITS>), fromObjectMapper, toObjectMapper};
-    }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
     template <typename T>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*)
     {

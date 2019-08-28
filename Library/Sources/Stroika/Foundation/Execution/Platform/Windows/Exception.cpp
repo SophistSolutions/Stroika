@@ -102,49 +102,6 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** Platform::Windows::Exception ***************************
- ********************************************************************************
- */
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_START (4996);
-Execution::Platform::Windows::Exception::Exception (DWORD error)
-    : Execution::SystemErrorException<> (error_code (error, system_category ()), SDKString2Wide (Win32Error2String_ (error)))
-    , fError (error)
-{
-}
-
-void Execution::Platform::Windows::Exception::Throw (DWORD error)
-{
-    switch (error) {
-        case ERROR_SUCCESS: {
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
-#if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED) from %s", Execution::Private_::GetBT_s ().c_str ());
-#else
-            DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
-#endif
-#endif
-            // unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
-            // a bad reason code?
-            throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED);
-        }
-        default: {
-            Execution::ThrowSystemErrNo (error);
-        }
-    }
-}
-
-SDKString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)
-{
-    return Win32Error2String_ (dw);
-}
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_END (4996);
-
-/*
- ********************************************************************************
  ***************************** ThrowIfShellExecError ****************************
  ********************************************************************************
  */

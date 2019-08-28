@@ -321,25 +321,6 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Return true iff the sOCKETS are the same.
-         *
-         *  This is like Compare() == 0.
-         *
-         *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
-         *          This means you can have two Socket objects which compare equal by use of Attach().
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] bool Equals (const Ptr& rhs) const;
-
-    public:
-        /**
-         *
-         *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
-         *          This means you can have two Socket objects which compare equal by use of Attach().
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Ptr& rhs) const;
-
-    public:
-        /**
          *  Return the native platform handle object associated with this socket
          *  (typically an integer file descriptor)
          */

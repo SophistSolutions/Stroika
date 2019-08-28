@@ -124,20 +124,6 @@ namespace Stroika::Foundation::Memory {
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const;
 
-    public:
-        /**
-         *  Return optional<RETURNTYPE> - like @As - except that if empty returns 'missing' value.
-         *
-         *  \par Example Usage
-         *      \code
-         *      if (auto o = anyVVal.IfAs<T>) {
-         *          print (o->xxx);
-         *      }
-         *      \endcode
-         */
-        template <typename RETURNTYPE>
-        [[deprecated ("use any_cast<>")]] nonvirtual optional<RETURNTYPE> IfAs () const;
-
     private:
         struct IRep_;
 

@@ -939,7 +939,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
@@ -1529,8 +1528,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
@@ -1551,7 +1548,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.h" />
@@ -1955,7 +1951,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
