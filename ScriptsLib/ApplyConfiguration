@@ -484,12 +484,6 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "$var\n");
 	}
 	
-	### DEPRECATED/REMOVED STROIKA v2.1d15
-	#print (OUT "INCLUDES_PATH_COMPILER_DIRECTIVES=");
-	#for my $i (split /:/, $INCLUDES_PATH) {
-	#	print (OUT "-I$i ");
-	#}
-	#print (OUT "\n");
 	print (OUT "LIBS_PATH_DIRECTIVES=");
 	for my $l (split /:/, $LIBS_PATH) {
 		print (OUT "-L$l ");
@@ -500,16 +494,6 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "\n\n");
 
-
-
-	if ($PROJECTPLATFORMSUBDIR eq "Unix") {
-		print (OUT "LIBSUFFIX=.a\n");	# DEPRECATED
-		print (OUT "OBJSUFFIX=.o\n");	# DEPRECATED
-	}
-	elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		print (OUT "LIBSUFFIX=.lib\n");	# DEPRECATED
-		print (OUT "OBJSUFFIX=.obj\n");	# DEPRECATED
-	}
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LIB_SUFFIX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("OBJ_SUFFIX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("EXE_SUFFIX");
@@ -522,7 +506,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");
-###	print (OUT "Linker=	\$(CXX)\n");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("Linker");
 
 	print (OUT "#\n");
@@ -586,25 +569,6 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "\n");
 		print (OUT "\n");
 	}
-
-
-
-	##### DEPRECATED#####
-	print (OUT "\n");
-	print (OUT "##\n");
-	print (OUT "##\n");
-	print (OUT "###DEPRECATED SINCE Stroika 2.1d14\n");
-	print (OUT "##\n");
-	print (OUT "##\n");
-	print (OUT "\n");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CompilerDriver-C++");
-	print (OUT "#C++-Compiler\n");
-	print (OUT "CC_C=	$COMPILER_DRIVER_C\n");
-	print (OUT "CC_CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
-	print (OUT "CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
-	print (OUT "\n");
-	print (OUT "\n");
 
 	print (OUT "\n");
 
