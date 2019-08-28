@@ -228,28 +228,6 @@ namespace Stroika::Foundation::IO::Network {
         return vector<uint8_t>{fArray_16_uint_.begin (), fArray_16_uint_.begin () + *GetAddressSize ()};
     }
     template <>
-    [[deprecated ("array<byte,4> works better so this is deprecated since Stroika v2.1d13")]] inline tuple<uint8_t, uint8_t, uint8_t, uint8_t> InternetAddress::As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> () const
-    {
-        Require (fAddressFamily_ == AddressFamily::V4);
-        switch (Configuration::GetEndianness ()) {
-            case Configuration::Endian::eLittleByte:
-                return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8)),
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 16)),
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 24)),
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 32)));
-            case Configuration::Endian::eBigByte:
-                return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 32)),
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 24)),
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 16)),
-                    static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8)));
-            default:
-                AssertNotImplemented ();
-                return tuple<uint8_t, uint8_t, uint8_t, uint8_t>{};
-        }
-    }
-    template <>
     constexpr in6_addr InternetAddress::As<in6_addr> () const
     {
         Require (fAddressFamily_ == AddressFamily::V6);

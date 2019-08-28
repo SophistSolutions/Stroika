@@ -77,7 +77,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.cpp" />
@@ -135,7 +134,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Marker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MarkerCover.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.h" />
