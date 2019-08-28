@@ -116,12 +116,6 @@ namespace Stroika::Foundation::Configuration {
     public:
         struct ThreeWayComparer;
 
-    public:
-        /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] constexpr int Compare (const Version& rhs) const;
-
 #if __cpp_lib_three_way_comparison >= 201711
     public:
         /**

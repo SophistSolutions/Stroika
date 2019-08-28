@@ -75,12 +75,6 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
-    bool Stack<T>::Equals (const Stack& rhs, const EQUALS_COMPARER& equalsComparer) const
-    {
-        return this->SequenceEquals (rhs, equalsComparer);
-    }
-    template <typename T>
     inline void Stack<T>::clear ()
     {
         RemoveAll ();

@@ -700,11 +700,6 @@ Sequence<VariantValue> VariantValue::As () const
     }
 }
 
-bool VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) const
-{
-    return equal_to<Stroika::Foundation::DataExchange::VariantValue>{exactTypeMatchOnly}(*this, rhs);
-}
-
 /*
  ********************************************************************************
  ************************* VariantValue operators *******************************

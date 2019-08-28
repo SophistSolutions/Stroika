@@ -136,12 +136,6 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
-    bool Queue<T>::Equals (const Queue<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
-    {
-        return EqualsComparer<EQUALS_COMPARER>{equalsComparer}(*this, rhs);
-    }
-    template <typename T>
     inline void Queue<T>::_AssertRepValidType () const noexcept
     {
 #if qDebug

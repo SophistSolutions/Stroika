@@ -339,11 +339,6 @@ namespace Stroika::Foundation::Time {
     public:
         struct ThreeWayComparer;
 
-    public:
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Duration& rhs) const;
-
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
         static string                     UnParseTime_ (InternalNumericFormatType_ t);

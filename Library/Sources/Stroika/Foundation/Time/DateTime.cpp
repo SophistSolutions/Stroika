@@ -77,10 +77,6 @@ namespace {
 #if qPlatform_Windows
     SYSTEMTIME toSysTime_ (TimeOfDay tod)
     {
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        Require (not tod.empty ());
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-
         SYSTEMTIME   t{};
         unsigned int seconds = tod.GetAsSecondsCount ();
         unsigned int minutes = seconds / 60;
@@ -173,14 +169,6 @@ DateTime::FormatException::FormatException ()
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const DateTime DateTime::kMin = DateTime::min (); // deprecated
-const DateTime DateTime::kMax = DateTime::max (); // deprecated
-#else
-const DateTime DateTime::kMin;
-const DateTime DateTime::kMax;
-#endif
-
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_ (Timezone::UTC ())
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
@@ -280,13 +268,6 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        case ParseFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case ParseFormat::eISO8601: {
             if (rep.empty ())
                 [[UNLIKELY_ATTR]]
@@ -501,31 +482,6 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     return DateTime (when, Timezone::Unknown ());
 }
 
-#if qPlatform_Windows
-DateTime DateTime::Parse (const String& rep, LCID lcid)
-{
-    // clang-format off
-    if (rep.empty ()) [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-    }
-    // clang-format on
-
-    DATE d{};
-    try {
-        using namespace Execution::Platform::Windows;
-        ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, 0, &d));
-    }
-    catch (...) {
-        // though COULD be time format exception?
-        Execution::Throw (Date::FormatException::kThe);
-    }
-    // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-    SYSTEMTIME sysTime{};
-    Verify (::VariantTimeToSystemTime (d, &sysTime));
-    return DateTime (mkDate_ (sysTime), mkTimeOfDay_ (sysTime));
-}
-#endif
-
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::UTC ()) {
@@ -619,15 +575,6 @@ optional<bool> DateTime::IsDaylightSavingsTime () const
 
 String DateTime::Format (PrintFormat pf) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (empty ()) {
-        return String{};
-    }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
@@ -660,14 +607,6 @@ String DateTime::Format (PrintFormat pf) const
             }
             return mungedData;
         }
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        case PrintFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-
         case PrintFormat::eISO8601: {
             String r = fDate_.Format (Date::PrintFormat::eISO8601);
             if (fTimeOfDay_.has_value ()) {
@@ -707,15 +646,6 @@ String DateTime::Format (PrintFormat pf) const
 
 String DateTime::Format (const locale& l) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (empty ()) {
-        return String{};
-    }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
     if (GetTimeOfDay ().has_value ()) {
         return Format (l, kLocaleStandardFormat);
     }
@@ -755,28 +685,6 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     // is not good. Unsure if thats glibc bug or my correction here makes sense -- LGP 2018-10-16
     return String (oss.str ()).RTrim ();
 }
-
-#if qPlatform_Windows
-String DateTime::Format (LCID lcid) const
-{
-    DISABLE_COMPILER_MSC_WARNING_START (4996); // this whole procedure deprecated so no need to warn its impl is as well
-    if (empty ()) {
-        return String{};
-    }
-    else {
-        String r = fDate_.Format (lcid);
-        Assert (not r.empty ());
-        if (fTimeOfDay_.has_value ()) {
-            String tod = fTimeOfDay_->Format (lcid);
-            if (not tod.empty ()) {
-                r += L" "sv + tod;
-            }
-        }
-        return r;
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-}
-#endif
 
 String DateTime::ToString () const
 {
@@ -944,17 +852,6 @@ Duration DateTime::Difference (const DateTime& rhs) const
     }
 }
 
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_START (4996);
-int DateTime::Compare (const DateTime& rhs) const
-{
-    return ThreeWayComparer{}(*this, rhs);
-}
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_END (4996);
-
 /*
  ********************************************************************************
  ************************* DateTime::ThreeWayComparer ***************************
@@ -962,21 +859,6 @@ DISABLE_COMPILER_MSC_WARNING_END (4996);
  */
 int DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (lhs.empty ()) {
-        return rhs.empty () ? 0 : -1;
-    }
-    else {
-        if (rhs.empty ()) {
-            return 1;
-        }
-    }
-    Assert (not lhs.empty () and not rhs.empty ());
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
     if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
         if (int cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ())) {
             return cmp;

@@ -251,9 +251,8 @@ namespace Stroika::Foundation::Configuration {
          *  Often virtualization (things like compatability mode in a manifest, or perhaps docker, or WSL) makes the apprarent
          *  operating system different than the one you are actually running on).
          */
-        OperatingSystem                                                                                                  fApparentOperatingSystem;
-        [[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] OperatingSystem& fOperatingSystem = fApparentOperatingSystem;
-        ComputerNames                                                                                                    fComputerNames;
+        OperatingSystem fApparentOperatingSystem;
+        ComputerNames   fComputerNames;
 
         /**
          */

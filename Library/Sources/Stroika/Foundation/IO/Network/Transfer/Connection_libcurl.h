@@ -42,10 +42,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      */
     class Connection_LibCurl : public Connection {
     public:
-        // when we lose this CTOR, then Connection_LibCurl inherits from Connection
-        [[deprecated ("in Stroika v2.1d27 - use Connection::Ptr conn = Connection_LibCurl::New () instead")]] Connection_LibCurl (const Options& options = Options ());
-
-    public:
         /**
          */
         static Connection::Ptr New (const Options& options = {});

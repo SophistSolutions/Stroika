@@ -25,8 +25,6 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Complete removeal of deprecated empty and no-arg constructor
- *
  *      @todo   Need DefaultNames<> for enums in TimeOfDay module
  *
  *      @todo   Consider having some way to support double as TimeOfDay (or maybe float). Don't want the
@@ -92,7 +90,6 @@ namespace Stroika::Foundation::Time {
          *  \req minute < 60
          *  \req seconds < 60
          */
-        [[deprecated ("Use optional<TimeOfDay> instead of TimeOfDay no-arg constructor - as of v2.1d11")]] constexpr TimeOfDay ();
         constexpr TimeOfDay (const TimeOfDay&) = default;
         constexpr TimeOfDay (TimeOfDay&& src)  = default;
         constexpr explicit TimeOfDay (uint32_t t);
@@ -113,7 +110,6 @@ namespace Stroika::Foundation::Time {
          */
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
-            eXML [[deprecated ("since Stroika v2.1d11- use eISO8601")]],
             eISO8601,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eISO8601)
@@ -168,22 +164,10 @@ namespace Stroika::Foundation::Time {
         static TimeOfDay Parse (const String& rep, ParseFormat pf);
         static TimeOfDay Parse (const String& rep, const locale& l);
         static TimeOfDay Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
+
 #if qPlatform_Windows
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static TimeOfDay Parse (const String& rep, LCID lcid);
-#endif
-
-    public:
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        [[deprecated ("use TimeOfDay::min - deprecated in Stroika v2.1d11")]] static const TimeOfDay kMin;
-#else
-        [[deprecated ("use TimeOfDay::min - deprecated in Stroika v2.1d11")]] static constexpr TimeOfDay kMin{0};
-#endif
-
-    public:
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        [[deprecated ("use TimeOfDay::max - deprecated in Stroika v2.1d11")]] static const TimeOfDay kMax;
-#else
-        [[deprecated ("use TimeOfDay::max - deprecated in Stroika v2.1d11")]] static constexpr TimeOfDay kMax{kMaxSecondsPerDay - 1};
+    private:
+        static TimeOfDay TimeOfDay::Parse_ (const String& rep, LCID lcid);
 #endif
 
     public:
@@ -215,11 +199,6 @@ namespace Stroika::Foundation::Time {
          *  \ensure {return} < kMaxSecondsPerDay
          */
         nonvirtual constexpr uint32_t GetAsSecondsCount () const; // seconds since StartOfDay (midnight)
-
-    public:
-        /**
-         */
-        [[deprecated ("Use optional<TimeOfDay> instead of TimeOfDay no-arg constructor - as of v2.1d11")]] nonvirtual constexpr bool empty () const;
 
     public:
         /**
@@ -260,7 +239,6 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("since Stroika v2.1d11- use eISO8601")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
@@ -277,9 +255,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
-#if qPlatform_Windows
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid) const;
-#endif
 
     public:
         /**
@@ -289,13 +264,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         struct ThreeWayComparer;
-
-    public:
-        /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int        Compare (const TimeOfDay& rhs) const;
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] static int Compare (const optional<TimeOfDay>& lhs, const optional<TimeOfDay>& rhs);
 
     private:
         uint32_t fTime_;

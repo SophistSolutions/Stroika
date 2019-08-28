@@ -317,11 +317,6 @@ namespace Stroika::Foundation::Containers {
         struct EqualsComparer;
 
     public:
-        /*
-         */
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const MultiSet& rhs) const;
-
-    public:
         /**
          *  Synonym for Add (), or AddAll() (depending on argument);
          */

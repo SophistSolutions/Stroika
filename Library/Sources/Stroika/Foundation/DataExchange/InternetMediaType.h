@@ -130,14 +130,6 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead, or ==, or equal_to<>{}")]] bool Equals (const InternetMediaType& rhs) const;
-
-    public:
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const InternetMediaType& rhs) const;
-
-    public:
-        /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
@@ -249,76 +241,6 @@ namespace Stroika::Foundation::DataExchange {
             const InternetMediaType& Application_RTF_CT ();
             const InternetMediaType& Application_Zip_CT ();
         }
-
-        /**
-         *  application/octet-stream
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kOctetStream")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kImage_PNG")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_PNG_CT> kImage_PNG;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kImage_GIF")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_GIF_CT> kImage_GIF;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kImage_JPEG")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Image_JPEG_CT> kImage_JPEG;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_HTML")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_HTML_CT> kText_HTML;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_XHTML")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_XHTML_CT> kText_XHTML;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_XML")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_XML_CT> kText_XML;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_PLAIN")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kText_CSV")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Text_CSV_CT> kText_CSV;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kJSON")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::JSON_CT> kJSON;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kPDF")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::PDF_CT> kPDF;
-
-        /**
-         * very unclear what to use, no clear standard!
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kURL")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::URL_CT> kURL;
-
-        /**
-         *  application/x-xslt
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kApplication_XSLT")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::XSLT_CT> kApplication_XSLT;
-
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kJavaArchive")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::JavaArchive_CT> kJavaArchive;
-
-        /**
-         * Microsoft RTF - Rich Text Format
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kApplication_RTF")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_RTF_CT> kApplication_RTF;
-
-        /**
-         *  application/zip
-         */
-        [[deprecated ("in Stroika v2.1d27 - use InternetMediaTypes::kApplication_Zip")]] constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
-
     }
 
     namespace InternetMediaTypes::Types {

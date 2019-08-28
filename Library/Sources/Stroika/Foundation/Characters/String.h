@@ -924,19 +924,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Utility to squash out bad characters from a string, and replace them with the argument 'safe' character. Handly
-         *  for things like file names, etc...
-         *
-         *  If replacement missing (the default) - the badCharacters are just removed, and not replaced.
-         *
-         *  \note FilteredString could have been called 'SafeString'
-         */
-        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-        [[deprecated ("Use ReplaceAll instead - as of v2.1d11 - replacement char betcomes string")]] nonvirtual String FilteredString (const function<bool (Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
-
-    public:
-        /**
          *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
          *
          *  The caller can specify the token seperators by set, by lambda. This defaults to the lambda "isWhitespace".
@@ -1174,24 +1161,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         struct LessComparer;
-
-    public:
-        /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         */
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        [[deprecated ("in Stroika v2.1d24 - use ThreeWayComparer{co} () instead")]] int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
-
-    public:
-        /**
-         * @brief   Return true of the two argument strings are equal. This is equivalent to
-         *              lhs.Compare (rhs, co);
-         */
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
 
     public:
         struct EqualToCI;

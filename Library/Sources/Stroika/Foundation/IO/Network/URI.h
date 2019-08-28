@@ -109,13 +109,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         URI () = default;
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        URI (const URL& url);
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
 

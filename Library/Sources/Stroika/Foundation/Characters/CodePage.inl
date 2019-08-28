@@ -284,40 +284,6 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     *********************************** UTF8Converter ******************************
-     ********************************************************************************
-     */
-    inline size_t UTF8Converter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
-    {
-        return inMBCharCnt;
-    }
-    inline size_t UTF8Converter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* /*inChars*/, size_t inCharCnt) const
-    {
-        return inCharCnt * 6;
-    }
-    inline void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
-    {
-        static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
-        if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-            MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
-        }
-        else if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-            MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char32_t*> (outChars), outCharCnt);
-        }
-    }
-    inline void UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
-    {
-        static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
-        if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-            MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
-        }
-        else if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-            MapFromUNICODE (reinterpret_cast<const char32_t*> (inChars), inCharCnt, outChars, outCharCnt);
-        }
-    }
-
-    /*
-     ********************************************************************************
      ******************************* CodePageConverter ******************************
      ********************************************************************************
      */

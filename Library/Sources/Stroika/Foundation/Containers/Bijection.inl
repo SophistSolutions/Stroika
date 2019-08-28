@@ -374,11 +374,6 @@ namespace Stroika::Foundation::Containers {
         return CONTAINER_PAIR_RANGE_DOMAIN (this->begin (), this->end ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs) const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
-    }
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::clear ()
     {
         RemoveAll ();

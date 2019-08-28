@@ -16,10 +16,10 @@
 #include "Connection.h"
 
 #if qHasFeature_LibCurl
-#include "Client_libcurl.h"
+#include "Connection_libcurl.h"
 #endif
 #if qHasFeature_WinHTTP
-#include "Client_WinHTTP.h"
+#include "Connection_WinHTTP.h"
 #endif
 
 using namespace Stroika::Foundation;

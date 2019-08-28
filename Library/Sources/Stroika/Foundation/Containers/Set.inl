@@ -211,17 +211,6 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline bool Set<T>::Equals (const Set<T>& rhs) const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
-    }
-    template <typename T>
-    inline bool Set<T>::Equals (const Iterable<T>& rhs) const
-    {
-        // KISS for now
-        return Equals (Set<T>{rhs});
-    }
-    template <typename T>
     inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         return Iterable<T>::Where (includeIfTrue, Set<T>{});

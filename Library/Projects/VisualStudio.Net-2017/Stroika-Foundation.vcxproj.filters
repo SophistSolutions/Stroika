@@ -237,9 +237,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp">
       <Filter>Sources\Database</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp">
-      <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -303,9 +300,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
-      <Filter>Sources\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -320,9 +314,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp">
-      <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -386,9 +377,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp">
-      <Filter>Sources\IO</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp">
       <Filter>Sources\IO</Filter>
@@ -882,9 +870,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h">
       <Filter>Sources\Database</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h">
-      <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -893,9 +878,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h">
       <Filter>Sources\Configuration</Filter>
@@ -1011,25 +993,16 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h">
-      <Filter>Sources\IO</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h">
-      <Filter>Sources\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h">
@@ -1046,9 +1019,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h">
       <Filter>Sources\Execution</Filter>
@@ -1128,14 +1098,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h">
-      <Filter>Sources\IO\Network\Transfer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h">
-      <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h">
       <Filter>Sources\Characters</Filter>
@@ -2207,16 +2171,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl">
-      <Filter>Sources\IO\Network</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
-      <Filter>Sources\IO</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl">
-      <Filter>Sources\IO</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl">
       <Filter>Sources\IO</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl">
@@ -2227,9 +2182,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl">
       <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl">
       <Filter>Sources\Execution</Filter>

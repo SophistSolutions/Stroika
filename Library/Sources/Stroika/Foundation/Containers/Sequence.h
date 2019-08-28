@@ -320,14 +320,6 @@ namespace Stroika::Foundation::Containers {
         struct EqualsComparer;
 
     public:
-        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
-        [[deprecated ("in Stroika v2.1d24 - use Sequence<T>::ThreeWayComparer{} () or Common::ThreeWayComparer{} instead")]] int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
-
-    public:
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        [[deprecated ("in Stroika v2.1d24 - use Sequence<T>::EqualsComparer{} () instead")]] bool Equals (const Sequence& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
-
-    public:
         /**
          *  \ens size () == 0
          */

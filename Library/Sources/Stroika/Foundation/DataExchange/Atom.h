@@ -147,9 +147,6 @@ namespace Stroika::Foundation::DataExchange {
         struct ThreeWayComparer;
 
     public:
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (Atom rhs) const;
-
-    public:
         /**
          *  This corresponds to an empty string. An 'empty' Atom can be constructed with:
          *      \code

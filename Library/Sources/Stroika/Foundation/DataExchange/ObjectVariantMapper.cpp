@@ -302,24 +302,6 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_START (4996);
-TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions)
-{
-    using T                                  = IO::Network::URL;
-    FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue (fromObjOfTypeT->GetFullURL ());
-    };
-    ToObjectMapperType<T> toObjectMapper = [parseOptions] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> (), parseOptions);
-    };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
-}
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_END (4996);
-
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Common::GUID> ()
 {
@@ -338,7 +320,6 @@ namespace {
     {
         using TypesRegistry                   = ObjectVariantMapper::TypesRegistry;
         static const TypesRegistry sDefaults_ = {Set<TypeMappingDetails>{
-            //ObjectVariantMapper::MakeCommonSerializer<void> (),       Comment out v2.1d11 - not sure why we ever had this? Omit or document
             ObjectVariantMapper::MakeCommonSerializer<bool> (),
             ObjectVariantMapper::MakeCommonSerializer<signed char> (),
             ObjectVariantMapper::MakeCommonSerializer<short int> (),

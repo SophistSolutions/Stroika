@@ -25,7 +25,6 @@
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
-#include "Stroika/Foundation/IO/Network/URL.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
 #include "../TestHarness/SimpleClass.h"
@@ -93,190 +92,6 @@ namespace {
     DISABLE_COMPILER_MSC_WARNING_END (6262)
 }
 #endif
-
-namespace {
-    namespace Test1_DEPRECATED_URL_Parsing_ {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        namespace Private_ {
-            void TestOldWinCracker_ ([[maybe_unused]] const String& w, [[maybe_unused]] const URL& url)
-            {
-#if qPlatform_Windows && qHasFeature_ATLMFC
-                {
-                    using namespace IO::Network::UniformResourceIdentification;
-                    String testProtocol;
-                    String testHost;
-                    String testPort;
-                    String testRelPath;
-                    String testQuery;
-                    OLD_Cracker_ (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-                    VerifyTestResult (SchemeType{testProtocol} == url.GetScheme ());
-                    if (testProtocol == L"http") {
-                        VerifyTestResult (testHost == url.GetHost ().ToLowerCase ());
-                        {
-                            //Assert (testPort == fPort);
-                            if (url.GetPortValue () == 80) {
-                                VerifyTestResult (testPort == L"" or testPort == L"80");
-                            }
-                            else {
-                                // apparently never really implemented in old cracker...
-                                //Assert (fPort == ::_wtoi (testPort.c_str ()));
-                            }
-                        }
-                        VerifyTestResult (testRelPath == url.GetHostRelativePath () or testRelPath.find (':') != String::npos or ((String_Constant (L"/") + url.GetHostRelativePath ()) == testRelPath)); //old code didnt handle port#   --LGP 2007-09-20
-                        VerifyTestResult (testQuery == url.GetQueryString () or not url.GetFragment ().empty ());                                                                                         // old code didn't check fragment
-                    }
-                }
-#endif
-            }
-            void TestOldWinCracker_ (const String& w)
-            {
-                TestOldWinCracker_ (w, URL (w, URL::eStroikaPre20a50BackCompatMode));
-            }
-            void TestBackCompatURL_ ()
-            {
-                using IO::Network::UniformResourceIdentification::SchemeType;
-                TestOldWinCracker_ (L"dyn:/Reminders/Home.htm");
-                TestOldWinCracker_ (L"dyn:/Startup.htm");
-                TestOldWinCracker_ (L"home:Home.htm");
-                {
-                    URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
-                    VerifyTestResult (url.GetScheme () == SchemeType{L"dyn"});
-                    VerifyTestResult (url.GetHost ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
-                    VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
-                }
-            }
-            void BasicTests_AsOf21d22_ ()
-            {
-                using IO::Network::UniformResourceIdentification::SchemeType;
-                {
-                    URL url = URL::Parse (L"http:/StyleSheet.css?ThemeName=Cupertino", URL::eFlexiblyAsUI);
-                    VerifyTestResult (url.GetPortValue () == 80);
-                    VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
-                    VerifyTestResult (url.GetHost ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
-                    VerifyTestResult (url.GetFragment ().empty ());
-                    VerifyTestResult (url.GetScheme () == SchemeType{L"http"});
-                }
-                {
-                    URL url = URL::Parse (L"http://www.recordsforliving.com/");
-                    VerifyTestResult (url.GetPortValue () == 80);
-                    VerifyTestResult (url.GetQueryString ().empty ());
-                    VerifyTestResult (url.GetFragment ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath ().empty ());
-                    VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
-                    VerifyTestResult (url.GetScheme () == SchemeType{L"http"});
-                    VerifyTestResult (not url.IsSecure ());
-                }
-                {
-                    URL url = URL::Parse (L"https://xxx.recordsforliving.com/");
-                    VerifyTestResult (url.GetPortValue () == 443);
-                    VerifyTestResult (url.GetQueryString ().empty ());
-                    VerifyTestResult (url.GetFragment ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath ().empty ());
-                    VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
-                    VerifyTestResult (url.GetScheme () == SchemeType{L"https"});
-                    VerifyTestResult (url.IsSecure ());
-                }
-                for (auto po : {URL::eAsFullURL, URL::eFlexiblyAsUI}) {
-                    const wchar_t kTestURL_[] = L"http://www.x.com/foo?bar=3";
-                    VerifyTestResult (URL::Parse (kTestURL_, po).GetFullURL () == kTestURL_);
-                    VerifyTestResult (URL::Parse (kTestURL_, po).GetHost () == L"www.x.com");
-                    VerifyTestResult (URL::Parse (kTestURL_, po).GetHostRelativePath () == L"foo");
-                    VerifyTestResult (URL::Parse (kTestURL_, po).GetQueryString () == L"bar=3");
-                    VerifyTestResult (URL::Parse (kTestURL_, po) == URL (L"http", L"www.x.com", L"foo", L"bar=3"));
-                }
-                {
-                    URL url{URL::Parse (L"localhost", URL::eFlexiblyAsUI)};
-                    //VerifyTestResult (not url.GetScheme ().has_value ()); // UNCLEAR WHAT THIS SHOULD DO - MUST RETHINK - NOT WELL DEFINED
-                    VerifyTestResult (url.GetScheme () == SchemeType{L"http"}); // DITTO
-                    VerifyTestResult (url.GetHost () == L"localhost");
-                    VerifyTestResult (url.GetPortValue () == 80);
-                    VerifyTestResult (url.GetHostRelativePath () == L"");
-                    VerifyTestResult (url.GetQueryString () == L"");
-                    VerifyTestResult (url.GetFragment () == L"");
-                    VerifyTestResult (url.GetFullURL () == L"http://localhost/");
-                }
-                {
-                    // Test case/examples from:
-                    //      https://docs.python.org/2/library/urlparse.html
-                    //
-                    //  Though the names of our attributes differ, and our results, somewhat differ...
-                    {
-                        URL url = URL::Parse (L"http://www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI);
-                        VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                        VerifyTestResult (url.GetPortValue () == 80);
-                        VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
-                        VerifyTestResult (url.GetQueryString () == L"");
-                        VerifyTestResult (url.GetFragment () == L"");
-                        VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
-                    }
-#if 0
-                    // Unclear why this  (#if section/comment) is needed, but without it, clang-format screws up the indent level
-#endif
-                    {
-                        URL url{URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-                        VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                        VerifyTestResult (url.GetPortValue () == 80);
-                        VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we don't
-                        VerifyTestResult (url.GetQueryString () == L"");
-                        VerifyTestResult (url.GetFragment () == L"");
-                        VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
-                    }
-                }
-                {
-                    URL url{URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-                    VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                    VerifyTestResult (url.GetPortValue () == 8080);
-                    VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
-                    VerifyTestResult (url.GetQueryString () == L"");
-                    VerifyTestResult (url.GetFragment () == L"");
-                    VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl:8080/%7Eguido/Python.html");
-                }
-                {
-                    URL url{URL::Parse (L"https://www.cwi.nl/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-                    VerifyTestResult (url.GetScheme () == SchemeType{L"https"});
-                    VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                    VerifyTestResult (url.GetPortValue () == 443);
-                    VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
-                    VerifyTestResult (url.GetQueryString () == L"");
-                    VerifyTestResult (url.GetFragment () == L"");
-                    VerifyTestResult (url.GetFullURL () == L"https://www.cwi.nl/%7Eguido/Python.html");
-                }
-                {
-                    URL url = URL::Parse (L"Start.htm", URL::eAsRelativeURL);
-                    VerifyTestResult (url.GetHost ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath () == L"Start.htm");
-                    VerifyTestResult (url.GetFragment ().empty ());
-                }
-                {
-                    URL url = URL::Parse (L"fred/Start.htm", URL::eAsRelativeURL);
-                    VerifyTestResult (url.GetHost ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath () == L"fred/Start.htm");
-                    VerifyTestResult (url.GetFragment ().empty ());
-                }
-                if (false) {
-                    // https://stroika.atlassian.net/browse/STK-502
-                    URL url = URL::Parse (L"123.1.2.3:8080", URL::eFlexiblyAsUI);
-                    VerifyTestResult (url.GetHost () == L"123.1.2.3");
-                    VerifyTestResult (url.GetPortValue () == 8080);
-                    VerifyTestResult (url.GetHostRelativePath ().empty ());
-                    VerifyTestResult (url.GetFragment ().empty ());
-                }
-            }
-        }
-        void DoTests_ ()
-        {
-            Private_::TestBackCompatURL_ ();
-            Private_::BasicTests_AsOf21d22_ ();
-        }
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-    }
-}
 
 namespace {
     namespace Test1_URI_ {
@@ -718,7 +533,6 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Test1_DEPRECATED_URL_Parsing_::DoTests_ ();
         Test1_URI_::DoTests_ ();
         Test2_InternetAddress_ ();
         Test3_NetworkInterfaceList_ ();

@@ -294,14 +294,6 @@ namespace Stroika::Foundation::Memory {
         Assert (tmp.first <= tmp.second);
         return tmp.second - tmp.first;
     }
-    inline int BLOB::compare (const BLOB& rhs) const
-    {
-        return Common::ThreeWayCompare (*this, rhs);
-    }
-    inline int BLOB::Compare (const BLOB& rhs) const
-    {
-        return Common::ThreeWayCompare (*this, rhs);
-    }
     inline size_t BLOB::length () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -316,10 +308,6 @@ namespace Stroika::Foundation::Memory {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return BLOB ({*this, rhs});
-    }
-    inline bool BLOB::Equals (const BLOB& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
     }
 
     /*

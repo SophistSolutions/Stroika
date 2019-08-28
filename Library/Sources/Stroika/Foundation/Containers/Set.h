@@ -310,10 +310,6 @@ namespace Stroika::Foundation::Containers {
         struct EqualsComparer;
 
     public:
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const Set<T>& rhs) const;
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{co} () or == instead")]] bool Equals (const Iterable<T>& rhs) const;
-
-    public:
         /**
          */
         nonvirtual bool Intersects (const Iterable<T>& rhs) const;

@@ -51,12 +51,6 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().SetAt (forward<INDEXES> (indexes)..., v);
     }
     template <typename T, typename... INDEXES>
-    template <typename EQUALS_COMPARER>
-    inline bool DataHyperRectangle<T, INDEXES...>::Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer) const
-    {
-        return EqualsComparer<EQUALS_COMPARER>{equalsComparer}(*this, rhs);
-    }
-    template <typename T, typename... INDEXES>
     inline void DataHyperRectangle<T, INDEXES...>::_AssertRepValidType () const
     {
 #if qDebug

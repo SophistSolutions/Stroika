@@ -248,17 +248,6 @@ namespace Stroika::Foundation::Time {
     {
         return Format ();
     }
-    inline int Duration::Compare (const Duration& rhs) const
-    {
-        Duration::InternalNumericFormatType_ n = As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
-        if (n < 0) {
-            return -1;
-        }
-        if (n > 0) {
-            return 1;
-        }
-        return 0;
-    }
 
     /*
      ********************************************************************************

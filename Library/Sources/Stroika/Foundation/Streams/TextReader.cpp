@@ -655,35 +655,3 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
             return New (src);
     }
 }
-
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (const InputStream<byte>::Ptr& src, bool seekable)
-{
-    return New (src, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
-}
-
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable)
-{
-    return New (src, charset, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
-}
-
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
-{
-    return New (src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
-}
-
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, bool seekable)
-{
-    return New (internallySynchronized, src, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
-}
-#if 0
-// no idea why wont compile on msvc, but unimportant, since deprecated, and could easily be never used...
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::TextReader::Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable)
-{
-    return New (internallySynchronized, src, charset, (seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable));
-}
-#endif
-
-[[deprecated ("use SeekableFlag overload since version 2.1d6")]] TextReader::Ptr TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
-{
-    return New (internallySynchronized, src, codeConverter, seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
-}

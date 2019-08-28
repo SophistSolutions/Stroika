@@ -151,20 +151,6 @@ void Registry::SimpleReader_<long double>::Deactivating ()
     (*fValue_) = Characters::String2Float<long double> (fBuf_.str ());
 }
 
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_START (4996);
-template <>
-void Registry::SimpleReader_<IO::Network::URL>::Deactivating ()
-{
-    IO::Network::URL::ParseOptions parseOptions{};
-    // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    IgnoreExceptionsForCall (*fValue_ = IO::Network::URL (fBuf_.str (), parseOptions));
-}
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_END (4996);
-
 template <>
 void Registry::SimpleReader_<IO::Network::URI>::Deactivating ()
 {

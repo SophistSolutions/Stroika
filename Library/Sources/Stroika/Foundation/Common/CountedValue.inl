@@ -39,11 +39,6 @@ namespace Stroika::Foundation::Common {
         , fCount (src.fCount)
     {
     }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const
-    {
-        return typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer{}(*this, rhs);
-    }
 
     /*
      ********************************************************************************

@@ -147,12 +147,6 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    template <typename ELEMENT_COMPARER>
-    inline int Sequence<T>::Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer) const
-    {
-        return typename Common::ThreeWayComparer<ELEMENT_COMPARER>{comparer}(*this, rhs);
-    }
-    template <typename T>
     inline auto Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const -> Sequence
     {
         return Iterable<T>::Where (doToElement, Sequence<T>{});
@@ -164,12 +158,6 @@ namespace Stroika::Foundation::Containers {
         vector<T> tmp (this->begin (), this->end ()); // due to Sequence_stdvector move constructor, a not very expensive implementation
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         return Concrete::Sequence_stdvector<T>{move (tmp)};
-    }
-    template <typename T>
-    template <typename EQUALS_COMPARER>
-    inline bool Sequence<T>::Equals (const Sequence<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
-    {
-        return typename Sequence<T>::template EqualsComparer<EQUALS_COMPARER>{equalsComparer}(*this, rhs);
     }
     template <typename T>
     inline void Sequence<T>::RemoveAll ()

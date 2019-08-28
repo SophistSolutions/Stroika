@@ -885,43 +885,6 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
     return sb.str ();
 }
 
-String String::FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement) const
-{
-    StringBuilder sb;
-    for (const Character&& i : *this) {
-        if (badCharacters.Contains (i)) {
-            if (replacement) {
-                sb += *replacement;
-            }
-        }
-        else {
-            sb += i;
-        }
-    }
-    return sb.str ();
-}
-
-String String::FilteredString (const RegularExpression& badCharacters, optional<Character> replacement) const
-{
-    return ReplaceAll (badCharacters, replacement.has_value () ? String (*replacement) : L"");
-}
-
-String String::FilteredString (const function<bool (Character)>& badCharacterP, optional<Character> replacement) const
-{
-    StringBuilder sb;
-    for (const Character&& i : *this) {
-        if (badCharacterP (i)) {
-            if (replacement) {
-                sb += *replacement;
-            }
-        }
-        else {
-            sb += i;
-        }
-    }
-    return sb.str ();
-}
-
 Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
     String                       tmp{*this}; // quickie thread-safety - do diffenrtly soon with new thread safety model... -- LGP 2014-10-31

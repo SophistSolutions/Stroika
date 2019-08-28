@@ -161,34 +161,6 @@ private:
 };
 #endif
 
-#if qHasFeature_LibCurl
-
-/*
- ********************************************************************************
- ************************ Transfer::LibCurlException ****************************
- ********************************************************************************
- */
-DISABLE_COMPILER_MSC_WARNING_START (4996);
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-LibCurlException::LibCurlException (CURLcode ccode)
-    : Execution::SystemErrorException<> (ccode, LibCurl_error_category ())
-    , fCurlCode_ (ccode)
-{
-}
-
-void LibCurlException::ThrowIfError (CURLcode status)
-{
-    if (status != CURLE_OK)
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (LibCurlException (status));
-        }
-}
-DISABLE_COMPILER_MSC_WARNING_END (4996);
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-#endif
 
 #if qHasFeature_LibCurl
 /*

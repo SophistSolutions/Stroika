@@ -301,20 +301,6 @@ namespace Stroika::Foundation::Time {
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
 
     public:
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        [[deprecated ("use Date::min - deprecated in Stroika v2.1d11")]] static const Date kMin;
-#else
-        [[deprecated ("use Date::min - deprecated in Stroika v2.1d11")]] static constexpr Date kMin{kMinJulianRep};
-#endif
-
-    public:
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        [[deprecated ("use Date::max - deprecated in Stroika v2.1d11")]] static const Date kMax;
-#else
-        [[deprecated ("use Date::max - deprecated in Stroika v2.1d11")]] static constexpr Date kMax{UINT_MAX - 1};
-#endif
-
-    public:
         /**
          *  Date::min () is the first date this Date class supports representing.
          *  Defined constexpr if compiler supports.
@@ -330,9 +316,6 @@ namespace Stroika::Foundation::Time {
          *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
          */
         static constexpr Date max ();
-
-    public:
-        [[deprecated ("Use optional<Date> instead of Date no-arg constructor - as of v2.1d11; once this goes away, it will be as if NEVER EMPTY")]] constexpr bool empty () const;
 
     public:
         /**
@@ -398,17 +381,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
-#if qPlatform_Windows
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid) const;
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid, const String& format) const; // See GetDateFormat () format args
-#endif
-
-#if qPlatform_Windows
-    public:
-        /**
-         */
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
-#endif
 
     public:
         /**
@@ -466,11 +438,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         struct ThreeWayComparer;
-
-    public:
-        // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-        // this comparison function - see the notes about 'empty' in the class description.
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Date& rhs) const;
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);

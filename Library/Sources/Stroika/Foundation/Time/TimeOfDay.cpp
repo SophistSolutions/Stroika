@@ -218,11 +218,6 @@ const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const TimeOfDay TimeOfDay::kMin = TimeOfDay::min ();
-const TimeOfDay TimeOfDay::kMax = TimeOfDay::max ();
-#endif
-
 const String TimeOfDay::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
 const String TimeOfDay::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
 const String TimeOfDay::kISO8601Format                 = String_Constant{kISO8601FormatArray}; // equivilent to String_Constant{L"%H:%M:%S"}
@@ -258,13 +253,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         }
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        case ParseFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case ParseFormat::eISO8601: {
             int hour   = 0;
             int minute = 0;
@@ -353,14 +341,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
         }
 #endif
 
-#if qPlatform_Windows
-        if (state & ios::failbit) {
-            DISABLE_COMPILER_MSC_WARNING_START (4996);
-            return Parse (rep, LOCALE_USER_DEFAULT);
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-        }
-#endif
-
         if (state & ios::failbit) {
             Execution::Throw (FormatException::kThe);
         }
@@ -408,7 +388,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
         else {
             // Best I can see to do to workaround this bug
             DISABLE_COMPILER_MSC_WARNING_START (4996);
-            return Parse (rep, LOCALE_USER_DEFAULT);
+            return Parse_ (rep, LOCALE_USER_DEFAULT);
             DISABLE_COMPILER_MSC_WARNING_END (4996);
         }
 #else
@@ -448,7 +428,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
 }
 
 #if qPlatform_Windows
-TimeOfDay TimeOfDay::Parse (const String& rep, LCID lcid)
+TimeOfDay TimeOfDay::Parse_ (const String& rep, LCID lcid)
 {
     using namespace Execution::Platform::Windows;
     if (rep.empty ()) {
@@ -481,15 +461,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, LCID lcid)
 
 String TimeOfDay::Format (PrintFormat pf) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (empty ()) {
-        return String{};
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
@@ -522,13 +493,6 @@ String TimeOfDay::Format (PrintFormat pf) const
             }
             return tmp;
         }
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        case PrintFormat::eXML:
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
         case PrintFormat::eISO8601: {
             uint32_t hour    = fTime_ / (60 * 60);
             uint32_t minutes = (fTime_ - hour * 60 * 60) / 60;
@@ -557,15 +521,6 @@ String TimeOfDay::Format (const String& formatPattern) const
 
 String TimeOfDay::Format (const locale& l, const String& formatPattern) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (empty ()) {
-        return String ();
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     // http://en.cppreference.com/w/cpp/locale/time_put/put
     tm when{};
@@ -579,35 +534,9 @@ String TimeOfDay::Format (const locale& l, const String& formatPattern) const
     return oss.str ();
 }
 
-#if qPlatform_Windows
-String TimeOfDay::Format (LCID lcid) const
-{
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    if (empty ()) {
-        return String ();
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    uint32_t hour    = fTime_ / (60 * 60);
-    uint32_t minutes = (fTime_ - hour * 60 * 60) / 60;
-    uint32_t secs    = fTime_ - hour * 60 * 60 - minutes * 60;
-    Assert (hour >= 0 and hour < 24);
-    Assert (minutes >= 0 and minutes < 60);
-    Assert (secs >= 0 and secs < 60);
-    return GenTimeStr4TOD_ (lcid, hour, minutes, secs);
-}
-#endif
-
 void TimeOfDay::ClearSecondsField ()
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    Assert (empty () or fTime_ < kMaxSecondsPerDay);
-    if (not empty ()) {
+    Assert (fTime_ < kMaxSecondsPerDay);
         int hour    = fTime_ / (60 * 60);
         int minutes = (fTime_ - hour * 60 * 60) / 60;
         int secs    = fTime_ - hour * 60 * 60 - minutes * 60;
@@ -615,9 +544,5 @@ void TimeOfDay::ClearSecondsField ()
         Assert (minutes >= 0 and minutes < 60);
         Assert (secs >= 0 and secs < 60);
         fTime_ -= secs;
-    }
-    Assert (empty () or fTime_ < kMaxSecondsPerDay);
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    Assert ( fTime_ < kMaxSecondsPerDay);
 }

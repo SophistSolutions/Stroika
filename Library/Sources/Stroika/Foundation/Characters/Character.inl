@@ -122,15 +122,6 @@ namespace Stroika::Foundation::Characters {
             return fCharacterCode_;
         }
     }
-    inline int Character::Compare (Character rhs) const
-    {
-        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
-        return static_cast<SIGNED_WCHART_> (GetCharacterCode ()) - static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
-    }
-    inline int Character::Compare (Character rhs, CompareOptions co) const
-    {
-        return Compare (this, this + 1, &rhs, &rhs + 1, co);
-    }
 
     /*
      ********************************************************************************
