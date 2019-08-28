@@ -57,26 +57,6 @@ namespace {
         {
             fDelegateTo.SetTimeout (timeout);
         }
-        virtual URI DeprecatedGetAuthorityRelativeURL () const override
-        {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996);
-            return fDelegateTo.GetURL ().GetAuthorityRelativeResource ();
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-        }
-        virtual void DeprecatedSetAuthorityRelativeURL (const URI& url) override
-        {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996);
-            fDelegateTo.SetURL (fDelegateTo.GetURL ().Combine (url));
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-        }
         virtual URI GetSchemeAndAuthority () const override
         {
             return fDelegateTo.GetSchemeAndAuthority ();

@@ -763,6 +763,7 @@ namespace {
          *      2017-10-10 - but just once and not since (and on loaded machine so that could have caused queer scheduling) - Windows ONLY
          *      2018-03-10 - saw happen on Linux, but still very rare
          *      2018-12-21 - saw happen on Linux (WSL), but still very rare
+         *      2019-08-28 - saw happen on Linux (WSL), but still very rare
          */
         VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSecondsType timeTaken = Time::GetTickCount () - startAt;
