@@ -82,26 +82,6 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename RANGE_TYPE>
-    template <typename T2, typename RANGE_TYPE2>
-    bool DisjointRange<T, RANGE_TYPE>::Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const
-    {
-        Containers::Sequence<RangeType>   lhsR = SubRanges ();
-        Containers::Sequence<RANGE_TYPE2> rhsR = rhs.SubRanges ();
-        if (lhsR.size () != rhsR.size ()) {
-            return false;
-        }
-        auto i  = lhsR.begin ();
-        auto ri = rhsR.begin ();
-        while (i != lhsR.end ()) {
-            if (*i != *ri) {
-                return false;
-            }
-            ++i;
-            ++ri;
-        }
-        return true;
-    }
-    template <typename T, typename RANGE_TYPE>
     inline bool DisjointRange<T, RANGE_TYPE>::Intersects (const RangeType& rhs) const
     {
         // @todo could do more efficiently

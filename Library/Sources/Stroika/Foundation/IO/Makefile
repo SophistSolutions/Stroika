@@ -22,7 +22,6 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AccessMode${OBJ_SUFFIX}\
-	$(ObjDir)FileBusyException${OBJ_SUFFIX}\
 
 
 all:	$(Objs) $(SubDirs)

@@ -1302,9 +1302,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClInclude>
@@ -2480,9 +2477,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.inl">
       <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>

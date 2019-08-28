@@ -114,10 +114,6 @@ namespace Stroika::Foundation::Traversal {
         struct EqualsComparer;
 
     public:
-        template <typename T2, typename RANGE_TYPE2>
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const;
-
-    public:
         /**
          */
         nonvirtual bool Intersects (const RangeType& rhs) const;
