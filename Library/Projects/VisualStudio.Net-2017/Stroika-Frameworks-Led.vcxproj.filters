@@ -53,7 +53,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Marker.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.cpp" />
@@ -127,7 +126,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Marker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MarkerCover.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\OptionsSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.h" />

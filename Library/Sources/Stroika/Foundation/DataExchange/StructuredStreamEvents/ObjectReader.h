@@ -297,13 +297,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         nonvirtual void AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
 
     public:
-        template <typename CLASS>
-        [[deprecated ("Since Stroika 2.1d23, use AddCommonReader_Class")]] inline void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
-        {
-            AddCommonReader_Class<CLASS> (fieldDescriptions);
-        }
-
-    public:
         /**
          *  Create a class factory for a class with the given fields. This does't check (because its static) if the types of the elements in the
          *  fields are part of the mapper.

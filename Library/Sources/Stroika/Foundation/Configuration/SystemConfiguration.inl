@@ -55,11 +55,6 @@ namespace Stroika::Foundation::Configuration {
         return fCores.empty () ? String () : fCores[0].fModelName;
     }
 
-    [[deprecated ("use fActualOperatingSystem or fApparentOperatingSystem since Stroika v2.1d22")]] inline SystemConfiguration::OperatingSystem GetSystemConfiguration_OperatingSystem ()
-    {
-        return GetSystemConfiguration_ActualOperatingSystem ();
-    }
-
 }
 
 namespace Stroika::Foundation::Configuration {

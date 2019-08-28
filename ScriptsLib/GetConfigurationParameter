@@ -22,8 +22,5 @@ if ($#ARGV < 1) {
 if ("$envVarName" eq "" ) {
 	die "Missing configuration parameter name argument"; 
 }
-if ("$envVarName" eq "CWARNING_FLAGS" ) {
-	print STDERR "#CWARNING_FLAGS ***DEPRECATED \n"; 
-}
 
 print GetConfigurationParameter($configuratioName, $envVarName);

@@ -15,7 +15,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h" />

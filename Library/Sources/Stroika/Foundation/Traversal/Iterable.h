@@ -103,11 +103,6 @@ namespace Stroika::Foundation::Traversal {
     public:
         template <typename SHARED_T>
         using enable_shared_from_this_PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
-
-    public:
-        // SharedPtrImplementationTemplate deprecated - Stroika v2.1b6
-        template <typename SHARED_T>
-        using SharedPtrImplementationTemplate = PtrImplementationTemplate<SHARED_T>;
     };
 
     /**

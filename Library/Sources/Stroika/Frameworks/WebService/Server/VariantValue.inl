@@ -163,41 +163,6 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
         };
     }
 
-    ////////////////DEPRECATED STUFF
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
-    {
-        Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
-        return PickoutParamValuesFromURL (request);
-    }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const URI& url, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
-    {
-        Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
-        return PickoutParamValuesFromURL (url);
-    }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
-    {
-        Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
-        return PickoutParamValuesFromBody (request);
-    }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, [[maybe_unused]] const optional<Iterable<String>>& namedParameters)
-    {
-        Assert (not namedParameters.has_value ()); // cuz never supported - you can manually call retainall if you want
-        return PickoutParamValuesFromBody (body, bodyContentType);
-    }
-    [[deprecated ("since Stroika v2.1d13 - use one arg version")]] inline Mapping<String, VariantValue> PickoutParamValues (Request* request, [[maybe_unused]] const optional<Iterable<String>>& namedURLParams, [[maybe_unused]] const optional<Iterable<String>>& namedBodyParams)
-    {
-        Assert (not namedURLParams.has_value ());  // cuz never supported - you can manually call retainall if you want
-        Assert (not namedBodyParams.has_value ()); // cuz never supported - you can manually call retainall if you want
-        return PickoutParamValues (request);
-    }
-
-    [[deprecated ("since Stroika v2.1d13 - use PickoutParamValues or OrderParamValues or CombineWebServiceArgsAsVariantValue")]] VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
-
-    [[deprecated ("since Stroika v2.1d13 - use mkRequestHandler withotu objVariantMapper argument")]] inline WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper&, const function<BLOB (WebServer::Message* m)>& f)
-    {
-        return mkRequestHandler (webServiceDescription, f);
-    }
-
     /**
      */
     // template <typename RETURN_TYPE, typename... IN_ARGS>

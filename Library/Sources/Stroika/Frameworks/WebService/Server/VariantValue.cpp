@@ -58,38 +58,6 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 
 /*
  ********************************************************************************
- ***** WebService::Server::VariantValue::GetWebServiceArgsAsVariantValue ********
- ********************************************************************************
- */
-DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage)
-{
-    /// DEPRECATED
-    String method{request->GetHTTPMethod ()};
-    if (method == L"POST" or method == L"PUT") {
-        // Allow missing (content-size: 0) for args to method - and don't fail it as invalid json
-        // @also - @todo - check ContentType ebfore reading as JSON!!!
-        Memory::BLOB inData = request->GetBody ();
-        return inData.empty () ? VariantValue{} : Variant::JSON::Reader ().Read (inData);
-    }
-    else if (method == L"GET") {
-        IO::Network::URI url = request->GetURL ();
-        // get query args
-        // For now - only support String values of query-string args
-        Mapping<String, VariantValue> result;
-        if (auto query = url.GetQuery ()) {
-            query->GetMap ().Apply ([&result] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
-        }
-        return VariantValue{result};
-    }
-    else {
-        Execution::Throw (ClientErrorException (
-            L"Expected GET with query-string arguments or PUT or POST"sv +
-            (fromInMessage ? (L" from " + *fromInMessage) : L"")));
-    }
-}
-
-/*
- ********************************************************************************
  *** WebService::Server::VariantValue::CombineWebServiceArgsAsVariantValue ******
  ********************************************************************************
  */
