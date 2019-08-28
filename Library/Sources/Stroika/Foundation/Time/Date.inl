@@ -278,9 +278,6 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
             {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
         }}};
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -288,16 +285,9 @@ namespace Stroika::Foundation::Configuration {
         EnumNames<Stroika::Foundation::Time::Date::ParseFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::Date::ParseFormat::eCurrentLocale, L"Current-Locale"},
             {Stroika::Foundation::Time::Date::ParseFormat::eISO8601, L"ISO-8601"},
-            {Stroika::Foundation::Time::Date::ParseFormat::eXML, L"XML"},
             {Stroika::Foundation::Time::Date::ParseFormat::eJavascript, L"Javascript"},
         }}};
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
 
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -305,13 +295,9 @@ namespace Stroika::Foundation::Configuration {
         EnumNames<Stroika::Foundation::Time::Date::PrintFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale, L"Current-Locale"},
             {Stroika::Foundation::Time::Date::PrintFormat::eISO8601, L"ISO-8601"},
-            {Stroika::Foundation::Time::Date::PrintFormat::eXML, L"XML"},
             {Stroika::Foundation::Time::Date::PrintFormat::eJavascript, L"Javascript"},
             {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
         }}};
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
 
 }
 

@@ -112,30 +112,6 @@ namespace Stroika::Foundation::IO::Network {
         socklen_t                                          optvallen = sizeof (arg);
         _ref ().setsockopt (level, optname, &arg, optvallen);
     }
-    inline bool Socket::Ptr::Equals (const Socket::Ptr& rhs) const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        /* 
-         *  Used to check GetNativeSocket () == rhs.GetNativeSocket ();
-         *  but this is better. It practically always amounts to the same thing (since one typically constructs
-         *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
-         *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
-         *  being careful about null ptrs.
-         */
-        return _GetSharedRep () == rhs._GetSharedRep ();
-    }
-    inline int Socket::Ptr::Compare (const Socket::Ptr& rhs) const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        /* 
-         *  Used to check Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
-         *  but this is better. It practically always amounts to the same thing (since one typically constructs
-         *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
-         *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
-         *  being careful about null ptrs.
-         */
-        return Common::ThreeWayCompareNormalizer (_GetSharedRep (), rhs._GetSharedRep ());
-    }
 
     /*
      ********************************************************************************

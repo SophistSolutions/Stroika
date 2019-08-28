@@ -242,7 +242,6 @@ namespace Stroika::Foundation::Time {
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eJavascript,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
@@ -363,7 +362,6 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eJavascript,
             eCurrentLocale_WithZerosStripped,
 

@@ -459,13 +459,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     private:
         static ReaderFromVoidStarFactory MakeCommonReader_ (const String*);
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        static ReaderFromVoidStarFactory MakeCommonReader_ (const IO::Network::URL*);
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
         static ReaderFromVoidStarFactory MakeCommonReader_ (const IO::Network::URI*);
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::DateTime*);
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::Duration*);
@@ -475,14 +468,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_pod_v<T> and not is_enum_v<T>>* = nullptr);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        template <typename T, typename TRAITS>
-        static ReaderFromVoidStarFactory MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const vector<T>*);
         template <typename T>

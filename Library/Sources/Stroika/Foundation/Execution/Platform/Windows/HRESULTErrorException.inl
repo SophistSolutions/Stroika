@@ -13,36 +13,6 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 
     /*
      ********************************************************************************
-     **************** Platform::Windows::HRESULTErrorException **********************
-     ********************************************************************************
-     */
-    class [[deprecated ("Since v2.1d18, use SystemErrorException{ hr, HRESULT_error_category () }")]] HRESULTErrorException : public Execution::Exception<>
-    {
-    private:
-        using inherited = Execution::Exception<>;
-
-    public:
-        HRESULTErrorException (HRESULT hresult);
-
-    public:
-        operator HRESULT () const
-        {
-            return fHResult;
-        }
-
-    public:
-        static SDKString LookupMessage (HRESULT hr);
-        nonvirtual SDKString LookupMessage () const
-        {
-            return LookupMessage (fHResult);
-        }
-
-    private:
-        HRESULT fHResult;
-    };
-
-    /*
-     ********************************************************************************
      ****************** Platform::Windows::ThrowIfErrorHRESULT **********************
      ********************************************************************************
      */

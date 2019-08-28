@@ -378,9 +378,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp">
-      <Filter>Sources\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -998,12 +995,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h">
       <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h">
-      <Filter>Sources\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h">
-      <Filter>Sources\IO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -1932,9 +1923,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.h">
-      <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket-Private_.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
@@ -2170,9 +2158,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
       <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl">
-      <Filter>Sources\IO</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl">
       <Filter>Sources\IO\FileSystem</Filter>

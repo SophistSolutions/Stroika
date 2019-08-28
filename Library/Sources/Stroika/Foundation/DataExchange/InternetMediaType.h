@@ -170,29 +170,6 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      */
-    [[deprecated ("in Stroika v2.1d27 - use (slightly different but probably better) InternetMediaType{}.IsA ()")]] inline bool IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
-    {
-        if (moreSpecificType.As<wstring> ().length () <= moreGeneralType.As<wstring> ().length ()) {
-            return false;
-        }
-        return moreGeneralType.As<wstring> () == moreSpecificType.As<wstring> ().substr (0, moreGeneralType.As<wstring> ().length ());
-    }
-
-    /**
-     */
-    [[deprecated ("in Stroika v2.1d27 - this never made sense and always has been equivilent to IsSubTypeOf")]] inline bool IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
-    {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        return moreSpecificType == moreGeneralType or IsSubTypeOf (moreSpecificType, moreGeneralType);
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-    }
-
-    /**
-     */
     template <typename CONTAINER>
     bool TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny);
 

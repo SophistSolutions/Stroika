@@ -1305,22 +1305,6 @@ namespace Stroika::Foundation::Characters {
     template <>
     pair<const wchar_t*, const wchar_t*> String::GetData () const;
 
-    /*
-     *  Equivilent to std::equal_to<String>, except doing case insensitive compares
-     */
-    struct [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{eCaseInsensative} ()")]] String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals>
-    {
-        nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-    };
-
-    /*
-     *  Equivilent to std::less<String>, except doing case insensitive compares
-     */
-    struct [[deprecated ("in Stroika v2.1d24 - use LessComparer{eCaseInsensative} ()")]] String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder>
-    {
-        nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-    };
-
     /**
      */
     struct String::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
