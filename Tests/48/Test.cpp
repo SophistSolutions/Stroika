@@ -86,25 +86,6 @@ namespace {
 #endif
 
 namespace {
-    void Test_0_Test_VarDateFromStrOnFirstTry_ ()
-    {
-        TraceContextBumper ctx ("Test_0_Test_VarDateFromStrOnFirstTry_");
-
-// TEST MUST BE FIRST - OR VERY NEAR START OF APP!
-//
-// Before any calls to VarDateFromStr ()...
-//
-// CHECK FOR qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
-//
-#if defined(_MSC_VER)
-        DISABLE_COMPILER_MSC_WARNING_START (4996); // API DEPRECATED
-        VerifyTestResult (not DateTime::Parse (L"7/26/1972 12:00:00 AM", LOCALE_USER_DEFAULT).empty ());
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-#endif
-    }
-}
-
-namespace {
 
     void Test_1_TestTickCountGrowsMonotonically_ ()
     {
@@ -128,7 +109,6 @@ namespace {
             DISABLE_COMPILER_MSC_WARNING_START (4996);
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            VerifyTestResult (not t2.empty ());
             VerifyTestResult (not t2.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
@@ -192,11 +172,6 @@ namespace {
             const LCID kUS_ENGLISH_LOCALE = MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
 #endif
             TimeOfDay threePM = TimeOfDay::Parse (L"3pm", locale::classic ());
-#if qPlatform_Windows
-            DISABLE_COMPILER_MSC_WARNING_START (4996); // API DEPRECATED
-            VerifyTestResult (threePM.Format (kUS_ENGLISH_LOCALE) == L"3 PM");
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-#endif
             //VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
             VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00"); // UGH!!!
             TestRoundTripFormatThenParseNoChange_ (threePM);
@@ -840,7 +815,6 @@ namespace {
     void DoRegressionTests_ ()
     {
         TraceContextBumper ctx{"DoRegressionTests_"};
-        Test_0_Test_VarDateFromStrOnFirstTry_ ();
         Test_1_TestTickCountGrowsMonotonically_ ();
         Test_2_TestTimeOfDay_ ();
         Test_3_TestDate_ ();
