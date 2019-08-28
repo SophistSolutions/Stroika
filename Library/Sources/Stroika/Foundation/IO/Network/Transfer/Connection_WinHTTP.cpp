@@ -106,12 +106,13 @@ public:
     }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
-    virtual URI                 DeprecatedGetAuthorityRelativeURL () const override;
-    virtual void                DeprecatedSetAuthorityRelativeURL (const URI& url) override;
     virtual URI                 GetSchemeAndAuthority () const override;
     virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
     virtual void                Close () override;
     virtual Response            Send (const Request& request) override;
+
+private:
+    nonvirtual void SetAuthorityRelativeURL_ (const URI& url);
 
 private:
     nonvirtual void AssureHasSessionHandle_ (const String& userAgent);
@@ -170,12 +171,7 @@ void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
     fTimeout_ = timeout; // affects subsequent calls to send...
 }
 
-URI Connection_WinHTTP::Rep_::DeprecatedGetAuthorityRelativeURL () const
-{
-    return fURL_;
-}
-
-void Connection_WinHTTP::Rep_::DeprecatedSetAuthorityRelativeURL (const URI& url)
+void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
 {
     URI newURL = url;
     newURL.SetScheme (fURL_.GetScheme ());
@@ -215,7 +211,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 #endif
     Request useRequest = request;
 
-    DeprecatedSetAuthorityRelativeURL (useRequest.fAuthorityRelativeURL);
+    SetAuthorityRelativeURL_ (useRequest.fAuthorityRelativeURL);
 
     BLOB                              data; // usually empty, but provided for some methods like POST
     Mapping<String, String>           headers;

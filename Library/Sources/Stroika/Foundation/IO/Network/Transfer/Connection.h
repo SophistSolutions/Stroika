@@ -171,12 +171,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual void SetSchemeAndAuthority (const URI& url);
 
     public:
-        [[deprecated ("Since v2.1d27, use GetSchemeAndAuthority")]] URI GetURL () const;
-
-    public:
-        [[deprecated ("Since v2.1d27, use SetSchemeAndAuthority, or use the URL argument to GET/POST/etc")]] void SetURL (const URI& url);
-
-    public:
         /**
          *  force closed Connection. Can still call Send again, but that autocreates new Connection
          */
@@ -446,8 +440,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         virtual Options             GetOptions () const                                   = 0;
-        virtual URI                 DeprecatedGetAuthorityRelativeURL () const            = 0;
-        virtual void                DeprecatedSetAuthorityRelativeURL (const URI& url)    = 0;
         virtual URI                 GetSchemeAndAuthority () const                        = 0;
         virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
         virtual DurationSecondsType GetTimeout () const                                   = 0;

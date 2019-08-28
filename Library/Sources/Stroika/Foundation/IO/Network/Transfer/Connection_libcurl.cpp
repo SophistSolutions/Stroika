@@ -129,10 +129,11 @@ public:
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URI                 GetSchemeAndAuthority () const override;
     virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
-    virtual URI                 DeprecatedGetAuthorityRelativeURL () const override;
-    virtual void                DeprecatedSetAuthorityRelativeURL (const URI& url) override;
     virtual void                Close () override;
     virtual Response            Send (const Request& request) override;
+
+private:
+    nonvirtual void SetAuthorityRelativeURL_ (const URI& url);
 
 private:
     nonvirtual void MakeHandleIfNeeded_ ();
@@ -209,15 +210,10 @@ void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthor
     }
 }
 
-URI Connection_LibCurl::Rep_::DeprecatedGetAuthorityRelativeURL () const
-{
-    return fURL_;
-}
-
-void Connection_LibCurl::Rep_::DeprecatedSetAuthorityRelativeURL (const URI& url)
+void Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (const URI& url)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Connection_LibCurl::Rep_::DeprecatedSetAuthorityRelativeURL (%s)", Characters::ToString (url).c_str ());
+    DbgTrace (L"Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (%s)", Characters::ToString (url).c_str ());
 #endif
     URI newURL = url;
     newURL.SetScheme (fURL_.GetScheme ());
@@ -300,7 +296,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 #endif
     Request useRequest = request;
 
-    DeprecatedSetAuthorityRelativeURL (useRequest.fAuthorityRelativeURL);
+    SetAuthorityRelativeURL_ (useRequest.fAuthorityRelativeURL);
 
     Cache::EvalContext cacheContext;
     if (fOptions_.fCache != nullptr) {

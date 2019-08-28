@@ -83,17 +83,6 @@ String Connection::Options::Authentication::ToString () const
  ************************ Transfer::Connection::Ptr *****************************
  ********************************************************************************
  */
-URI Connection::Ptr::GetURL () const
-{
-    return fRep_->GetSchemeAndAuthority ().Combine (fRep_->DeprecatedGetAuthorityRelativeURL ());
-}
-
-void Connection::Ptr::SetURL (const URI& url)
-{
-    fRep_->SetSchemeAndAuthority (url.GetSchemeAndAuthority ());
-    fRep_->DeprecatedSetAuthorityRelativeURL (url.GetAuthorityRelativeResource<URI> ());
-}
-
 Response Connection::Ptr::GET (const URI& l, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
