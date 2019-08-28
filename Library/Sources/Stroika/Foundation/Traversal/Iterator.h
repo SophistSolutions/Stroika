@@ -311,11 +311,6 @@ namespace Stroika::Foundation::Traversal {
          */
         using RepSmartPtr = PtrImplementationTemplate<IRep>;
 
-    public:
-        /**
-         */
-        [[deprecated ("use IteratorRepSmartPtr since version 2.1d6")]] typedef RepSmartPtr IteratorRepSharedPtr;
-
     private:
         /*
          *  Mostly internal type to select a constructor for the special END iterator.

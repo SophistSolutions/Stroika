@@ -437,14 +437,6 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 
-#if qPlatform_Windows
-namespace Stroika::Foundation::Execution {
-    // INTENTIONALLY UNDEFINED -     "wrong/super-deprecated in v2.1d18 - use ThrowWSASystemErrorIfSOCKET_ERROR");
-    template <>
-    IO::Network::Socket::PlatformNativeHandle ThrowPOSIXErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
-}
-#endif
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

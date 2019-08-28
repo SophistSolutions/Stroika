@@ -214,7 +214,6 @@ namespace Stroika::Foundation::Time {
          *
          *  \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
          */
-        [[deprecated ("Use optional<Date> instead of Date no-arg constructor - as of v2.1d11;")]] constexpr Date ();
         constexpr Date (const Date& src) = default;
         constexpr Date (Date&& src)      = default;
         explicit constexpr Date (JulianRepType julianRep);
@@ -292,9 +291,6 @@ namespace Stroika::Foundation::Time {
         static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
         static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
         static Date Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
-#if qPlatform_Windows
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static Date Parse (const String& rep, LCID lcid);
-#endif
 
     private:
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);

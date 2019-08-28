@@ -259,27 +259,6 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     return AsDate_ (when);
 }
 
-#if qPlatform_Windows
-Date Date::Parse (const String& rep, LCID lcid)
-{
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
-    }
-    DATE d{};
-    try {
-        using namespace Execution::Platform::Windows;
-        ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
-    }
-    catch (...) {
-        Execution::Throw (FormatException::kThe);
-    }
-    // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-    SYSTEMTIME sysTime{};
-    Verify (::VariantTimeToSystemTime (d, &sysTime));
-    return Date (Safe_jday_ (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)));
-}
-#endif
-
 String Date::Format (PrintFormat pf) const
 {
     switch (pf) {

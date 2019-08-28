@@ -121,10 +121,6 @@ namespace Stroika::Foundation::Time {
             return Date::kEmptyJulianRep;
         }
     }
-    inline constexpr Date::Date ()
-        : fJulianDateRep_ (kEmptyJulianRep)
-    {
-    }
     inline constexpr Date::Date (JulianRepType julianRep)
         : fJulianDateRep_ (julianRep)
     {
