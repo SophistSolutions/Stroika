@@ -63,12 +63,6 @@ namespace Stroika::Foundation::Common {
 
     public:
         struct ThreeWayComparer;
-
-    public:
-        /**
-         * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
-         */
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () instead")]] bool Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const;
     };
 
     /**

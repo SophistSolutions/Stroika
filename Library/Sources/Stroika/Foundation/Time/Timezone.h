@@ -228,24 +228,12 @@ namespace Stroika::Foundation::Time {
         nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTC (const Date& date, const TimeOfDay& tod) const;
 
     public:
-        [[deprecated ("use GetBiasInMinutesFromUTC since version 2.1d7")]] nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
-        {
-            return GetBiasInMinutesFromUTC (date, tod);
-        }
-
-    public:
         /**
          *  Depending on the form of the timezone, the offset from UTC could depend on the date (cuz of daylight savings time)
          *
          *  This offset (number of seconds) - is added to a UTC time to get the time in that local timezone.
          */
         nonvirtual make_signed_t<time_t> GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const;
-
-    public:
-        [[deprecated ("use GetBiasFromUTC since version 2.1d7")]] nonvirtual make_signed_t<time_t> GetOffset (const Date& date, const TimeOfDay& tod) const
-        {
-            return GetBiasFromUTC (date, tod);
-        }
 
     public:
         /**

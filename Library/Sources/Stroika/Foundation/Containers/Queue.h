@@ -203,10 +203,6 @@ namespace Stroika::Foundation::Containers {
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         struct EqualsComparer;
 
-    public:
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Queue& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
-
     protected:
         /**
          */

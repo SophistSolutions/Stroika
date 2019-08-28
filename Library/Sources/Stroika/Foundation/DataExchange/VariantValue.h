@@ -42,8 +42,6 @@ namespace Stroika::Foundation::DataExchange {
      */
     constexpr bool kVariantValueUsesStroikaSharedPtr_ = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
-    [[deprecated ("use kVariantValueUsesStroikaSharedPtr_ since Stroika v2.1d1")]] constexpr bool qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_ = kVariantValueUsesStroikaSharedPtr_;
-
     /**
      * \brief   Simple variant-value object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
      *
@@ -301,20 +299,6 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         struct ThreeWayComparer;
-
-    public:
-        /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         *   This coerces types.
-         *   @todo - thinkout bettter and document what it means for different types
-         *           FOR NOW - just key off first type and convert RHS to same type as LHS, where possible
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const VariantValue& rhs) const;
-
-    public:
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d24 - use std::equal_to{} () instead")]] bool Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 
     private:
         struct IRep_;

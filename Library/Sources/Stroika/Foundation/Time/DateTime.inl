@@ -18,16 +18,6 @@ namespace Stroika::Foundation::Time {
      ********************************** DateTime ************************************
      ********************************************************************************
      */
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    inline constexpr DateTime::DateTime () noexcept
-        : fTimezone_{Timezone::Unknown ()}
-    {
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     inline constexpr DateTime::DateTime (const Date& d) noexcept
         : fTimezone_{Timezone::Unknown ()}
         , fDate_{d}
@@ -44,39 +34,18 @@ namespace Stroika::Foundation::Time {
         , fDate_ (dt.GetDate ())
         , fTimeOfDay_ (updateTOD)
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        Require (not updateTOD.empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr DateTime::DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz) noexcept
         : fTimezone_{tz}
         , fDate_{date}
         , fTimeOfDay_{timeOfDay.has_value () ? optional<TimeOfDay>{*timeOfDay} : nullopt}
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        Require (not timeOfDay.has_value () or not timeOfDay->empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz) noexcept
         : fTimezone_{tz}
         , fDate_{date}
         , fTimeOfDay_{timeOfDay}
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        Require (not timeOfDay.empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     inline constexpr DateTime DateTime::min ()
     {
@@ -85,16 +54,6 @@ namespace Stroika::Foundation::Time {
     inline constexpr DateTime DateTime::max ()
     {
         return DateTime{Date::max (), optional<TimeOfDay>{TimeOfDay::max ()}, Timezone::Unknown ()};
-    }
-    inline constexpr bool DateTime::empty () const noexcept
-    {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        return fDate_.empty ();
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
     inline constexpr Date DateTime::GetDate () const noexcept
     {
@@ -155,9 +114,6 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -165,15 +121,8 @@ namespace Stroika::Foundation::Configuration {
         EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::DateTime::ParseFormat::eCurrentLocale, L"Current-Locale"},
             {Stroika::Foundation::Time::DateTime::ParseFormat::eISO8601, L"ISO-8601"},
-            {Stroika::Foundation::Time::DateTime::ParseFormat::eXML, L"XML"},
             {Stroika::Foundation::Time::DateTime::ParseFormat::eRFC1123, L"RFC-1123"},
         }}};
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -181,14 +130,9 @@ namespace Stroika::Foundation::Configuration {
         EnumNames<Stroika::Foundation::Time::DateTime::PrintFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale, L"Current-Locale"},
             {Stroika::Foundation::Time::DateTime::PrintFormat::eISO8601, L"ISO-8601"},
-            {Stroika::Foundation::Time::DateTime::PrintFormat::eXML, L"XML"},
             {Stroika::Foundation::Time::DateTime::PrintFormat::eRFC1123, L"RFC-1123"},
             {Stroika::Foundation::Time::DateTime::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
         }}};
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-
 }
 
 #endif /*_Stroika_Foundation_Time_DateTime_inl_*/

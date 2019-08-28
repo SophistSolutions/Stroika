@@ -58,11 +58,6 @@ namespace Stroika::Foundation::DataExchange {
         return fValue_ == ATOM_MANAGER::kEmpty ? String{} : ATOM_MANAGER::Extract (fValue_);
     }
     template <typename ATOM_MANAGER>
-    inline int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
-    {
-        return Common::ThreeWayCompareNormalizer (fValue_, rhs.fValue_);
-    }
-    template <typename ATOM_MANAGER>
     inline constexpr bool Atom<ATOM_MANAGER>::empty () const
     {
         return fValue_ == ATOM_MANAGER::kEmpty;

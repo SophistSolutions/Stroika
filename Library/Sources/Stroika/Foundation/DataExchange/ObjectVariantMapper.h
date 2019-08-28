@@ -25,7 +25,6 @@
 #include "../Execution/Synchronized.h"
 #include "../IO/Network/InternetAddress.h"
 #include "../IO/Network/URI.h"
-#include "../IO/Network/URL.h"
 #include "../Memory/Common.h"
 #include "../Memory/Optional.h"
 #include "../Traversal/DiscreteRange.h"
@@ -385,7 +384,6 @@ namespace Stroika::Foundation::DataExchange {
          *      o   DateTime
          *      o   Duration
          *      o   IO::Network::InternetAddress
-         *      o   IO::Network::URL
          *      o   IO::Network::URI
          *      o   String
          *      o   Mapping<String, String>
@@ -550,7 +548,6 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Time::DateTime
          *      o   Characters::String
          *      o   VariantValue
-         *      o   IO::Network::URL
          *      o   IO::Network::URI
          *      o   Time::TimeOfDay
          *      o   Common::GUID
@@ -576,9 +573,6 @@ namespace Stroika::Foundation::DataExchange {
          *          MakeCommonSerializer_MappingWithStringishKey or MakeCommonSerializer_MappingAsArrayOfKeyValuePairs.
          *          MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general, but MakeCommonSerializer_MappingWithStringishKey
          *          is more commonly the desired output mapping, and so is the default.
-         *
-         *  \note   MakeCommonSerializer<IO::Network::URL> takes an optional argument IO::Network::URL::ParseOptions which defaults to AsFulLURL, but can
-         *          be set to IO::Network::URL::ParseOptions::eFlexiblyAsUI to allow easier use for configuration files.
          *
          *  \note   It is legal to call MakeCommonSerializer<> on a type where it only knows how to construct the base class type (struct derived : base {})
          *          in which case it produces a serializer that will still work with the given type T, but will only capture the data from base.
@@ -714,13 +708,6 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
         static TypeMappingDetails MakeCommonSerializer_ (const Memory::BLOB*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URL*, IO::Network::URL::ParseOptions parseOptions = IO::Network::URL::eAsFullURL);
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);

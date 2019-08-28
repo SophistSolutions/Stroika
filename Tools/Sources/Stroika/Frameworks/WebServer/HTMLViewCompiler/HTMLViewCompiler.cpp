@@ -7,9 +7,8 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/SDKString.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Execution/StringException.h"
 #include "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include "Stroika/Foundation/Streams/iostream/Utilities.h"
 
@@ -17,7 +16,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
-using Execution::StringException;
 
 const wchar_t kOpenCodeTag[]  = L"<%";
 const wchar_t kCloseCodeTag[] = L"%>";

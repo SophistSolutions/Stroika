@@ -20,10 +20,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      */
     class Connection_WinHTTP : public Connection {
     public:
-        // when we lose this CTOR, then Connection_WinHTTP inherits from Connection
-        [[deprecated ("in Stroika v2.1d27 - use Connection::Ptr conn = Connection_WinHTTP::New () instead")]] Connection_WinHTTP (const Options& options = Options ());
-
-    public:
         /**
          */
         static Connection::Ptr New (const Options& options = {});

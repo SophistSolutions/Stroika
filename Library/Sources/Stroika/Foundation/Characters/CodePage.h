@@ -251,9 +251,6 @@ namespace Stroika::Foundation::Characters {
             lenientConversion
         };
 
-        // [ - in C++20, get rid of this, as it can be either char, or char8_t (and/or change to char8_t)
-        using UTF8 [[deprecated ("2.1d23 deprecated, use char or char8_t as apppropriate")]] = char;
-
         /**
          *  FROM and TO can be
          *      char
@@ -547,25 +544,6 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_TYPE>
     const codecvt<CHAR_TYPE, char, mbstate_t>& LookupCodeConverter (const String& charset);
 
-    /*
-     */
-    class [[deprecated ("in Stroika v2.1d10 - use UTFConvert instead")]] UTF8Converter
-    {
-    public:
-        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
-
-        nonvirtual size_t MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
-
-        nonvirtual void MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-        nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
-
-        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
-        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
-        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
-    };
 }
 
 /*

@@ -126,13 +126,6 @@ namespace Stroika::Foundation::Traversal {
         // [[deprecated ("use PtrImplementationTemplate since version 2.1d6")]] - really deprecated but not sure how to get deprecated attribute working here.
         template <typename SHARED_T>
         using SharedPtrImplementationTemplate = PtrImplementationTemplate<SHARED_T>;
-
-    public:
-        template <typename SHARED_T, typename... ARGS_TYPE>
-        [[deprecated ("use MakeSmartPtr since version 2.1d6")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
-        {
-            return MakeSmartPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
-        }
     };
 
     /**

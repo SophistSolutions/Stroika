@@ -141,34 +141,6 @@ namespace Stroika::Foundation::Time {
     {
         return fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_;
     }
-    inline constexpr bool Date::empty () const
-    {
-        return fJulianDateRep_ == kEmptyJulianRep;
-    }
-    inline int Date::Compare (const Date& rhs) const
-    {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        if (empty ()) {
-            return rhs.empty () ? 0 : -1;
-        }
-        else {
-            if (rhs.empty ()) {
-                return 1;
-            }
-            // careful of signed/unsigned converstions - esp because of kMax which is very large
-            JulianRepType l = GetJulianRep ();
-            JulianRepType r = rhs.GetJulianRep ();
-            if (l == r) {
-                return 0;
-            }
-            return l < r ? -1 : 1;
-        }
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-    }
     inline Date Date::Parse (const String& rep, const locale& l)
     {
         return Date::Parse_ (rep, l, kDefaultParseFormats, nullptr);
@@ -234,27 +206,13 @@ namespace Stroika::Foundation::Time {
      */
     constexpr int Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        if (lhs.empty ()) {
-            return rhs.empty () ? 0 : -1;
+        // careful of signed/unsigned converstions - esp because of kMax which is very large
+        JulianRepType l = lhs.GetJulianRep ();
+        JulianRepType r = rhs.GetJulianRep ();
+        if (l == r) {
+            return 0;
         }
-        else {
-            if (rhs.empty ()) {
-                return 1;
-            }
-            // careful of signed/unsigned converstions - esp because of kMax which is very large
-            JulianRepType l = lhs.GetJulianRep ();
-            JulianRepType r = rhs.GetJulianRep ();
-            if (l == r) {
-                return 0;
-            }
-            return l < r ? -1 : 1;
-        }
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        return l < r ? -1 : 1;
     }
 
     /*

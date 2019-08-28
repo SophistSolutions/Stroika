@@ -45,11 +45,6 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (fFun_);
         return fFun_ (forward<Args> (args)...);
     }
-    template <typename FUNCTION_SIGNATURE>
-    inline int Function<FUNCTION_SIGNATURE>::Compare (const Function& rhs) const
-    {
-        return Common::ThreeWayCompareNormalizer (fOrdering_, rhs.fOrdering_);
-    }
 
     /*
      ********************************************************************************

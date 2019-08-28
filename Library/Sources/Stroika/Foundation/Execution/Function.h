@@ -90,15 +90,6 @@ namespace Stroika::Foundation::Execution {
     public:
         struct ThreeWayComparer;
 
-    public:
-        /**
-         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-         *  Note - this has nothing todo with the actual value of the 'target' function passed in.
-         *  This is just magic associated with the object so it can be stored in a map.
-         *      @todo DOCUMENT BETTER
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const Function& rhs) const;
-
     private:
         STDFUNCTION fFun_;
         void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)

@@ -114,10 +114,6 @@ namespace Stroika::Foundation::Containers {
         template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
         struct EqualsComparer;
 
-    public:
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () instead")]] bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
-
     protected:
         /**
          */
@@ -206,18 +202,6 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, size_t N>
     using DataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, DataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
-
-    /**
-     *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
-     */
-    template <typename T>
-    using DataHyperRectangle1 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 1>;
-    template <typename T>
-    using DataHyperRectangle2 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 2>;
-    template <typename T>
-    using DataHyperRectangle3 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 3>;
-    template <typename T>
-    using DataHyperRectangle4 [[deprecated ("in Stroika v2.1d24 - use DataHyperRectangleN instead")]] = DataHyperRectangleN<T, 4>;
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 

@@ -16,7 +16,6 @@ Objs	=	\
 	$(ObjDir)ClientContext${OBJ_SUFFIX}\
 	$(ObjDir)Common${OBJ_SUFFIX}\
 	$(ObjDir)ServerContext${OBJ_SUFFIX}\
-	$(ObjDir)SSLSocket${OBJ_SUFFIX}\
 
 
 all:	$(Objs)

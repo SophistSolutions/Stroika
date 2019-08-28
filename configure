@@ -93,8 +93,6 @@ my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
-my $CWARNING_FLAGS = undef;
-my $ADD2CWARNING_FLAGS = "";
 my $SharedSymbolVisibility = undef;	# gcc visibility flag - -fvisible=hidden
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
@@ -157,7 +155,6 @@ my $AR = undef;
 my $RANLIB = undef;
 my $Linker = undef;
 my $STRIP = undef;
-my $EXTRA_COMPILER_ARGS = "";				### OBSOLETE - DEPRECATED ###
 my $EXTRA_PREFIX_LINKER_ARGS = "";
 my $EXTRA_SUFFIX_LINKER_ARGS = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
@@ -550,7 +547,6 @@ sub	SetInitialDefaults_
 		$COMPILER_DRIVER = "clang";
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
-		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
 		$AR = "ar";
 		$AS = "as";
 		$RANLIB = "ranlib";
@@ -608,19 +604,6 @@ sub	SetDefaultForCompilerDriver_
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		if ($STATIC_LINK_GCCRUNTIME == DEFAULT_BOOL_OPTIONS) {
 			$STATIC_LINK_GCCRUNTIME = 1;
-		}
-	}
-	if (! defined $CWARNING_FLAGS) {
-		$CWARNING_FLAGS = '';
-		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 5.2 && GetGCCVersion_ ($COMPILER_DRIVER) < 6) {
-				#This is broken in gcc 5.2 - #https://gcc.gnu.org/ml/gcc-bugs/2015-08/msg01811.html
-				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS . " -Wno-odr"
-			}
-		}
-		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
-			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
 		}
 	}
 
@@ -1057,12 +1040,6 @@ sub	ParseCommandLine_Remaining_
 				DoHelp_ (1);
 			}
 		}
-		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
-			$i++;
-			$var = $args[$i];
-			$CPPSTD_VERSION_FLAG = $var;
-			print "--cppstd-version-flag deprecated - use --cppstd-version\n";
-		}
 		elsif ((lc ($var) eq "-stdlib") or (lc ($var) eq "--stdlib")) {
 			$i++;
 			$var = $args[$i];
@@ -1209,30 +1186,6 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$STRIP = $var;
 		}
-		elsif ((lc ($var) eq "-append-compiler-warning-args") or (lc ($var) eq "--append-compiler-warning-args")) {
-			$i++;
-			$var = $args[$i];
-			if (not ($ADD2CWARNING_FLAGS eq "")) {
-				$ADD2CWARNING_FLAGS .= " ";
-			}
-			$ADD2CWARNING_FLAGS .= $var;
-			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
-		}
-		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
-			$i++;
-			$var = $args[$i];
-			$EXTRA_COMPILER_ARGS = $var;
-			print "--extra-compile-args is ***DEPRECATED***\n";
-		}
-		elsif ((lc ($var) eq "-append-extra-compiler-args") or (lc ($var) eq "--append-extra-compiler-args")) {
-			$i++;
-			$var = $args[$i];
-			if (not ($EXTRA_COMPILER_ARGS eq "")) {
-				$EXTRA_COMPILER_ARGS .= " ";
-			}
-			$EXTRA_COMPILER_ARGS .= $var;
-			print "--append-extra-compiler-args is ***DEPRECATED***\n";
-		}
 		elsif ((lc ($var) eq "-extra-prefix-linker-args") or (lc ($var) eq "--extra-prefix-linker-args")) {
 			$i++;
 			$var = $args[$i];
@@ -1347,10 +1300,6 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-extra-compiler-and-linker-args") or (lc ($var) eq "--append-extra-compiler-and-linker-args")) {
 			$i++;
 			$var = $args[$i];
-			if (not ($EXTRA_COMPILER_ARGS eq "")) {
-				$EXTRA_COMPILER_ARGS .= " ";
-			}
-			$EXTRA_COMPILER_ARGS .= $var;
 			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
 				$EXTRA_PREFIX_LINKER_ARGS .= " ";
 			}
@@ -1463,7 +1412,6 @@ sub	ParseCommandLine_Remaining_
 			$onlyGenerateIfCompilerExists = true;
 		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
-			$EXTRA_COMPILER_ARGS .= " -pg";
 			push @CFLAGS, "-pg";
 			push @CXXFLAGS, "-pg";
 			$EXTRA_PREFIX_LINKER_ARGS .= " -pg";
@@ -1476,12 +1424,6 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ (0);
-		}
-		elsif ((lc ($var) eq "-compiler-warning-args") or (lc ($var) eq "--compiler-warning-args")) {
-			$i++;
-			$var = $args[$i];
-			$CWARNING_FLAGS = $var;
-			print "--compiler-warning-args is ***DEPRECATED***: use --append-CXXFLAGS, --remove-CXXFLAGS, (or CFLAGS or CPPFLAGS)\n";
 		}
 		else {
 			if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
@@ -1626,12 +1568,6 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			}
 		}
 	}
-	if (not ($CWARNING_FLAGS eq "")) {
-		### @todo - need separate flags for C and CXX
-		for my $i (split / /, $CWARNING_FLAGS) {
-			push @flags, "$i";
-		}
-	}
 
 	if (defined $SharedSymbolVisibility) {
 		push @flags, "-fvisibility=$SharedSymbolVisibility";
@@ -1690,17 +1626,6 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		}
 
 	}
-	### @todo - need separate flags for C and CXX
-	if (0) {
-		for my $i (split / /, $EXTRA_COMPILER_ARGS) {
-			if (defined $STDCXXLIB and $i eq ("-stdlib=" . $STDCXXLIB)) {
-				#ignore
-			}
-			else {
-				push @flags, "$i";
-			}
-		}
-	}
 	for my $r (@flagValues2Remove) {
 		my $i = indexOf (@flags, $r);
 		if ($i != -1) {
@@ -1720,7 +1645,6 @@ sub PostProcessOptions_ ()
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";
 			push @CXXFLAGS, "-flto";
-			$EXTRA_COMPILER_ARGS .= " -flto";
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
@@ -1737,7 +1661,6 @@ sub PostProcessOptions_ ()
 					$crap2Add2CZZFlags .= ",";
 				}
 			}
-			$EXTRA_COMPILER_ARGS .= $crap2Add2CZZFlags;
 			$EXTRA_PREFIX_LINKER_ARGS .= $crap2Add2CZZFlags;
 			push @CFLAGS, $crap2Add2CZZFlags;
 			push @CXXFLAGS, $crap2Add2CZZFlags;
@@ -1771,7 +1694,6 @@ sub PostProcessOptions_ ()
 		
 	}
 	if (not ($noSanitizerFlags eq "")) {
-		$EXTRA_COMPILER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
 		$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
 		push @CFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
 		push @CXXFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
@@ -1807,8 +1729,6 @@ sub PostProcessOptions_ ()
 		}
 	}
 
-	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
-
 	if ($ARCH eq "") {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			die ("assert error - sb handled earlier");
@@ -1820,7 +1740,6 @@ sub PostProcessOptions_ ()
 
 	if (defined $STDCXXLIB) {
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDCXXLIB;
 			$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDCXXLIB;
 			push @CXXFLAGS, " -stdlib=" . $STDCXXLIB;
 		}
@@ -1924,18 +1843,6 @@ sub PostProcessOptions_ ()
 		$isVisualStudio = false;
 	}
 
-	#
-	# generate CFLAGS and CXXFLAGS
-	# roughly as follows:
-	#	CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
-	#	ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	#		CFLAGS += -g
-	#	endif
-	#	ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	#		CFLAGS +=  -D_GLIBCXX_DEBUG 
-	#	endif
-	#	CFLAGS		+=			$(EXTRA_COMPILER_ARGS)
-	#
 	if ($CFLAGS_Overridden eq false) {
 		@GetDefaultCFLAGSorCXXFLAGS_flags = @CFLAGS;
 		@GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove = @CFLAGS2Remove;
@@ -2071,12 +1978,6 @@ sub	WriteConfigFile_
 		print (OUT "    <HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>true</HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>\n");
 	}
 
-	
-	if (not ($CWARNING_FLAGS eq "")) {
-		### DEPRECATED###
-		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
-	}
-
 	print (OUT "    <ExtraCDefines>\n");
 		foreach my $var (@useExtraCDefines)
 		{
@@ -2113,12 +2014,9 @@ sub	WriteConfigFile_
 	print (OUT "</CXXFLAGS>\n");
 
 	if ($runtimeStackProtectorFlag == true) {
-		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
 		unshift(@CFLAGS, '-fstack-protector-all');
 		unshift(@CXXFLAGS, '-fstack-protector-all');
 	}
-
-	print (OUT "    <EXTRA_COMPILER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");		# DEPRECATED
 
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 

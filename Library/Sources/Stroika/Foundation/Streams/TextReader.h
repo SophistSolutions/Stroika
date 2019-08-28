@@ -124,13 +124,6 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src);
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src);
 
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (const InputStream<byte>::Ptr& src, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable);
-        [[deprecated ("use SeekableFlag overload since version 2.1d6")]] static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable);
-
     private:
         class FromBinaryStreamBaseRep_;
         class UnseekableBinaryStreamRep_;

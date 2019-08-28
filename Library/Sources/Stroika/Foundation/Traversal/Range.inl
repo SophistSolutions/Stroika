@@ -234,15 +234,6 @@ namespace Stroika::Foundation::Traversal {
         Require (not empty ());
         return Range<T, TRAITS> (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
     }
-    template <typename T, typename TRAITS>
-    template <typename T2, typename TRAITS2>
-    inline bool Range<T, TRAITS>::Equals (const Range<T2, TRAITS2>& rhs) const
-    {
-        if (empty ()) {
-            return rhs.empty ();
-        }
-        return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_ and fBeginOpenness_ == rhs.fBeginOpenness_ and fBeginOpenness_ == rhs.fBeginOpenness_;
-    }
 #if 0
     template    <typename T, typename TRAITS>
     bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& rhs) const

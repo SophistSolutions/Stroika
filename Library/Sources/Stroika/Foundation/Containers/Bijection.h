@@ -424,11 +424,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         */
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Bijection& rhs) const;
-
-    public:
-        /**
          * \brief STL-ish alias for RemoveAll ().
          */
         nonvirtual void clear ();

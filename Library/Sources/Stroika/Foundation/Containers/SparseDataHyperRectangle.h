@@ -63,18 +63,6 @@ namespace Stroika::Foundation::Containers {
     template <typename T, size_t N>
     using SparseDataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, SparseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
 
-    /**
-     *  @todo see if there is a way to define this genericly using templates/sequences - SparseDataHyperRectangleN<N>
-     */
-    template <typename T>
-    using SparseDataHyperRectangle1 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 1>;
-    template <typename T>
-    using SparseDataHyperRectangle2 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 2>;
-    template <typename T>
-    using SparseDataHyperRectangle3 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 3>;
-    template <typename T>
-    using SparseDataHyperRectangle4 [[deprecated ("in Stroika v2.1d24 - use SparseDataHyperRectangleN instead")]] = SparseDataHyperRectangleN<T, 4>;
-
 }
 
 /*

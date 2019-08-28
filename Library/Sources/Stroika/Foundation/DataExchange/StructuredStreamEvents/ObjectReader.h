@@ -25,7 +25,6 @@
 #include "../../Containers/SortedSet.h"
 #include "../../Execution/Synchronized.h"
 #include "../../IO/Network/URI.h"
-#include "../../IO/Network/URL.h"
 #include "../../Memory/Common.h"
 #include "../../Memory/Optional.h"
 #include "../../Streams/InputStream.h"

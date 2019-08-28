@@ -108,13 +108,6 @@ namespace Stroika::Foundation::Traversal {
         // SharedPtrImplementationTemplate deprecated - Stroika v2.1b6
         template <typename SHARED_T>
         using SharedPtrImplementationTemplate = PtrImplementationTemplate<SHARED_T>;
-
-    public:
-        template <typename SHARED_T, typename... ARGS_TYPE>
-        [[deprecated ("use MakeSmartPtr since version 2.1d6???")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
-        {
-            return MakeSmartPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
-        }
     };
 
     /**

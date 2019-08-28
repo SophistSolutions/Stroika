@@ -92,14 +92,6 @@ namespace Stroika::Foundation::DataExchange {
         // compare just the subtypes, for prefix equals
         return GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::CompareOptions::eCaseInsensitive);
     }
-    inline bool InternetMediaType::Equals (const InternetMediaType& rhs) const
-    {
-        return fType_ == rhs.fType_ and fSubType_ == rhs.fSubType_ and fParameters_ == rhs.fParameters_;
-    }
-    inline int InternetMediaType::Compare (const InternetMediaType& rhs) const
-    {
-        return InternetMediaType::ThreeWayComparer{}(*this, rhs);
-    }
     template <>
     inline wstring InternetMediaType::As () const
     {

@@ -313,10 +313,6 @@ namespace Stroika::Foundation::Traversal {
         struct EqualsComparer;
 
     public:
-        template <typename T2, typename TRAITS2>
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Range<T2, TRAITS2>& rhs) const;
-
-    public:
         /**
          *  Returns true iff there are any points shared in common between this range and the rhs range.
          */

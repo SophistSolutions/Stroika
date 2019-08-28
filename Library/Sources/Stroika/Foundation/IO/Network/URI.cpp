@@ -12,8 +12,6 @@
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 
-#include "URL.h"
-
 #include "URI.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -95,21 +93,6 @@ namespace {
         return result.str ();
     };
 }
-
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_START (4996);
-URI::URI (const URL& url)
-    : URI{url.GetScheme (),
-          url.GetAuthority (),
-          PatchOldStroikaURLPath2NewPath_ (url.GetAuthority (), url.GetHostRelativePath ()),
-          url.GetQueryString ().empty () ? optional<String>{} : url.GetQueryString (),
-          url.GetFragment ().empty () ? optional<String>{} : url.GetFragment ()}
-{
-}
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_END (4996);
 
 URI URI::Parse (const string& rawURL)
 {

@@ -2790,62 +2790,6 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
 
 /*
  ********************************************************************************
- ********************************** UTF8Converter *******************************
- ********************************************************************************
- */
-void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const
-{
-    Require (inMBCharCnt == 0 or inMBChars != nullptr);
-    RequireNotNull (outCharCnt);
-    Require (*outCharCnt == 0 or outChars != nullptr);
-    using namespace UTFConvert;
-    const char*                       sourceStart = inMBChars;
-    const char*                       sourceEnd   = sourceStart + inMBCharCnt;
-    char16_t*                         targetStart = outChars;
-    char16_t*                         targetEnd   = outChars + *outCharCnt;
-    constexpr ConversionFlags         kFlag_      = lenientConversion;
-    [[maybe_unused]] ConversionResult tmp         = ConvertQuietly (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    *outCharCnt                                   = targetStart - outChars;
-}
-
-void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
-{
-    using namespace UTFConvert;
-    const char*                       sourceStart = inMBChars;
-    const char*                       sourceEnd   = sourceStart + inMBCharCnt;
-    char32_t*                         targetStart = outChars;
-    char32_t*                         targetEnd   = outChars + *outCharCnt;
-    constexpr ConversionFlags         kFlag_      = lenientConversion;
-    [[maybe_unused]] ConversionResult tmp         = ConvertQuietly (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    *outCharCnt                                   = targetStart - outChars;
-}
-
-void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
-{
-    using namespace UTFConvert;
-    const char16_t*                   sourceStart = inChars;
-    const char16_t*                   sourceEnd   = sourceStart + inCharCnt;
-    char*                             targetStart = reinterpret_cast<char*> (outChars);
-    char*                             targetEnd   = targetStart + *outCharCnt;
-    constexpr ConversionFlags         kFlag_      = lenientConversion;
-    [[maybe_unused]] ConversionResult tmp         = ConvertQuietly (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    *outCharCnt                                   = targetStart - reinterpret_cast<char*> (outChars);
-}
-
-void UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
-{
-    using namespace UTFConvert;
-    const char32_t*                   sourceStart = reinterpret_cast<const char32_t*> (inChars);
-    const char32_t*                   sourceEnd   = sourceStart + inCharCnt;
-    char*                             targetStart = reinterpret_cast<char*> (outChars);
-    char*                             targetEnd   = targetStart + *outCharCnt;
-    constexpr ConversionFlags         kFlag_      = lenientConversion;
-    [[maybe_unused]] ConversionResult tmp         = ConvertQuietly (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    *outCharCnt                                   = targetStart - reinterpret_cast<char*> (outChars);
-}
-
-/*
- ********************************************************************************
  ********************************** UTFConvert **********************************
  ********************************************************************************
  */

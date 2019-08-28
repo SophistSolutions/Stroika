@@ -113,11 +113,6 @@ namespace Stroika::Foundation::Common {
         fValue = forward<VALUE_TYPE2> (rhs.fValue);
         return *this;
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::Equals (const KeyValuePair<KeyType, ValueType>& rhs) const
-    {
-        return fKey == rhs.fKey and fValue == rhs.fValue;
-    }
 
     /*
      ********************************************************************************

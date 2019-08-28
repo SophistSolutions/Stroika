@@ -17,7 +17,6 @@
 
 #include "../HTTP/Exception.h"
 #include "../HTTP/Status.h"
-#include "../URL.h"
 
 #include "Request.h"
 

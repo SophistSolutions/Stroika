@@ -36,31 +36,6 @@
 namespace Stroika::Foundation::Memory {
 
     /**
-     *  \brief  SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
-     *
-     *  SharedByValue_CopyByFunction is a simple copying mechanism used by SharedByValue<>.
-     *  It is not the most efficient approach (since it stores an actual pointer for the
-     *  copy function. But its very simple and usually adequate.
-     */
-    template <typename T, typename SHARED_IMLP = shared_ptr<T>>
-    struct [[deprecated ("use std::function<> or just any functor with operator() - since in version 2.1d6")]] SharedByValue_CopyByFunction
-    {
-        SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [] (const T& t) -> SHARED_IMLP { return SHARED_IMLP (new T (t)); }) noexcept
-            : fCopier (copier)
-        {
-            //RequireNotNull (copier);
-        }
-        nonvirtual SHARED_IMLP operator() (const T& t) const
-        {
-            // AssertNotNull (fCopier);
-            return (*fCopier) (t);
-        }
-
-        SHARED_IMLP (*fCopier)
-        (const T&);
-    };
-
-    /**
      *  \brief  SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
      *
      * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.

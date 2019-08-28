@@ -144,10 +144,6 @@ namespace Stroika::Foundation::Containers {
         struct EqualsComparer;
 
     public:
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        [[deprecated ("in Stroika v2.1d24 - use EqualsComparer{} () or == instead")]] bool Equals (const Stack& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
-
-    public:
         /**
          * \brief STL-ish alias for RemoveAll ().
          */

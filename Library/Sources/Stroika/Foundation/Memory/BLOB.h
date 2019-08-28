@@ -284,23 +284,6 @@ namespace Stroika::Foundation::Memory {
         struct ThreeWayComparer;
 
     public:
-        [[deprecated ("in Stroika v2.1d24 - use a == b instead (or EqualsComparer)")]] bool Equals (const BLOB& rhs) const;
-
-    public:
-        /**
-         *  This is like memcmp() - it returns == 0, if the RHS and LHS are the same, and it
-         *  returns < 0 if the first byte where the two regions differ is less than the first byte
-         *  of the RHS (where they differ).
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const BLOB& rhs) const;
-
-    public:
-        /**
-         *  Trivial alias for @see Compare()
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int compare (const BLOB& rhs) const;
-
-    public:
         /**
          *  Trivial alias for @see GetSize()
          */

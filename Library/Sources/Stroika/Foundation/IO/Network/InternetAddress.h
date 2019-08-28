@@ -173,7 +173,6 @@ namespace Stroika::Foundation::IO::Network {
         InternetAddress (const in_addr& i, ByteOrder byteOrder);
         constexpr InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4);
         constexpr InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
-        [[deprecated ("array<byte,4> works better so this is deprecated since Stroika v2.1d13")]] constexpr InternetAddress (tuple<uint8_t, uint8_t, uint8_t, uint8_t> octets);
         constexpr InternetAddress (array<uint8_t, 4> octets, AddressFamily af = AddressFamily::V4);
         constexpr InternetAddress (array<byte, 4> octets, AddressFamily af = AddressFamily::V4);
         constexpr InternetAddress (const in6_addr& i);

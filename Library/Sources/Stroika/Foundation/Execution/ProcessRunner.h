@@ -345,12 +345,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void JoinUntil (Time::DurationSecondsType timeoutAt) const;
 
     public:
-        [[deprecated ("Use Join instead - as of v2.1d16")]] void WaitForDoneAndPropagateErrors (Time::DurationSecondsType timeout = Time::kInfinite) const
-        {
-            Join (timeout);
-        }
-
-    public:
         /**
          *  If the process has completed with an error, throw exception reflecting that failure.
          *

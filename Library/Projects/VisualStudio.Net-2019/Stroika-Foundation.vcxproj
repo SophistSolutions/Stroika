@@ -398,7 +398,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Cryptography-SSL-Common.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp">
@@ -767,7 +766,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Activity.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
@@ -941,9 +939,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
@@ -1145,7 +1141,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
@@ -1390,7 +1385,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h" />
@@ -1445,7 +1439,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
@@ -1523,7 +1516,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
@@ -1537,10 +1529,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
@@ -1587,9 +1577,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\ConnectionPool.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_libcurl.h" />
@@ -1599,7 +1586,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h" />
@@ -1906,7 +1892,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
@@ -1959,7 +1944,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
@@ -1971,9 +1955,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
@@ -2034,7 +2016,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Makefile" />

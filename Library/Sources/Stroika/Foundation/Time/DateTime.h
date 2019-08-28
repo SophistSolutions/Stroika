@@ -31,8 +31,6 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Complete removeal of deprecated empty and no-arg constructor
- *
  *      @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
  *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
@@ -63,15 +61,6 @@ namespace Stroika::Foundation::Time {
      *      DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
      *
      *      Timezone may be "unknown" (missing), or a Timezone object (@see Timezone).
-     *
-     *      'empty' concept:
-     *          ****DEPRECATED***
-     *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
-     *          of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
-     *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
-     *          This is a bit like the floating point concept of negative infinity.
-     *
-     *          This concept is the same as the Date::empty () concept.
      *
      *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
@@ -106,7 +95,6 @@ namespace Stroika::Foundation::Time {
          *
          *  \note TimeOfDay arguments *must* not be 'empty' - instead use optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
          */
-        [[deprecated ("Use optional<DateTime> instead of DateTime no-arg constructor - as of v2.1d11")]] constexpr DateTime () noexcept;
         constexpr DateTime (const DateTime& src) = default;
         constexpr DateTime (DateTime&& src)      = default;
         constexpr DateTime (const Date& d) noexcept;
@@ -151,7 +139,6 @@ namespace Stroika::Foundation::Time {
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eRFC1123,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eRFC1123)
@@ -217,18 +204,6 @@ namespace Stroika::Foundation::Time {
         static DateTime Parse (const String& rep, ParseFormat pf);
         static DateTime Parse (const String& rep, const locale& l);
         static DateTime Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
-#if qPlatform_Windows
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] static DateTime Parse (const String& rep, LCID lcid);
-#endif
-
-    public:
-        /**
-         *  If the date is empty - this DateTime is empty.
-         *
-         *  Timezone, and TimeOfDay are ignored for the purpose of 'empty' check (because empty tz means unknown, and empty tod
-         *  just means all day or time part unspecified).
-         */
-        [[deprecated ("Use optional<TimeOfDay> instead of TimeOfDay no-arg constructor - as of v2.1d11")]] constexpr bool empty () const noexcept;
 
     public:
         /**
@@ -241,20 +216,6 @@ namespace Stroika::Foundation::Time {
          *  Return the current Date (in LocalTime - local timezone)
          */
         static Date GetToday () noexcept;
-
-    public:
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        [[deprecated ("use DateTime::min - deprecated in Stroika v2.1d11")]] static const DateTime kMin;
-#else
-        [[deprecated ("use DateTime::min - deprecated in Stroika v2.1d11")]] static constexpr DateTime kMin{Date::min (), TimeOfDay::min (), Timezone::Unknown ()};
-#endif
-
-    public:
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        [[deprecated ("use DateTime::max - deprecated in Stroika v2.1d11")]] static const DateTime kMax;
-#else
-        [[deprecated ("use DateTime::max - deprecated in Stroika v2.1d11")]] static constexpr DateTime kMax{Date::max (), TimeOfDay::max (), Timezone::Unknown ()};
-#endif
 
     public:
         /**
@@ -365,7 +326,6 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eXML [[deprecated ("since Stroika v2.1d11 - use eISO8601")]],
             eRFC1123,
             eCurrentLocale_WithZerosStripped,
 
@@ -388,9 +348,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
-#if qPlatform_Windows
-        [[deprecated ("Use Locale APIs instead of LCID APIS - https://docs.microsoft.com/en-us/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformata says Microsoft is migrating toward the use of locale names instead of locale identifiers - Since Stroika v2.1d11")]] nonvirtual String Format (LCID lcid) const;
-#endif
 
     public:
         /**
@@ -496,11 +453,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         struct ThreeWayComparer;
-
-    public:
-        /**
-         */
-        [[deprecated ("in Stroika v2.1d24 - use Common::ThreeWayCompare () or ThreeWayComparer{} () instead")]] int Compare (const DateTime& rhs) const;
 
     private:
         optional<Timezone>  fTimezone_;

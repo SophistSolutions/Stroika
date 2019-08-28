@@ -88,10 +88,6 @@ namespace Stroika::Foundation::IO::Network {
         : InternetAddress (array<uint8_t, 4>{octet1, octet2, octet3, octet4})
     {
     }
-    constexpr InternetAddress::InternetAddress (tuple<uint8_t, uint8_t, uint8_t, uint8_t> octets)
-        : InternetAddress (array<uint8_t, 4>{get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets)})
-    {
-    }
     constexpr InternetAddress::InternetAddress (array<uint8_t, 4> octets, AddressFamily af)
         : fAddressFamily_{af}
         , fArray_4_uint_{octets}

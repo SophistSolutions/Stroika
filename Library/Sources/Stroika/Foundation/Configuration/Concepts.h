@@ -102,22 +102,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr bool IsIterableOfT_v = IsIterableOfT<ITERABLE_OF_T, T>::value;
 
     /**
-     *  See http://en.cppreference.com/w/cpp/concept/Container
-     */
-    template <typename T>
-    [[deprecated ("Use IsIterable_v instead - as of v2.1d5")]] constexpr bool Container ()
-    {
-#if 1
-        // no where near enough, but a start...
-        // IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesn't compile instead of returning false - we msut use has_beginend
-        return has_beginend<T>::value;
-#else
-        // about right?
-        return IsIterableOfT<T>::value;
-#endif
-    }
-
-    /**
      *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
      */
     template <typename T>
