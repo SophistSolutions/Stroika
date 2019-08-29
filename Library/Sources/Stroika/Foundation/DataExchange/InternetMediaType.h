@@ -99,12 +99,10 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual bool IsTextFormat () const;
 
     public:
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wcomment\"")
         /**
-         * subtype of image/*
+         * subtype of image / *		{avoid comment-character}
          */
         nonvirtual bool IsImageFormat () const;
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wcomment\"")
 
     public:
         /**
