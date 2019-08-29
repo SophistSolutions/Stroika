@@ -85,7 +85,7 @@ namespace {
             tmp.SetAt (2, 2, 4);
             VerifyTestResult (tmp.GetAt (2, 2) == 4);
             Verify (tmp.GetLength () == 1);
-            for (auto t : tmp) {
+            for ([[maybe_unused]]auto t : tmp) {
             }
         }
     }

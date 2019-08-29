@@ -188,7 +188,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
 
-    int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
+    [[maybe_unused]]int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
 
     InternetAddress result;

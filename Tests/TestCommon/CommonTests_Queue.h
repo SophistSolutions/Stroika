@@ -21,8 +21,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
             void DoAllTests_ ()
             {
-                CONCRETE_CONTAINER                              s;
-                CONCRETE_CONTAINER                              s3 = s;
+                CONCRETE_CONTAINER s;
+                CONCRETE_CONTAINER s3 = s;
             }
         }
 
