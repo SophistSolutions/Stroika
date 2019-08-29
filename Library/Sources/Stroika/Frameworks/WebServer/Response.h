@@ -81,10 +81,11 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void              SetContentType (const InternetMediaType& contentType);
 
     public:
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wcomment\"")
         /*
          * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
          * For ContentTypes
-         *      o   'text/*'
+         *      o   text/*
          *      o   application/json
          *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
          *          "text/html; charset=UTF-8"
@@ -94,6 +95,7 @@ namespace Stroika::Frameworks::WebServer {
          *          GetState () == eInProgress
          *          TotalBytesWritten == 0
          */
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wcomment\"")
         nonvirtual Characters::CodePage GetCodePage () const;
         nonvirtual void                 SetCodePage (Characters::CodePage codePage);
 
