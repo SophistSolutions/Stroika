@@ -927,8 +927,8 @@ namespace {
             [[maybe_unused]] long               ignoredLong{};
             [[maybe_unused]] unsigned long      ignoredUnsignedLong{};
             [[maybe_unused]] unsigned long long ignoredUnsignedLongLong{};
-            [[maybe_unused]]unsigned long int  ignored_unsigned_long{};
-            int                num = ::sscanf (
+            [[maybe_unused]] unsigned long int  ignored_unsigned_long{};
+            [[maybe_unused]] int                num = ::sscanf (
                 S,
 
                 // (3 - char state)...

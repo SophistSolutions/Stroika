@@ -723,32 +723,32 @@ namespace {
             unsigned int i = 0;
             for (Date d : dr) {
                 ++i;
-                Assert (d.GetYear () == Year (1903));
-                Assert (d.GetMonth () == MonthOfYear::eApril);
+                VerifyTestResult (d.GetYear () == Year (1903));
+                VerifyTestResult (d.GetMonth () == MonthOfYear::eApril);
                 if (i == 1) {
-                    Assert (d.GetDayOfMonth () == DayOfMonth (5));
+                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth (5));
                 }
                 else {
-                    Assert (d.GetDayOfMonth () == DayOfMonth (6));
+                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth (6));
                 }
             }
-            Assert (i == 2);
+            VerifyTestResult (i == 2);
         }
         {
             DateRange    dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};
             unsigned int i = 0;
             for (Date d : dr.Elements ()) {
                 ++i;
-                Assert (d.GetYear () == Year (1903));
-                Assert (d.GetMonth () == MonthOfYear::eApril);
+                VerifyTestResult (d.GetYear () == Year (1903));
+                VerifyTestResult (d.GetMonth () == MonthOfYear::eApril);
                 if (i == 1) {
-                    Assert (d.GetDayOfMonth () == DayOfMonth (5));
+                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth (5));
                 }
                 else {
-                    Assert (d.GetDayOfMonth () == DayOfMonth (6));
+                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth (6));
                 }
             }
-            Assert (i == 2);
+            VerifyTestResult (i == 2);
         }
         {
             DateRange dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};

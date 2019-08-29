@@ -96,10 +96,9 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
-                    using key_type                     = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using ConcreteContainerType        = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    using KeyEqualsCompareFunctionType = typename ConcreteContainerType::KeyEqualsCompareFunctionType;
-                    ConcreteContainerType m            = testingSchema.Factory ();
+                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
+                    ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 1);
                     for (auto i : m) {
@@ -251,10 +250,9 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_8_Iteration_With_Value_Comparer"};
-                    using key_type                     = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using ConcreteContainerType        = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    using KeyEqualsCompareFunctionType = typename ConcreteContainerType::KeyEqualsCompareFunctionType;
-                    ConcreteContainerType m            = testingSchema.Factory ();
+                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
+                    ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 1);
                     for (auto i : m) {

@@ -158,7 +158,7 @@ namespace {
                 VerifyTestResult (ct1.IsTextFormat ());
             }
             {
-                InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
                 DbgTrace (L"SUFFIX(JSON)=%s", Characters::ToString (r.GetPreferredAssociatedFileSuffix (InternetMediaTypes::kJSON)).c_str ());
                 DbgTrace (L"MOREGEN(JSON)=%s", Characters::ToString (r.GetMoreGeneralTypes (InternetMediaTypes::kJSON)).c_str ());
                 DbgTrace (L"MORESPECIFIC(JSON)=%s", Characters::ToString (r.GetMoreSpecificTypes (InternetMediaTypes::kJSON)).c_str ());
@@ -166,7 +166,7 @@ namespace {
                 DbgTrace (L"GetAssociatedPrettyName(JSON)=%s", Characters::ToString (r.GetAssociatedPrettyName (InternetMediaTypes::kJSON)).c_str ());
             }
             {
-                InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
                 DbgTrace (L"SUFFIX(PNG)=%s", Characters::ToString (r.GetPreferredAssociatedFileSuffix (InternetMediaTypes::kImage_PNG)).c_str ());
                 DbgTrace (L"MOREGEN(PNG)=%s", Characters::ToString (r.GetMoreGeneralTypes (InternetMediaTypes::kImage_PNG)).c_str ());
                 DbgTrace (L"MORESPECIFIC(PNG)=%s", Characters::ToString (r.GetMoreSpecificTypes (InternetMediaTypes::kImage_PNG)).c_str ());
