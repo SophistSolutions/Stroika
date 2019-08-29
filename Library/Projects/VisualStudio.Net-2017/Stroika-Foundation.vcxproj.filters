@@ -357,9 +357,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.cpp">
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClCompile>
@@ -1057,9 +1054,6 @@
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h">
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h">
