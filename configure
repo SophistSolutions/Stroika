@@ -94,7 +94,6 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = undef;
-my $ADD2CWARNING_FLAGS = "";
 my $SharedSymbolVisibility = undef;	# gcc visibility flag - -fvisible=hidden
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
@@ -1745,8 +1744,6 @@ sub PostProcessOptions_ ()
 			$FEATUREFLAG_WIX = $LIBFEATUREFLAG_No;
 		}
 	}
-
-	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
 
 	if ($ARCH eq "") {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
