@@ -923,11 +923,11 @@ namespace {
             // (warning doesn't appear to check if we have mismatch between types and format args provided.
             //      --LGP 2015-01-07
             DISABLE_COMPILER_MSC_WARNING_START (4996)
-            int                ignoredInt{};
-            long               ignoredLong{};
-            unsigned long      ignoredUnsignedLong{};
-            unsigned long long ignoredUnsignedLongLong{};
-            unsigned long int  ignored_unsigned_long{};
+            [[maybe_unused]] int                ignoredInt{};
+            [[maybe_unused]] long               ignoredLong{};
+            [[maybe_unused]] unsigned long      ignoredUnsignedLong{};
+            [[maybe_unused]] unsigned long long ignoredUnsignedLongLong{};
+            [[maybe_unused]]unsigned long int  ignored_unsigned_long{};
             int                num = ::sscanf (
                 S,
 
@@ -1141,11 +1141,11 @@ namespace {
                         Assert (S < std::end (buf));
                         int ruid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));
-                        int euid = ::strtol (S, &S, 10);
+                        [[maybe_unused]]int euid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));
-                        int suid = ::strtol (S, &S, 10);
+                        [[maybe_unused]] int suid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));
-                        int fuid = ::strtol (S, &S, 10);
+                        [[maybe_unused]] int fuid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));
                         result.ruid = ruid;
                     }

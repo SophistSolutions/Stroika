@@ -46,10 +46,10 @@ namespace {
                 DataHyperRectangleN<int, 2>       x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
 #endif
                 Verify (x.GetAt (2, 2) == 0);
-                for (auto t : x) {
+                for ([[maybe_unused]]auto t : x) {
                 }
                 x.SetAt (2, 2, 4);
-                for (auto t : x) {
+                for ([[maybe_unused]] auto t : x) {
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace {
                 DataHyperRectangleN<int, 2>       x = Concrete::DenseDataHyperRectangle_VectorN<int, 2>{3, 4};
 #endif
                 Verify (x.GetAt (2, 2) == 0);
-                for (auto t : x) {
+                for ([[maybe_unused]] auto t : x) {
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace {
             DataHyperRectangleN<int, 2> x = CONCRETE_CONTAINER2{3, 4};
 #endif
             Verify (x.GetAt (2, 2) == 0);
-            for (auto t : x) {
+            for ([[maybe_unused]] auto t : x) {
             }
         }
     }
