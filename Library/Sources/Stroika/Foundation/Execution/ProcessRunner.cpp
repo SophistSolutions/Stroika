@@ -718,7 +718,7 @@ namespace {
                             ::close (i);
                         }
                     }
-                    int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
+                    [[maybe_unused]]int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     {
                         ofstream myfile;
@@ -1333,7 +1333,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
         // check and extra closer
 
         // @todo - safer EXECVP like we did in ProcessRunner()!!!!
-        int r = ::execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+        [[maybe_unused]] int r = ::execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
         // no practical way to return this failure...
         // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
         ::_exit (-1);

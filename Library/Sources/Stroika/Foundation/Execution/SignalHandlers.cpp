@@ -441,7 +441,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     if (handlers.empty ()) {
         sigSetHandler (signal, SIG_DFL);
     }
-    else if (bool isSigIgnore = handlers.size () == 1 and handlers.Contains (SignalHandlerRegistry::kIGNORED)) {
+    else if (handlers.size () == 1 and handlers.Contains (SignalHandlerRegistry::kIGNORED)) {
         sigSetHandler (signal, SIG_IGN);
     }
     else {
