@@ -110,22 +110,16 @@ my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
 ### @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
+### FOR COMMON ONES - SEE IF THEY SHOULD REALLY BE GCC SPECIFIC
 my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
 $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';			# This warning needed because of pattern with eEnd being injected into enums but not looked for in switch
 $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-sign-compare ';		# someday tackle this, but I'm not sure its helpful
-#$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-variable ';
-#$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-value ';
-#$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-strict-aliasing ';
-#$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-comment ';
 $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-function ';	# we have many of these - review if makes sense warning?
 
 my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
-#$DEFAULT_CWARNING_FLAGS_GCC			= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-but-set-variable ';
-#$DEFAULT_CWARNING_FLAGS_GCC			= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-local-typedefs ';
 
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
-#$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-const-variable ';
-$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef '; ### reallly needed get alot of them (maybe can use [[maybe_unused]])
+$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef '; 		### really needed - get alot of them - e.g. using inherited = ... - (maybe can use [[maybe_unused]])
 $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
 
 my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
