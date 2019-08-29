@@ -230,7 +230,7 @@ namespace {
             {
                 unsigned int totalCallsCount{};
 #if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
-                Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
+                Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
 #else
                 Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
 #endif
