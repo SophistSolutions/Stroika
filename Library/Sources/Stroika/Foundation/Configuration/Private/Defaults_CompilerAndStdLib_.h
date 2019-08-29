@@ -1281,7 +1281,7 @@ Test.cpp:173:31: error: template template argument has different template parame
 #endif
 
 /*
-/*
+ *
 @CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
     String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*", RegularExpression::eECMAScript), L"");
