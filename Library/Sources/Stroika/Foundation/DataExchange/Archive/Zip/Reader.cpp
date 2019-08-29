@@ -753,7 +753,7 @@ namespace {
 #define SIZECENTRALDIRITEM (0x2e)
 #define SIZEZIPLOCALHEADER (0x1e)
 
-    const char unz_copyright[] = " unzip 1.01 Copyright 1998-2004 Gilles Vollant - http://www.winimage.com/zLibDll";
+    // const char unz_copyright[] = " unzip 1.01 Copyright 1998-2004 Gilles Vollant - http://www.winimage.com/zLibDll";
 
     /* unz_file_info_interntal contain internal info about a file in zipfile*/
     typedef struct unz_file_info64_internal_s {

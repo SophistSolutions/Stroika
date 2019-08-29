@@ -586,7 +586,7 @@ namespace {
         int    jStdin[2]{-1, -1};
         int    jStdout[2]{-1, -1};
         int    jStderr[2]{-1, -1};
-        auto&& cleanup = Finally ([&] () noexcept {
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
             ::CLOSE_ (jStdout[0]);

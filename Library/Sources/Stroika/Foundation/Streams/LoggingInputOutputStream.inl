@@ -98,8 +98,8 @@ namespace Stroika::Foundation::Streams {
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
             Require (IsOpenWrite ());
-            SeekOffsetType o1 = fRealStream_.SeekWrite (whence, offset);
-            SeekOffsetType o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
+            SeekOffsetType                  o1 = fRealStream_.SeekWrite (whence, offset);
+            [[maybe_unused]] SeekOffsetType o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
             return o1;
         }
         virtual void Flush () override

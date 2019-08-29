@@ -378,12 +378,12 @@ namespace {
                 Debug::TraceContextBumper traceCtx ("Test1_");
                 {
                     syncofdata x;
-                    syncofdata y = data_ ();
+                    [[maybe_unused]] syncofdata y = data_ ();
                     x            = data_ ();
                 }
                 {
                     syncofint x;
-                    syncofint y = 3;
+                    [[maybe_unused]] syncofint y = 3;
                     x           = 4;
                 }
                 {
