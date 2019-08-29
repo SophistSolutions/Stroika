@@ -178,8 +178,6 @@ namespace CommonTests {
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
                     using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
-                    using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
-                    using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     {
                         USING_BIJECTION_CONTAINER b = testingSchema.Factory ();
                         b.Add (3, 5);

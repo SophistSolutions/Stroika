@@ -49,8 +49,6 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test1_BasicConstruction"};
-                    using key_type               = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type            = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType  = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     using ArchetypeContainerType = typename DEFAULT_TESTING_SCHEMA::ArchetypeContainerType;
                     ConcreteContainerType s      = testingSchema.Factory ();
@@ -67,8 +65,6 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test2_AddRemove"};
-                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
@@ -117,7 +113,7 @@ namespace CommonTests {
                     }
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
-                    for (auto i : m) {
+                    for ([[maybe_unused]]auto i : m) {
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);
