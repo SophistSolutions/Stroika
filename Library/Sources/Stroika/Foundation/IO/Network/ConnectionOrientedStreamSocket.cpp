@@ -157,7 +157,6 @@ namespace {
                     numeric_limits<int>::max (),
                     [this] (const byte* start, const byte* end) -> size_t {
                         Assert ((end - start) < numeric_limits<int>::max ());
-                        int     len = static_cast<int> (end - start);
                         ssize_t n   = Handle_ErrNoResultInterruption ([this, &start, &end] () -> ssize_t { return ::write (fSD_, start, end - start); });
                         ThrowPOSIXErrNoIfNegative (n);
                         Assert (0 <= n and n <= (end - start));

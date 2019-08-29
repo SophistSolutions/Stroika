@@ -67,7 +67,6 @@ namespace {
             //      and epoll_wait(2) mark the file as having an error condition.
             struct pollfd pfd;
             int           rv;
-            int           changes = 0;
             pfd.fd                = mfd;
             pfd.events            = POLLERR | POLLPRI;
             pfd.revents           = 0;

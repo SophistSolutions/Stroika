@@ -79,9 +79,9 @@ namespace {
         int            result{};
         constexpr bool kUseSysConf_ = true;
 #if _BSD_SOURCE || _XOPEN_SOURCE >= 500
-        constexpr bool kUseGetDTableSize_ = true;
+        [[maybe_unused]]constexpr bool kUseGetDTableSize_ = true;
 #else
-        constexpr bool kUseGetDTableSize_ = false;
+        [[maybe_unused]] constexpr bool kUseGetDTableSize_ = false;
 #endif
         constexpr bool kUseGetRLimit_ = true;
         if constexpr (kUseSysConf_) {
