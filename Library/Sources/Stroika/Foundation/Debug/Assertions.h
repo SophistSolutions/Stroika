@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Debug {
 #if qDebug
 #define Verify(c) Assert (c)
 #else
-#define Verify(c) (c)
+#define Verify(c) ((void)(c))
 #endif
 
 }
