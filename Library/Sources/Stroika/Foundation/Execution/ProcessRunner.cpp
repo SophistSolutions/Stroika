@@ -1327,7 +1327,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
          */
         (void)::setsid ();
 
-        int ignored{};
+        [[maybe_unused]]int ignored{};
         ignored = chdir ("/"); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
 
         ignored = umask (027); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
