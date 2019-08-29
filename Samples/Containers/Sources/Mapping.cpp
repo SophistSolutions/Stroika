@@ -32,7 +32,7 @@ namespace {
         Mapping<int, int> m;
         m.Add (3, -3);
         m.Add (19, -19);
-        for (KeyValuePair<int, int> p : m) {
+        for ([[maybe_unused]]KeyValuePair<int, int> p : m) {
             Assert (p.fKey == -p.fValue);
         }
     }

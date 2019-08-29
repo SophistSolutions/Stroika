@@ -307,7 +307,6 @@ namespace Stroika::Foundation::Characters {
         _SafeReadRepAccessor accessor{this};
         size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
         size_t               f = SubString_adjust_ (from, myLength);
-        size_t               t = myLength;
         f                      = min (f, myLength);
         Assert (f <= myLength);
         size_t useLength{myLength - f};
