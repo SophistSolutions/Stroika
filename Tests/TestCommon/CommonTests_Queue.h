@@ -21,7 +21,6 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
             void DoAllTests_ ()
             {
-                typedef typename CONCRETE_CONTAINER::value_type ELEMENT_TYPE;
                 CONCRETE_CONTAINER                              s;
                 CONCRETE_CONTAINER                              s3 = s;
             }

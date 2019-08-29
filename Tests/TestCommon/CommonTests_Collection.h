@@ -85,7 +85,6 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void CollectionTimings_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename CONCRETE_CONTAINER::value_type T;
 #if qPrintTimings
                 Time t = GetCurrentTime ();
                 cout << tab << "testing Collection<size_t> of length " << s.GetLength () << endl;
