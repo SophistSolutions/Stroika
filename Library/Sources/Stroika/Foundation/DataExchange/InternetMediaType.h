@@ -100,7 +100,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         * subtype of image/*
+         * subtype of 'image/*'
          */
         nonvirtual bool IsImageFormat () const;
 
