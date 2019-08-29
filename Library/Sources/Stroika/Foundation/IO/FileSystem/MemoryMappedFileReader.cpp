@@ -94,7 +94,6 @@ MemoryMappedFileReader::~MemoryMappedFileReader ()
 {
 #if qPlatform_POSIX
     if (::munmap (const_cast<byte*> (fFileDataStart_), fFileDataEnd_ - fFileDataStart_)) {
-        Assert (res == -1);
         DbgTrace (L"munmap failed: Cannot throw in DTOR, so just DbgTrace log: errno=%d", errno);
     }
 #elif qPlatform_Windows
