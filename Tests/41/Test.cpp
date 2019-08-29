@@ -465,11 +465,11 @@ namespace {
             if (iFace.fType.has_value ()) {
                 DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>{}.GetName (*iFace.fType));
             }
-            for (auto binding : iFace.fBindings) {
+            for ([[maybe_unused]] auto binding : iFace.fBindings) {
                 DbgTrace (L"binding-addr: %s", Characters::ToString (binding).c_str ());
             }
             if (iFace.fStatus.has_value ()) {
-                for (Interface::Status s : *iFace.fStatus) {
+                for ([[maybe_unused]]Interface::Status s : *iFace.fStatus) {
                     DbgTrace (L"status: %s", Configuration::DefaultNames<Interface::Status>{}.GetName (s));
                 }
             }
