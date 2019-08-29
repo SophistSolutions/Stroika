@@ -663,9 +663,6 @@ namespace {
              *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
              */
             {
-                int useSTDIN  = jStdin[0];
-                int useSTDOUT = jStdout[1];
-                int useSTDERR = jStderr[1];
                 posix_spawn_file_actions_init (&file_actions);
                 posix_spawn_file_actions_addclose (&file_actions, jStdin[0]);
                 posix_spawn_file_actions_addclose (&file_actions, jStdin[0]);
