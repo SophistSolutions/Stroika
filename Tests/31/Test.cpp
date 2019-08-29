@@ -203,7 +203,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]]SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -261,7 +261,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -336,7 +336,7 @@ namespace {
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
                 Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -367,7 +367,7 @@ namespace {
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
                 Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -428,7 +428,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -478,7 +478,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -571,7 +571,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -707,7 +707,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"10.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -859,7 +859,7 @@ namespace {
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"12.txt";
                 Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
