@@ -97,7 +97,6 @@ namespace CommonTests {
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
                     using key_type                     = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type                  = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType        = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     using KeyEqualsCompareFunctionType = typename ConcreteContainerType::KeyEqualsCompareFunctionType;
                     ConcreteContainerType m            = testingSchema.Factory ();
@@ -220,8 +219,6 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test7_Keys"};
-                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     static const size_t   K     = qDebug ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
                     ConcreteContainerType c     = testingSchema.Factory ();
@@ -255,7 +252,6 @@ namespace CommonTests {
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_8_Iteration_With_Value_Comparer"};
                     using key_type                     = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type                  = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType        = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     using KeyEqualsCompareFunctionType = typename ConcreteContainerType::KeyEqualsCompareFunctionType;
                     ConcreteContainerType m            = testingSchema.Factory ();

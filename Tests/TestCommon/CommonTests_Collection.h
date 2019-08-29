@@ -122,8 +122,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void On_Container_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename CONCRETE_CONTAINER::value_type T;
-                size_t                                          three = 3;
+                size_t three = 3;
 
                 typename CONCRETE_CONTAINER::ArchetypeContainerType s1 (s);
 
@@ -179,9 +178,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
             void On_Container_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                typedef typename CONCRETE_CONTAINER::value_type T;
-                typedef typename CONCRETE_CONTAINER::TraitsType TraitsType;
-                size_t                                          three = 3;
+                size_t three = 3;
 
                 applyToContainer (s);
                 typename CONCRETE_CONTAINER::ArchetypeContainerType s1 (s);

@@ -100,7 +100,6 @@ namespace {
     void SimpleSequenceTest_2_Contains_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_2_Contains_ ()");
-        using T = typename CONCRETE_SEQUENCE_T::value_type;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -133,7 +132,6 @@ namespace {
     void SimpleSequenceTest_3_Compare_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_3_Compare_ ()");
-        using T = typename CONCRETE_SEQUENCE_T::value_type;
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
@@ -521,7 +519,6 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_13_Initializers_ ()");
         CONCRETE_SEQUENCE_T       s;
-        using T = typename CONCRETE_SEQUENCE_T::value_type;
         VerifyTestResult (s.empty ());
 
         // fix - once we have on all subclasses - do be basic test for aech
