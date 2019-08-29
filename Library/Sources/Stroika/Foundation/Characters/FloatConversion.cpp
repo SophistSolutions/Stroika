@@ -212,7 +212,7 @@ namespace {
         Assert (!isinf (f));
 
         // Handle special cases as a performance optimization
-        constexpr bool kUsePerformanceOptimizedCases_ = true;
+        [[maybe_unused]]constexpr bool kUsePerformanceOptimizedCases_ = true;
         if constexpr (kUsePerformanceOptimizedCases_) {
             if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
                 auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros));
