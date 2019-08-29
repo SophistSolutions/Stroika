@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Time {
     {
         Date tmp = *this;
         *this    = this->AddDays (1);
-        return *this;
+        return tmp;
     }
     inline Date Date::operator+ (SignedJulianRepType daysOffset) const
     {
