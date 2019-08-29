@@ -10,10 +10,6 @@
 #include <climits>
 #include <string>
 
-#if qPlatform_Windows
-#include <Windows.h>
-#endif
-
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Execution/Exceptions.h"
