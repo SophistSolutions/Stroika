@@ -453,7 +453,6 @@ namespace {
 
     bool IsDaylightSavingsTime_ (const DateTime& d)
     {
-        struct tm asTM = d.As<struct tm> ();
         if (d.GetTimezone () == Timezone::kLocalTime) {
             return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ().has_value () ? *d.GetTimeOfDay () : TimeOfDay{0});
         }
