@@ -327,7 +327,7 @@ void Main::ReReadConfiguration ()
 #if qPlatform_Windows
     AssertNotImplemented ();
 #elif qPlatform_POSIX
-    pid_t pid = GetServicePID ();
+    [[maybe_unused]]pid_t pid = GetServicePID ();
     Assert (pid != 0); // maybe throw if non-zero???
     Execution::ThrowPOSIXErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
 #else

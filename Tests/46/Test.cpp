@@ -58,7 +58,7 @@ namespace {
                 VerifyTestResult (n2.has_value ());
             }
             {
-                optional<NotCopyable> a;
+                [[maybe_unused]]optional<NotCopyable> a;
                 optional<NotCopyable> a1{NotCopyable ()};
                 a1 = NotCopyable ();
             }
@@ -101,7 +101,7 @@ namespace {
             [[maybe_unused]] optional<double> t2 = optional<double> (d); // ""
         }
         {
-            optional<double> d;
+            [[maybe_unused]] optional<double> d;
             //Optional<uint64_t> t1 = d;                      // should generate warning or error
             // SKIP SINCE SWITCH TO C++ optional - generates warning - optional<uint64_t> t2 = optional<uint64_t> (d); // should not
         }

@@ -69,7 +69,6 @@ namespace {
     // its optimized about how much it copies etc. Its really only tuned for POD-types (OK here but not necessarily good about reallocs).
     //
     //      -- LGP 2011-07-06
-    constexpr size_t kMinResponseBufferReserve_              = 32 * 1024;
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
