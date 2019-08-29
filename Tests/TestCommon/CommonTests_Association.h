@@ -75,7 +75,6 @@ namespace CommonTests {
             template <typename USING_ASSOCIATION_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                using KeyEqualsCompareFunctionType = typename USING_ASSOCIATION_CONTAINER::KeyEqualsCompareFunctionType;
                 USING_ASSOCIATION_CONTAINER m;
                 using KeyType = typename USING_ASSOCIATION_CONTAINER::KeyType;
                 m.Add (1, 2);

@@ -59,7 +59,6 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_1_ ()
     {
-        using T = typename CONCRETE_SEQUENCE_T::value_type;
         {
             Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_1_ ()");
             CONCRETE_SEQUENCE_T       s;
