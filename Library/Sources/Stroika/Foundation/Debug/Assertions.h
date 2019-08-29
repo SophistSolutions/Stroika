@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define AssertNotReached() ([[maybe_unused]] (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define AssertNotReached() Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
 /**
  *  \def EnsureNotReached(p)
@@ -314,7 +314,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define EnsureNotReached() ([[maybe_unused]] (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define EnsureNotReached() Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
 /**
  *  \def RequireNotReached(p)
@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define RequireNotReached() ([[maybe_unused]] (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define RequireNotReached() Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
 /**
  *  \def RequireNotReached(p)
@@ -332,7 +332,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define WeakAsserteNotReached() ([[maybe_unused]] (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define WeakAsserteNotReached() Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
 /**
  *  \def AssertNotImplemented()
@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define AssertNotImplemented() ([[maybe_unused]] (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define AssertNotImplemented() Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
 /**
  *  \def AssertNotImplemented()
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define WeakAssertNotImplemented() ([[maybe_unused]] (Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define WeakAssertNotImplemented() Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ ("WeakAssert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
 
 #else
 
