@@ -63,7 +63,7 @@ namespace CommonTests {
                     VerifyTestResult (s.GetLength () == 0);
                     applyToContainer (s);
 
-                    for (CountedValue<T> i : s) {
+                    for ([[maybe_unused]] CountedValue<T> i : s) {
                         VerifyTestResult (false);
                     }
                     IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
@@ -86,7 +86,7 @@ namespace CommonTests {
                         VerifyTestResult (s.GetLength () == kTestSize);
 
                         {
-                            for (CountedValue<T> it : s) {
+                            for ([[maybe_unused]]CountedValue<T> it : s) {
                                 for (size_t i = 1; i <= kTestSize; i++) {
                                     VerifyTestResult (s.Contains (i));
                                     VerifyTestResult (s.GetLength () == kTestSize - i + 1);
@@ -265,7 +265,7 @@ namespace CommonTests {
                         }
                         for (auto it = s.begin (); it != s.end (); ++it) {
                             auto tmp = s;
-                            for (auto it1 : tmp) {
+                            for ([[maybe_unused]] auto it1 : tmp) {
                             }
                             s.Add (1);
                         }
