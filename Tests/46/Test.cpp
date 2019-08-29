@@ -97,8 +97,8 @@ namespace {
         }
         {
             optional<int>    d;
-            optional<double> t1 = d;                    // no warnings - this direction OK
-            optional<double> t2 = optional<double> (d); // ""
+            [[maybe_unused]] optional<double> t1 = d;                    // no warnings - this direction OK
+            [[maybe_unused]] optional<double> t2 = optional<double> (d); // ""
         }
         {
             optional<double> d;
