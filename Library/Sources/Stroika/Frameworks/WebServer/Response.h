@@ -84,7 +84,7 @@ namespace Stroika::Frameworks::WebServer {
         /*
          * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
          * For ContentTypes
-         *      o   text/*
+         *      o   'text/*'
          *      o   application/json
          *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
          *          "text/html; charset=UTF-8"
