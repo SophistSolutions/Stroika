@@ -1505,7 +1505,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 /*
 @CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionSuppressionBug
-/*
+ *
  *  Running regression tests (built with clang (4 and 5) and sanitizer debug options)
  *      clang++-debug/Test31
  *      clang++-debug/Test33
