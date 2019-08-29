@@ -168,11 +168,7 @@ namespace {
             VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:00");
         }
         {
-#if qPlatform_Windows
-            const LCID kUS_ENGLISH_LOCALE = MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-#endif
             TimeOfDay threePM = TimeOfDay::Parse (L"3pm", locale::classic ());
-            //VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
             VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00"); // UGH!!!
             TestRoundTripFormatThenParseNoChange_ (threePM);
         }
@@ -282,15 +278,6 @@ namespace {
             VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
-#if qPlatform_Windows
-        {
-            const LCID kUS_ENGLISH_LOCALE = MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-            wstring    testCase           = L"2010-01-01";
-            //TODO: FIX SO THIS WORKS... (or come up with better test)
-            //VerifyTestResult (DateTime::Parse (testCase, kUS_ENGLISH_LOCALE) == DateTime::Parse (testCase, locale::classic ()));
-        }
-#endif
-
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
         {
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
