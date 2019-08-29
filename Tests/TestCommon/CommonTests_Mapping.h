@@ -113,7 +113,7 @@ namespace CommonTests {
                     }
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
-                    for ([[maybe_unused]]auto i : m) {
+                    for ([[maybe_unused]] auto i : m) {
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);
@@ -306,8 +306,6 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test9_RetainAll"};
-                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType c     = testingSchema.Factory ();
                     for (int i = 0; i < 100; ++i) {

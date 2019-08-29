@@ -42,10 +42,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
         // old for old, and when I match, stop on new
         Require (pi->fData == movedFrom);
-        auto newI = this->begin ();
-        auto newE = this->end ();
-        auto oldI = movedFrom->begin ();
-        auto oldE = movedFrom->end ();
+        auto                  newI = this->begin ();
+        [[maybe_unused]] auto newE = this->end ();
+        auto                  oldI = movedFrom->begin ();
+        [[maybe_unused]] auto oldE = movedFrom->end ();
         while (oldI != pi->fStdIterator) {
             Assert (newI != newE);
             Assert (oldI != oldE);
