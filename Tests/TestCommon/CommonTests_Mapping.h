@@ -124,7 +124,7 @@ namespace CommonTests {
                     m.Add (2, 3);
                     m.Add (3, 4);
                     unsigned int cnt = 0;
-                    for (auto i : m) {
+                    for ([[maybe_unused]]auto i : m) {
                         cnt++;
                         if (cnt == 1) {
                             VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
@@ -277,7 +277,7 @@ namespace CommonTests {
                     }
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
-                    for (auto i : m) {
+                    for ([[maybe_unused]] auto i : m) {
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);

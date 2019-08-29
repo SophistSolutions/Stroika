@@ -1138,7 +1138,7 @@ namespace {
             {
                 for (int i = 0; i < 1000; ++i) {
                     optional<T> x;
-                    optional<T> y = x;
+                    [[maybe_unused]]optional<T> y = x;
                 }
             }
             template <typename T>
@@ -1146,7 +1146,7 @@ namespace {
             {
                 for (int i = 0; i < 1000; ++i) {
                     optional<T> x = T{};
-                    optional<T> y = x;
+                    [[maybe_unused]] optional<T> y = x;
                 }
             }
             template <typename T>

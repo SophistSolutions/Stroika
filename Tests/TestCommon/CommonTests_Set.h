@@ -46,7 +46,6 @@ namespace CommonTests {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
-                using ELEMENT_TYPE = typename USING_SET_CONTAINER::value_type;
                 {
                     USING_SET_CONTAINER s = factory ();
                     applyToContainer (s);

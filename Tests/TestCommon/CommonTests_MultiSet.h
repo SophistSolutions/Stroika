@@ -86,7 +86,7 @@ namespace CommonTests {
                         VerifyTestResult (s.GetLength () == kTestSize);
 
                         {
-                            for ([[maybe_unused]]CountedValue<T> it : s) {
+                            for ([[maybe_unused]] CountedValue<T> it : s) {
                                 for (size_t i = 1; i <= kTestSize; i++) {
                                     VerifyTestResult (s.Contains (i));
                                     VerifyTestResult (s.GetLength () == kTestSize - i + 1);
