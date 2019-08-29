@@ -103,8 +103,8 @@ namespace Stroika::Foundation::DataExchange {
         /**
          * subtype of image/*
          */
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wcomment\"")
         nonvirtual bool IsImageFormat () const;
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wcomment\"")
 
     public:
         /**
