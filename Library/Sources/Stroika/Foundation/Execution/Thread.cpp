@@ -690,7 +690,7 @@ void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
     if (*fTLSInterruptFlag_ != InterruptFlagState_::eNone) {
 #if qPlatform_POSIX
         {
-            auto&& critSec = lock_guard{sHandlerInstalled_};
+            [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
                 SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
@@ -1157,7 +1157,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 #if qPlatform_POSIX
 void Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
 {
-    auto&& critSec = lock_guard{sHandlerInstalled_};
+    [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
     if (sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;

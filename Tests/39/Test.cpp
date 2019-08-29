@@ -433,13 +433,6 @@ namespace {
                     x.rwget ().rwref ().method ();
                     x.cget ().cref ().const_method ();
                 }
-#if 0
-                {
-                    Memory::Optional<NotCopyable> a;
-                    Memory::Optional<NotCopyable> a1{NotCopyable ()};
-                    a1 = move (NotCopyable ());
-                }
-#endif
                 {
                     Synchronized<unique_ptr<NotCopyable>> x;
                     x.store (make_unique<NotCopyable> ());
