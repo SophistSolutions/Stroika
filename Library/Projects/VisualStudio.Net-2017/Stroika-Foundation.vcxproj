@@ -398,7 +398,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Cryptography-SSL-Common.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp">
@@ -1385,7 +1384,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h" />
