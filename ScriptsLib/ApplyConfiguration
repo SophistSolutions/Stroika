@@ -137,7 +137,6 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_GLIBCXX_DEBUG"));
-	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguration, "CWARNING_FLAGS");
 	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
 	$LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
 	$LIB_DEPENDENCIES = GetConfigurationParameter($activeConfiguration, "LIB_DEPENDENCIES");
@@ -411,11 +410,6 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ProjectPlatformSubdir", $PROJECTPLATFORMSUBDIR);
 	print (OUT "\n");
 
-	##if $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
-	#if ($ENABLE_GLIBCXX_DEBUG == 1 || ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS && $ENABLE_ASSERTIONS == 1)) {
-	#	print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
-	#}
-
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
@@ -445,21 +439,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "CONFIGURATION=$activeConfiguration\n");
 
 
-	print (OUT '# WARNING - qFeatureFlag_EnableAssertions is DEPRECATED as of Stroika v2.1d13 - use ENABLE_ASSERTIONS' . "\n");
-	if ($ENABLE_ASSERTIONS) {
-		print (OUT "qFeatureFlag_EnableAssertions=1\n");
-	}	
-	else {
-		print (OUT "qFeatureFlag_EnableAssertions=0\n");
-	}
-
-
-
-
-	if (not ($CWARNING_FLAGS eq '')) {
-		print (OUT "#CWARNING_FLAGS ***DEPRECATED as of Stroika v2.1d15\n");
-		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
-	}
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("HasMakefileBugWorkaround_lto_skipping_undefined_incompatible");
 
@@ -573,10 +552,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	close(OUT);
-
-
-	#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
-	#system ("cp $configFileMakeName  $intermediateFiles$activeConfiguration/Library/Configuration.mk")
 }
 
 
