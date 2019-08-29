@@ -41,7 +41,6 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
     {
-        using T = typename CONCRETE_CONTAINER::value_type;
         DoTestForConcreteContainer_<CONCRETE_CONTAINER> ([] () { return CONCRETE_CONTAINER{}; });
     }
 }
