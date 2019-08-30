@@ -571,9 +571,9 @@ namespace {
                 VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
             }
         }
-        VerifyTestResult (Duration::kMin < Duration::kMax);
-        VerifyTestResult (Duration::kMin != Duration::kMax);
-        VerifyTestResult (Duration::kMin < Duration (L"P30S") and Duration (L"P30S") < Duration::kMax);
+        VerifyTestResult (Duration::min () < Duration::max ());
+        VerifyTestResult (Duration::min () != Duration::max ());
+        VerifyTestResult (Duration::min () < Duration (L"P30S") and Duration (L"P30S") < Duration::max ());
         {
             using Time::DurationSecondsType;
             Duration d = Duration (L"PT0.1S");
@@ -688,8 +688,8 @@ namespace {
         DurationRange      d2 = DurationRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
-        VerifyTestResult (d2.GetLowerBound () == Duration::kMin);
-        VerifyTestResult (d2.GetUpperBound () == Duration::kMax);
+        VerifyTestResult (d2.GetLowerBound () == Duration::min ());
+        VerifyTestResult (d2.GetUpperBound () == Duration::max ());
     }
 }
 
