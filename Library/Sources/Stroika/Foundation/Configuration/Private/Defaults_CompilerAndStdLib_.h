@@ -286,6 +286,78 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
+1>        with
+1>        [
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>,
+1>            T=size_t
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(363): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::SimpleMultiSetTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
+1>        with
+1>        [
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>,
+1>            T=size_t
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(481): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::DoAllTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
+1>        with
+1>        [
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\17\test.cpp(38): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::All_For_Type<SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
+1>        with
+1>        [
+1>            SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>,
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\17\test.cpp(81): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>>,CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<CONCRETE_CONTAINER>>>(const SCHEMA &)' being compiled
+1>        with
+1>        [
+1>            T=size_t,
+1>            CONCRETE_CONTAINER=Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,
+1>            SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2143: syntax error: missing ';' before '{'
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<Stroika::SimpleClass,unsigned int>'
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
+1>        with
+1>        [
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>,
+1>            T=Stroika::SimpleClass
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(363): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::SimpleMultiSetTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
+1>        with
+1>        [
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>,
+1>            T=Stroika::SimpleClass
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(481): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::DoAllTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
+1>        with
+1>        [
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\17\test.cpp(38): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::All_For_Type<SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
+1>        with
+1>        [
+1>            SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>,
+1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>
+1>        ]
+1>c:\sandbox\stroika\devroot\tests\17\test.cpp(82): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>>,CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<CONCRETE_CONTAINER>>>(const SCHEMA &)' being compiled
+1>        with
+1>        [
+1>            T=Stroika::SimpleClass,
+*/
+#ifndef qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_attributes_before_template_in_Template_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_attributes_before_template_in_Template_Buggy 0
+#endif
+
+#endif
+
+/*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
     http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale
 
