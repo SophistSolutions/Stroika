@@ -10,10 +10,6 @@
 #include <locale>
 #include <string>
 
-#if qPlatform_Windows
-#include <Windows.h>
-#endif
-
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
@@ -164,11 +160,6 @@ namespace Stroika::Foundation::Time {
         static TimeOfDay Parse (const String& rep, ParseFormat pf);
         static TimeOfDay Parse (const String& rep, const locale& l);
         static TimeOfDay Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
-
-#if qPlatform_Windows
-    private:
-        static TimeOfDay TimeOfDay::Parse_ (const String& rep, LCID lcid);
-#endif
 
     public:
         /**
