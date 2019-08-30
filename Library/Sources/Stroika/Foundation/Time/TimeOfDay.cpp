@@ -77,6 +77,40 @@ const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
+#if qPlatform_Windows
+namespace {
+	TimeOfDay Parse_ (const String& rep, LCID lcid)
+	{
+		using namespace Execution::Platform::Windows;
+		if (rep.empty ()) {
+			Execution::Throw (TimeOfDay::FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+																 //        return TimeOfDay ();
+		}
+		DATE d{};
+		try {
+			ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+		}
+		catch (...) {
+			// Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
+			// Detect that - and try to interpret it appropriately.
+			String newRep = rep;
+			if (newRep.length () == 4 and
+				newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
+				newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
+				ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+			}
+			else {
+				Execution::Throw (TimeOfDay::FormatException::kThe);
+			}
+		}
+		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+		SYSTEMTIME sysTime{};
+		Verify (::VariantTimeToSystemTime (d, &sysTime));
+		return mkTimeOfDay_ (sysTime);
+	}
+}
+#endif
+
 const String TimeOfDay::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
 const String TimeOfDay::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
 const String TimeOfDay::kISO8601Format                 = String_Constant{kISO8601FormatArray}; // equivilent to String_Constant{L"%H:%M:%S"}
@@ -219,38 +253,6 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
 #endif
     return result;
 }
-
-#if qPlatform_Windows
-TimeOfDay TimeOfDay::Parse_ (const String& rep, LCID lcid)
-{
-    using namespace Execution::Platform::Windows;
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-                                                  //        return TimeOfDay ();
-    }
-    DATE d{};
-    try {
-        ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-    }
-    catch (...) {
-        // Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
-        // Detect that - and try to interpret it appropriately.
-        String newRep = rep;
-        if (newRep.length () == 4 and
-            newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
-            newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
-            ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-        }
-        else {
-            Execution::Throw (FormatException::kThe);
-        }
-    }
-    // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-    SYSTEMTIME sysTime{};
-    Verify (::VariantTimeToSystemTime (d, &sysTime));
-    return mkTimeOfDay_ (sysTime);
-}
-#endif
 
 String TimeOfDay::Format (PrintFormat pf) const
 {
