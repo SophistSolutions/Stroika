@@ -125,7 +125,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         RequireNotNull (elt);
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
         if (fTraceThisReader) {
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
             DbgTrace (L"%sContext::Push [%s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*elt.get ())).c_str ());
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
         }
 #endif
         Containers::ReserveSpeedTweekAdd1 (fStack_);
@@ -142,7 +144,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 DbgTrace (L"%sContext::Popped [empty stack]", TraceLeader_ ().c_str ());
             }
             else {
+                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
                 DbgTrace (L"%sContext::Popped [back to: %s]", TraceLeader_ ().c_str (), Characters::ToString (typeid (*GetTop ().get ())).c_str ());
+                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
             }
         }
 #endif
