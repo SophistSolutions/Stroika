@@ -978,7 +978,7 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (String2Float<double> (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float<double> (String (L"44.4333")), 44.4333));
         }
-        auto runLocaleIndepTest = [] () {
+        [[maybe_unused]]auto runLocaleIndepTest = [] () {
             VerifyTestResult (Float2String (3000.5) == L"3000.5");
             VerifyTestResult (Float2String (30000.5) == L"30000.5");
         };
