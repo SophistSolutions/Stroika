@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include <limits>
+
 namespace Stroika::Foundation::Time {
 
     /*
@@ -248,6 +250,14 @@ namespace Stroika::Foundation::Time {
     {
         return Format ();
     }
+    /*todo constexpr*/ inline Duration Duration::min ()
+    {
+        return Duration{numeric_limits<InternalNumericFormatType_>::lowest ()};
+    }
+    /*todo constexpr*/ inline Duration Duration::max ()
+    {
+        return Duration{numeric_limits<InternalNumericFormatType_>::max ()};
+    }
 
     /*
      ********************************************************************************
@@ -350,10 +360,10 @@ namespace Stroika::Foundation::Time {
 
     namespace Private_ {
 
-        struct Duration_ModuleData_ {
+        struct Duration_ModuleData_ {		// DEPRECATED in 2.1a1
             Duration_ModuleData_ ();
-            Duration fMin;
-            Duration fMax;
+            Duration fMin; // DEPRECATED in 2.1a1
+            Duration fMax; // DEPRECATED in 2.1a1
         };
     }
 

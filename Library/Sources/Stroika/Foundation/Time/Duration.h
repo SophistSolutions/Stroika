@@ -32,6 +32,11 @@
  *              the string, and ALWAYS convert to float (or chron::duration) representation. Or I could make
  *              the class into a template class (but thats too close to hte existing chron::duration - so whats the point).
  *
+ *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.inl(253,34): error C3615:  constexpr function 'Stroika::Foundation::Time::Duration::min' cannot result in a constant expression (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+ *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.inl(253,34): message :  failure was because type 'Stroika::Foundation::Time::Duration' is not a literal type (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+ *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.inl(106,23): message :  type 'Stroika::Foundation::Time::Duration' is not a literal type because it has a user-defined destructor (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+ *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.h(378,20): message :  type 'Stroika::Foundation::Time::Duration' is not a literal type because its data member 'fStringRep_' is of non-literal type 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
+ *
  *              Even with this restriction, I COULD store the string elsewhere to eliminate the DTOR. A kludge, but akin
  *              to garbage collection. Keep a list (std::map) of all allocated Duration objects which were given a string.
  *              Store the PTR as key, and the actual string pointer as value; We cannot always (maybe not even often) catch
@@ -50,7 +55,7 @@
  *              done in 2.1d18
  *
  *     @todo    Then, when constexpr works, debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
- *              stuff for kMin/kMax
+ *              stuff for min () / max  ()
  *
  *              For now using ModuleInit<> code to assure proper construction order.
  *
@@ -127,9 +132,6 @@ namespace Stroika::Foundation::Time {
      *      simplest way around this is to have the caller pass something in, or to return something
      *      whose lifetime is controlled (an object). So now - just call As<String> ().c_str () or
      *      As<wstring> ().c_str ()
-     *
-     *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
-     *          static de-initializaiton.
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */
@@ -315,13 +317,33 @@ namespace Stroika::Foundation::Time {
         /**
          * Duration::kMin is the least duration this Duration class supports representing.
          */
-        static const Duration& kMin;
+        [[deprecated ("use Duration::min () - deprecated in  in 2.1a1")]] static const Duration& kMin;
 
     public:
         /**
          * Duration::kMax is the largest duration this Duration class supports representing.
          */
-        static const Duration& kMax;
+        [[deprecated ("use Duration::max ()- deprecated in  in 2.1a1")]] static const Duration& kMax;
+
+    public:
+        /**
+         * Duration::kMin is the least duration this Duration class supports representing.
+         *
+         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         *
+         *  @todo get constexpr working here
+         */
+        static /*constexpr*/ Duration min ();
+
+    public:
+        /**
+         * Duration::kMax is the largest duration this Duration class supports representing
+         *
+         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         *
+         *  @todo get constexpr working here
+         */
+        static /*constexpr*/ Duration max ();
 
     public:
         /**
