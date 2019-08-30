@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Time {
 
     namespace Private_ {
 
-        struct Duration_ModuleData_ {		// DEPRECATED in 2.1a1
+        struct Duration_ModuleData_ { // DEPRECATED in 2.1a1
             Duration_ModuleData_ ();
             Duration fMin; // DEPRECATED in 2.1a1
             Duration fMax; // DEPRECATED in 2.1a1
