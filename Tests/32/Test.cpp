@@ -694,6 +694,7 @@ namespace {
     }
 }
 namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -704,6 +705,7 @@ namespace Stroika::Foundation::Configuration {
             {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT3, L"eT3"},
             {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT4, L"eT4"},
         }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
 }
 
 namespace {
@@ -1123,6 +1125,7 @@ namespace {
     }
 }
 namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
     // for ToString ()
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
@@ -1134,6 +1137,7 @@ namespace Stroika::Foundation::Configuration {
             {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3"},
             {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4"},
         }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
 }
 
 namespace {
