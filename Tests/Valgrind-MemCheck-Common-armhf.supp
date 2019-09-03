@@ -398,7 +398,7 @@
 {
    https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
-   fun:exprDup.constprop.444
+   fun:exprDup.constprop.*
 }
 {
    https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
