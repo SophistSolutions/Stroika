@@ -697,7 +697,7 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    [[maybe_unused]] constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k{
+    constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k{
         EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::BasicArrayInitializer{{
             {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT1, L"eT1"},
             {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT2, L"eT2"},
@@ -1127,7 +1127,7 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    [[maybe_unused]] constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k{
+    constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k{
         EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{{
             {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1"},
             {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2"},
