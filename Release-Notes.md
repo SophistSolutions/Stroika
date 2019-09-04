@@ -6,6 +6,59 @@ to be aware of when upgrading.
 
 # History
 
+## 2.1a1 {2019-09-04}
+
+- <https://github.com/SophistSolutions/Stroika/compare/v2.1d27...v2.1a1>
+
+- Removed all past deprecated code. For upgrading from older versions of Stroika, its recommended you first
+  build with Stroika 2.1d27
+
+- Compilers/Flags/Bug workarounds
+  - many fewer default warnings configured for UNIX compilers (testing to a degree), and in some cases other workarounds for warnings
+  - new qCompilerAndStdLib_attributes_before_template_in_Template_Buggy workaround
+
+- Foundation::Memory
+  - better error handling in ~MemoryMappedFileReader for POSIX
+
+- Foundation::Time
+  - fixed bug in Date::operator++ (int) - returned wrong value
+  - Added Duration::min ()/max() and notes about making it constexpr and deprecated Duration::kMin/kMax
+
+- HistoricalPerformanceRegressionTestResults/
+  PerformanceDump-{Windows_VS2k17, Windows_VS2k19, Ubuntu1804_x86_64, Ubuntu1810_x86_64, Ubuntu1904_x86_64, MacOS_XCode10}-2.1a1.txt
+
+- Tested (passed regtests)
+  - OUTPUT FILES:
+        Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17, Windows_VS2k19,
+        Ubuntu1804_x86_64,Ubuntu1804-Cross-Compile2RaspberryPi, Ubuntu1810_x86_64,
+        Ubuntu1810-Cross-Compile2RaspberryPi, Ubuntu1904_x86_64,
+        Ubuntu1904-Cross-Compile2RaspberryPi, MacOS_XCode10, Centos7_x86_64}-2.1a1-OUT.txt
+  - vc++2k17 (15.9.15)
+  - vc++2k19 (16.2.3)
+  - MacOS, XCode 10 (Apple LLVM version 10.0.1)
+  - Ubuntu 18.04, Ubuntu 18.10, Ubuntu 19.04, Centos 7
+  - gcc 7, gcc 8, gcc 9
+  - clang++-6, clang++-7, clang++-8 {libstdc++ and libc++}
+  - valgrind Tests (memcheck and helgrind), helgrind some Samples
+  - cross-compile to raspberry-pi(3/stretch+testing): --sanitize address,undefined, gcc7, gcc8, gcc9 (gcc9 not passing tests cuz libc version mismatch on test machine) and
+    valgrind:memcheck/helgrind
+  - gcc with --sanitize address,undefined,thread and debug/release builds on tests
+
+- Known issues
+  - Bug with regression-test - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround
+    (qIterationOnCopiedContainer_ThreadSafety_Buggy)
+  - See https://stroika.atlassian.net/secure/Dashboard.jspa for many more.
+
+----
+
+
+
+
+
+
+
+
+
 ## 2.1d27 {2019-08-27}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d26...v2.1d27>
