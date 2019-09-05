@@ -21,19 +21,20 @@ namespace Stroika::Foundation::Time {
      */
     template <typename DURATION_REP, typename DURATION_PERIOD>
     constexpr Duration::Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d)
-        : fRepType_ (eNumeric_)
+        : inherited{chrono::duration<InternalNumericFormatType_> (d).count ()}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (chrono::duration<InternalNumericFormatType_> (d).count ())
     {
     }
     constexpr Duration::Duration ()
-        : fRepType_ (eEmpty_)
+        : inherited{kValueWhenEmptyRenderedAsNumber_}
+        , fRepType_ (eEmpty_)
         , fNonStringRep_{}
     {
     }
     inline Duration::Duration (const Duration& src)
-        : fRepType_ (src.fRepType_)
-        , fNumericRepOrCache_ (src.fNumericRepOrCache_)
+        : inherited{src}
+        , fRepType_ (src.fRepType_)
     {
         if (fRepType_ == eString_) {
             Assert (not src.fStringRep_.empty ());
@@ -41,8 +42,8 @@ namespace Stroika::Foundation::Time {
         }
     }
     inline Duration::Duration (Duration&& src) noexcept
-        : fRepType_ (src.fRepType_)
-        , fNumericRepOrCache_ (src.fNumericRepOrCache_)
+        : inherited{move (src)}
+        , fRepType_ (src.fRepType_)
     {
         if (src.fRepType_ == eString_) {
             Assert (fRepType_ == eString_);
@@ -51,51 +52,52 @@ namespace Stroika::Foundation::Time {
         src.fRepType_ = eEmpty_;
     }
     inline Duration::Duration (const string& durationStr)
-        : fNonStringRep_{}
+        : inherited{kValueWhenEmptyRenderedAsNumber_}
+        , fNonStringRep_{}
     {
         Assert (fRepType_ == eEmpty_);
         if (not durationStr.empty ()) {
-            fNumericRepOrCache_ = ParseTime_ (durationStr);
+            (*(inherited*)this) = inherited (ParseTime_ (durationStr));
             new (&fStringRep_) string (durationStr);
             fRepType_ = eString_;
         }
     }
     constexpr Duration::Duration (int duration)
-        : fRepType_ (eNumeric_)
+        : inherited{duration}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (duration)
     {
     }
     constexpr Duration::Duration (long duration)
-        : fRepType_ (eNumeric_)
+        : inherited{duration}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (duration)
     {
     }
     constexpr Duration::Duration (long long duration)
-        : fRepType_ (eNumeric_)
+        : inherited{static_cast<InternalNumericFormatType_> (duration)}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (static_cast<InternalNumericFormatType_> (duration))
     {
     }
     constexpr Duration::Duration (float duration)
-        : fRepType_ (eNumeric_)
+        : inherited{duration}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (duration)
     {
         //Require (not isnan (duration)); // inf is allowed
     }
     constexpr Duration::Duration (double duration)
-        : fRepType_ (eNumeric_)
+        : inherited{duration}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (duration)
     {
         //Require (not isnan (duration)); // inf is allowed
     }
     constexpr Duration::Duration (long double duration)
-        : fRepType_ (eNumeric_)
+        : inherited{static_cast<InternalNumericFormatType_> (duration)}
+        , fRepType_ (eNumeric_)
         , fNonStringRep_{}
-        , fNumericRepOrCache_ (static_cast<InternalNumericFormatType_> (duration))
     {
         //Require (not isnan (duration)); // inf is allowed
     }
@@ -106,10 +108,6 @@ namespace Stroika::Foundation::Time {
     inline Duration::~Duration ()
     {
         destroy_ ();
-    }
-    inline /*explicit*/ Duration::operator chrono::duration<Duration::InternalNumericFormatType_> () const
-    {
-        return As<chrono::duration<InternalNumericFormatType_>> ();
     }
     inline void Duration::clear ()
     {
@@ -137,8 +135,8 @@ namespace Stroika::Foundation::Time {
                     // fRepType_ = eString_;    done at end of procedure
                 }
             }
-            fNumericRepOrCache_ = rhs.fNumericRepOrCache_;
-            fRepType_           = rhs.fRepType_;
+            inherited::operator= (rhs);
+            fRepType_          = rhs.fRepType_;
         }
         return *this;
     }
@@ -159,9 +157,9 @@ namespace Stroika::Foundation::Time {
                     new (&fStringRep_) string (move (rhs.fStringRep_));
                 }
             }
-            fNumericRepOrCache_ = rhs.fNumericRepOrCache_;
-            fRepType_           = rhs.fRepType_;
-            rhs.fRepType_       = eEmpty_;
+            inherited::operator= (move (rhs));
+            fRepType_          = rhs.fRepType_;
+            rhs.fRepType_      = eEmpty_;
         }
         return *this;
     }
@@ -175,57 +173,57 @@ namespace Stroika::Foundation::Time {
     template <>
     inline int Duration::As () const
     {
-        return static_cast<int> (fNumericRepOrCache_);
+        return static_cast<int> (count ());
     }
     template <>
     inline long int Duration::As () const
     {
-        return static_cast<long int> (fNumericRepOrCache_);
+        return static_cast<long int> (count ());
     }
     template <>
     inline long long int Duration::As () const
     {
-        return static_cast<long long int> (fNumericRepOrCache_);
+        return static_cast<long long int> (count ());
     }
     template <>
     inline float Duration::As () const
     {
-        return static_cast<float> (fNumericRepOrCache_);
+        return static_cast<float> (count ());
     }
     template <>
     inline double Duration::As () const
     {
-        return fNumericRepOrCache_;
+        return count ();
     }
     template <>
     inline long double Duration::As () const
     {
-        return fNumericRepOrCache_;
+        return count ();
     }
     template <>
     inline chrono::duration<double> Duration::As () const
     {
-        return chrono::duration<double> (fNumericRepOrCache_);
+        return chrono::duration<double> (count ());
     }
     template <>
     inline chrono::seconds Duration::As () const
     {
-        return chrono::seconds (static_cast<chrono::seconds::rep> (fNumericRepOrCache_));
+        return chrono::seconds (static_cast<chrono::seconds::rep> (count ()));
     }
     template <>
     inline chrono::milliseconds Duration::As () const
     {
-        return chrono::milliseconds (static_cast<chrono::milliseconds::rep> (fNumericRepOrCache_ * 1000));
+        return chrono::milliseconds (static_cast<chrono::milliseconds::rep> (count () * 1000));
     }
     template <>
     inline chrono::microseconds Duration::As () const
     {
-        return chrono::microseconds (static_cast<chrono::microseconds::rep> (fNumericRepOrCache_ * 1000 * 1000));
+        return chrono::microseconds (static_cast<chrono::microseconds::rep> (count () * 1000 * 1000));
     }
     template <>
     inline chrono::nanoseconds Duration::As () const
     {
-        return chrono::nanoseconds (static_cast<chrono::nanoseconds::rep> (fNumericRepOrCache_ * 1000.0 * 1000.0 * 1000.0));
+        return chrono::nanoseconds (static_cast<chrono::nanoseconds::rep> (count () * 1000.0 * 1000.0 * 1000.0));
     }
     template <>
     inline Characters::String Duration::As () const
@@ -237,7 +235,7 @@ namespace Stroika::Foundation::Time {
             case eString_:
                 return String::FromASCII (fStringRep_);
             case eNumeric_:
-                return String::FromASCII (UnParseTime_ (fNumericRepOrCache_));
+                return String::FromASCII (UnParseTime_ (count ()));
         }
         AssertNotReached ();
         return String{};
@@ -299,67 +297,20 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ********************** Duration comparison operators ***************************
-     ********************************************************************************
-     */
-    inline bool operator< (const Duration& lhs, const Duration& rhs)
-    {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const Duration& lhs, const Duration& rhs)
-    {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const Duration& lhs, const Duration& rhs)
-    {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const Duration& lhs, const Duration& rhs)
-    {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const Duration& lhs, const Duration& rhs)
-    {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const Duration& lhs, const Duration& rhs)
-    {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
-    }
-
-    /*
-     ********************************************************************************
      ***************************** Duration operators *******************************
      ********************************************************************************
      */
-    inline Duration operator/ (const Duration& lhs, long double rhs)
-    {
-        Require (rhs != 0);
-        return lhs * (1 / rhs);
-    }
-    inline Duration operator+ (const Duration& lhs, const Duration& rhs)
-    {
-        return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
-    }
     inline Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs)
     {
         return Duration{lhs + rhs.As<DurationSecondsType> ()};
-    }
-    inline Duration operator- (const Duration& lhs, const Duration& rhs)
-    {
-        return Duration (lhs.As<Time::DurationSecondsType> () - rhs.As<DurationSecondsType> ());
-    }
-    inline Duration operator* (const Duration& lhs, long double rhs)
-    {
-        return Duration (lhs.As<Time::DurationSecondsType> () * rhs);
     }
     inline Duration operator* (long double lhs, const Duration& rhs)
     {
         return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
     }
 
-    namespace Private_ {
 
+    namespace Private_ {
         struct Duration_ModuleData_ { // DEPRECATED in 2.1a1
             Duration_ModuleData_ ();
             Duration fMin; // DEPRECATED in 2.1a1

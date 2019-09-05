@@ -48,7 +48,7 @@ const Duration::FormatException Duration::FormatException::kThe;
  ********************************************************************************
  */
 
-		// DEPRECATED in 2.1a1
+// DEPRECATED in 2.1a1
 Time::Private_::Duration_ModuleData_::Duration_ModuleData_ ()
     : fMin (numeric_limits<Duration::InternalNumericFormatType_>::lowest ())
     , fMax (numeric_limits<Duration::InternalNumericFormatType_>::max ())
@@ -124,7 +124,7 @@ wstring Duration::As () const
         case eString_:
             return ASCIIStringToWide (fStringRep_);
         case eNumeric_:
-            return ASCIIStringToWide (UnParseTime_ (fNumericRepOrCache_));
+            return ASCIIStringToWide (UnParseTime_ (count ()));
     }
     AssertNotReached ();
     return wstring{};
@@ -144,25 +144,25 @@ namespace {
 template <>
 chrono::seconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::seconds> (fNumericRepOrCache_, 1);
+    return DoPin_<chrono::seconds> (count (), 1);
 }
 
 template <>
 chrono::milliseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::milliseconds> (fNumericRepOrCache_, 1000.0);
+    return DoPin_<chrono::milliseconds> (count (), 1000.0);
 }
 
 template <>
 chrono::microseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::microseconds> (fNumericRepOrCache_, 1000.0 * 1000.0);
+    return DoPin_<chrono::microseconds> (count (), 1000.0 * 1000.0);
 }
 
 template <>
 chrono::nanoseconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::nanoseconds> (fNumericRepOrCache_, 1000.0 * 1000.0 * 1000.0);
+    return DoPin_<chrono::nanoseconds> (count (), 1000.0 * 1000.0 * 1000.0);
 }
 
 namespace {

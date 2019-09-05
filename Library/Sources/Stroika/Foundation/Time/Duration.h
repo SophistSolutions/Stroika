@@ -22,10 +22,6 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   See if I can change Duration to be a SUBCLASS OF
- *              Duration::operator chrono::duration<Duration::InternalNumericFormatType_> ()
- *              That MIGHT (indirectly) address some of the constexpr issues below. and allow eliminating the operator conversion thing to duration
- *
  *      @todo   See if I can get constexpr Duration working.
  *              This appears tricky because we need a DESTRUCTOR, and this cannot be constexpr which prevents
  *              you from having a constexpr object of that type. The closest I can get is that I could lose
@@ -61,9 +57,6 @@
  *
  *              After I get this working, consider fixing derivitate classes like DurationRange
  *              to also use constexpr - but this one must work first!
- *
- *      @todo   Consider possibly storing chrono::duration<> as the representation for 'numeric' type instead of double/float. This might
- *              produce less overflow problems.
  *
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
@@ -135,7 +128,10 @@ namespace Stroika::Foundation::Time {
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */
-    class Duration final {
+    class Duration final : public chrono::duration<double> {
+    private:
+        using inherited = chrono::duration<double>;
+
     public:
         /**
          *  The characterset of the std::string CTOR is expected to be all ascii, or the code throws FormatException
@@ -168,11 +164,7 @@ namespace Stroika::Foundation::Time {
         nonvirtual Duration& operator= (Duration&& rhs) noexcept;
 
     private:
-        using InternalNumericFormatType_ = double;
-
-    public:
-        //experiment with this
-        /*explicit*/ operator chrono::duration<InternalNumericFormatType_> () const;
+        using InternalNumericFormatType_ = inherited::rep;
 
     public:
         /**
@@ -383,8 +375,7 @@ namespace Stroika::Foundation::Time {
             char   fNonStringRep_{}; // unused except to allow constexpr initialization (allow selecting non fStringRep_ to initialize since union must be initialized)
             string fStringRep_;
         };
-        InternalNumericFormatType_ fNumericRepOrCache_{kValueWhenEmptyRenderedAsNumber_}; // we ALWAYS compute this (even if string rep) since frequently used
-        void                       destroy_ ();                                           // allow call if already empty
+        void destroy_ (); // allow call if already empty
     };
     template <>
     int Duration::As () const;
@@ -455,38 +446,18 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
-     */
-    bool operator< (const Duration& lhs, const Duration& rhs);
-    bool operator<= (const Duration& lhs, const Duration& rhs);
-    bool operator== (const Duration& lhs, const Duration& rhs);
-    bool operator!= (const Duration& lhs, const Duration& rhs);
-    bool operator>= (const Duration& lhs, const Duration& rhs);
-    bool operator> (const Duration& lhs, const Duration& rhs);
-
-    /**
      *  Return the sum of the two durations.
+	 *
+	 *	Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
      */
-    Duration operator+ (const Duration& lhs, const Duration& rhs);
     Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs);
 
     /**
-     *  Return the difference of the two durations.
-     */
-    Duration operator- (const Duration& lhs, const Duration& rhs);
-
-    /**
      *  Multiply the duration by the floating point argument
+	 *
+	 *	Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
      */
-    Duration operator* (const Duration& lhs, long double rhs);
     Duration operator* (long double lhs, const Duration& rhs);
-
-    /**
-     *  Divide the duration by the floating point argument
-     */
-    Duration operator/ (const Duration& lhs, long double rhs);
 
 }
 
