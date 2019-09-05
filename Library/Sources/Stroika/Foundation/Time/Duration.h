@@ -447,15 +447,15 @@ namespace Stroika::Foundation::Time {
 
     /**
      *  Return the sum of the two durations.
-	 *
-	 *	Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
+     *
+     *  Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
      */
     Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs);
 
     /**
      *  Multiply the duration by the floating point argument
-	 *
-	 *	Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
+     *
+     *  Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
      */
     Duration operator* (long double lhs, const Duration& rhs);
 
