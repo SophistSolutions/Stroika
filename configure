@@ -1614,6 +1614,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		else {
 			push @flags, "/EHsc";
 		}
+		push @flags, "/nologo";
 	}
 	if (not $doCFLAGS) {
 		# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
