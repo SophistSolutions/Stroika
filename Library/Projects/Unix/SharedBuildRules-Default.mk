@@ -12,13 +12,19 @@ $(ObjDir):
 $(Objs):	| $(ObjDir)
 
 
+ifeq (Unix,$(ProjectPlatformSubdir))
+DASH_O_PARAMS_= -o $1
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+DASH_O_PARAMS_=/Fo$(shell cygpath -m $1)
+endif
+
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables $(abspath  $<)) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(CXX) $(CXXFLAGS) -c $< -o $@;\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(CXX) $(CXXFLAGS) -c $< $(call DASH_O_PARAMS_, $@);\
 	fi
 	@mkdir -p `dirname $@`
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< $(call DASH_O_PARAMS_, $@)
 
 
 %.i : %.swsp
