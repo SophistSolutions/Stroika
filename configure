@@ -1548,7 +1548,7 @@ my @GetDefaultCFLAGSorCXXFLAGS_flags;
 my @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
 sub GetDefaultCFLAGSorCXXFLAGS_
 {
-	my @flags  = @GetDefaultCFLAGSorCXXFLAGS_flags;
+	my @flags  = ();
 	my @flagValues2Remove  = @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
 	my $doCFLAGS = shift(@_);
 	#print "entering GetDefaultCFLAGSorCXXFLAGS_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
@@ -1657,6 +1657,16 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			push @flags, $dashFlag . "$name=" . $value;
 		}
 
+	}
+
+	for my $r (@GetDefaultCFLAGSorCXXFLAGS_flags) {
+		my $i = indexOf (@flags, $r);
+		if ($i != -1) {
+			splice (@flags, $i, 1);
+		}
+		else {
+			push @flags, $r;
+		}
 	}
 	for my $r (@flagValues2Remove) {
 		my $i = indexOf (@flags, $r);
