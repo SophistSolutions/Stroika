@@ -108,7 +108,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	$(RANLIB) $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(AR)" /OUT:`cygpath -w $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)` /nologo `cygpath -w $(OBJS)`
+		$(AR) /OUT:`cygpath -w $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)` /nologo `cygpath -w $(OBJS)`
 endif
 
 
@@ -145,7 +145,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" INCLUDE="$(WIN_INCLUDES_PATH)";\
 		cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); \
-		"$(CC)" $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+		$(CC) $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
 endif
 
 

@@ -60,8 +60,6 @@ if (0) {
 
 
 
-
-
 local $PROGRAMFILESDIR= $ENV{'PROGRAMFILES'};
 local $PROGRAMFILESDIR86= $ENV{'ProgramFiles(x86)'};
 
@@ -251,18 +249,18 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	if (index($activeConfigBits, "32") != -1) {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
-		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
-		$resEnv{"LD"} = toCygPath_ ($exe32Dir . "\\link");
-		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS"} = "\"" . toCygPath_ ($exe32Dir . "\\ml") . "\"";
+		$resEnv{"CC"} = "\"" . toCygPath_ ($exe32Dir . "\\cl") . "\"";
+		$resEnv{"LD"} = "\"" . toCygPath_ ($exe32Dir . "\\link") . "\"";
+		$resEnv{"AR"} = "\"" . toCygPath_ ($exe32Dir . "\\lib") . "\"";		# 'AR' is what unix uses to create libraries
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
-		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");
-		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
-		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS"} = "\"" . toCygPath_ ($exe64Dir . "\\ml64") . "\"";
+		$resEnv{"CC"} = "\"" . toCygPath_ ($exe64Dir . "\\cl") . "\"";
+		$resEnv{"LD"} = "\"" . toCygPath_ ($exe64Dir . "\\link") . "\"";
+		$resEnv{"AR"} = "\"" . toCygPath_ ($exe64Dir . "\\lib") . "\"";		# 'AR' is what unix uses to create libraries
 	}
 
 	my $myOrigFullPath = $ENV{'PATH'};
@@ -310,23 +308,6 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$param_string.= "$ip";
 	}
 	$resEnv{"TOOLS_PATH_ADDITIONS"} = $param_string;
-
-	#CONVERT TO UNIX PATH STYLE
-	#my $initialSegmentLen = length ($myOrigFullPath);
-	#my $diff = length ($newFullPath) - $initialSegmentLen;
-	#print ("myOrigFullPath=$myOrigFullPath\n\n");
-	#print ("newFullPath=$newFullPath\n\n");
-	#print ("initialSegmentLen=$initialSegmentLen\n\n");
-	#print ("diff=$diff\n\n");
-	#if ($diff > 0 and (substr ($newFullPath, 0, $initialSegmentLen) eq $myOrigFullPath)) {
-	#	print ("in match case - with substr (newfullapth, initseglen)");
-	#	$resEnv{"TOOLS_PATH_ADDITIONS"} = substr ($newFullPath, $initialSegmentLen);
-	#}
-	#else {
-	#	print "other case\n";
-	#	$resEnv{"TOOLS_PATH_ADDITIONS"} = convertWinPathVar2CygwinPathVar_($winPATH);
-	#}
-
 
 	return %resEnv;
 }

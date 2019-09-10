@@ -511,22 +511,27 @@ sub WriteStroikaConfigMakeHeader
 
 		{
 			my $Linker = GetConfigurationParameter($activeConfiguration, "Linker");
-			my $tmp		=	trim (`cygpath --windows "$Linker"`);
+			my $tmp		=	trim (`cygpath --windows $Linker`);
 			print (OUT "WIN_Linker=$tmp\n");
 		}
 		{
 			my $AR = GetConfigurationParameter($activeConfiguration, "AR");
-			my $WIN_AR		=	trim (`cygpath --windows "$AR"`);
+			my $WIN_AR		=	trim (`cygpath --windows $AR`);
 			print (OUT "WIN_AR=$WIN_AR\n");
 		}
 		{
 			my $CC = GetConfigurationParameter($activeConfiguration, "CC");
-			my $WIN_CC		=	trim (`cygpath --windows "$CC"`);
+			my $WIN_CC		=	trim (`cygpath --windows $CC`);
 			print (OUT "WIN_CC=$WIN_CC\n");
 		}
 		{
+			my $AS = GetConfigurationParameter($activeConfiguration, "AS");
+			my $WIN_AS		=	trim (`cygpath --windows $AS`);
+			print (OUT "WIN_AS=$WIN_AS\n");
+		}
+		{
 			my $CXX = GetConfigurationParameter($activeConfiguration, "CXX");
-			my $WIN_CXX		=	trim (`cygpath --windows "$CXX"`);
+			my $WIN_CXX		=	trim (`cygpath --windows $CXX`);
 			print (OUT "WIN_CXX=$WIN_CXX\n");
 		}
 		{

@@ -49,13 +49,6 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_CC	=	$(shell cygpath -w "$(CC)")
-WIN_AR	=	$(shell cygpath -w "$(AR)")
-WIN_AS	=	$(shell cygpath -w "$(AS)")
-endif
-
-
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))

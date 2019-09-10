@@ -126,14 +126,14 @@ ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(CC)" \
-		CXX="$(CXX)" \
+		CC=$(CC) \
+		CXX=$(CXX) \
 		CFLAGS="-nologo -W3 -MTd -Z7" \
 		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(Linker)" \
-		AR="$(AR)" \
+		LD=$(Linker) \
+		AR=$(AR) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -144,14 +144,14 @@ endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(CC)" \
-		CXX="$(CXX)" \
+		CC=$(CC) \
+		CXX=$(CXX) \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(Linker)" \
-		AR="$(AR)" \
+		LD=$(Linker) \
+		AR=$(AR) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -166,15 +166,15 @@ ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(CC)" \
-		CXX="$(CXX)" \
+		CC=$(CC) \
+		CXX=$(CXX) \
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(Linker)" \
-		AR="$(AR)" \
+		LD=$(Linker) \
+		AR=$(AR) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -185,15 +185,15 @@ endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(CC)" \
-		CXX="$(CXX)" \
+		CC=$(CC) \
+		CXX=$(CXX) \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(WIN_INCLUDES_PATH)" \
 		LIB="$(WIN_LIBS_PATH)" \
 		PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(Linker)" \
-		AR="$(AR)" \
+		LD=$(Linker) \
+		AR=$(AR) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \

@@ -597,6 +597,9 @@ sub	SetDefaultForCompilerDriver_
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 			$CPPSTD_VERSION_FLAG="--std=c++17"
 		}
+		elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			$CPPSTD_VERSION_FLAG="/std:c++latest"
+		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		if ($STATIC_LINK_GCCRUNTIME == DEFAULT_BOOL_OPTIONS) {
