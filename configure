@@ -1615,6 +1615,43 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			push @flags, "/EHsc";
 		}
 		push @flags, "/nologo";
+		push @flags, "/GR";			#  Enable Run-Time Type Information
+		push @flags, "/Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
+		push @flags, "/W4";			#  Warning Level (most less than WALL)
+		#push @flags, "/WX-";		#  (Dont) treat warnings as errors
+		#push @flags, "/JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
+		push @flags, "/Zc:inline";	#  Remove unreferenced code and data
+		push @flags, "/FC";			#  Use full paths in diagnostic messages
+		
+		push @flags, "/D_UNICODE";
+		push @flags, "/DUNICODE";
+		push @flags, "/errorReport:prompt";
+
+		###push @flags, "/experimental:module";
+		
+		if ($ApplyDebugFlags == true) {
+			push @flags, "/RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
+			push @flags, "/GS";			#	Enable Security Check
+			push @flags, "/Oy-";		#	(Dont) omit frame pointers
+			push @flags, "/Od";			#	Disable Optimization
+			push @flags, "-D_DEBUG";
+		}
+		if ($ApplyReleaseFlags == true) {
+			push @flags, "/GS-";		#	Disable Security Check
+			push @flags, "/Gy";			#	Enable Function Level Linking
+			push @flags, "/Oy";			#	Omit frame pointers
+			push @flags, "/O2";			#	Maximum Optimization (Favor Speed)
+			push @flags, "/GL";			#	Whole Program Optimization
+			push @flags, "/Oi";			#	Enable Intrinsic Functions
+			push @flags, "/GF";			#	Enable String Pooling
+			push @flags, "-DNDEBUG";
+		}
+		##push @flags, "fp:precise";	#vs2k sample projects define this, but maybe can use default?
+		push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
+	
+		if ($INCLUDE_SYMBOLS_LIB) {
+			push @flags, "/Zi";		#	Program Database (Debug Information)
+		}
 	}
 	if (not $doCFLAGS) {
 		# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
