@@ -1627,6 +1627,8 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		push @flags, "/DUNICODE";
 		push @flags, "/errorReport:prompt";
 
+		push @flags, "/FS";			# Force Synchronous PDB Writes (needed for parallel make/build)
+
 		###push @flags, "/experimental:module";
 		
 		if ($ApplyDebugFlags == true) {
