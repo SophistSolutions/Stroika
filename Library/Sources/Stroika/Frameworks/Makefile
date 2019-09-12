@@ -34,7 +34,7 @@ $(SubDirs):
 # redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
 # sub-make - easier to just ignore in this one case from here
 # -- LGP 2019-01-09
-Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
+Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
 
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@#suppress normal rule so just all_objs_ fires
