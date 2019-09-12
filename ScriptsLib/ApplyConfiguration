@@ -54,6 +54,7 @@ my $STATIC_LINK_GCCRUNTIME = 1;
 my $COMPILER_DRIVER_C = "";
 my $COMPILER_DRIVER_CPlusPlus = "";
 my $AR = undef;
+my $LIBTOOL = undef;
 my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_PREFIX_LINKER_ARGS = "";
@@ -119,6 +120,7 @@ sub	ReadConfiguration_
 	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
 	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++");
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
+	$LIBTOOL = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
 	$CFLAGS = GetConfigurationParameter($activeConfiguration, "CFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
@@ -428,6 +430,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("OptimizerFlag", $COPTIMIZE_FLAGS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AR");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LIBTOOL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("RANLIB");
 	print (OUT "\n");
 
@@ -510,29 +513,39 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "##\n");
 
 		{
-			my $Linker = GetConfigurationParameter($activeConfiguration, "Linker");
-			my $tmp		=	trim (`cygpath --windows $Linker`);
-			print (OUT "WIN_Linker=$tmp\n");
+			my $tmp = GetConfigurationParameter($activeConfiguration, "Linker");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --windows $tmp`);
+			}
+			print (OUT "WIN_Linker=$Linker\n");
 		}
 		{
-			my $AR = GetConfigurationParameter($activeConfiguration, "AR");
-			my $WIN_AR		=	trim (`cygpath --windows $AR`);
-			print (OUT "WIN_AR=$WIN_AR\n");
+			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --windows $tmp`);
+			}
+			print (OUT "WIN_LIBTOOL=$tmp\n");
 		}
 		{
-			my $CC = GetConfigurationParameter($activeConfiguration, "CC");
-			my $WIN_CC		=	trim (`cygpath --windows $CC`);
-			print (OUT "WIN_CC=$WIN_CC\n");
+			my $tmp = GetConfigurationParameter($activeConfiguration, "CC");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --windows $tmp`);
+			}
+			print (OUT "WIN_CC=$tmp\n");
 		}
 		{
-			my $AS = GetConfigurationParameter($activeConfiguration, "AS");
-			my $WIN_AS		=	trim (`cygpath --windows $AS`);
-			print (OUT "WIN_AS=$WIN_AS\n");
+			my $tmp = GetConfigurationParameter($activeConfiguration, "AS");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --windows $tmp`);
+			}
+			print (OUT "WIN_AS=$tmp\n");
 		}
 		{
-			my $CXX = GetConfigurationParameter($activeConfiguration, "CXX");
-			my $WIN_CXX		=	trim (`cygpath --windows $CXX`);
-			print (OUT "WIN_CXX=$WIN_CXX\n");
+			my $tmp = GetConfigurationParameter($activeConfiguration, "CXX");
+			if (not ($tmp eq "")) {
+				$tmp		=	trim (`cygpath --windows $tmp`);
+			}
+			print (OUT "WIN_CXX=$tmp\n");
 		}
 		{
 			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");

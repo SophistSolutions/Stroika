@@ -148,6 +148,7 @@ my $COMPILER_DRIVER_C = "";				# @todo allow cmdline option to set _C or _CPlusP
 my $COMPILER_DRIVER_CPlusPlus = "";
 my $AS = undef;
 my $AR = undef;
+my $LIBTOOL = undef; # Windows format LIB tool
 my $RANLIB = undef;
 my $Linker = undef;
 my $STRIP = undef;
@@ -834,6 +835,15 @@ sub	SetDefaultForCompilerDriver_
 		}
 		else {
 			$AR = "";
+		}
+	}
+	if (!(defined $LIBTOOL)) {
+		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			my $x = GetMSVCVarName_ ("AR");
+			$LIBTOOL = trim ($x);
+		}
+		else {
+			$LIBTOOL = "";
 		}
 	}
 	if (!(defined $RANLIB)) {
@@ -2132,6 +2142,7 @@ sub	WriteConfigFile_
 
 
 	print (OUT "    <AR>$AR</AR>\n");
+	print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
 	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
 	print (OUT "    <Linker>$Linker</Linker>\n");
 	

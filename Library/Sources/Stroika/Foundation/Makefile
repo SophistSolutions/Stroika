@@ -37,8 +37,7 @@ SubDirs=				\
 # redirect errors on list-objs cuz could fail due to directories not existing yet (#include) and not worth fixing each
 # sub-make - easier to just ignore in this one case from here
 # -- LGP 2019-01-09
-Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) -s list-objs 2>/dev/null))
-
+Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
 
 $(Objs):	all_objs_
 
@@ -61,19 +60,36 @@ all_objs_:
 $(StroikaFoundationLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
-	@rm -f $(StroikaFoundationLib)
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-		echo "      $(AR) cr $(StroikaFoundationLib) $(Objs)";\
+	@rm -f $@
+	@if [ "$(AR)" != "" ]; then \
+		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+			echo "      $(AR) cr $@ $(Objs)";\
+		fi;\
+		$(AR) cr $@ $(Objs);\
 	fi
-	@$(AR) cr $(StroikaFoundationLib) $(Objs)
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-		echo "      $(RANLIB) $(StroikaFoundationLib)";\
+	@if [ "$(RANLIB)" != "" ]; then \
+		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+			echo "      $(RANLIB) $@";\
+		fi;\
+		$(RANLIB) $@;\
 	fi
-	@$(RANLIB) $(StroikaFoundationLib)
+	@if [ "$(LIBTOOL)" != "" ]; then \
+		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+			echo "      $(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs)";\
+		fi;\
+		$(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs);\
+	fi
 
 
-
+## experimenting/moving towards build without msbuild (just makefile build)
 ifeq (Unix,$(ProjectPlatformSubdir))
+USE_MSBUILD_=0
+else
+#USE_MSBUILD_=0
+USE_MSBUILD_=1
+endif
+
+ifeq ($(USE_MSBUILD_),0)
 all:	$(StroikaFoundationLib)
 else
 all:

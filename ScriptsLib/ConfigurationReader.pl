@@ -193,6 +193,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'AR'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<LIBTOOL>");
+		if (defined $pps) {
+			$configuration {'LIBTOOL'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<RANLIB>");
 		if (defined $pps) {
 			$configuration {'RANLIB'} = $pps;

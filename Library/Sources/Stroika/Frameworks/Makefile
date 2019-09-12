@@ -51,18 +51,37 @@ all_objs_:
 $(StroikaFrameworksLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
-	@rm -f $(StroikaFrameworksLib)
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-		echo "      $(AR) cr $(StroikaFrameworksLib) $(Objs)";\
+	@rm -f $@
+	@if [ "$(AR)" != "" ]; then \
+		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+			echo "      $(AR) cr $@ $(Objs)";\
+		fi;\
+		$(AR) cr $@ $(Objs);\
 	fi
-	@$(AR) cr $(StroikaFrameworksLib) $(Objs)
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-		echo "      $(RANLIB) $(StroikaFrameworksLib)";\
+	@if [ "$(RANLIB)" != "" ]; then \
+		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+			echo "      $(RANLIB) $@";\
+		fi;\
+		$(RANLIB) $@;\
 	fi
-	@$(RANLIB) $(StroikaFrameworksLib)
+	@if [ "$(LIBTOOL)" != "" ]; then \
+		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+			echo "      $(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs)";\
+		fi;\
+		$(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs);\
+	fi
 
 
+
+## experimenting/moving towards build without msbuild (just makefile build)
 ifeq (Unix,$(ProjectPlatformSubdir))
+USE_MSBUILD_=0
+else
+#USE_MSBUILD_=0
+USE_MSBUILD_=1
+endif
+
+ifeq ($(USE_MSBUILD_),0)
 all:	$(StroikaFrameworksLib)
 else
 all:
