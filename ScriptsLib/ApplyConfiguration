@@ -49,7 +49,6 @@ my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
-my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
 my $COMPILER_DRIVER_C = "";
 my $COMPILER_DRIVER_CPlusPlus = "";
@@ -143,15 +142,10 @@ sub	ReadConfiguration_
 	$LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
 	$LIB_DEPENDENCIES = GetConfigurationParameter($activeConfiguration, "LIB_DEPENDENCIES");
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_TRACE2FILE"));
-	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguration, "OptimizerFlag");
 
 	$IncludeDebugSymbolsInExecutables = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables");
 	$IncludeDebugSymbolsInLibraries = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInLibraries");
 
-
-	if (not (defined $COPTIMIZE_FLAGS)) {
-		$COPTIMIZE_FLAGS = "";
-	}
 	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "STATIC_LINK_GCCRUNTIME"));
 
 	foreach $cdef (GetConfigurationParameter($activeConfiguration, "ExtraCDefines")) {
@@ -427,7 +421,6 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "\n");
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("OptimizerFlag", $COPTIMIZE_FLAGS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("STRIP");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AR");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LIBTOOL");
@@ -483,10 +476,7 @@ sub WriteStroikaConfigMakeHeader
 	
 	print (OUT "\n");
 	print (OUT "\n");
-	print (OUT "# Can be blank, or -O2, etc..\n");
-	print (OUT "COPTIMIZE_FLAGS=	$COPTIMIZE_FLAGS\n");
-	print (OUT "\n");
-	print (OUT "\n");
+
 	print (OUT "#Linker-Driver\n");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("Linker");
 

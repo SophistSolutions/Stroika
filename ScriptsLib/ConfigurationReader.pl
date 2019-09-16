@@ -93,10 +93,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ConfigTags'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<OptimizerFlag>");
-		if (defined $pps) {
-			$configuration {'OptimizerFlag'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<Linker>");
 		if (defined $pps) {
 			$configuration {'Linker'} = $pps;

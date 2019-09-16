@@ -140,7 +140,7 @@ my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
 my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
 my $MALLOC_GUARD = DEFAULT_BOOL_OPTIONS;
-my $COPTIMIZE_FLAGS = "";
+my $COPTIMIZE_FLAGS = "";   ### DEPRECATED
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $STATIC_LINK_SANITIZERS = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
@@ -199,7 +199,7 @@ sub	DoHelp_
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
 		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
-		print("	    --cpp-optimize-flag  {FLAG}                     /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
+		print("	    --cpp-optimize-flag  {FLAG}                     /* DEPRECATED in 2.1a2 */\n");
 		print("	    --c-define {ARG}                                /* Define C++ pre-processor define for the given configuration: arg appears as a line in Stroika-Configuration.h\n");
 		print("	                                                       (e.g. --c-define '\\#define qCompilerAndStdLib_quick_exit_Buggy 1')\n");
 		print("	                                                       Functionally similar to --append-CPPFLAGS */\n");
@@ -722,10 +722,6 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 
-		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$COPTIMIZE_FLAGS .= " /Od";
-		}
-
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
 		}
@@ -1183,6 +1179,7 @@ sub	ParseCommandLine_Remaining_
 			}
 		}
 		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
+			print ("DEPRECATED: $var\n");
 			$i++;
 			$var = $args[$i];
 			$COPTIMIZE_FLAGS = $var;
@@ -1572,7 +1569,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		}
 	}
 
-	if (not ($COPTIMIZE_FLAGS eq "")) {
+	if (not ($COPTIMIZE_FLAGS eq "")) {### DEPRECATED
 		push @flags, $COPTIMIZE_FLAGS;
 	}
 	if (defined $INCLUDES_PATH) {
@@ -1640,7 +1637,8 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			push @flags, "/GS";			#	Enable Security Check
 			push @flags, "/Oy-";		#	(Dont) omit frame pointers
 			push @flags, "/Od";			#	Disable Optimization
-			push @flags, "-D_DEBUG";
+			push @flags, "/D_DEBUG";
+			push @flags, "/MTd";		#	Multithreaded (Debug; but not dll)
 		}
 		if ($ApplyReleaseFlags == true) {
 			push @flags, "/GS-";		#	Disable Security Check
@@ -1650,10 +1648,11 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			push @flags, "/GL";			#	Whole Program Optimization
 			push @flags, "/Oi";			#	Enable Intrinsic Functions
 			push @flags, "/GF";			#	Enable String Pooling
-			push @flags, "-DNDEBUG";
+			push @flags, "/DNDEBUG";
+			push @flags, "/MT";			#	Multithreaded (not debug not dll)
 		}
-		##push @flags, "fp:precise";	#vs2k sample projects define this, but maybe can use default?
-		push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
+		##push @flags, "/fp:precise";	#vs2k sample projects define this, but maybe can use default?
+		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
 	
 		if ($INCLUDE_SYMBOLS_LIB) {
 			push @flags, "/Zi";		#	Program Database (Debug Information)
@@ -1733,7 +1732,7 @@ sub PostProcessOptions_ ()
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
-			$COPTIMIZE_FLAGS .= " /GL";
+			$COPTIMIZE_FLAGS .= " /GL";	### DEPRECATED
 		}
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
@@ -2124,9 +2123,6 @@ sub	WriteConfigFile_
 	}
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
-	if (not ($COPTIMIZE_FLAGS eq "")) {
-		print (OUT "    <OptimizerFlag>$COPTIMIZE_FLAGS</OptimizerFlag>\n");
-	}
 
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
