@@ -829,13 +829,7 @@ sub	SetDefaultForCompilerDriver_
 		$STRIP = "";
 	}
 	if (!(defined $AR)) {
-		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			my $x = GetMSVCVarName_ ("AR");
-			$AR = trim ($x);
-		}
-		else {
-			$AR = "";
-		}
+		$AR = "";
 	}
 	if (!(defined $LIBTOOL)) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {

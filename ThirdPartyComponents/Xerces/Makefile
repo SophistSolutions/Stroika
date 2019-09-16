@@ -1,6 +1,6 @@
 #
 #	TODO:
-###		@todo	use cmake –G”Unix Makefiles” so that I can run make -jN (or so regular make inherits flags from $(MAKE)
+###		@todo	use cmake ï¿½Gï¿½Unix Makefilesï¿½ so that I can run make -jN (or so regular make inherits flags from $(MAKE)
 ###				then use that to lose horrible MAKEFLAGS= hack
 ###				***NOTE*** this is by far the slowest part of the UNIX build process (latency) - so this maybe a priority
 ###

@@ -133,7 +133,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD=$(Linker) \
-		AR=$(AR) \
+		AR=$(LIBTOOL) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -151,7 +151,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		LIB="$(WIN_LIBS_PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD=$(Linker) \
-		AR=$(AR) \
+		AR=$(LIBTOOL) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -174,7 +174,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD=$(Linker) \
-		AR=$(AR) \
+		AR=$(LIBTOOL) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -193,7 +193,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD=$(Linker) \
-		AR=$(AR) \
+		AR=$(LIBTOOL) \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \

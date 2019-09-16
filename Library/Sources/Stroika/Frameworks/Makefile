@@ -11,6 +11,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+CXXFLAGS+=/Fd$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb
+endif
+
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
 
@@ -54,21 +58,21 @@ $(StroikaFrameworksLib):	$(Objs)
 	@rm -f $@
 	@if [ "$(AR)" != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(AR) cr $@ $(Objs)";\
+			echo "      "$(AR) cr $@ $(Objs);\
 		fi;\
 		$(AR) cr $@ $(Objs);\
 	fi
 	@if [ "$(RANLIB)" != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(RANLIB) $@";\
+			echo "      "$(RANLIB) $@;\
 		fi;\
 		$(RANLIB) $@;\
 	fi
-	@if [ "$(LIBTOOL)" != "" ]; then \
+	@if [ $(LIBTOOL) != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs)";\
+			echo "      "$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:X86 /NOLOGO $(shell cygpath --mixed $(Objs));\
 		fi;\
-		$(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs);\
+		$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:X86 /NOLOGO $(shell cygpath --mixed $(Objs));\
 	fi
 
 

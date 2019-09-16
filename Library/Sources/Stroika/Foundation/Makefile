@@ -63,21 +63,21 @@ $(StroikaFoundationLib):	$(Objs)
 	@rm -f $@
 	@if [ "$(AR)" != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(AR) cr $@ $(Objs)";\
+			echo "      "$(AR) cr $@ $(Objs);\
 		fi;\
 		$(AR) cr $@ $(Objs);\
 	fi
 	@if [ "$(RANLIB)" != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(RANLIB) $@";\
+			echo "      "$(RANLIB) $@;\
 		fi;\
 		$(RANLIB) $@;\
 	fi
-	@if [ "$(LIBTOOL)" != "" ]; then \
+	@if [ $(LIBTOOL) != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs)";\
+			echo "      "$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:X86 /NOLOGO $(shell cygpath --mixed $(Objs));\
 		fi;\
-		$(LIBTOOL) /OUT:$(shell cygpath --mixed @$) /MACHINE:X86 /NOLOGO $(Objs);\
+		$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:X86 /NOLOGO $(shell cygpath --mixed $(Objs));\
 	fi
 
 
