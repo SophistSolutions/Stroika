@@ -81,15 +81,8 @@ $(StroikaFoundationLib):	$(Objs)
 	fi
 
 
-## experimenting/moving towards build without msbuild (just makefile build)
-ifeq (Unix,$(ProjectPlatformSubdir))
-USE_MSBUILD_=0
-else
-#USE_MSBUILD_=0
-USE_MSBUILD_=1
-endif
 
-ifeq ($(USE_MSBUILD_),0)
+ifeq ($(USE_MSBUILD),0)
 all:	$(StroikaFoundationLib)
 else
 all:
