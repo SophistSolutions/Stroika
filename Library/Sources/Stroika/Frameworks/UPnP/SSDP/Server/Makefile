@@ -11,7 +11,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 vpath %cpp $(SrcDir)
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=/Fd$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb
 endif
 

@@ -41,6 +41,8 @@ ifeq ($(LIB_SUFFIX),.a)
 	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
 endif
 ifeq ($(LIB_SUFFIX),.lib)
+	#StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
+
 #TMPHACK til I can figure out how to merge .lib files (and script it) - or rename to FrameworksLibs and do similar for UNIX
 	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks-Led$(LIB_SUFFIX) \
 									$(StroikaLibDir)Stroika-Frameworks-Modbus$(LIB_SUFFIX) \

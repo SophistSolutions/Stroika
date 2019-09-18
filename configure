@@ -108,6 +108,13 @@ my $HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = DEFAULT_BOOL_
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
+
+## /Zi or /Zl (as opposed to using /Z7 for debug info)
+## Z7 may use more disk space but less confusing for library to
+## not have symbol information written into .pdb file
+my $WinFlag_DebugProgramDatabase = false;	# ignored except for visual studio
+
+
 ### @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
 ### FOR COMMON ONES - SEE IF THEY SHOULD REALLY BE GCC SPECIFIC
 my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
@@ -1655,7 +1662,12 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
 	
 		if ($INCLUDE_SYMBOLS_LIB) {
-			push @flags, "/Zi";		#	Program Database (Debug Information)
+			if ($WinFlag_DebugProgramDatabase) {
+				push @flags, "/Zi";		#	Program Database (Debug Information)
+			}
+			else {
+				push @flags, "/Z7";		#	Use intra-obj file debug info format 
+			}
 		}
 	}
 	if (not $doCFLAGS) {

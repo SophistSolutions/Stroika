@@ -552,6 +552,13 @@ sub WriteStroikaConfigMakeHeader
 		#	my $tmp		=	trim (`cygpath --windows --path "$TOOLS_PATH_ADDITIONS"`);
 		#	print (OUT "WIN_TOOLS_PATH_ADDITIONS=$tmp \n");		#nb: space importnat if $tmp ends in backslash
 		#}
+		{
+			# Not a great way to test, but hopefully adequate for now
+			# esp since not critical always right -- LGP 2019-09-17
+			if (index($CXXFLAGS, "/Zi") != -1 || index($CXXFLAGS, "/Zl") != -1) {
+				print (OUT "WIN_USE_PROGRAM_DATABASE=1\n");
+			}
+		}
 
 		print (OUT "\n");
 		print (OUT "\n");
