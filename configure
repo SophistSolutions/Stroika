@@ -738,7 +738,9 @@ sub	SetDefaultForCompilerDriver_
 
 		#helpful to print stack traces in log (not critical, and has performance overhead)
 		#see Debug::BackTrace ()
-		$EXTRA_PREFIX_LINKER_ARGS .= " -rdynamic";
+		if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
+			$EXTRA_PREFIX_LINKER_ARGS .= " -rdynamic";
+		}
 	}
 	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
@@ -1961,6 +1963,10 @@ sub PostProcessOptions_ ()
 		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (false);
 	}
 
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && not ($CPPSTD_VERSION_FLAG eq '')) {
+		$EXTRA_PREFIX_LINKER_ARGS .= " $CPPSTD_VERSION_FLAG";
+	}
+
 }
 
 
@@ -2139,9 +2145,8 @@ sub	WriteConfigFile_
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
-	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
+	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
 	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
-
 
 	print (OUT "    <AR>$AR</AR>\n");
 	print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
