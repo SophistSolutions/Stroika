@@ -1633,7 +1633,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		
 		push @flags, "/D_UNICODE";
 		push @flags, "/DUNICODE";
-		push @flags, "/errorReport:prompt";
+#		push @flags, "/errorReport:prompt";	users can add this if desired
 
 		push @flags, "/FS";			# Force Synchronous PDB Writes (needed for parallel make/build)
 
