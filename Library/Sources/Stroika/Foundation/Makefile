@@ -75,9 +75,9 @@ $(StroikaFoundationLib):	$(Objs)
 	fi
 	@if [ $(LIBTOOL) != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      "$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:X86 /NOLOGO $(shell cygpath --mixed $(Objs));\
+			echo "      "$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
 		fi;\
-		$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:X86 /NOLOGO $(shell cygpath --mixed $(Objs));\
+		$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
 	fi
 
 

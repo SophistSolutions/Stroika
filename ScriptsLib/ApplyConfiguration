@@ -517,6 +517,14 @@ sub WriteStroikaConfigMakeHeader
 			print (OUT "WIN_LIBTOOL=$tmp\n");
 		}
 		{
+			#Lib tool requires queer ARCH arguments (and probably Link) - so conert here
+			my $tmp = GetConfigurationParameter($activeConfiguration, "ARCH");
+			if ($tmp eq "x86_64") {
+				$tmp = "x64";
+			}
+			print (OUT "WIN_LIBCOMPATIBLE_ARCH=$tmp\n");
+		}
+		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CC");
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --windows $tmp`);
