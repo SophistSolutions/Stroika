@@ -126,19 +126,6 @@ CFLAGS	+= -DSQLITE_DEBUG
 endif
 
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-#/Z7 program databaes debug format
-CFLAGS	+= /Z7
-CFLAGS	+= /nologo
-ifeq (1,$(ENABLE_ASSERTIONS))
-CFLAGS	+= /MTd
-endif
-ifeq (0,$(ENABLE_ASSERTIONS))
-CFLAGS	+= /MT
-endif
-endif
-
-
 $(SQLITE3OBJ):
 ifeq (Unix,$(ProjectPlatformSubdir))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(CC) -c -o $@ sqlite3.c $(CFLAGS)
