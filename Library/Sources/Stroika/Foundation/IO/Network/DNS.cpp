@@ -241,12 +241,43 @@ Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress
     return GetHostEntry (hostNameOrAddress).fAddressList;
 }
 
+Sequence<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s, family=%s", Characters::ToString (address).c_str (), Characters::ToString (family).c_str ())};
+#endif
+    auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+    for (auto i = h.begin (); i != h.end (); ++i) {
+        if (i->GetAddressFamily () != family) {
+            h.Remove (i);
+        }
+    }
+    return h;
+}
+
 InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s", Characters::ToString (address).c_str ())};
 #endif
     auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+    if (h.empty ()) {
+        Execution::Throw (RuntimeErrorException (L"No associated addresses"sv));
+    }
+    return h[0];
+}
+
+InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::GetHostAddresses", L"address=%s, family=%s", Characters::ToString (address).c_str (), Characters::ToString (family).c_str ())};
+#endif
+    auto h = GetHostEntry (hostNameOrAddress).fAddressList;
+    for (auto i = h.begin (); i != h.end (); ++i) {
+        if (i->GetAddressFamily () != family) {
+            h.Remove (i);
+        }
+    }
     if (h.empty ()) {
         Execution::Throw (RuntimeErrorException (L"No associated addresses"sv));
     }

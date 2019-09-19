@@ -86,6 +86,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \brief simple wrapper on GetHostEntry - looking up the hostname/ip address and returning the list of associated ip addresses (or the argument ip address).
          */
         nonvirtual Sequence<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
+        nonvirtual Sequence<InternetAddress> GetHostAddresses (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const;
 
     public:
         /**
@@ -96,6 +97,7 @@ namespace Stroika::Foundation::IO::Network {
          *  error retrieving the information).
          */
         nonvirtual InternetAddress GetHostAddress (const String& hostNameOrAddress) const;
+        nonvirtual InternetAddress GetHostAddress (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const;
     };
 
 }
