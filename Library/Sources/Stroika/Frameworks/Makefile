@@ -60,19 +60,19 @@ $(StroikaFrameworksLib):	$(Objs)
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
 			echo "      "$(AR) cr $@ $(Objs);\
 		fi;\
-		$(AR) cr $@ $(Objs);\
+		"$(AR)" cr $@ $(Objs);\
 	fi
 	@if [ "$(RANLIB)" != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
 			echo "      "$(RANLIB) $@;\
 		fi;\
-		$(RANLIB) $@;\
+		"$(RANLIB)" $@;\
 	fi
-	@if [ $(LIBTOOL) != "" ]; then \
+	@if [ "$(LIBTOOL)" != "" ]; then \
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      "$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+			echo "      $(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
 		fi;\
-		$(LIBTOOL) /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+		"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
 	fi
 
 

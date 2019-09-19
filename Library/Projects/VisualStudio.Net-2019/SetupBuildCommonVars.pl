@@ -249,18 +249,18 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	if (index($activeConfigBits, "32") != -1) {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-		$resEnv{"AS"} = "\"" . toCygPath_ ($exe32Dir . "\\ml") . "\"";
-		$resEnv{"CC"} = "\"" . toCygPath_ ($exe32Dir . "\\cl") . "\"";
-		$resEnv{"LD"} = "\"" . toCygPath_ ($exe32Dir . "\\link") . "\"";
-		$resEnv{"AR"} = "\"" . toCygPath_ ($exe32Dir . "\\lib") . "\"";		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
+		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
+		$resEnv{"LD"} = toCygPath_ ($exe32Dir . "\\link");
+		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-		$resEnv{"AS"} = "\"" . toCygPath_ ($exe64Dir . "\\ml64") . "\"";
-		$resEnv{"CC"} = "\"" . toCygPath_ ($exe64Dir . "\\cl") . "\"";
-		$resEnv{"LD"} = "\"" . toCygPath_ ($exe64Dir . "\\link") . "\"";
-		$resEnv{"AR"} = "\"" . toCygPath_ ($exe64Dir . "\\lib") . "\"";		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
+		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");
+		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
+		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 
 	my $myOrigFullPath = $ENV{'PATH'};

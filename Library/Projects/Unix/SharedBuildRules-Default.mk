@@ -24,10 +24,10 @@ endif
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables $(abspath  $<)) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(CXX) $(CXXFLAGS) -c $< $(call DASH_O_PARAMS_, $@);\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "$(CXX)" $(CXXFLAGS) -c $< $(call DASH_O_PARAMS_, $@);\
 	fi
 	@mkdir -p `dirname $@`
-	@$(CXX) $(CXXFLAGS) -c $< $(call DASH_O_PARAMS_, $@) $(OUTPUT_FILTER_)
+	@"$(CXX)" $(CXXFLAGS) -c $< $(call DASH_O_PARAMS_, $@) $(OUTPUT_FILTER_)
 
 
 %.i : %.swsp

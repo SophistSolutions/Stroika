@@ -124,82 +124,84 @@ else
 	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) - if its 32-bit debug/relase
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC=$(CC) \
-		CXX=$(CXX) \
-		CFLAGS="-nologo -W3 -MTd -Z7" \
-		INCLUDE="$(WIN_INCLUDES_PATH)" \
-		LIB="$(WIN_LIBS_PATH)" \
-		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD=$(Linker) \
-		AR=$(LIBTOOL) \
-		ARCRATEFLAGS="-nologo" \
-		ARTARGETPREFIX=-out: \
-		LINKTARGETPREFIX=-out: \
-		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-		all
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
+			CC="$(CC)" \
+			CXX="$(CXX)" \
+			LD="$(Linker)" \
+			AR="$(LIBTOOL)" \
+			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+			INCLUDE="$(WIN_INCLUDES_PATH)" \
+			LIB="$(WIN_LIBS_PATH)" \
+			LIBS="oleaut32.lib ole32.lib user32.lib" \
+			ARCRATEFLAGS="-nologo" \
+			ARTARGETPREFIX=-out: \
+			LINKTARGETPREFIX=-out: \
+			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
+			CFLAGS="-nologo -W3 -MTd -Z7" \
+			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+			all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC=$(CC) \
-		CXX=$(CXX) \
-		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
-		INCLUDE="$(WIN_INCLUDES_PATH)" \
-		LIB="$(WIN_LIBS_PATH)" \
-		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD=$(Linker) \
-		AR=$(LIBTOOL) \
-		ARCRATEFLAGS="-nologo" \
-		ARTARGETPREFIX=-out: \
-		LINKTARGETPREFIX=-out: \
-		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-		all
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
+			CC="$(CC)" \
+			CXX="$(CXX)" \
+			LD="$(Linker)" \
+			AR="$(LIBTOOL)" \
+			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+			INCLUDE="$(WIN_INCLUDES_PATH)" \
+			LIB="$(WIN_LIBS_PATH)" \
+			LIBS="oleaut32.lib ole32.lib user32.lib" \
+			ARCRATEFLAGS="-nologo" \
+			ARTARGETPREFIX=-out: \
+			LINKTARGETPREFIX=-out: \
+			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
+			CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
+			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+			all
 endif
 endif
 
 	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) - if its 64-bit debug/relase
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC=$(CC) \
-		CXX=$(CXX) \
-		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
-		INCLUDE="$(WIN_INCLUDES_PATH)" \
-		LIB="$(WIN_LIBS_PATH)" \
-		PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" \
-		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD=$(Linker) \
-		AR=$(LIBTOOL) \
-		ARCRATEFLAGS="-nologo" \
-		ARTARGETPREFIX=-out: \
-		LINKTARGETPREFIX=-out: \
-		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-		all
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
+			CC="$(CC)" \
+			CXX="$(CXX)" \
+			LD="$(Linker)" \
+			AR="$(LIBTOOL)" \
+			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+			INCLUDE="$(WIN_INCLUDES_PATH)" \
+			LIB="$(WIN_LIBS_PATH)" \
+			LIBS="oleaut32.lib ole32.lib user32.lib" \
+			ARCRATEFLAGS="-nologo" \
+			ARTARGETPREFIX=-out: \
+			LINKTARGETPREFIX=-out: \
+			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
+			CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
+			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+			all
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC=$(CC) \
-		CXX=$(CXX) \
-		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
-		INCLUDE="$(WIN_INCLUDES_PATH)" \
-		LIB="$(WIN_LIBS_PATH)" \
-		PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" \
-		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD=$(Linker) \
-		AR=$(LIBTOOL) \
-		ARCRATEFLAGS="-nologo" \
-		ARTARGETPREFIX=-out: \
-		LINKTARGETPREFIX=-out: \
-		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-		OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-		all
+	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
+			CC="$(CC)" \
+			CXX="$(CXX)" \
+			LD="$(Linker)" \
+			AR="$(LIBTOOL)" \
+			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+			INCLUDE="$(WIN_INCLUDES_PATH)" \
+			LIB="$(WIN_LIBS_PATH)" \
+			LIBS="oleaut32.lib ole32.lib user32.lib" \
+			ARCRATEFLAGS="-nologo" \
+			ARTARGETPREFIX=-out: \
+			LINKTARGETPREFIX=-out: \
+			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
+			CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
+			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+			all
 endif
 endif
 

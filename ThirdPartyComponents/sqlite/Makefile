@@ -104,11 +104,11 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib
 	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(OBJS)
 ifeq (Unix,$(ProjectPlatformSubdir))
-	$(AR) cr $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB) $(OBJS)
-	$(RANLIB) $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
+	"$(AR)" cr $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB) $(OBJS)
+	"$(RANLIB)" $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		$(LIBTOOL) /OUT:`cygpath -w $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)` /nologo `cygpath -w $(OBJS)`
+		"$(LIBTOOL)" /OUT:`cygpath -w $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)` /nologo `cygpath -w $(OBJS)`
 endif
 
 
@@ -128,11 +128,11 @@ endif
 
 $(SQLITE3OBJ):
 ifeq (Unix,$(ProjectPlatformSubdir))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(CC) -c -o $@ sqlite3.c $(CFLAGS)
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && "$(CC)" -c -o $@ sqlite3.c $(CFLAGS)
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" INCLUDE="$(WIN_INCLUDES_PATH)";\
 		cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); \
-		$(CC) $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+		"$(CC)" $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
 endif
 
 

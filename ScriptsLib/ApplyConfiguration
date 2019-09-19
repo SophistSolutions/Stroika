@@ -505,14 +505,14 @@ sub WriteStroikaConfigMakeHeader
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "Linker");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows $tmp`);
+				$tmp		=	trim (`cygpath --windows "$tmp"`);
 			}
 			print (OUT "WIN_Linker=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows $tmp`);
+				$tmp		=	trim (`cygpath --windows "$tmp"`);
 			}
 			print (OUT "WIN_LIBTOOL=$tmp\n");
 		}
@@ -527,21 +527,21 @@ sub WriteStroikaConfigMakeHeader
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CC");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows $tmp`);
+				$tmp		=	trim (`cygpath --windows "$tmp"`);
 			}
 			print (OUT "WIN_CC=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "AS");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows $tmp`);
+				$tmp		=	trim (`cygpath --windows "$tmp"`);
 			}
 			print (OUT "WIN_AS=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CXX");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows $tmp`);
+				$tmp		=	trim (`cygpath --windows "$tmp"`);
 			}
 			print (OUT "WIN_CXX=$tmp\n");
 		}
