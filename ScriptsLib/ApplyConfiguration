@@ -507,7 +507,7 @@ sub WriteStroikaConfigMakeHeader
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --windows $tmp`);
 			}
-			print (OUT "WIN_Linker=$Linker\n");
+			print (OUT "WIN_Linker=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
