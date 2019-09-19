@@ -122,7 +122,7 @@ CONFIG_ARGS+=	-no-dso
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 WIN_CRYPTO_LIB_BASENAME=libcrypto
 WIN_SSL_LIB_BASENAME=libssl
-WIN_PDB_BASENAME=ossl_static
+###WIN_PDB_BASENAME=ossl_static
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -137,7 +137,6 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_CRYPTO_LIB_BASENAME).lib		\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_SSL_LIB_BASENAME).lib			\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_PDB_BASENAME).pdb				\
 	$(PER_CONFIGURATION_BUILDS_DIR)bin/openssl.exe							\
 	$(PER_CONFIGURATION_BUILDS_DIR)bin/openssl.pdb							\
 	$(PER_CONFIGURATION_BUILDS_DIR)bin/c_rehash.pl
@@ -321,4 +320,3 @@ ifeq ($@, $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))
 	@$(ECHO) "done"
 endif
 endif
-
