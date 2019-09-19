@@ -10,7 +10,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=/Fd$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb
+CXXFLAGS+=/Fd$(shell cygpath --mixed $(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
 endif
 
 
