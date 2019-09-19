@@ -377,14 +377,14 @@ namespace {
 
                 Debug::TraceContextBumper traceCtx ("Test1_");
                 {
-                    syncofdata x;
+                    syncofdata                  x;
                     [[maybe_unused]] syncofdata y = data_ ();
-                    x            = data_ ();
+                    x                             = data_ ();
                 }
                 {
-                    syncofint x;
+                    syncofint                  x;
                     [[maybe_unused]] syncofint y = 3;
-                    x           = 4;
+                    x                            = 4;
                 }
                 {
                     // Make 2 concurrent threads, which update a lynchronized variable
@@ -1007,10 +1007,10 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
-			// https://stroika.atlassian.net/browse/STK-632
+            // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
             // most likely helgrind bug - hopefully fixed soon.
-            bool hasBug632AndRunningHelgrind = kRunningValgrind_;	// not easy to check
+            bool hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
             if (not hasBug632AndRunningHelgrind) {
                 // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
                 Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);

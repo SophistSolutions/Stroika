@@ -1137,15 +1137,15 @@ namespace {
             void T1_ ()
             {
                 for (int i = 0; i < 1000; ++i) {
-                    optional<T> x;
-                    [[maybe_unused]]optional<T> y = x;
+                    optional<T>                  x;
+                    [[maybe_unused]] optional<T> y = x;
                 }
             }
             template <typename T>
             void T2_ ()
             {
                 for (int i = 0; i < 1000; ++i) {
-                    optional<T> x = T{};
+                    optional<T>                  x = T{};
                     [[maybe_unused]] optional<T> y = x;
                 }
             }

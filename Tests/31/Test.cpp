@@ -203,7 +203,7 @@ namespace {
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]]SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form

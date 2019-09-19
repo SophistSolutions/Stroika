@@ -1141,7 +1141,7 @@ namespace {
                         Assert (S < std::end (buf));
                         int ruid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));
-                        [[maybe_unused]]int euid = ::strtol (S, &S, 10);
+                        [[maybe_unused]] int euid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));
                         [[maybe_unused]] int suid = ::strtol (S, &S, 10);
                         Assert (S < std::end (buf));

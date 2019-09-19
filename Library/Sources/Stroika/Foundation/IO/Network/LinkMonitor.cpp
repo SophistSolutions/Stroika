@@ -188,7 +188,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
 
-    [[maybe_unused]]int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
+    [[maybe_unused]] int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
 
     InternetAddress result;
@@ -211,7 +211,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"IO::Network::GetPrimaryNetworkDeviceMacAddress"};
 #endif
-    [[maybe_unused]]auto printMacAddr = [] (const uint8_t macaddrBytes[6]) -> String {
+    [[maybe_unused]] auto printMacAddr = [] (const uint8_t macaddrBytes[6]) -> String {
         char buf[100]{};
         (void)std::snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
                              macaddrBytes[0], macaddrBytes[1],

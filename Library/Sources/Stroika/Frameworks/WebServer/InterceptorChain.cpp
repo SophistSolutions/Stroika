@@ -78,7 +78,7 @@ void InterceptorChain::InterceptorChain::AddAfter (const Interceptor& intercepto
 {
     auto rwLock = fRep_.rwget ();
 
-    [[maybe_unused]]bool                  found{false};
+    [[maybe_unused]] bool found{false};
     Sequence<Interceptor> interceptors = rwLock->get ()->GetInterceptors ();
     for (size_t i = 0; i < interceptors.size (); ++i) {
         if (interceptors[i] == after) {

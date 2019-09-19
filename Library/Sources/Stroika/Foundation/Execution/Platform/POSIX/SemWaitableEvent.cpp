@@ -23,8 +23,8 @@ using namespace Stroika::Foundation::Execution::Platform::POSIX;
  */
 SemWaitableEvent::SemWaitableEvent ()
 {
-    [[maybe_unused]]constexpr int kpshared     = 0; // shared between threads of a process
-    int           defaultValue = 0;
+    [[maybe_unused]] constexpr int kpshared     = 0; // shared between threads of a process
+    int                            defaultValue = 0;
 #if qCompilerAndStdLib_unnamed_semaphores_Buggy
     char nameBuf[1000] = "/tmp/semaphore-XXXXXX";
     ::close (::mkstemp (nameBuf)); // create file as side-effect so no race - file name still reserved by this CTOR

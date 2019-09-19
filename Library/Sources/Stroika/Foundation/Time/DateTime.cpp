@@ -502,7 +502,7 @@ DateTime DateTime::AsLocalTime () const
 
 DateTime DateTime::AsUTC () const
 {
-    [[maybe_unused]] auto oldCode = [&]() {
+    [[maybe_unused]] auto oldCode = [&] () {
         if (GetTimezone () == Timezone::UTC ()) {
             return *this;
         }

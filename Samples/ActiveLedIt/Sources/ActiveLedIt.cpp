@@ -159,7 +159,7 @@ int ActiveLedItApp::ExitInstance ()
             ;
     }
 #endif
-    [[maybe_unused]]_AFX_THREAD_STATE* pState = AfxGetThreadState ();
+    [[maybe_unused]] _AFX_THREAD_STATE* pState = AfxGetThreadState ();
     ASSERT (pState != NULL);
     Assert (pState->m_nCtrlRef == 0);
     Assert (AfxGetModuleState ()->m_nObjectCount == 0);

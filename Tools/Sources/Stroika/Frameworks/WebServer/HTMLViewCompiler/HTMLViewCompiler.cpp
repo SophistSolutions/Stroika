@@ -16,7 +16,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
-
 const wchar_t kOpenCodeTag[]  = L"<%";
 const wchar_t kCloseCodeTag[] = L"%>";
 const wchar_t kMagicWriteChar = '='; // if first char after open tag - treat as synonym for fResponse.write ()

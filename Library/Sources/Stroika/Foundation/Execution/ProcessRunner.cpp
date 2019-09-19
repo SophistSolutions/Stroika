@@ -79,7 +79,7 @@ namespace {
         int            result{};
         constexpr bool kUseSysConf_ = true;
 #if _BSD_SOURCE || _XOPEN_SOURCE >= 500
-        [[maybe_unused]]constexpr bool kUseGetDTableSize_ = true;
+        [[maybe_unused]] constexpr bool kUseGetDTableSize_ = true;
 #else
         [[maybe_unused]] constexpr bool kUseGetDTableSize_ = false;
 #endif
@@ -583,9 +583,9 @@ namespace {
          *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
          *          the write end of the pipe"
          */
-        int    jStdin[2]{-1, -1};
-        int    jStdout[2]{-1, -1};
-        int    jStderr[2]{-1, -1};
+        int                     jStdin[2]{-1, -1};
+        int                     jStdout[2]{-1, -1};
+        int                     jStderr[2]{-1, -1};
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
@@ -718,7 +718,7 @@ namespace {
                             ::close (i);
                         }
                     }
-                    [[maybe_unused]]int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
+                    [[maybe_unused]] int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     {
                         ofstream myfile;
@@ -1324,7 +1324,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
          */
         (void)::setsid ();
 
-        [[maybe_unused]]int ignored{};
+        [[maybe_unused]] int ignored{};
         ignored = chdir ("/"); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
 
         ignored = umask (027); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html

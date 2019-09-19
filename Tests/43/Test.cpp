@@ -161,9 +161,9 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                optional<Response>            optResp;
-                [[maybe_unused]] static constexpr int          kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
-                [[maybe_unused]] unsigned int tryCount{1};
+                optional<Response>                    optResp;
+                [[maybe_unused]] static constexpr int kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
+                [[maybe_unused]] unsigned int         tryCount{1};
             again:
                 try {
                     optResp = c.POST (URI{L"/post"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);

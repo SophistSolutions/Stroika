@@ -70,7 +70,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         // THEN deserialize, and map back to C++ object form
-        [[maybe_unused]]MyType2Serialize1_ tmp2 = mapper.ToObject<MyType2Serialize1_> (Variant::JSON::Reader ().Read (tmpStream));
+        [[maybe_unused]] MyType2Serialize1_ tmp2 = mapper.ToObject<MyType2Serialize1_> (Variant::JSON::Reader ().Read (tmpStream));
 
         // make sure new object matches
         Assert (tmp2 == tmp);

@@ -467,7 +467,7 @@ namespace {
         Assert (sd >= 0);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd] () noexcept { ::close (sd); });
 
-        [[maybe_unused]]int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
+        [[maybe_unused]] int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
         Assert (r == 0);
 
         for (const ifreq* i = std::begin (ifreqs); reinterpret_cast<const char*> (i) - reinterpret_cast<const char*> (std::begin (ifreqs)) < ifconf.ifc_len;) {

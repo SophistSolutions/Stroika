@@ -46,7 +46,7 @@ namespace {
                 DataHyperRectangleN<int, 2>       x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
 #endif
                 Verify (x.GetAt (2, 2) == 0);
-                for ([[maybe_unused]]auto t : x) {
+                for ([[maybe_unused]] auto t : x) {
                 }
                 x.SetAt (2, 2, 4);
                 for ([[maybe_unused]] auto t : x) {
@@ -85,7 +85,7 @@ namespace {
             tmp.SetAt (2, 2, 4);
             VerifyTestResult (tmp.GetAt (2, 2) == 4);
             Verify (tmp.GetLength () == 1);
-            for ([[maybe_unused]]auto t : tmp) {
+            for ([[maybe_unused]] auto t : tmp) {
             }
         }
     }

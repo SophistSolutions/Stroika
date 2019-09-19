@@ -519,7 +519,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
          *
          *  The only time we can be SURE its safe is after 'fOK2StartEvent_'
          */
-        [[maybe_unused]]IDType thisThreadID = GetCurrentThreadID (); // CANNOT USE incRefCnt->GetID (); because of above!
+        [[maybe_unused]] IDType thisThreadID = GetCurrentThreadID (); // CANNOT USE incRefCnt->GetID (); because of above!
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         {

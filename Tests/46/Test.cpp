@@ -58,8 +58,8 @@ namespace {
                 VerifyTestResult (n2.has_value ());
             }
             {
-                [[maybe_unused]]optional<NotCopyable> a;
-                optional<NotCopyable> a1{NotCopyable ()};
+                [[maybe_unused]] optional<NotCopyable> a;
+                optional<NotCopyable>                  a1{NotCopyable ()};
                 a1 = NotCopyable ();
             }
         };
@@ -96,7 +96,7 @@ namespace {
             VerifyTestResult (x == 1);
         }
         {
-            optional<int>    d;
+            optional<int>                     d;
             [[maybe_unused]] optional<double> t1 = d;                    // no warnings - this direction OK
             [[maybe_unused]] optional<double> t2 = optional<double> (d); // ""
         }

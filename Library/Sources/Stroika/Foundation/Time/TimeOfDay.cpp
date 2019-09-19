@@ -79,35 +79,35 @@ const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
  */
 #if qPlatform_Windows
 namespace {
-	TimeOfDay Parse_ (const String& rep, LCID lcid)
-	{
-		using namespace Execution::Platform::Windows;
-		if (rep.empty ()) {
-			Execution::Throw (TimeOfDay::FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-																 //        return TimeOfDay ();
-		}
-		DATE d{};
-		try {
-			ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-		}
-		catch (...) {
-			// Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
-			// Detect that - and try to interpret it appropriately.
-			String newRep = rep;
-			if (newRep.length () == 4 and
-				newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
-				newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
-				ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
-			}
-			else {
-				Execution::Throw (TimeOfDay::FormatException::kThe);
-			}
-		}
-		// SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-		SYSTEMTIME sysTime{};
-		Verify (::VariantTimeToSystemTime (d, &sysTime));
-		return mkTimeOfDay_ (sysTime);
-	}
+    TimeOfDay Parse_ (const String& rep, LCID lcid)
+    {
+        using namespace Execution::Platform::Windows;
+        if (rep.empty ()) {
+            Execution::Throw (TimeOfDay::FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+                                                                 //        return TimeOfDay ();
+        }
+        DATE d{};
+        try {
+            ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+        }
+        catch (...) {
+            // Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
+            // Detect that - and try to interpret it appropriately.
+            String newRep = rep;
+            if (newRep.length () == 4 and
+                newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
+                newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
+                ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+            }
+            else {
+                Execution::Throw (TimeOfDay::FormatException::kThe);
+            }
+        }
+        // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
+        SYSTEMTIME sysTime{};
+        Verify (::VariantTimeToSystemTime (d, &sysTime));
+        return mkTimeOfDay_ (sysTime);
+    }
 }
 #endif
 
@@ -332,12 +332,12 @@ String TimeOfDay::Format (const locale& l, const String& formatPattern) const
 void TimeOfDay::ClearSecondsField ()
 {
     Assert (fTime_ < kMaxSecondsPerDay);
-        int hour    = fTime_ / (60 * 60);
-        int minutes = (fTime_ - hour * 60 * 60) / 60;
-        int secs    = fTime_ - hour * 60 * 60 - minutes * 60;
-        Assert (hour >= 0 and hour < 24);
-        Assert (minutes >= 0 and minutes < 60);
-        Assert (secs >= 0 and secs < 60);
-        fTime_ -= secs;
-    Assert ( fTime_ < kMaxSecondsPerDay);
+    int hour    = fTime_ / (60 * 60);
+    int minutes = (fTime_ - hour * 60 * 60) / 60;
+    int secs    = fTime_ - hour * 60 * 60 - minutes * 60;
+    Assert (hour >= 0 and hour < 24);
+    Assert (minutes >= 0 and minutes < 60);
+    Assert (secs >= 0 and secs < 60);
+    fTime_ -= secs;
+    Assert (fTime_ < kMaxSecondsPerDay);
 }
