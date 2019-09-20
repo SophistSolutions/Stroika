@@ -142,10 +142,10 @@ ifndef StroikaLinkerSuffixArgs
 endif
 
 
-
-ifeq ($(IncludeDebugSymbolsInExecutables), 1)
-	StroikaLinkerPrefixArgs += -g
-endif
+### DONE IN CONFIGURE NOW (AND FOR A WHILE) --LGP 2019-09-20
+#ifeq ($(IncludeDebugSymbolsInExecutables), 1)
+#	StroikaLinkerPrefixArgs += -g
+#endif
 StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 
 
