@@ -428,7 +428,12 @@ sub     FillDefaultLibDependencies_
 			if (not ($LIB_DEPENDENCIES eq "")) {
 				$LIB_DEPENDENCIES .= " ";
 			}
-			$LIB_DEPENDENCIES .= "-lxerces-c"
+			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				$LIB_DEPENDENCIES .= "xerces-c_3D.lib";		#todo fix 'd' depending on debug or not
+			}
+			else {
+				$LIB_DEPENDENCIES .= "-lxerces-c";
+			}
 		}
 
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
@@ -452,21 +457,27 @@ sub     FillDefaultLibDependencies_
 			$LIB_DEPENDENCIES .= "-lz"
 		}
 
-		if (not ($LIB_DEPENDENCIES eq "")) {
-			$LIB_DEPENDENCIES .= " ";
-		}
-		$LIB_DEPENDENCIES .= "-lpthread";
-
-		if (not ($LIB_DEPENDENCIES eq "")) {
-			$LIB_DEPENDENCIES .= " ";
-		}
-		$LIB_DEPENDENCIES .= "-lm";
-
-		if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
+		if ($PROJECTPLATFORMSUBDIR eq "Unix") {
 			if (not ($LIB_DEPENDENCIES eq "")) {
 				$LIB_DEPENDENCIES .= " ";
 			}
-			$LIB_DEPENDENCIES .= "-lrt";
+			$LIB_DEPENDENCIES .= "-lpthread";
+		}
+
+		if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+			if (not ($LIB_DEPENDENCIES eq "")) {
+				$LIB_DEPENDENCIES .= " ";
+			}
+			$LIB_DEPENDENCIES .= "-lm";
+		}
+
+		if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+			if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
+				if (not ($LIB_DEPENDENCIES eq "")) {
+					$LIB_DEPENDENCIES .= " ";
+				}
+				$LIB_DEPENDENCIES .= "-lrt";
+			}
 		}
 	}
 }
