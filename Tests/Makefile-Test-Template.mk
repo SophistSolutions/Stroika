@@ -18,11 +18,10 @@ ifndef TEST_NUM
 endif
 
 
-#Includes				+=	-I.
-
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Tests/Test$(TEST_NUM)${EXE_SUFFIX}
 
-VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
+vpath %.h $(SrcDir) ../TestHarness/
+vpath %.cpp $(SrcDir) ../TestHarness/
 
 
 Objs	=	\
@@ -45,6 +44,6 @@ $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@mkdir -p $(dir $(TARGETEXE))
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)";\
+	    $(StroikaRoot)ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(Linker)" $(StroikaLinkerPrefixArgs) -o $@ $(Objs) $(StroikaLinkerSuffixArgs);\
 	fi
-	@$(Linker) $(StroikaLinkerPrefixArgs) -o $@ $(Objs) $(StroikaLinkerSuffixArgs)
+	@"$(Linker)" $(StroikaLinkerPrefixArgs) -o $@ $(Objs) $(StroikaLinkerSuffixArgs)
