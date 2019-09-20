@@ -461,7 +461,18 @@ sub WriteStroikaConfigMakeHeader
 	
 	print (OUT "LIBS_PATH_DIRECTIVES=");
 	for my $l (split /:/, $LIBS_PATH) {
-		print (OUT "-L$l ");
+		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			my $tmp		=	trim (`cygpath --windows "$l"`);
+			my $len = length ($tmp);
+			my $c = $tmp[length ($tmp)-1];
+			if (length ($tmp) > 0 && substr ($tmp, -1) eq "\\") {
+				$tmp .= "\"";
+			}
+			print (OUT "/LIBPATH:\"$tmp\" ");
+		}
+		else {
+			print (OUT "-L$l ");
+		}
 	}
 	print (OUT "\n");
 	print (OUT "LIB_DEPENDENCIES=$LIB_DEPENDENCIES");
