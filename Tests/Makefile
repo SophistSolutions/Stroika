@@ -5,11 +5,12 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 
 # While we still use msbuild we must not be parallel at this level, since multiple msbuilds will stomp all over one another 
 # e.g. The process cannot access the file '....54.tlog\CL.13264.write.1.tlog' because it is being used by another process
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq ($(USE_MSBUILD), 1)
 .NOTPARALLEL:
 
 # JOBSERVER_INFO is the data to be assigned to MFLAGS in calling sub-make.
@@ -188,11 +189,12 @@ ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName $@`:"
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory $@ -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
-else
+ifeq ($(USE_MSBUILD), 1)
 	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe ${MSBUILD_PARALLEL_ARG} /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:$(WIN_MSBUILD_CFG_ARG) /target:Build"
+else
+	@$(MAKE) --directory $@ -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
+
 
 run-tests:
 ifeq ($(CONFIGURATION),)
