@@ -19,9 +19,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 .PHONY:	all clean clobber check doBuilds_
 
-###
-### TODO:
-
 
 VERSION=3.2.2
 #VERSION=3.2.1
@@ -70,6 +67,13 @@ endif
 endif
 
 
+ifeq (0,$(ENABLE_ASSERTIONS))
+CMAKE_CONFIGURATION:=Release
+else
+CMAKE_CONFIGURATION:=Debug
+endif
+
+
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/xercesc/dom/DOM.hpp
@@ -79,11 +83,11 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libxerces-c.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
+ifeq (Debug,$(CMAKE_CONFIGURATION))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/xerces-c_3D.lib
 endif
-ifeq (Release,$(findstring Release, $(CONFIGURATION)))
+ifeq (Release,$(CMAKE_CONFIGURATION))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/xerces-c_3.lib
 endif
@@ -260,11 +264,6 @@ endif
 endif
 
 
-ifeq (0,$(ENABLE_ASSERTIONS))
-CMAKE_CONFIGURATION:=Release
-else
-CMAKE_CONFIGURATION:=Debug
-endif
 
 
 #Default Xerces build generates dependency on DLL version of runtime
