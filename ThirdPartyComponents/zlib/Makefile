@@ -17,9 +17,6 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
-
-DoCreateSymLink=0
-
 # last stable version
 VERSION=1.2.8
 # crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
