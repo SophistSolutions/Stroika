@@ -70,14 +70,14 @@ endif
 ifneq ($(RANLIB),)
 		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
 			echo "      "$(RANLIB) $@;\
-		fi;\
+		fi;
 		@"$(RANLIB)" $@;
 endif
 ifneq ($(LIBTOOL),)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
 		echo "      $(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
 	fi;
-	@"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+	@"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));
 endif
 
 
