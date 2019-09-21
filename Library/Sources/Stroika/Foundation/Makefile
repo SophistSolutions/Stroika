@@ -61,24 +61,24 @@ $(StroikaFoundationLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
 	@rm -f $@
-	@if [ "$(AR)" != "" ]; then \
-		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+ifneq ($(AR),)
+		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
 			echo "      "$(AR) cr $@ $(Objs);\
-		fi;\
-		"$(AR)" cr $@ $(Objs);\
-	fi
-	@if [ "$(RANLIB)" != "" ]; then \
-		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+		fi;
+		@"$(AR)" cr $@ $(Objs);
+endif
+ifneq ($(RANLIB),)
+		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
 			echo "      "$(RANLIB) $@;\
 		fi;\
-		"$(RANLIB)" $@;\
-	fi
-	@if [ "$(LIBTOOL)" != "" ]; then \
-		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
-		fi;\
-		"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
-	fi
+		@"$(RANLIB)" $@;
+endif
+ifneq ($(LIBTOOL),)
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+		echo "      $(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+	fi;
+	@"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+endif
 
 
 
