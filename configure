@@ -439,10 +439,15 @@ sub     FillDefaultLibDependencies_
 	if ($includeAutomaticLibDependencies) {
 		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-				PortablyAddLibToLibDependencies_("xerces-c_3D");
+				if ($ENABLE_ASSERTIONS) {
+					PortablyAddLibToLibDependencies_("xerces-c_3D");
+				}
+				else {
+					PortablyAddLibToLibDependencies_("xerces-c_3");
+				}
 			}
 			else {
-				PortablyAddLibToLibDependencies_("lxerces-c");
+				PortablyAddLibToLibDependencies_("xerces-c");
 			}
 		}
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
