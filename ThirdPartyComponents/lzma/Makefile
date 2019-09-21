@@ -114,6 +114,16 @@ endif
 	@$(MAKE) doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT 2>&1
 
 
+ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
+CFLAGS_=-nologo -W3 -MTd -Z7
+LDFLAGS_=-nologo -debug -incremental:no -opt:ref
+endif
+ifeq (Release,$(findstring Release,$(CONFIGURATION)))
+CFLAGS_=-nologo -W3 -MT -O2 -Oy- -Z7
+LDFLAGS_=-nologo -debug -incremental:no -opt:ref
+endif
+
+
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" CXX="$(CXX)" AR="$(AR)" LIBS="$(LIBS)"
@@ -122,8 +132,6 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/7zDec $(PER_CONFIGURATION_BUILDS_DIR)
 else
 	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) - if its 32-bit debug/relase
-ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
-ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
 		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 			CC="$(CC)" \
@@ -138,79 +146,16 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 			ARTARGETPREFIX=-out: \
 			LINKTARGETPREFIX=-out: \
 			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-			CFLAGS="-nologo -W3 -MTd -Z7" \
-			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+			CFLAGS="$(CFLAGS_)" \
+			LDFLAGS="$(LDFLAGS)" \
 			all
-endif
-ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-			CC="$(CC)" \
-			CXX="$(CXX)" \
-			LD="$(Linker)" \
-			AR="$(LIBTOOL)" \
-			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-			INCLUDE="$(WIN_INCLUDES_PATH)" \
-			LIB="$(WIN_LIBS_PATH)" \
-			LIBS="oleaut32.lib ole32.lib user32.lib" \
-			ARCRATEFLAGS="-nologo" \
-			ARTARGETPREFIX=-out: \
-			LINKTARGETPREFIX=-out: \
-			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-			CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
-			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-			all
-endif
-endif
-
-	#Build to $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) - if its 64-bit debug/relase
-ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
-ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-			CC="$(CC)" \
-			CXX="$(CXX)" \
-			LD="$(Linker)" \
-			AR="$(LIBTOOL)" \
-			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-			INCLUDE="$(WIN_INCLUDES_PATH)" \
-			LIB="$(WIN_LIBS_PATH)" \
-			LIBS="oleaut32.lib ole32.lib user32.lib" \
-			ARCRATEFLAGS="-nologo" \
-			ARTARGETPREFIX=-out: \
-			LINKTARGETPREFIX=-out: \
-			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-			CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
-			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-			all
-endif
-ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-			CC="$(CC)" \
-			CXX="$(CXX)" \
-			LD="$(Linker)" \
-			AR="$(LIBTOOL)" \
-			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-			INCLUDE="$(WIN_INCLUDES_PATH)" \
-			LIB="$(WIN_LIBS_PATH)" \
-			LIBS="oleaut32.lib ole32.lib user32.lib" \
-			ARCRATEFLAGS="-nologo" \
-			ARTARGETPREFIX=-out: \
-			LINKTARGETPREFIX=-out: \
-			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-			CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
-			LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
-			all
-endif
-endif
 
 	# Now copy the right output
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR)lib/
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
 	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.exe $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/7zDec.exe $(PER_CONFIGURATION_BUILDS_DIR)
-
 endif
+
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
