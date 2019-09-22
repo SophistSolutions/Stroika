@@ -12,7 +12,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=/Fd$(shell cygpath --mixed $(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
+CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
 endif
 
 
@@ -70,9 +70,9 @@ ifneq ($(RANLIB),)
 endif
 ifneq ($(LIBTOOL),)
 		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+			echo "      $(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs));\
 		fi;
-		@"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));
+		@"$(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs));
 endif
 
 

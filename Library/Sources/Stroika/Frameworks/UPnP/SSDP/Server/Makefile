@@ -12,7 +12,7 @@ include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=/Fd$(shell cygpath --mixed $(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
+CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
 endif
 
 

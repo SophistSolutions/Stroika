@@ -75,9 +75,9 @@ ifneq ($(RANLIB),)
 endif
 ifneq ($(LIBTOOL),)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-		echo "      $(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));\
+		echo "      $(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs));\
 	fi;
-	@"$(LIBTOOL)" /OUT:$(shell cygpath --mixed $(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(shell cygpath --mixed $(Objs));
+	@"$(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaFoundationLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs));
 endif
 
 
