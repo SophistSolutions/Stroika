@@ -29,16 +29,16 @@ all:	$(ObjDir) $(TARGETEXE)
 
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    echo "         $(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)";\
-	fi
-	@$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)
-else
+ifeq ($(USE_MSBUILD), 1)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(( $(MAKE_INDENT_LEVEL)+1)) -n "Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler..."
 	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../../../Projects/$(ProjectPlatformSubdir)/StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build"
 	@$(ECHO) done
+else
+	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $@)..."
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    echo "         $(call DEFAULT_LINK_LINE, $@)";\
+	fi
+	@$(call DEFAULT_LINK_LINE, $@)
 endif
 
 
