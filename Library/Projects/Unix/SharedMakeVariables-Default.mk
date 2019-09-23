@@ -162,3 +162,17 @@ StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
 ifndef HTMLViewCompiler
 	HTMLViewCompiler	=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
 endif
+
+
+#
+# This macro takes a single argument - the output filename for the link command
+#
+DEFAULT_LINK_LINE=\
+	"$(Linker)" \
+	$(EXTRA_PREFIX_LINKER_ARGS) \
+	$(LIBS_PATH_DIRECTIVES) \
+	-o $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$1) \
+	$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs)) \
+	$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaLibs)) \
+	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS) \
+	$(StroikaFoundationSupportLibs)

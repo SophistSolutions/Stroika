@@ -42,8 +42,8 @@ check:
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
-	@mkdir -p $(dir $(TARGETEXE))
+	@mkdir -p $(dir $@)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(Linker)" $(StroikaLinkerPrefixArgs) -o $@ $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs)) $(StroikaLinkerSuffixArgs);\
+	    $(StroikaRoot)ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) $(call DEFAULT_LINK_LINE, $@);\
 	fi
-	@"$(Linker)" $(StroikaLinkerPrefixArgs) -o $@ $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs)) $(StroikaLinkerSuffixArgs)
+	@$(call DEFAULT_LINK_LINE, $@)
