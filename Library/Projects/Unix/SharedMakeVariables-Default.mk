@@ -134,6 +134,10 @@ endif
 ####	
 ####	Intentionally use '=' instead of ':=' so variables included in StroikaLinkerPrefixArgs can get re-evaluated
 ####
+#ifeq ($(IncludeDebugSymbolsInExecutables), 1)
+#	StroikaLinkerPrefixArgs += -g
+#endif
+### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
 ifndef StroikaLinkerPrefixArgs
 	StroikaLinkerPrefixArgs	=	
 endif
@@ -146,16 +150,20 @@ endif
 #ifeq ($(IncludeDebugSymbolsInExecutables), 1)
 #	StroikaLinkerPrefixArgs += -g
 #endif
+### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
 StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 
 
 
+### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
 StroikaLinkerSuffixArgs	+=	$(StroikaLibs)
 
 # (NOTE DONE FOR NOW BECAUSE SO FAR NOT NEEDED BUT HERE IS THE PLACE TO DUP LIB_DEPENDENCIES IF NEEDED): Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
+### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
 StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 
 #### clean dup / do another way...StroikaFoundationSupportLibs deprecated - so just add compute of pkg-config libs) @todo -LGP 2018-05-01, -LGP 2018-05-03
+### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
 StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
 
 
@@ -169,10 +177,10 @@ endif
 #
 DEFAULT_LINK_LINE=\
 	"$(Linker)" \
-	$(EXTRA_PREFIX_LINKER_ARGS) \
-	$(LIBS_PATH_DIRECTIVES) \
-	-o $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$1) \
-	$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs)) \
-	$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaLibs)) \
-	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS) \
-	$(StroikaFoundationSupportLibs)
+		$(EXTRA_PREFIX_LINKER_ARGS) \
+		$(LIBS_PATH_DIRECTIVES) \
+		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$1) \
+		$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs)) \
+		$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaLibs)) \
+		$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS) \
+		$(StroikaFoundationSupportLibs)

@@ -584,6 +584,13 @@ sub WriteStroikaConfigMakeHeader
 	}
 
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		print (OUT "OUT_ARG_PREFIX_NATIVE=-OUT:\n");
+	}
+	else {
+		print (OUT "OUT_ARG_PREFIX_NATIVE=-o \n");
+	}
+
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");
 	}
 	else {
