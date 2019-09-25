@@ -35,11 +35,11 @@ endif
 
 ## experimenting/moving towards build without msbuild (just makefile build)
 ## This variable will go away shortly - USE_MSBUILD - FYI - dont count on it
-ifeq (Unix,$(ProjectPlatformSubdir))
-USE_MSBUILD=0
-else
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 #USE_MSBUILD=0
 USE_MSBUILD=1
+else
+USE_MSBUILD=0
 endif
 
 
