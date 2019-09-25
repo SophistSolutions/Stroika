@@ -462,7 +462,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "LIBS_PATH_DIRECTIVES=");
 	for my $l (split /:/, $LIBS_PATH) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			my $tmp		=	trim (`cygpath --windows "$l"`);
+			my $tmp		=	trim (`cygpath --mixed "$l"`);
 			my $len = length ($tmp);
 			my $c = $tmp[length ($tmp)-1];
 			if (length ($tmp) > 0 && substr ($tmp, -1) eq "\\") {
@@ -508,22 +508,22 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "##\n");
 		print (OUT "## Windows format path versions of some of these variables\n");
 		print (OUT "##\n");
-		print (OUT "##WIN_\$var = cygpath --windows \"\$var\"                OR\n");
-		print (OUT "##WIN_\$var = cygpath --windows --path \"\$var\"         (as appropriate)\n");
+		print (OUT "##WIN_\$var = cygpath --mixed \"\$var\"                OR\n");
+		print (OUT "##WIN_\$var = cygpath --mixed --path \"\$var\"         (as appropriate)\n");
 		print (OUT "##\n");
 		print (OUT "##\n");
 
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "Linker");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows "$tmp"`);
+				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
 			print (OUT "WIN_Linker=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows "$tmp"`);
+				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
 			print (OUT "WIN_LIBTOOL=$tmp\n");
 		}
@@ -538,37 +538,37 @@ sub WriteStroikaConfigMakeHeader
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CC");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows "$tmp"`);
+				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
 			print (OUT "WIN_CC=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "AS");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows "$tmp"`);
+				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
 			print (OUT "WIN_AS=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CXX");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --windows "$tmp"`);
+				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
 			print (OUT "WIN_CXX=$tmp\n");
 		}
 		{
 			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
-			my $tmp		=	trim (`cygpath --windows --path "$LIBS_PATH"`);
+			my $tmp		=	trim (`cygpath --mixed --path "$LIBS_PATH"`);
 			print (OUT "WIN_LIBS_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
 		}
 		{
 			my $INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
-			my $tmp		=	trim (`cygpath --windows --path "$INCLUDES_PATH"`);
+			my $tmp		=	trim (`cygpath --mixed --path "$INCLUDES_PATH"`);
 			print (OUT "WIN_INCLUDES_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
 		}
 		#{
 		#	my $TOOLS_PATH_ADDITIONS = GetConfigurationParameter($activeConfiguration, "TOOLS_PATH_ADDITIONS");
-		#	my $tmp		=	trim (`cygpath --windows --path "$TOOLS_PATH_ADDITIONS"`);
+		#	my $tmp		=	trim (`cygpath --mixed --path "$TOOLS_PATH_ADDITIONS"`);
 		#	print (OUT "WIN_TOOLS_PATH_ADDITIONS=$tmp \n");		#nb: space importnat if $tmp ends in backslash
 		#}
 		{

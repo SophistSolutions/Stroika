@@ -170,7 +170,7 @@ endif
 
 WIX_WORKDIR=$(ObjDir)WIX_TMP/
 WIX_OUT_OBJ=$(WIX_WORKDIR)Installer.wixobj
-WIX_OUT_OBJ_WIN=$(shell cygpath --windows $(WIX_OUT_OBJ))
+WIX_OUT_OBJ_WIN=$(shell cygpath --mixed $(WIX_OUT_OBJ))
 WIX_BUILD_OUT=$(ObjDir)WIX-Installer-Build.Out
 WIX_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 WIX_4DOT_VERSION=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformation $(VERSION_FILE_IN) Win32FourDot)
@@ -184,7 +184,7 @@ CANDLE_ARCH=$(ARCH)
 ifeq ($(ARCH),x86_64)
 CANDLE_ARCH=x64
 endif
-TARGET_OUT_INSTALLER_WIX_WINDOWSPATH=$(shell cygpath -w $(TARGET_OUT_INSTALLER_WIX))
+TARGET_OUT_INSTALLER_WIX_WINDOWSPATH=$(shell cygpath --mixed $(TARGET_OUT_INSTALLER_WIX))
 $(TARGET_OUT_INSTALLER_WIX): $(BUILT_SERVICE_EXE) Makefile
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building WIX installer: "
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "temp files: $(WIX_WORKDIR); log: $(WIX_BUILD_OUT)"`"..."

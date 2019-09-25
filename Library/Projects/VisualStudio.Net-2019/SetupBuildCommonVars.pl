@@ -80,7 +80,7 @@ sub toCygPath_
 sub fromCygPath_
 {
 	my $arg = shift;
-	return trim (`cygpath --windows \"$arg\"`);
+	return trim (`cygpath --mixed \"$arg\"`);
 }
 
 

@@ -62,7 +62,7 @@ FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-StroikaRoot_ASWINPATH=$(shell cygpath --windows $(StroikaRoot))
+StroikaRoot_ASWINPATH=$(shell cygpath --mixed $(StroikaRoot))
 endif
 
 	
@@ -77,14 +77,14 @@ endif
 
 BUILDS_OUTPUT_DIR=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyComponents/
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH=$(shell cygpath --windows $(BUILDS_OUTPUT_DIR))
+BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH=$(shell cygpath --mixed $(BUILDS_OUTPUT_DIR))
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	--prefix=$(BUILDS_OUTPUT_DIR)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-#CONFIG_ARGS+=	--prefix=$(shell cygpath --windows $(BUILDS_OUTPUT_DIR))
+#CONFIG_ARGS+=	--prefix=$(shell cygpath --mixed $(BUILDS_OUTPUT_DIR))
 CONFIG_ARGS+=	--prefix=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)
 endif
 
