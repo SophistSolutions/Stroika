@@ -1600,10 +1600,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 	if (defined $INCLUDES_PATH) {
 		for my $i (split /:/, $INCLUDES_PATH) {
 			if ($isVisualStudio) {
-				my $wpath = trim (`cygpath --windows \"$i\"`);
-				if (substr($wpath, -1) eq '\\') {
-					$wpath .= '\\';
-				}
+				my $wpath = trim (`cygpath --mixed \"$i\"`);
 				push @flags, "/I\"$wpath\"";
 			}
 			else {

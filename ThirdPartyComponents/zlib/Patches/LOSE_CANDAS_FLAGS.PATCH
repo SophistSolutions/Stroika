@@ -1,7 +1,8 @@
-*** zlib-1.2.5.Orig\win32\Makefile.msc	2010-03-28 23:51:22.000000000 -0400
---- CURRENT\win32\Makefile.msc	2010-06-09 19:33:34.260994300 -0400
+diff -r -c ORIGs/win32/Makefile.msc CURRENT/win32/Makefile.msc
+*** ORIGs/win32/Makefile.msc	Sun Apr 28 20:23:49 2013
+--- CURRENT/win32/Makefile.msc	Tue Sep 24 14:51:53 2019
 ***************
-*** 22,30 ****
+*** 26,34 ****
   LD = link
   AR = lib
   RC = rc
@@ -11,13 +12,13 @@
   LDFLAGS = -nologo -debug -incremental:no -opt:ref
   ARFLAGS = -nologo
   RCFLAGS = /dWIN32 /r
---- 22,30 ----
+--- 26,34 ----
   LD = link
   AR = lib
   RC = rc
-! CFLAGS  = -nologo -W3 -O2 -Oy- -Z7 -Fd"zlib" $(LOC)
+! #CFLAGS  = -nologo -MD -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
   WFLAGS  = -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE
-! ASFLAGS = -coff -Z7 $(LOC)
+! #ASFLAGS = -coff -Zi $(LOC)
   LDFLAGS = -nologo -debug -incremental:no -opt:ref
   ARFLAGS = -nologo
   RCFLAGS = /dWIN32 /r

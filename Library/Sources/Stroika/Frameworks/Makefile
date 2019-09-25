@@ -56,25 +56,10 @@ $(StroikaFrameworksLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
 	@rm -f $@
-ifneq ($(AR),)
-		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      "$(AR) cr $@ $(Objs);\
-		fi;
-		@"$(AR)" cr $@ $(Objs);
-endif
-ifneq ($(RANLIB),)
-		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      "$(RANLIB) $@;\
-		fi;
-		@"$(RANLIB)" $@;
-endif
-ifneq ($(LIBTOOL),)
-		@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-			echo "      $(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs));\
-		fi;
-		@"$(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaFrameworksLib)) /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} /NOLOGO $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(Objs));
-endif
-
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) "$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))";\
+	fi
+	@$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))
 
 
 ifeq ($(USE_MSBUILD),0)

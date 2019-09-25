@@ -16,6 +16,8 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
 
 # last stable version
 VERSION=1.2.8
@@ -102,18 +104,13 @@ $(ZIPPEDFILE):
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-LOC_=
 ifeq ($(ENABLE_ASSERTIONS),1)
-LOC_+= /MTd 
-LOC_+= /DZLIB_DEBUG
-else
-LOC_+= /MT
+CFLAGS+= /DZLIB_DEBUG
 endif
-LOC_+= /I.
-LOC_+= /DASMV /DASMINF
+CFLAGS+= /DASMV /DASMINF
+CFLAGS+= /I.
 ifeq ($(ARCH), x86)
 OBJA_=inffas32.obj match686.obj
-LOC_+= /safeseh
 endif
 ifeq ($(ARCH), x86_64)
 OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
@@ -127,8 +124,10 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
+		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
+		export ASFLAGS="-coff -Z7"; \
 		env --unset=MAKEFLAGS --unset=MFLAGS sh -c \
-		"$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"$(LOC_)\\\" OBJA=\\\"$(OBJA_)\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_LIBTOOL)\\\" zlib.lib\""
+		"$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc OBJA=\\\"$(OBJA_)\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_LIBTOOL)\\\" zlib.lib\""
 else
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory CC="$(CC)"
 endif
@@ -149,7 +148,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 		../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib ${VERSION} - Patching `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$@"` ... "; \
 		dos2unix -q $@/win32/Makefile.msc > $@/PATCHING.OUT; \
 		patch -p0 $@/win32/Makefile.msc Patches/Makefile.msc.PATCH >> $@/PATCHING.OUT; \
-		patch -p0 $@/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH >> $@/PATCHING.OUT; \
+		patch -p0 $@/win32/Makefile.msc Patches/LOSE_CANDAS_FLAGS.PATCH >> $@/PATCHING.OUT; \
 		unix2dos -q $@/win32/Makefile.msc >> $@/PATCHING.OUT; \
 	fi
 endif

@@ -12,6 +12,8 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
+
 
 VERSION=3290000
 #VERSION=3280000
@@ -102,13 +104,7 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib
 	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(OBJS)
-ifeq (Unix,$(ProjectPlatformSubdir))
-	"$(AR)" cr $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB) $(OBJS)
-	"$(RANLIB)" $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(LIBTOOL)" /OUT:`cygpath -w $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)` /nologo `cygpath -w $(OBJS)`
-endif
+	$(call DEFAULT_LIBRARY_GEN_LINE, $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB), $(OBJS))
 
 
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
@@ -127,11 +123,11 @@ endif
 
 $(SQLITE3OBJ):
 ifeq (Unix,$(ProjectPlatformSubdir))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && "$(CC)" -c -o $@ sqlite3.c $(CFLAGS)
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(call DEFAULT_CC_LINE, sqlite3.c,$@)
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
 		cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); \
-		"$(CC)" $(CFLAGS) /c /Fo`cygpath -w $@` sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+		$(call DEFAULT_CC_LINE, sqlite3.c,$@)
 endif
 
 

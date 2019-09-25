@@ -173,6 +173,68 @@ endif
 
 
 #
+# This macro takes two arguments:
+#	$1 input src name
+#	$2 OUTFILE OBJ name
+#
+ifeq (Unix,$(ProjectPlatformSubdir))
+DEFAULT_CC_LINE=\
+	"$(CC)" \
+		$(CFLAGS) \
+		-c $1 \
+		-o $2
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+DEFAULT_CC_LINE=\
+	"$(CC)" \
+		$(CFLAGS) \
+		-c $1 \
+		/Fo$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$2) \
+		| sed -n '1!p'
+endif
+
+
+#
+# This macro takes two arguments:
+#	$1 input src name
+#	$2 OUTFILE OBJ name
+#
+ifeq (Unix,$(ProjectPlatformSubdir))
+DEFAULT_CXX_LINE=\
+	"$(CXX)" \
+		$(CXXFLAGS) \
+		-c $1 \
+		-o $2
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+DEFAULT_CXX_LINE=\
+	"$(CXX)" \
+		$(CXXFLAGS) \
+		-c $1 \
+		/Fo$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$2) \
+		| sed -n '1!p'
+endif
+
+
+
+#
+# This macro takes two arguments:
+#	$1 OUTFILE library name
+#	$2 list of OBJS
+#
+DEFAULT_LIBRARY_GEN_LINE=
+ifneq ($(AR),)
+DEFAULT_LIBRARY_GEN_LINE+=	"$(AR)" cr $1 $2;
+endif
+ifneq ($(RANLIB),)
+DEFAULT_LIBRARY_GEN_LINE+=	"$(RANLIB)" $1
+endif
+ifneq ($(LIBTOOL),)
+DEFAULT_LIBRARY_GEN_LINE+=\
+	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+		"$(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$1) /nologo /MACHINE:${WIN_LIBCOMPATIBLE_ARCH} $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$2)
+endif
+
+
+#
 # This macro takes a single argument - the output filename for the link command
 #
 DEFAULT_LINK_LINE=\
@@ -184,3 +246,7 @@ DEFAULT_LINK_LINE=\
 		$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaLibs)) \
 		$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS) \
 		$(StroikaFoundationSupportLibs)
+
+
+
+FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL=$(subst  ",\",$1)
