@@ -24,18 +24,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 #
 
 VERSION=1.1.1d
-
-### 1.1.1c BUILDS AND WORKS but has DPURIFY broken (apparently) - see
-### https://stroika.atlassian.net/browse/STK-697
-### Valgrind-Memcheck-NEWOPENSSL.supp
-
+### 1.1.1c BUILDS AND WORKS but has DPURIFY broken - see ### https://stroika.atlassian.net/browse/STK-697 fixed in 1.1.1d
 #VERSION=1.1.1b
 #VERSION=1.1.1c
 #VERSION=1.1.1b
-#VERSION=1.1.1a
-#VERSION=1.1.1
-#VERSION=1.1.1-pre9
-#VERSION=1.1.0g
 
 
 BASENAME=openssl-$(VERSION)
