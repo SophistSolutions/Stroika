@@ -213,26 +213,25 @@ ifeq (0,$(ENABLE_ASSERTIONS))
 USE_CONFIGURE_TARGET_NAME_=VC-WIN32
 else
 USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN32
-#
-#from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
-#and appears to default incorrectly to /MT
-#
-CONFIG_ARGS +=	-MTd
 endif
 else ifeq ($(ARCH), x86_64)
 ifeq (0,$(ENABLE_ASSERTIONS))
 USE_CONFIGURE_TARGET_NAME_=VC-WIN64A
 else
 USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN64A
-#
-#from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
-#and appears to default incorrectly to /MT
-#
-CONFIG_ARGS +=	-MTd
 endif
 endif
 endif
 
+#
+# from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
+# and appears to default incorrectly to /MT
+#
+# However, adding all of CFLAGs to the arguments of openssl configure didn't work. But looking through the code for configure, it appears to respect the passed in CFLAGS (as do most
+# configure processes) - so use that trick here.
+#
+export CFLAGS
+export CXXFLAGS
 
 doBuilds_:
 	@
@@ -276,8 +275,11 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@#pdb hack - hardwired in openssl makefile, but not build if we pass in /Z7 (which we do by default)
+	@touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ossl_static.pdb 
 	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL.OUT
 	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL.OUT
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ossl_static.pdb $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/lib/ossl_static.pdb
 endif
 	@
 	@
