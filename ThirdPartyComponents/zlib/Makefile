@@ -104,6 +104,7 @@ $(ZIPPEDFILE):
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ASFLAGS_=/coff /Z7
 ifeq ($(ENABLE_ASSERTIONS),1)
 CFLAGS+= /DZLIB_DEBUG
 endif
@@ -111,6 +112,8 @@ CFLAGS+= /DASMV /DASMINF
 CFLAGS+= /I.
 ifeq ($(ARCH), x86)
 OBJA_=inffas32.obj match686.obj
+### avoid occasional 'fatal error LNK1281: Unable to generate SAFESEH image.'
+ASFLAGS_+= /safeseh
 endif
 ifeq ($(ARCH), x86_64)
 OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
@@ -125,7 +128,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
-		export ASFLAGS="-coff -Z7"; \
+		export ASFLAGS="$(ASFLAGS_)"; \
 		env --unset=MAKEFLAGS --unset=MFLAGS sh -c \
 		"$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc OBJA=\\\"$(OBJA_)\\\" AS=\\\"$(WIN_AS)\\\" CC=\\\"$(WIN_CC)\\\" AR=\\\"$(WIN_LIBTOOL)\\\" zlib.lib\""
 else
