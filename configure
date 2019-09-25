@@ -1650,8 +1650,6 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		push @flags, "/DUNICODE";
 #		push @flags, "/errorReport:prompt";	users can add this if desired
 
-		push @flags, "/FS";			# Force Synchronous PDB Writes (needed for parallel make/build)
-
 		###push @flags, "/experimental:module";
 		
 		if ($ApplyDebugFlags == true) {
@@ -1679,6 +1677,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		if ($INCLUDE_SYMBOLS_LIB) {
 			if ($WinFlag_DebugProgramDatabase) {
 				push @flags, "/Zi";		#	Program Database (Debug Information)
+				push @flags, "/FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
 			}
 			else {
 				push @flags, "/Z7";		#	Use intra-obj file debug info format 
