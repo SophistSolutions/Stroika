@@ -15,8 +15,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 
-
-VERSION=7.65.3	### revert to this cuz latest broken
+VERSION=7.65.3
 #### BROKEN - VERSION=7.66.0  - configure: error: --with-ssl was given but OpenSSL could not be detected (not debugged - wait for next release and see if I need to dig)
 #VERSION=7.65.3
 #VERSION=7.65.0
