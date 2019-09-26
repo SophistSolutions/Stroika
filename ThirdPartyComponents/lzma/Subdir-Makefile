@@ -1,5 +1,4 @@
 
-
 OBJ_SUFFIX=.o
 LIB_SUFFIX=.a
 
@@ -240,19 +239,20 @@ ARCRATEFLAGS=cru
 ARTARGETPREFIX=
 
 LD=$(CC)
-LDFLAGS=
+#LDFLAGS=
 LINKTARGETPREFIX= -o 
 
 # may need to add define
 #-D_7ZIP_PPMD_SUPPPORT
 
 
+
 %$(OBJ_SUFFIX) : %.cpp
-	echo "$(CXX)" $(CFLAGS) -c $<
-	"$(CXX)" $(CFLAGS) -c $<
+	echo '$(CXX) $(CXXFLAGS) -c $<'
+	"$(CXX)" $(CXXFLAGS) -c $<
 
 %$(OBJ_SUFFIX) : %.c
-	echo "$(CC)" $(CFLAGS) -c $<
+	echo '$(CC) $(CFLAGS) -c $<'
 	"$(CC)" $(CFLAGS) -c $<
 
 

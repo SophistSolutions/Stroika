@@ -115,41 +115,31 @@ endif
 
 
 
-### @todo fix to use inherited CFLAGS variables!!
-ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-CFLAGS_=-nologo -W3 -MTd -Z7
-LDFLAGS_=-nologo -debug -incremental:no -opt:ref
-endif
-ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-CFLAGS_=-nologo -W3 -MT -O2 -Oy- -Z7
-LDFLAGS_=-nologo -debug -incremental:no -opt:ref
-endif
-
-
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" CXX="$(CXX)" AR="$(AR)" LIBS="$(LIBS)"
+	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC='$(CC)' CXX='$(CXX)' AR='$(AR)' LIBS='$(LIBS)'
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
 	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma $(PER_CONFIGURATION_BUILDS_DIR)
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)bin && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/7zDec $(PER_CONFIGURATION_BUILDS_DIR)/bin/
 else
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
+	PATH='$(TOOLS_PATH_ADDITIONS):$(PATH)';\
 		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
-			CC="$(CC)" \
-			CXX="$(CXX)" \
-			LD="$(Linker)" \
-			AR="$(LIBTOOL)" \
-			ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-			INCLUDE="$(WIN_INCLUDES_PATH)" \
-			LIB="$(WIN_LIBS_PATH)" \
-			LIBS="oleaut32.lib ole32.lib user32.lib" \
-			ARCRATEFLAGS="-nologo" \
+			CC='$(CC)' \
+			CXX='$(CXX)' \
+			LD='$(Linker)' \
+			AR='$(LIBTOOL)' \
+			ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
+			INCLUDE='$(WIN_INCLUDES_PATH)' \
+			LIB='$(WIN_LIBS_PATH)' \
+			LIBS='oleaut32.lib ole32.lib user32.lib' \
+			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \
 			LINKTARGETPREFIX=-out: \
 			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
-			CFLAGS="$(CFLAGS_)" \
-			LDFLAGS="$(LDFLAGS)" \
+			CFLAGS='$(CFLAGS)' \
+			CXXFLAGS='$(CXXFLAGS)' \
+			LDFLAGS='-nologo -debug -incremental:no -opt:ref' \
 			all
 	# Now copy the output to the BUILD directory
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR)lib/
