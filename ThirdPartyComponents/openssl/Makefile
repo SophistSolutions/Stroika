@@ -188,7 +188,7 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "openssl ${VERSION} - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]"
 
@@ -330,7 +330,7 @@ else
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($@, $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching OpenSSL ... "
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "openssl ${VERSION} - Patching ... "
 	@$(ECHO) -n .
 	@patch --quiet -p0 $@/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
 	@$(ECHO) "done"

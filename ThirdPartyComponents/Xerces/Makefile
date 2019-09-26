@@ -179,7 +179,7 @@ endif
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking ... "
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -329,7 +329,7 @@ endif
 
 
 check-prerequisite-tools:
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking Prerequisite tools ... "
 ifeq ($(PATH_ADJUSTMENT_PREFIX),)
 	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(PATH_ADJUSTMENT_PREFIX) ../../ScriptsLib/GetMessageForMissingTool cmake && exit 1; }
 else

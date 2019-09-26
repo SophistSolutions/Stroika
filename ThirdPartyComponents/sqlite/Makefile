@@ -132,13 +132,13 @@ endif
 
 
 check-prerequisite-tools:
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking Prerequisite tools ... "
 	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && ../../ScriptsLib/GetMessageForMissingTool unzip && exit 1; }
 	@$(ECHO) "done";
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -  [Succeeded]";
 

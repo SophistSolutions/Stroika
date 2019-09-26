@@ -119,7 +119,7 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for lzma ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "lzma ${VERSION} - Checking Prerequisite tools ... "
 	@$(MAKE) --no-print-directory --silent check_prerequisites_
 	@$(ECHO) "done"
 
@@ -188,7 +188,7 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "lzma ${VERSION} - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/lzma -    [Succeeded]";
 

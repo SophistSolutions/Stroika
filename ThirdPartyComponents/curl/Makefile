@@ -225,7 +225,7 @@ check_prerequisites_:
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "curl ${VERSION} - Checking ... "
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -237,7 +237,7 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for curl ... "
+	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "curl ${VERSION} - Checking Prerequisite tools ... "
 	@$(MAKE) --no-print-directory --silent check_prerequisites_
 	@$(ECHO) "done";
 
