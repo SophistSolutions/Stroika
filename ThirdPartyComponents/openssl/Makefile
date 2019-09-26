@@ -101,7 +101,7 @@ endif
 #	https://stroika.atlassian.net/browse/STK-454 addressed. But - I don't think we really count on
 #	dso or engines, and you can always use --openssl=use-system
 #
-CONFIG_ARGS+=	-no-dso
+#CONFIG_ARGS+=	-no-dso		### EXPERIMENT TURNING THIS WORKAROUND OFF - 2019-09-25
 
 
 
