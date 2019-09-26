@@ -237,6 +237,14 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 
 
+###
+### Not critical todo, but leaving /GL in here produces warnings when the module is used (in vs2k17 and vs2k19)
+###     EG   c:\sandbox\stroika\devroot\intermediatefiles\release-u-32\thirdpartycomponents\openssl\crypto\x509v3\v3_utl.c(405): warning C4706: assignment within conditional expression [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\29\Test29.vcxproj]
+###		-- LGP 2019-09-26
+###
+CFLAGS:=$(filter-out /GL, $(CFLAGS))
+CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
+
 #
 # from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
 # and appears to default incorrectly to /MT
