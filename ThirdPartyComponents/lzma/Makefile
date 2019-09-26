@@ -66,6 +66,15 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 
 
 
+#
+# For now needed beacuse we don't pass in proper LDFLAGS so test apps dont know about extra linker flags needed for sanitizers
+# -- LGP 2019-09-25
+#
+CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+
+
+
 all:
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/lzma Build $(VERSION) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
@@ -117,7 +126,15 @@ endif
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC='$(CC)' CXX='$(CXX)' AR='$(AR)' LIBS='$(LIBS)'
+	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
+		AR='$(AR)' \
+		CC='$(CC)' \
+		CXX='$(CXX)' \
+		CFLAGS='$(CFLAGS)' \
+		CXXFLAGS='$(CXXFLAGS)' \
+		ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
+		LIBS='$(LIBS)' \
+		all
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR)lib/liblzma.a
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR)include/lzma/
 	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma $(PER_CONFIGURATION_BUILDS_DIR)

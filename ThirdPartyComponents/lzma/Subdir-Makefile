@@ -232,7 +232,8 @@ vpath %c $(SubDirs2Compile)
 
 CC?=gcc
 CXX?=g++
-CFLAGS+=-D_7ZIP_ST
+override CFLAGS+=-D_7ZIP_ST
+override CXXFLAGS+=-D_7ZIP_ST
 
 AR?=ar
 ARCRATEFLAGS=cru
