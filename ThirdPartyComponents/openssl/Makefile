@@ -102,13 +102,6 @@ endif
 #	dso or engines, and you can always use --openssl=use-system
 #
 CONFIG_ARGS+=	-no-dso
-#ifeq (Unix,$(ProjectPlatformSubdir))
-# for some reason, no-engines not working on Ubuntu 1804 and 1.1.0g openssl - not worth debugging now...
-### NOW no-engine breaking for 1.1.1-pre9, so just disable no-engines altogether. IF I ever need to support centos6 with this, and if it causes problems, revisit -- LGP 2018-08-21
-#ifneq (1.1.0,$(findstring 1.1.0,$(VERSION)))
-#CONFIG_ARGS+=	-no-engines
-#endif
-#endif
 
 
 
@@ -230,6 +223,14 @@ endif
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+
+
+### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+endif
+
 
 
 #
