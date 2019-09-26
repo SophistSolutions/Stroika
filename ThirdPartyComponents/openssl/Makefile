@@ -224,6 +224,15 @@ endif
 endif
 
 #
+# openssl with sanitizers doesn't work (causes issues with building libcurl)
+# see ... IntermediateFiles\Debug\ThirdPartyComponents\curl\config.log for failure this causes (could fix by having this patch pkgconfig file)
+# -- LGP 2019-09-25
+#
+CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+
+
+#
 # from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
 # and appears to default incorrectly to /MT
 #
