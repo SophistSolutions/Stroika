@@ -74,6 +74,19 @@ CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 
 
+###
+### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
+### and 
+###		7zMain.o: file not recognized: file format not recognized
+###		clang: error: linker command failed with exit code 1 (use -v to see invocation)
+###		LzmaAlone.o: file not recognized: file format not recognized
+###		clang: error: linker command failed with exit code 1 (use -v to see invocation)
+###
+###		-- LGP 2019-09-26
+###
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+
 
 all:
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/lzma Build $(VERSION) {$(CONFIGURATION)}:"
