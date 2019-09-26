@@ -225,12 +225,16 @@ CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 
 
+###
 ### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
-ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
+### and 
+###   /usr/lib/gcc-cross/arm-linux-gnueabihf/8/../../../../arm-linux-gnueabihf/bin/ld: armcap.o (symbol from plugin): in function `OPENSSL_cpuid_setup':
+###   (.text+0x0): multiple definition of `OPENSSL_rdtsc'; armcap.o (symbol from plugin):(.text+0x0): first defined here - g++ - cross compiler, so
+### disable for now, and try again later
+###		-- LGP 2019-09-26
+###
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
-endif
-
 
 
 #
