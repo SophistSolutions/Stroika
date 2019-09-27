@@ -25,3 +25,10 @@ SHELL?=/bin/bash
 .DEFAULT_GOAL := all
 
 .PHONY:			all clean clobber check
+
+##
+## Use this to strip /I"..." includes from a CFLAGS or CXXFLAGS list of arguments (to a windows compiler) since these
+## sometimes cause trouble (not 100% sure why - this is a bit of a hack)
+##
+STRIP_INCLUDE_COMPILER_FLAGS= \
+	$(shell  echo '$1' | sed 's/\/I"[^"]*"//g')
