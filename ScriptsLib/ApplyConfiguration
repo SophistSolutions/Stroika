@@ -407,22 +407,6 @@ sub WriteStroikaConfigMakeHeader
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ProjectPlatformSubdir", $PROJECTPLATFORMSUBDIR);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TARGET_PLATFORMS", $TARGET_PLATFORMS);
-
-	/*
-	THOUGHT it might be helpful, but maybe not so dont add just yet
-	if (index($TARGET_PLATFORMS, "Windows") != -1) {
-		print (OUT "TARGET_PLATFORMS_Windows=true\n");
-	}
-	if (index($TARGET_PLATFORMS, "POSIX") != -1) {
-		print (OUT "TARGET_PLATFORMS_POSIX=true\n");
-	}
-	if (index($TARGET_PLATFORMS, "Linux") != -1) {
-		print (OUT "TARGET_PLATFORMS_Linux=true\n");
-	}
-	if (index($TARGET_PLATFORMS, "MacOS") != -1) {
-		print (OUT "TARGET_PLATFORMS_MacOS=true\n");
-	}
-	*/
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
