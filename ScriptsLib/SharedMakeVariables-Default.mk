@@ -47,10 +47,6 @@ ifndef StroikaFoundationLib
 	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation$(LIB_SUFFIX)
 endif
 ifndef StroikaFrameworksLib
-ifeq ($(LIB_SUFFIX),.a)
-	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
-endif
-ifeq ($(LIB_SUFFIX),.lib)
 	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
 ifeq ($(USE_MSBUILD),1)
 #TMPHACK til I can figure out how to merge .lib files (and script it) - or rename to FrameworksLibs and do similar for UNIX
@@ -62,7 +58,6 @@ ifeq ($(USE_MSBUILD),1)
 									$(StroikaLibDir)Stroika-Frameworks-UPnP$(LIB_SUFFIX) \
 									$(StroikaLibDir)Stroika-Frameworks-WebServer$(LIB_SUFFIX) \
 									$(StroikaLibDir)Stroika-Frameworks-WebService$(LIB_SUFFIX)
-endif
 endif
 endif
 
