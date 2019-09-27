@@ -267,9 +267,10 @@ endif
 ### not sure why this is needed?
 ###  -- LGP 2019-09-26
 ##
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CFLAGS +=  /DWIN32
 CXXFLAGS +=  /DWIN32
-
+endif
 
 #
 # A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
