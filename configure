@@ -67,6 +67,7 @@ my @EXTRA_ARGS = ();
 ########### CONFIG_Variables ###############
 my $ARCH='';
 my $PROJECTPLATFORMSUBDIR='';
+my $TARGET_PLATFORMS='';
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
@@ -186,6 +187,7 @@ sub	DoHelp_
 		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */\n");
+		print("	    --targetPlatforms {TARGET_PLATFORMS}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
 		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
 		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
@@ -254,7 +256,7 @@ sub	DoHelp_
 		print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
 		print("\n");
 		print("Configure's behavior is also influenced by the following environment variables:\n");
-		print("	    CC, CXX, PLATFORM, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
+		print("	    CC, CXX, PLATFORM, TARGET_PLATFORMS, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
 		print("	    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command\n");
 		
 	exit ($x);
@@ -506,6 +508,17 @@ sub     FillInToolsPathAdditionsIfNeeded_
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
 {
+	if ($TARGET_PLATFORMS eq "") {
+		if ("$^O" eq "linux") {
+			$TARGET_PLATFORMS = 'Linux POSIX';
+		}
+		elsif ("$^O" eq "darwin") {
+			$TARGET_PLATFORMS = 'MacOS POSIX';
+		}
+		elsif ("$^O" eq "cygwin") {
+			$TARGET_PLATFORMS = 'Windows';
+		}
+	}
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
@@ -1006,6 +1019,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$PROJECTPLATFORMSUBDIR = $var;
 		}
+		elsif (lc ($var) eq "-target-platforms" or lc ($var) eq "--target-platforms") {
+			$i++;
+			$var = $args[$i];
+			$TARGET_PLATFORMS = $var;
+		}
 		elsif (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
 			$i++;
 			$var = $args[$i];
@@ -1499,7 +1517,7 @@ sub     CHECK_FEATURE_OPTION
 {
 	my $x = shift(@_);
 	if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
-			die ("Cannot identify ProjectPlatformSubdir");
+			die ("Cannot identify feature argument");
 	}
 }
 
@@ -1518,6 +1536,9 @@ sub	CHECK_OPTIONS_
 	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
 	if (not exists ($params{$PROJECTPLATFORMSUBDIR})) {
 		die ("Unrecognized --platfrom argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
+	}
+	if ($TARGET_PLATFORMS eq "") {
+		die ("Cannot identify TARGET_PLATFORMS");
 	}
 	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
@@ -2052,6 +2073,7 @@ sub	WriteConfigFile_
 
 
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
+	print (OUT "    <TARGET_PLATFORMS>$TARGET_PLATFORMS</TARGET_PLATFORMS>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
 	if (defined $Config_Tag) {
 		print (OUT "    <ConfigTags>$Config_Tag</ConfigTags>\n");

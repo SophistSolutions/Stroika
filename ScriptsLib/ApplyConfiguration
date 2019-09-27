@@ -23,6 +23,7 @@ my $activeConfiguration	=	$ARGV[0];
 
 
 my $PROJECTPLATFORMSUBDIR='';
+my $TARGET_PLATFORMS='';
 
 
 my @useExtraCDefines;
@@ -116,6 +117,7 @@ sub	ConfigParam2BoolInt
 sub	ReadConfiguration_
 {
 	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter($activeConfiguration, "ProjectPlatformSubdir");
+	$TARGET_PLATFORMS = GetConfigurationParameter($activeConfiguration, "TARGET_PLATFORMS");
 	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
 	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++");
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
@@ -404,6 +406,19 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ProjectPlatformSubdir", $PROJECTPLATFORMSUBDIR);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("TARGET_PLATFORMS", $TARGET_PLATFORMS);
+	if (index($TARGET_PLATFORMS, "Windows") != -1) {
+		print (OUT "TARGET_PLATFORMS_Windows=true\n");
+	}
+	if (index($TARGET_PLATFORMS, "POSIX") != -1) {
+		print (OUT "TARGET_PLATFORMS_POSIX=true\n");
+	}
+	if (index($TARGET_PLATFORMS, "Linux") != -1) {
+		print (OUT "TARGET_PLATFORMS_Linux=true\n");
+	}
+	if (index($TARGET_PLATFORMS, "MacOS") != -1) {
+		print (OUT "TARGET_PLATFORMS_MacOS=true\n");
+	}
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
