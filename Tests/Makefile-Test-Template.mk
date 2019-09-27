@@ -42,21 +42,6 @@ check:
 
 #tmphack - til we can properly amend configure (and to experiment HOW we need to amend confiugure)
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-LIB_DEPENDENCIES +=\
-	urlmon.lib\
-	rpcrt4.lib\
-	kernel32.lib\
-	user32.lib\
-	gdi32.lib\
-	winspool.lib\
-	comdlg32.lib\
-	advapi32.lib\
-	shell32.lib\
-	ole32.lib\
-	oleaut32.lib\
-	uuid.lib\
-	odbc32.lib\
-	odbccp32.lib
 
 EXTRA_PREFIX_LINKER_ARGS+= /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
 
@@ -69,8 +54,6 @@ EXTRA_PREFIX_LINKER_ARGS+= /OPT:ICF
 EXTRA_PREFIX_LINKER_ARGS+= /DEBUG
 #EXTRA_PREFIX_LINKER_ARGS+= /DYNAMICBASE:NO
 
-EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:CONSOLE
-
 #EXTRA_SUFFIX_LINKER_ARGS+= /SAFESEH 
 #EXTRA_SUFFIX_LINKER_ARGS+= /INCREMENTAL:NO
 #EXTRA_SUFFIX_LINKER_ARGS+= /PGD:"C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2019\34\..\..\..\..\Builds\Release-U-32\Tests\Test34.pgd" 
@@ -79,7 +62,13 @@ EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:CONSOLE
 # /LTCG linktime code gen
 # /LTCG:incremental incremental linktime codegen (or many other : variations)
 #EXTRA_PREFIX_LINKER_ARGS+= /LTCG
+endif
 
+
+
+# Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:CONSOLE
 endif
 
 
