@@ -9,8 +9,8 @@ endif
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
 
-include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 ifndef TEST_NUM

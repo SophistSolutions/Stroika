@@ -9,8 +9,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 SrcDir				=	$(StroikaRoot)Samples/Traceroute/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Traceroute/
 
-include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Traceroute/
 TARGETEXE				=	$(TARGETDIR)Traceroute${EXE_SUFFIX}

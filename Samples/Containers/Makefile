@@ -9,8 +9,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 SrcDir				=	$(StroikaRoot)Samples/Containers/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Containers/
 
-include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Containers/
 TARGETEXE				=	$(TARGETDIR)Containers${EXE_SUFFIX}

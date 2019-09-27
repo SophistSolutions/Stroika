@@ -9,8 +9,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 SrcDir				=	$(StroikaRoot)Samples/LedLineIt/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedLineIt/
 
-include $(StroikaRoot)Library/Projects/Unix/SharedBuildRules-Default.mk
-include $(StroikaRoot)Library/Projects/Unix/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedLineIt/LedLineIt${EXE_SUFFIX}
