@@ -617,7 +617,15 @@ sub     ReplaceLast_
 
 sub	SetDefaultForCompilerDriver_
 {
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
+	if ($isVisualStudio) {
 		if ($ARCH eq "32" or $ARCH eq "WIN32") {
 			$ARCH = "x86";
 		}
@@ -779,6 +787,7 @@ sub	SetDefaultForCompilerDriver_
 		if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 			$EXTRA_PREFIX_LINKER_ARGS .= " -rdynamic";
 		}
+
 	}
 	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
@@ -808,6 +817,14 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 0;
 		}
+
+		if ($isVisualStudio) {
+			#	/OPT:REF eliminates functions and or data that are never referenced
+			#	/OPT:ICF[=iterations] to perform identical COMDAT folding
+			$EXTRA_PREFIX_LINKER_ARGS .= " /OPT:REF";
+			$EXTRA_PREFIX_LINKER_ARGS .= " /OPT:ICF";
+		}
+
 	}
 
 	if (!(defined $AR)) {
@@ -1983,6 +2000,16 @@ sub PostProcessOptions_ ()
 		$isVisualStudio = false;
 	}
 
+
+	if ($isVisualStudio) {
+		my $WIN_LIBCOMPATIBLE_ARCH = $ARCH;
+		if ($WIN_LIBCOMPATIBLE_ARCH eq "x86_64") {
+			$WIN_LIBCOMPATIBLE_ARCH = "x64";
+		}
+		$EXTRA_PREFIX_LINKER_ARGS .= " /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+	}
+
+
 	#
 	# generate CFLAGS and CXXFLAGS
 	# roughly as follows:
@@ -2007,6 +2034,15 @@ sub PostProcessOptions_ ()
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && not ($CPPSTD_VERSION_FLAG eq '')) {
 		$EXTRA_PREFIX_LINKER_ARGS .= " $CPPSTD_VERSION_FLAG";
+	}
+
+	if ($INCLUDE_SYMBOLS_EXE) {
+		if ($isVisualStudio) {
+			$EXTRA_PREFIX_LINKER_ARGS .= " /DEBUG";
+		}
+		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
+			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
+		}
 	}
 
 }
