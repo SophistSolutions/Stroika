@@ -40,6 +40,49 @@ check:
 	@$(ECHO) "[SUCCEEDED]";
 
 
+#tmphack - til we can properly amend configure (and to experiment HOW we need to amend confiugure)
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+LIB_DEPENDENCIES +=\
+	urlmon.lib\
+	rpcrt4.lib\
+	kernel32.lib\
+	user32.lib\
+	gdi32.lib\
+	winspool.lib\
+	comdlg32.lib\
+	advapi32.lib\
+	shell32.lib\
+	ole32.lib\
+	oleaut32.lib\
+	uuid.lib\
+	odbc32.lib\
+	odbccp32.lib
+
+EXTRA_PREFIX_LINKER_ARGS+= /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
+
+#FOR RELEASE BUIILDS 
+#	/OPT:REF eliminates functions and or data that are never referenced
+#	/OPT:ICF[=iterations] to perform identical COMDAT folding
+EXTRA_PREFIX_LINKER_ARGS+= /OPT:REF
+EXTRA_PREFIX_LINKER_ARGS+= /OPT:ICF
+
+EXTRA_PREFIX_LINKER_ARGS+= /DEBUG
+#EXTRA_PREFIX_LINKER_ARGS+= /DYNAMICBASE:NO
+
+EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:CONSOLE
+
+#EXTRA_SUFFIX_LINKER_ARGS+= /SAFESEH 
+#EXTRA_SUFFIX_LINKER_ARGS+= /INCREMENTAL:NO
+#EXTRA_SUFFIX_LINKER_ARGS+= /PGD:"C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2019\34\..\..\..\..\Builds\Release-U-32\Tests\Test34.pgd" 
+
+# 
+# /LTCG linktime code gen
+# /LTCG:incremental incremental linktime codegen (or many other : variations)
+#EXTRA_PREFIX_LINKER_ARGS+= /LTCG
+
+endif
+
+
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@mkdir -p $(dir $@)
