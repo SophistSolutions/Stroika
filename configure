@@ -413,14 +413,11 @@ sub     FillDefaultLibsPathIfNeeded_
 sub		PortablyAddLibToLibDependencies_
 {
 	my $libBaseName = trim(shift(@_));
-	if (not ($LIB_DEPENDENCIES eq "")) {
-		$LIB_DEPENDENCIES .= " ";
-	}
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		$LIB_DEPENDENCIES .= "$libBaseName.lib";
+		$LIB_DEPENDENCIES .= "$libBaseName.lib ";
 	}
 	else {
-		$LIB_DEPENDENCIES .= "-l$libBaseName";
+		$LIB_DEPENDENCIES .= "-l$libBaseName ";
 	}
 }
 sub     FillDefaultLibDependencies_
@@ -430,12 +427,16 @@ sub     FillDefaultLibDependencies_
 	if (!defined ($LIB_DEPENDENCIES)) {
 		$LIB_DEPENDENCIES = "";
 	}
+
+	my $mustAppendDefaults = false;
+
+	if ($LIB_DEPENDENCIES eq "") {
+		$mustAppendDefaults = true;
+	}
+
 	my $var;
 	foreach $var (@LIB_DEPENDENCIES_ADD) {
-		if (not ($LIB_DEPENDENCIES eq "")) {
-			$LIB_DEPENDENCIES .= " ";
-		}
-		$LIB_DEPENDENCIES .= $var;
+		$LIB_DEPENDENCIES .= $var . " ";
 	}
 
 	if ($includeAutomaticLibDependencies) {
@@ -466,27 +467,35 @@ sub     FillDefaultLibDependencies_
 				PortablyAddLibToLibDependencies_("z");
 			}
 		}
-		if ($PROJECTPLATFORMSUBDIR eq "Unix") {
-			if (not ($LIB_DEPENDENCIES eq "")) {
-				$LIB_DEPENDENCIES .= " ";
-			}
-			$LIB_DEPENDENCIES .= "-lpthread";
+	}
+
+	if ($mustAppendDefaults == true) {
+		if (index ($TARGET_PLATFORMS, "Windows") != -1) {
+			$LIB_DEPENDENCIES .= "urlmon.lib ";
+			$LIB_DEPENDENCIES .= "rpcrt4.lib ";
+			$LIB_DEPENDENCIES .= "kernel32.lib ";
+			$LIB_DEPENDENCIES .= "user32.lib ";
+			$LIB_DEPENDENCIES .= "gdi32.lib ";
+			$LIB_DEPENDENCIES .= "winspool.lib ";
+			$LIB_DEPENDENCIES .= "comdlg32.lib ";
+			$LIB_DEPENDENCIES .= "advapi32.lib ";
+			$LIB_DEPENDENCIES .= "shell32.lib ";
+			$LIB_DEPENDENCIES .= "ole32.lib ";
+			$LIB_DEPENDENCIES .= "oleaut32.lib ";
+			$LIB_DEPENDENCIES .= "uuid.lib ";
+			$LIB_DEPENDENCIES .= "odbc32.lib ";
+			$LIB_DEPENDENCIES .= "odbccp32.lib ";
 		}
-		if ($PROJECTPLATFORMSUBDIR eq "Unix") {
-			if (not ($LIB_DEPENDENCIES eq "")) {
-				$LIB_DEPENDENCIES .= " ";
-			}
-			$LIB_DEPENDENCIES .= "-lm";
-		}
-		if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+		if (index ($TARGET_PLATFORMS, "POSIX") != -1) {
+			$LIB_DEPENDENCIES .= "-lpthread ";
+			$LIB_DEPENDENCIES .= "-lm ";
 			if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
-				if (not ($LIB_DEPENDENCIES eq "")) {
-					$LIB_DEPENDENCIES .= " ";
-				}
-				$LIB_DEPENDENCIES .= "-lrt";
+				$LIB_DEPENDENCIES .= "-lrt ";
 			}
 		}
 	}
+
+
 }
 sub     FillInToolsPathAdditionsIfNeeded_
 {
@@ -1885,17 +1894,17 @@ sub PostProcessOptions_ ()
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
 				if (defined $lib) {
 					if ($lib ne $lib2FindStatic) {
-						push @LIB_DEPENDENCIES_ADD, " $lib";
+						push @LIB_DEPENDENCIES_ADD, "$lib";
 					}
 					else {
 						# consider using apt-get install glibc-static libstdc++-static
 						my $dashLName = trim (`echo $STDCXXLIB | sed s/lib//`);
-						push @LIB_DEPENDENCIES_ADD, " -l$dashLName";
+						push @LIB_DEPENDENCIES_ADD, "-l$dashLName";
 					}
 				}
 			}
 			else {
-				push @LIB_DEPENDENCIES_ADD, " -lstdc++";
+				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
 				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libstdc++";
 			}
 		}
