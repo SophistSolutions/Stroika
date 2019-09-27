@@ -17,6 +17,9 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
+
+
 .PHONY:	all clean clobber check doBuilds_
 
 
@@ -121,12 +124,34 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
 
+
+### makefile forces /Zi (at least during configure) and that's not compile with /GL (whole program optimization) and so compiler/config process
+### errors out
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+CFLAGS:=$(filter-out /GL, $(CFLAGS))
+CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
+endif
+
+
 ifeq (Unix,$(ProjectPlatformSubdir))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces
 CFLAGS+= -pthread
 CXXFLAGS+= -pthread
+endif
+
+
+##
+## It appears just /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/ucrt"
+## causes build problems. Unsure why (didnt did much).
+##
+## But there is no need for any of the /I parameters, as none were supported before Stroika 2.1a2, so strip them all for now
+##		-- LGP 2019-09-26
+##
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+CFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CFLAGS))
+CXXFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CXXFLAGS))
 endif
 
 
@@ -234,9 +259,29 @@ CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(shell which $(CC))"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(shell which $(CXX))"
 CMAKE_ARGS+= -DCMAKE_AR="$(shell which $(AR))"
 CMAKE_ARGS+= -DCMAKE_RANLIB="$(shell which $(RANLIB))"
-CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CFLAGS)"
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 endif
+
+
+##
+### Avoid compile error in time_t XMLDateTime::getEpoch(bool duration) const
+### not sure why this is needed?
+###  -- LGP 2019-09-26
+##
+CFLAGS +=  /DWIN32
+CXXFLAGS +=  /DWIN32
+
+
+#
+# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
+# No matter - set them all to the same thing
+#
+CMAKE_ARGS+= -DCMAKE_C_FLAGS='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS='$(CXXFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG='$(CXXFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE='$(CXXFLAGS)'
+
 
 #
 #PARALLEL BUILD TRICKERY
@@ -266,26 +311,8 @@ endif
 
 
 
-#Default Xerces build generates dependency on DLL version of runtime
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-#DEFAULT values from CMakeCache.txt
-#NB: We must REPLACE the values (copy defaults and munge) cuz otherwise need to edit CMakeCache.txt
-#or one of the other config files (maybe patch or script). This seems the lesser evil...
-#	--LGP 2018-10-31
-ifeq (Release,$(CMAKE_CONFIGURATION))
-#		CMAKE_CXX_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /DNDEBUG
-#		CMAKE_C_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /DNDEBUG
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="/MT /O2 /Ob2 /DNDEBUG"
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /DNDEBUG"
-else
-#		CMAKE_CXX_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /Od /RTC1
-#		CMAKE_C_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /Od /RTC1
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="/MTd /Zi /Ob0 /Od /RTC1"
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="/MTd /Zi /Ob0 /Od /RTC1"
-endif
-endif
 
-
+#### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
 CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(ARCH), x86)
@@ -301,15 +328,17 @@ endif
 #	--LGP 2018-12-15
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PATH_ADJUSTMENT_PREFIX= PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" 
-else
 endif
 
 
 doBuilds_:
 	@mkdir -p $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT && touch  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Configuring (See $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE.OUT)"` "... "
-	@echo 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ; $(PATH_ADJUSTMENT_PREFIX)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT 2>&1
+	@echo CXX='$(CXX)' >>  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
+	@echo CFLAGS='$(CFLAGS)' >>  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
+	@echo CXXFLAGS='$(CXXFLAGS)' >>  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT
+	@echo 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ; $(PATH_ADJUSTMENT_PREFIX)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT 2>&1
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) ; $(PATH_ADJUSTMENT_PREFIX)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE.OUT 2>&1
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Compiling (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD.OUT)"` "... "
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(ECHO) $(PATH_ADJUSTMENT_PREFIX)"cmake --build . --config $(CMAKE_CONFIGURATION)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT 2>&1
