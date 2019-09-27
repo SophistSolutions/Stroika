@@ -18,7 +18,7 @@ $(Objs):	| $(ObjDir)
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables $(abspath $<)) ... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(call DEFAULT_CXX_LINE,$<,$@);\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CXX_LINE,$<,$@)';\
 	fi
 	@mkdir -p `dirname $@`
 	@$(call DEFAULT_CXX_LINE,$<,$@)
