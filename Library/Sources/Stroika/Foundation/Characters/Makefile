@@ -30,6 +30,7 @@ Objs	=	\
 SubDirs	=	\
 	Concrete \
 	CString \
+	Platform \
 
 
 all:	$(Objs) $(SubDirs)

@@ -1,9 +1,9 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot=$(abspath ../../../../../../../../)/
 
 include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Configuration/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Configuration/
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/Platform/Windows/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/Platform/Windows/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
@@ -13,22 +13,16 @@ ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb)
 endif
 
+SubDirs	=				\
+
 
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Locale${OBJ_SUFFIX}\
-	$(ObjDir)StroikaConfig${OBJ_SUFFIX}\
-	$(ObjDir)SystemConfiguration${OBJ_SUFFIX}\
-	$(ObjDir)Version${OBJ_SUFFIX}
 
-
-SubDirs	=	\
-	Platform \
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+Objs+=	$(ObjDir)WinSock${OBJ_SUFFIX}
+endif
 
 
 all:	$(Objs) $(SubDirs)
-
-.PHONY:	$(SubDirs)
-$(SubDirs):
-	@$(MAKE) --directory $@ -s

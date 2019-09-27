@@ -16,6 +16,7 @@ endif
 SubDirs	=				\
 	HTTP				\
 	InternetProtocol	\
+	Platform			\
 	SOAP				\
 	Transfer			\
 

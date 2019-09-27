@@ -62,7 +62,7 @@ $(StroikaFoundationLib):	$(Objs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` ... "
 	@rm -f $@
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) "$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))";\
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) '$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))';\
 	fi
 	@$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))
 

@@ -14,7 +14,7 @@ CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Buil
 endif
 
 SubDirs	=	\
-	Platform/POSIX \
+	Platform \
 
 
 .PHONY:				$(SubDirs)
