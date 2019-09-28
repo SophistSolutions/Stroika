@@ -842,8 +842,11 @@ sub	SetDefaultForCompilerDriver_
 					#skip cuz broken on Centos7  - generates link errors with boost (maybe an issue how I build boost)
 				}
 				else {
-					$ENABLE_LTO = 1;
+					$ENABLE_LTO = true;
 				}
+			}
+			if ($isVisualStudio) {
+				$ENABLE_LTO = true;
 			}
 		}
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
@@ -1443,10 +1446,10 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			if ($var eq "enable") {
-				$ENABLE_LTO = 1;
+				$ENABLE_LTO = true;
 			}
 			elsif ($var eq "disable") {
-				$ENABLE_LTO = 0;
+				$ENABLE_LTO = false;
 			}
 			elsif ($var eq "default") {
 				$ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
@@ -1495,7 +1498,7 @@ sub	ParseCommandLine_Remaining_
 			### DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DON'T WORK TOGETHER
 			### -- LGP 2016-07-14
 			if ($MALLOC_GUARD == true) {
-				$ENABLE_LTO = 0;
+				$ENABLE_LTO = false;
 			}
 		}
 		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
@@ -1738,6 +1741,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		
 		push @flags, "/D_UNICODE";
 		push @flags, "/DUNICODE";
+		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
 #		push @flags, "/errorReport:prompt";	users can add this if desired
 
 		###push @flags, "/experimental:module";
@@ -1762,7 +1766,6 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			push @flags, "/MT";			#	Multithreaded (not debug not dll)
 		}
 		##push @flags, "/fp:precise";	#vs2k sample projects define this, but maybe can use default?
-		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
 	
 		if ($INCLUDE_SYMBOLS_LIB) {
 			if ($WinFlag_DebugProgramDatabase) {
@@ -1848,7 +1851,9 @@ sub PostProcessOptions_ ()
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
-			$COPTIMIZE_FLAGS .= " /GL";	### DEPRECATED
+			push @CFLAGS, "/GL";			#	Whole Program Optimization
+			push @CXXFLAGS, "/GL";			#	Whole Program Optimization
+			$EXTRA_PREFIX_LINKER_ARGS .= " /LTCG";
 		}
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
