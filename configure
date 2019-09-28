@@ -474,6 +474,27 @@ sub     FillDefaultLibDependencies_
 		}
 
 
+		# Better to run 
+		#		PKG_CONFIG_PATH=Builds/Debug/ThirdPartyComponents/lib/pkgconfig/ pkg-config --static --libs libcurl
+		#	which produces
+		#		-L/mnt/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib -lcurl -lssl -lcrypto -lssl -lcrypto -ldl -lpthread
+		if ($FEATUREFLAG_LIBCURL ne $LIBFEATUREFLAG_No) {
+			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+				#???dont thnik needed cuz of pragma comment link...
+			}
+			else {
+				# CAN use pkg-config --static --libs openssl if 'use-system'; but for 'yes' - we haven't built it yet so we cannot
+				# invoke pkg-config! One good reason for OLD way when we USED to invoke pkgconfig. MAYBE have a series of PKG-CONFIG lines
+				# EMITTED here - as a config variable, and run those at link time and append ot link libs line
+				PortablyAddLibToLibDependencies_("curl");
+				PortablyAddLibToLibDependencies_("ssl");
+				PortablyAddLibToLibDependencies_("crypto");
+				PortablyAddLibToLibDependencies_("dl");
+				PortablyAddLibToLibDependencies_("pthread");
+			}
+		}
+
+
 
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
 			PortablyAddLibToLibDependencies_("lzma");
