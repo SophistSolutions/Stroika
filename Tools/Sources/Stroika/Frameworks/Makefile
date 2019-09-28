@@ -9,7 +9,6 @@ ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/
 
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
@@ -17,6 +16,9 @@ VPATH		=	$(SrcDir)
 
 SubDirs=				\
 	WebServer	\
+
+
+include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all check:	$(SubDirs)

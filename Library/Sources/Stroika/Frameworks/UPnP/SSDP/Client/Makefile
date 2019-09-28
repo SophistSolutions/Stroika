@@ -6,7 +6,6 @@ SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/Client/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/Client/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -21,6 +20,8 @@ Objs	=	\
 	$(ObjDir)CachingListener${OBJ_SUFFIX}\
 	$(ObjDir)Listener${OBJ_SUFFIX}\
 	$(ObjDir)Search${OBJ_SUFFIX}\
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

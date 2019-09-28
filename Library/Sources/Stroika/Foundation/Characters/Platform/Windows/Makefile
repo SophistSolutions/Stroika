@@ -6,7 +6,6 @@ SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/Platform/Wi
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/Platform/Windows/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -20,6 +19,10 @@ Objs	=
 ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)CodePage${OBJ_SUFFIX}
 endif
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 all:	$(Objs)
 

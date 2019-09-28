@@ -6,7 +6,6 @@ SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Containers/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Containers/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -16,6 +15,8 @@ endif
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

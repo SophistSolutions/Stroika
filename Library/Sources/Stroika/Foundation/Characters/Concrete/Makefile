@@ -6,7 +6,6 @@ SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/Concrete/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/Concrete/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -21,6 +20,10 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)String_ExternalMemoryOwnership_ApplicationLifetime${OBJ_SUFFIX}\
 	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 all:	$(Objs) $(SubDirs)
 

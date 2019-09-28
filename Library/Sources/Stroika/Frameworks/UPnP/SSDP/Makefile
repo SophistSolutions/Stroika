@@ -6,7 +6,6 @@ SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -24,6 +23,9 @@ SubDirs	=	\
 Objs	=	\
 	$(ObjDir)Advertisement${OBJ_SUFFIX}\
 	$(ObjDir)Common${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs) $(SubDirs)

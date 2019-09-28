@@ -6,7 +6,6 @@ SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Modbus/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Modbus/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -18,6 +17,9 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)IModbusService${OBJ_SUFFIX}\
 	$(ObjDir)Server${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

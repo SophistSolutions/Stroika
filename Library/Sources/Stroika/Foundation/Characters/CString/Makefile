@@ -6,7 +6,6 @@ SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/CString/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/CString/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -17,6 +16,10 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Utilities${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 all:	$(Objs)
 

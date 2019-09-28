@@ -8,7 +8,6 @@ SrcDir						=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLVie
 ObjDir						=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/HTMLViewCompiler/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
@@ -23,6 +22,9 @@ Objs	=	\
 else
 Objs	=	
 endif
+
+
+include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(ObjDir) $(TARGETEXE)
