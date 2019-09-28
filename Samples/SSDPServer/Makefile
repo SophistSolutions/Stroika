@@ -5,14 +5,11 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-
-SrcDir				=	$(StroikaRoot)Samples/SSDPServer/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPServer/
-
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-
+SrcDir				=	$(StroikaRoot)Samples/SSDPServer/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPServer/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/
 TARGETEXE				=	$(TARGETDIR)SSDPServer${EXE_SUFFIX}

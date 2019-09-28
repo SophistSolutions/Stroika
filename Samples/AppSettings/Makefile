@@ -5,13 +5,11 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-
-SrcDir				=	$(StroikaRoot)Samples/AppSettings/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-AppSettings/
-
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
+SrcDir				=	$(StroikaRoot)Samples/AppSettings/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-AppSettings/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-AppSettings/
 TARGETEXE				=	$(TARGETDIR)AppSettings${EXE_SUFFIX}

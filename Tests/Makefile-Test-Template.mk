@@ -1,6 +1,8 @@
 export StroikaRoot?=$(abspath ../../)/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
@@ -8,9 +10,6 @@ endif
 
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
-
-include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
-include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 ifndef TEST_NUM

@@ -5,12 +5,11 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Samples/Traceroute/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Traceroute/
-
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Traceroute/
 TARGETEXE				=	$(TARGETDIR)Traceroute${EXE_SUFFIX}

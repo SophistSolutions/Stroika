@@ -5,15 +5,12 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
-
-###Includes				+=	-I.
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/LedIt${EXE_SUFFIX}
 

@@ -5,12 +5,11 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Samples/SSDPClient/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPClient/
-
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPClient/
