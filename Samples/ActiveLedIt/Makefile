@@ -49,8 +49,9 @@ ifeq (${USE_MSBUILD},1)
 		$(ECHO) "[SKIPPED]";\
 	fi
 else
-	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
-	@$(ECHO) "[SUCCEEDED]";
+	@#echo no check implemetned yet
+	@#$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
+	@#$(ECHO) "[SUCCEEDED]";
 endif
 
 
