@@ -8,7 +8,6 @@ SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
@@ -38,6 +37,10 @@ SubDirs=				\
 # sub-make - easier to just ignore in this one case from here
 # -- LGP 2019-01-09
 Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 $(Objs):	all_objs_
 

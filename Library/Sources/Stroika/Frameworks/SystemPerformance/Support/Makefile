@@ -11,7 +11,6 @@ ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Sys
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
 endif
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 vpath %cpp $(SrcDir)
@@ -22,6 +21,8 @@ Objs	=	\
 ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)WMICollector${OBJ_SUFFIX}
 endif
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 all:	$(Objs)
 

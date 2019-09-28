@@ -8,7 +8,6 @@ SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -39,6 +38,12 @@ $(SubDirs):
 # sub-make - easier to just ignore in this one case from here
 # -- LGP 2019-01-09
 Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
+
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
+
 
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@#suppress normal rule so just all_objs_ fires

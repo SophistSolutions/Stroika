@@ -6,7 +6,6 @@ SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Streams/iostream/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Streams/iostream/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -22,5 +21,8 @@ Objs	=	\
 	$(ObjDir)SerializeItemToBLOB${OBJ_SUFFIX}\
 	$(ObjDir)Utilities${OBJ_SUFFIX}\
 	
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 all:	$(Objs)
