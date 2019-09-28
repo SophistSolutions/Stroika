@@ -1,21 +1,18 @@
 export StroikaRoot?=$(abspath ../../)/
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
-include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
-
 ifneq ($(CONFIGURATION),)
 	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
+
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
-
 
 ifndef TEST_NUM
 	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
 endif
-
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Tests/Test$(TEST_NUM)${EXE_SUFFIX}
 
@@ -28,6 +25,9 @@ Objs	=	\
 	$(ObjDir)NotCopyable${OBJ_SUFFIX}\
 	$(ObjDir)SimpleClass${OBJ_SUFFIX}\
 	$(ObjDir)TestHarness${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 
 
 all:	$(ObjDir) $(TARGETEXE)
@@ -75,6 +75,6 @@ $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@mkdir -p $(dir $@)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(call DEFAULT_LINK_LINE,$@);\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)
