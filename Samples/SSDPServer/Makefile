@@ -41,7 +41,7 @@ endif
 
 check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SSDPServer...               "
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (${USE_MSBUILD},1)
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE);\
 		$(ECHO) "[SUCCEEDED]";\

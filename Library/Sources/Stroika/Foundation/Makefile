@@ -4,12 +4,11 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
-
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
+SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/
+ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
 
@@ -94,8 +93,8 @@ else
 endif
 
 clobber::
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@rm -f $(StroikaFoundationLib)
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (${USE_MSBUILD},1)
 	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Clean";
+else
+	@rm -f $(StroikaFoundationLib)
 endif

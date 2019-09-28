@@ -56,7 +56,7 @@ endif
 
 check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/Service...            "
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (${USE_MSBUILD},1)
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE);\
 		$(ECHO) "[SUCCEEDED]";\
@@ -73,15 +73,12 @@ clobber::
 	@rm -rf $(TARGETDIR)
 
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-else
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)
-endif
 
 
 .PHONY:  installers installer-deb installer-rpm installer-wix

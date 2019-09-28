@@ -15,13 +15,8 @@ VPATH = $(SrcDir)
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler${EXE_SUFFIX}
 
-
-ifeq (Unix,$(ProjectPlatformSubdir))
 Objs	=	\
 	$(ObjDir)HTMLViewCompiler${OBJ_SUFFIX}
-else
-Objs	=	
-endif
 
 
 include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
