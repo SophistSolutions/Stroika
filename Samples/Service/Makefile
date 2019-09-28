@@ -5,15 +5,12 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
 
 SrcDir				=	$(StroikaRoot)Samples/Service/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
-
-CXXFLAGS				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
+CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/)
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Service/
 TARGETEXE				=	$(TARGETDIR)Service${EXE_SUFFIX}
@@ -25,6 +22,9 @@ VPATH	=			$(SrcDir)/Sources/
 Objs	=	\
 	$(ObjDir)Service${OBJ_SUFFIX}\
 	$(ObjDir)Main${OBJ_SUFFIX}\
+
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
