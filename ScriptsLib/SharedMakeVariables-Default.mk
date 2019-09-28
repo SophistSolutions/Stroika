@@ -182,7 +182,7 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdi
 DEFAULT_CC_LINE=\
 	"$(CC)" \
 		$(CFLAGS) \
-		-c $1 \
+		-c $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$1) \
 		/Fo$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$2) \
 		| sed -n '1!p'
 endif
@@ -203,7 +203,7 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdi
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
 		$(CXXFLAGS) \
-		-c $1 \
+		-c $(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$1) \
 		/Fo$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$2) \
 		| sed -n '1!p'
 endif
