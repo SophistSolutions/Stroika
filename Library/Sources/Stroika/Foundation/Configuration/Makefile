@@ -2,11 +2,12 @@ StroikaRoot=$(abspath ../../../../../)/
 
 include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Configuration/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Configuration/
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
