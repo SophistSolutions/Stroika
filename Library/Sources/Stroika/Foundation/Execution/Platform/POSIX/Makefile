@@ -17,7 +17,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifneq ($(findstring POSIX,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)SemWaitableEvent${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SignalBlock${OBJ_SUFFIX}
 Objs+=	$(ObjDir)Users${OBJ_SUFFIX}

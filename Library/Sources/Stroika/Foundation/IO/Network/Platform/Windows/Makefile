@@ -20,7 +20,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)WinSock${OBJ_SUFFIX}
 endif
 

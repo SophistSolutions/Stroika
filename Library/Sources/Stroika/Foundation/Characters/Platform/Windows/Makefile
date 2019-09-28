@@ -15,8 +15,11 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
-	$(ObjDir)CodePage${OBJ_SUFFIX}\
+Objs	=
+
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+Objs+=	$(ObjDir)CodePage${OBJ_SUFFIX}
+endif
 
 all:	$(Objs)
 
