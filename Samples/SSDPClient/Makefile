@@ -5,35 +5,34 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Samples/SSDPClient/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPClient/
 
-
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPClient/
 TARGETEXE				=	$(TARGETDIR)SSDPClient${EXE_SUFFIX}
 
-
 VPATH	=			$(SrcDir)/Sources/
-
 
 Objs	=	\
 	$(ObjDir)SSDPClient${OBJ_SUFFIX}\
 
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
+
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Building Samples/SSDPClient:"
 	@mkdir -p $(TARGETDIR)
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-else
+ifeq (${USE_MSBUILD},1)
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/SSDPClient.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
 	fi
+else
+	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
@@ -52,10 +51,15 @@ else
 endif
 
 
+# Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:CONSOLE
+endif
+
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(call DEFAULT_LINK_LINE,$@);\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)

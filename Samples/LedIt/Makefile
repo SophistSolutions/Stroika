@@ -5,12 +5,10 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
-
 
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/LedIt${EXE_SUFFIX}
 
@@ -20,15 +18,19 @@ VPATH	=			$(SrcDir)/Sources/
 
 Objs	=	\
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 all:
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (${USE_MSBUILD},1)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/LedIt:"
 	if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
 		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/LedIt.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
 	fi
+else
+	echo NYI build LedIt makefile
 endif
 
 

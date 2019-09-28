@@ -5,7 +5,6 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Samples/Serialization/
@@ -15,27 +14,30 @@ ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Serializati
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Serialization/
 TARGETEXE				=	$(TARGETDIR)Serialization${EXE_SUFFIX}
 
-
-VPATH	=			$(SrcDir)/Sources/
-
-
 Objs	=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	\
 	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
 
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
+
+VPATH	=			$(SrcDir)/Sources/
+
+
+
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Serialization:"
 	@mkdir -p $(TARGETDIR)
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-else
+ifeq (${USE_MSBUILD},1)
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/Serialization.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
 	fi
+else
+	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
@@ -57,6 +59,6 @@ endif
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  $(call DEFAULT_LINK_LINE,$@);\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)
