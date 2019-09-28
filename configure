@@ -2002,6 +2002,7 @@ sub PostProcessOptions_ ()
 
 
 	if ($isVisualStudio) {
+		$EXTRA_PREFIX_LINKER_ARGS .= " /nologo";
 		my $WIN_LIBCOMPATIBLE_ARCH = $ARCH;
 		if ($WIN_LIBCOMPATIBLE_ARCH eq "x86_64") {
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
