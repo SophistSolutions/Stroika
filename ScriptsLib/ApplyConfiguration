@@ -492,7 +492,9 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "# Extra dynamically computed link lines\n");
 	foreach $var (@packageConfigLinkLines)
 	{
-		print (OUT "LIB_DEPENDENCIES += \$(shell $var)\n");
+		# Use `` so this is only evaluated when linking, not other times when the Configuration.mk file is loaded
+		#print (OUT "LIB_DEPENDENCIES += \$(shell $var)\n");
+		print (OUT "LIB_DEPENDENCIES += `$var`\n");
 	}
 
 
