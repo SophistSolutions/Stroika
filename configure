@@ -71,6 +71,7 @@ my $TARGET_PLATFORMS='';
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
+my @packageConfigLinkLines;
 
 my @CFLAGS = qw ();
 my @CFLAGS2Remove = qw ();
@@ -454,46 +455,30 @@ sub     FillDefaultLibDependencies_
 			}
 		}
 
-		# Better to run 
-		#		$ pkg-config --static --libs openssl
-		#	which produces
-		#		-lssl -ldl -lcrypto -ldl
+		#	$ pkg-config --static --libs openssl
+		#		which produces
+		#			-lssl -ldl -lcrypto -ldl
 		if ($FEATUREFLAG_OpenSSL ne $LIBFEATUREFLAG_No) {
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 				#???dont thnik needed cuz of pragma comment link...
 			}
 			else {
-				# CAN use pkg-config --static --libs openssl if 'use-system'; but for 'yes' - we haven't built it yet so we cannot
-				# invoke pkg-config! One good reason for OLD way when we USED to invoke pkgconfig. MAYBE have a series of PKG-CONFIG lines
-				# EMITTED here - as a config variable, and run those at link time and append ot link libs line
-				PortablyAddLibToLibDependencies_("ssl");
-				PortablyAddLibToLibDependencies_("dl");
-				PortablyAddLibToLibDependencies_("crypto");
-				PortablyAddLibToLibDependencies_("dl");
+				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \$(StroikaRoot)Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs openssl");
 			}
 		}
 
 
-		# Better to run 
-		#		PKG_CONFIG_PATH=Builds/Debug/ThirdPartyComponents/lib/pkgconfig/ pkg-config --static --libs libcurl
-		#	which produces
-		#		-L/mnt/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib -lcurl -lssl -lcrypto -lssl -lcrypto -ldl -lpthread
+		#	PKG_CONFIG_PATH=Builds/Debug/ThirdPartyComponents/lib/pkgconfig/ pkg-config --static --libs libcurl
+		#		which produces
+		#			-L/mnt/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib -lcurl -lssl -lcrypto -lssl -lcrypto -ldl -lpthread
 		if ($FEATUREFLAG_LIBCURL ne $LIBFEATUREFLAG_No) {
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 				#???dont thnik needed cuz of pragma comment link...
 			}
 			else {
-				# CAN use pkg-config --static --libs openssl if 'use-system'; but for 'yes' - we haven't built it yet so we cannot
-				# invoke pkg-config! One good reason for OLD way when we USED to invoke pkgconfig. MAYBE have a series of PKG-CONFIG lines
-				# EMITTED here - as a config variable, and run those at link time and append ot link libs line
-				PortablyAddLibToLibDependencies_("curl");
-				PortablyAddLibToLibDependencies_("ssl");
-				PortablyAddLibToLibDependencies_("crypto");
-				PortablyAddLibToLibDependencies_("dl");
-				PortablyAddLibToLibDependencies_("pthread");
+				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \$(StroikaRoot)Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libcurl");
 			}
 		}
-
 
 
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
@@ -2185,6 +2170,13 @@ sub	WriteConfigFile_
 			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
 		}
 	print (OUT "    </ExtraMakeDefines>\n");
+
+	print (OUT "    <PkgConfigLinkLineAppendages>\n");
+		foreach my $var (@packageConfigLinkLines)
+		{
+			print (OUT "       <PkgConfigLinkLineAppendage>$var</PkgConfigLinkLineAppendage>\n");
+		}
+	print (OUT "    </PkgConfigLinkLineAppendages>\n");
 
 
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {

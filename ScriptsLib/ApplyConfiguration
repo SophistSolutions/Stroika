@@ -28,7 +28,7 @@ my $TARGET_PLATFORMS='';
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
-
+my @packageConfigLinkLines;
 
 #
 # BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
@@ -156,6 +156,10 @@ sub	ReadConfiguration_
 
 	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
 		push (@useExtraMakeDefines, $mdef);
+	}
+
+	foreach $mdef (GetConfigurationParameter($activeConfiguration, "PackageConfigLinkLines")) {
+		push (@packageConfigLinkLines, $mdef);
 	}
 
 	#print "PROJECTPLATFORMSUBDIR = $PROJECTPLATFORMSUBDIR\n";
@@ -461,7 +465,10 @@ sub WriteStroikaConfigMakeHeader
 	{
 		print (OUT "$var\n");
 	}
-	
+
+
+
+	print (OUT "\n\n");
 	print (OUT "LIBS_PATH_DIRECTIVES=");
 	for my $l (split /:/, $LIBS_PATH) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
@@ -480,6 +487,15 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "LIB_DEPENDENCIES=$LIB_DEPENDENCIES");
 	print (OUT "\n");
+
+	print (OUT "\n\n");
+	print (OUT "# Extra dynamically computed link lines\n");
+	foreach $var (@packageConfigLinkLines)
+	{
+		print (OUT "LIB_DEPENDENCIES += \$(shell $var)\n");
+	}
+
+
 
 	print (OUT "\n\n");
 
