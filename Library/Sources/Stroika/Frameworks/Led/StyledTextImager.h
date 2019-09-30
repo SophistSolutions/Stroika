@@ -574,7 +574,7 @@ namespace Stroika::Frameworks::Led {
         Led_Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
 #elif qPlatform_MacOS
         Led_Pen pen (patCopy, &Led_Pen::kGrayPattern, lightColor);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_Pen pen;
 #endif
         Led_GDI_Obj_Selector penWrapper (tablet, pen);

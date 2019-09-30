@@ -49,7 +49,7 @@ class My_CMDNUM_MAPPING : public
                           Platform::MFC_CommandNumberMapping
 #elif qPlatform_MacOS
                           Platform::PP_CommandNumberMapping
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
                           Platform::Gtk_CommandNumberMapping
 #endif
 {
@@ -151,7 +151,7 @@ public:
 #endif
         AddAssociation (kSubScriptCmd, LedItView::kSubScriptCommand_CmdID);
         AddAssociation (kSuperScriptCmd, LedItView::kSuperScriptCommand_CmdID);
-#if qPlatform_Windows || qXWindows
+#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
         AddAssociation (kChooseFontDialogCmd, LedItView::kChooseFontCommand_CmdID);
 #endif
 
@@ -212,7 +212,7 @@ public:
         Led_StdDialogHelper_FindDialog findDialog;
 #elif qPlatform_Windows
         Led_StdDialogHelper_FindDialog                 findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_FindDialog       findDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
@@ -239,7 +239,7 @@ public:
         Led_StdDialogHelper_ReplaceDialog replaceDialog;
 #elif qPlatform_Windows
         Led_StdDialogHelper_ReplaceDialog              replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_ReplaceDialog    replaceDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
@@ -283,7 +283,7 @@ public:
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qPlatform_Windows
         Led_StdDialogHelper_SpellCheckDialog           spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
@@ -315,7 +315,7 @@ public:
         return sFontIDMapCache[idx];
 #elif qPlatform_Windows
         return LedItApplication::Get ().CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         const vector<Led_SDK_String>& fontNames = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
         Led_Assert (cmdNum - LedItView::kFontMenuFirst_CmdID < fontNames.size ());
         return (fontNames[cmdNum - LedItView::kFontMenuFirst_CmdID]);
@@ -397,7 +397,7 @@ public:
         }
     }
 #endif
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     virtual bool PickOtherFontColor (Led_Color* color) override
     {
         StdColorPickBox dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *color);
@@ -409,7 +409,7 @@ public:
         return false;
     }
 #endif
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     virtual bool ChooseFont (Led_IncrementalFontSpecification* font) override
     {
         StdFontPickBox dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *font);
@@ -568,7 +568,7 @@ END_MESSAGE_MAP ()
 #endif
 
 LedItView::LedItView (
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     LedItDocument* owningDoc
 #endif
     )
@@ -586,7 +586,7 @@ LedItView::LedItView (
 #elif qPlatform_Windows
     SetScrollBarType (h, fWrapToWindow ? eScrollBarNever : eScrollBarAsNeeded);
     SetScrollBarType (v, eScrollBarAlways);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     SpecifyTextStore (&owningDoc->GetTextStore ());
     SetStyleDatabase (owningDoc->GetStyleDatabase ());
     SetParagraphDatabase (owningDoc->GetParagraphDatabase ());

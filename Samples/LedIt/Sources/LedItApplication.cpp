@@ -34,7 +34,7 @@
 
 #include <afx.h>
 
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <gtk/gtkoptionmenu.h>
 #endif
 
@@ -63,7 +63,7 @@
 
 #include "LedItApplication.h"
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 #include "AboutBoxImage.xpm"
 #endif
 
@@ -363,7 +363,7 @@ public:
         : inherited (hInstance, parentWnd)
     {
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 public:
     MyAboutBox (GtkWindow* modalParentWindow)
         : inherited (modalParentWindow)
@@ -440,7 +440,7 @@ public:
         }
 
         ::SetWindowText (GetHWND (), _T ("About LedIt!"));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         GtkWidget* window = GetWindow ();
         gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
@@ -498,7 +498,7 @@ public:
     }
 };
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 class LedItFilePickBox : public StdFilePickBox {
 private:
     using inherited = StdFilePickBox;
@@ -657,11 +657,11 @@ LedItApplication::LedItApplication ()
 #endif
 #if qPlatform_Windows
     fInstalledFonts ()
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     fInstalledFonts (GDK_DISPLAY ())
     ,
 #endif
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
         fAppWindow (NULL)
     , fDocument (NULL)
 #endif
@@ -730,7 +730,7 @@ LedItApplication::LedItApplication ()
     // Always make sure sleep time no longer than the caret blink time.
     // But default to 6 ticks (PP's default) - 0.1 seconds.
     SetSleepTime (Led_Min (6, GetCaretTime ()));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     fDocument = new LedItDocument ();
 
     fAppWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -802,7 +802,7 @@ LedItApplication::~LedItApplication ()
 {
     Require (sThe == this);
     sThe = NULL;
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     delete fDocument;
 #endif
 }
@@ -819,7 +819,7 @@ void LedItApplication::DoAboutBox ()
     MyAboutBox dlg;
 #elif qPlatform_Windows
     MyAboutBox dlg (m_hInstance, AfxGetMainWnd ()->m_hWnd);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     MyAboutBox dlg (GTK_WINDOW (fAppWindow));
 #endif
     dlg.DoModal ();
@@ -1295,7 +1295,7 @@ void LedItApplication::UpdateViewsForPrefsChange ()
             }
         }
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     AssertNotNull (fTextEditor);
     fTextEditor->SetSmartCutAndPasteMode (smartCutNPaste);
     fTextEditor->SetWrapToWindow (wrapToWindow);
@@ -1666,7 +1666,7 @@ void LedItApplication::HandleUnknownException () noexcept
     }
 }
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 gint LedItApplication::delete_event (GtkWidget* widget, gpointer data)
 {
     // FIND ORIG GTK SAMPLE CODE AND SEE WHAT THIS USED TO GET HOOKED TO!!!!!!

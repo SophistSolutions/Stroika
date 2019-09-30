@@ -84,7 +84,7 @@ namespace Stroika::Frameworks::Led {
         virtual bool    InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
             const FSSpec* fileName,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const Led_SDK_Char* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat,
@@ -93,7 +93,7 @@ namespace Stroika::Frameworks::Led {
         virtual void InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
             const FSSpec* fileName,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const Led_SDK_Char* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat,
@@ -152,7 +152,7 @@ namespace Stroika::Frameworks::Led {
         virtual bool   GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
         virtual size_t GetFlavorSize (Led_ClipFormat clipFormat) const override;
         virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const override;
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     public:
         static map<Led_ClipFormat, vector<char>> sPrivateClipData;
 #endif

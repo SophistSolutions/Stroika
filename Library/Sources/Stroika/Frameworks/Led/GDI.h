@@ -27,7 +27,7 @@
 
 // WHY DON'T WE NEED TO INCLUDE <Windows.h> here??? - LGP 991213
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #endif
@@ -639,7 +639,7 @@ namespace Stroika::Frameworks::Led {
         Pattern   fPenPat;
         Led_Color fPenColor;
 #endif
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     public:
         Led_Pen () {}
 #endif
@@ -807,7 +807,7 @@ namespace Stroika::Frameworks::Led {
             FontNameSpecifier (const Led_SDK_Char* from);
             Led_SDK_Char fName[LF_FACESIZE];
         };
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         using FontNameSpecifier = Led_SDK_String;
 #endif
 
@@ -877,7 +877,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void    GetOSRep (LOGFONT* logFont) const;
         nonvirtual void    SetOSRep (LOGFONT logFont);
         nonvirtual void    LightSetOSRep (LOGFONT logFont);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         static string mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
         nonvirtual string GetOSRep () const;
         nonvirtual void   SetFromOSRep (const string& osRep);
@@ -894,7 +894,7 @@ namespace Stroika::Frameworks::Led {
         Style fFontStyle;
 #elif qPlatform_Windows
         LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
         bool              fItalics : 1;
@@ -1091,7 +1091,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         };
         Led_InstalledFonts (
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
             Display* display,
 #endif
             FilterOptions filterOptions = eDefaultFilterOptions);
@@ -1177,7 +1177,7 @@ namespace Stroika::Frameworks::Led {
     RECT      AsRECT (Led_Rect p);
     SIZE      AsSIZE (Led_Size s);
     Led_Size  AsLedSize (SIZE s);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     Led_Rect AsLedRect (const XRectangle& r);
     XRectangle AsXRect (const Led_Rect& r);
 #endif
@@ -1194,7 +1194,7 @@ namespace Stroika::Frameworks::Led {
         portable access to things like GetLineHeight (), and GetAscent (), etc...</p>
     */
     class Led_FontMetrics {
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     public:
         struct PlatformSpecific {
             Led_Distance fAscent;
@@ -1209,7 +1209,7 @@ namespace Stroika::Frameworks::Led {
         Led_FontMetrics (const FontInfo& from);
 #elif qPlatform_Windows
         Led_FontMetrics (const TEXTMETRIC& from);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_FontMetrics (const PlatformSpecific& from);
 #endif
         Led_FontMetrics (const Led_FontMetrics& from);
@@ -1244,7 +1244,7 @@ namespace Stroika::Frameworks::Led {
         FontInfo fPlatformSpecific;
 #elif qPlatform_Windows
         TEXTMETRIC fPlatformSpecific;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         PlatformSpecific fPlatformSpecific;
 #endif
     };
@@ -1273,7 +1273,7 @@ namespace Stroika::Frameworks::Led {
                             eDoesntOwnDC };
 
         Led_Tablet_ (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_Tablet_ (Display* display, Drawable drawable);
 #endif
 
@@ -1333,7 +1333,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual int   GetDeviceCaps (int nIndex) const;
         nonvirtual BOOL Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
         nonvirtual HDC Detach ();
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     public:
         nonvirtual void SetFont (const Led_FontSpecification& fontSpec);
 
@@ -1354,12 +1354,12 @@ namespace Stroika::Frameworks::Led {
         nonvirtual unsigned int SetTextAlign (unsigned int nTextAlign);
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     public:
         static int IgnoreXErrorHandler (Display* display, XErrorEvent* error);
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     private:
         nonvirtual Led_SDK_String BestMatchFont (const Led_FontSpecification& fsp, const vector<Led_SDK_String>& fontsList);
 
@@ -1371,7 +1371,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void MoveTo (const Led_Point& to);
         nonvirtual void LineTo (const Led_Point& to);
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     private:
         Led_Point fCurDrawLineLoc;
 #endif
@@ -1427,7 +1427,7 @@ namespace Stroika::Frameworks::Led {
     private:
         mutable Led_Distance fLogPixelsV;
         mutable Led_Distance fLogPixelsH;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     private:
         Display* fDisplay;
         Drawable fDrawable;
@@ -1555,7 +1555,7 @@ namespace Stroika::Frameworks::Led {
             OT (GrafPtr gp);
 #elif qPlatform_Windows
             OT (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
             OT (Display* display, Drawable drawable);
 #endif
         };
@@ -1573,7 +1573,7 @@ namespace Stroika::Frameworks::Led {
         Led_Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
         HBITMAP fOldBitmapInDC; // used for save/restore of bitmap associated with the DC.
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Drawable fPixmap;
 #endif
     };
@@ -1593,7 +1593,7 @@ namespace Stroika::Frameworks::Led {
     public:
 #if qPlatform_Windows
         Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect);
-#elif qPlatform_MacOS || qXWindows
+#elif qPlatform_MacOS || qStroika_FeatureSupported_XWindows
         Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen);
 #endif
     public:
@@ -2603,7 +2603,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         Assert (m_hDC != nullptr);
         Verify (::MoveToEx (m_hDC, to.h, to.v, nullptr));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fCurDrawLineLoc = to;
 #endif
     }
@@ -2614,7 +2614,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         Assert (m_hDC != nullptr);
         Verify (::LineTo (m_hDC, to.h, to.v));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         ::XDrawLine (fDisplay, fDrawable, fGC, fCurDrawLineLoc.h, fCurDrawLineLoc.v, to.h, to.v);
         fCurDrawLineLoc = to;
 #endif
@@ -2667,7 +2667,7 @@ namespace Stroika::Frameworks::Led {
         ::SetClip (kWideOpened.GetOSRep ());
 #elif qPlatform_Windows
         Verify (::SelectClipRgn (*this, nullptr) != ERROR);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         static Led_Rect kWideOpened = Led_Rect (-10000, -10000, 20000, 20000);
         XRectangle xrectangle = AsXRect (kWideOpened);
         ::XSetClipRectangles (fDisplay, fGC, 0, 0, &xrectangle, 1, Unsorted);
@@ -2683,7 +2683,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         Verify (::SelectClipRgn (*this, Led_Region (clipTo)) != ERROR);
         Ensure (GetClip ().GetBoundingRect () == clipTo);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         XRectangle xrectangle = AsXRect (clipTo);
         ::XSetClipRectangles (fDisplay, fGC, 0, 0, &xrectangle, 1, Unsorted);
 #else
@@ -3002,7 +3002,7 @@ namespace Stroika::Frameworks::Led {
         result.v = s.cy;
         return result;
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     inline Led_Rect AsLedRect (const XRectangle& r)
     {
         return Led_Rect (r.y, r.x, r.height, r.width);
@@ -3087,7 +3087,7 @@ namespace Stroika::Frameworks::Led {
         : fPlatformSpecific (from)
     {
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     inline Led_FontMetrics::Led_FontMetrics (const Led_FontMetrics::PlatformSpecific& from)
         : fPlatformSpecific (from)
     {
@@ -3108,7 +3108,7 @@ namespace Stroika::Frameworks::Led {
         return (fPlatformSpecific.ascent);
 #elif qPlatform_Windows
         return (fPlatformSpecific.tmAscent);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fPlatformSpecific.fAscent;
 #endif
     }
@@ -3118,7 +3118,7 @@ namespace Stroika::Frameworks::Led {
         return (fPlatformSpecific.descent);
 #elif qPlatform_Windows
         return (fPlatformSpecific.tmDescent);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fPlatformSpecific.fDescent;
 #endif
     }
@@ -3128,7 +3128,7 @@ namespace Stroika::Frameworks::Led {
         return (fPlatformSpecific.leading);
 #elif qPlatform_Windows
         return (fPlatformSpecific.tmExternalLeading);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return (fPlatformSpecific.fLeading);
 #endif
     }
@@ -3150,7 +3150,7 @@ namespace Stroika::Frameworks::Led {
         return (fPlatformSpecific.widMax);
 #elif qPlatform_Windows
         return (fPlatformSpecific.tmMaxCharWidth);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return (fPlatformSpecific.fMaxCharWidth);
 #endif
     }
@@ -3329,7 +3329,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         fFontInfo ()
         ,
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fFontFamily ()
         , fBold (false)
         , fItalics (false)
@@ -3354,7 +3354,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         fFontInfo (((const Led_FontSpecification&)from).fFontInfo)
         ,
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fFontFamily (from.fFontFamily)
         , fBold (from.fBold)
         , fItalics (from.fItalics)
@@ -3380,7 +3380,7 @@ namespace Stroika::Frameworks::Led {
         return string ((const char*)&fontName[1], len);
 #elif qPlatform_Windows
         return fFontInfo.lfFaceName;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fFontFamily;
 #endif
     }
@@ -3391,7 +3391,7 @@ namespace Stroika::Frameworks::Led {
         return fFontSpecifier;
 #elif qPlatform_Windows
         return fFontInfo.lfFaceName;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fFontFamily;
 #endif
     }
@@ -3415,7 +3415,7 @@ namespace Stroika::Frameworks::Led {
             fFontInfo.lfWeight <= FW_NORMAL and
             fFontInfo.lfUnderline == false and
             fFontInfo.lfStrikeOut == false);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return not fBold and not fItalics and not fUnderline;
 #endif
     }
@@ -3434,7 +3434,7 @@ namespace Stroika::Frameworks::Led {
         fFontInfo.lfWeight    = FW_NORMAL;
         fFontInfo.lfUnderline = false;
         fFontInfo.lfStrikeOut = false;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fBold = false;
         fItalics = false;
         fUnderline = false;
@@ -3446,7 +3446,7 @@ namespace Stroika::Frameworks::Led {
         return (fFontStyle & bold);
 #elif qPlatform_Windows
         return (fFontInfo.lfWeight > FW_NORMAL);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fBold;
 #endif
     }
@@ -3461,7 +3461,7 @@ namespace Stroika::Frameworks::Led {
         }
 #elif qPlatform_Windows
         fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fBold = isBold;
 #endif
     }
@@ -3471,7 +3471,7 @@ namespace Stroika::Frameworks::Led {
         return (fFontStyle & italic);
 #elif qPlatform_Windows
         return !!fFontInfo.lfItalic;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fItalics;
 #endif
     }
@@ -3486,7 +3486,7 @@ namespace Stroika::Frameworks::Led {
         }
 #elif qPlatform_Windows
         fFontInfo.lfItalic = isItalic;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fItalics = isItalic;
 #endif
     }
@@ -3496,7 +3496,7 @@ namespace Stroika::Frameworks::Led {
         return (fFontStyle & underline);
 #elif qPlatform_Windows
         return !!fFontInfo.lfUnderline;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fUnderline;
 #endif
     }
@@ -3511,7 +3511,7 @@ namespace Stroika::Frameworks::Led {
         }
 #elif qPlatform_Windows
         fFontInfo.lfUnderline = isUnderline;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fUnderline = isUnderline;
 #endif
     }
@@ -3608,7 +3608,7 @@ namespace Stroika::Frameworks::Led {
         else {
             return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
         }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return fFontSize;
 #endif
     }
@@ -3618,7 +3618,7 @@ namespace Stroika::Frameworks::Led {
         fFontSize = pointSize;
 #elif qPlatform_Windows
         fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         fFontSize = pointSize;
 #endif
     }
@@ -3724,7 +3724,7 @@ namespace Stroika::Frameworks::Led {
         if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
             return false;
         }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
             return false;
         }
@@ -4557,7 +4557,7 @@ namespace Stroika::Frameworks::Led {
         return (Led_Color::kBlack);
 #elif qPlatform_Windows
         return Led_Color (::GetSysColor (COLOR_WINDOWTEXT));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return (Led_Color::kBlack);
 #endif
     }
@@ -4567,7 +4567,7 @@ namespace Stroika::Frameworks::Led {
         return (Led_Color::kWhite);
 #elif qPlatform_Windows
         return Led_Color (::GetSysColor (COLOR_WINDOW));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return (Led_Color::kWhite);
 #endif
     }
@@ -4590,7 +4590,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         //          return Led_Color (::GetSysColor (COLOR_CAPTIONTEXT));
         return Led_Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return (Led_Color::kWhite);
 #endif
     }
@@ -4603,7 +4603,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         //return Led_Color (::GetSysColor (COLOR_ACTIVECAPTION));
         return Led_Color (::GetSysColor (COLOR_HIGHLIGHT));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         return (Led_Color::kBlack);
 #endif
     }
@@ -4749,7 +4749,7 @@ namespace Stroika::Frameworks::Led {
         ::PenMode (pen.fPenStyle);
         ::PenPat (&pen.fPenPat);
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen)
     {
     }

@@ -19,7 +19,7 @@
 #pragma warning(disable : 5054)
 #include <afxole.h>
 #pragma warning(pop)
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <gtk/gtk.h>
 #endif
 
@@ -37,7 +37,7 @@
 #include "Stroika/Frameworks/Led/Platform/Led_PP.h"
 #elif qPlatform_Windows
 #include "Stroika/Frameworks/Led/Platform/MFC.h"
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include "Stroika/Frameworks/Led/Platform/Gtk.h"
 #endif
 
@@ -52,7 +52,7 @@ class LedItView;
 using CMD_ENABLER = Platform::Led_PP_TmpCmdUpdater;
 #elif qPlatform_Windows
 using CMD_ENABLER = Platform::Led_MFC_TmpCmdUpdater;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 using CMD_ENABLER = Platform::Led_Gtk_TmpCmdUpdater;
 #endif
 
@@ -211,7 +211,7 @@ private:
     static pascal short   SFGetDlgHook (short item, DialogPtr dialog, void* myData);
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 private:
     nonvirtual GtkWidget* get_main_menu (GtkWidget* window);
 
@@ -253,7 +253,7 @@ private:
 private:
     static GtkItemFactoryEntry kMenuItemResources[];
 #endif
-#if qPlatform_Windows || qXWindows
+#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
 public:
     Led_InstalledFonts fInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
 #endif

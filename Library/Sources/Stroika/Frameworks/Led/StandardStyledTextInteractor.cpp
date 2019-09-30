@@ -34,7 +34,7 @@ const TCHAR                                kRTFClipTypeName[]                   
 const Led_ClipFormat                       Led::kRTFClipFormat                         = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
 const TCHAR                                kHTMLClipTypeName[]                         = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
 const Led_ClipFormat                       Led::kHTMLClipFormat                        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 // Toolkit-specific code (e.g. Led_Gtk<>) must reset these to good values. Cannot be constants
 // and cannot be filled in here, cuz we require a DISPLAY object to register the contants on.
 Led_ClipFormat kLedPrivateClipFormat = 0;
@@ -824,7 +824,7 @@ StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextSt
 void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
     const FSSpec* fileName,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Led_SDK_Char* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat,

@@ -19,40 +19,44 @@ SubDirs	=	\
 	StyledTextIO	\
 
 
-Objs	=	\
-	$(ObjDir)BiDiLayoutEngine${OBJ_SUFFIX}\
-	$(ObjDir)ChunkedArrayTextStore${OBJ_SUFFIX}\
-	$(ObjDir)Command${OBJ_SUFFIX}\
-	$(ObjDir)FlavorPackage${OBJ_SUFFIX}\
-	$(ObjDir)GDI${OBJ_SUFFIX}\
-	$(ObjDir)HandySimple${OBJ_SUFFIX}\
-	$(ObjDir)HiddenText${OBJ_SUFFIX}\
-	$(ObjDir)IdleManager${OBJ_SUFFIX}\
-	$(ObjDir)LineBasedPartition${OBJ_SUFFIX}\
-	$(ObjDir)Marker${OBJ_SUFFIX}\
-	$(ObjDir)MultiRowTextImager${OBJ_SUFFIX}\
-	$(ObjDir)PartitioningTextImager${OBJ_SUFFIX}\
-	$(ObjDir)SimpleLed${OBJ_SUFFIX}\
-	$(ObjDir)SimpleTextImager${OBJ_SUFFIX}\
-	$(ObjDir)SimpleTextInteractor${OBJ_SUFFIX}\
-	$(ObjDir)SimpleTextStore${OBJ_SUFFIX}\
-	$(ObjDir)SpellCheckEngine${OBJ_SUFFIX}\
-	$(ObjDir)SpellCheckEngine_Basic${OBJ_SUFFIX}\
-	$(ObjDir)StandardStyledTextImager${OBJ_SUFFIX}\
-	$(ObjDir)StandardStyledTextInteractor${OBJ_SUFFIX}\
-	$(ObjDir)StdDialogs${OBJ_SUFFIX}\
-	$(ObjDir)StyledTextEmbeddedObjects${OBJ_SUFFIX}\
-	$(ObjDir)StyledTextImager${OBJ_SUFFIX}\
-	$(ObjDir)Support${OBJ_SUFFIX}\
-	$(ObjDir)SyntaxColoring${OBJ_SUFFIX}\
-	$(ObjDir)TextBreaks${OBJ_SUFFIX}\
-	$(ObjDir)TextImager${OBJ_SUFFIX}\
-	$(ObjDir)TextInteractor${OBJ_SUFFIX}\
-	$(ObjDir)TextInteractorMixins${OBJ_SUFFIX}\
-	$(ObjDir)TextStore${OBJ_SUFFIX}\
-	$(ObjDir)WordProcessor${OBJ_SUFFIX}\
-	$(ObjDir)WordWrappedTextImager${OBJ_SUFFIX}\
-	$(ObjDir)WordWrappedTextInteractor${OBJ_SUFFIX}\
+Objs	=
+
+# for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
+Objs+=	$(ObjDir)BiDiLayoutEngine${OBJ_SUFFIX}
+Objs+=	$(ObjDir)ChunkedArrayTextStore${OBJ_SUFFIX}
+Objs+=	$(ObjDir)Command${OBJ_SUFFIX}
+Objs+=	$(ObjDir)FlavorPackage${OBJ_SUFFIX}
+Objs+=	$(ObjDir)GDI${OBJ_SUFFIX}
+Objs+=	$(ObjDir)HandySimple${OBJ_SUFFIX}
+Objs+=	$(ObjDir)HiddenText${OBJ_SUFFIX}
+Objs+=	$(ObjDir)IdleManager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)LineBasedPartition${OBJ_SUFFIX}
+Objs+=	$(ObjDir)Marker${OBJ_SUFFIX}
+Objs+=	$(ObjDir)MultiRowTextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)PartitioningTextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SimpleLed${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SimpleTextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SimpleTextInteractor${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SimpleTextStore${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SpellCheckEngine${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SpellCheckEngine_Basic${OBJ_SUFFIX}
+Objs+=	$(ObjDir)StandardStyledTextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)StandardStyledTextInteractor${OBJ_SUFFIX}
+Objs+=	$(ObjDir)StdDialogs${OBJ_SUFFIX}
+Objs+=	$(ObjDir)StyledTextEmbeddedObjects${OBJ_SUFFIX}
+Objs+=	$(ObjDir)StyledTextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)Support${OBJ_SUFFIX}
+Objs+=	$(ObjDir)SyntaxColoring${OBJ_SUFFIX}
+Objs+=	$(ObjDir)TextBreaks${OBJ_SUFFIX}
+Objs+=	$(ObjDir)TextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)TextInteractor${OBJ_SUFFIX}
+Objs+=	$(ObjDir)TextInteractorMixins${OBJ_SUFFIX}
+Objs+=	$(ObjDir)TextStore${OBJ_SUFFIX}
+Objs+=	$(ObjDir)WordProcessor${OBJ_SUFFIX}
+Objs+=	$(ObjDir)WordWrappedTextImager${OBJ_SUFFIX}
+Objs+=	$(ObjDir)WordWrappedTextInteractor${OBJ_SUFFIX}
+endif
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

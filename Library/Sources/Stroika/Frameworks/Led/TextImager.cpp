@@ -164,7 +164,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
     if (changed) {
         imager->fCachedFontInfo = tablet->GetFontMetrics ();
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     tablet->SetFont (fontSpec);
     imager->fCachedFontInfo = tablet->GetFontMetrics ();
 #endif
@@ -463,7 +463,7 @@ Led_FontSpecification TextImager::GetStaticDefaultFont ()
         sDefaultFont.SetStyle_Plain ();
 #elif qPlatform_Windows
         sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         {
             sDefaultFont.SetFontNameSpecifier ("times");
             sDefaultFont.SetPointSize (12);

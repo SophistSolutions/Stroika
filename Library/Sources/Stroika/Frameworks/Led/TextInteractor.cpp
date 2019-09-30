@@ -3331,12 +3331,12 @@ bool TextInteractor::HandledMByteCharTyping (char theChar)
 }
 #endif
 
-#if qPlatform_MacOS || qXWindows
+#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
 float TextInteractor::GetTickCountBetweenBlinks ()
 {
 #if qPlatform_MacOS
     return (::GetCaretTime () / 60.0);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     return (0.4f);
 #endif
 }

@@ -9,7 +9,7 @@
 
 #include <UDrawingState.h> // for class UQDGlobals
 #include <UMemoryMgr.h>    // for InitializeHeap
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
@@ -30,7 +30,7 @@
 #ifndef qProfile
 #define qProfile 0
 #endif
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #define qSlowXDebugSyncMode 0
 //#define   qSlowXDebugSyncMode qDebug
 #ifndef qUseMyXErrorHandlers
@@ -127,7 +127,7 @@ std::size_t __sys_pointer_size (void* p)
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-#if qXWindows && qUseMyXErrorHandlers
+#if qStroika_FeatureSupported_XWindows && qUseMyXErrorHandlers
 static int MyXErrorHandler (Display* display, XErrorEvent* error)
 {
     if (error->error_code) {
@@ -142,7 +142,7 @@ static int MyXErrorHandler (Display* display, XErrorEvent* error)
 }
 #endif
 
-#if qPlatform_MacOS || qXWindows
+#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
 int main (int argc, char** argv)
 {
 #if qPlatform_MacOS
@@ -183,7 +183,7 @@ int main (int argc, char** argv)
     // Hmm. produces link error doing this on CW6Pro? But seems to work OK without... LGP 2001-07-17
     ::DebugNewValidateAllBlocks ();
 #endif
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     gtk_set_locale ();
     gtk_init (&argc, &argv);
 #if qUseMyXErrorHandlers

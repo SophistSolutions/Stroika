@@ -22,7 +22,7 @@
 #if defined(WIN32)
 
 #include <afxwin.h>
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -246,7 +246,7 @@ LedItDocument::LedItDocument (LCommander* inSuper, FileFormat format)
 LedItDocument::LedItDocument ()
     : COleServerDoc ()
     ,
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 LedItDocument::LedItDocument ()
     :
 #endif
@@ -261,12 +261,12 @@ LedItDocument::LedItDocument ()
 #if qPlatform_MacOS
     fFileFormat (format)
     ,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     fFileFormat (eDefaultFormat)
     ,
 #endif
     fHTMLInfo ()
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     , fPathName ()
 #endif
 #if qPlatform_MacOS
@@ -318,7 +318,7 @@ TextStore* LedItDocument::PeekAtTextStore () const
     return &const_cast<LedItDocument*> (this)->fTextStore;
 }
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
 {
     Require (not fileName.empty ());

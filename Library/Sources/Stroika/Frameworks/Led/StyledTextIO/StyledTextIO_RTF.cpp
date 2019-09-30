@@ -278,7 +278,7 @@ Led_IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
         }
     }
     fontSpec.SetFontNameSpecifier (fontNum);
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     fontSpec.SetFontNameSpecifier (fte.fFontName.c_str ());
 #endif
     return fontSpec;
@@ -1279,7 +1279,7 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
 #if qPlatform_MacOS
     fCurrentOutputCharSetEncoding (kCodePage_MAC)
     ,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     fCurrentOutputCharSetEncoding (kCodePage_ANSI)
     , // not sure???
 #endif
@@ -4141,7 +4141,7 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
 #if qPlatform_MacOS
     fCurrentInputCharSetEncoding (kCodePage_MAC)
     ,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     fCurrentInputCharSetEncoding (kCodePage_ANSI)
     , // not sure???
 #endif

@@ -58,22 +58,13 @@
 
 #define qLed_FullVersion Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
 
-/*
- * OS Defines.
- *
- *      Be sure OS defines are defined to ZERO if not defined. This is so we can write code
- *  like if (qPlatform_MacOS) as well as code like #if qPlatform_MacOS
- */
-#ifndef qXWindows
-#define qXWindows defined (__GNUC__) && !qPlatform_MacOS
-#endif
 
-#if qPlatform_MacOS + qPlatform_Windows + qXWindows > 1
-#error "Only one of these should be defined"
-#endif
-#if !qPlatform_MacOS && !qPlatform_Windows && !qXWindows
-#error "One of these should be defined - right now thats all we support"
-#endif
+// #if qPlatform_MacOS + qPlatform_Windows + qStroika_FeatureSupported_XWindows > 1
+// #error "Only one of these should be defined"
+// #endif
+// #if !qPlatform_MacOS && !qPlatform_Windows && !qStroika_FeatureSupported_XWindows
+// #error "One of these should be defined - right now thats all we support"
+// #endif
 
 /// MAY THIS A COMMENTED DEFINE - AND FIXUP THE ABOVE __GNUC__ STUFF LIKE OTHER COMPILER SETTINGS - LGP 991214
 #ifndef qBitSetTemplateAvailable
@@ -469,7 +460,7 @@ namespace Stroika::Frameworks::Led {
  *************** X-Windows Specific configuration variables *************
  *************** X-Windows Specific configuration variables *************
  */
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 
 /*
 @CONFIGVAR:     qUseSystemNetscapeOpenURLs
@@ -480,6 +471,6 @@ namespace Stroika::Frameworks::Led {
 #define qUseSystemNetscapeOpenURLs 1
 #endif
 
-#endif /*qXWindows*/
+#endif /*qStroika_FeatureSupported_XWindows*/
 
 #endif /*_Stroika_Framework_Led_Config_h_*/

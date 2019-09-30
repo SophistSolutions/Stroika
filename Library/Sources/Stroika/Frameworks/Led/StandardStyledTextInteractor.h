@@ -36,7 +36,7 @@ namespace Stroika::Frameworks::Led {
 #define qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor 1
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     extern Led_ClipFormat kLedPrivateClipFormat;
     extern Led_ClipFormat kRTFClipFormat;
     extern Led_ClipFormat kHTMLClipFormat;
@@ -313,7 +313,7 @@ namespace Stroika::Frameworks::Led {
         virtual void InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
             const FSSpec* fileName,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const Led_SDK_Char* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat,

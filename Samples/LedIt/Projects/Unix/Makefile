@@ -85,7 +85,7 @@ endif
 
 
 #CXXFLAGS	=	-g -DqDebug=$(DEBUG) `gtk-config --cflags`
-CXXFLAGS	=	`gtk-config --cflags` -DqXWindows=1
+CXXFLAGS	=	`gtk-config --cflags` -DqStroika_FeatureSupported_XWindows=1
 ifeq ($(DEBUG),1)
 CXXFLAGS +=	-DqDebug=1
 else

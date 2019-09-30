@@ -18,7 +18,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include <shellapi.h>
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -87,7 +87,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     Require (end <= GetTextStore ().GetEnd ());
     Require (start <= end);
     size_t length = end - start;
-#if qPlatform_MacOS || qXWindows
+#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
     Memory::SmallStackBuffer<Led_tChar> buf (length);
 #elif qPlatform_Windows
     Memory::SmallStackBuffer<Led_tChar> buf (2 * length + 1);
@@ -95,7 +95,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     if (length != 0) {
         Memory::SmallStackBuffer<Led_tChar> buf2 (length);
         GetTextStore ().CopyOut (start, length, buf2);
-#if qPlatform_MacOS || qXWindows
+#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
         length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
 #elif qPlatform_Windows
         length = Characters::NLToNative<Led_tChar> (buf2, length, buf, 2 * length + 1);
@@ -197,7 +197,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
             ::GlobalFree (hdrop);
         }
         Led_ClipFormat suggestedClipFormat = kBadClipFormat; // no guess - examine text later
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         char realFileName[1000]; // use MAX_PATH? ??? NO - GET REAL SIZE !!! X-TMP-HACK-LGP991213
         realFileName[0]                    = '\0';
         Led_ClipFormat suggestedClipFormat = kBadClipFormat; // no guess - examine text later
@@ -213,7 +213,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
 bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
     const FSSpec* fileName,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Led_SDK_Char* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat,
@@ -239,7 +239,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
     const FSSpec* fileName,
-#elif qPlatform_Windows || qXWindows
+#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Led_SDK_Char* fileName,
 #endif
     Led_ClipFormat*            suggestedClipFormat,
@@ -332,13 +332,13 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
  *************************** ReaderClipboardFlavorPackage ***********************
  ********************************************************************************
  */
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 map<Led_ClipFormat, vector<char>> ReaderClipboardFlavorPackage::sPrivateClipData;
 #endif
 
 bool ReaderClipboardFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
 {
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     map<Led_ClipFormat, vector<char>>::const_iterator i = sPrivateClipData.find (clipFormat);
     return (i != sPrivateClipData.end ());
 #else
@@ -348,7 +348,7 @@ bool ReaderClipboardFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFormat
 
 size_t ReaderClipboardFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
 {
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     map<Led_ClipFormat, vector<char>>::const_iterator i = sPrivateClipData.find (clipFormat);
     if (i == sPrivateClipData.end ()) {
         return 0;
@@ -369,7 +369,7 @@ size_t ReaderClipboardFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) c
 
 size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const
 {
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     map<Led_ClipFormat, vector<char>>::const_iterator i = sPrivateClipData.find (clipFormat);
     if (i == sPrivateClipData.end ()) {
         return 0;
@@ -427,7 +427,7 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
         DWORD err = ::GetLastError ();
         Led_ThrowIfErrorHRESULT (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_WIN32, err));
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     ReaderClipboardFlavorPackage::sPrivateClipData.insert (map<Led_ClipFormat, vector<char>>::value_type (clipFormat, vector<char> (reinterpret_cast<const char*> (buf), reinterpret_cast<const char*> (buf) + bufSize)));
 #endif
 }

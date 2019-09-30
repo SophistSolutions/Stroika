@@ -48,7 +48,7 @@ public:
 protected: // create from serialization only
     LedItDocument ();
     DECLARE_DYNCREATE (LedItDocument)
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 public:
     LedItDocument ();
 #endif
@@ -130,7 +130,7 @@ public:
     WordProcessor::HidableTextDatabasePtr      fHidableTextDatabase;
     MultiLevelUndoCommandHandler               fCommandHandler;
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 public:
     nonvirtual void LoadFromFile (const string& fileName, FileFormat fileFormat);
     nonvirtual void Save ();
@@ -147,7 +147,7 @@ private:
     static bool DoPromptFileName (CString& fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, FileFormat* fileFormat);
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 private:
 public: //tmphack to allow easier change of old code...
     string fPathName;

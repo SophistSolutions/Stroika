@@ -42,7 +42,7 @@
 #include <DDEML.h> // really only needed if qUseSpyglassDDESDIToOpenURLs - but that define only set in LedConfig.h
 #include <oaidl.h> // for SAFEARRAY
 #include <tchar.h>
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #endif
@@ -564,7 +564,7 @@ namespace Stroika::Frameworks::Led {
     using Led_ClipFormat = OSType;
 #elif qPlatform_Windows
     using Led_ClipFormat                 = CLIPFORMAT;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     using Led_ClipFormat                 = long;
 #endif
 #if qPlatform_MacOS
@@ -580,7 +580,7 @@ namespace Stroika::Frameworks::Led {
     //  const Led_ClipFormat    kPICTClipFormat =   CF_METAFILEPICT;
     const Led_ClipFormat kPICTClipFormat = CF_DIB;
     const Led_ClipFormat kFILEClipFormat = CF_HDROP;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     const Led_ClipFormat kTEXTClipFormat = XA_STRING;
     const Led_ClipFormat kFILEClipFormat = 1; // X-TMP-HACK-LGP991213 - not sure what this should be???
 #endif
@@ -610,7 +610,7 @@ namespace Stroika::Frameworks::Led {
     void                                  Led_BeepNotify ();
     Foundation::Time::DurationSecondsType Led_GetDoubleClickTime (); // time-interval which defines how quick we consider two consecutive clicks a dbl-click
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     extern void (*gBeepNotifyCallBackProc) ();
     unsigned long LedTickCount2XTime (float ledTickCount);
     void          SyncronizeLedXTickCount (unsigned long xTickCount);
@@ -1338,7 +1338,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 #elif qPlatform_Windows
         return (!!::IsClipboardFormatAvailable (clipType));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         // Wild guess - no good answer yet - LGP 2003-05-06
         return true;
 #endif

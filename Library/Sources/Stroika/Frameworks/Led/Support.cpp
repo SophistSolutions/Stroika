@@ -22,7 +22,7 @@
 #elif qPlatform_Windows
 #include <fcntl.h>
 #include <io.h>
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -218,14 +218,14 @@ void Led::Led_BeepNotify ()
     ::SysBeep (1);
 #elif qPlatform_Windows
     ::MessageBeep (MB_OK);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     if (gBeepNotifyCallBackProc != nullptr) {
         (gBeepNotifyCallBackProc) ();
     }
 #endif
 }
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 static unsigned long sLastXWindowsEventTime;
 static double        sLastEventReferenceTime;
 static double        Led::GetThisMachineCurTime ()
@@ -239,7 +239,7 @@ static double        Led::GetThisMachineCurTime ()
 }
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 /*
 @METHOD:        gBeepNotifyCallBackProc
 @DESCRIPTION:   <p>X-Windows specific magic. See @'Led_BeepNotify'.</p>
@@ -278,7 +278,7 @@ Time::DurationSecondsType Led::Led_GetDoubleClickTime ()
     return (float (::GetDblTime ()) / 60.0f);
 #elif qPlatform_Windows
     return (float (::GetDoubleClickTime ()) / 1000.0f);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     return 0.25f; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
 #endif
 }
@@ -1715,7 +1715,7 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
                      string ("&Platform=Windows") +
 #elif qPlatform_MacOS
                      string ("&Platform=MacOS") +
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
                      string ("&Platform=XWindows") +
 #endif
                      "&MajorMinorVersion=" + qLed_MajorMinorVersionString +

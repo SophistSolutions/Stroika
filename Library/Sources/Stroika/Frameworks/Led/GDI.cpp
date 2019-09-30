@@ -44,7 +44,7 @@ using namespace Stroika::Frameworks::Led;
  *  Short term debugging crap to debug X-Windows font issues.
  */
 #ifndef qDebugFontDetails
-#define qDebugFontDetails qDebug&& qXWindows
+#define qDebugFontDetails qDebug&& qStroika_FeatureSupported_XWindows
 #endif
 
 // Suggestion from Greg Binkerd [gregb@microsoft.com] about SRX021206603127 - LGP 2003-01-02
@@ -735,7 +735,7 @@ const Pattern Led_Pen::kBlackPattern = {
  ****************************** Led_FontSpecification ***************************
  ********************************************************************************
  */
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 string Led_FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize)
 {
     char hRes[1024];
@@ -808,7 +808,7 @@ void Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
 #elif qPlatform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     fFontFamily = fontName;
 #endif
 }
@@ -827,7 +827,7 @@ void Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpec
 #elif qPlatform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     fFontFamily = fontNameSpecifier;
 #endif
 }
@@ -1217,7 +1217,7 @@ Led_Tablet_::Led_Tablet_ (HDC hdc, Led_Tablet_::OwnDCControl ownsDC)
     , fLogPixelsH (0)
 {
 }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable)
     : fDrawableOrigin (Led_Point (0, 0))
     , fFontCache ()
@@ -1263,7 +1263,7 @@ Led_Tablet_::~Led_Tablet_ ()
     if (m_hDC != nullptr and fOwnsDC == eOwnsDC) {
         ::DeleteDC (Detach ());
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     ::XFreeGC (fDisplay, fGC);
     for (auto i = fFontCache.begin (); i != fFontCache.end (); ++i) {
         ::XFreeFont (fDisplay, i->second);
@@ -1337,7 +1337,7 @@ void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Co
     HWND w = GetWindow ();
     Led_ThrowIfNull (w);
     ::ScrollWindow (w, 0, scrollVBy, &gdiMoveRect, &gdiMoveRect);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     if (scrollVBy != 0) {
         {
             /*
@@ -1471,7 +1471,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
         SIZE we = GetWindowExt ();
         kMaxTextWidthResult = ::MulDiv (kMaxTextWidthResult, we.cx, ve.cx) - 1;
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     const Led_Distance kMaxTextWidthResult = 0x7fff; //X-TMP-HACK-LGP991213
 #endif
     size_t kMaxChars = kMaxTextWidthResult / precomputedFontMetrics.GetMaxCharacterWidth ();
@@ -1593,7 +1593,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 #if qUseUniscribeToImage && qWideCharacters
     Succeeded:
 #endif
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_ThrowIfNull (fCachedFontInfo);
         // Gross hack - sloppy implementation (SLOW). But I'm not sure what in the X SDK allows this to be done faster! -- LGP 2000-09-05
         // Actually - not TOO bad since whole computation is done client-side. Seems to be working OK - at least for now - LGP 2001-05-05
@@ -1844,7 +1844,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
 #endif
 
         (void)SetBkMode (oldBkMode);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Led_Point cursor = Led_Point (outputAt.v + precomputedFontMetrics.GetAscent (), outputAt.h - hScrollOffset) - fDrawableOrigin; // ascent - goto baseline...
         XTextItem item;
         memset (&item, 0, sizeof (item));
@@ -1884,7 +1884,7 @@ void Led_Tablet_::SetBackColor (const Led_Color& backColor)
     GDI_RGBBackColor (backColor.GetOSRep ());
 #elif qPlatform_Windows
     SetBkColor (backColor.GetOSRep ());
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     if (backColor == Led_Color::kWhite) {
         ::XSetBackground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
     }
@@ -1916,7 +1916,7 @@ void Led_Tablet_::SetForeColor (const Led_Color& foreColor)
     GDI_RGBForeColor (foreColor.GetOSRep ());
 #elif qPlatform_Windows
     SetTextColor (foreColor.GetOSRep ());
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     if (foreColor == Led_Color::kWhite) {
         ::XSetForeground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
     }
@@ -1962,7 +1962,7 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
         eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
         eraser.bottom++;
         Rectangle (AsRECT (eraser));
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         XGCValues prevValues;
         const unsigned long kSavedAttrs = GCForeground;
         Colormap cmap = DefaultColormap (fDisplay, 0);
@@ -2032,7 +2032,7 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_
             recolorHelper->DoRecolor (hilightArea);
 #endif
         }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         /*
          *  Quick and dirty primitive version. Should probably take into account backColor/foreColor args.
          *          --  LGP 2001-04-30
@@ -2071,7 +2071,7 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[mayb
         ::InvertRgn (hilightArea.GetOSRep ());
 #elif qPlatform_Windows
         Assert (false); // probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Assert (false); // I have no XWin region implementation yet... LGP 2002-12-03
 #endif
     }
@@ -2092,7 +2092,7 @@ Led_FontMetrics Led_Tablet_::GetFontMetrics () const
     TEXTMETRIC tms;
     Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
     return tms;
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     Led_FontMetrics::PlatformSpecific result;
     memset (&result, 0, sizeof (result));
     Led_ThrowIfNull (fCachedFontInfo);
@@ -2104,7 +2104,7 @@ Led_FontMetrics Led_Tablet_::GetFontMetrics () const
 #endif
 }
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 void Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
 {
     /*
@@ -2213,7 +2213,7 @@ void Led_Tablet_::SetDrawableOrigin (const Led_Point& origin)
 }
 #endif
 
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
 static bool FontNamesEqual (const string& lhs, const string& rhs)
 {
     if (lhs.length () != rhs.length ()) {
@@ -2355,7 +2355,7 @@ OffscreenTablet::OT::OT (HDC hdc, Led_Tablet_::OwnDCControl ownsDC)
     : inherited (hdc, ownsDC)
 {
 }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 OffscreenTablet::OT::OT (Display* display, Drawable drawable)
     : inherited (display, drawable)
 {
@@ -2379,7 +2379,7 @@ OffscreenTablet::OffscreenTablet ()
     , fMemDC ()
     , fMemoryBitmap ()
     , fOldBitmapInDC (nullptr)
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     , fPixmap (0)
 #endif
 {
@@ -2399,7 +2399,7 @@ OffscreenTablet::~OffscreenTablet ()
     if (fOldBitmapInDC != nullptr) {
         (void)fMemDC.SelectObject (fOldBitmapInDC);
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     if (fPixmap != 0) {
         ::XFreePixmap (fOrigTablet->fDisplay, fPixmap);
     }
@@ -2440,7 +2440,7 @@ void OffscreenTablet::Setup (Led_Tablet origTablet)
     if (fMemDC.CreateCompatibleDC (fOrigTablet)) {
         fOffscreenTablet = &fMemDC;
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     Assert (fPixmap == 0);
 // Nothing todo yet - create the pixmap when we know the RowRect.
 #endif
@@ -2529,7 +2529,7 @@ Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Dis
             fMemDC.SetWindowOrg (fOffscreenRect.left, fOffscreenRect.top);
         }
     }
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     Led_Size pixmapSize = fOffscreenRect.GetSize ();
     fOffscreenRect = currentRowRect;
     fOffscreenRect.bottom += extraToAddToBottomOfRect;
@@ -2610,7 +2610,7 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
         Led_Tablet screenDC = fOrigTablet;
         screenDC->BitBlt (fOffscreenRect.left, fOffscreenRect.top, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         Assert (fPixmap != 0);
         ::XCopyArea (fOrigTablet->fDisplay, fOffscreenTablet->fDrawable, fOrigTablet->fDrawable, fOrigTablet->fGC,
                      0, 0,
@@ -2626,7 +2626,7 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
  ********************************************************************************
  */
 Led_InstalledFonts::Led_InstalledFonts (
-#if qXWindows
+#if qStroika_FeatureSupported_XWindows
     Display* display,
 #endif
     FilterOptions filterOptions)
@@ -2642,7 +2642,7 @@ Led_InstalledFonts::Led_InstalledFonts (
     sort (fFontNames.begin (), fFontNames.end ());
     vector<Led_SDK_String>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
     fFontNames.erase (rest, fFontNames.end ()); // remove the duplicates
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     int fontListSize = 0;
     char** fontList = ::XListFonts (display, "*", 200000, &fontListSize);
     set<string> fontNames;
@@ -2725,7 +2725,7 @@ void Led_GDIGlobals::InvalidateGlobals ()
     Led_WindowDC screenDC (nullptr);
     fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
     fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
     /*
      *  Either 75 or 100??? Not sure which is best
      *

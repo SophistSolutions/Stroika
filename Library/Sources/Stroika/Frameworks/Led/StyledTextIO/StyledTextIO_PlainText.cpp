@@ -110,7 +110,7 @@ void StyledTextIOWriter_PlainText::Write ()
     Led_tChar buf[8 * 1024];
     size_t    bytesRead = 0;
     while ((bytesRead = GetSrcStream ().readNTChars (buf, NEltsOf (buf))) != 0) {
-#if qPlatform_MacOS || qXWindows
+#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
         Led_tChar buf2[NEltsOf (buf)];
 #elif qPlatform_Windows
         Led_tChar buf2[2 * NEltsOf (buf)];

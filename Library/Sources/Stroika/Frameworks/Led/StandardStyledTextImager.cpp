@@ -170,7 +170,7 @@ Led_IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInf
         4
 #elif qPlatform_Windows
         1
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
         0 //  X-TMP-HACK-LGP991213    -- Not quite a hack - but revisit when we have REAL X-Font support
 #endif
         ;

@@ -316,7 +316,7 @@
 #if qPlatform_MacOS
 #define kBaseWindowCmd 20600
 #define kLastWindowCmd 20699
-#elif qXWindows
+#elif qStroika_FeatureSupported_XWindows
 enum {
     kNewDocumentCmd,
     kOpenDocumentCmd,
