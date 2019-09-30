@@ -19,6 +19,7 @@ VPATH		=	$(SrcDir) $(StroikaLibDir)
 
 
 SubDirs=	\
+		Led\
 		Modbus\
 		NetworkMonitor\
 		Service\
@@ -87,6 +88,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Frameworks
 endif
+
 
 clobber::
 ifeq (Unix,$(ProjectPlatformSubdir))
