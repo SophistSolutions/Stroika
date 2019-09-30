@@ -13,28 +13,49 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedLineIt/LedLineIt${EXE_SUFFIX}
+TARGETDIR	=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedLineIt/
+TARGETEXE	=	$(TARGETDIR)LedLineIt${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)WebServer.o\
+
+ifeq ($(qFeatureFlag_ATLMFC), use-system)
+Objs+= $(ObjDir)FontMenu${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItApplication${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItDocFrame${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItDocument${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItInPlaceFrame${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItMainFrame${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItServerItem${OBJ_SUFFIX}
+Objs+= $(ObjDir)LedLineItView${OBJ_SUFFIX}
+Objs+= $(ObjDir)Options${OBJ_SUFFIX}
+endif
+
+
+
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+CXXFLAGS += /D_WINDOWS 
+CXXFLAGS += /DWIN32 
+CXXFLAGS += /DSTRICT
+CXXFLAGS += /D_WIN32_WINNT=0x0501 
+endif
 
 
 all:
-ifeq (${USE_MSBUILD},1)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/LedLineIt:"
+	@mkdir -p $(TARGETDIR)
+ifeq (${USE_MSBUILD},1)
 	if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
 		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/LedLineIt.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
 	fi
 else
-	echo NYI build ledlineit makefile
+	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-
 
 
 check:
@@ -47,11 +68,16 @@ ifeq (${USE_MSBUILD},1)
 		$(ECHO) "[SKIPPED]";\
 	fi
 else
-	echo build/cjeck maekefile for ledit NYI
-	@#$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
-	@#$(ECHO) "[SUCCEEDED]";
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 endif
 
+
+# Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
+EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
+endif
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
