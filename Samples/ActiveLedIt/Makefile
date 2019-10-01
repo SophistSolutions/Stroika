@@ -82,43 +82,22 @@ endif
 
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
-$(ObjDir)ActiveLedIt_h.h:	$(ObjDir)ActiveLedIt.tlb
-$(ObjDir)ActiveLedIt_i.c:	$(ObjDir)ActiveLedIt.tlb
+$(ObjDir)ActiveLedIt_h.h $(ObjDir)ActiveLedIt_i.c:	$(ObjDir)ActiveLedIt.tlb
+
+$(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 
-###tmphack - must replace with list of all C includes from configfile
-### MAYBE ADD CPPFLAGS (like CXXFLAGS), and use for includes and defines
-
-CPPFLAGS=
-#CPPFLAGS	+=	/D"NDEBUG"
-CPPFLAGS+=	/I"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.22.27905/ATLMFC/include" /I"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.22.27905/include" /I"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.7.2/include/um" /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/ucrt" /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/shared" /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/um" /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/winrt" /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/cppwinrt"
-
-MIDL_FLAGS_=	${CPPFLAGS}
-MIDL_FLAGS_+=	/nologo
-MIDL_FLAGS_+=	/env win32
-MIDL_FLAGS_+=	/W1
-MIDL_FLAGS_+=	/char signed
-MIDL_FLAGS_+=	/I'$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))' 
-MIDL_FLAGS_+=	/I'$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)' 
-
+MIDL_FLAGS +=	/env win32
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
-	PATH='$(TOOLS_PATH_ADDITIONS):$(PATH)';\
-	INCLUDES='$(WIN_INCLUDES_PATH)'; \
-		midl \
-			/iid '$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(ObjDir)ActiveLedIt_i.c)'\
-			$(MIDL_FLAGS_)\
-			/h '$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(ObjDir)ActiveLedIt_h.h)' \
-			/tlb '$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(ObjDir)ActiveLedIt_h.tlb)' \
-			/target "NT60" \
-			'$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(SrcDir)/Sources/ActiveLedIt.odl)' \
-			> $(ObjDir)MIDL-Build.out 2>&1
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt_h.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c);\
+	fi
+	@$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt_h.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
 
 
 
-$(ObjDir)ActiveLedIt${OBJ_SUFFIX}:	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
-$(ObjDir)LedItView${OBJ_SUFFIX}:	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
