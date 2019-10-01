@@ -418,6 +418,8 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("RC");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("MIDL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_GLIBCXX_DEBUG", $ENABLE_GLIBCXX_DEBUG);
@@ -425,6 +427,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
 
 	print (OUT "\n");
 

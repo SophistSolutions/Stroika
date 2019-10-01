@@ -73,6 +73,9 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 my @packageConfigLinkLines;
 
+my @CPPFLAGS = qw ();
+my @CPPFLAGS2Remove = qw ();
+my $CPPFLAGS_Overridden = false;
 my @CFLAGS = qw ();
 my @CFLAGS2Remove = qw ();
 my $CFLAGS_Overridden = false;
@@ -160,6 +163,8 @@ my $AR = undef;
 my $LIBTOOL = undef; # Windows format LIB tool
 my $RANLIB = undef;
 my $Linker = undef;
+my $MIDL = undef;
+my $RC = undef;
 my $STRIP = undef;
 my $EXTRA_PREFIX_LINKER_ARGS = "";
 my $EXTRA_SUFFIX_LINKER_ARGS = "";
@@ -222,6 +227,9 @@ sub	DoHelp_
 		print("	    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */\n");
 		print("	    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */\n");
 		print("	    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */\n");
+		print("	    --append-CPPFLAGS {ARG}                         /* Appends ARG to CPPFLAGS */\n");
+		print("	    --remove-CPPFLAGS {ARG}                         /* Remove ARG from CPPFLAGS (including default added args; processed after all adds applied) */\n");
+		print("	    --replace-all-CPPFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CPPFLAGS to just these values */\n");
 		print("	    --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */\n");
 		print("	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
 		print("	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
@@ -944,6 +952,11 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		$MIDL = GetMSVCVarName_ ("MIDL");
+		$RC = GetMSVCVarName_ ("RC");
+	}
+
 	#https://stroika.atlassian.net/browse/STK-696
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
@@ -1330,6 +1343,24 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
 		}
+		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CPPFLAGS, $var;
+		}
+		elsif ((lc ($var) eq "-remove-CPPFLAGS") or (lc ($var) eq "--remove-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			push @CPPFLAGS2Remove, $var;
+		}
+		elsif ((lc ($var) eq "-replace-all -CPPFLAGS") or (lc ($var) eq "--replace-all-CPPFLAGS")) {
+			$i++;
+			$var = $args[$i];
+			for my $i (split / /, $var) {
+				push @CPPFLAGS, "$i";
+			}
+			$CPPFLAGS_Overridden = true;
+		}
 		elsif ((lc ($var) eq "-append-CFLAGS") or (lc ($var) eq "--append-cflags")) {
 			$i++;
 			$var = $args[$i];
@@ -1648,14 +1679,14 @@ sub	ParseCommandLine_
 ParseCommandLine_ ();
 
 
-my @GetDefaultCFLAGSorCXXFLAGS_flags;
-my @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
-sub GetDefaultCFLAGSorCXXFLAGS_
+my @GetDefaultCZZFLAGS_flags_flags;
+my @GetDefaultCZZFLAGS_flags_flagValues2Remove;
+sub GetDefaultCZZFLAGS_flags_
 {
 	my @flags  = ();
-	my @flagValues2Remove  = @GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove;
+	my @flagValues2Remove  = @GetDefaultCZZFLAGS_flags_flagValues2Remove;
 	my $doCFLAGS = shift(@_);
-	#print "entering GetDefaultCFLAGSorCXXFLAGS_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
+	#print "entering GetDefaultCZZFLAGS_flags_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
 
 	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
 	if ($isVisualStudio eq 1) {
@@ -1665,16 +1696,13 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		$isVisualStudio = false;
 	}
 
-	if (not $doCFLAGS) {
+	if ($doCFLAGS eq 2) {
 		# C++ only flags
 		if (not ($CPPSTD_VERSION_FLAG eq "")) {
 			push @flags, $CPPSTD_VERSION_FLAG;
 		}
 	}
 
-	if (not ($COPTIMIZE_FLAGS eq "")) {### DEPRECATED
-		push @flags, $COPTIMIZE_FLAGS;
-	}
 	if (defined $INCLUDES_PATH) {
 		for my $i (split /:/, $INCLUDES_PATH) {
 			if ($isVisualStudio) {
@@ -1693,76 +1721,89 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 		}
 	}
 
-	if (defined $SharedSymbolVisibility) {
-		push @flags, "-fvisibility=$SharedSymbolVisibility";
-	}
-	
-	if ($INCLUDE_SYMBOLS_LIB) {
-		if ($isVisualStudio) {
-			####? push @flags, "/Z7";
+	if (not ($doCFLAGS eq 0)) {
+		if (not ($COPTIMIZE_FLAGS eq "")) {### DEPRECATED
+			push @flags, $COPTIMIZE_FLAGS;
 		}
-		else {
-			push @flags, "-g";
+
+		if (defined $SharedSymbolVisibility) {
+			push @flags, "-fvisibility=$SharedSymbolVisibility";
+		}
+		
+		if ($INCLUDE_SYMBOLS_LIB) {
+			if ($isVisualStudio) {
+				####? push @flags, "/Z7";
+			}
+			else {
+				push @flags, "-g";
+			}
+		}
+		if ( $isVisualStudio ) {
+			if ($Windows_Exceptions_SupportStructuredExceptions == true) {
+				push @flags, "/EHa";
+			}
+			else {
+				push @flags, "/EHsc";
+			}
+			push @flags, "/nologo";
+			push @flags, "/GR";			#  Enable Run-Time Type Information
+			push @flags, "/Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
+			push @flags, "/W4";			#  Warning Level (most less than WALL)
+			#push @flags, "/WX-";		#  (Dont) treat warnings as errors
+			#push @flags, "/JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
+			push @flags, "/Zc:inline";	#  Remove unreferenced code and data
+			push @flags, "/FC";			#  Use full paths in diagnostic messages
+			
+	#		push @flags, "/errorReport:prompt";	users can add this if desired
+
+			###push @flags, "/experimental:module";
+			
+			if ($ApplyDebugFlags == true) {
+				push @flags, "/RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
+				push @flags, "/GS";			#	Enable Security Check
+				push @flags, "/Oy-";		#	(Dont) omit frame pointers
+				push @flags, "/Od";			#	Disable Optimization
+				push @flags, "/MTd";		#	Multithreaded (Debug; but not dll)
+			}
+			if ($ApplyReleaseFlags == true) {
+				push @flags, "/GS-";		#	Disable Security Check
+				push @flags, "/Gy";			#	Enable Function Level Linking
+				push @flags, "/Oy";			#	Omit frame pointers
+				push @flags, "/O2";			#	Maximum Optimization (Favor Speed)
+				push @flags, "/GL";			#	Whole Program Optimization
+				push @flags, "/Oi";			#	Enable Intrinsic Functions
+				push @flags, "/GF";			#	Enable String Pooling
+				push @flags, "/MT";			#	Multithreaded (not debug not dll)
+			}
+			##push @flags, "/fp:precise";	#vs2k sample projects define this, but maybe can use default?
+		
+			if ($INCLUDE_SYMBOLS_LIB) {
+				if ($WinFlag_DebugProgramDatabase) {
+					push @flags, "/Zi";		#	Program Database (Debug Information)
+					push @flags, "/FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
+				}
+				else {
+					push @flags, "/Z7";		#	Use intra-obj file debug info format 
+				}
+			}
 		}
 	}
 	if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
 		push @flags, "-D_GLIBCXX_DEBUG";
 	}
 	if ( $isVisualStudio ) {
-		if ($Windows_Exceptions_SupportStructuredExceptions == true) {
-			push @flags, "/EHa";
-		}
-		else {
-			push @flags, "/EHsc";
-		}
-		push @flags, "/nologo";
-		push @flags, "/GR";			#  Enable Run-Time Type Information
-		push @flags, "/Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
-		push @flags, "/W4";			#  Warning Level (most less than WALL)
-		#push @flags, "/WX-";		#  (Dont) treat warnings as errors
-		#push @flags, "/JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
-		push @flags, "/Zc:inline";	#  Remove unreferenced code and data
-		push @flags, "/FC";			#  Use full paths in diagnostic messages
-		
 		push @flags, "/D_UNICODE";
 		push @flags, "/DUNICODE";
 		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
-#		push @flags, "/errorReport:prompt";	users can add this if desired
-
-		###push @flags, "/experimental:module";
 		
 		if ($ApplyDebugFlags == true) {
-			push @flags, "/RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
-			push @flags, "/GS";			#	Enable Security Check
-			push @flags, "/Oy-";		#	(Dont) omit frame pointers
-			push @flags, "/Od";			#	Disable Optimization
 			push @flags, "/D_DEBUG";
-			push @flags, "/MTd";		#	Multithreaded (Debug; but not dll)
 		}
 		if ($ApplyReleaseFlags == true) {
-			push @flags, "/GS-";		#	Disable Security Check
-			push @flags, "/Gy";			#	Enable Function Level Linking
-			push @flags, "/Oy";			#	Omit frame pointers
-			push @flags, "/O2";			#	Maximum Optimization (Favor Speed)
-			push @flags, "/GL";			#	Whole Program Optimization
-			push @flags, "/Oi";			#	Enable Intrinsic Functions
-			push @flags, "/GF";			#	Enable String Pooling
 			push @flags, "/DNDEBUG";
-			push @flags, "/MT";			#	Multithreaded (not debug not dll)
-		}
-		##push @flags, "/fp:precise";	#vs2k sample projects define this, but maybe can use default?
-	
-		if ($INCLUDE_SYMBOLS_LIB) {
-			if ($WinFlag_DebugProgramDatabase) {
-				push @flags, "/Zi";		#	Program Database (Debug Information)
-				push @flags, "/FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
-			}
-			else {
-				push @flags, "/Z7";		#	Use intra-obj file debug info format 
-			}
 		}
 	}
-	if (not $doCFLAGS) {
+	{
 		# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
 		# Doing this way means the defines appear in compiles of third-party-components, but they should not interfere, and if they ever
 		# did we could add a new separate flag to extract/remove/keep them out (e.g STROIKA_CPP_DEFINE_ARGS, and just -filter-out all those from the CXXFLAGS)
@@ -1805,7 +1846,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 
 	}
 
-	for my $r (@GetDefaultCFLAGSorCXXFLAGS_flags) {
+	for my $r (@GetDefaultCZZFLAGS_flags_flags) {
 		my $i = indexOf (@flags, $r);
 		if ($i != -1) {
 			splice (@flags, $i, 1);
@@ -1820,7 +1861,7 @@ sub GetDefaultCFLAGSorCXXFLAGS_
 			splice (@flags, $i, 1);
 		}
 	}
-	#print " GetDefaultCFLAGSorCXXFLAGS_: returning flags=", join("\n", @flags),"\n";
+	#print " GetDefaultCZZFLAGS_flags_: returning flags=", join("\n", @flags),"\n";
 	return @flags;
 }
 
@@ -2055,15 +2096,20 @@ sub PostProcessOptions_ ()
 	#		CFLAGS +=  -D_GLIBCXX_DEBUG 
 	#	endif
 	#
+	if ($CPPFLAGS_Overridden eq false) {
+		@GetDefaultCZZFLAGS_flags_flags = @CPPFLAGS;
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CPPFLAGS2Remove;
+		@CPPFLAGS = GetDefaultCZZFLAGS_flags_ (0);
+	}
 	if ($CFLAGS_Overridden eq false) {
-		@GetDefaultCFLAGSorCXXFLAGS_flags = @CFLAGS;
-		@GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove = @CFLAGS2Remove;
-		@CFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (true);
+		@GetDefaultCZZFLAGS_flags_flags = @CFLAGS;
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CFLAGS2Remove;
+		@CFLAGS = GetDefaultCZZFLAGS_flags_ (1);
 	}
 	if ($CXXFLAGS_Overridden eq false) {
-		@GetDefaultCFLAGSorCXXFLAGS_flags = @CXXFLAGS;
-		@GetDefaultCFLAGSorCXXFLAGS_flagValues2Remove = @CXXFLAGS2Remove;
-		@CXXFLAGS = GetDefaultCFLAGSorCXXFLAGS_ (false);
+		@GetDefaultCZZFLAGS_flags_flags = @CXXFLAGS;
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CXXFLAGS2Remove;
+		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2);
 	}
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && not ($CPPSTD_VERSION_FLAG eq '')) {
@@ -2164,6 +2210,13 @@ sub	WriteConfigFile_
 	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
 	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
 
+	if (defined $MIDL) {
+		print (OUT "    <MIDL>$MIDL</MIDL>\n");
+	}
+	if (defined $RC) {
+		print (OUT "    <RC>$RC</RC>\n");
+	}
+
 	print (OUT "    <ExtraMakeDefines>\n");
 		foreach my $var (@useExtraMakeDefines)
 		{
@@ -2220,6 +2273,20 @@ sub	WriteConfigFile_
 	print (OUT "    </ExtraCDefines>\n");
 
 	my $firstTime = true;
+	print (OUT "    <CPPFLAGS>");
+		foreach my $var (@CPPFLAGS)
+		{
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</CPPFLAGS>\n");
+
+	$firstTime = true;
 	print (OUT "    <CFLAGS>");
 		foreach my $var (@CFLAGS)
 		{

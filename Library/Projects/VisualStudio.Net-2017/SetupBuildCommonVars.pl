@@ -262,6 +262,14 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 
+	{
+		my $sdkPath = %resEnv{'WindowsSdkVerBinPath'};
+		$sdkPath = toCygPath_($sdkPath);
+		my $exeDir = "$sdkPath/x64/";
+		$resEnv{"MIDL"} = exeDir . "midl";
+		$resEnv{"RC"} = exeDir . "rc";
+	}
+
 	my $myOrigFullPath = $ENV{'PATH'};
 	#print "myOrigFullPath=$myOrigFullPath\n";
 	my $newFullPath = $resEnv{"PATH"};

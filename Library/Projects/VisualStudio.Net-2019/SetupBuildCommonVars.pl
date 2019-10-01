@@ -165,6 +165,7 @@ sub GetEnvironmentVariablesForConfiguration_
 		my $envVarValue = @splitLine[1];
 		$result{$envVar} .= $envVarValue;
 	}
+	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"WindowsSdkVerBinPath"} . "\n";
 	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"PATH"} . "\n";
 	return %result;
 }
@@ -262,6 +263,15 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
 		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
+
+	{
+		my $sdkPath = %resEnv{'WindowsSdkVerBinPath'};
+		$sdkPath = toCygPath_($sdkPath);
+		my $exeDir = "$sdkPath/x64/";
+		$resEnv{"MIDL"} = $exeDir . "midl";
+		$resEnv{"RC"} = $exeDir . "rc";
+	}
+
 
 	my $myOrigFullPath = $ENV{'PATH'};
 	#print "myOrigFullPath=$myOrigFullPath\n";

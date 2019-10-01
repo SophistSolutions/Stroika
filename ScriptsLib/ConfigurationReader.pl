@@ -193,6 +193,14 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'AR'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<MIDL>");
+		if (defined $pps) {
+			$configuration {'MIDL'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<RC>");
+		if (defined $pps) {
+			$configuration {'RC'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<LIBTOOL>");
 		if (defined $pps) {
 			$configuration {'LIBTOOL'} = $pps;
@@ -204,6 +212,10 @@ sub	ReadConfigFile_ {
 		my $pps = ReadValue_($line, "<STRIP>");
 		if (defined $pps) {
 			$configuration {'STRIP'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<CPPFLAGS>");
+		if (defined $pps) {
+			$configuration {'CPPFLAGS'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<CFLAGS>");
 		if (defined $pps) {
