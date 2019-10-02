@@ -393,7 +393,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             Led_ClipFormat cf = (suggestedClipFormat == NULL or *suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
             Require (cf == kTEXTClipFormat);
 
-            fBreakWidths = max (fBreakWidths, 1U); // assure a decent value given...
+            fBreakWidths = max<size_t> (fBreakWidths, 1U); // assure a decent value given...
 
             if (fBreakLongLines) {
 #if qWideCharacters

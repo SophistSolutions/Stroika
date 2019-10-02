@@ -815,7 +815,7 @@ void LedLineItView::OnShiftNCommand (bool shiftRight)
             }
             else {
                 size_t                      pmLength     = pm->GetLength ();
-                size_t                      lookAtLength = min (pmLength - 1, kCharsPerTab);
+                size_t                      lookAtLength = min<size_t> (pmLength - 1, kCharsPerTab);
                 SmallStackBuffer<Led_tChar> buf (lookAtLength);
                 CopyOut (pm->GetStart (), lookAtLength, buf);
                 size_t deleteLength = lookAtLength; // default to deleting all if all whitespace..
