@@ -1753,7 +1753,8 @@ sub GetDefaultCZZFLAGS_flags_
 			#push @flags, "/JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
 			push @flags, "/Zc:inline";	#  Remove unreferenced code and data
 			push @flags, "/FC";			#  Use full paths in diagnostic messages
-			
+			push @flags, "/bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
+
 	#		push @flags, "/errorReport:prompt";	users can add this if desired
 
 			###push @flags, "/experimental:module";
@@ -2082,9 +2083,6 @@ sub PostProcessOptions_ ()
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
 		}
 		$EXTRA_PREFIX_LINKER_ARGS .= " /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
-
-		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
-		$EXTRA_SUFFIX_LINKER_ARGS .= " /bigobj";
 	}
 
 
