@@ -20,6 +20,9 @@ VPATH	=			$(SrcDir)/Sources/
 Objs	=	\
 
 
+RC_OUTPUT_=$(ObjDir)LedIt.res
+
+
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 Objs+= $(ObjDir)ColorMenu${OBJ_SUFFIX}
 Objs+= $(ObjDir)FormatToolbar${OBJ_SUFFIX}
@@ -45,7 +48,8 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CXXFLAGS += /D_WINDOWS 
 CXXFLAGS += /DWIN32 
 CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501 
+CXXFLAGS += /D_WIN32_WINNT=0x0501
+Objs += ${RC_OUTPUT_}
 endif
 
 
@@ -80,6 +84,38 @@ else
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 endif
+
+
+
+MIDL_OUTPUT_=$(ObjDir)LedIt.tlb $(ObjDir)LedIt_i.c $(ObjDir)LedIt_h.h
+
+$(ObjDir)LedIt_h.h $(ObjDir)LedIt_i.c:	$(ObjDir)LedIt.tlb
+
+$(Objs):	$(ObjDir)LedIt_i.c $(ObjDir)LedIt_h.h
+
+
+MIDL_FLAGS +=	/env win32
+
+$(ObjDir)LedIt.tlb:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/LedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/LedIt.odl,$(ObjDir)LedIt_h.tlb,$(ObjDir)LedIt_h.h,$(ObjDir)LedIt_i.c)';\
+	fi
+	@$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/LedIt.odl,$(ObjDir)LedIt_h.tlb,$(ObjDir)LedIt_h.h,$(ObjDir)LedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
+
+
+# English US culture
+RC_FLAGS += /l 0x0409
+
+$(ObjDir)LedIt.res:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/LedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)/Sources/LedIt.rc,$(ObjDir)LedIt.res)';\
+	fi
+	@$(call DEFAULT_RC_LINE,$(SrcDir)/Sources/LedIt.rc,$(ObjDir)LedIt.res) > $(ObjDir)RC-Build.out 2>&1
+
+
+
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
