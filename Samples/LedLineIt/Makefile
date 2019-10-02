@@ -19,6 +19,8 @@ TARGETEXE	=	$(TARGETDIR)LedLineIt${EXE_SUFFIX}
 
 VPATH	=			$(SrcDir)/Sources/
 
+RC_OUTPUT_=$(ObjDir)LedLineIt.res
+
 
 Objs	=	\
 
@@ -32,6 +34,7 @@ Objs+= $(ObjDir)LedLineItMainFrame${OBJ_SUFFIX}
 Objs+= $(ObjDir)LedLineItServerItem${OBJ_SUFFIX}
 Objs+= $(ObjDir)LedLineItView${OBJ_SUFFIX}
 Objs+= $(ObjDir)Options${OBJ_SUFFIX}
+Objs += ${RC_OUTPUT_}
 endif
 
 
@@ -71,6 +74,37 @@ else
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 endif
+
+
+MIDL_OUTPUT_=$(ObjDir)LedLineIt.tlb $(ObjDir)LedLineIt_i.c $(ObjDir)LedLineIt_h.h
+
+$(ObjDir)LedLineIt_h.h $(ObjDir)LedLineIt_i.c:	$(ObjDir)LedLineIt.tlb
+
+$(Objs):	$(ObjDir)LedLineIt_i.c $(ObjDir)LedLineIt_h.h
+
+
+MIDL_FLAGS +=	/env win32
+
+$(ObjDir)LedLineIt.tlb:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/LedLineIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/LedLineIt.odl,$(ObjDir)LedLineIt_h.tlb,$(ObjDir)LedLineIt_h.h,$(ObjDir)LedLineIt_i.c)';\
+	fi
+	@$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/LedLineIt.odl,$(ObjDir)LedLineIt_h.tlb,$(ObjDir)LedLineIt_h.h,$(ObjDir)LedLineIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
+
+
+# English US culture
+RC_FLAGS += /l 0x0409
+
+$(ObjDir)LedLineIt.res:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/LedLineIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)/Sources/LedLineIt.rc,$(ObjDir)LedLineIt.res)';\
+	fi
+	@$(call DEFAULT_RC_LINE,$(SrcDir)/Sources/LedLineIt.rc,$(ObjDir)LedLineIt.res) > $(ObjDir)RC-Build.out 2>&1
+
+
+
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
