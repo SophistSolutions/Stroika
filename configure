@@ -2082,6 +2082,9 @@ sub PostProcessOptions_ ()
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
 		}
 		$EXTRA_PREFIX_LINKER_ARGS .= " /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+
+		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
+		$EXTRA_SUFFIX_LINKER_ARGS .= " /bigobj";
 	}
 
 
