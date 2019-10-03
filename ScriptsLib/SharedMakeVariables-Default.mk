@@ -268,8 +268,8 @@ endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 RC_FLAGS=	${CPPFLAGS}
 RC_FLAGS+=	/nologo
-RC_FLAGS+=	/I'$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))' 
-RC_FLAGS+=	/I'$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)' 
+RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"
+RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)"
 
 DEFAULT_RC_LINE=\
 	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
