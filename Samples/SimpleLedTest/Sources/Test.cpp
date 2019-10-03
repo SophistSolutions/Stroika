@@ -83,7 +83,7 @@ BOOL    InitInstance (HINSTANCE, int);
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK About (HWND, UINT, WPARAM, LPARAM);
 
-int APIENTRY WinMain (HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, [[maybe_unused]] LPSTR lpCmdLine, int nCmdShow)
+int APIENTRY wWinMain (HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, [[maybe_unused]] LPTSTR lpCmdLine, int nCmdShow)
 {
 #if CRTDBG_MAP_ALLOC
     _CrtSetDbgFlag (_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
