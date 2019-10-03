@@ -124,7 +124,6 @@ clean::
 	@rm -rf ${ObjDir}/*
 
 
-
 $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$@ ; see $(ObjDir)CAB-Build.OUT"` ... "
 	@rm -rf $(ObjDir)CabBld
@@ -145,6 +144,7 @@ $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 	@echo ActiveLedIt.inf >> $(ObjDir)CabBld/CabBld.ddf
 	@cd $(ObjDir)/CabBld && makecab /F CabBld.ddf > ../CAB-Build.OUT 2>&1
 	@mv $(ObjDir)/CabBld/AAA/ActiveLedIt.cab $@
+
 
 register:	$(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
