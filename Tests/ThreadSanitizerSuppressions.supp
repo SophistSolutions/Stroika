@@ -16,6 +16,8 @@ race:pipe
 #       #4 Stroika::Foundation::Debug::AssertExternallySynchronizedLock::unlock_shared() const ../Characters/../Containers/../Traversal/../Debug/AssertExternallySynchronizedLock.inl:88 (Test38+0x8554a0)
 # not 100% clear this is right thing, but FirstPassSignalHandler_ does indirect call sem_post which could spoil though I wrote code to unspoil iterators
 # may not look that way to tsan -- LGP 2018-02-13
+#
+# NOTE - I see this very rarely, but did see again on Ununtu 1904 - 2019-10-03 regtest. So this suppression doesn't work.
 signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int)
 
 #https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
