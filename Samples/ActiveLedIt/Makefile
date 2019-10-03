@@ -10,8 +10,8 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 SrcDir				=	$(StroikaRoot)Samples/ActiveLedIt/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ActiveLedIt/
 
-TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
-TARGETEXE				=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
+TARGETDIR			=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
+TARGETEXE			=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
 
 
 VPATH	=			$(SrcDir)/Sources/
@@ -83,7 +83,6 @@ EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
 EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
 endif
 
-
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 $(ObjDir)ActiveLedIt_h.h $(ObjDir)ActiveLedIt_i.c:	$(ObjDir)ActiveLedIt.tlb
@@ -113,10 +112,6 @@ $(ObjDir)ActiveLedIt.res:
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res) > $(ObjDir)RC-Build.out 2>&1
 
 
-
-
-
-
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
@@ -127,3 +122,14 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 
 clean::
 	@rm -f ${MIDL_OUTPUT_} $(ObjDir)MIDL-Build.out
+
+
+register:	$(TARGETEXE)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
+	@#NOTE - if you run into errors - this typically needs to be run as administrator (run as administrator shell that invokes this)
+	@#regsvr32 /s /c "$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	@regsvr32 /c "$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(TARGETEXE))"
+
+
+launch-sample:
+	"C:/Program Files/Internet Explorer/iexplore.exe" 'file://$(shell cygpath --absolute --windows Samples/HTML-JavaScript/CommandSupportTester.html)'
