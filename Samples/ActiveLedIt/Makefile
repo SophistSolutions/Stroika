@@ -58,7 +58,7 @@ ifeq (${USE_MSBUILD},1)
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
 	fi
 else
-	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --silent $(TARGETEXE) $(TARGETDIR)ActiveLedIt.cab MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
@@ -121,8 +121,30 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 
 
 clean::
-	@rm -f ${MIDL_OUTPUT_} $(ObjDir)MIDL-Build.out
+	@rm -rf ${ObjDir}/*
 
+
+
+$(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$@ ; see $(ObjDir)CAB-Build.OUT"` ... "
+	@rm -rf $(ObjDir)CabBld
+	@mkdir $(ObjDir)CabBld
+	@rm -f $(ObjDir)CabBld/ActiveLedIt.inf
+	@sed s/FILE_VERSION_STRING/%1,%2,%3,%4/g < ActiveLedItTemplate.inf > $(ObjDir)CabBld/ActiveLedIt.inf
+	@# Make the CAB file (-s leaves room to be signed)
+	@rm -f $(ObjDir)CabBld.ddf
+	@cp $(TARGETEXE) $(ObjDir)CabBld
+	@echo ".OPTION EXPLICIT     ; Generate errors" >> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".Set CabinetNameTemplate=ActiveLedIt.cab"      >> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".set DiskDirectoryTemplate=CDROM ; All cabinets in a single directory">> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".Set CompressionType=MSZIP;** All files are compressed in cabinet files">> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".Set UniqueFiles=\"OFF\"">> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".Set Cabinet=on">> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".Set DiskDirectory1=AAA">> $(ObjDir)CabBld/CabBld.ddf
+	@echo "SophistSolutions.ActiveLedIt.dll" >> $(ObjDir)CabBld/CabBld.ddf
+	@echo ActiveLedIt.inf >> $(ObjDir)CabBld/CabBld.ddf
+	@cd $(ObjDir)/CabBld && makecab /F CabBld.ddf > ../CAB-Build.OUT 2>&1
+	@mv $(ObjDir)/CabBld/AAA/ActiveLedIt.cab $@
 
 register:	$(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "

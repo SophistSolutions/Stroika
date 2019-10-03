@@ -8,6 +8,7 @@
             "command": "make",
             "args": [
                 "CONFIGURATION=${input:CONFIGURATION}",
+                "--directory", "${input:DIRECTORY}",
                 "${input:make-targets}"
             ],
             "group": {
@@ -16,8 +17,11 @@
             },
             "presentation": {
                 "clear": true,
-                "panel": "dedicated",
-            }
+                "panel": "dedicated"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
         }
     ],
     "inputs": [
@@ -32,6 +36,19 @@
                 "Debug-U-64",
                 "Release-U-32",
                 "Release-U-64",
+            ]
+        },
+        {
+            "id": "DIRECTORY",
+            "description": "directory?",
+            "default": ".",
+            "type": "pickString",
+            "options": [
+                "",
+                ".",
+                "libraries",
+                "samples",
+                "tests",
             ]
         },
         {
