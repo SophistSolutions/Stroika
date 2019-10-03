@@ -27,11 +27,15 @@ Objs	=	\
 	$(ObjDir)UserConfigCommands${OBJ_SUFFIX}\
 
 
+RC_OUTPUT_=$(ObjDir)ActiveLedIt.res
+
+
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /D_WINDOWS 
-CXXFLAGS += /DWIN32 
+CXXFLAGS += /D_WINDOWS
+CXXFLAGS += /DWIN32
 CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501 
+CXXFLAGS += /D_WIN32_WINNT=0x0501
+Objs += ${RC_OUTPUT_}
 endif
 
 
@@ -88,13 +92,26 @@ $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 
 MIDL_FLAGS +=	/env win32
+RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(ObjDir))"
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) $(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt_h.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c);\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c)';\
 	fi
-	@$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt_h.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
+	@$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
+
+
+# English US culture
+RC_FLAGS += /l 0x0409
+
+$(ObjDir)ActiveLedIt.res:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res)';\
+	fi
+	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res) > $(ObjDir)RC-Build.out 2>&1
+
 
 
 
