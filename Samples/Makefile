@@ -30,7 +30,6 @@ SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
 SUBPROJECTS+=	Serialization
-# SOMEDAY SOON GET IF BUILT FROM CONFIGURATION FILE!!!
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
