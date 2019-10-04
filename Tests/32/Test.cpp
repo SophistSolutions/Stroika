@@ -623,7 +623,11 @@ namespace {
                 DISABLE_COMPILER_MSC_WARNING_START (4573)
                 static const ReaderFromVoidStarFactory sEltReader_ =
                     [] () -> ReaderFromVoidStarFactory {
+#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
+                    typedef KeyValuePair<TunerNumberType_, TARGET_TYPE> KVPType_;
+#else
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
+#endif
                     return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
                         {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
                         {Name{Name::eValue}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue)},
@@ -821,6 +825,7 @@ namespace {
             return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
         namespace PRIVATE_ {
+
             struct SpectrumReader_ : public ObjectReader::IElementConsumer {
                 SpectrumType_* fValuePtr_;
                 SpectrumReader_ (SpectrumType_* v)
@@ -833,7 +838,11 @@ namespace {
                     DISABLE_COMPILER_MSC_WARNING_START (4573)
                     static const ReaderFromVoidStarFactory sEltReader_ =
                         [] () -> ReaderFromVoidStarFactory {
+#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
+                        typedef SpectrumType_::value_type KVPType_;
+#else
                         using KVPType_ = SpectrumType_::value_type;
+#endif
                         return Registry::MakeClassReader<KVPType_> (
                             initializer_list<StructFieldInfo>{
                                 {Name{L"waveNumber", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
@@ -861,7 +870,12 @@ namespace {
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
                     static const ReaderFromVoidStarFactory sEltReader_ =
                         [] () -> ReaderFromVoidStarFactory {
+#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
+                        typedef KeyValuePair<String, String> KVPType_;
+#else
                         using KVPType_ = KeyValuePair<String, String>;
+#endif
+
                         return Registry::MakeClassReader<KVPType_> (
                             initializer_list<StructFieldInfo>{
                                 {Name{L"Key", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},

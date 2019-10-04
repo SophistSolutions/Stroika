@@ -1155,7 +1155,12 @@ ActiveLedIt_BuiltinCommand* ActiveLedIt_BuiltinCommand::mk (const BuiltinCmdSpec
     CComObject<ActiveLedIt_BuiltinCommand>* o = NULL;
     Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_BuiltinCommand>::CreateInstance (&o));
     try {
-        o->fName          = ACP2WideString (cmdSpec.fCmdName);
+#if qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy
+        wstring tmp = ACP2WideString (cmdSpec.fCmdName);
+        o->fName    = move (tmp);
+#else
+        o->fName = ACP2WideString (cmdSpec.fCmdName);
+#endif
         o->fInternalName  = NormalizeCmdNameToInternal (ACP2WideString (cmdSpec.fInternalCmdName));
         o->fCommandNumber = cmdSpec.fCmdNum;
         return o;
