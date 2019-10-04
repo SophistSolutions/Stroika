@@ -71,13 +71,7 @@ $(StroikaFoundationLib):	$(Objs)
 
 
 
-ifeq ($(USE_MSBUILD),0)
 all:	$(StroikaFoundationLib)
-else
-all:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika-Foundation:"
-	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";
-endif
 
 
 check:
@@ -92,9 +86,6 @@ else
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation
 endif
 
+
 clobber::
-ifeq (${USE_MSBUILD},1)
-	@$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Clean";
-else
 	@rm -f $(StroikaFoundationLib)
-endif

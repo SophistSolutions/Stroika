@@ -27,30 +27,13 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/SystemPerformanceClient:"
 	@mkdir -p $(TARGETDIR)
-ifeq (${USE_MSBUILD},1)
-	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
-		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/SystemPerformanceClient.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";\
-	else\
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
-	fi
-else
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
 
 
 check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SystemPerformanceClient...  "
-ifeq (${USE_MSBUILD},1)
-	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
-		$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE);\
-		$(ECHO) "[SUCCEEDED]";\
-	else\
-		$(ECHO) "[SKIPPED]";\
-	fi
-else
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
-endif
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)

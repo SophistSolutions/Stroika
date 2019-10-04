@@ -33,32 +33,11 @@ ifndef StroikaLibDir
 endif
 
 
-## experimenting/moving towards build without msbuild (just makefile build)
-## This variable will go away shortly - USE_MSBUILD - FYI - dont count on it
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-USE_MSBUILD=0
-#USE_MSBUILD=1
-else
-USE_MSBUILD=0
-endif
-
-
 ifndef StroikaFoundationLib
 	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation$(LIB_SUFFIX)
 endif
 ifndef StroikaFrameworksLib
 	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
-ifeq ($(USE_MSBUILD),1)
-#TMPHACK til I can figure out how to merge .lib files (and script it) - or rename to FrameworksLibs and do similar for UNIX
-	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks-Led$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-Modbus$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-NetworkMonitor$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-Service$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-SystemPerformance$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-UPnP$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-WebServer$(LIB_SUFFIX) \
-									$(StroikaLibDir)Stroika-Frameworks-WebService$(LIB_SUFFIX)
-endif
 endif
 
 

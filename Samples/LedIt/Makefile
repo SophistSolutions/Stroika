@@ -19,10 +19,6 @@ VPATH	=			$(SrcDir)/Sources/
 
 Objs	=	\
 
-
-RC_OUTPUT_=$(ObjDir)LedIt.res
-
-
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 Objs+= $(ObjDir)ColorMenu${OBJ_SUFFIX}
 Objs+= $(ObjDir)FormatToolbar${OBJ_SUFFIX}
@@ -49,7 +45,7 @@ CXXFLAGS += /D_WINDOWS
 CXXFLAGS += /DWIN32 
 CXXFLAGS += /DSTRICT
 CXXFLAGS += /D_WIN32_WINNT=0x0501
-Objs += ${RC_OUTPUT_}
+Objs += $(ObjDir)LedIt.res
 endif
 
 
@@ -59,31 +55,13 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/LedIt:"
 	@mkdir -p $(TARGETDIR)
-ifeq (${USE_MSBUILD},1)
-	if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
-		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/LedIt.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine $(CONFIGURATION)` /target:Build";\
-	else\
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
-	fi
-else
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-
 
 
 check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/LedIt...                    "
-ifeq (${USE_MSBUILD},1)
-	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
-		$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE);\
-		$(ECHO) "[SUCCEEDED]";\
-	else\
-		$(ECHO) "[SKIPPED]";\
-	fi
-else
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
-endif
 
 
 

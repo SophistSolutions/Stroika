@@ -54,10 +54,13 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">SophistSolutions.ActiveLedIt</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">SophistSolutions.ActiveLedIt</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
+    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <CustomBuildStep>
       <Message>(DISABLED) Registering ActiveX Control... (old outputs were $(OutDir)regsvr32.trg;%(Outputs))</Message>
-      <Command>REM regsvr32 /s /c "$(TargetPath)"
+      <Command>regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
       <Outputs>
