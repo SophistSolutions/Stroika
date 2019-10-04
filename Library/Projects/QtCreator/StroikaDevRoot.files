@@ -1563,7 +1563,6 @@ ScriptsLib/GenerateConfiguration.pl
 ScriptsLib/GetConfigurations.sh
 ScriptsLib/GetDefaultShellVariable.sh
 ScriptsLib/GetMessageForMissingTool.sh
-ScriptsLib/GetVisualStudioConfigLine.pl
 ScriptsLib/HasCompiler.sh
 ScriptsLib/MakeBuildRoot.sh
 ScriptsLib/MakeDirectorySymbolicLink.sh

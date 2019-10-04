@@ -15,7 +15,6 @@ GetConfigurations text eol=lf
 GetConfigurationTags text eol=lf
 GetDefaultShellVariable text eol=lf
 GetMessageForMissingTool text eol=lf
-GetVisualStudioConfigLine text eol=lf
 HasCompiler text eol=lf
 MakeDirectorySymbolicLink text eol=lf
 MakeBuildRoot text eol=lf
