@@ -58,7 +58,6 @@
 
 #define qLed_FullVersion Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
 
-
 // #if qPlatform_MacOS + qPlatform_Windows + qStroika_FeatureSupported_XWindows > 1
 // #error "Only one of these should be defined"
 // #endif
