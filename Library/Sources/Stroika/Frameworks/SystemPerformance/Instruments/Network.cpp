@@ -545,16 +545,15 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
         mapper.AddCommonType<Set<Interface::Status>> ();
         mapper.AddCommonType<optional<Set<Interface::Status>>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        using Interface = InterfaceInfo::Interface;
-        mapper.AddClass<Interface> (initializer_list<StructFieldInfo>{
-            {L"Interface-Internal-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fInternalInterfaceID)},
-            {L"Friendly-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fFriendlyName)},
-            {L"Description", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fDescription), StructFieldInfo::eOmitNullFields},
-            {L"Interface-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fType), StructFieldInfo::eOmitNullFields},
-            {L"Hardware-Address", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fHardwareAddress), StructFieldInfo::eOmitNullFields},
-            {L"Interface-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fStatus), StructFieldInfo::eOmitNullFields},
-            {L"Transmit-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fTransmitSpeedBaud), StructFieldInfo::eOmitNullFields},
-            {L"Receive-Link-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fReceiveLinkSpeedBaud), StructFieldInfo::eOmitNullFields},
+        mapper.AddClass<InterfaceInfo::Interface> (initializer_list<StructFieldInfo>{
+            {L"Interface-Internal-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fInternalInterfaceID)},
+            {L"Friendly-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fFriendlyName)},
+            {L"Description", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fDescription), StructFieldInfo::eOmitNullFields},
+            {L"Interface-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fType), StructFieldInfo::eOmitNullFields},
+            {L"Hardware-Address", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fHardwareAddress), StructFieldInfo::eOmitNullFields},
+            {L"Interface-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fStatus), StructFieldInfo::eOmitNullFields},
+            {L"Transmit-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fTransmitSpeedBaud), StructFieldInfo::eOmitNullFields},
+            {L"Receive-Link-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fReceiveLinkSpeedBaud), StructFieldInfo::eOmitNullFields},
             // TODO ADD:
             //Containers::Set<InternetAddress>            fBindings;
         });
