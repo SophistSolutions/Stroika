@@ -266,8 +266,8 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		my $sdkPath = %resEnv{'WindowsSdkVerBinPath'};
 		$sdkPath = toCygPath_($sdkPath);
 		my $exeDir = "$sdkPath/x64/";
-		$resEnv{"MIDL"} = exeDir . "midl";
-		$resEnv{"RC"} = exeDir . "rc";
+		$resEnv{"MIDL"} = $exeDir . "midl";
+		$resEnv{"RC"} = $exeDir . "rc";
 	}
 
 	my $myOrigFullPath = $ENV{'PATH'};
