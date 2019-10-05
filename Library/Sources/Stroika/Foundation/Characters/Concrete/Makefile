@@ -28,13 +28,6 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 all:	$(Objs) $(SubDirs)
 
 
-list-objs::
-	@for sd in $(SubDirs);\
-	 do\
-		$(MAKE) --directory $$sd -s list-objs;\
-	 done
-
-
 .PHONY:	$(SubDirs)
 $(SubDirs):
 	@$(MAKE) --directory $@ -s
