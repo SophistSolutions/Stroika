@@ -142,7 +142,7 @@ namespace {
 */
 void Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ()
 {
-    DISABLE_COMPILER_MSC_WARNING_START (4535)   // disable warning cuz MSVC appears to offer no way to check if this function is available, and harmless to register if not available
+    DISABLE_COMPILER_MSC_WARNING_START (4535) // disable warning cuz MSVC appears to offer no way to check if this function is available, and harmless to register if not available
     _set_se_translator (trans_func_);
     DISABLE_COMPILER_MSC_WARNING_END (4535)
 }
