@@ -1229,7 +1229,7 @@ void LedItDocument::Serialize (CArchive& ar)
                 Assert (false); // don't support writing that format (yet?)!
             } break;
         }
-        ar.Write ((char*)sink.PeekAtData (), sink.GetLength ());
+        ar.Write ((char*)sink.PeekAtData (), static_cast<UINT> (sink.GetLength ()));
     }
     else {
         // NOTE - AS OF CHANGE FOR SPR#1552- this code for READING docs is probably not called

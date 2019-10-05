@@ -334,7 +334,7 @@ inline const void* LoadAppResource (long resID, LPCTSTR resType)
 static BOOL AFXAPI SetRegKey (LPCTSTR lpszKey, LPCTSTR lpszValue, LPCTSTR lpszValueName = NULL)
 {
     if (lpszValueName == NULL) {
-        if (::RegSetValue (HKEY_CLASSES_ROOT, lpszKey, REG_SZ, lpszValue, ::_tcslen (lpszValue)) != ERROR_SUCCESS) {
+        if (::RegSetValue (HKEY_CLASSES_ROOT, lpszKey, REG_SZ, lpszValue, static_cast<DWORD> (::_tcslen (lpszValue))) != ERROR_SUCCESS) {
             TRACE1 ("Warning: registration database update failed for key '%s'.\n", lpszKey);
             return FALSE;
         }
@@ -343,7 +343,7 @@ static BOOL AFXAPI SetRegKey (LPCTSTR lpszKey, LPCTSTR lpszValue, LPCTSTR lpszVa
     else {
         HKEY hKey;
         if (::RegCreateKey (HKEY_CLASSES_ROOT, lpszKey, &hKey) == ERROR_SUCCESS) {
-            LONG lResult = ::RegSetValueEx (hKey, lpszValueName, 0, REG_SZ, (CONST BYTE*)lpszValue, ::_tcslen (lpszValue) + sizeof (TCHAR));
+            LONG lResult = ::RegSetValueEx (hKey, lpszValueName, 0, REG_SZ, (CONST BYTE*)lpszValue, static_cast<DWORD> (::_tcslen (lpszValue) + sizeof (TCHAR)));
             if (::RegCloseKey (hKey) == ERROR_SUCCESS && lResult == ERROR_SUCCESS) {
                 return TRUE;
             }

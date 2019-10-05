@@ -112,7 +112,7 @@ namespace {
     void DoEnableDisableChecksEtcsOnMenu (CComPtr<IDispatch> al, HMENU menu)
     {
         UINT itemCount = ::GetMenuItemCount (menu);
-        for (size_t i = 0; i < itemCount; i++) {
+        for (UINT i = 0; i < itemCount; i++) {
             UINT itemID = ::GetMenuItemID (menu, i);
             if (itemID == -1) {
                 // see if a popup menu - and recurse

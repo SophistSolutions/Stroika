@@ -139,7 +139,7 @@ const CDockState& Options::GetDocBarState () const
         BLOB bytes = sOptions_.Get ().fDockBarState;
         if (not bytes.empty ()) {
             CMemFile file;
-            file.Write (&*bytes.begin (), bytes.size ());
+            file.Write (&*bytes.begin (), static_cast<UINT> (bytes.size ()));
             file.SeekToBegin ();
             CArchive ar (&file, CArchive::load);
             dockState.Serialize (ar);

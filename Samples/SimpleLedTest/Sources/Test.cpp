@@ -111,7 +111,7 @@ int APIENTRY wWinMain (HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInst
         }
     }
 
-    return msg.wParam;
+    return static_cast<int> (msg.wParam);
 }
 
 //
