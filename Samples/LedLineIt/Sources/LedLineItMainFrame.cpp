@@ -216,12 +216,10 @@ void LedLineItMainFrame::OnUpdateLineIndicator (CCmdUI* pCmdUI)
             Characters::CString::Copy (buf, NEltsOf (buf), _T ("N/A"));
         }
         else {
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            (void)::_stprintf (buf, _T ("%d"), v->GetCurUserLine ());
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            Characters::CString::Copy (buf, NEltsOf (buf), Characters::Format (L"%d", static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
         }
-        pCmdUI->SetText (buf);
     }
+    pCmdUI->SetText (buf);
     pCmdUI->Enable ();
 
     // dynamicly size the indicator

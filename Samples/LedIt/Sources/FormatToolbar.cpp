@@ -531,7 +531,7 @@ void SizeComboBox::InsertSize (int nSize)
         int   nIndex = -1;
         int   nPos   = 0;
         DWORD dw;
-        while ((dw = GetItemData (nPos)) != CB_ERR) {
+        while ((dw = static_cast<DWORD> (GetItemData (nPos))) != CB_ERR) {
             if (dw > dwSize) {
                 nIndex = nPos;
                 break;

@@ -23,8 +23,10 @@ ColorMenu::ColorMenu ()
 {
     VERIFY (CreatePopupMenu ());
     ASSERT (GetMenuItemCount () == 0);
-    for (int i = 0; i <= 15; i++) {
-        VERIFY (AppendMenu (MF_OWNERDRAW, kBaseFontColorCmd + i, (LPCTSTR) (kBaseFontColorCmd + i)));
+    for (UINT i = 0; i <= 15; i++) {
+        DISABLE_COMPILER_MSC_WARNING_START (4312)
+        VERIFY (AppendMenu (MF_OWNERDRAW, kBaseFontColorCmd + i, reinterpret_cast<LPCTSTR> (kBaseFontColorCmd + i)));
+        DISABLE_COMPILER_MSC_WARNING_END (4312)
     }
     // ADD:
     //          MenuItem    SEPARATOR

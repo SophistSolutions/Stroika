@@ -441,7 +441,7 @@ STDMETHODIMP AL_CommandListHelper::IndexOf (VARIANT internalNameOrObject, UINT* 
         return E_INVALIDARG;
     }
     try {
-        *val = DoFindIndex<CMD_NAME_GRABBER> (&fOwnedItems, internalNameOrObject);
+        *val = static_cast<UINT> (DoFindIndex<CMD_NAME_GRABBER> (&fOwnedItems, internalNameOrObject));
         return S_OK;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
@@ -481,7 +481,7 @@ STDMETHODIMP AL_CommandListHelper::get_Count (long* pVal)
         return E_INVALIDARG;
     }
     try {
-        *pVal = fOwnedItems.size ();
+        *pVal = static_cast<long> (fOwnedItems.size ());
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
     return S_OK;
@@ -753,7 +753,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::get_Count (long* pVal)
         return E_INVALIDARG;
     }
     try {
-        *pVal = fAccelerators.size ();
+        *pVal = static_cast<long> (fAccelerators.size ());
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
     return S_OK;
@@ -834,7 +834,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 // See if its in the builtin command list
                 long bicc = 0;
                 builtins->get_Count (&bicc);
-                for (size_t ii = 0; ii < static_cast<size_t> (bicc); ++ii) {
+                for (long ii = 0; ii < bicc; ++ii) {
                     CComPtr<IDispatch> e;
                     Led_ThrowIfErrorHRESULT (builtins->get_Item (ii, &e));
                     CComQIPtr<IALCommand> alc = e;
@@ -866,7 +866,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 accels[goodKeysFound].cmd = static_cast<WORD> (cmdNum);
                 goodKeysFound++;
             }
-            *pVal = ::CreateAcceleratorTable (accels, goodKeysFound);
+            *pVal = ::CreateAcceleratorTable (accels, static_cast<int> (goodKeysFound));
         }
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
@@ -1206,8 +1206,8 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
     {
         const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
         Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
-        for (size_t i = 0; i < fontNames.size (); i++) {
-            int cmdNum = kBaseFontNameCmd + i;
+        for (UINT i = 0; i < fontNames.size (); i++) {
+            UINT cmdNum = kBaseFontNameCmd + i;
             if (cmdNum > kLastFontNameCmd) {
                 break; // asserted out before above - now just ignore extra font names...
             }
@@ -1238,8 +1238,8 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
         if (lookForCmdName.length () > kFontNameCMDPrefix.length () and lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == ACP2WideString (kFontNameCMDPrefix)) {
             const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
-            for (size_t i = 0; i < fontNames.size (); i++) {
-                int cmdNum = kBaseFontNameCmd + i;
+            for (UINT i = 0; i < fontNames.size (); i++) {
+                UINT cmdNum = kBaseFontNameCmd + i;
                 if (cmdNum > kLastFontNameCmd) {
                     break; // asserted out before above - now just ignore extra font names...
                 }

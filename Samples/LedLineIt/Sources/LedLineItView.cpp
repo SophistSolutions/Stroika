@@ -217,7 +217,7 @@ public:
     virtual BOOL OnInitDialog () override
     {
         BOOL result = CDialog::OnInitDialog ();
-        SetDlgItemInt (kGotoLine_Dialog_LineNumberEditFieldID, fOrigLine);
+        SetDlgItemInt (kGotoLine_Dialog_LineNumberEditFieldID, static_cast<UINT> (fOrigLine));
         return (result);
     }
     virtual void OnOK () override

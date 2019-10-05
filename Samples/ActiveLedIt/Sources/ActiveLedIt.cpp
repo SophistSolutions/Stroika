@@ -53,7 +53,7 @@ static HRESULT CreateComponentCategory (CATID catid, WCHAR* catDescription)
 
     // Make sure the provided description is not too long.
     // Only copy the first 127 characters if it is.
-    int len = wcslen (catDescription);
+    size_t len = wcslen (catDescription);
     if (len > 127)
         len = 127;
     Characters::CString::Copy (catinfo.szDescription, len, catDescription);

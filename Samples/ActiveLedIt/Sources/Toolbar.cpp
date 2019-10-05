@@ -876,7 +876,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
             HGDIOBJ oldFont = ::SelectObject (hdc, ::GetStockObject (DEFAULT_GUI_FONT));
             try {
                 Led_Distance maxItemWidth = 0;
-                for (size_t i = 0; i < static_cast<size_t> (cmdCount); ++i) {
+                for (long i = 0; i < cmdCount; ++i) {
                     CComPtr<IDispatch> e;
                     Led_ThrowIfErrorHRESULT (cmdList->get_Item (i, &e));
                     CComQIPtr<IALCommand> alc = e;
@@ -887,7 +887,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
                     Verify (fComboBox.SendMessage (CB_ADDSTRING, 0, reinterpret_cast<LPARAM> (itemPrintName.c_str ())) != CB_ERR);
                     SIZE sz;
                     memset (&sz, 0, sizeof (sz));
-                    ::GetTextExtentPoint32 (hdc, itemPrintName.c_str (), itemPrintName.length (), &sz);
+                    ::GetTextExtentPoint32 (hdc, itemPrintName.c_str (), static_cast<int> (itemPrintName.length ()), &sz);
                     maxItemWidth = max (maxItemWidth, static_cast<Led_Distance> (sz.cx));
                 }
                 ::SelectObject (hdc, oldFont);
@@ -1196,7 +1196,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_Count (long* pVal)
         if (pVal == NULL) {
             return E_INVALIDARG;
         }
-        *pVal = fToolbarItems.size ();
+        *pVal = static_cast<long> (fToolbarItems.size ());
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
     return S_OK;
@@ -1230,7 +1230,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::MergeAdd (IDispatch* newElts, UINT afterElt)
         CComQIPtr<IALToolbar> alt       = newElts;
         long                  nElts2Add = 0;
         Led_ThrowIfErrorHRESULT (alt->get_Count (&nElts2Add));
-        for (size_t i = 0; i < static_cast<size_t> (nElts2Add); ++i) {
+        for (long i = 0; i < nElts2Add; ++i) {
             CComPtr<IDispatch> e;
             Led_ThrowIfErrorHRESULT (alt->get_Item (i, &e));
             fToolbarItems.insert (fToolbarItems.begin () + idx, e);
@@ -1329,7 +1329,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredWidth (UINT* pVal)
         }
 
         // Use total preferred width of all buttons, plus room for bottom line, plus room for edges of toolbar itself
-        *pVal = totalPrefWidth + 2 * kHTBEdge + kHSluff * (fToolbarItems.size ()) + 2 * ::GetSystemMetrics (SM_CYEDGE);
+        *pVal = static_cast<UINT> (totalPrefWidth + 2 * kHTBEdge + kHSluff * (fToolbarItems.size ()) + 2 * ::GetSystemMetrics (SM_CYEDGE));
 
         return S_OK;
     }
@@ -1469,7 +1469,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_Count (UINT* pVal)
         return E_INVALIDARG;
     }
     try {
-        *pVal = fToolbars.size ();
+        *pVal = static_cast<UINT> (fToolbars.size ());
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
     return S_OK;

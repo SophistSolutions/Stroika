@@ -94,7 +94,7 @@ bool COMBased_SpellCheckEngine::ScanForUndefinedWord (const Led_tChar* startBuf,
         size_t textBufLen = endBuf - startBuf;
         size_t cursorIdx  = *cursor == NULL ? 0 : (*cursor - startBuf);
 
-        BSTR        bstrVal = ::SysAllocStringLen (startBuf, textBufLen);
+        BSTR        bstrVal = ::SysAllocStringLen (startBuf, static_cast<UINT> (textBufLen));
         CComVariant textToScan (bstrVal);
         ::SysFreeString (bstrVal);
         CComVariant result;
@@ -907,7 +907,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
                 Led_StackBasedHandleLocker hdl (hglobal);
                 void*                      pvBlob = hdl.GetPointer ();
                 AssertNotNull (pvBlob);
-                *(long*)pvBlob = len;
+                *(size_t*)pvBlob = len;
                 ::memcpy (reinterpret_cast<char*> (pvBlob) + sizeof (size_t), s.c_str (), len);
             }
             try {
@@ -1088,7 +1088,7 @@ void ActiveLedItControl::WriteBytesToFile (LPCTSTR filename, const void* buffer,
         if (fd < 0) {
             AfxThrowFileException (CFileException::fileNotFound, -1, filename);
         }
-        int nBytes = ::_write (fd, buffer, size);
+        int nBytes = ::_write (fd, buffer, static_cast<unsigned int> (size));
         if (nBytes != static_cast<int> (size)) {
             AfxThrowFileException (CFileException::genericException, -1, filename);
         }
@@ -1263,7 +1263,7 @@ void ActiveLedItControl::ScrollToSelection ()
 
 long ActiveLedItControl::OLE_GetMaxUndoLevel ()
 {
-    return fCommandHandler.GetMaxUnDoLevels ();
+    return static_cast<long> (fCommandHandler.GetMaxUnDoLevels ());
 }
 
 void ActiveLedItControl::OLE_SetMaxUndoLevel (long maxUndoLevel)
@@ -1354,7 +1354,7 @@ long ActiveLedItControl::OLE_Find (long searchFrom, const VARIANT& findText, BOO
 
     size_t whereTo = fTextStore.Find (parameters, searchFrom);
 
-    return whereTo;
+    return static_cast<long> (whereTo);
 }
 
 void ActiveLedItControl::OLE_LaunchReplaceDialog ()
@@ -1413,7 +1413,7 @@ long ActiveLedItControl::OLE_GetHeight (long from, long to)
         from = 0;
     }
     if (to < 0) {
-        to = fTextStore.GetEnd ();
+        to = static_cast<long> (fTextStore.GetEnd ());
     }
     if (from > to) {
         // throw invalid input
@@ -1426,9 +1426,9 @@ long ActiveLedItControl::OLE_GetHeight (long from, long to)
     RowReference startingRow = fEditor.GetRowReferenceContainingPosition (from);
     RowReference endingRow   = fEditor.GetRowReferenceContainingPosition (to);
     /*
-         *  Always take one more row than they asked for, since they will expect if you start and end on a given row - you'll get
-         *  the height of that row.
-         */
+     *  Always take one more row than they asked for, since they will expect if you start and end on a given row - you'll get
+     *  the height of that row.
+     */
     return fEditor.GetHeightOfRows (startingRow, fEditor.CountRowDifference (startingRow, endingRow) + 1);
 }
 
@@ -2190,7 +2190,7 @@ inline void PackBytesIntoVariantSAFEARRAY (const void* bytes, size_t nBytes, VAR
     // doesnt call SafeArrayDelete...
     SAFEARRAYBOUND rgsaBounds[1];
     rgsaBounds[0].lLbound   = 0;
-    rgsaBounds[0].cElements = nBytes;
+    rgsaBounds[0].cElements = static_cast<ULONG> (nBytes);
     SAFEARRAY* ar           = ::SafeArrayCreate (VT_I1, 1, rgsaBounds);
     Led_ThrowIfNull (ar);
     Led_ThrowIfErrorHRESULT (::SafeArrayAllocData (ar));
@@ -2303,7 +2303,7 @@ VARIANT ActiveLedItControl::GetBufferTextAsDIB ()
 
 long ActiveLedItControl::GetBufferLength ()
 {
-    return fEditor.GetLength ();
+    return static_cast<long> (fEditor.GetLength ());
 }
 
 long ActiveLedItControl::GetMaxLength ()
@@ -2997,9 +2997,9 @@ HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
                     size_t accelTableSize = static_cast<size_t> (::CopyAcceleratorTable (fWin32AccelTable, NULL, 0));
                     if (accelTableSize == static_cast<size_t> (::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0))) {
                         Memory::SmallStackBuffer<ACCEL> oldOne (accelTableSize);
-                        Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, accelTableSize) == static_cast<int> (accelTableSize));
+                        Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
                         Memory::SmallStackBuffer<ACCEL> newOne (accelTableSize);
-                        Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, accelTableSize) == static_cast<int> (accelTableSize));
+                        Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
                         if (::memcmp (oldOne, newOne, accelTableSize * sizeof (ACCEL)) == 0) {
                             keepOld = true;
                         }
@@ -3549,7 +3549,7 @@ VARIANT ActiveLedItControl::OLE_GetCurrentEventArguments ()
 
 long ActiveLedItControl::GetSelStart ()
 {
-    return fEditor.GetSelectionStart ();
+    return static_cast<long> (fEditor.GetSelectionStart ());
 }
 
 void ActiveLedItControl::SetSelStart (long start)
@@ -3569,7 +3569,7 @@ long ActiveLedItControl::GetSelLength ()
     size_t s;
     size_t e;
     fEditor.GetSelection (&s, &e);
-    return e - s;
+    return static_cast<long> (e - s);
 }
 
 void ActiveLedItControl::SetSelLength (long length)

@@ -898,8 +898,8 @@ void LedItView::SetSelection (size_t start, size_t end)
 void LedItView::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
     if (GetMaxLength () != -1) {
-        long textAdded = long (updateInfo.fTextLength) - (updateInfo.fReplaceTo - updateInfo.fReplaceFrom);
-        if (textAdded + long (GetLength ()) > GetMaxLength ()) {
+        long textAdded = static_cast<long> (updateInfo.fTextLength) - static_cast<long> (updateInfo.fReplaceTo - updateInfo.fReplaceFrom);
+        if (textAdded + static_cast<long> (GetLength ()) > GetMaxLength ()) {
             throw "";
         }
     }
@@ -979,7 +979,7 @@ long LedItView::OLE_FindReplace (long searchFrom, const Led_tString& findText, c
             InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), replaceText.c_str (), replaceText.length ());
         }
         undoContext.CommandComplete ();
-        return whereTo + replaceText.length ();
+        return static_cast<long> (whereTo + replaceText.length ());
     }
 
     return -1;

@@ -86,7 +86,7 @@ public:
         for (vector<CodePage>::const_iterator i = fCodePages.begin (); i != fCodePages.end (); ++i) {
             fCodePageComboBox.AddString (MapCodePageToPrettyName (*i).c_str ());
             if (*i == fCodePage) {
-                fCodePageComboBox.SetCurSel (i - fCodePages.begin ());
+                fCodePageComboBox.SetCurSel (static_cast<int> (i - fCodePages.begin ()));
             }
         }
         return (true);
@@ -130,7 +130,7 @@ namespace {
             BOOL result = CDialog::OnInitDialog ();
             Led_CenterWindowInParent (m_hWnd);
             SetDlgItemText (kLineTooLongOnRead_Dialog_MessageFieldID, fMessage.c_str ());
-            SetDlgItemInt (kLineTooLongOnRead_Dialog_BreakNumFieldID, fBreakCount);
+            SetDlgItemInt (kLineTooLongOnRead_Dialog_BreakNumFieldID, static_cast<UINT> (fBreakCount));
             return (result);
         }
         virtual void OnOK () override
@@ -512,7 +512,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
             char* buffp = static_cast<char*> (buf2);
             size_t nBytesToWrite = charsToWrite;
 #endif
-            ar.Write (buffp, nBytesToWrite);
+            ar.Write (buffp, static_cast<UINT> (nBytesToWrite));
         }
     }
     else {
@@ -539,14 +539,14 @@ void LedLineItDocument::Serialize (CArchive& ar)
         size_t                      outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<char*> (buf), nLen + 1);
         SmallStackBuffer<Led_tChar> result (outCharCnt);
         cpc.MapToUNICODE (static_cast<char*> (buf), nLen, static_cast<wchar_t*> (result), &outCharCnt);
-        nLen             = outCharCnt;
+        nLen             = static_cast<DWORD> (outCharCnt);
         result[nLen]     = '\0'; // assure NUL-Term
         Led_tChar* buffp = static_cast<Led_tChar*> (result);
 #else
         Led_tChar* buffp = static_cast<char*> (buf);
 #endif
 
-        nLen = Characters::NormalizeTextToNL<Led_tChar> (buffp, nLen, buffp, nLen);
+        nLen = static_cast<DWORD> (Characters::NormalizeTextToNL<Led_tChar> (buffp, nLen, buffp, nLen));
         fTextStore.Replace (0, 0, buffp, nLen);
 
         fCodePage = useCodePage; // whatever codepage I just used to read the doc should be the new codepage...

@@ -2189,8 +2189,8 @@ void LedItApplication::FixupFontMenu (CMenu* fontMenu)
         ;
     }
 
-    for (size_t i = 0; i < fontNames.size (); i++) {
-        int cmdNum = kBaseFontNameCmd + i;
+    for (UINT i = 0; i < fontNames.size (); i++) {
+        UINT cmdNum = kBaseFontNameCmd + i;
         fontMenu->AppendMenu (MF_STRING, cmdNum, fontNames[i].c_str ());
     }
 }
