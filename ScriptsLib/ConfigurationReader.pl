@@ -89,6 +89,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'TOOLS_PATH_ADDITIONS'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<TOOLS_PATH_ADDITIONS_BUGWORKAROUND>");
+		if (defined $pps) {
+			$configuration {'TOOLS_PATH_ADDITIONS_BUGWORKAROUND'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<ARCH>");
 		if (defined $pps) {
 			$configuration {'ARCH'} = $pps;

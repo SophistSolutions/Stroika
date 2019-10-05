@@ -415,6 +415,7 @@ sub WriteStroikaConfigMakeHeader
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS_BUGWORKAROUND");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");

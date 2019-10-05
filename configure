@@ -179,6 +179,9 @@ my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
+my $TOOLS_PATH_ADDITIONS_BUGWORKAROUND = "";			# space separated list
+
+
 
 # More standard to have false, true is the value used in VS2k project files (through 2.1a2)
 # for a while in Stroika based apps /EHa versus /EHsc - https://docs.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=vs-2019
@@ -346,6 +349,20 @@ sub     IsMSVCCompiler_
 	}
 	return false
 }
+
+sub     Get_MSVC_CL_Version_
+{
+	my $x = trim(shift(@_));
+	my $firstLine = trim (`('$x' 2>&1) | head -1`);
+	if (not defined($firstLine)) {
+		return 0;
+	}
+	no warnings 'numeric';
+	my $ver = trim(`echo "$firstLine" | awk '{print \$7}' | sed 's/\\.//g'`);
+	$ver = $ver * 1;
+	return $ver;
+}
+
 
 
 
@@ -540,6 +557,13 @@ sub     FillInToolsPathAdditionsIfNeeded_
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
 			$TOOLS_PATH_ADDITIONS = trim ($x);
+			my $v = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) ;
+			if (IsMSVCCompiler_ () && 191627034 <= $v  && $v <= 191800000 ) {
+				#$x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
+				## only need the one, but this is easiest way to get the right path
+				$TOOLS_PATH_ADDITIONS_BUGWORKAROUND = '/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64';
+				$TOOLS_PATH_ADDITIONS_BUGWORKAROUND = $TOOLS_PATH_ADDITIONS;
+			}
 		}
 		else {
 			$TOOLS_PATH_ADDITIONS = "";
@@ -2332,6 +2356,10 @@ sub	WriteConfigFile_
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
 
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
+	if (not ($TOOLS_PATH_ADDITIONS_BUGWORKAROUND eq "")) {
+		print (OUT "    <TOOLS_PATH_ADDITIONS_BUGWORKAROUND>$TOOLS_PATH_ADDITIONS_BUGWORKAROUND</TOOLS_PATH_ADDITIONS_BUGWORKAROUND>\n");
+	}
+	
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
 	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
