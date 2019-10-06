@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_Platform_Windows_h_
 #define _Stroika_Frameworks_Led_Platform_Windows_h_ 1
 
-#include "../../../Foundation/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 #include "../../../Foundation/Debug/CompileTimeFlagChecker.h"
 
@@ -751,8 +751,8 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_Helper<BASE_INTERACTOR>::OnIMEChar_Msg (WPARAM wParam, LPARAM lParam)
     {
         /*
-            *  Win32 SDK docs don't say what value to return for WM_IME_CHAR - so return 0 for now - LGP20000111
-            */
+         *  Win32 SDK docs don't say what value to return for WM_IME_CHAR - so return 0 for now - LGP20000111
+         */
         UINT nChar = wParam;
         if (nChar == VK_ESCAPE) {
             // Ignore when user types ESC key - that is what Windows NotePad and MS Word seem todo...
@@ -1700,10 +1700,10 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 
         /*
-            *  Note that we only allocate the memory once, and don't free it, only constructing the
-            *  windows object on the fly so as to avoid memory fragmentation resulting from the
-            *  editor (for LEC's memory concerns - LGP 950524).
-            */
+         *  Note that we only allocate the memory once, and don't free it, only constructing the
+         *  windows object on the fly so as to avoid memory fragmentation resulting from the
+         *  editor (for LEC's memory concerns - LGP 950524).
+         */
         if (fAcquireCount == 0) {
             Assert (fAllocatedTablet.m_hDC == NULL);
             Assert (fAllocatedTablet.m_hAttribDC == NULL);
@@ -1747,9 +1747,9 @@ namespace Stroika::Frameworks::Led::Platform {
         Draw (subsetToDraw, printing);
 
         /*
-            *  The user specified a DefaultWindowMargin - lies outside of our WindowRect, and so
-            *  won't get drawn by the normal Led draw mechanism. Make sure it gets erased here.
-            */
+         *  The user specified a DefaultWindowMargin - lies outside of our WindowRect, and so
+         *  won't get drawn by the normal Led draw mechanism. Make sure it gets erased here.
+         */
         Led_Rect       wr = GetWindowRect ();
         Led_TWIPS_Rect wm = GetDefaultWindowMargins ();
         if (wm.GetTop () != 0 or wm.GetLeft () != 0 or wm.GetBottom () != 0 or wm.GetRight () != 0) {

@@ -12,7 +12,7 @@
 
  */
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <limits.h> // for UINT_MAX
 #include <string.h>

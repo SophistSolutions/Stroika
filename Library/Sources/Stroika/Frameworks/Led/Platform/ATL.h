@@ -12,7 +12,7 @@
     ATL, and this is a temporary repository for those utilities.</p>
  */
 
-#include "../../../Foundation/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform ATL code requires the ATLMFC feature to be set true");
 

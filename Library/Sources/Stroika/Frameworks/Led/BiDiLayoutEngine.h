@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_BiDiLayoutEngine_h_
 #define _Stroika_Frameworks_Led_BiDiLayoutEngine_h_ 1
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <memory>
 
@@ -260,55 +260,13 @@ namespace Stroika::Frameworks::Led {
         Foundation::Memory::SmallStackBuffer<Led_tChar> fRealText;
     };
 
-    /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-
-    //  class   TextLayoutBlock;
-    inline const Led_tChar* TextLayoutBlock::PeekAtRealText () const
-    {
-        const Led_tChar* s = nullptr;
-        const Led_tChar* e = nullptr;
-        PeekAtRealText_ (&s, &e);
-        return s;
-    }
-    inline const Led_tChar* TextLayoutBlock::PeekAtVirtualText () const
-    {
-        const Led_tChar* s = nullptr;
-        const Led_tChar* e = nullptr;
-        PeekAtVirtualText_ (&s, &e);
-        return s;
-    }
-    inline size_t TextLayoutBlock::GetTextLength () const
-    {
-        const Led_tChar* s = nullptr;
-        const Led_tChar* e = nullptr;
-        PeekAtVirtualText_ (&s, &e);
-        return e - s;
-    }
-    inline void TextLayoutBlock::Invariant () const
-    {
-#if qDebug
-        Invariant_ ();
-#endif
-    }
-
-    // class    TextLayoutBlock::ScriptRunElt
-    inline bool TextLayoutBlock::ScriptRunElt::operator== (const ScriptRunElt& rhs) const
-    {
-        return (fDirection == rhs.fDirection and
-                fRealStart == rhs.fRealStart and
-                fRealEnd == rhs.fRealEnd and
-                fVirtualStart == rhs.fVirtualStart and
-                fVirtualEnd == rhs.fVirtualEnd);
-    }
-    inline bool TextLayoutBlock::ScriptRunElt::operator!= (const ScriptRunElt& rhs) const
-    {
-        return not(*this == rhs);
-    }
-
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "BiDiLayoutEngine.inl"
 
 #endif /*_Stroika_Frameworks_Led_BiDiLayoutEngine_h_*/

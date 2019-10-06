@@ -4,6 +4,8 @@
 #ifndef _Stroika_Frameworks_Led_Support_h_
 #define _Stroika_Frameworks_Led_Support_h_ 1
 
+#include "../StroikaPreComp.h"
+
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/CompileTimeFlagChecker.h"
@@ -1201,17 +1203,17 @@ namespace Stroika::Frameworks::Led {
         return (fromHere - 1); // address arithmatic does the magic for wide characters
 #elif qMultiByteCharacters
         /*
-            *  If the previous byte is a lead-byte, then the real character boundsary
-            *  is really TWO back.
-            *
-            *  Proof by contradiction:
-            *      Assume prev character is back one byte. Then the chracter it is part of
-            *  contains the first byte of the character we started with. This obviously
-            *  cannot happen. QED.
-            *
-            *      This is actually a worth-while test since lots of second bytes look quite
-            *  a lot like lead-bytes - so this happens a lot.
-            */
+         *  If the previous byte is a lead-byte, then the real character boundsary
+         *  is really TWO back.
+         *
+         *  Proof by contradiction:
+         *      Assume prev character is back one byte. Then the chracter it is part of
+         *  contains the first byte of the character we started with. This obviously
+         *  cannot happen. QED.
+         *
+         *      This is actually a worth-while test since lots of second bytes look quite
+         *  a lot like lead-bytes - so this happens a lot.
+         */
         if (Led_IsLeadByte (*(fromHere - 1))) {
             Assert (fromHere - startOfString >= 2); // else split character...
             return (fromHere - 2);

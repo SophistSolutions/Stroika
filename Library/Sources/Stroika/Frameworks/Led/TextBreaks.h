@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_TextBreaks_h_
 #define _Stroika_Frameworks_Led_TextBreaks_h_ 1
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 /*
 @MODULE:    TextBreaks
@@ -204,10 +204,10 @@ namespace Stroika::Frameworks::Led {
     using TextBreaks_DefaultImpl = TextBreaks_Basic_WP;
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
 
 }
 

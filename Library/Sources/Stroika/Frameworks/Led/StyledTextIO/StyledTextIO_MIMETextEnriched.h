@@ -8,6 +8,7 @@
 @MODULE:    StyledTextIO_MIMETextEnriched
 @DESCRIPTION:
  */
+#include "../../StroikaPreComp.h"
 
 #include "StyledTextIO.h"
 

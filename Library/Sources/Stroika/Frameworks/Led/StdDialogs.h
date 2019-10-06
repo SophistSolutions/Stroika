@@ -13,7 +13,7 @@
     </p>
  */
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include "Config.h"
 

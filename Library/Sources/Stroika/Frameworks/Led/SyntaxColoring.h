@@ -24,6 +24,8 @@
     </p>
  */
 
+#include "../StroikaPreComp.h"
+
 #include "StyledTextImager.h"
 #include "Support.h"
 #include "TextInteractor.h"
@@ -228,10 +230,10 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
     //  class   SyntaxColoringMarkerOwner::ColoredStyleMarker
     inline SyntaxColoringMarkerOwner::ColoredStyleMarker::ColoredStyleMarker (const Led_Color& color)
         : inherited ()

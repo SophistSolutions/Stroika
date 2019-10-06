@@ -4,6 +4,8 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_STYLText_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_STYLText_h_ 1
 
+#include "../../StroikaPreComp.h"
+
 /*
 @MODULE:    StyledTextIO_STYLText
 @DESCRIPTION:

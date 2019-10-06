@@ -164,9 +164,9 @@ namespace Stroika::Frameworks::Led {
         , fNeedExtraUpdateCheck_UpdateInfo (0, 0, nullptr, 0, false, false)
     {
         /*
-            *  Add ourselves to the TextStore (for callbacks), and add one marker to span
-            *  the entire buffer length (plus one so catches anything at the end).
-            */
+         *  Add ourselves to the TextStore (for callbacks), and add one marker to span
+         *  the entire buffer length (plus one so catches anything at the end).
+         */
         fTextStore.AddMarkerOwner (this);
         fTextStore.AddMarker (new MARKER (defaultInfo), 0, fTextStore.GetEnd () + 1, this);
     }
@@ -205,13 +205,13 @@ namespace Stroika::Frameworks::Led {
     inline typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllInRange (size_t from, size_t to) const
     {
         /*
-            *  Walk through all the markers in existence (in this range), and throw away all
-            *  but our standard style markers.
-            *  This is an inefficient approach. It would be far
-            *  faster to keep a linked, or doubly linked list of all these guys.
-            *  But this approach saves a bit of memory, and til we see this as a problem, lets just
-            *  live with it.
-            */
+         *  Walk through all the markers in existence (in this range), and throw away all
+         *  but our standard style markers.
+         *  This is an inefficient approach. It would be far
+         *  faster to keep a linked, or doubly linked list of all these guys.
+         *  But this approach saves a bit of memory, and til we see this as a problem, lets just
+         *  live with it.
+         */
         MarkersOfATypeMarkerSink2Vector<MARKER> result;
         fTextStore.CollectAllMarkersInRangeInto (from, to, this, result);
         return result.fResult;
@@ -220,13 +220,13 @@ namespace Stroika::Frameworks::Led {
     inline typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllInRange_OrSurroundings (size_t from, size_t to) const
     {
         /*
-            *  Walk through all the markers in existence (in this range), and throw away all
-            *  but our standard style markers.
-            *  This is an inefficeint approach. It would be far
-            *  faster to keep a linked, or doubly linked list of all these guys.
-            *  But this approach saves a bit of memory, and til we see this as a problem, lets just
-            *  live with it.
-            */
+         *  Walk through all the markers in existence (in this range), and throw away all
+         *  but our standard style markers.
+         *  This is an inefficeint approach. It would be far
+         *  faster to keep a linked, or doubly linked list of all these guys.
+         *  But this approach saves a bit of memory, and til we see this as a problem, lets just
+         *  live with it.
+         */
         MarkersOfATypeMarkerSink2Vector<MARKER> result;
         fTextStore.CollectAllMarkersInRangeInto_OrSurroundings (from, to, this, result);
         return result.fResult;
@@ -235,8 +235,8 @@ namespace Stroika::Frameworks::Led {
     inline typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllNonEmptyInRange (size_t from, size_t to) const
     {
         /*
-            *  See CollectAllInRange - but with extra test to eliminate zero-len markers...
-            */
+         *  See CollectAllInRange - but with extra test to eliminate zero-len markers...
+         */
         NonEmptyOnes result;
         fTextStore.CollectAllMarkersInRangeInto (from, to, this, result);
         return result.fResult;
@@ -245,8 +245,8 @@ namespace Stroika::Frameworks::Led {
     inline typename MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::MarkerVector MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CollectAllNonEmptyInRange_OrSurroundings (size_t from, size_t to) const
     {
         /*
-            *  See CollectAllInRange - but with extra test to eliminate zero-len markers...
-            */
+         *  See CollectAllInRange - but with extra test to eliminate zero-len markers...
+         */
         NonEmptyOnes result;
         fTextStore.CollectAllMarkersInRangeInto_OrSurroundings (from, to, this, result);
         return result.fResult;
@@ -384,14 +384,14 @@ namespace Stroika::Frameworks::Led {
         size_t totalEnd   = 0;
         {
             /*
-                *  We must compute the entire range of the affected area. This is very nearly trivial - except for the ConstrainSetInfoArgs ()
-                *  effect. If the ConstrainSetInfoArgs () call expands the nCharsFollowing count past the end of what would have been the sum
-                *  of the '(*i).second' values - then we must use the larger value - so that we do an AboutToUpdate/DidUpdate on the entire
-                *  affected area.
-                *
-                *  If the ConstrainSetInfoArgs () turn out to be expensive - then we could probably optimize this so that we only called
-                *  the ConstrainSetInfoArgs () on the last few markers in the list.
-                */
+             *  We must compute the entire range of the affected area. This is very nearly trivial - except for the ConstrainSetInfoArgs ()
+             *  effect. If the ConstrainSetInfoArgs () call expands the nCharsFollowing count past the end of what would have been the sum
+             *  of the '(*i).second' values - then we must use the larger value - so that we do an AboutToUpdate/DidUpdate on the entire
+             *  affected area.
+             *
+             *  If the ConstrainSetInfoArgs () turn out to be expensive - then we could probably optimize this so that we only called
+             *  the ConstrainSetInfoArgs () on the last few markers in the list.
+             */
             totalStart    = charAfterPos;
             size_t curPos = charAfterPos;
             for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
@@ -429,8 +429,8 @@ namespace Stroika::Frameworks::Led {
                     }
 
                     /*
-                    *   Assure region we are updating is contained within the 'total' update region.
-                    */
+                     *   Assure region we are updating is contained within the 'total' update region.
+                     */
                     Assert (totalStart <= from);
                     Assert (from <= to);
                     Assert (to <= totalEnd);
@@ -536,8 +536,8 @@ namespace Stroika::Frameworks::Led {
                 changedAnythingHERE = true;
 
                 /*
-                    *  First apply the actual change, splitting any markers as needed along the way.
-                    */
+                 *  First apply the actual change, splitting any markers as needed along the way.
+                 */
                 if (m->GetStart () < from) {
                     // WE MUST SPLIT
                     MARKERINFO origFSP   = m->GetInfo ();
@@ -585,20 +585,20 @@ namespace Stroika::Frameworks::Led {
             }
 
             /*
-                *  Now for each marker - as a result of this merged in style - may now be
-                *  EQUAL to its predecesor marker, or its following marker.
-                *
-                *  Since all our markers are now ordered (sorted above), checking the
-                *  predecessor is easy (except for the first maker). And we can avoid
-                *  the redundancy of checking the following markers (not to mention
-                *  possible futility since they are about to change) by simply arranging to
-                *  check the very LAST marker, and see if it can be merged with the
-                *  one following it.
-                *
-                *  Note: we do this OUTSIDE the test for (fsp != m->GetInfo ())
-                *  cuz even if they were the same, we could have had PREVIOUS differences,
-                *  and so needed to merge together all those blocks.
-                */
+             *  Now for each marker - as a result of this merged in style - may now be
+             *  EQUAL to its predecesor marker, or its following marker.
+             *
+             *  Since all our markers are now ordered (sorted above), checking the
+             *  predecessor is easy (except for the first maker). And we can avoid
+             *  the redundancy of checking the following markers (not to mention
+             *  possible futility since they are about to change) by simply arranging to
+             *  check the very LAST marker, and see if it can be merged with the
+             *  one following it.
+             *
+             *  Note: we do this OUTSIDE the test for (fsp != m->GetInfo ())
+             *  cuz even if they were the same, we could have had PREVIOUS differences,
+             *  and so needed to merge together all those blocks.
+             */
             if (changedAnythingHERE and prevNonEmptyMarker != nullptr and prevNonEmptyMarker != m) {
                 AssertMember (prevNonEmptyMarker, MARKER);
                 if (prevNonEmptyMarker->GetInfo () == m->GetInfo ()) {
@@ -751,10 +751,10 @@ namespace Stroika::Frameworks::Led {
     void MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CheckForMerges (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
     {
         /*
-            *  Argument markers must be pre-sorted.
-            *
-            *  Walk the list - and if any adjacent pairs are identical, merge one out.
-            */
+         *  Argument markers must be pre-sorted.
+         *
+         *  Walk the list - and if any adjacent pairs are identical, merge one out.
+         */
         if (rangeAndSurroundingsMarkers.size () >= 2) {
             typename MarkerVector::const_iterator i          = rangeAndSurroundingsMarkers.begin ();
             typename MarkerVector::const_iterator end        = rangeAndSurroundingsMarkers.end ();

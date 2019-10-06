@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_WordWrappedTextImager_h_
 #define _Stroika_Frameworks_Led_WordWrappedTextImager_h_ 1
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 /*
 @MODULE:    WordWrappedTextImager

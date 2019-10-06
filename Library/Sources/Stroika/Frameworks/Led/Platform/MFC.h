@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_Platform_MFC_h_
 #define _Stroika_Frameworks_Led_Platform_MFC_h_ 1
 
-#include "../../../Foundation/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 /*
 @MODULE:    Led_MFC
@@ -267,7 +267,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS = Led_MFC_Helper<>>
     class Led_MFC_MimicMFCAPIHelper : public BASECLASS {
     protected:
-        Led_MFC_MimicMFCAPIHelper ();
+        Led_MFC_MimicMFCAPIHelper () = default;
 
     public:
         nonvirtual BOOL Create (DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);

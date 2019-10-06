@@ -18,6 +18,8 @@
 #error "if you ARE in fact using one of the supported class libraries."
 #endif
 
+#include "../StroikaPreComp.h"
+
 #include "ChunkedArrayTextStore.h"
 #include "Command.h"
 #include "SimpleTextInteractor.h"

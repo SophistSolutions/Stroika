@@ -404,10 +404,6 @@ namespace Stroika::Frameworks::Led::Platform {
 
     //  class   Led_MFC_MimicMFCAPIHelper<BASECLASS>
     template <typename BASECLASS>
-    inline Led_MFC_MimicMFCAPIHelper<BASECLASS>::Led_MFC_MimicMFCAPIHelper ()
-    {
-    }
-    template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Create (DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
     {
         return (BASECLASS::Create (NULL, NULL, dwStyle, rect, pParentWnd, nID));
@@ -753,9 +749,9 @@ namespace Stroika::Frameworks::Led::Platform {
         }
         if (not fDropTarget.Register (this)) {
             /*
-                *  This can happen if the document associated with the view is not a COleDocument, for
-                *  example. Shouldn't prevent Led view from being used. D&D just won't work...
-                */
+             *  This can happen if the document associated with the view is not a COleDocument, for
+             *  example. Shouldn't prevent Led view from being used. D&D just won't work...
+             */
             TRACE (_T ("Warning: failed to register window as drop target\n"));
             return 0; // treat this as OK - but warn above...
         }
@@ -765,14 +761,14 @@ namespace Stroika::Frameworks::Led::Platform {
     bool Led_MFC_DragAndDropWindow<BASECLASS>::IsADragSelect (Led_Point clickedWhere) const
     {
         /*
-            *  This seems to be what most people do. But I think this algorithm should
-            *  be embellished, so we detect that the mouse is down for a while (a half second?)
-            *  and then melt the drag into a regular selection. Also, pay attention to keys
-            *  pressed etc as a hint of intent. But immediately return yes if we are moving
-            *  what we've selected.
-            *
-            *  For now though, just do it the simple way...
-            */
+         *  This seems to be what most people do. But I think this algorithm should
+         *  be embellished, so we detect that the mouse is down for a while (a half second?)
+         *  and then melt the drag into a regular selection. Also, pay attention to keys
+         *  pressed etc as a hint of intent. But immediately return yes if we are moving
+         *  what we've selected.
+         *
+         *  For now though, just do it the simple way...
+         */
         Led_Region r;
         GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
         return !!r.PtInRegion (AsCPoint (clickedWhere));
@@ -790,9 +786,9 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 
         /*
-            *  Be sure to reset these so on a double click after what looked like a single
-            *  click we don't grab the old anchor (see spr#0438).
-            */
+         *  Be sure to reset these so on a double click after what looked like a single
+         *  click we don't grab the old anchor (see spr#0438).
+         */
         fMouseTrackingLastPoint = AsLedPoint (oPoint);
         fDragAnchor             = GetCharAtClickLocation (fMouseTrackingLastPoint);
 
@@ -1487,11 +1483,11 @@ namespace Stroika::Frameworks::Led::Platform {
         ASSERT_VALID (pDC);
 
         /*
-            *  Since we currently use the same textimager for printing as for display, we will screw
-            *  up all our cached info for line breaks etc if we display while we are printing.
-            *  If it is desired to make this work then we must use a NEW imager (as with LedIt! PowerPlant)
-            *  to print to.
-            */
+         *  Since we currently use the same textimager for printing as for display, we will screw
+         *  up all our cached info for line breaks etc if we display while we are printing.
+         *  If it is desired to make this work then we must use a NEW imager (as with LedIt! PowerPlant)
+         *  to print to.
+         */
         if (fPrintInfo != NULL) {
             return;
         }

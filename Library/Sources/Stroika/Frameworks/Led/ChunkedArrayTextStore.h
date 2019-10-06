@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_Led_ChunkedArrayTextStore_h_
 #define _Stroika_Framework_Led_ChunkedArrayTextStore_h_ 1
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 /*
 @MODULE:    ChunkedArrayTextStore

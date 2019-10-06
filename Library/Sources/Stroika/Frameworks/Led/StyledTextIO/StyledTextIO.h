@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_StyledTextIO_h_
 #define _Stroika_Frameworks_Led_StyledTextIO_h_ 1
 
-#include "../../../Foundation/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 /*
 @MODULE:    StyledTextIO
@@ -59,7 +59,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         */
         class SrcStream {
         public:
-            virtual ~SrcStream () {}
+            virtual ~SrcStream () = default;
 
         public:
             /*

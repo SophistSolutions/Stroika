@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_
 #define _Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_ 1
 
-#include "../../../Foundation/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 /*
 @MODULE:    Led_MFC_WordProcessor

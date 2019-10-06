@@ -33,6 +33,8 @@
     @'StyledTextIOWriter_HTML'.</p>
  */
 
+#include "../../StroikaPreComp.h"
+
 #include "StyledTextIO.h"
 
 namespace Stroika::Frameworks::Led::StyledTextIO {

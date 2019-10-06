@@ -4,7 +4,7 @@
 #ifndef _Stroika_Framework_Led_Config_h_
 #define _Stroika_Framework_Led_Config_h_ 1
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include "../../Foundation/Configuration/StroikaVersion.h"
 #include "../../Foundation/Configuration/VersionDefs.h"

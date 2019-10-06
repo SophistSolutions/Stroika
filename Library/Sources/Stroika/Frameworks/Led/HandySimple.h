@@ -4,6 +4,8 @@
 #ifndef ____Led_HandySimple_h__
 #define ____Led_HandySimple_h__ 1
 
+#include "../StroikaPreComp.h"
+
 /*
 @MODULE:    LedHandySimple
 @DESCRIPTION:

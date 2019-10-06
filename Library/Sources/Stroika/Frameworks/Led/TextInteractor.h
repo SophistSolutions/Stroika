@@ -4,7 +4,7 @@
 #ifndef _Stroika_Frameworks_Led_TextInteractor_h_
 #define _Stroika_Frameworks_Led_TextInteractor_h_ 1
 
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include "../../Foundation/Time/Realtime.h"
 
