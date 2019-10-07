@@ -24,6 +24,7 @@
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
 
 #pragma warning(push)
+#pragma warning(disable : 4459)
 #pragma warning(disable : 5054)
 #include <afxole.h>
 #pragma warning(pop)
@@ -39,8 +40,8 @@ static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC
 namespace Stroika::Frameworks::Led::Platform {
 
 /*
-        **************** Windows Specific configuration variables **************
-        */
+ **************** Windows Specific configuration variables **************
+ */
 
 /*
     @CONFIGVAR:     qLedAssertsDefaultToMFCAsserts
@@ -776,11 +777,11 @@ namespace Stroika::Frameworks::Led::Platform {
     LED_MFC_HANDLE_COMMAND_RANGE (MFC_CommandNumberMapping::Get ().ReverseLookup (A), MFC_CommandNumberMapping::Get ().ReverseLookup (B))
 }
 
-#endif /*_Stroika_Frameworks_Led_Platform_MFC_h_*/
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
 #include "MFC.inl"
+
+#endif /*_Stroika_Frameworks_Led_Platform_MFC_h_*/

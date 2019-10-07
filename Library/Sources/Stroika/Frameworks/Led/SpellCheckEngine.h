@@ -25,10 +25,10 @@ namespace Stroika::Frameworks::Led {
     */
     class SpellCheckEngine {
     protected:
-        SpellCheckEngine ();
+        SpellCheckEngine () = nullptr;
 
     public:
-        virtual ~SpellCheckEngine ();
+        virtual ~SpellCheckEngine () = default;
 
     public:
         /*
@@ -135,10 +135,10 @@ namespace Stroika::Frameworks::Led {
     */
     class SpellCheckEngine::UDInterface {
     protected:
-        UDInterface ();
+        UDInterface () = default;
 
     public:
-        virtual ~UDInterface ();
+        virtual ~UDInterface () = default;
 
     public:
         /*
@@ -164,9 +164,6 @@ namespace Stroika::Frameworks::Led {
         */
 
     // class SpellCheckEngine
-    inline SpellCheckEngine::SpellCheckEngine ()
-    {
-    }
     /*
     @METHOD:        SpellCheckEngine::LookupWord
     @DESCRIPTION:   <p>Lookup the given word and see if its found in the system (dictionaries). Return true
@@ -189,13 +186,18 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-    // class SpellCheckEngine::UDInterface
-    inline SpellCheckEngine::UDInterface::UDInterface ()
-    {
-    }
-    inline SpellCheckEngine::UDInterface::~UDInterface ()
-    {
-    }
+
+#if qDebug
+/*
+@METHOD:        SpellCheckEngine::Invariant_
+@DESCRIPTION:   <p>Default implementaiton for calls to @'SpellCheckEngine::Invariant'. Overridden in subclasses
+        to check validity of SpellCheck engine.</p>
+*/
+void SpellCheckEngine::Invariant_ () const
+{
+}
+#endif
+
 
 }
 

@@ -208,34 +208,13 @@ namespace Stroika::Frameworks::Led {
         vector<PackageRecord> fPackages;
     };
 
-    /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-    //  class   FlavorPackageExternalizer
-    inline FlavorPackageExternalizer::FlavorPackageExternalizer (TextStore& ts)
-        : inherited ()
-        , fTextStore (ts)
-    {
-    }
-
-    //  class   FlavorPackageInternalizer
-    inline FlavorPackageInternalizer::FlavorPackageInternalizer (TextStore& ts)
-        : inherited ()
-        , fTextStore (ts)
-    {
-    }
-
-    //  class   ReaderFlavorPackage
-    inline bool ReaderFlavorPackage::GetFlavorAvailable_TEXT () const
-    {
-        if (GetFlavorAvailable (kTEXTClipFormat)) {
-            return true;
-        }
-        return false;
-    }
-
 }
 
-#endif /*_Stroika_Frameworks_Led_FlavorPackage_h_*/
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "FlavorPackage.inl"
+
+#endif /*_Stroika_Frameworks_Led_FlavorPackage_inl_*/

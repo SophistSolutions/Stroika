@@ -37,10 +37,6 @@ bool Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
  ******************************** CommandHandler ********************************
  ********************************************************************************
  */
-CommandHandler::CommandHandler ()
-{
-}
-
 bool CommandHandler::PostUpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
 {
     IdleManager::NonIdleContext nonIdleContext;

@@ -15,7 +15,7 @@ endif
 vpath %cpp $(SrcDir)
 
 SubDirs	=	\
-	Platform	\
+	Platform		\
 	StyledTextIO	\
 
 
@@ -39,7 +39,6 @@ Objs+=	$(ObjDir)SimpleLed${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SimpleTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SimpleTextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SimpleTextStore${OBJ_SUFFIX}
-Objs+=	$(ObjDir)SpellCheckEngine${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SpellCheckEngine_Basic${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StandardStyledTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StandardStyledTextInteractor${OBJ_SUFFIX}
@@ -60,9 +59,6 @@ endif
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
-
-
-
 
 
 

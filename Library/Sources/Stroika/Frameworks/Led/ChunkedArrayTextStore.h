@@ -29,21 +29,21 @@ namespace Stroika::Frameworks::Led {
         This just keeps track of the given variables. To see them - you must peek in the debugger at the ChunkedArrayTextStore's
         instance variables.</p>
             <p>Turn ON iff @'qDebug' - by default.</p>
-        */
+*/
 #ifndef qKeepChunkedArrayStatistics
 #define qKeepChunkedArrayStatistics qDebug
 #endif
 
 /*
-        *  Reduce the amount of memory needed per Marker*, by limiting the number of Led_tChars
-        *  in the buffer to 16Megs, and the number of different MarkerOwner*'s associated with
-        *  a particular text-store to 256. Doing this can save (??? roughly) 8 bytes per
-        *  Marker. (OH, and also can do similar trick with next/prev/parent poiinters. They
-        *  all occur multiple times. Use table (array) in textstore obj, and store indexes
-        *  into it here? maybe too slow on adding/removing markers? - oh well)
-        *
-        *  WARNING - NOT YET IMPLEMENTED - THIS IS STILL IGNORED, BUT TOTALLY LOCAL TO CHUNKEDDARRAYTEXTSTORE.CPP.
-        */
+ *  Reduce the amount of memory needed per Marker*, by limiting the number of Led_tChars
+ *  in the buffer to 16Megs, and the number of different MarkerOwner*'s associated with
+ *  a particular text-store to 256. Doing this can save (??? roughly) 8 bytes per
+ *  Marker. (OH, and also can do similar trick with next/prev/parent poiinters. They
+ *  all occur multiple times. Use table (array) in textstore obj, and store indexes
+ *  into it here? maybe too slow on adding/removing markers? - oh well)
+ *
+ *  WARNING - NOT YET IMPLEMENTED - THIS IS STILL IGNORED, BUT TOTALLY LOCAL TO CHUNKEDDARRAYTEXTSTORE.CPP.
+ */
 #ifndef qSkrunchDataSizeByImposingLimits
 #define qSkrunchDataSizeByImposingLimits 1
 #endif
@@ -190,37 +190,13 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    /*
-     ********************************************************************************
-     ********************** ChunkedArrayTextStore::ChunkAndOffset *******************
-     ********************************************************************************
-     */
-    inline ChunkedArrayTextStore::ChunkAndOffset::ChunkAndOffset (size_t chunk, size_t offset)
-        : fChunk (chunk)
-        , fOffset (offset)
-    {
-    }
-
-    /*
-     ********************************************************************************
-     **************************** ChunkedArrayTextStore *****************************
-     ********************************************************************************
-     */
-    inline size_t ChunkedArrayTextStore::GetLength () const noexcept
-    {
-        return (fLength);
-    }
-    inline ChunkedArrayTextStore::ChunkAndOffset ChunkedArrayTextStore::FindChunkIndex (size_t charPos) const
-    {
-        // No cache implemented yet - later check cache - and only call _ version if need be...
-        return (FindChunkIndex_ (charPos));
-    }
-    inline void ChunkedArrayTextStore::InvalCachedChunkIndexes ()
-    {
-        fCachedChunkIndex         = 0;
-        fCachedChunkIndexesOffset = 0;
-    }
-
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "ChunkedArrayTextStore.inl"
 
 #endif /*_Stroika_Framework_Led_ChunkedArrayTextStore_h_*/
