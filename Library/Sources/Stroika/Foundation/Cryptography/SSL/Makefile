@@ -12,10 +12,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
-	$(ObjDir)ClientContext${OBJ_SUFFIX}\
-	$(ObjDir)Common${OBJ_SUFFIX}\
-	$(ObjDir)ServerContext${OBJ_SUFFIX}\
+Objs	=
 
 
 all:	$(Objs)
