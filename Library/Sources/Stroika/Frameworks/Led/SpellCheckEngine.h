@@ -25,7 +25,7 @@ namespace Stroika::Frameworks::Led {
     */
     class SpellCheckEngine {
     protected:
-        SpellCheckEngine () = nullptr;
+        SpellCheckEngine () = default;
 
     public:
         virtual ~SpellCheckEngine () = default;
