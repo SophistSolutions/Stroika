@@ -17,7 +17,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Common${OBJ_SUFFIX}\
 	$(ObjDir)Directory${OBJ_SUFFIX}\
 	$(ObjDir)DirectoryIterable${OBJ_SUFFIX}\
 	$(ObjDir)DirectoryIterator${OBJ_SUFFIX}\
