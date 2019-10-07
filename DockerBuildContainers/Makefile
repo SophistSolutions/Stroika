@@ -22,6 +22,8 @@ docker-images:
 	docker build -f Ubuntu1810-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests .
 	docker build -f Ubuntu1904-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1904-small .
 	docker build -f Ubuntu1904-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests .
+	docker build -f Ubuntu1910-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1910-small .
+	docker build -f Ubuntu1910-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests .
 	docker build -f Centos-7-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-7-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 
@@ -30,6 +32,7 @@ docker-pull-base-images:
 	docker pull ubuntu:18.04
 	docker pull ubuntu:18.10
 	docker pull ubuntu:19.04
+	docker pull ubuntu:19.10
 	docker pull centos:centos7
 
 
@@ -38,9 +41,11 @@ push-images:
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-small
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev
