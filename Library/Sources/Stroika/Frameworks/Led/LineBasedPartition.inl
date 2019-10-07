@@ -12,7 +12,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-
 }
 
 #endif /*_Stroika_Framework_Led_LineBasedPartition_inl_*/

@@ -136,14 +136,6 @@ namespace Stroika::Frameworks::Led {
         fTextStoreHook->GetStartEnd (start, end);
     }
 
-    //  class   MarkerOwner::HookData;
-    inline MarkerOwner::HookData::HookData ()
-    {
-    }
-    inline MarkerOwner::HookData::~HookData ()
-    {
-    }
-
     //  class   MarkerOwner::UpdateInfo;
     inline MarkerOwner::UpdateInfo::UpdateInfo (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool textModified, bool realContentUpdate)
         : fReplaceFrom (from)
@@ -159,20 +151,7 @@ namespace Stroika::Frameworks::Led {
         return fTextModified ? (fReplaceFrom + fTextLength) : fReplaceTo;
     }
 
-    //  class   Marker::HookData;
-    inline Marker::HookData::HookData ()
-    {
-    }
-    inline Marker::HookData::~HookData ()
-    {
-    }
-
     //  class   MarkerMortuary<MARKER>;
-    template <typename MARKER>
-    inline MarkerMortuary<MARKER>::MarkerMortuary ()
-        : fMarkersToBeDeleted ()
-    {
-    }
     template <typename MARKER>
     inline MarkerMortuary<MARKER>::~MarkerMortuary ()
     {
@@ -193,8 +172,7 @@ namespace Stroika::Frameworks::Led {
             <p>NB:  It is illegal to accumulate a marker for deletion twice (detected error). And greatly
         discouraged using it afterwards.</p>
     */
-    inline void
-    MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m)
+    inline void MarkerMortuary<MARKER>::AccumulateMarkerForDeletion (MARKER* m)
     {
         RequireNotNull (m);
         Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
@@ -220,8 +198,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion
     @DESCRIPTION:   <p>Like @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion', but its OK to add a marker more than once.</p>
     */
-    void
-    MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m)
+    void MarkerMortuary<MARKER>::SafeAccumulateMarkerForDeletion (MARKER* m)
     {
         RequireNotNull (m);
         if (IndexOf (fMarkersToBeDeleted, m) == kBadIndex) {
@@ -258,8 +235,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        MarkerMortuary<MARKER>::IsEmpty
     @DESCRIPTION:   <p>Mostly used for assertions. Checks all accumulated markers have been finalized.</p>
     */
-    inline bool
-    MarkerMortuary<MARKER>::IsEmpty () const noexcept
+    inline bool MarkerMortuary<MARKER>::IsEmpty () const noexcept
     {
         return fMarkersToBeDeleted.size () == 0;
     }

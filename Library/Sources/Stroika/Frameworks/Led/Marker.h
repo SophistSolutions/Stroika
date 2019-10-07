@@ -168,10 +168,10 @@ namespace Stroika::Frameworks::Led {
     */
     class MarkerOwner::HookData {
     protected:
-        HookData ();
+        HookData () = default;
 
     public:
-        virtual ~HookData ();
+        virtual ~HookData () = default;
     };
 
     /*
@@ -224,23 +224,23 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void         GetRange (size_t* start, size_t* end) const;
 
         /*
-            *  Considered having one notification method since this would be more efficient - but
-            *  using TWO like this is necessary to allow for cooperative transation processing.
-            *  Need to be able to say NO to this transation - and then need to be notified and
-            *  update our internals if it goes through.
-            *
-            *  So AboutToUpdateText () may or may not be balanced with a call to DidUpdateText (),
-            *  but DidUpdateText () is ALWAYS proceeded by a call to AboutToUpdateText () (for this
-            *  update).
-            *
-            *  Another interesting note on updates. The question is - what sorts of modifications
-            *  produce update calls. I had considered having markers notified when text was changed
-            *  INSIDE of them. This is clearly needed. But it is also - very often - quite convenient
-            *  to be notified when text is changed one character to the left or right of our boundaries.
-            *  For example - when we use markers to define boundaries of words - and someone types
-            *  a non-space character just before or just after the word - we might want to re-consider
-            *  whether we still have a valid word marker.
-            */
+         *  Considered having one notification method since this would be more efficient - but
+         *  using TWO like this is necessary to allow for cooperative transation processing.
+         *  Need to be able to say NO to this transation - and then need to be notified and
+         *  update our internals if it goes through.
+         *
+         *  So AboutToUpdateText () may or may not be balanced with a call to DidUpdateText (),
+         *  but DidUpdateText () is ALWAYS proceeded by a call to AboutToUpdateText () (for this
+         *  update).
+         *
+         *  Another interesting note on updates. The question is - what sorts of modifications
+         *  produce update calls. I had considered having markers notified when text was changed
+         *  INSIDE of them. This is clearly needed. But it is also - very often - quite convenient
+         *  to be notified when text is changed one character to the left or right of our boundaries.
+         *  For example - when we use markers to define boundaries of words - and someone types
+         *  a non-space character just before or just after the word - we might want to re-consider
+         *  whether we still have a valid word marker.
+         */
     public:
         using UpdateInfo = MarkerOwner::UpdateInfo;
         virtual void AboutToUpdateText (const UpdateInfo& updateInfo); // throw to avoid actual update
@@ -264,10 +264,10 @@ namespace Stroika::Frameworks::Led {
     */
     class Marker::HookData {
     protected:
-        HookData ();
+        HookData () = default;
 
     public:
-        virtual ~HookData ();
+        virtual ~HookData () = default;
 
     public:
         virtual MarkerOwner* GetOwner () const                              = 0;
@@ -289,7 +289,7 @@ namespace Stroika::Frameworks::Led {
     template <typename MARKER>
     class MarkerMortuary {
     public:
-        MarkerMortuary ();
+        MarkerMortuary () = default;
         ~MarkerMortuary ();
 
     public:
