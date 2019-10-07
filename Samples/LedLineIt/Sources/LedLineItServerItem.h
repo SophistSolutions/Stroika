@@ -4,7 +4,7 @@
 #ifndef __LedLineItServerItem_h__
 #define __LedLineItServerItem_h__ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #pragma warning(push)
 #pragma warning(disable : 5054)

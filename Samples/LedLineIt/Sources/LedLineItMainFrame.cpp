@@ -4,7 +4,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 

@@ -4,7 +4,7 @@
 #ifndef __FontMenu_hh__
 #define __FontMenu_hh__ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <afx.h>
 

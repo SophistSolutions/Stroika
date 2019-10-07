@@ -4,10 +4,12 @@
 #ifndef __LedLineItDocFrame_h__
 #define __LedLineItDocFrame_h__ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <afxext.h>
+#pragma warning(push)
+#pragma warning(disable : 4459)
 #include <afxwin.h>
+#pragma warning(pop)
 
 #include "Stroika/Frameworks/Led/Support.h"
 

@@ -4,7 +4,7 @@
 #ifndef __LedLineItView_h__
 #define __LedLineItView_h__ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Frameworks/Led/Platform/MFC.h"
 #include "Stroika/Frameworks/Led/SimpleTextInteractor.h"

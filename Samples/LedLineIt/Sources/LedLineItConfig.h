@@ -4,7 +4,7 @@
 #ifndef __LedLineItConfig__
 #define __LedLineItConfig__ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Frameworks/Led/Config.h"
 

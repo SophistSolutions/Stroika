@@ -4,7 +4,7 @@
 #ifndef __LedLineItResourceIDs_h__
 #define __LedLineItResourceIDs_h__ 1
 
-#include "Stroika/Foundation/StroikaPreComp.h"
+#include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <afxres.h>
 
