@@ -84,7 +84,7 @@ checkin from one spot.
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1810_x86_64 \
-        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=default-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests \
         MACHINE=Hercules \
         ./ScriptsLib/RunRemoteRegressionTests
@@ -110,7 +110,7 @@ checkin from one spot.
     ~~~bash
     RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1904_x86_64 \
-        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+        BUILD_CONFIGURATIONS_MAKEFILE_TARGET=default-configurations \
         CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests \
         MACHINE=Hercules \
         ./ScriptsLib/RunRemoteRegressionTests
