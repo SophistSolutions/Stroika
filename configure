@@ -812,7 +812,12 @@ sub	SetDefaultForCompilerDriver_
 					}
 				}
 				if(!exists($already{'undefined'})) {
-					push @sanitizerFlags, 'undefined';
+					if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
+						#skip cuz broken on Centos8  - spurrious warnings when run...
+					}
+					else {
+						push @sanitizerFlags, 'undefined';
+					}
 				}
 				$sanitizerFlagsIsDefined = true;
 			}
@@ -1933,6 +1938,11 @@ sub PostProcessOptions_ ()
 			push @CXXFLAGS, $crap2Add2CZZFlags;
 		}
 
+		if ($STATIC_LINK_SANITIZERS == DEFAULT_BOOL_OPTIONS) {
+			if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
+				$STATIC_LINK_SANITIZERS = 0;	# missing on (my install of) centos8 - until I figure out how to detect/fix
+			}
+		}
 
 		if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1) and ($STATIC_LINK_SANITIZERS != 0)) {
 			if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
