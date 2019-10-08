@@ -994,6 +994,11 @@ sub	SetDefaultForCompilerDriver_
 	else {
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 	}
+
+	# This doesn't work with (at least how I've setup) centos8 under docker - not sure how to get the libs there...
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
+		$STATIC_LINK_GCCRUNTIME = 0;
+	}
 }
 
 sub	SetDefaultForPlatform_
