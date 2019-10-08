@@ -46,7 +46,7 @@ docker rm ${CONTAINER_NAME} >& /dev/null || true
 
 # --dns lines since the default for a container is to use global (google) dns server, which doesn't have local dns entries (like raspberrypi device)
 
-# -security-opt seccomp=unconfined  needed to run some google sanitizers (and probbaly to debug?/valgrind?)
+# -security-opt seccomp=unconfined  needed to run some google sanitizers (and probably to debug?/valgrind?)
 
 
 # -e COLUMNS=\"`tput cols`\" -e LINES=\"`tput lines`\" doesn't work perfectly, but better than completely shitty display of # of lines 
