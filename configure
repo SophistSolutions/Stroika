@@ -1939,7 +1939,7 @@ sub PostProcessOptions_ ()
 		}
 
 		if ($STATIC_LINK_SANITIZERS == DEFAULT_BOOL_OPTIONS) {
-			if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
+			if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print \$2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
 				$STATIC_LINK_SANITIZERS = 0;	# missing on (my install of) centos8 - until I figure out how to detect/fix
 			}
 		}
