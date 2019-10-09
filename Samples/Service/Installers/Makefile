@@ -162,7 +162,8 @@ endif
 	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@echo "Release: $(INSTALLER_RELEASE_TAG)" >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
-	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT) 2>&1
+	@#set HOME= to workaround issue/bug with centos-8
+	@export HOME=/tmp/installer-bld && cd $(RPM_WORKDIR) && rpmbuild -ba SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT) 2>&1
 
 	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_INSTALLER_RPM)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_RPM)"`
