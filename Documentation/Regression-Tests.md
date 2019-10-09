@@ -138,7 +138,7 @@ checkin from one spot.
     sleep 28000 && RUN_IN_DOCKER=1 \
         USE_TEST_BASENAME=Ubuntu1910-Cross-Compile2RaspberryPi \
         BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
-        CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1919-regression-tests \
+        CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests \
         MACHINE=Hercules \
         ./ScriptsLib/RunRemoteRegressionTests
     ~~~
