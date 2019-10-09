@@ -83,7 +83,7 @@
 #if __GNUC__ < 7
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 7 (v2.0 supports g++5 and g++6)"
 #endif
-#if __GNUC__ > 9 || (__GNUC__ == 9 && (__GNUC_MINOR__ > 0))
+#if __GNUC__ > 9 || (__GNUC__ == 9 && (__GNUC_MINOR__ > 2))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -536,6 +536,7 @@ ABORTING...
 #if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC8
 // VERIFIED BROKEN IN GCC9
+// VERIFIED BROKEN IN GCC 9.2
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 9)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
@@ -864,6 +865,7 @@ lose those deprecated interfaces.
 // APPEARS still broken with gcc 7.2
 // APPEARS still broken with gcc 8.1
 // APPEARS still broken with gcc 9.0
+// VERIFIED still broken with gcc 9.2
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 9)
 #elif defined(_MSC_VER)
 // STILL WARNINGS in _MS_VS_2k17_15Pt1_
@@ -1013,6 +1015,7 @@ In file included from ./ObjectVariantMapper.h:883:
 
 #if defined(__GNUC__) && !defined(__clang__)
 // Broken in GCC 9.0
+// Verified still broken in 9.2
 #define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ == 9))
 #else
 #define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy 0
