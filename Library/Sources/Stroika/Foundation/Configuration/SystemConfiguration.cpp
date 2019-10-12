@@ -887,10 +887,10 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     using ComputerNames = SystemConfiguration::ComputerNames;
     ComputerNames result;
 #if qPlatform_POSIX
-#if defined (HOST_NAME_MAX)
+#if defined(HOST_NAME_MAX)
     char nameBuf[HOST_NAME_MAX + 1]; // size from http://man7.org/linux/man-pages/man2/gethostname.2.html
 #else
-    char nameBuf[1024];               // Mac XCode 11 doesn't define HOST_NAME_MAX
+    char nameBuf[1024]; // Mac XCode 11 doesn't define HOST_NAME_MAX
 #endif
     Execution::ThrowPOSIXErrNoIfNegative (::gethostname (nameBuf, NEltsOf (nameBuf)));
     nameBuf[NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated

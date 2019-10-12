@@ -61,7 +61,7 @@
 #if (__clang_major__ < 10) || (__clang_major__ == 10 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by v2.0) does not support versions prior to APPLE clang++ 10 (XCode 10)"
 #endif
-#if (__clang_major__ > 10) || (__clang_major__ == 10 && (__clang_minor__ > 1))
+#if (__clang_major__ > 11) || (__clang_major__ == 11 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -854,7 +854,8 @@ lose those deprecated interfaces.
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// VERIFIED BROKEN on XCode 11.0
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // APPEARS still broken with clang++-8
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
@@ -947,6 +948,7 @@ C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(656): note: see reference to class 
 #ifndef qCompilerAndStdLib_optional_value_const_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
+// VERIFIED FIXED on XCode 11.0
 #define qCompilerAndStdLib_optional_value_const_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
 #define qCompilerAndStdLib_optional_value_const_Buggy 0
@@ -986,7 +988,8 @@ In file included from ./ObjectVariantMapper.h:883:
 #ifndef qCompiler_noSanitizeAttributeForLamdas_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// VERIFIED STILL BROKEN on XCode 11.0
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // tested still generates error with clang++-8
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
@@ -1303,6 +1306,7 @@ clang says:
 #ifndef qCompilerAndStdLib_make_from_tuple_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
+// VERIFIED FIXED on XCode 11.0
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
@@ -1352,7 +1356,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// VERIFIED BROKEN on XCode 11.0
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++-8
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
@@ -1395,7 +1400,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #ifndef qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// VERIFIED BROKEN on XCode 11.0
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-8
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
@@ -1672,6 +1678,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 #if defined(__clang__) && defined(__APPLE__)
+// VERIFIED FIXED on XCode 11.0
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy 0
@@ -1853,11 +1860,15 @@ namespace {
 
 #endif
 
+/*
+ * Assertions.cpp:178:5: error: use of undeclared identifier 'quick_exit'
+ */
 #ifndef qCompilerAndStdLib_quick_exit_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // Still broken XCode 10 - beta
-#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// VERIFIED STILL BROKEN on XCode 11.0
+#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #else
 #define qCompilerAndStdLib_quick_exit_Buggy 0
 #endif
