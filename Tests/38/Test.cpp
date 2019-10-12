@@ -341,6 +341,8 @@ namespace {
                     //      [---MAIN---][0010.363]              startTestAt=1.659040, doneAt=10.362815, expectedEndAt=4.659040
                     //      [---MAIN---][0010.363]              FAILED: RegressionTestFailure; startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_; ; Test.cpp; 311
                     //  So upped kMarginOfError_ from 3.5 to 10 seconds.
+                    //
+                    // Very rare - but saw this again on Raspberrypi - raspberrypi-g++-8-debug-sanitize_undefined- 2.1a2x -- LGP 2019-10-11
                 }
                 Time::DurationSecondsType doneAt        = Time::GetTickCount ();
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
