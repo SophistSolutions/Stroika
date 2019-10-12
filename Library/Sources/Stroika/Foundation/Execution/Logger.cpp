@@ -43,6 +43,7 @@ using Time::DurationSecondsType;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
+    template<>
     constexpr EnumNames<Logger::Priority> DefaultNames<Logger::Priority>::k;
 }
 #endif

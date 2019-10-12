@@ -66,6 +66,7 @@ using Time::DurationSecondsType;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
+    template<>
     constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k;
 }
 #endif

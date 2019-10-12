@@ -15,6 +15,7 @@ using namespace Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
+    template<>
     constexpr EnumNames<IO::AccessMode> DefaultNames<IO::AccessMode>::k;
 }
 #endif

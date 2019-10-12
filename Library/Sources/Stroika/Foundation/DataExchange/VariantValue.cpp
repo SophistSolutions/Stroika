@@ -97,6 +97,7 @@ struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAlloca
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
+    template<>
     constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k;
 }
 #endif

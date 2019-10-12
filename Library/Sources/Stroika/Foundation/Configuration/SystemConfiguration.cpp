@@ -70,6 +70,7 @@ using Memory::SmallStackBufferCommon;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
+    template<>
     constexpr EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
 }
 #endif

@@ -273,6 +273,7 @@ namespace {
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
+    template<>
     constexpr EnumNames<ProcessType::RunStatus> DefaultNames<ProcessType::RunStatus>::k;
 }
 #endif
