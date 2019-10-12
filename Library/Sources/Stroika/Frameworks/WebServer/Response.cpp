@@ -51,7 +51,7 @@ namespace {
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k;
 }
 #endif

@@ -48,7 +48,7 @@ DEFINE_GUID (GUID_DEVINTERFACE_DISK, 0x53f56307L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<Foundation::IO::FileSystem::BlockDeviceKind> DefaultNames<Foundation::IO::FileSystem::BlockDeviceKind>::k;
 }
 #endif

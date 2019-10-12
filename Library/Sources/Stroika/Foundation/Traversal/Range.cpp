@@ -15,7 +15,7 @@ using namespace Stroika::Foundation;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k;
 }
 #endif

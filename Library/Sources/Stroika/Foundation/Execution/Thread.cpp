@@ -192,7 +192,7 @@ SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k;
 }
 #endif

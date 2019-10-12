@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy>::k;
 }
 #endif

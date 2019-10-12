@@ -70,7 +70,7 @@ using Memory::SmallStackBufferCommon;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
 }
 #endif
@@ -886,7 +886,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     using ComputerNames = SystemConfiguration::ComputerNames;
     ComputerNames result;
 #if qPlatform_POSIX
-    char nameBuf[HOST_NAME_MAX + 1];    // size from http://man7.org/linux/man-pages/man2/gethostname.2.html
+    char nameBuf[HOST_NAME_MAX + 1]; // size from http://man7.org/linux/man-pages/man2/gethostname.2.html
     Execution::ThrowPOSIXErrNoIfNegative (::gethostname (nameBuf, NEltsOf (nameBuf)));
     nameBuf[NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
     result.fHostname               = String::FromNarrowSDKString (nameBuf);

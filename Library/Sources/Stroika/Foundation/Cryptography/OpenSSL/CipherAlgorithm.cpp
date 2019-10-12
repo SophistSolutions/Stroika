@@ -43,7 +43,7 @@ using namespace Stroika::Foundation::Memory;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    template<>
+    template <>
     constexpr EnumNames<Cryptography::OpenSSL::CipherAlgorithm> DefaultNames<Cryptography::OpenSSL::CipherAlgorithm>::k;
 }
 #endif
