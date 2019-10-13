@@ -301,7 +301,11 @@ namespace {
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
                 VerifyTestResult (tmp == L"4/5/1903 12:01:41 AM" or tmp == L"04/05/1903 12:01:41 AM");
 #else
+#if qCompilerAndStdLib_locale_pctX_print_time_Buggy
+                VerifyTestResult (tmp == L"Sun Apr  5 00:01:41 1903");
+#else
                 VerifyTestResult (tmp == L"Sun 05 Apr 1903 12:01:41 AM");
+#endif
 #endif
             }
             DateTime dt2 (d, TimeOfDay (60));
