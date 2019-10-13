@@ -153,8 +153,8 @@ namespace {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-            VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41 AM");
-            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"00:01 AM");
+            VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"00:01");
 #else
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
             VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
