@@ -1687,6 +1687,19 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 /*
+ */
+#ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// First Noted BROKEN on XCode 11.0
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+#else
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
+#endif
+
+#endif
+
+/*
  *  DateTime::Format (const locale& l, const String& formatPattern) const
  *     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
  *     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
