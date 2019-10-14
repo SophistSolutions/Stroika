@@ -656,11 +656,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
                 size_t bytesAvail    = fWindowBottom_Offset - fCursor_Offset; // must be > 0 UNLESS we are at EOF
                 size_t thisReadCount = min (bytesAvail, bytesLeftToRead);
                 AssertNotNull (fCursor_Data);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// fCursor_Data is not null because of assertion above
-#pragma warning(suppress : 6387)
-#endif
+                DISABLE_COMPILER_MSC_WARNING_START (6387) // fCursor_Data is not null because of assertion above
                 (void)::memcpy (destCursor, fCursor_Data, thisReadCount);
+                DISABLE_COMPILER_MSC_WARNING_END (6387)
                 destCursor += thisReadCount;
                 fCursor_Data += thisReadCount;
                 fCursor_Offset += thisReadCount;

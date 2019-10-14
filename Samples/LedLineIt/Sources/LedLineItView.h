@@ -18,10 +18,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
 #if qSupportSyntaxColoring
 struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
@@ -157,6 +154,7 @@ public:
     virtual void Dump (CDumpContext& dc) const override;
 #endif
 };
+DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
 class FontDlgWithNoColorNoStyles : public CFontDialog {
 public:
@@ -174,10 +172,6 @@ inline LedLineItDocument& LedLineItView::GetDocument () const
 {
     return *(LedLineItDocument*)m_pDocument;
 }
-#endif
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
 #endif
 
 #endif /*__LedLineItView_h__*/

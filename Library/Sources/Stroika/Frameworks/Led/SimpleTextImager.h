@@ -21,10 +21,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
     /*
     @CLASS:         SimpleTextImager
@@ -292,16 +289,13 @@ namespace Stroika::Frameworks::Led {
         friend bool operator== (RowReference lhs, RowReference rhs);
         friend bool operator!= (RowReference lhs, RowReference rhs);
     };
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
     // defined out of order cuz used earlier
     inline SimpleTextImager::RowReference::RowReference (PartitionMarker* partitionMarker)
         : fPartitionMarker (partitionMarker)

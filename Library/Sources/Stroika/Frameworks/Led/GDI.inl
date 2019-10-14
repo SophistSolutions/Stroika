@@ -1080,19 +1080,14 @@ namespace Stroika::Frameworks::Led {
         Led_Coordinate winLeft   = max (r.GetLeft (), enlosingR.GetLeft ());
         Led_Coordinate winTop    = max (r.GetTop (), enlosingR.GetTop ());
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4018) // signed/unsigned mismatch
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4018) //signed/unsigned mismatch
         if ((winLeft + winWidth) > enlosingR.GetRight ()) {
             winLeft = enlosingR.GetRight () - winWidth;
         }
         if ((winTop + winHeight) > enlosingR.GetBottom ()) {
             winTop = enlosingR.GetBottom () - winHeight;
         }
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4018)
         return Led_Rect (winTop, winLeft, winHeight, winWidth);
     }
     /*
@@ -3092,18 +3087,16 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qProvideIMESupport
+    DISABLE_COMPILER_MSC_WARNING_START (6011)
     inline Led_IME& Led_IME::Get ()
     {
         if (sThe == nullptr) {
             new Led_IME ();
         }
         AssertNotNull (sThe);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// This is OK because sThe is set in the Led_IME::CTOR
-#pragma warning(suppress : 6011)
-#endif
         return *sThe;
     }
+    DISABLE_COMPILER_MSC_WARNING_END (6011)
     inline void Led_IME::Enable ()
     {
         if (fIMEEnableProc != nullptr) {

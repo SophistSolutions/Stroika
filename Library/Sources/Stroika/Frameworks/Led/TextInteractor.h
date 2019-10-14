@@ -1010,10 +1010,7 @@ namespace Stroika::Frameworks::Led {
         Led_SDK_String fText;
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         TrivialImager_Interactor<TEXTSTORE,IMAGER>
     @DESCRIPTION:   <p>Handy little template, if you want to use the power of Led, but just to wrap a particular imager,
@@ -1055,9 +1052,7 @@ namespace Stroika::Frameworks::Led {
         virtual void RefreshWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea, [[maybe_unused]] UpdateMode updateMode) const override {}
         virtual void UpdateWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea) const override {}
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
      ********************************************************************************

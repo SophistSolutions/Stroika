@@ -30,10 +30,7 @@ class LedItDocument;
 using LedItViewAlmostBASE = Platform::Led_MFC_X<WordProcessor>;
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 class LedItView :
 #if qPlatform_MacOS
     public Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>
@@ -140,9 +137,7 @@ public:
 #endif
 #endif
 };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
 /*
  ********************************************************************************

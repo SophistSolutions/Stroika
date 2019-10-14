@@ -6,14 +6,9 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 class LedLineItInPlaceFrame : public COleIPFrameWnd {
     DECLARE_DYNCREATE (LedLineItInPlaceFrame)

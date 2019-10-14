@@ -9,14 +9,9 @@
 
 #include <afxext.h>
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "../../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -223,12 +218,11 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
     else {
         Led_MFCReaderDAndDFlavorPackage* dndfp = dynamic_cast<Led_MFCReaderDAndDFlavorPackage*> (&flavorPackage);
         AssertNotNull (dndfp); // if not from clip, must be from Drag and Drop!
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 28182)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (28182)
         if (e->CreateFromData (dndfp->GetOleDataObject ()) == 0) {
             Led_ThrowBadFormatDataException ();
         }
+        DISABLE_COMPILER_MSC_WARNING_END (28182)
     }
 
     {
@@ -416,10 +410,9 @@ void Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPackage
     else {
         Led_MFCWriterDAndDFlavorPackage* dndfp = dynamic_cast<Led_MFCWriterDAndDFlavorPackage*> (&flavorPackage);
         AssertNotNull (dndfp);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 28182)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (28182)
         GetClipboardData (dndfp->GetOleDataSource ());
+        DISABLE_COMPILER_MSC_WARNING_END (28182)
     }
 }
 
@@ -509,12 +502,10 @@ void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, byte** resultData
         CLSID myCLSID;
         GetClassID (&myCLSID);
         CheckGeneral (::WriteClassStg (pStorage, myCLSID));
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// safe because ips != null = due to assert on QueryInterface above
-#pragma warning(suppress : 6011)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (6011) // safe because ips != null = due to assert on QueryInterface above
         CheckGeneral (ips->Save (pStorage, false));
         CheckGeneral (ips->SaveCompleted (pStorage));
+        DISABLE_COMPILER_MSC_WARNING_END (6011) // safe because ips != null = due to assert on QueryInterface above
 
         // Convert storage into array of bytes
         MyOLEStream_output myStream;

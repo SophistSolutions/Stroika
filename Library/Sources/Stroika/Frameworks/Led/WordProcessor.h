@@ -31,11 +31,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
-
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         StandardStyledWordWrappedTextInteractor
     @BASES:         @'InteractorInteractorMixinHelper<INTERACTOR1,INTERACTOR2>', (INTERACTOR1=@'StandardStyledTextInteractor',INTERACTOR2=@'WordWrappedTextInteractor')
@@ -1959,6 +1955,7 @@ namespace Stroika::Frameworks::Led {
     private:
         ParagraphInfo fSavedStyleInfo;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
         ********************************************************************************
@@ -2998,9 +2995,5 @@ namespace Stroika::Frameworks::Led {
     }
 
 }
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 #endif /*_Stroika_Frameworks_Led_WordProcessor_h_*/

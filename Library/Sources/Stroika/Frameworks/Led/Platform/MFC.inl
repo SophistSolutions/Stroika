@@ -351,10 +351,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>;
         using TheBaseClass = MFC_BASE_CLASS;
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_CREATE ()
                 ON_WM_CHAR ()
@@ -395,9 +392,7 @@ namespace Stroika::Frameworks::Led::Platform {
                                                                                                                                                             LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kReplace_CmdID)
                                                                                                                                                                 LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kReplaceAgain_CmdID)
                                                                                                                                                                     LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSpellCheck_CmdID){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }
@@ -659,10 +654,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_MESSAGE (WM_SETTEXT, &OnMFCSDKMessageDispatcher<WM_SETTEXT>)
                 ON_MESSAGE (WM_GETTEXT, &OnMFCSDKMessageDispatcher<WM_GETTEXT>)
@@ -687,9 +679,7 @@ namespace Stroika::Frameworks::Led::Platform {
                                                                                             ON_MESSAGE (EM_SCROLLCARET, &OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)
                                                                                                 ON_MESSAGE (WM_GETFONT, &OnMFCSDKMessageDispatcher<WM_GETFONT>)
                                                                                                     ON_MESSAGE (WM_SETFONT, &OnMFCSDKMessageDispatcher<WM_SETFONT>){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }
@@ -1143,16 +1133,11 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_DragAndDropWindow<BASECLASS>;
         using TheBaseClass = BASECLASS;
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_CREATE ()
                 ON_WM_TIMER (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }
@@ -1553,19 +1538,14 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_CViewHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_PAINT ()
                 ON_WM_LBUTTONDOWN ()
                     ON_WM_CREATE ()
                         ON_WM_VSCROLL ()
                             ON_WM_HSCROLL (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }
@@ -1674,10 +1654,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         using ThisClass    = Led_MFC_ExceptionHandlerHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_CHAR ()
                 ON_MESSAGE (WM_IME_CHAR, &OnIMEChar)
@@ -1686,9 +1663,7 @@ namespace Stroika::Frameworks::Led::Platform {
                             ON_WM_LBUTTONDOWN ()
                                 ON_WM_LBUTTONUP ()
                                     ON_WM_LBUTTONDBLCLK (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }

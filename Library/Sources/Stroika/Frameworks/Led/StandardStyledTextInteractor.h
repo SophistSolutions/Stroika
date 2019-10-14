@@ -46,12 +46,9 @@ namespace Stroika::Frameworks::Led {
     extern const Led_ClipFormat kHTMLClipFormat;
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
-
     class SimpleEmbeddedObjectStyleMarker;
+
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         StandardStyledTextInteractor
     @BASES:         virtual @'TextInteractor', @'StandardStyledTextImager'
@@ -169,6 +166,7 @@ namespace Stroika::Frameworks::Led {
         class EmptySelStyleTextRep;
         friend class EmptySelStyleTextRep;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
     @CLASS:         StandardStyledTextInteractor::CommandNames
@@ -395,10 +393,10 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
     //  class   StandardStyledTextInteractor
     /*
     @METHOD:        StandardStyledTextInteractor::GetCommandNames
@@ -485,9 +483,5 @@ namespace Stroika::Frameworks::Led {
         return fSelEnd;
     }
 }
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 #endif /*_Stroika_Frameworks_Led_StandardStyledTextInteractor_h_*/

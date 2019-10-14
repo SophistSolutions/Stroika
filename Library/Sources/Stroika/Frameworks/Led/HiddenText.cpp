@@ -8,10 +8,6 @@
 
 #include "Config.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
 #include "../../Foundation/Traversal/Iterator.h"
 
 #include "StandardStyledTextImager.h"
@@ -178,9 +174,7 @@ void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
                 Assert (i == hidableTextMarkersInRange.begin ()); // must have been first marker...
                 prevNonEmptyMarker = *i;
                 AssertNotNull (prevNonEmptyMarker);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 6011)
-#endif
+                DISABLE_COMPILER_MSC_WARNING_START (6011)
                 if (from < prevNonEmptyMarker->GetStart ()) {
                     if (prevNonEmptyMarker->IsShown ()) {
                         fTextStore.SetMarkerStart (prevNonEmptyMarker, from);
@@ -191,6 +185,7 @@ void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
                         GetTextStore ().AddMarker (MakeHidableTextMarker (), from, prevNonEmptyMarker->GetStart () - from, this);
                     }
                 }
+                DISABLE_COMPILER_MSC_WARNING_END (6011)
             }
             else if (prevNonEmptyMarker->IsShown ()) {
                 // If its shown - we can coalesce it - so delete old one

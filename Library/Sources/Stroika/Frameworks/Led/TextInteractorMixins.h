@@ -17,10 +17,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
     /*
     @CLASS:         InteractorImagerMixinHelper<IMAGER>
@@ -113,12 +110,13 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
     //  class   InteractorImagerMixinHelper<IMAGER>
     template <typename IMAGER>
     void InteractorImagerMixinHelper<IMAGER>::Draw (const Led_Rect& subsetToDraw, bool printing)
@@ -182,10 +180,6 @@ namespace Stroika::Frameworks::Led {
         INTERACTOR1::DidUpdateText (updateInfo);
         INTERACTOR2::DidUpdateText (updateInfo);
     }
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 }
 

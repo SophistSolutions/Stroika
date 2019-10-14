@@ -29,10 +29,7 @@ typedef SimpleLedWordProcessor _BASE_;
 typedef SimpleLedLineEditor _BASE_;
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 class MyLedWindow : public _BASE_ {
 private:
     typedef _BASE_ inherited;
@@ -49,9 +46,7 @@ public:
     }
     virtual void OnNCDestroy_Msg () override;
 };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
 void MyLedWindow::OnNCDestroy_Msg ()
 {

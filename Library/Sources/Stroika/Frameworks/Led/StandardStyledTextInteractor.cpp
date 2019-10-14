@@ -84,13 +84,12 @@ void StandardStyledTextInteractor::HookLosingTextStore_ ()
     for (size_t i = 0; i < embeddings.size (); i++) {
         SimpleEmbeddedObjectStyleMarker* e = embeddings[i];
         AssertNotNull (e); // all embeddings returned must be non-null
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 28182)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (28182)
         if (e->GetOwner () == this) {
             PeekAtTextStore ()->RemoveMarker (e);
             delete e;
         }
+        DISABLE_COMPILER_MSC_WARNING_END (28182)
     }
 }
 

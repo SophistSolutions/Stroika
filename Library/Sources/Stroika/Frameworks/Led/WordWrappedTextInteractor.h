@@ -18,10 +18,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
     /*
     @CLASS:         WordWrappedTextInteractor
@@ -53,6 +50,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate) override;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
         ********************************************************************************
@@ -72,9 +70,5 @@ namespace Stroika::Frameworks::Led {
     }
 
 }
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
 
 #endif /*_Stroika_Frameworks_Led_WordWrappedTextInteractor_h_*/

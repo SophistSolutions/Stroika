@@ -475,13 +475,11 @@ namespace Stroika::Frameworks::Led {
                     // last marker, and otherwise it won't get found to 'cull'
                 }
             }
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// Asserts above make clear m not null
-#pragma warning(suppress : 28182)
-#endif
+            DISABLE_COMPILER_MSC_WARNING_START (28182) // Asserts above make clear m not null
             if (m->GetLength () != 0) {
                 prevNonEmptyMarker = m;
             }
+            DISABLE_COMPILER_MSC_WARNING_END (28182)
         }
     }
     template <typename MARKER, typename MARKERINFO, typename INCREMENTALMARKERINFO>

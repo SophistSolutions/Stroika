@@ -24,10 +24,6 @@
 
 #include "WordProcessor.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(4 : 4786)
-#endif
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
@@ -3385,9 +3381,9 @@ Led_tString WordProcessor::GetListLeader (size_t paragraphMarkerPos) const
         const Led_tChar kBulletChar = 0x2022;
 #else
 #if qPlatform_MacOS
-        const Led_tChar kBulletChar = '¥';
+        const Led_tChar kBulletChar = 'ï¿½';
 #else
-        const Led_tChar kBulletChar = '·';
+        const Led_tChar kBulletChar = 'ï¿½';
 #endif
 #endif
         // In a future release, pay attention to RTF \levelfollowN (0 tab, 1 space, 2 nothing)
@@ -4144,7 +4140,7 @@ void WordProcessor::ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Le
 #elif qPlatform_MacOS
         const Led_tChar kReplacementChar = 166;
 #else
-        const Led_tChar kReplacementChar = '¶';
+        const Led_tChar kReplacementChar = 'ï¿½';
 #endif
         copyText[nTChars - 1] = kReplacementChar;
     }
@@ -4155,7 +4151,7 @@ void WordProcessor::ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Le
 #elif qPlatform_MacOS
         const Led_tChar kReplacementChar = 215;
 #else
-        const Led_tChar kReplacementChar = '·';
+        const Led_tChar kReplacementChar = 'ï¿½';
 #endif
         ReplaceMappedDisplayCharacters_HelperForChar (copyText, nTChars, ' ', kReplacementChar);
     }

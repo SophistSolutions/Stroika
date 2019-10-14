@@ -38,10 +38,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         SimpleLedWordProcessor
     @BASES:         @'Led_MFC', @'Led_PP', @'WordProcessor'
@@ -98,14 +95,9 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250)
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         SimpleLedLineEditor
     @BASES:         @'Led_MFC', @'Led_PP', @'SimpleTextInteractor'
@@ -161,15 +153,9 @@ namespace Stroika::Frameworks::Led {
         DECLARE_DYNCREATE (SimpleLedLineEditor)
 #endif
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250)
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
-
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         LedDialogText
     @BASES:         @'SimpleLedWordProcessor'
@@ -199,9 +185,7 @@ namespace Stroika::Frameworks::Led {
         DECLARE_DYNCREATE (LedDialogText)
 #endif
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250)
 
 }
 

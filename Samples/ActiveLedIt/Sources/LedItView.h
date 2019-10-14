@@ -6,14 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxctl.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include <atlbase.h>
 
@@ -65,10 +60,7 @@ public:
 
 using LedItViewAlmostBASE = Led_MFC_ExceptionHandlerHelper<Led_MFC_X<WordProcessor>>;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
 class LedItView : public WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE> {
 private:
@@ -199,9 +191,7 @@ public:
     virtual void Dump (CDumpContext& dc) const override;
 #endif
 };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
 /*
  ********************************************************************************

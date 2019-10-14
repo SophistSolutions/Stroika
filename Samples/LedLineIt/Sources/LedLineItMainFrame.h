@@ -6,14 +6,9 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4459)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4459)
 #include <afxwin.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4459)
 
 #include "Stroika/Frameworks/Led/Support.h"
 

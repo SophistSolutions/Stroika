@@ -2924,10 +2924,9 @@ Led_DIB* Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
         size_t nBytes        = Led_GetDIBImageByteCount (reinterpret_cast<Led_DIB*> (&bmiHdr));
         dibResult            = reinterpret_cast<Led_DIB*> (new char[nBytes]);
         Assert (nBytes > sizeof (BITMAPINFOHEADER));
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 6386)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (6386)
         (void)::memcpy (dibResult, &bmiHdr, sizeof (bmiHdr));
+        DISABLE_COMPILER_MSC_WARNING_END (6386)
     }
 
     [[maybe_unused]] int nScanLinesCopied = ::GetDIBits (hDC, hbm, 0, dibResult->bmiHeader.biHeight, reinterpret_cast<char*> (dibResult) + Led_GetDIBPalletByteCount (dibResult) + sizeof (BITMAPINFOHEADER), dibResult, DIB_RGB_COLORS);

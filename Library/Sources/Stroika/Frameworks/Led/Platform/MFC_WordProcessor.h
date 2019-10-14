@@ -15,14 +15,9 @@
 
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC_WordProcessor code requires the ATLMFC feature to be set true");
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include <afxwin.h>
 #include <oleidl.h>
@@ -53,10 +48,7 @@ namespace Stroika::Frameworks::Led::Platform {
     class Led_MFC_ControlItem;
 #endif
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning (Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning (Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore)
     /*
     @CLASS:         WordProcessorCommonCommandHelper_MFC<BASECLASS>
     @BASES:         BASECLASS
@@ -124,9 +116,7 @@ namespace Stroika::Frameworks::Led::Platform {
         friend class Led_MFC_ControlItem;
 #endif
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning (Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore)
 
 #if qSupportOLEControlEmbedding
     /*
@@ -290,11 +280,8 @@ namespace Stroika::Frameworks::Led::Platform {
         using ThisClass    = WordProcessorCommonCommandHelper_MFC<BASECLASS>;
         using TheBaseClass = BASECLASS;
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-// warning C4407: cast between different pointer to member representations, compiler may generate incorrect code
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START (4407) // warning C4407: cast between different pointer to member representations, compiler may generate incorrect code
+                                                  // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
             ON_WM_PAINT ()
 
@@ -334,9 +321,7 @@ namespace Stroika::Frameworks::Led::Platform {
                                                                                                                                                     LED_MFC_HANDLE_COMMAND_RANGE_M (WordProcessor::kFirstSelectedEmbedding_CmdID, WordProcessor::kLastSelectedEmbedding_CmdID)
 
                                                                                                                                                         {0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
     }

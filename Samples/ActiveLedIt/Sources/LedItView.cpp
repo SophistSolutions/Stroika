@@ -3,14 +3,9 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxwin.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -507,10 +502,7 @@ LedItViewController::~LedItViewController ()
  ************************************ LedItView *********************************
  ********************************************************************************
  */
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 BEGIN_MESSAGE_MAP (LedItView, LedItView::inherited)
 ON_WM_MOUSEACTIVATE ()
 ON_WM_INITMENUPOPUP ()
@@ -537,9 +529,7 @@ ON_UPDATE_COMMAND_UI (kPasteFormatTextCmdID, OnUpdatePasteAsTextCommand)
 ON_COMMAND_RANGE (kFirstOLEUserCmdCmdID, kLastOLEUserCmdCmdID, OnOLEUserCommand)
 ON_UPDATE_COMMAND_UI_RANGE (kFirstOLEUserCmdCmdID, kLastOLEUserCmdCmdID, OnUpdateOLEUserCommand)
 END_MESSAGE_MAP ()
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4407)
 
 LedItView::LedItView ()
     : inherited ()

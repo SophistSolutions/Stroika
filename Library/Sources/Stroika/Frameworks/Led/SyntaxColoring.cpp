@@ -519,9 +519,7 @@ void SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t up
         for (size_t i = 0; i < fMarkers.size ();) {
             Marker* m = fMarkers[i];
             AssertNotNull (m);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 28182)
-#endif
+            DISABLE_COMPILER_MSC_WARNING_START (28182)
             if (
                 (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo) or m->GetLength () == 0) {
                 // This update is needed cuz Led's normal typing update might not extend as far as the effect of
@@ -535,6 +533,7 @@ void SimpleSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t up
                 fMarkers.erase (fMarkers.begin () + i);
                 continue;
             }
+            DISABLE_COMPILER_MSC_WARNING_END (28182)
             ++i;
         }
     }
@@ -651,9 +650,7 @@ void WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t 
         for (size_t i = 0; i < fMarkers.size ();) {
             Marker* m = fMarkers[i];
             AssertNotNull (m);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 28182)
-#endif
+            DISABLE_COMPILER_MSC_WARNING_START (28182)
             if (
                 (lookBackStart <= m->GetStart () and m->GetEnd () <= lookBackTo) or (m->GetEnd () <= windowStart or m->GetStart () >= windowEnd) or m->GetLength () == 0) {
 
@@ -668,6 +665,7 @@ void WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t 
                 fMarkers.erase (fMarkers.begin () + i);
                 continue;
             }
+            DISABLE_COMPILER_MSC_WARNING_END (28182)
             ++i;
         }
     }

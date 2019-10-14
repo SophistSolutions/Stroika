@@ -23,15 +23,11 @@
 
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4459)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4459)
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
+DISABLE_COMPILER_MSC_WARNING_END (4459)
 
 #include <afxwin.h>
 #include <oleidl.h>
@@ -598,10 +594,7 @@ namespace Stroika::Frameworks::Led::Platform {
         }
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_MFC_ExceptionHandlerHelper<BASECLASS>
     @BASES:         BASECLASS = @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'
@@ -631,14 +624,9 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         DECLARE_MESSAGE_MAP ()
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_MFC_X
     @BASES:         ChosenInteractor, @'Led_MFC'
@@ -662,9 +650,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void AboutToUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
         virtual void DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
     @CLASS:         Led_MFCReaderDAndDFlavorPackage

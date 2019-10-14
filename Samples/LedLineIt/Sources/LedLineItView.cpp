@@ -4,14 +4,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxodlgs.h> // MFC OLE dialog classes
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include <afxwin.h>
 
@@ -262,10 +257,7 @@ namespace {
  */
 IMPLEMENT_DYNCREATE (LedLineItView, CView)
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 BEGIN_MESSAGE_MAP (LedLineItView, LedLineItView::inherited)
 
 ON_WM_SETFOCUS ()
@@ -291,9 +283,7 @@ ON_COMMAND_RANGE (cmdFontMenuFirst, cmdFontMenuLast, OnFontNameChangeCommand)
 ON_UPDATE_COMMAND_UI_RANGE (kBaseFontSizeCmdID, kLastFontSizeCmdID, OnUpdateFontSizeChangeCommand)
 ON_COMMAND_RANGE (kBaseFontSizeCmdID, kLastFontSizeCmdID, OnFontSizeChangeCommand)
 END_MESSAGE_MAP ()
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4407)
 
 LedLineItView::LedLineItView ()
     : inherited ()

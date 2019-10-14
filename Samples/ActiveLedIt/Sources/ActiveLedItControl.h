@@ -73,10 +73,7 @@ public:
     virtual void AddWordToUserDictionary (const Led_tString& word) override;
 };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
 class ActiveLedItControl : public COleControl, public MarkerOwner, public LedItViewController {
 private:
@@ -433,9 +430,7 @@ public:
     StyledTextIO::HTMLInfo fHTMLInfo;
 };
 
-#if qSilenceAnnoyingCompilerWarnings
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
 /*
  ********************************************************************************

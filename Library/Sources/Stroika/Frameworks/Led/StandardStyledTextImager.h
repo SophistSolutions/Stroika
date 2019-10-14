@@ -194,11 +194,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
-
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         StandardStyledTextImager::StyleDatabaseRep
     @BASES:         @'MarkerCover'<@'StandardStyleMarker',@'Led_FontSpecification',@'Led_IncrementalFontSpecification'>
@@ -226,9 +222,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
     @CLASS:         SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper

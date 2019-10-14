@@ -19,14 +19,9 @@
 #include <UAppleEventsMgr.h>
 #include <UModalDialogs.h>
 #elif qPlatform_Windows
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 5054)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxodlgs.h> // MFC OLE dialog classes
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (5054)
 #endif
 
 #include "Stroika/Frameworks/Led/StdDialogs.h"
@@ -551,10 +546,7 @@ static LedIt_DialogSupport sLedIt_DialogSupport;
 #if qPlatform_Windows
 IMPLEMENT_DYNCREATE (LedItView, CView)
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-#endif
+DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 BEGIN_MESSAGE_MAP (LedItView, LedItView::inherited)
 ON_WM_SETFOCUS ()
 ON_WM_SIZE ()
@@ -566,9 +558,7 @@ ON_COMMAND (ID_FILE_PRINT, &OnFilePrint)
 ON_COMMAND (ID_FILE_PRINT_DIRECT, &OnFilePrint)
 ON_NOTIFY (NM_RETURN, ID_VIEW_FORMATBAR, &OnBarReturn)
 END_MESSAGE_MAP ()
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END (4407)
 #endif
 
 LedItView::LedItView (

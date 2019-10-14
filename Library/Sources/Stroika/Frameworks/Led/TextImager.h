@@ -954,10 +954,7 @@ namespace Stroika::Frameworks::Led {
         bool        fSavedSuppressRecompute;
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
     /*
     @CLASS:         TrivialImager<TEXTSTORE,IMAGER>
@@ -1003,9 +1000,7 @@ namespace Stroika::Frameworks::Led {
         Led_Tablet fTablet;
         bool       fBackgroundTransparent;
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
         ********************************************************************************

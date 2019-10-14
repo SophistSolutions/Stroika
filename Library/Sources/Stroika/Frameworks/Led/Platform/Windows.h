@@ -115,10 +115,7 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t fRowNum;
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_Win32_Helper<BASE_INTERACTOR>
     @BASES:         BASE_INTERACTOR = @'TextInteractor'
@@ -344,14 +341,9 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         nonvirtual HWND GetValidatedHWND () const;
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>
     @BASES:         BASECLASS
@@ -398,9 +390,7 @@ namespace Stroika::Frameworks::Led::Platform {
     private:
         Led_FontObject fDefaultFontCache; // used to be able to answer WM_GETFONT calls...
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
     @CLASS:         SimpleWin32WndProcHelper
@@ -458,10 +448,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam);
     };
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_Win32_SimpleWndProc_Helper
     @BASES:         @'Led_Win32_Helper<BASE_INTERACTOR>'
@@ -516,14 +503,9 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         virtual LRESULT DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam) override;
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4250) // inherits via dominance warning
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         Led_Win32_SimpleWndProc_HelperWithSDKMessages
     @BASES:         @'Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>' with BASE_INTERACTOR= @'Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>'
@@ -540,9 +522,7 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         virtual LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
     };
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
      ********************************************************************************
