@@ -6,6 +6,25 @@ to be aware of when upgrading.
 
 # History
 
+
+#### next release
+
+* valgrind warning of the form
+
+~~~
+==17459== warning: Can't handle line info entry with line number 258779709 greater than 1048575
+==17459== (Nb: this message is only shown once)
+==17459== warning: Can't handle inlined call info entry with line number 258779714 greater than 1048575
+==17459== (Nb: this message is only shown once)
+~~~~
+
+Cannot figure out good way to suppress - probably just a valgrind (or compiler codegen) bug
+
+
+
+
+
+
 ## 2.1a1 {2019-09-04}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d27...v2.1a1>
