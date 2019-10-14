@@ -52,23 +52,13 @@ namespace Stroika::Frameworks::Led {
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
-    /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-    //  class   WordWrappedTextInteractor
-    inline void WordWrappedTextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode)
-    {
-        TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
-        SetTopRowInWindow (newTopRow);
-    }
-    inline void WordWrappedTextInteractor::SetTopRowInWindow (RowReference row, UpdateMode updateMode)
-    {
-        TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
-        SetTopRowInWindow (row);
-    }
-
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "WordWrappedTextInteractor.inl"
 
 #endif /*_Stroika_Frameworks_Led_WordWrappedTextInteractor_h_*/

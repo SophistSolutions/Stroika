@@ -87,8 +87,8 @@ namespace Stroika::Frameworks::Led {
         virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const override;
 
         /*
-            * Word wrapping helpers.
-            */
+         * Word wrapping helpers.
+         */
     private:
         nonvirtual size_t FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
                                                         size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar);
@@ -128,58 +128,13 @@ namespace Stroika::Frameworks::Led {
         nonvirtual Led_Distance GetHeight () const;
     };
 
-    /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-    //  class   TrivialWordWrappedImager<TEXTSTORE,IMAGER>
-    template <typename TEXTSTORE, typename IMAGER>
-    /*
-    @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::TrivialWordWrappedImager
-    @DESCRIPTION:   <p>Two overloaded versions - one protected, and the other public. The protected one
-                does NOT call @'TrivialImager<TEXTSTORE,IMAGER>::SnagAttributesFromTablet' - so you must in your subclass.</p>
-                    <p>Most people will just call the public CTOR - as in the class documentation
-                (@'TrivialWordWrappedImager<TEXTSTORE,IMAGER>')</p>
-    */
-    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t)
-        : TrivialImager<TEXTSTORE, IMAGER> (t)
-    {
-    }
-    template <typename TEXTSTORE, typename IMAGER>
-    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText)
-        : TrivialImager<TEXTSTORE, IMAGER> (t)
-    {
-        SnagAttributesFromTablet ();
-        SetWindowRect (bounds);
-        GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
-    }
-    template <typename TEXTSTORE, typename IMAGER>
-    void TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
-    {
-        Ensure (GetWindowRect ().GetWidth () >= 1);
-        if (lhs != nullptr) {
-            *lhs = 0;
-        }
-        if (rhs != nullptr) {
-            *rhs = GetWindowRect ().GetWidth ();
-        }
-#if qDebug
-        if (lhs != nullptr and rhs != nullptr) {
-            Ensure (*rhs > *lhs);
-        }
-#endif
-    }
-    template <typename TEXTSTORE, typename IMAGER>
-    /*
-    @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::GetHeight
-    @DESCRIPTION:   <p>Returns the height - in pixels - of the text in the imager.</p>
-    */
-    Led_Distance
-    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
-    {
-        return GetHeightOfRows (0, GetRowCount ());
-    }
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "WordWrappedTextImager.inl"
 
 #endif /*_Stroika_Frameworks_Led_WordWrappedTextImager_h_*/

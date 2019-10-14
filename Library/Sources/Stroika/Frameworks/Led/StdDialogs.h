@@ -1446,23 +1446,15 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 #endif
-
-    /*
-             ********************************************************************************
-             ***************************** Implementation Details ***************************
-             ********************************************************************************
-             */
-
-#if qSupportLedDialogWidgets && defined(__cplusplus)
-    //  class   LedComboBoxWidget
-    inline vector<Led_tString> LedComboBoxWidget::GetPopupItems () const
-    {
-        return fPopupItems;
-    }
-#endif
-
 #if defined(__cplusplus)
 }
 #endif
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "StdDialogs.inl"
 
 #endif /*__Led_StdDialogs__h__*/

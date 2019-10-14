@@ -16,10 +16,6 @@
     @'TextBreaks_DefaultImpl' implementation.</p>
  */
 
-/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
- */
-
 #include "Support.h"
 
 namespace Stroika::Frameworks::Led {
@@ -52,10 +48,10 @@ namespace Stroika::Frameworks::Led {
     */
     class TextBreaks {
     protected:
-        TextBreaks () {}
+        TextBreaks () = default;
 
     public:
-        virtual ~TextBreaks (){};
+        virtual ~TextBreaks () = default;
 
     public:
         /*
@@ -203,12 +199,13 @@ namespace Stroika::Frameworks::Led {
     */
     using TextBreaks_DefaultImpl = TextBreaks_Basic_WP;
 
-    /*
-     ********************************************************************************
-     ***************************** Implementation Details ***************************
-     ********************************************************************************
-     */
-
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "TextBreaks.inl"
 
 #endif /*_Stroika_Frameworks_Led_TextBreaks_h_*/

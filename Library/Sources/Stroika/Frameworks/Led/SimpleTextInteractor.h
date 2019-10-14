@@ -54,27 +54,13 @@ namespace Stroika::Frameworks::Led {
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
-    /*
-     ********************************************************************************
-     ***************************** Implementation Details ***************************
-     ********************************************************************************
-     */
-    //  class   SimpleTextInteractor
-    inline void SimpleTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, TextInteractor::UpdateMode updateMode)
-    {
-        TextInteractor::SetDefaultFont (defaultFont, updateMode);
-    }
-    inline void SimpleTextInteractor::SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode)
-    {
-        TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
-        SetTopRowInWindow (newTopRow);
-    }
-    inline void SimpleTextInteractor::SetTopRowInWindow (RowReference row, UpdateMode updateMode)
-    {
-        TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
-        SetTopRowInWindow (row);
-    }
-
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "SimpleTextInteractor.inl"
 
 #endif /*_Stroika_Frameworks_Led_SimpleTextInteractor_h_*/
