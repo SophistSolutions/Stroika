@@ -16,10 +16,14 @@
 #include <io.h>
 #include <sys/stat.h>
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 5054)
+#endif
 #include <afxctl.h>
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <atlbase.h>
 

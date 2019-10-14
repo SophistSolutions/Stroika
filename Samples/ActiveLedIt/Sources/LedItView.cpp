@@ -3,10 +3,14 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 5054)
+#endif
 #include <afxwin.h>
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Trace.h"

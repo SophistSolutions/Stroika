@@ -15,10 +15,14 @@
 
 #include <LDocApplication.h>
 #elif qPlatform_Windows
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 5054)
+#endif
 #include <afxole.h>
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 #elif qStroika_FeatureSupported_XWindows
 #include <gtk/gtk.h>
 #endif

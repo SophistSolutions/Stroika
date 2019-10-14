@@ -4,10 +4,14 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 5054)
+#endif
 #include <afxodlgs.h> // MFC OLE dialog classes
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <afxwin.h>
 

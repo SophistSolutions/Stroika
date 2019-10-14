@@ -23,11 +23,15 @@
 
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4459)
 #pragma warning(disable : 5054)
+#endif
 #include <afxole.h>
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <afxwin.h>
 #include <oleidl.h>

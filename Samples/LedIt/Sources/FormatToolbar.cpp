@@ -6,10 +6,14 @@
 
 #if WIN32
 
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 5054)
+#endif
 #include <afxole.h>
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <atlconv.h>
 

@@ -19,10 +19,14 @@
 #include <UAppleEventsMgr.h>
 #include <UModalDialogs.h>
 #elif qPlatform_Windows
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 5054)
+#endif
 #include <afxodlgs.h> // MFC OLE dialog classes
+#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
+#endif
 #endif
 
 #include "Stroika/Frameworks/Led/StdDialogs.h"
