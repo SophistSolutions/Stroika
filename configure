@@ -329,7 +329,7 @@ sub     GetClangVersion_
 		return 0;
 	}
 	no warnings 'numeric';
-	if (index($firstLine, "Apple LLVM") != -1) {
+	if (index($firstLine, "Apple ") == 0) {
 		my $ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
 		$ver = $ver * 1;
 		return $ver;
