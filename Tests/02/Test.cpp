@@ -441,7 +441,12 @@ namespace {
 #if qPrintTimings
             constexpr int kRecurseDepth = 10;
 #else
-            constexpr int kRecurseDepth = (defined (__arm__) and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
+			#ifdef __arm__
+            constexpr bool kArm_             = true;
+			#else
+            constexpr bool kArm_ = false;
+#endif
+            constexpr int  kRecurseDepth     = (kArm_ and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
 #endif
             STRING testString = L"some dump test";
 #if qPrintTimings
