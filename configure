@@ -1908,6 +1908,14 @@ sub GetDefaultCZZFLAGS_flags_
 
 sub PostProcessOptions_ ()
 {
+	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
+	if ($isVisualStudio eq 1) {
+		$isVisualStudio = true;
+	}
+	else {
+		$isVisualStudio = false;
+	}
+
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 	}
@@ -1977,6 +1985,13 @@ sub PostProcessOptions_ ()
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+	}
+
+	if ($isVisualStudio) {
+		# Default to true for visual studio, because debug symbols go in separate file, and don't balloon the exe size (.pdb)
+		if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
+			$INCLUDE_SYMBOLS_EXE = true;
+		}
 	}
 
 	if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
@@ -2111,14 +2126,6 @@ sub PostProcessOptions_ ()
 	FillDefaultLibsPathIfNeeded_();
 	FillDefaultLibDependencies_();
 	FillInToolsPathAdditionsIfNeeded_ ();
-
-	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
-	if ($isVisualStudio eq 1) {
-		$isVisualStudio = true;
-	}
-	else {
-		$isVisualStudio = false;
-	}
 
 
 	if ($isVisualStudio) {
