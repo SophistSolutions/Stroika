@@ -25,6 +25,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -213,6 +214,7 @@ namespace {
 
     void Test1_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test1_"};
         /*
          * Some simple tests to start off with.
          */
@@ -247,6 +249,7 @@ namespace {
 
     void Test2_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test2_"};
         Test2Helpers_::StressTestStrings ();
 #if 0
         Test2Helpers_::StressTestBufferedStrings ();
@@ -255,7 +258,8 @@ namespace {
 
     void Test3_ ()
     {
-        String t1;
+        Debug::TraceContextBumper ctx{L"Test3_"};
+        String                    t1;
         String t2 = t1;
         String t3 = L"a";
         String t4 = L"a";
@@ -314,7 +318,8 @@ namespace {
 
     void Test4_ ()
     {
-        const wchar_t frobaz[] = L"abc";
+        Debug::TraceContextBumper ctx{L"Test4_"};
+        const wchar_t             frobaz[] = L"abc";
 
         String  t1;
         String  t3 = L"a";
@@ -404,7 +409,8 @@ namespace {
 
     void Test5_ ()
     {
-        String arr[100];
+        Debug::TraceContextBumper ctx{L"Test5_"};
+        String                    arr[100];
         arr[3] = L"fred";
         VerifyTestResult (arr[3] == L"fred");
         String* l = new String[100];
@@ -451,11 +457,13 @@ namespace {
     }
     void Test6_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test6_"};
         Test6_Helper_<String> ("Characters::String");
         Test6_Helper_<wstring> ("std::wstring");
     }
     void Test7_Comparisons_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test7_Comparisons_"};
         VerifyTestResult (String (L"1") <= String (L"1"));
         VerifyTestResult (L"1" <= String (L"1"));
         VerifyTestResult (String (L"1") <= L"1");
@@ -486,6 +494,7 @@ namespace {
 
     void Test8_ReadOnlyStrings_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test8_ReadOnlyStrings_"};
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
         String s = String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
@@ -513,7 +522,8 @@ namespace {
 
     void Test8_ExternalMemoryOwnershipStrings_ ()
     {
-        String s = String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
+        Debug::TraceContextBumper ctx{L"Test8_ExternalMemoryOwnershipStrings_"};
+        String                    s = String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
@@ -544,6 +554,7 @@ namespace {
     }
     void Test9_StringVersusStdCString_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test9_StringVersusStdCString_"};
         // EMBELLISH THIS MORE ONCE WE HAVE TIMING SUPPORT WORKING - SO WE CNA COMPARE PERFORMANCE - AND COME UP WITH MORE REASONABLE TESTS
         //
         //      -- LGP 2011-09-01
@@ -552,7 +563,8 @@ namespace {
     }
     void Test10_ConvertToFromSTDStrings_ ()
     {
-        const wstring kT1 = L"abcdefh124123985213129314234";
+        Debug::TraceContextBumper ctx{L"Test10_ConvertToFromSTDStrings_"};
+        const wstring             kT1 = L"abcdefh124123985213129314234";
         String        t1  = kT1;
         VerifyTestResult (t1.As<wstring> () == kT1);
         VerifyTestResult (t1 == kT1);
@@ -562,7 +574,8 @@ namespace {
 namespace {
     void Test11_Trim_ ()
     {
-        const String kT1 = L"  abc";
+        Debug::TraceContextBumper ctx{L"Test11_Trim_"};
+        const String              kT1 = L"  abc";
         VerifyTestResult (kT1.RTrim () == kT1);
         VerifyTestResult (kT1.LTrim () == kT1.Trim ());
         VerifyTestResult (kT1.Trim () == L"abc");
@@ -576,7 +589,8 @@ namespace {
 namespace {
     void Test12_CodePageConverter_ ()
     {
-        wstring w = L"<PHRMode";
+        Debug::TraceContextBumper ctx{L"Test12_CodePageConverter_"};
+        wstring                   w = L"<PHRMode";
         using namespace Characters;
         using namespace Memory;
         CodePageConverter      cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
