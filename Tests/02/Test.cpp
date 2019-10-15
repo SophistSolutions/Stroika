@@ -436,6 +436,7 @@ namespace {
     template <typename STRING>
     void Test6_Helper_ ([[maybe_unused]] const char* testMessage)
     {
+        Debug::TraceContextBumper ctx{L"Test6_Helper_"};
 #if qPrintTimings
         const int kRecurseDepth = 10;
 #else
@@ -605,7 +606,8 @@ namespace {
 namespace {
     void Test13_ToLowerUpper_ ()
     {
-        String w = L"Lewis";
+        Debug::TraceContextBumper ctx{L"Test13_ToLowerUpper_"};
+        String                    w = L"Lewis";
         VerifyTestResult (w.ToLowerCase () == L"lewis");
         VerifyTestResult (w.ToUpperCase () == L"LEWIS");
         VerifyTestResult (w == L"Lewis");
@@ -615,7 +617,8 @@ namespace {
 namespace {
     void Test14_String_StackLifetimeReadOnly_ ()
     {
-        wchar_t buf[1024] = L"fred";
+        Debug::TraceContextBumper ctx{L"Test14_String_StackLifetimeReadOnly_"};
+        wchar_t                   buf[1024] = L"fred";
         {
             String_ExternalMemoryOwnership_StackLifetime s (buf);
             VerifyTestResult (s[0] == 'f');
@@ -650,7 +653,8 @@ namespace {
 namespace {
     void Test15_StripAll_ ()
     {
-        String w = L"Le wis";
+        Debug::TraceContextBumper ctx{L"Test15_StripAll_"};
+        String                    w = L"Le wis";
         VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == L"Lewis");
 
         w = L"This is a very good test    ";
@@ -661,6 +665,7 @@ namespace {
 namespace {
     void Test16_Format_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test16_Format_"};
         VerifyTestResult (CString::Format ("%d", 123) == "123");
         VerifyTestResult (CString::Format ("%s", "123") == "123");
 
@@ -838,6 +843,7 @@ namespace {
 
     void Test17_Find_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test17_Find_"};
         Test17_Private_::Test17_ReplaceAll_ ();
         Test17_Private_::Test17_ReplaceAll_ ();
         Test17_Private_::Test17_RegExp_ ();
@@ -848,7 +854,8 @@ namespace {
 namespace {
     void Test18_Compare_ ()
     {
-        const String kHELLOWorld = String (L"Hello world");
+        Debug::TraceContextBumper ctx{L"Test18_Compare_"};
+        const String              kHELLOWorld = String (L"Hello world");
         VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld) == 0);
         VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String (L"Hello world")) == 0);
         VerifyTestResult (String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0);
@@ -865,6 +872,7 @@ namespace {
 namespace {
     void Test19_ConstCharStar_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test19_ConstCharStar_"};
         VerifyTestResult (wcscmp (String (L"fred").c_str (), L"fred") == 0);
         VerifyTestResult (wcscmp (String (L"0123456789abcde").c_str (), L"0123456789abcde") == 0);                                   // 15 chars
         VerifyTestResult (wcscmp (String (L"0123456789abcdef").c_str (), L"0123456789abcdef") == 0);                                 // 16 chars
@@ -887,6 +895,7 @@ namespace {
 namespace {
     void Test20_CStringHelpers_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test20_CStringHelpers_"};
         VerifyTestResult (CString::Length ("hi") == 2);
         VerifyTestResult (CString::Length (L"hi") == 2);
         {
@@ -928,6 +937,7 @@ namespace {
     }
     void Test21_StringToIntEtc_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test21_StringToIntEtc_"};
         {
             VerifyTestResult (CString::String2Int<int> ("-3") == -3);
             VerifyTestResult (CString::String2Int<int> ("3") == 3);
@@ -1015,6 +1025,7 @@ namespace {
 namespace {
     void Test22_StartsWithEndsWithMatch_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test22_StartsWithEndsWithMatch_"};
         VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
         VerifyTestResult (not(String (L"abc").Match (RegularExpression (L"bc"))));
         VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc")));
@@ -1030,20 +1041,24 @@ namespace {
 }
 
 namespace {
-    String Test23_help1_ (const wchar_t* format, va_list argsList)
-    {
-        return Characters::FormatV (format, argsList);
-    }
-    String Test23_help1_HELPER (const wchar_t* format, ...)
-    {
-        va_list argsList;
-        va_start (argsList, format);
-        String tmp = Test23_help1_ (format, argsList);
-        va_end (argsList);
-        return tmp;
+    namespace Test23_PRIVATE_ {
+        String Test23_help1_ (const wchar_t* format, va_list argsList)
+        {
+            return Characters::FormatV (format, argsList);
+        }
+        String Test23_help1_HELPER (const wchar_t* format, ...)
+        {
+            va_list argsList;
+            va_start (argsList, format);
+            String tmp = Test23_help1_ (format, argsList);
+            va_end (argsList);
+            return tmp;
+        }
     }
     void Test23_FormatV_ ()
     {
+		using namespace Test23_PRIVATE_;
+        Debug::TraceContextBumper ctx{L"Test23_FormatV_"};
         VerifyTestResult (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
     }
 }
@@ -1051,6 +1066,7 @@ namespace {
 namespace {
     void Test24_Float2String ()
     {
+        Debug::TraceContextBumper ctx{L"Test24_Float2String"};
         VerifyTestResult (Float2String (0.0) == L"0");
         VerifyTestResult (Float2String (3000.5) == L"3000.5");
         VerifyTestResult (Float2String (3000.500) == L"3000.5");
@@ -1064,7 +1080,8 @@ namespace {
 namespace {
     void Test25_RemoveAt_ ()
     {
-        String x = L"123";
+        Debug::TraceContextBumper ctx{L"Test25_RemoveAt_"};
+        String                    x = L"123";
         x        = x.RemoveAt (1);
         VerifyTestResult (x == L"13");
         x = x.RemoveAt (0, 2);
