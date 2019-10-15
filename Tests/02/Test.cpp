@@ -423,41 +423,45 @@ namespace {
         delete[](l);
     }
 
-    template <typename STRING>
-    STRING Test6_Helper_ (const STRING& a, int depth)
-    {
-        STRING b = a;
-        b += a;
-        if (depth > 0) {
-            b = Test6_Helper_<STRING> (b, depth - 1) + Test6_Helper_<STRING> (b, depth - 1);
+	namespace Test6_PRIVATE_ {
+        template <typename STRING>
+        STRING Test6_Helper_ (const STRING& a, int depth)
+        {
+            STRING b = a;
+            b += a;
+            if (depth > 0) {
+                b = Test6_Helper_<STRING> (b, depth - 1) + Test6_Helper_<STRING> (b, depth - 1);
+            }
+            return (b);
         }
-        return (b);
-    }
-    template <typename STRING>
-    void Test6_Helper_ ([[maybe_unused]] const char* testMessage)
-    {
-        Debug::TraceContextBumper ctx{L"Test6_Helper_"};
+        template <typename STRING>
+        void Test6_Helper_ ([[maybe_unused]] const char* testMessage)
+        {
+            Debug::TraceContextBumper ctx{L"Test6_Helper_"};
 #if qPrintTimings
-        const int kRecurseDepth = 10;
+            const int kRecurseDepth = 10;
 #else
-        const int kRecurseDepth = 8;
+            //const int kRecurseDepth = 8;
+            const int kRecurseDepth = 4;
 #endif
-        STRING testString = L"some dump test";
+            STRING testString = L"some dump test";
 #if qPrintTimings
-        cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
-        Time::DurationSecondsType t = Time::GetTickCount ();
+            cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
+            Time::DurationSecondsType t = Time::GetTickCount ();
 #endif
 
-        STRING s = Test6_Helper_<STRING> (testString, kRecurseDepth); // returns length 114688 for depth 6
-        VerifyTestResult (s.length () == (ipow (4, kRecurseDepth) * 2 * testString.length ()));
+            STRING s = Test6_Helper_<STRING> (testString, kRecurseDepth); // returns length 114688 for depth 6
+            VerifyTestResult (s.length () == (ipow (4, kRecurseDepth) * 2 * testString.length ()));
 
 #if qPrintTimings
-        t = Time::GetTickCount () - t;
-        cout << "\tfinished Recursive build test. Time elapsed = " << t << " length = " << s.length () << endl;
+            t = Time::GetTickCount () - t;
+            cout << "\tfinished Recursive build test. Time elapsed = " << t << " length = " << s.length () << endl;
 #endif
+        }
     }
     void Test6_ ()
     {
+		using namespace Test6_PRIVATE_;
         Debug::TraceContextBumper ctx{L"Test6_"};
         Test6_Helper_<String> ("Characters::String");
         Test6_Helper_<wstring> ("std::wstring");
@@ -1092,6 +1096,7 @@ namespace {
 namespace {
     void Test26_Iteration_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test26_Iteration_"};
         {
             String x = L"123";
             int    i = 0;
@@ -1120,6 +1125,7 @@ namespace {
 namespace {
     void Test27_Repeat_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test27_Repeat_"};
         {
             String x;
             String r = x.Repeat (5);
@@ -1137,7 +1143,8 @@ namespace {
 namespace {
     void Test28_ReplacementForStripTrailingCharIfAny_ ()
     {
-        auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String {
+        Debug::TraceContextBumper ctx{L"Test28_ReplacementForStripTrailingCharIfAny_"};
+        auto                      StripTrailingCharIfAny = [](const String& s, const Character& c) -> String {
             return s.EndsWith (c) ? s.SubString (0, -1) : s;
         };
         VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
@@ -1149,6 +1156,7 @@ namespace {
 namespace {
     void Test29_StringWithSequenceOfCharacter_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test29_StringWithSequenceOfCharacter_"};
         {
             String              initialString = L"012345";
             Sequence<Character> s1            = Sequence<Character> (initialString); // THIS NEEDS TO BE MORE SEEMLESS
@@ -1161,6 +1169,7 @@ namespace {
 namespace {
     void Test30_LimitLength_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test30_LimitLength_"};
         VerifyTestResult (String (L"12345").LimitLength (3) == L"12\u2026");
         VerifyTestResult (String (L"12345").LimitLength (5) == L"12345");
     }
@@ -1169,7 +1178,7 @@ namespace {
 namespace {
     void Test31_OperatorINSERT_ostream_ ()
     {
-        using namespace std;
+        Debug::TraceContextBumper ctx{L"Test31_OperatorINSERT_ostream_"};
         wstringstream out;
         out << String (L"abc");
         VerifyTestResult (out.str () == L"abc");
@@ -1179,6 +1188,7 @@ namespace {
 namespace {
     void Test32_StringBuilder_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test32_StringBuilder_"};
         {
             StringBuilder out;
             out << L"hi mom";
