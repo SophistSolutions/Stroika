@@ -95,7 +95,7 @@ namespace {
 #if qDebug
         const int kLoopEnd = 1000;
 #else
-        const int kLoopEnd      = 2000;
+        const int kLoopEnd = 2000;
 #endif
 
         void StressTest1_ (String big)
@@ -260,9 +260,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test3_"};
         String                    t1;
-        String t2 = t1;
-        String t3 = L"a";
-        String t4 = L"a";
+        String                    t2 = t1;
+        String                    t3 = L"a";
+        String                    t4 = L"a";
 
         VerifyTestResult (t1 == L"");
         VerifyTestResult (t1 == String ());
@@ -423,7 +423,7 @@ namespace {
         delete[](l);
     }
 
-	namespace Test6_PRIVATE_ {
+    namespace Test6_PRIVATE_ {
         template <typename STRING>
         STRING Test6_Helper_ (const STRING& a, int depth)
         {
@@ -440,10 +440,8 @@ namespace {
             Debug::TraceContextBumper ctx{L"Test6_Helper_"};
 #if qPrintTimings
             constexpr int kRecurseDepth = 10;
-#elif defined(__arm__)
-            constexpr int kRecurseDepth = 6;	// reduction only needed with sanitizer on rasberrypi
 #else
-            constexpr int kRecurseDepth = 8;
+            constexpr int kRecurseDepth = (defined (__arm__) and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
 #endif
             STRING testString = L"some dump test";
 #if qPrintTimings
@@ -462,7 +460,7 @@ namespace {
     }
     void Test6_ ()
     {
-		using namespace Test6_PRIVATE_;
+        using namespace Test6_PRIVATE_;
         Debug::TraceContextBumper ctx{L"Test6_"};
         Test6_Helper_<String> ("Characters::String");
         Test6_Helper_<wstring> ("std::wstring");
@@ -571,7 +569,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test10_ConvertToFromSTDStrings_"};
         const wstring             kT1 = L"abcdefh124123985213129314234";
-        String        t1  = kT1;
+        String                    t1  = kT1;
         VerifyTestResult (t1.As<wstring> () == kT1);
         VerifyTestResult (t1 == kT1);
     }
@@ -1062,7 +1060,7 @@ namespace {
     }
     void Test23_FormatV_ ()
     {
-		using namespace Test23_PRIVATE_;
+        using namespace Test23_PRIVATE_;
         Debug::TraceContextBumper ctx{L"Test23_FormatV_"};
         VerifyTestResult (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
     }
@@ -1087,7 +1085,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test25_RemoveAt_"};
         String                    x = L"123";
-        x        = x.RemoveAt (1);
+        x                           = x.RemoveAt (1);
         VerifyTestResult (x == L"13");
         x = x.RemoveAt (0, 2);
         VerifyTestResult (x.empty ());
@@ -1145,7 +1143,7 @@ namespace {
     void Test28_ReplacementForStripTrailingCharIfAny_ ()
     {
         Debug::TraceContextBumper ctx{L"Test28_ReplacementForStripTrailingCharIfAny_"};
-        auto                      StripTrailingCharIfAny = [](const String& s, const Character& c) -> String {
+        auto                      StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String {
             return s.EndsWith (c) ? s.SubString (0, -1) : s;
         };
         VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
@@ -1180,7 +1178,7 @@ namespace {
     void Test31_OperatorINSERT_ostream_ ()
     {
         Debug::TraceContextBumper ctx{L"Test31_OperatorINSERT_ostream_"};
-        wstringstream out;
+        wstringstream             out;
         out << String (L"abc");
         VerifyTestResult (out.str () == L"abc");
     }
@@ -1213,7 +1211,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test33_Append_"};
         String                    result;
-        Character buf[]{'a', 'b', 'c', 'd'};
+        Character                 buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
             result.Append (std::begin (buf), std::begin (buf) + NEltsOf (buf));
         }
@@ -1300,7 +1298,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test46_CompareLHSRHS_"};
         const wchar_t*            i = L"One";
-        Characters::String n = L"Two";
+        Characters::String        n = L"Two";
         if (i == n) {
             VerifyTestResult (false);
         }
@@ -1362,7 +1360,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test49_SetOfStringCTORIssue_"};
         optional<String>          optString{String ()};
-        Containers::Set<String> s{*optString};
+        Containers::Set<String>   s{*optString};
     }
 }
 
