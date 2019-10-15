@@ -439,10 +439,11 @@ namespace {
         {
             Debug::TraceContextBumper ctx{L"Test6_Helper_"};
 #if qPrintTimings
-            const int kRecurseDepth = 10;
+            constexpr int kRecurseDepth = 10;
+#elif defined(__arm__)
+            constexpr int kRecurseDepth = 6;	// reduction only needed with sanitizer on rasberrypi
 #else
-            //const int kRecurseDepth = 8;
-            const int kRecurseDepth = 4;
+            constexpr int kRecurseDepth = 8;
 #endif
             STRING testString = L"some dump test";
 #if qPrintTimings
@@ -1210,7 +1211,8 @@ namespace {
 namespace {
     void Test33_Append_ ()
     {
-        String    result;
+        Debug::TraceContextBumper ctx{L"Test33_Append_"};
+        String                    result;
         Character buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
             result.Append (std::begin (buf), std::begin (buf) + NEltsOf (buf));
@@ -1224,6 +1226,7 @@ namespace {
 namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test44_LocaleUNICODEConversions_"};
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 #if !qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
         auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
@@ -1260,6 +1263,7 @@ namespace {
 namespace {
     void Test45_Tokenize_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test45_Tokenize_"};
         using Containers::Set;
         {
             String           t{L"ABC DEF G"};
@@ -1294,7 +1298,8 @@ namespace {
 namespace {
     void Test46_CompareLHSRHS_ ()
     {
-        const wchar_t*     i = L"One";
+        Debug::TraceContextBumper ctx{L"Test46_CompareLHSRHS_"};
+        const wchar_t*            i = L"One";
         Characters::String n = L"Two";
         if (i == n) {
             VerifyTestResult (false);
@@ -1310,6 +1315,7 @@ namespace {
 namespace {
     void Test47_SubString_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test47_SubString_"};
         {
             String tmp{L"This is good"};
             VerifyTestResult (tmp.SubString (5) == L"is good");
@@ -1329,6 +1335,7 @@ namespace {
 namespace {
     void Test48_ToString_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test48_ToString_"};
         VerifyTestResult (ToString (3) == L"3");
         VerifyTestResult (ToString (3u) == L"0x3");
         VerifyTestResult (ToString (1.0).StartsWith (L"1"));
@@ -1353,7 +1360,8 @@ namespace {
 namespace {
     void Test49_SetOfStringCTORIssue_ ()
     {
-        optional<String>        optString{String ()};
+        Debug::TraceContextBumper ctx{L"Test49_SetOfStringCTORIssue_"};
+        optional<String>          optString{String ()};
         Containers::Set<String> s{*optString};
     }
 }
@@ -1361,6 +1369,7 @@ namespace {
 namespace {
     void Test50_Utf8Conversions_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test50_Utf8Conversions_"};
         {
             VerifyTestResult (String::FromUTF8 (u8"phred") == String{L"phred"});
 #if __cpp_char8_t >= 201811L
@@ -1403,6 +1412,7 @@ namespace {
 namespace {
     void Test51_Utf16Conversions_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test51_Utf16Conversions_"};
         {
             VerifyTestResult (u16string (u"phred") == String (u16string (u"phred")).AsUTF16 ());
             VerifyTestResult (u16string (u"שלום") == String (u16string (u"שלום")).AsUTF16 ());
@@ -1459,6 +1469,7 @@ namespace {
 namespace {
     void Test52_Utf32Conversions_ ()
     {
+        Debug::TraceContextBumper ctx{L"Test52_Utf32Conversions_"};
         {
             VerifyTestResult (u32string (U"phred") == String (u32string (U"phred")).AsUTF32 ());
             VerifyTestResult (u32string (U"שלום") == String (u32string (U"שלום")).AsUTF32 ());
@@ -1490,6 +1501,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
+        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
         Test1_ ();
         Test2_ ();
         Test3_ ();
