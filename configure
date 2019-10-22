@@ -1975,8 +1975,6 @@ sub PostProcessOptions_ ()
 				}
 			}
 		}
-
-		
 	}
 	if (not ($noSanitizerFlags eq "")) {
 		$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
