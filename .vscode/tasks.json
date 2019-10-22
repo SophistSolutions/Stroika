@@ -2,14 +2,68 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "isBackground": true,
-            "label": "make",
+            "label": "Get CURRENT-CONFIGURATION",
+            "type": "shell",
+            "command": "cat ${workspaceFolder}/CURRENT-CONFIGURATION",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+            ],
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated"
+            },
+            "promptOnClose": false,
+        },
+        {
+            "label": "Set CURRENT-CONFIGURATION",
+            "type": "shell",
+            "command": "echo ${input:PROMPT-CONFIGURATION} > ${workspaceFolder}/CURRENT-CONFIGURATION",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+            ],
+            "promptOnClose": false,
+        },
+        {
+            "label": "Get CURRENT-JOBSFLAG",
+            "type": "shell",
+            "command": "cat ${workspaceFolder}/CURRENT-JOBSFLAG",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+            ],
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated"
+            },
+            "promptOnClose": false,
+        },
+        {
+            "label": "Set CURRENT-JOBSFLAG",
+            "type": "shell",
+            "command": "echo ${input:PROMT-JOBSFLAG} > ${workspaceFolder}/CURRENT-JOBSFLAG",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+            ]
+        },
+        {
+            "label": "make CURRENT-CONFIGURATION PROMPT-TARGET PROMPT-JOBSFLAGS",
             "type": "shell",
             "command": "make",
             "args": [
-                "CONFIGURATION=${input:CONFIGURATION}",
-                "--directory", "${input:DIRECTORY}",
-                "${input:make-targets}"
+                "CONFIGURATION=`cat ${workspaceFolder}/CURRENT-CONFIGURATION`",
+                "${input:PROMPT-TARGET}",
+                "${input:PROMT-JOBSFLAG}"
             ],
             "group": {
                 "kind": "build",
@@ -22,24 +76,118 @@
             "problemMatcher": [
                 "$msCompile"
             ]
+        },
+        {
+            "label": "make rebuild CURRENT-CONFIGURATION PROMPT-TARGET PROMPT-JOBSFLAGS",
+            "type": "shell",
+            "command": "make CONFIGURATION=${input:CURRENT-CONFIGURATION} --no-print-directory --directory ${input:PROMT-DIRECTORY} clean && make CONFIGURATION=${input:CURRENT-CONFIGURATION} --no-print-directory --directory ${input:PROMT-DIRECTORY} all ${input:PROMT-JOBSFLAG}",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "clear": true,
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "make CONFIGURATION",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${input:PROMPT-CONFIGURATION}",
+                "--no-print-directory",
+                "--directory", "${input:PROMT-DIRECTORY}",
+                "${input:PROMPT-TARGET}",
+                "${input:PROMT-JOBSFLAG}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "clear": true,
+                "panel": "dedicated"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "make rebuild CONFIGURATION",
+            "type": "shell",
+            "command": "make CONFIGURATION=${input:PROMPT-CONFIGURATION} --no-print-directory --directory ${input:PROMT-DIRECTORY} clean && make CONFIGURATION=${input:PROMPT-CONFIGURATION} --no-print-directory --directory ${input:PROMT-DIRECTORY}  all ${input:PROMT-JOBSFLAG}",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "clear": true,
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "make clean PROMPT-CONFIGURATION",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${input:PROMPT-CONFIGURATION}",
+                "--no-print-directory",
+                "--directory", "${input:PROMT-DIRECTORY}",
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "make clobber PROMPT-CONFIGURATION PROMT-DIRECTORY",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "CONFIGURATION=${input:PROMPT-CONFIGURATION}",
+                "--no-print-directory",
+                "--directory", "${input:PROMT-DIRECTORY}",
+                "clobber"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "clear": true,
+                "panel": "dedicated"
+            }
         }
     ],
     "inputs": [
         {
-            "id": "CONFIGURATION",
+            "id": "PROMPT-CONFIGURATION",
             "description": "configuration name?",
-            "default": "Debug-U-32",
-            "type": "pickString",
-            "options": [
-                "",
-                "Debug-U-32",
-                "Debug-U-64",
-                "Release-U-32",
-                "Release-U-64",
-            ]
+            "type": "promptString"
         },
         {
-            "id": "DIRECTORY",
+            "id": "PROMT-JOBSFLAG",
+            "description": "-j1, -j4, etc",
+            "default": "-j4",
+            "type": "promptString"
+        },
+        {
+            "id": "PROMT-DIRECTORY",
             "description": "directory?",
             "default": ".",
             "type": "pickString",
@@ -52,10 +200,15 @@
             ]
         },
         {
-            "id": "make-targets",
+            "id": "PROMPT-TARGET",
             "description": "typically all, clean, clobber, libraries, tests, run-tests, etc.",
             "default": "all",
             "type": "promptString"
+        },
+        {
+            "id": "CURRENT-CONFIGURATION",
+            "type": "command",
+            "command" : "echo WHAT COMMAND READS THAT FILE"
         }
     ]
 }
