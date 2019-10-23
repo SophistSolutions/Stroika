@@ -49,7 +49,7 @@ namespace {
             RequireNotNull (m);
             String fn{ExtractFileName_ (m)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetHostRelativePath ().c_str (), fn.c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetAuthorityRelativeResource ().c_str (), fn.c_str ())};
 #endif
             try {
                 Response&              response = *m->PeekResponse ();

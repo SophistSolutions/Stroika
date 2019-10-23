@@ -55,8 +55,8 @@ namespace Stroika::Foundation::Cache {
             lock.unlock ();
             if (fHoldWriteLockDuringCacheFill) {
                 // Avoid two threds calling cache for same key value at the same time
-                auto&& newRWLock = lock_guard{fMutex_};
-                VALUE  v         = cacheFiller (key);
+                [[maybe_unused]] auto&& newRWLock = lock_guard{fMutex_};
+                VALUE                   v         = cacheFiller (key);
                 this->Add (key, v);
                 return v;
             }
