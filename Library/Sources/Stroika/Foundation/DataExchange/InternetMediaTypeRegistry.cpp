@@ -44,7 +44,7 @@ namespace {
         {
 #if qPlatform_POSIX
             // On POSIX systems, try these two locations to load MIME DB from files. DONT do on demand (per lookup) because you have to parse the entire files for these requests.
-            if (LoadFromEtcMimeDotTypes ()) {
+            if (LoadFromUserShare ()) {
                 return;
             }
             if (LoadFromEtcMimeDotTypes ()) {
@@ -71,7 +71,7 @@ namespace {
                     }
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"succeeded");
+                DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap.size (), fMediaType2PreferredSuffixMap.size ());
 #endif
                 return true;
             }
@@ -99,7 +99,7 @@ namespace {
                     }
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"succeeded");
+                DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap.size (), fMediaType2PreferredSuffixMap.size ());
 #endif
                 return true;
             }
