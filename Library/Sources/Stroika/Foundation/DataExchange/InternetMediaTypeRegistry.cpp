@@ -43,7 +43,11 @@ namespace {
         MIMEDB_ ()
         {
 #if qPlatform_POSIX
-            // On POSIX systems, try these two locations to load MIME DB from files. DONT do on demand (per lookup) because you have to parse the entire files for these requests.
+            // On POSIX systems, try these two locations to load MIME DB from files. DONT do on demand (per lookup)
+            // because you have to parse the entire files for these requests.
+            //
+            // Note - if one works, we assume that's good enuf, and don't waste time reading the other. That could be
+            // a mistake, and maybe we should read both?
             if (LoadFromUserShare ()) {
                 return;
             }
@@ -90,12 +94,15 @@ namespace {
             Debug::TraceContextBumper ctx{L"{}MIMEDB_::LoadFromEtcMimeDotTypes"};
 #endif
             try {
-                for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
-                    if (line.length () == 2 and not line[0].StartsWith (L"#")) {
+                for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
+                    if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
                         InternetMediaType ct{line[0]};
-                        String            suffix = line[1];
-                        fSuffix2MediaTypeMap.Add (suffix, ct);
-                        fMediaType2PreferredSuffixMap.Add (ct, suffix);
+                        // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
+                        for (size_t i = 1; i < line.length (); ++i) {
+                            String suffix = L"."sv + line[i];
+                            fSuffix2MediaTypeMap.Add (suffix, ct);
+                            fMediaType2PreferredSuffixMap.Add (ct, suffix);
+                        }
                     }
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
