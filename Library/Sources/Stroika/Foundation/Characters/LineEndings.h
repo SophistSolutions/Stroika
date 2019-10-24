@@ -41,6 +41,7 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \brief Convert the argument srcText buffer from NL format line endings, to CRLF format line endings.
+     *         Note - even if input is already CRLF, this then is a no-op, changing nothing.
      */
     template <typename TCHAR>
     size_t NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);

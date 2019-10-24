@@ -119,14 +119,17 @@ namespace Stroika::Foundation::Characters {
     {
         Require (srcText != outBuf); // though we support this for the others - its too hard
                                      // in this case for the PC...
-        TCHAR* outPtr = outBuf;
-        for (size_t i = 1; i <= srcTextBytes; i++) {
+        TCHAR* outPtr        = outBuf;
+        bool   prevCharWasCR = false;
+        for (const TCHAR* i = srcText; i < srcText + srcTextBytes; ++i) {
             Assert (outPtr < outBuf + outBufSize);
-            TCHAR c = srcText[i - 1];
-            if (c == '\n') {
+            // prefix all LF with 'CR' so 'CRLF', unless it already WAS CRLF
+            if (*i == '\n' and not prevCharWasLF) {
                 *outPtr++ = '\r';
             }
-            *outPtr++ = c;
+            Assert (outPtr < outBuf + outBufSize);
+            *outPtr++ = *i;
+            prevCharWasCR == (*i == '\r');
         }
         size_t nBytes = outPtr - outBuf;
         Assert (nBytes <= outBufSize);
