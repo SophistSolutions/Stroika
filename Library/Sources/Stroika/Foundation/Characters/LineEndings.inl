@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Characters {
         for (const TCHAR* i = srcText; i < srcText + srcTextBytes; ++i) {
             Assert (outPtr < outBuf + outBufSize);
             // prefix all LF with 'CR' so 'CRLF', unless it already WAS CRLF
-            if (*i == '\n' and not prevCharWasLF) {
+            if (*i == '\n' and not prevCharWasCR) {
                 *outPtr++ = '\r';
             }
             Assert (outPtr < outBuf + outBufSize);
