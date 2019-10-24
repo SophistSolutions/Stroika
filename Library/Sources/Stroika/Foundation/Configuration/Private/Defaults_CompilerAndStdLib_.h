@@ -144,6 +144,7 @@
 // _MSC_VER=1923
 #define _MSC_VER_2k19_16Pt3_ 1923
 #define _MS_VS_2k19_16Pt3Pt0_ 192328105
+#define _MS_VS_2k19_16Pt3Pt5_ 192328106
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -161,14 +162,10 @@
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt3_
-// check which pointer-version of MSVC2k19 (15.9.x)
-#if _MSC_FULL_VER > _MS_VS_2k19_16Pt3Pt0_
-// @todo figure out how to add arg to message
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 16.3.0 - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
-#define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
-#endif
+// We COULD look at _MSC_FULL_VER and compare to _MS_VS_2k19_16Pt3Pt5_ etc, but changes too often and too rarely makes a difference
+// Just assume all bug defines the same for a given _MSC_VER
 #else
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (> 16.1) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (> 16.3) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
