@@ -327,12 +327,12 @@
 {
    https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
-   fun:releaseMemArray.part.287.*
+   fun:releaseMemArray.part.*.*
 }
 {
    https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Value4
-   fun:releaseMemArray.part.287.*
+   fun:releaseMemArray.part.*.*
 }
 {
    https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
