@@ -341,6 +341,11 @@
 }
 {
    https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
+   Memcheck:Value4
+   fun:insertCell.*
+}
+{
+   https://stroika.atlassian.net/browse/STK-699 - raspberry pi only - recent as of debian 10 upgrade
    Memcheck:Cond
    fun:btreeParseCellPtr
 }
