@@ -36,7 +36,7 @@ mkdir -p Tests/HistoricalRegressionTestResults
 
 
 if [ "$(uname -s)" == "Darwin" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode10"; fi
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode11"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
 fi
 if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
