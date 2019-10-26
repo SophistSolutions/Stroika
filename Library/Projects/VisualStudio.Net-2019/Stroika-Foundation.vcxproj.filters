@@ -321,15 +321,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
@@ -388,9 +379,6 @@
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.cpp">
