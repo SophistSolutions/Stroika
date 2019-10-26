@@ -22,12 +22,12 @@ These can all be run at the same time (each in a separate bash shell window). Mo
 do work remotely on other machines (MACHINE=ARG), and then copy back results to this machine where I can
 checkin from one spot.
 
-* $TEST_TARGET=MacOS_XCode10
+* $TEST_TARGET=MacOS_XCode11
 
     (takes about 1 HR)
 
     ~~~bash
-    MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
+    MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode11 \
         ./ScriptsLib/RunRemoteRegressionTests
     ~~~
 
