@@ -95,10 +95,12 @@
   <ImportGroup Label="Shared">
   </ImportGroup>
   <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros">
+    <JOBS_FLAG>-j5</JOBS_FLAG>
+  </PropertyGroup>
 
   <PropertyGroup>
-    <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources/Stroika/Foundation/ CONFIGURATION=$(CONFIGURATION) all -j5 --silent</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources/Stroika/Foundation/ CONFIGURATION=$(CONFIGURATION) all $(JOBS_FLAG) --silent</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources/Stroika/Foundation/ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
     <OutDir>$(ProjectDir)\..\..\..\Builds\$(Configuration)</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\IntermediateFiles\Stroika-Foundation\$(Configuration)</IntDir>
