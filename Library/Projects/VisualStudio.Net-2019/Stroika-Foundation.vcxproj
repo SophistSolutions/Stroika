@@ -104,6 +104,8 @@
     <IntDir>$(ProjectDir)\..\..\..\IntermediateFiles\Stroika-Foundation\$(Configuration)</IntDir>
   </PropertyGroup>
 
+  <ItemDefinitionGroup />
+
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
