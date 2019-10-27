@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug-A-32|Win32">
       <Configuration>Debug-A-32</Configuration>
@@ -74,6 +75,7 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EE9FC638-19E3-4D45-ABC4-6A451CE3DB6D}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
@@ -185,8 +187,10 @@
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
+
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -241,7 +245,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+
   <PropertyGroup Label="UserMacros" />
+
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Tests\</OutDir>
@@ -299,6 +305,7 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">false</LinkIncremental>
   </PropertyGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -314,7 +321,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -322,7 +329,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
@@ -340,14 +347,14 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">
@@ -365,7 +372,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -373,7 +380,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
@@ -391,13 +398,13 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
@@ -415,13 +422,13 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
@@ -439,13 +446,13 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
@@ -462,7 +469,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -471,7 +478,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
@@ -488,7 +495,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -497,7 +504,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
@@ -514,7 +521,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -523,7 +530,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
@@ -540,7 +547,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -549,7 +556,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
@@ -566,7 +573,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -575,7 +582,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
@@ -592,7 +599,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -601,7 +608,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
@@ -618,7 +625,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -626,7 +633,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
@@ -643,7 +650,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -651,7 +658,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
@@ -668,7 +675,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -676,7 +683,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
@@ -693,7 +700,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -701,7 +708,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
@@ -718,7 +725,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -726,7 +733,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
@@ -743,7 +750,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Stroika-Foundation.lib;urlmon.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -751,9 +758,10 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../../Builds/$(Configuration)/;$(ProjectDir)../../../../Builds/$(Configuration)/ThirdPartyComponents/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2019\Stroika-Foundation.vcxproj">
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
@@ -764,6 +772,7 @@
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
+
   <ItemGroup>
     <ClCompile Include="..\..\..\NNN\Test.cpp">
     </ClCompile>
@@ -793,7 +802,9 @@
   <ItemGroup>
     <None Include="..\..\..\NNN\Makefile" />
   </ItemGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+
 </Project>
