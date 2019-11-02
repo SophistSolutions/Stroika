@@ -16,8 +16,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- *  TODO
  */
 
 namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
@@ -55,16 +53,17 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     };
 
     /**
+     *  \brief Downhill Simplex Minimization, AKA Nelder-Mead algorithm, to compute minimization
+     *
      *  Take an argument function with argument 'initialValues' and try many values to find where the targetFunction is least (ie minimize it).
      *
      *  If the function is naturally periodic - you can add checks in the minimization function for the desired target range and produce LARGE answers there
      *  so they wont appear as minima of the 'targetFunction'.
      *
-     *      Reference: https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py
      *      Reference: https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
+     *      Reference: https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py
      *      Reference: http://www.aip.de/groups/soe/local/numres/bookcpdf/c10-4.pdf
      *      Reference: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/20398/versions/1/previews/fminsearch2.m/index.html
-     *
      *
      *  \note   The size of the Sequence<> in initialValues will be the same as the size of the Sequence passed to 'function2Minimize', which
      *          in turn will the the size of the Sequence<> in the Results.
