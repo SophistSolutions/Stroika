@@ -1,11 +1,807 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Makefile">
+      <Filter>Led</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\ReadMe.md">
+      <Filter>Led</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md">
+      <Filter>Led</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r">
+      <Filter>Led</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md">
+      <Filter>Led</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.inl">
+      <Filter>Modbus</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Makefile">
+      <Filter>Modbus</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\ReadMe.md">
+      <Filter>Modbus</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.inl">
+      <Filter>Modbus</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Makefile">
+      <Filter>NetworkMonitor</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\ReadMe.md">
+      <Filter>NetworkMonitor</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Ping.inl">
+      <Filter>NetworkMonitor</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Traceroute.inl">
+      <Filter>NetworkMonitor</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Service\Main.inl">
+      <Filter>Service</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Service\Makefile">
+      <Filter>Service</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Service\ReadMe.md">
+      <Filter>Service</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.inl">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.inl">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Makefile">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.inl">
+      <Filter>System-Performance</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.inl">
+      <Filter>UPnP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl">
+      <Filter>UPnP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Makefile">
+      <Filter>UPnP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\ReadMe.md">
+      <Filter>UPnP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Makefile">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.inl">
+      <Filter>WebService</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Makefile">
+      <Filter>WebService</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ReadMe.md">
+      <Filter>WebService</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\ToDo.md">
+      <Filter>WebService</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Command.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Config.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\GDI.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\IdleManager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Marker.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MarkerCover.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextEmbeddedObjects.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Support.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixins.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.h">
+      <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
+      <Filter>Modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.h">
+      <Filter>Modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Traceroute.h">
+      <Filter>NetworkMonitor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Ping.h">
+      <Filter>NetworkMonitor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Service\Main.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h">
+      <Filter>System-Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.h">
+      <Filter>System-Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.h">
+      <Filter>System-Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h">
+      <Filter>System-Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h">
+      <Filter>System-Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.h">
+      <Filter>System-Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h">
+      <Filter>UPnP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h">
+      <Filter>UPnP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h">
+      <Filter>WebService</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Led">
+      <UniqueIdentifier>{ef04d654-0dd5-461a-af35-133e205cbb81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Led\Platform">
+      <UniqueIdentifier>{d2f77868-e7ea-49c9-be67-28d59bbefe7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Led\StyledTextIO">
+      <UniqueIdentifier>{166fb1cf-a686-409d-b857-46afe84151b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modbus">
+      <UniqueIdentifier>{3a1e53a9-00ca-4e0b-ac40-85f5a2ac7369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetworkMonitor">
+      <UniqueIdentifier>{d62a1733-a0cf-46fb-a678-0ff1e331749f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System-Performance">
+      <UniqueIdentifier>{6f140e2e-0b90-41b1-98d2-233350708c16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service">
+      <UniqueIdentifier>{27092237-745a-4027-ad2f-b9b4e25a4a52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System-Performance\Instruments">
+      <UniqueIdentifier>{8b72bc0d-f445-44ff-9830-4770676f0fb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System-Performance\Support">
+      <UniqueIdentifier>{881e9d3e-7843-48f1-ad40-cccf2930ec79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UPnP">
+      <UniqueIdentifier>{6d462cd4-174e-42e9-b66c-0b3c6bc93b9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UPnP\SSDP">
+      <UniqueIdentifier>{b31f22cf-df51-46a3-bccc-de8c97f181c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UPnP\SSDP\Client">
+      <UniqueIdentifier>{15dd0de2-66df-47e1-840a-925fa24f175e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UPnP\SSDP\Server">
+      <UniqueIdentifier>{c1dfa0c7-0544-438e-885d-4820a6741d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebServer">
+      <UniqueIdentifier>{39d303ad-65cd-4be0-b6af-c21bf569b631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebService">
+      <UniqueIdentifier>{9dda4588-fff6-417d-8a6e-2b628e7fd37b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebService\Client">
+      <UniqueIdentifier>{daf7aafe-6bee-4ad2-9a57-1538854184ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebService\Server">
+      <UniqueIdentifier>{1b4c9996-eedc-4b2b-bd58-4b2a822e85a1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp">
+      <Filter>Led\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp">
+      <Filter>Led\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp">
+      <Filter>Led\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_HTML.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.cpp">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.cpp">
+      <Filter>Led\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\GDI.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\IdleManager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Marker.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextEmbeddedObjects.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Support.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixins.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.cpp">
+      <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.cpp">
+      <Filter>Modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.cpp">
+      <Filter>Modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Traceroute.cpp">
+      <Filter>NetworkMonitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\NetworkMonitor\Ping.cpp">
+      <Filter>NetworkMonitor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Service\Main.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp">
+      <Filter>UPnP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp">
+      <Filter>UPnP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.cpp">
+      <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp">
+      <Filter>WebService</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h">
+      <Filter>Led\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.h">
+      <Filter>Led\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.h">
+      <Filter>Led\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.h">
+      <Filter>Led\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_HTML.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.h">
+      <Filter>Led\StyledTextIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows_FileRegistration.h">
+      <Filter>Led\Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl">
+      <Filter>Led\Platform</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.inl">
+      <Filter>System-Performance\Support</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Makefile">
+      <Filter>System-Performance\Instruments</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\Makefile">
+      <Filter>System-Performance\Support</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.cpp">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.cpp">
+      <Filter>System-Performance\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.cpp">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Filesystem.cpp">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Process.cpp">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.cpp">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.h">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h">
+      <Filter>System-Performance\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.h">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Filesystem.h">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Process.h">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.h">
+      <Filter>System-Performance\Instruments</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.inl">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.inl">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.inl">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.inl">
+      <Filter>UPnP\SSDP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.inl">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.inl">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.inl">
+      <Filter>UPnP\SSDP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Makefile">
+      <Filter>UPnP\SSDP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Makefile">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Makefile">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.cpp">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.cpp">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.cpp">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.cpp">
+      <Filter>UPnP\SSDP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.cpp">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.cpp">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.cpp">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.cpp">
+      <Filter>UPnP\SSDP</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.h">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.h">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.h">
+      <Filter>UPnP\SSDP\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.h">
+      <Filter>UPnP\SSDP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.h">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.h">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.h">
+      <Filter>UPnP\SSDP\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.h">
+      <Filter>UPnP\SSDP</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Client\Makefile">
+      <Filter>WebService\Client</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Makefile">
+      <Filter>WebService\Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.inl">
+      <Filter>WebService\Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.inl">
+      <Filter>WebService\Server</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.cpp">
+      <Filter>WebService\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.cpp">
+      <Filter>WebService\Server</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h">
+      <Filter>WebService\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h">
+      <Filter>WebService\Server</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
