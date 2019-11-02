@@ -102,9 +102,9 @@
     <OutDir>$(ProjectDir)\..\..\..\Builds\$(Configuration)</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\IntermediateFiles\Stroika-Foundation\$(Configuration)</IntDir>
   </PropertyGroup>
-
   <PropertyGroup>
-    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Library\Sources/</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
+    <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
 
   <ItemDefinitionGroup />
