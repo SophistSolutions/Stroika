@@ -10,7 +10,10 @@
 			"**/.obj": true
 		},
 		"files.associations": {
-			"system_error": "cpp"
+			"system_error": "cpp",
+			"memory": "cpp",
+			"mutex": "cpp",
+			"xstring": "cpp"
 		}
 
 	}
