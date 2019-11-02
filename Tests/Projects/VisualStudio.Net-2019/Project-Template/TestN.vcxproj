@@ -109,6 +109,10 @@
     <OutDir>$(ProjectDir)\..\..\..\..\Builds\$(Configuration)\Tests\</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
   </PropertyGroup>
+  <PropertyGroup>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\..\Tests\NNN\;$(ProjectDir)\..\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
+    <AdditionalOptions>/std:c++latest</AdditionalOptions>
+  </PropertyGroup>
 
   <ItemGroup>
     <ClCompile Include="..\..\..\NNN\Test.cpp">
