@@ -49,9 +49,13 @@ CachedOBJSFile_ = $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Found
 #		-- LGP 2019-10-27
 #
 ifeq ($(wildcard $(CachedOBJSFile_)),)
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),clobber)
 $(shell $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing $(CachedOBJSFile_)" 1>&2)
 $(shell mkdir -p $(shell dirname $(CachedOBJSFile_)) )
 $(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null)))
+endif
+endif
 endif
 ifneq ($(wildcard $(CachedOBJSFile_)),)
 Objs := $(shell cat $(CachedOBJSFile_))
