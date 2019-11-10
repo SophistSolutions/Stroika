@@ -1,107 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug-A-32|Win32">
       <Configuration>Debug-A-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-A-32|x64">
-      <Configuration>Debug-A-32</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug-U-32|Win32">
       <Configuration>Debug-U-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-U-32|x64">
-      <Configuration>Debug-U-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug-U-64|Win32">
       <Configuration>Debug-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-U-64|x64">
-      <Configuration>Debug-U-64</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-A-32|Win32">
       <Configuration>Release-A-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-A-32|x64">
-      <Configuration>Release-A-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release-DbgMemLeaks-U-32|Win32">
       <Configuration>Release-DbgMemLeaks-U-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-DbgMemLeaks-U-32|x64">
-      <Configuration>Release-DbgMemLeaks-U-32</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-Logging-U-32|Win32">
       <Configuration>Release-Logging-U-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-Logging-U-32|x64">
-      <Configuration>Release-Logging-U-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release-Logging-U-64|Win32">
       <Configuration>Release-Logging-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-Logging-U-64|x64">
-      <Configuration>Release-Logging-U-64</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-U-32|Win32">
       <Configuration>Release-U-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-U-32|x64">
-      <Configuration>Release-U-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release-U-64|Win32">
       <Configuration>Release-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-U-64|x64">
-      <Configuration>Release-U-64</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
-
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>StroikaFoundation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-
   <PropertyGroup Label="UserMacros">
     <JOBS_FLAG>-j8</JOBS_FLAG>
   </PropertyGroup>
   <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   <PropertyGroup Label="UserMacros">
   </PropertyGroup>
-
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Foundation\ CONFIGURATION=$(CONFIGURATION) all $(JOBS_FLAG) --silent</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Foundation\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
@@ -110,7 +68,6 @@
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
-
   <ItemDefinitionGroup />
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp" />

@@ -77,9 +77,6 @@
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>StroikaFoundation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -107,7 +104,7 @@
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Tools\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Tools\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
   </PropertyGroup>
   <PropertyGroup>

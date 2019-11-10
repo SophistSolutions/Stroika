@@ -25,7 +25,9 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+#if qHasFeature_LZMA || qHasFeature_ZLib
 using namespace Stroika::Foundation::DataExchange;
+#endif
 using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
