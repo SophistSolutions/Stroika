@@ -233,10 +233,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test45", "..\..\Tests\Proje
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test46", "..\..\Tests\Projects\VisualStudio.Net-2019\46\Test46.vcxproj", "{80CCCA75-6656-4F0C-8FC1-A5BC8FC5C006}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test47", "..\..\Tests\Projects\VisualStudio.Net-2019\47\Test47.vcxproj", "{6D73F571-1D15-483A-9956-ECD7CD1AF5D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test48", "..\..\Tests\Projects\VisualStudio.Net-2019\48\Test48.vcxproj", "{9BBCAED5-A09E-4404-8160-E2948B8E33AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests {top level}", "Tests {top level}", "{281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}"
 	ProjectSection(SolutionItems) = preProject
@@ -263,8 +272,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test49", "..\..\Tests\Projects\VisualStudio.Net-2019\49\Test49.vcxproj", "{F32BB2E2-28C3-44A1-959B-C8CCFEC4A30C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test50", "..\..\Tests\Projects\VisualStudio.Net-2019\50\Test50.vcxproj", "{6F1E0B42-E170-42D0-94BA-10565DDB2808}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.Net-2019", "VisualStudio.Net-2019", "{704D0451-F85C-4C0B-802F-806B9AF680B5}"
 	ProjectSection(SolutionItems) = preProject
