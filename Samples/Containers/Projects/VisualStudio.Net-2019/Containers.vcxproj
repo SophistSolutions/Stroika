@@ -5,73 +5,37 @@
       <Configuration>Debug-A-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-A-32|x64">
-      <Configuration>Debug-A-32</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug-U-32|Win32">
       <Configuration>Debug-U-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-U-32|x64">
-      <Configuration>Debug-U-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug-U-64|Win32">
       <Configuration>Debug-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-U-64|x64">
-      <Configuration>Debug-U-64</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-A-32|Win32">
       <Configuration>Release-A-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-A-32|x64">
-      <Configuration>Release-A-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release-DbgMemLeaks-U-32|Win32">
       <Configuration>Release-DbgMemLeaks-U-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-DbgMemLeaks-U-32|x64">
-      <Configuration>Release-DbgMemLeaks-U-32</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-Logging-U-32|Win32">
       <Configuration>Release-Logging-U-32</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-Logging-U-32|x64">
-      <Configuration>Release-Logging-U-32</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release-Logging-U-64|Win32">
       <Configuration>Release-Logging-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-Logging-U-64|x64">
-      <Configuration>Release-Logging-U-64</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-U-32|Win32">
       <Configuration>Release-U-32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-U-32|x64">
-      <Configuration>Release-U-32</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-U-64|Win32">
       <Configuration>Release-U-64</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-U-64|x64">
-      <Configuration>Release-U-64</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
