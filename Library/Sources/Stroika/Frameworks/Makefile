@@ -96,9 +96,9 @@ all:	$(StroikaFrameworksLib)
 
 clean::
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)IntermediateFiles/*/Frameworks
+	@rm -rf $(StroikaRoot)IntermediateFiles/*/Library/Frameworks
 else
-	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Frameworks
+	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks
 endif
 
 
