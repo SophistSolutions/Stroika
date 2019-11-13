@@ -50,6 +50,17 @@ CachedOBJSFile_ = $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frame
 #
 #		-- LGP 2019-10-27
 #
+#
+# Sadly none of this wildcard or file stuff appears to work right on very old gnu make, which is
+# what comes with macos. Not sure what #s work/fail, but seems to work with 4.2.1 or later, and fail with
+# 3.81
+#
+NEED_GNU_MAKE_ := 4.0.0
+OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
+
+ifeq ($(OK_GNU_MAKE_VERSION_),)
+Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
+else
 ifeq ($(wildcard $(CachedOBJSFile_)),)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clobber)
@@ -61,6 +72,7 @@ endif
 endif
 ifneq ($(wildcard $(CachedOBJSFile_)),)
 Objs := $(shell cat $(CachedOBJSFile_))
+endif
 endif
 
 
