@@ -1158,7 +1158,7 @@ Cannot figure out good way to suppress - probably just a valgrind (or compiler c
                 <li>big configure change - now register in Configuration file CFLAGS and CXXFLAGS; 
 					instead of computing these in SharedMakeVariables-Default.mk;
 					and severl places in other makefiles, musta djust; aslso - !!!! - so code that said CFLAGS += ... worked; IT NO LONGER WILL WORK - MUST DO CXXFLAGS += isntead!!! </li>
-                <li>EXTRA_COMPILER_ARGS **DEPRECATED** so must use configure --append-CXXFLAGS or --append-CPPFLAGS (or a a few others)</li>
+                <li>EXTRA_COMPILER_ARGS **DEPRECATED** so must use configure --append-CXXFLAGS or --append-CPPFLAGS (or a few others)</li>
                 <li>get rid of more legacy CFLAGS/CXXFLAGS/INCLUDES_PATH_COMPILER_DIRECTIVES support</li>
                 <li>new  configure append/remove/replace-all CFLAGS or CXXFLAGS arguemnts</li>
                 <li>deprecated --compiler-warning-args and --append-compiler-warning-args parameters to configure - use --append-CXXFLAGS instead</li>

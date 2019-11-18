@@ -26,7 +26,6 @@ my $PROJECTPLATFORMSUBDIR='';
 my $TARGET_PLATFORMS='';
 
 
-my @useExtraCDefines;
 my @useExtraMakeDefines;
 my @packageConfigLinkLines;
 
@@ -149,10 +148,6 @@ sub	ReadConfiguration_
 	$IncludeDebugSymbolsInLibraries = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInLibraries");
 
 	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "STATIC_LINK_GCCRUNTIME"));
-
-	foreach $cdef (GetConfigurationParameter($activeConfiguration, "ExtraCDefines")) {
-		$useExtraCDefines[@useExtraCDefines] = $cdef;
-	}
 
 	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
 		push (@useExtraMakeDefines, $mdef);
@@ -353,12 +348,6 @@ sub WriteStroikaConfigCHeader
 		print (OUT "\n");
 	}
 
-	print (OUT "\n");
-	print (OUT "//Configure Command Line Arguments (-c-define)\n");
-	foreach $var (@useExtraCDefines)
-	{
-		print (OUT "$var\n");
-	}
 	print (OUT "\n");
 	print (OUT "\n");
 

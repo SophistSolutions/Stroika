@@ -11,7 +11,6 @@ my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
 my $configurationFiles	=	GetThisScriptDir() . "/../ConfigurationFiles";
 my $masterXMLConfigFile	=	"";
 
-my @useExtraCDefines;
 my @useExtraMakeDefines;
 my @packageConfigLinkLines;
 
@@ -261,10 +260,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'RUN_PREFIX'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CDefine>");
-		if (defined $pps) {
-			$useExtraCDefines[@useExtraCDefines] = $pps;
-		}
 		my $pps = ReadValue_($line, "<MakeDefine>");
 		if (defined $pps) {
 			push (@useExtraMakeDefines, $pps);
@@ -276,7 +271,6 @@ sub	ReadConfigFile_ {
 	print (OUT "    </PkgConfigLinkLineAppendages>\n");
 
 	}
-	$configuration {'ExtraCDefines'} = \@useExtraCDefines;
 	$configuration {'ExtraMakeDefines'} = \@useExtraMakeDefines;
 	$configuration {'PackageConfigLinkLines'} = \@packageConfigLinkLines;
 }
@@ -307,7 +301,6 @@ sub	GetConfigurationParameter {
 	}
 
 	if ($lastReadConfig ne $configName) {
-		@useExtraCDefines = ();
 		@useExtraMakeDefines = ();
 		@useExtraMakeDefines = ();
 		@packageConfigLinkLines = ();
@@ -323,9 +316,6 @@ sub	GetConfigurationParameter {
 	
 	# crazy hack cuz storing arrays into a hash screws them up in perl. What a terrible
 	# language  choice!
-	if ($paramName eq "ExtraCDefines") {
-		return @useExtraCDefines;
-	}
 	if ($paramName eq "ExtraMakeDefines") {
 		return @useExtraMakeDefines;
 	}
