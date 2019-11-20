@@ -13,7 +13,8 @@
 			"system_error": "cpp",
 			"memory": "cpp",
 			"mutex": "cpp",
-			"xstring": "cpp"
+			"xstring": "cpp",
+			"optional": "cpp"
 		}
 
 	}
