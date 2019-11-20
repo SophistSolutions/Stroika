@@ -440,8 +440,8 @@ basic-unix-test-configurations:
 	./configure g++-valgrind-debug-SSLPurify --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
 	./configure g++-valgrind-debug-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
 	##https://stroika.atlassian.net/browse/STK-674 - avoid warning\
-	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning\
-	./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable --append-CXXFLAGS -Wno-maybe-uninitialize -lto disable;
+	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning (lto disable for valgrind)\
+	./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable;
 	
 
 raspberrypi-cross-compile-test-configurations:
