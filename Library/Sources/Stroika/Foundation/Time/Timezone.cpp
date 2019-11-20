@@ -119,7 +119,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
 {
     RequireNotNull (tzStr);
     if (*tzStr == '\0') {
-        return {};
+        return nullopt;
     }
     else {
         int            tzHr    = 0;
