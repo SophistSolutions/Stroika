@@ -17,10 +17,3 @@
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
    ...
 }
-{
-   https://stroika.atlassian.net/browse/STK-626 PART3 (UBUNTU 1810 and earlier - fixed in Ubuntu 1904)
-   Memcheck:Addr32
-   ...
-   fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   ...
-}
