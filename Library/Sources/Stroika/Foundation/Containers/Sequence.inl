@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline optional<T> Sequence<T>::First () const
     {
-        return this->IsEmpty () ? nullopt : GetAt (0);
+        return this->IsEmpty () ? optional<T>{} : GetAt (0);
     }
     template <typename T>
     inline optional<T> Sequence<T>::First (const function<bool (ArgByValueType<T>)>& that) const
