@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::First () const
     {
         auto i = begin ();
-        return i ? *i : nullopt;
+        return i ? *i : optional<T>{};
     }
     template <typename T>
     inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
