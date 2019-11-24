@@ -1328,7 +1328,7 @@ sub	ParseCommandLine_Remaining_
 			}
 		}
 		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
-			print ("DEPRECATED: $var\n");// DEPRECATED in 2.1a2
+			print ("DEPRECATED: $var\n");# DEPRECATED in 2.1a2
 			$i++;
 			$var = $args[$i];
 			$COPTIMIZE_FLAGS = $var;
