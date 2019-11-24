@@ -426,7 +426,7 @@ namespace Stroika::Foundation::Traversal {
             while (tmpIt and not includeIfTrue (*tmpIt)) {
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : optional<T>{};
+            return tmpIt ? *tmpIt++ : nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -563,7 +563,7 @@ namespace Stroika::Foundation::Traversal {
                 nItemsToSkip--;
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : optional<T>{};
+            return tmpIt ? *tmpIt++ : nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -578,7 +578,7 @@ namespace Stroika::Foundation::Traversal {
                 return nullopt;
             }
             nItemsToTake--;
-            return tmpIt ? *tmpIt++ : optional<T>{};
+            return tmpIt ? *tmpIt++ : nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -598,7 +598,7 @@ namespace Stroika::Foundation::Traversal {
                 return nullopt;
             }
             nItemsToTake--;
-            return tmpIt ? *tmpIt++ : optional<T>{};
+            return tmpIt ? *tmpIt++ : nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -623,7 +623,7 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::First () const
     {
         auto i = begin ();
-        return i ? *i : optional<T>{};
+        return i ? *i : nullopt;
     }
     template <typename T>
     inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
@@ -634,7 +634,7 @@ namespace Stroika::Foundation::Traversal {
                 return i;
             }
         }
-        return optional<T>{};
+        return nullopt;
     }
     template <typename T>
     inline T Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
@@ -658,7 +658,7 @@ namespace Stroika::Foundation::Traversal {
             }
             return *prev;
         }
-        return optional<T>{};
+        return nullopt;
     }
     template <typename T>
     optional<T> Iterable<T>::Last (const function<bool (ArgByValueType<T>)>& that) const

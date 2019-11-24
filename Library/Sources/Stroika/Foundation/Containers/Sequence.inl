@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline optional<T> Sequence<T>::First () const
     {
-        return this->IsEmpty () ? optional<T>{} : GetAt (0);
+        return this->IsEmpty () ? nullopt : GetAt (0);
     }
     template <typename T>
     inline optional<T> Sequence<T>::First (const function<bool (ArgByValueType<T>)>& that) const
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
     inline optional<T> Sequence<T>::Last () const
     {
         // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
-        return this->IsEmpty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
+        return this->IsEmpty () ? nullopt : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
     }
     template <typename T>
     inline optional<T> Sequence<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
