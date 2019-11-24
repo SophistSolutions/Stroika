@@ -291,11 +291,20 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Inspired by useful JQuery plugin http://ksylvest.github.io/jquery-age/
+         *  Inspired by useful JQuery plugin http://ksylvest.github.io/jquery-age/; or https://momentjs.com/
          *
          *  Technically, this isn't an 'age' but just a 'now-centric' pretty printing of durations.
          *
-         *  Just a DRAFT impl for now ... --LGP 2014-09-01 -- @todo FIX/revise/test
+         *  \todo Just a DRAFT impl for now ... --LGP 2014-09-01 -- @todo FIX/revise/test
+         *
+         *  \par Example Usage
+         *      \code
+         *          VerifyTestResult (Duration (L"PT1.4S").PrettyPrintAge () == L"now");
+         *          VerifyTestResult (Duration (L"-PT9M").PrettyPrintAge () == L"now");
+         *          VerifyTestResult (Duration (L"-PT20M").PrettyPrintAge () == L"20 minutes ago");
+         *          VerifyTestResult (Duration (L"PT20M").PrettyPrintAge () == L"20 minutes from now");
+         *          VerifyTestResult (Duration (L"PT4H").PrettyPrintAge () == L"4 hours from now");
+         *      \endcode
          */
         nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
