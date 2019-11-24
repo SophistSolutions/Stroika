@@ -123,7 +123,7 @@ namespace {
 #endif
                         return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
                     }
-                    return optional<ScanIDType_>{};
+                    return nullopt;
                 }
                 static void InitialSetup_ (Database::SQLite::Connection& db)
                 {
