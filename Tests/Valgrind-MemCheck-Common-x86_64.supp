@@ -5,3 +5,10 @@
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
    ...
 }
+{
+   https://stroika.atlassian.net/browse/STK-704
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Characters12Float2StringEdRKNS1_19Float2StringOptionsE
+   ...
+}
