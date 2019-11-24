@@ -14,7 +14,8 @@
 			"memory": "cpp",
 			"mutex": "cpp",
 			"xstring": "cpp",
-			"optional": "cpp"
+			"optional": "cpp",
+			"functional": "cpp"
 		}
 
 	}
