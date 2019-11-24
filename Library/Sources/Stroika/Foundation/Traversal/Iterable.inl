@@ -426,7 +426,10 @@ namespace Stroika::Foundation::Traversal {
             while (tmpIt and not includeIfTrue (*tmpIt)) {
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : Iterable<T>{nullptr};
+            if (tmpIt) {
+                return *tmpIt++;
+            }
+            return nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -563,7 +566,10 @@ namespace Stroika::Foundation::Traversal {
                 nItemsToSkip--;
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : nullopt;
+            if (tmpIt) {
+                return *tmpIt++;
+            }
+            return nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -578,7 +584,10 @@ namespace Stroika::Foundation::Traversal {
                 return nullopt;
             }
             nItemsToTake--;
-            return tmpIt ? *tmpIt++ : nullopt;
+            if (tmpIt) {
+                return *tmpIt++;
+            }
+            return nullopt;
         };
         return CreateGenerator (getNext);
     }
@@ -598,7 +607,10 @@ namespace Stroika::Foundation::Traversal {
                 return nullopt;
             }
             nItemsToTake--;
-            return tmpIt ? *tmpIt++ : nullopt;
+            if (tmpIt) {
+                return *tmpIt++;
+            }
+            return nullopt;
         };
         return CreateGenerator (getNext);
     }
