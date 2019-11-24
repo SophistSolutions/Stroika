@@ -242,8 +242,6 @@ $(TARGETEXE): $(Objs) $(StroikaLibs)
             --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */
             --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link 
                                                                (only applies if gcc family compiler) */
-            --cpp-optimize-flag  {FLAG}                     /* Sets $COPTIMIZE_FLAGS (empty str means none,
-                                                               -O2 is typical for optimize) - UNIX ONLY */
             --c-define {ARG}                                /* Define C++ pre-processor define for the
                                                                given configuration: arg appears as a line in
                                                                Stroika-Configuration.h
