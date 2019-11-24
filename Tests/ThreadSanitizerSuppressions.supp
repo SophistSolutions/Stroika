@@ -18,7 +18,10 @@ race:pipe
 # may not look that way to tsan -- LGP 2018-02-13
 #
 # NOTE - I see this very rarely, but did see again on Ununtu 1904 - 2019-10-03 regtest. So this suppression doesn't work.
-signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int)
+#
+# SINCE NOT WORKING - COMMENT OUT AND LATER REMOVE ENTIRELY - LGP 2019-11-23
+# see jira ticket for how I handled instead
+#signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int)
 
 #https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
 #since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedLock (in one stacktrace)

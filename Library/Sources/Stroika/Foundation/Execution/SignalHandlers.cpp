@@ -494,7 +494,8 @@ void SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handle
     }
 }
 
-void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
+// use no_sanitize(thread) to workaround https://stroika.atlassian.net/browse/STK-677
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
     /*
      *  Important example / stack backtrace to bear in mind:
