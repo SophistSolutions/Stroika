@@ -426,7 +426,7 @@ namespace Stroika::Foundation::Traversal {
             while (tmpIt and not includeIfTrue (*tmpIt)) {
                 ++tmpIt;
             }
-            return tmpIt ? *tmpIt++ : nullopt;
+            return tmpIt ? *tmpIt++ : nullptr;
         };
         return CreateGenerator (getNext);
     }
