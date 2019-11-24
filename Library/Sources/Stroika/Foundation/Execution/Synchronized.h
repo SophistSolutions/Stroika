@@ -596,7 +596,7 @@ namespace Stroika::Foundation::Execution {
          *  note: we don't need to use atomic/or extra lock for updating this because
          *  its ONLY INCREMENETED and EXAMINED when fMutex_ is owned.
          */
-        mutable unsigned int fWriteLockCount_ {0};
+        mutable unsigned int fWriteLockCount_{0};
     };
 
     /**
