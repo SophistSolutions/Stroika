@@ -9,6 +9,6 @@
    https://stroika.atlassian.net/browse/STK-704
    Memcheck:Cond
    ...
-   fun:_ZN7Stroika10Foundation10Characters12Float2StringEdRKNS1_19Float2StringOptionsE
+   fun:_ZN7Stroika10Foundation10Characters12Float2String*_19Float2StringOptionsE
    ...
 }
