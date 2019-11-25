@@ -24,73 +24,12 @@ Cannot figure out good way to suppress - probably just a valgrind (or compiler c
 
 #if 0
 
-
-commit f17ee9b3abcca416fa20ad13855551a6e51ca52f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 23 22:09:18 2019 -0500
-
-    replace use of empty optional<>{} CTOR with nullopt in a few places becaues of (probably misplaced) g++ warnings, but also because the nullopt code is probably clearer
-
-
-    
-commit ffa9bf9d6fb7c911d083c4f6aadfbe74457f801f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 10:56:45 2019 -0500
-
-    x86 line in memcheck suppression causes failure on raspberrypi, so break out into Valgrind-MemCheck-Common-x86_64.supp
-
-    
-
-commit a7dedfb89c1fe1b72b714084a658ac6c2b73ca6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 17 22:18:41 2019 -0500
-
-    lose/deprecate support for --c-define on configure - document / use --append-CPPFLAGS intead
-
 commit 8cba1846360c8e6a3a38cf17baa469eb5c4baa77
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Nov 17 22:01:20 2019 -0500
 
     https://stroika.atlassian.net/browse/STK-702 - avoid another warning attempted patch
 
-
-
-commit cf3517e83e6d543a3c6b1d9139017ab732db89fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 12 21:00:03 2019 -0500
-
-    file caching trick doesn't work on old gnu make (macos) - so disable there
-
-Date:   Tue Nov 12 13:16:03 2019 -0500
-
-    tweak Frameworks makefile compute of CachedOBJSFile
-
-commit 353685f52985a4594ab9bf6aadc96d55256ab2d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 09:56:16 2019 -0500
-
-    slience notes about creating CachedOBJSFile during make clean/clobber
-
-
-    
-
-commit 4c0e0adca1550ddde26774b4ecbe03c844c75da8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 21:24:46 2019 -0500
-
-    more cleanups to sln files - losing project file architecture settings (cuz just using makefile)
-
-commit 063210cc247fde39069410af0cee7c85558e0f21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 20:44:01 2019 -0500
-
-    updates samples to use new Makefile based projects (and lost target/archiecture x64 - just use win32 for everything and rename win32 to unspecified in solution file
-
-commit e667be1e63ec136b9162a43de1e5de167dbfd60f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 16:12:36 2019 -0400
-
-    tweak foundation makefile print when computing list of objs; and cloned all that code into framewroks makefile so it do does that caching
 
 commit 6b99cf304015f7fba57a21e5aa82edc896bfdd78
 Author: Lewis Pringle <lewis@sophists.com>
@@ -116,96 +55,12 @@ Date:   Fri Nov 1 23:36:06 2019 -0400
 
     fixed Library/Projects/VisualStudio.Net-2019/Stroika-Foundation.vcxproj intellisense settings
 
-
-commit 0159122139505df3384a974ea279ee7d0ea23872
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 23:12:35 2019 -0400
-
-    vs2k19 foundation project file: add MakeIncludeSearchPath and minor cleanups
-
-commit 16eae69f2df7a1f9cfd9f7650280319c03ccda74
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 21:58:58 2019 -0400
-
-    got tests converting to using new makefile support in vcprojx for Tests projects
-
-commit 0a2f2f1f859a4fcc223348fe79bf73136e99e4f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 21:50:13 2019 -0400
-
-    lose UseDebugLibraries section from VisualStudio.Net-2019/Stroika-Foundation.vcxproj
-
-commit 4a8e6a0687968c412612f05ad56a07e640a0afaf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 21:28:57 2019 -0400
-
-    CachedOBJSFile_ to make build of Stroika-Foundation.{lib,a} quicker (2 seconds on unix and 12 seconds on windows); could cleanup/improve much more
-
-commit 7edb73e6a2faa197ca24f9e461ab2f1e08efb7c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 11:06:39 2019 -0400
-
-    progress cleaning up vsk219 test project file for new process - cleaned usermacros defs
-
-commit 29a9006ff9ed40bd183f6ceaccabfd9f03ffe7a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 11:05:59 2019 -0400
-
-    I think better to have Usermacros group before and after import of Microsoft.Cpp.$(Platform).user.props? trying and seems to work
-
-commit 0264d6a0e474b59c889397a5b2e40751d50b820f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 10:09:46 2019 -0400
-
-    tweaked vsk219 tests project file for new stroika makefile system
-
-commit aa4c957be1e95409ccf4c64949c5678af1c8024d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 27 09:59:26 2019 -0400
-
-    
-
-commit 61e705a2caf3c809198f9a36367fbb69ed12fbba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 26 20:30:28 2019 -0400
-
-    updated added item to vcproj file based  on https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=vs-2019 review
-
-commit 8ed493114388ed221680f01b6b23067f773f27f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 26 15:38:25 2019 -0400
-
-    
-
-commit b4f7eed0059ddaeac60e9f7ea5798926f367faa1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 26 15:30:14 2019 -0400
-
-    another minor https://stroika.atlassian.net/browse/STK-699 valgrind workaround
-
 commit b11145f174f2a840d564b16de60b2bc21fd45740
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Oct 24 21:56:03 2019 -0400
 
     tweak workaround for https://stroika.atlassian.net/browse/STK-699
 
-commit 2130a72c07f8d8051d7417114e7863212eabf25d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 23 22:13:30 2019 -0400
-
-    tweak NLToCRLF() impl - not just performance - but also fixed so if run on existing CRLF text, it does nothing
-
-commit 518d59d3fddb5c7b9a8057b83ed8ba77df25ec37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 23 21:27:18 2019 -0400
-
-    
-
-commit 2afa947b41073d3167498a3a25b4e02070d0a5cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 23 12:57:57 2019 -0400
-
-    [[maybe_unused]] and fixed typo in USE_NOISY_TRACE_IN_THIS_MODULE_ trace message
 
 commit 1570103c19199262bd2f84546f5e224f1e06cd13
 Author: Lewis Pringle <lewis@sophists.com>
@@ -219,171 +74,19 @@ Date:   Tue Oct 22 22:54:56 2019 -0400
 
     fixed (POSIX) bug with InternetMediaTypeRegistry - read from both LoadFromUserShare and LoadFromEtcMimeDotTypes; and improved USE_NOISY_TRACE_IN_THIS_MODULE_ display    
 
-commit 8c05577a77239c9e16abf63b51014df1f2cd6516
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 21 22:15:51 2019 -0400
-
 commit 6db7e8c38b492fce59d80a9a3cf4a42ea5c3ef11
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Oct 15 18:43:01 2019 -0400
 
     for visual studio.net - default INCLUDE_SYMBOLS_EXE = true (even release builds) since we write to separate .pdb file
 
-commit bb656bd2e6b9e0c536335a42421432460057e411
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 18:42:16 2019 -0400
-
-    cosmetic
-
-commit 7f1bdef13ff75d9866614f5d3b2e7813bdf17fef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 16:46:19 2019 -0400
-
-    cleanups;  and tweak test2 worakround for raspberrypi (stackoverflow I expect)
-
-commit 196a5233b7cef6a1b91852146a3d84721bd939cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 16:44:00 2019 -0400
-
-    cleanups;  and tweak test2 worakround for raspberrypi (stackoverflow I expect)
-
-commit d0c6f97cd496bee01bcdd4d789e3a3687367d2fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 16:37:32 2019 -0400
-
-    more Debug::TraceContextBumper () on regtests; and lowered stacksize limit on raspberrypi test to avoid crash there
-
-commit fb24993e249acbf8f15ab4b856222462b8d7efb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 16:31:37 2019 -0400
-
-    Debug::TraceContextBumber code in regtests; and fiddle max recursion on one regtest
-
-commit b08e00ce212f8af4995e8c8f1cc8c7c02bf7e514
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 16:26:45 2019 -0400
-
-    Debug::TraceContextBumber code in regtests:
-
-commit 9171243d47e5affd7323d51f9ae32ec0e67adc9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 16:12:14 2019 -0400
-
-    Debug::TraceContextBumber code in regtests:
-
-commit e9b1ec56508ffe6452cc8a1fa65c2a81bb69730e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 14 12:59:24 2019 -0400
-
-    factor most of rest of Led code so uses .inl for code includes (implementation details)
-
+    
 commit 71538925507ab9a96479c835409143cab049ee59
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 14 11:31:20 2019 -0400
 
     lose Led code from Archive (always around in git history if I need it) - but unlikely to return to any of that code so just polutes searches.
 
-commit 3f8495162470da89bc493dad77357d977c7fcb1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 14 11:27:30 2019 -0400
-
-    simplify alot of #if qSilenceAnnoyingCompilerWarnings calls to juse use DISABLE_COMPILER_MSC_WARNING_START()/END macros
-
-commit 4f9d565dcefcafe39e825e682857bd7db99aac51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 14 10:05:48 2019 -0400
-
-    wrap a few more pragma push warnings inside #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-
-commit b1a9119f3d5d0835e238852f79d4de4fad36e280
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 14 09:49:51 2019 -0400
-
-    release notes
-
-commit 24c1b97216f4be417af5cbb8a795c84415f849ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 13 21:39:15 2019 -0400
-
-    fixed check for apply clang in GetClangVersion_
-
-commit ce6d9a4cc625b06fac302f8a659d66668c105b8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 22:10:13 2019 -0400
-
-    another workaround for qCompilerAndStdLib_locale_pctX_print_time_Buggy
-
-commit b6d1da0e000a79a5b28326bc21b7478ef326b5ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 22:02:25 2019 -0400
-
-    tweak qCompilerAndStdLib_locale_pctX_print_time_Buggy workaround
-
-commit 7e08b74900b978279e83feca4b9566393713d33a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 21:56:43 2019 -0400
-
-    tweak qCompilerAndStdLib_locale_pctX_print_time_Buggy workaround
-
-commit 1e5e22023bd256930dac7a37d24937339f3e1feb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 21:50:48 2019 -0400
-
-    tweak qCompilerAndStdLib_locale_pctX_print_time_Buggy workaround
-
-commit 73eac08666d36cf0ace0ff0ce7e007a5c7bd6785
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 21:40:34 2019 -0400
-
-    qCompilerAndStdLib_locale_pctX_print_time_Buggy bug define for xcode11
-
-commit d266d55fe1ddc3ec873dd8e9d52648c46aa38804
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 13:46:01 2019 -0400
-
-    compiler bug define support for Apple Clang++ 11 (MacOS XCode 11)
-
-commit 31ccf2b3e01c27eac8e05ba9746a3cf051a33aa4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 13:08:51 2019 -0400
-
-    Mac XCode 11 doesn't define HOST_NAME_MAX
-
-commit 72055ac694cbacb6035054950e97e835f556da79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 13:00:41 2019 -0400
-
-    fixed missing include
-
-commit 4d0bf5309de08e1c95caccf219e9639214480edf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 12:15:28 2019 -0400
-
-    cosmetic
-
-commit 10db4863be3f06380b28431187aa99f5e6803d0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 12:15:09 2019 -0400
-
-    comments on raspberry pi bug
-
-commit f8dee9d774452f08769c09155222b05524222080
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 12:09:17 2019 -0400
-
-    adjust buffer size for gethostname call to HOST_NAME_MAX and doc reference
-
-commit 4eef016ae16a90335d0d7b94eaaad86df12b68ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 12:05:32 2019 -0400
-
-    tweak qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy bug worakround for macos
-
-commit 51a5b8c6d94d563f54ef2c9e7056f7ae4d439696
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 12:04:44 2019 -0400
-
-    tweak qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy bug worakround for macos
 
 commit 211845bfab52aff877b3c472a28cc074bfc3f7bc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -391,48 +94,6 @@ Date:   Sat Oct 12 12:00:44 2019 -0400
 
     tweak qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy bug worakround for macos
 
-commit e7d1d2d49eb1821a15156d78da8a05c46abf161b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 9 20:16:16 2019 -0400
-
-    just do 2 target configs for cross-compile to raspberrypi
-
-commit eacc0d2f6fa9d5911daeabc399b215e1fce27eb2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 9 11:39:38 2019 -0400
-
-    fixed typo
-
-commit 5d531893d33b9198dd00ddae3f1e8aa7a0013740
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 9 11:33:04 2019 -0400
-
-    workaround installer build issue on centos8 by setting HOME variable more innocuously
-
-commit 907f3ed1f0c072d5628bc1810aa371495ee2fe6d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Oct 9 10:16:47 2019 -0400
-
-    updated bug defines for gcc 9.2
-
-
-commit 4b03bd90a93565ac028b6860cf491ee504cfdcff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 8 17:19:09 2019 -0400
-
-    cosmetic
-
-commit 0c08a0ccd40be32e54cbee93ab9cf86534456015
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Oct 8 17:17:13 2019 -0400
-
-    updated Stroika-Dev to use ubuntu 1910
-
-commit ba580901cc467643c5881d26652de701405cc1a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 8 14:19:28 2019 -0400
-
-    fix typo on configure/centos workaround
 
 commit deb79c5717c0e431e2d10b66143391e70171d306
 Author: Lewis Pringle <lewis@sophists.com>
@@ -446,125 +107,12 @@ Date:   Tue Oct 8 12:10:41 2019 -0400
 
     Centos 8 support; and add build of $TEST_TARGET=Ubuntu1910-Cross-Compile2RaspberryPi; and lose a few regular builds of raspberrypi on older non-long-term ubuntus
 
-commit d61a6b45733ba242a0224ce4e993a5853e1c87d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 8 12:03:08 2019 -0400
-
-    workaround lack of STATIC_LINK_GCCRUNTIME on  centos8
-
-commit a3ef4fdbeed4fc53c840a0561e8b532141dd689a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 8 11:36:22 2019 -0400
-
-    handle missing print-multi-arch in configure script (for centos8)
 
 commit 9840c644646a5959dc3b8c3b93c5ea47e7586649
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Oct 7 20:25:00 2019 -0400
 
     use default-configurations instead of basic-unix-test-configurations for ubuntu 1810 and 1904 (intermediate not long term older) releases - to save disk space and testing time
-
-commit 1ec9d2836619d06c3f8ec8496f78f567f7f8caab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 7 10:02:51 2019 -0400
-
-    lose Sources/Stroika/Foundation/IO/FileSystem/Common.cpp since empty
-
-commit e093844067edf9c9c5f82a1cf12eba33f5ccc536
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 7 09:57:51 2019 -0400
-
-    lose some empty cpp files Cryptography/SSL/... files - cuz NYI and just generates warnigns (not coming soon)
-
-commit 995e9b141df7922c8e239b0d44cbf33c384ac03d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 22:06:16 2019 -0400
-
-    more Led refactoring
-
-commit 0f388a8ce2cb95955c0a37120b458045522306a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 21:52:45 2019 -0400
-
-    prelim Ubuntu1910_x86_64 regtests
-
-commit 30f65ce20aef135a8642edc259367d495636aee0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 21:37:07 2019 -0400
-
-    more refactoring of Led framework (.inl file support)
-
-commit 90e4607bf62afd98cc9ebee9239911a014df4fed
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Oct 6 21:33:40 2019 -0400
-
-    
-
-commit b7ccfcca0cbaefad000f74bfc0fedd45ca4edfdd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 21:18:21 2019 -0400
-
-    fixed typo
-
-commit 66909b912ad56d84f7a27aedc4c22aed2d3520df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 20:51:31 2019 -0400
-
-    fixed typo
-
-commit 2de55cbb6387c086719a1684cc3ffb3f0ad78df4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 20:46:25 2019 -0400
-
-    Led framework code cleanups/factoring (simple mostly adding .inl files)
-
-commit c2be9fa9699b58145b9fa57bffd786c99158a134
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 6 10:04:36 2019 -0400
-
-    various minor code cleanups to Led code
-
-commit ddcbb7ba3bc4a260837e24195b9700d641bd0fbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 15:28:49 2019 -0400
-
-    small warning/type cleanups for 64bit versions of Led samples
-
-commit 25844a2dccda81f0d4cc93b62111a6a49076e6cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 15:28:17 2019 -0400
-
-    cosmetic
-
-commit 7060dcabda1a5d275cd7acd6cf24e03e8dc81a0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 11:50:15 2019 -0400
-
-    factor DEFAULT_LIBRARY_GEN_LINE for windows slightly, and supprot adding /LTCG arg to lib line (silence warning) when using /GL
-
-commit d0789d0173572a9fc7803e398667915fb7653141
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 11:49:20 2019 -0400
-
-    cleanup a few 32/64 bit warnings in Led based samples
-
-commit ae04e1e2c8852ee87e02f3e95a2c1a748aef4e2b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 10:52:37 2019 -0400
-
-    DISABLE_COMPILER_MSC_WARNING_START (4535) _set_se_translator()
-
-commit 731a3d415342b776c5213aa6ce4fd54ff4c0bf68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 10:52:16 2019 -0400
-
-    lose extra list-objs make rule that produced dup obj
-
-commit c054784f755156d296352a1b2dbd98a9f2837457
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 4 21:51:56 2019 -0400
-
-    fixced typo in Library/Projects/VisualStudio.Net-2017/SetupBuildCommonVars.pl
 
 commit 8f255f3c4b5055acfc5a3eb7fdf416bed34c4400
 Author: Lewis Pringle <lewis@sophists.com>
@@ -576,16 +124,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Oct 3 13:16:37 2019 -0400
 
     docs cleanups and register target and launch-sample example target which all work as of 2.1a2 (using non msbuild); only thing not working here is I haven't been able to get debugger working
-
-commit ccbe4feb51bea711455a936f22c49a4092b41db7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 13:22:11 2019 -0400
-
-    add EXTRA_SUFFIX_LINKER_ARGS /bigobj for visual studio:
-
-commit 08f8a58c83646d289079af4e8cc48c641d8d4d31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 30 22:44:22 2019 -0400
 
 commit 495c2b49eb57b8f38ee19d095ec6bf297a79452c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -611,157 +149,11 @@ Date:   Sat Sep 28 20:53:17 2019 -0400
 
     new configure feature - PackageConfigLinkLines - and used that to eliminate manual expansion of a few dependencies, and to dynamically invoke pkg-config at runtime in the makefile based on feedback from the (built) third party components
 
-commit 715d0b917bca4111a3ac89767789696dd1de5bd7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 14:50:22 2019 -0400
-
-    disable failure report on simpleledtest makefile til we fix it
-
 commit 03f490020d59a8022470a8960772ed1227435707
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 28 14:49:51 2019 -0400
 
     fixed configure --fto enable/disable for windows/visual studio; and fix it (and apply-release-settings) to set /LGCG for linker as well
-
-commit cf601228ba3af2a3cb4043d320b80dc1ca211b71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 00:54:27 2019 -0400
-
-    adjusted windows version of DEFAULT_CC (and CXX)_LINE to FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE src file too - occasionally full path)
-
-commit 94cac6af97cb4ced90ec6efe8d3dea686053c0e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 00:53:35 2019 -0400
-
-    lose obsolete commented out var-setting in makefile
-
-commit a9913ea1a118884f647ccad7d704831f8dd1300e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 00:17:51 2019 -0400
-
-    workaround missing ssl libraries - hardwired - must fix to have general pkgconfig mechiansm in link line
-
-commit 446708ffe8860088a0042a77801763b1a20a1e66
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 20:22:49 2019 -0400
-
-    makefile cleanups - using +ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),) to check for if soemthing depends on target platform (like windows specific files)
-
-commit c41f0a26ec7f4a7976ad60c2aeb218e7485a22fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 17:56:32 2019 -0400
-
-    fixed regression in genarting -g linker flag on unix; and did similar now for windows - generating /DEBUG, and /OPT flags by default on Windows
-
-commit 62c4053aae4ae9a5124abd9a0fe5f2146472c7b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 17:30:24 2019 -0400
-
-    Small cleanup to Makefile-Test-Template.mk for recent configure cleanups
-
-
-commit c0a3ac1d293514337670fe37c6e718e8b1bc859a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 16:45:51 2019 -0400
-
-    Lose TARGET_PLATFORMS_Windows etc shortcuts (at least for now) from ApplyConfigurations
-
-commit ae1fcb70f589c599c946168e749f96abdf5b4995
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 16:40:06 2019 -0400
-
-    support new configuration variable TARGET_PLATFORMS (properly defaulting) - and derived variables in COnfiguraiton.mk TARGET_PLATFORMS_POSIX, etc
-
-commit 17bad871bd4eca4083403524256fff167df80810
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 16:15:58 2019 -0400
-
-    more cosmetic cleanups of make output; and more makefiles for windows only code, so now regression tests compile with msbuild disabled
-
-commit cbbf14e8a4ec3b61ce783b5fc70af63a1c0fc73d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 16:13:02 2019 -0400
-
-    tmphack - amend +LIB_DEPENDENCIES and +EXTRA_PREFIX_LINKER_ARGS in Test-Temaplate.mk file - so we can now successfully link wit MSBUILD = 0 on windows/visual studio (just tests so far); clean this up before applying to samples and tools
-
-commit bdd7e384755009287ac31cd64dcb0357a9d33f1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 11:34:07 2019 -0400
-
-    deprecated Library/Projects/Unix/SharedBuildRules-Default.mk replacing with ScriptsLib/SharedBuildRules-Default.mk; and seprecated Library/Projects/Unix/SharedMakeVariables-Default.mk replacing with ScriptsLib/SharedMakeVariables-Default.mk
-
-commit adf72a76884abacc46b719850cc8476c2271b4dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 22:20:31 2019 -0400
-
-    Improvements to Xerces makefile (significant chagne): use CFLAGS / CXXFLAGS from 'Configuration'; write these to CONFIGURE.OUT; Various ammendments, like adding /DWIN32 and removing all the /I:... flags (to workaround ill-understood bugs); but recall - we set none of these flags before so this is just better, I strongly suspect, and leaves a little more room to cleanup (little tested)
-
-commit 5f8bd99549e20db9a1b61e0ea19e40fda30f7e87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 21:10:34 2019 -0400
-
-    STRIP_INCLUDE_COMPILER_FLAGS= makefile macro - used to workaround problem with the xerces makefile
-
-commit d29535f4b4f82829cae86c6cd848d1037a953347
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 12:26:18 2019 -0400
-
-    lose lto from build of lzma for now - since also fails and not a priority to have working
-
-commit 53ef623e90553c9f63626772e3000a5eb8175ce4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 26 11:26:58 2019 -0400
-
-    cleanup LZMA makefile - so it uses single quote instead of double quote to pass shell variables (may eliminate some of need/use of export); and eliminate dependneicy on configuraiton names (windows) - using configured CFLAGS/etc variables passed through to library makefiles
-
-commit 9206133b006e0ea97abfc736066bbda94e52d809
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 22:43:37 2019 -0400
-
-    lose no-dso workaround building openssl - to test (we currently only test on centos7 not 6)
-
-commit 12f3e71e135a7e6857a53030aabc734244e73cb1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 22:37:14 2019 -0400
-
-    workaround HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for lto not working building openssl
-
-commit fa6194b2ab7e54166f8d42c11cdeb0e8cd32bbb6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 21:41:09 2019 -0400
-
-    workaround issue caused by exporting all of CFLAGS to openssl makefile - by filtering out sanitizer stuff from cflags
-
-commit 6fa794182c06806adf0dfd7e8e9660bac421f1c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 15:06:00 2019 -0400
-
-    reorder test for setting USE_MSBUILD so ONLY IF KNOWN to be vs2k we use MS_BUILD, and else (like if no config files) we dont
-
-commit c65af4994455ba13e57a901542c7d6616b73f259
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 14:50:13 2019 -0400
-
-    openssl makefile  pass along/export CFLAGS and CXXFLAGS to configure (and workaround/support no pdb output in those CFLAGS args) - so can configure from configure script and passed to openssl build - without any harewired dependencies on named configs for windows
-
-commit 4fcb813a95391a3c43b644465c8fd51e101437d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 08:58:26 2019 -0400
-
-    in configure (for visual studio) - only do /FS flag if WinFlag_DebugProgramDatabase - since I think only needed there
-
-commit c76a5cf25e0fb8e25a072c013b1a946195a4f04a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 25 08:57:47 2019 -0400
-
-    incliude /safesh on ASFLAGS for x86 on windows/msvc zlib builds
-
-commit d89289244ca8103538f1b23d1f4b275738e390ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 24 23:16:45 2019 -0400
-
-    doc https://stroika.atlassian.net/browse/STK-697 openssl issue fixed
-
 
 #endif
 
@@ -774,37 +166,49 @@ Date:   Tue Sep 24 23:16:45 2019 -0400
 
 * Bug defines
   * qCompilerAndStdLib_attributes_before_template_in_Template_Buggy workaround
+  * qCompilerAndStdLib_locale_pctX_print_time_Buggy changes (eg broken xcode 11)
 
 * Build System
-  * Visual Studio.net build uses makefile - not MSBuild
-  * Visual studio.net project (both 2k17 and 2k19) just indirect to makefile builds now (makefile project files)
-    * lose more x64 arch settings and A-32 configuration support - smaller set and means nothign since
-      now all semantics indirected to ConfigurationFiles configfiles
-    * use UserMacros for JOBS_FLAG
+  * Visual Studio Changes
+    * Visual Studio.net build uses makefile - not MSBuild
+    * Visual studio.net project files (both 2k17 and 2k19) just indirect to makefile builds now (makefile based project files)
+      * lose more x64 arch settings and A-32 configuration support - smaller set and means nothign since now all semantics indirected to ConfigurationFiles configfiles
+      * use UserMacros for JOBS_FLAG
+      * https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=vs-2019
   * use cygpath --mixed instead of cygpath --windows in a bunch of places (forward slashes work better in bash based scripting so see if we can get away with this switch)
   * new LIBTOOL configuration variable (more or less replacing AR - but so easier to script in makefile lib with diff sets of options); ifeq ($(USE_MSBUILD_),0) prelim test for building on vs2k without msbuild (off still)
-  * Lose obsolete ScriptsLib\MakeBuildRoot.sh (use without .sh)
-  * deprecated OptimizerFlag/--cpp-optimize-flag for configure script and lose from docs
-  * just use inherited CFLAGS - dont need to override anymore in sqlite and other thirdpartycomponents makefiles
-  * lose  StroikaLinkerPrefixArgs += -g since done in configure now (for a while)
-  * ThirdPartyComponents makefiles - lose dependencies on particular windows configuration names
-  * use FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE makefile macro to repolace direct cygpath call
   * tweaked https://stroika.atlassian.net/browse/STK-704 workaround
-  * re-org placement of regtession test output into subfolders
   * ApplyConfigurations - now emits OUT_ARG_PREFIX_NATIVE and use that in DEFAULT_LINK_LINE
   * hopefully better workaroudn for https://stroika.atlassian.net/browse/STK-677 (tsan noise)
-  * New macros (defined and used):
-    * DEFAULT_CC_LINE
-    * DEFAULT_CXX_LINE
-    * DEFAULT_LIBRARY_GEN_LINE
-     * DEFAULT_LINK_LINE macro in makefile, and use it in regetests, samples, etc build makefiles
-  * Configure:
+  * Makefile cleanup
+    * New macros (defined and used):
+        * DEFAULT_CC_LINE
+        * DEFAULT_CXX_LINE
+        * DEFAULT_LIBRARY_GEN_LINE
+        * DEFAULT_LINK_LINE macro in makefile, and use it in regetests, samples, etc build makefiles
+    * Makefile performance tweak for Library makefiles: CachedOBJSFile
+    * use FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE makefile macro to repolace direct cygpath call
+    * deprecated Library/Projects/Unix/SharedBuildRules-Default.mk replacing with ScriptsLib/SharedBuildRules-Default.mk; and seprecated Library/Projects/Unix/SharedMakeVariables-Default.mk replacing with ScriptsLib/SharedMakeVariables-Default.mk
+    * lose  StroikaLinkerPrefixArgs += -g since done in configure now (for a while)
+  * Scripts
+    * Lose obsolete script ScriptsLib/GetVisualStudioConfigLine
+    * Lose obsolete ScriptsLib/MakeBuildRoot.sh (use without .sh)
+  * Configure
     * support new variables RC/MIDL (windows only/msvc)
-  * disable valgrind testing on raspberrypi (by removing valgrind configs)
-  * Lose obsolete script ScriptsLib/GetVisualStudioConfigLine
+    * lose/deprecate support for --c-define on configure - document / use --append-CPPFLAGS intead
+    * deprecated OptimizerFlag/--cpp-optimize-flag for configure script and lose from docs
+    * add EXTRA_SUFFIX_LINKER_ARGS /bigobj for visual studio
+    * in configure (for visual studio) - only do /FS flag if WinFlag_DebugProgramDatabase - since I think only needed there
+    * workaround HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for lto not working building openssl
+    * support new configuration variable TARGET_PLATFORMS (properly defaulting)
+  * Valgrind
+    * break out some suppressions into Valgrind-MemCheck-Common-x86_64.supp
+    * disable valgrind testing on raspberrypi (by removing valgrind configs)
+    * another minor https://stroika.atlassian.net/browse/STK-699 valgrind workaround
 
 
-
+* Code cleanups
+  * replace use of empty optional<>{} CTOR with nullopt in a few places becaues of (probably misplaced) g++ warnings, but also because the nullopt code is probably clearer
 
 * Docker based builds
   * ununtu 1910 docker images, and used in regtests
@@ -816,10 +220,14 @@ Date:   Tue Sep 24 23:16:45 2019 -0400
   * support vs2k17 15.9.16
   * support vs2k19 16.3.5
   * changed warnings so only done on MSC_VER not _MSC_FULL_VER so I dont need to do this update as often
-  * update docs etc to say XCode 11 (not 10)
-
+  * compiler bug define support for Apple Clang++ 11 (MacOS XCode 11.1)
+  * updated bug defines for gcc 9.2
 
 * Removed Deprecated classes/components (so checkout v2.1a1 and try building with that if upgrading)
+
+* Foundation::Characters
+  * tweak NLToCRLF() impl - not just performance - but also fixed so if run on existing CRLF text, it does nothing
+
 
 * Foundation::Execution
   * fixed serious bug in Syncrhonized class (noticed by g++ compiler warning); fWriteLockCount_ left uninitialized (now zero initialized)
@@ -835,22 +243,30 @@ Date:   Tue Sep 24 23:16:45 2019 -0400
     nor many comparison operators, etc.
   * docs strings for Duration::PrettyPrintAge ()
 
-* ThirdPartyComponents
-  * libcurl version 7.66.0
-  * openssl 1.1.1d
-  * SQLite 3300100
+* Frameworks::Led
+  * Led framework code cleanups/factoring (simple mostly adding .inl files)
+  * Several small Led code cleanups
 
-* Miscelaneous code cleanups
+* RegressionTests
+  * re-org placement of regtession test output into subfolders
+  * New Ubuntu1910_x86_64 regtests
+  * fixed a few places in regtests to use VerifyTestResult instead of Assert()
+  * Tests on Centos8
 
 * Samples
 
-  * tweak Led samples
-  * Got all samples (including Led - ActiveLedIt) - working with new makefile based build, including RC, and MIDL. Updated docs on how to run ActiveLedIt when built from cmdline and now have 64 bit builds of all these - including activeledit.
+  * Got all samples (including Led - ActiveLedIt) - working with new makefile based build, including RC, and MIDL. Updated docs on how to run ActiveLedIt when built from cmdline and now have 64 bit builds of all these - including activeledit, and other small cleanups.
+
+* ThirdPartyComponents
+  * Big changes to makefiles - all heavily cleaned up; no more msbuild, no more dependencies on configuration names. Much more uniformly using CFLAGS etc make configure settings.
+  * libcurl version 7.66.0
+  * openssl 1.1.1d
+  * SQLite 3300100
+  * Note/Clean workarounds https://stroika.atlassian.net/browse/STK-697 openssl issue fixed (FIXED in openssl 1.1.1d)
 
 
 
-* Tests
-  * fixed a few places in regtests to use VerifyTestResult instead of Assert()
+
 
 
 
