@@ -7,116 +7,8 @@ to be aware of when upgrading.
 # History
 
 
-#### next release
-
-* valgrind warning of the form
-
-~~~
-==17459== warning: Can't handle line info entry with line number 258779709 greater than 1048575
-==17459== (Nb: this message is only shown once)
-==17459== warning: Can't handle inlined call info entry with line number 258779714 greater than 1048575
-==17459== (Nb: this message is only shown once)
-~~~~
-
-Cannot figure out good way to suppress - probably just a valgrind (or compiler codegen) bug
-
-
 
 #if 0
-
-commit 8cba1846360c8e6a3a38cf17baa469eb5c4baa77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 17 22:01:20 2019 -0500
-
-    https://stroika.atlassian.net/browse/STK-702 - avoid another warning attempted patch
-
-
-commit 6b99cf304015f7fba57a21e5aa82edc896bfdd78
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 13:54:31 2019 -0400
-
-    cleanups to Stroika-Foundation.vcxproj; and merged Stroika-Frameworks-* files to Stroika-Frameworks*; and converted to using Makefile project instead of library project
-
-commit 72267e986bfe4b697ae99ba20146dbafe6591ce7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 23:37:35 2019 -0400
-
-    tweak Stroika.code-workspace for settings auto-added by vscode
-
-commit 8ee31cb2248d6f03f881dbce1090c48abf9455ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 23:36:32 2019 -0400
-
-    fixed Tests/Projects/VisualStudio.Net-2019/Project-Template/TestN.vcxproj intellisense settings
-
-commit 5bf6ceb95f84baa3ad967db6970da20b6ba90d83
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 23:36:06 2019 -0400
-
-    fixed Library/Projects/VisualStudio.Net-2019/Stroika-Foundation.vcxproj intellisense settings
-
-commit b11145f174f2a840d564b16de60b2bc21fd45740
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 24 21:56:03 2019 -0400
-
-    tweak workaround for https://stroika.atlassian.net/browse/STK-699
-
-
-commit 1570103c19199262bd2f84546f5e224f1e06cd13
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 22 23:27:23 2019 -0400
-
-    several (POSIX only) bugfixes to InternetMediaTypeRegistry reading dbs: DOCUMENT we try one and then the other (and that maybe not good idea); and fixed a couple bugs with LoadFromEtcMimeDotTypes (wrong separator, sometimes have multiple suffixes on a line)
-
-commit c1b61a8693f141c8aa180518ac2a0665d5ceeaf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 22 22:54:56 2019 -0400
-
-    fixed (POSIX) bug with InternetMediaTypeRegistry - read from both LoadFromUserShare and LoadFromEtcMimeDotTypes; and improved USE_NOISY_TRACE_IN_THIS_MODULE_ display    
-
-commit 6db7e8c38b492fce59d80a9a3cf4a42ea5c3ef11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 15 18:43:01 2019 -0400
-
-    for visual studio.net - default INCLUDE_SYMBOLS_EXE = true (even release builds) since we write to separate .pdb file
-
-    
-commit 71538925507ab9a96479c835409143cab049ee59
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 14 11:31:20 2019 -0400
-
-    lose Led code from Archive (always around in git history if I need it) - but unlikely to return to any of that code so just polutes searches.
-
-
-commit 211845bfab52aff877b3c472a28cc074bfc3f7bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 12 12:00:44 2019 -0400
-
-    tweak qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy bug worakround for macos
-
-
-commit deb79c5717c0e431e2d10b66143391e70171d306
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 8 14:16:55 2019 -0400
-
-    a few workaroudns for centos issues - no obsan, and default static_link_sanitizers to false on centos (maybe irrelevant if none of the sanitizers works)
-
-commit a6808b6edd475ad34a62c53674c7fbf2fce68822
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 8 12:10:41 2019 -0400
-
-    Centos 8 support; and add build of $TEST_TARGET=Ubuntu1910-Cross-Compile2RaspberryPi; and lose a few regular builds of raspberrypi on older non-long-term ubuntus
-
-
-commit 9840c644646a5959dc3b8c3b93c5ea47e7586649
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 7 20:25:00 2019 -0400
-
-    use default-configurations instead of basic-unix-test-configurations for ubuntu 1810 and 1904 (intermediate not long term older) releases - to save disk space and testing time
-
-commit 8f255f3c4b5055acfc5a3eb7fdf416bed34c4400
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 4 21:51:36 2019 -0400
 
     TOOLS_PATH_ADDITIONS_BUGWORKAROUND workaround for DLL issue with latest version of MSVC2k17 - fails to compile without stuffin path
 
@@ -125,35 +17,11 @@ Date:   Thu Oct 3 13:16:37 2019 -0400
 
     docs cleanups and register target and launch-sample example target which all work as of 2.1a2 (using non msbuild); only thing not working here is I haven't been able to get debugger working
 
-commit 495c2b49eb57b8f38ee19d095ec6bf297a79452c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 30 15:47:26 2019 -0400
-
-    defined new qStroika_FeatureSupported_XWindows; and updated Led code to depend on that (still nowhere near compiling); and adjust makefile to accomodate that most Led code only compiles for windows
-
-commit 6c655f9bbae0e475a3860703bf23228579b90d26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 30 13:17:53 2019 -0400
-
-    progress on ActiveLedIt (msbuild free) Makefile for windows - now call midl compiler
-
-commit b5b88702a64793f99cd46cbadfdad922b6bf2fd0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 21:12:38 2019 -0400
-
-    small build time performance tweak with ScriptsLib/ApplyConfiguration - use backtick instead of (shell) in makefile
-
 commit 11d7083ae3de80b269b5b3ee00ebb74a2f98d9db
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 28 20:53:17 2019 -0400
 
     new configure feature - PackageConfigLinkLines - and used that to eliminate manual expansion of a few dependencies, and to dynamically invoke pkg-config at runtime in the makefile based on feedback from the (built) third party components
-
-commit 03f490020d59a8022470a8960772ed1227435707
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 14:49:51 2019 -0400
-
-    fixed configure --fto enable/disable for windows/visual studio; and fix it (and apply-release-settings) to set /LGCG for linker as well
 
 #endif
 
@@ -201,20 +69,17 @@ Date:   Sat Sep 28 14:49:51 2019 -0400
     * in configure (for visual studio) - only do /FS flag if WinFlag_DebugProgramDatabase - since I think only needed there
     * workaround HasMakefileBugWorkaround_lto_skipping_undefined_incompatible for lto not working building openssl
     * support new configuration variable TARGET_PLATFORMS (properly defaulting)
+    * fixed configure --fto enable/disable for windows/visual studio; and fix it (and apply-release-settings) to set /LGCG for linker as well
+    * for visual studio.net - default INCLUDE_SYMBOLS_EXE = true (even release builds) since we write to separate .pdb file
   * Valgrind
     * break out some suppressions into Valgrind-MemCheck-Common-x86_64.supp
     * disable valgrind testing on raspberrypi (by removing valgrind configs)
     * another minor https://stroika.atlassian.net/browse/STK-699 valgrind workaround
+    * https://stroika.atlassian.net/browse/STK-702 - avoid another warning attempted patch
 
 
 * Code cleanups
   * replace use of empty optional<>{} CTOR with nullopt in a few places becaues of (probably misplaced) g++ warnings, but also because the nullopt code is probably clearer
-
-* Docker based builds
-  * ununtu 1910 docker images, and used in regtests
-  * Draft windows docker build image (for vs2k19) but not working yet
-  * centos 8 support
-
 
 * Compiler versions
   * support vs2k17 15.9.16
@@ -222,12 +87,21 @@ Date:   Sat Sep 28 14:49:51 2019 -0400
   * changed warnings so only done on MSC_VER not _MSC_FULL_VER so I dont need to do this update as often
   * compiler bug define support for Apple Clang++ 11 (MacOS XCode 11.1)
   * updated bug defines for gcc 9.2
+  * tweak qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy bug worakround for macos
+
+* Docker based builds
+  * ununtu 1910 docker images, and used in regtests
+  * Draft windows docker build image (for vs2k19) but not working yet
+  * centos 8 support
+
 
 * Removed Deprecated classes/components (so checkout v2.1a1 and try building with that if upgrading)
 
 * Foundation::Characters
   * tweak NLToCRLF() impl - not just performance - but also fixed so if run on existing CRLF text, it does nothing
 
+* Foundation::DataExchange
+  * several (POSIX only) bugfixes to InternetMediaTypeRegistry reading dbs: DOCUMENT we try one and then the other (and that maybe not good idea); and fixed a couple bugs with LoadFromEtcMimeDotTypes (wrong separator, sometimes have multiple suffixes on a line); read from both LoadFromUserShare and LoadFromEtcMimeDotTypes; and improved USE_NOISY_TRACE_IN_THIS_MODULE_ display
 
 * Foundation::Execution
   * fixed serious bug in Syncrhonized class (noticed by g++ compiler warning); fWriteLockCount_ left uninitialized (now zero initialized)
@@ -246,12 +120,18 @@ Date:   Sat Sep 28 14:49:51 2019 -0400
 * Frameworks::Led
   * Led framework code cleanups/factoring (simple mostly adding .inl files)
   * Several small Led code cleanups
+  * defined new qStroika_FeatureSupported_XWindows; and updated Led code to depend on that (still nowhere near compiling); and adjust makefile to accomodate that most Led code only compiles for windows
+  * lose Led code from Archive (always around in git history if I need it) - but unlikely to return to any of that code so just polutes searches
 
 * RegressionTests
   * re-org placement of regtession test output into subfolders
   * New Ubuntu1910_x86_64 regtests
   * fixed a few places in regtests to use VerifyTestResult instead of Assert()
   * Tests on Centos8
+  * add build of $TEST_TARGET=Ubuntu1910-Cross-Compile2RaspberryPi; and lose a few regular builds of raspberrypi on older non-long-term ubuntus
+  * use default-configurations instead of basic-unix-test-configurations for ubuntu 1810 and 1904 (intermediate not long term older) releases - to save disk space and testing time
+
+
 
 * Samples
 
