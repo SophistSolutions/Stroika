@@ -6,35 +6,11 @@ to be aware of when upgrading.
 
 # History
 
-
-
-#if 0
-
-    TOOLS_PATH_ADDITIONS_BUGWORKAROUND workaround for DLL issue with latest version of MSVC2k17 - fails to compile without stuffin path
-
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 13:16:37 2019 -0400
-
-    docs cleanups and register target and launch-sample example target which all work as of 2.1a2 (using non msbuild); only thing not working here is I haven't been able to get debugger working
-
-commit 11d7083ae3de80b269b5b3ee00ebb74a2f98d9db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 20:53:17 2019 -0400
-
-    new configure feature - PackageConfigLinkLines - and used that to eliminate manual expansion of a few dependencies, and to dynamically invoke pkg-config at runtime in the makefile based on feedback from the (built) third party components
-
-#endif
-
-
-
+## 2.1a2x {2019-11-25}
 
 * **Major Changes**
-  * Visual Studio.net build uses makefile - not MSBuild
+  * Visual Studio.net build uses makefile instead of not MSBuild
   * Visual studio.net project (both 2k17 and 2k19) just indirect to makefile builds now (makefile project files)
-
-* Bug defines
-  * qCompilerAndStdLib_attributes_before_template_in_Template_Buggy workaround
-  * qCompilerAndStdLib_locale_pctX_print_time_Buggy changes (eg broken xcode 11)
 
 * Build System
   * Visual Studio Changes
@@ -71,15 +47,20 @@ Date:   Sat Sep 28 20:53:17 2019 -0400
     * support new configuration variable TARGET_PLATFORMS (properly defaulting)
     * fixed configure --fto enable/disable for windows/visual studio; and fix it (and apply-release-settings) to set /LGCG for linker as well
     * for visual studio.net - default INCLUDE_SYMBOLS_EXE = true (even release builds) since we write to separate .pdb file
+    * new configure feature - PackageConfigLinkLines - and used that to eliminate manual expansion of a few dependencies, and to dynamically invoke pkg-config at runtime in the makefile based on feedback from the (built) third party components
   * Valgrind
     * break out some suppressions into Valgrind-MemCheck-Common-x86_64.supp
     * disable valgrind testing on raspberrypi (by removing valgrind configs)
     * another minor https://stroika.atlassian.net/browse/STK-699 valgrind workaround
     * https://stroika.atlassian.net/browse/STK-702 - avoid another warning attempted patch
 
+* Bug defines
+  * qCompilerAndStdLib_attributes_before_template_in_Template_Buggy workaround
+  * qCompilerAndStdLib_locale_pctX_print_time_Buggy changes (eg broken xcode 11)
 
 * Code cleanups
   * replace use of empty optional<>{} CTOR with nullopt in a few places becaues of (probably misplaced) g++ warnings, but also because the nullopt code is probably clearer
+  * Removed Deprecated classes/components (so checkout v2.1a1 and try building with that if upgrading)
 
 * Compiler versions
   * support vs2k17 15.9.16
@@ -93,9 +74,6 @@ Date:   Sat Sep 28 20:53:17 2019 -0400
   * ununtu 1910 docker images, and used in regtests
   * Draft windows docker build image (for vs2k19) but not working yet
   * centos 8 support
-
-
-* Removed Deprecated classes/components (so checkout v2.1a1 and try building with that if upgrading)
 
 * Foundation::Characters
   * tweak NLToCRLF() impl - not just performance - but also fixed so if run on existing CRLF text, it does nothing
@@ -131,10 +109,7 @@ Date:   Sat Sep 28 20:53:17 2019 -0400
   * add build of $TEST_TARGET=Ubuntu1910-Cross-Compile2RaspberryPi; and lose a few regular builds of raspberrypi on older non-long-term ubuntus
   * use default-configurations instead of basic-unix-test-configurations for ubuntu 1810 and 1904 (intermediate not long term older) releases - to save disk space and testing time
 
-
-
 * Samples
-
   * Got all samples (including Led - ActiveLedIt) - working with new makefile based build, including RC, and MIDL. Updated docs on how to run ActiveLedIt when built from cmdline and now have 64 bit builds of all these - including activeledit, and other small cleanups.
 
 * ThirdPartyComponents
@@ -143,11 +118,6 @@ Date:   Sat Sep 28 20:53:17 2019 -0400
   * openssl 1.1.1d
   * SQLite 3300100
   * Note/Clean workarounds https://stroika.atlassian.net/browse/STK-697 openssl issue fixed (FIXED in openssl 1.1.1d)
-
-
-
-
-
 
 
 ## 2.1a1 {2019-09-04}
