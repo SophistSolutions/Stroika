@@ -69,7 +69,7 @@ elif [ $TOOL == "node" ] ; then
 	if [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try installing https://nodejs.org/en/ msi installer" && echo && exit 0
 	else 
-		echo -n ": try apt-get install nodejs-legacy" && echo && exit 0
+		echo -n ": try apt-get install nodejs" && echo && exit 0
 	fi
 elif [ $TOOL == "sed" ] ; then
 	if [ $DistroBasedOn == "Darwin" ] ; then
