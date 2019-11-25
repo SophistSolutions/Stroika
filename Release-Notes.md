@@ -6,7 +6,7 @@ to be aware of when upgrading.
 
 # History
 
-## 2.1a2x {2019-11-25}
+## 2.1a2 {2019-11-25}
 
 * **Major Changes**
   * Visual Studio.net build uses makefile instead of not MSBuild
@@ -18,10 +18,9 @@ to be aware of when upgrading.
     * Visual studio.net project files (both 2k17 and 2k19) just indirect to makefile builds now (makefile based project files)
       * lose more x64 arch settings and A-32 configuration support - smaller set and means nothign since now all semantics indirected to ConfigurationFiles configfiles
       * use UserMacros for JOBS_FLAG
-      * https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=vs-2019
+      * follow (mostly) https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=vs-2019
   * use cygpath --mixed instead of cygpath --windows in a bunch of places (forward slashes work better in bash based scripting so see if we can get away with this switch)
   * new LIBTOOL configuration variable (more or less replacing AR - but so easier to script in makefile lib with diff sets of options); ifeq ($(USE_MSBUILD_),0) prelim test for building on vs2k without msbuild (off still)
-  * tweaked https://stroika.atlassian.net/browse/STK-704 workaround
   * ApplyConfigurations - now emits OUT_ARG_PREFIX_NATIVE and use that in DEFAULT_LINK_LINE
   * hopefully better workaroudn for https://stroika.atlassian.net/browse/STK-677 (tsan noise)
   * Makefile cleanup
@@ -53,6 +52,7 @@ to be aware of when upgrading.
     * disable valgrind testing on raspberrypi (by removing valgrind configs)
     * another minor https://stroika.atlassian.net/browse/STK-699 valgrind workaround
     * https://stroika.atlassian.net/browse/STK-702 - avoid another warning attempted patch
+    * tweaked https://stroika.atlassian.net/browse/STK-704 workaround
 
 * Bug defines
   * qCompilerAndStdLib_attributes_before_template_in_Template_Buggy workaround
@@ -82,7 +82,7 @@ to be aware of when upgrading.
   * several (POSIX only) bugfixes to InternetMediaTypeRegistry reading dbs: DOCUMENT we try one and then the other (and that maybe not good idea); and fixed a couple bugs with LoadFromEtcMimeDotTypes (wrong separator, sometimes have multiple suffixes on a line); read from both LoadFromUserShare and LoadFromEtcMimeDotTypes; and improved USE_NOISY_TRACE_IN_THIS_MODULE_ display
 
 * Foundation::Execution
-  * fixed serious bug in Syncrhonized class (noticed by g++ compiler warning); fWriteLockCount_ left uninitialized (now zero initialized)
+  * **fixed serious bug in Syncrhonized** class (noticed by g++ compiler warning); fWriteLockCount_ left uninitialized (now zero initialized)
 
 * Foundation::IO
   * better error handling in ~MemoryMappedFileReader for POSIX
@@ -119,6 +119,7 @@ to be aware of when upgrading.
   * SQLite 3300100
   * Note/Clean workarounds https://stroika.atlassian.net/browse/STK-697 openssl issue fixed (FIXED in openssl 1.1.1d)
 
+----
 
 ## 2.1a1 {2019-09-04}
 
