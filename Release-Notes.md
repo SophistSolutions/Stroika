@@ -548,12 +548,6 @@ Date:   Sat Oct 5 11:49:20 2019 -0400
 
     cleanup a few 32/64 bit warnings in Led based samples
 
-commit 9a525825d8cf3711b6500d0da076051e36b63146
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 5 11:48:45 2019 -0400
-
-    support vs2k17 15.9.16
-
 commit ae04e1e2c8852ee87e02f3e95a2c1a748aef4e2b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Oct 5 10:52:37 2019 -0400
@@ -577,108 +571,17 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Oct 4 21:51:36 2019 -0400
 
     TOOLS_PATH_ADDITIONS_BUGWORKAROUND workaround for DLL issue with latest version of MSVC2k17 - fails to compile without stuffin path
-    
-
-commit 0a974db5412d52c79671521401df7bf9f00de70c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 22:52:35 2019 -0400
-
-    small cosmetic change to workaround VS compiler bug/crash
-
-commit 187d0444dd3297c5f90b80db389bb643f976ab77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 21:24:40 2019 -0400
-
-    Lose obsolete script ScriptsLib/GetVisualStudioConfigLine
-
-commit ae4c318eaaa52d3af27caecd5b2b5ab8afb45293
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 21:21:40 2019 -0400
-
-    use USE_MSBUILD (msbuild.exe) support
-
-commit ef2ff268618b7378c74da43a68c4fe4958ac98e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 14:40:58 2019 -0400
-
-    build activeledit cab file
 
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Oct 3 13:16:37 2019 -0400
 
     docs cleanups and register target and launch-sample example target which all work as of 2.1a2 (using non msbuild); only thing not working here is I haven't been able to get debugger working
 
-commit 07e6b474ec5598168eeb302a239625a3627ecade
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 12:28:32 2019 -0400
-
-    got SimpleLedTest app building/running from makefile (no msbuild and using stroika configs)
-
-commit 10b6d3efeb1836234c20c413cadb48483d2f45a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 3 09:59:50 2019 -0400
-
-    note about thread sanitizer suprpession
-
-commit a8f4d827d3ef5b963ffcd1fd0737e304a50daff2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 21:49:32 2019 -0400
-
-    default to USE_MSBUILD=0 - not 100% ready - but close enough I think its best to test that way
-
-commit eabcd71a5c98a2ccf04d92df6c16c564bb2d8f80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 21:49:01 2019 -0400
-
-    fixed quotes on files in RC_FLAGS
-
-commit ac3e082ab91744f4e16bebd47c9a1d72a447a0bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 21:48:22 2019 -0400
-
-    various fixes to samples genrating midl/rc output (LedIt variants)
-
-commit 387714e46e79c29d9ac9d586b5625a25be6cf901
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 15:54:34 2019 -0400
-
-    tweak for 64 bit builds some Led based samples
-
-commit ad6af36cee1041cdb458248ab71303ebb8f21d50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 15:54:11 2019 -0400
-
-    Added MIDL and RC support to sample LedLineIt, so that appears to build without MSBUILD (using stroika configuraiton mechanism)
-
-commit 6021bce28574f4ed6e944006726150602ffcb190
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 13:26:13 2019 -0400
-
-    fixed /bigobj workaround
-
 commit ccbe4feb51bea711455a936f22c49a4092b41db7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Oct 2 13:22:11 2019 -0400
 
     add EXTRA_SUFFIX_LINKER_ARGS /bigobj for visual studio:
-
-commit 9800a67d40cd0ce1bd8feff6683cfd4abf25a597
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 11:01:17 2019 -0400
-
-    Got LedIt building and running without MSBUILD (still no UAC stuff, but MIDL/RC compiler part seems working)
-
-commit 4a2662bded9243503b5d883176dd76bdb76e202d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 2 11:00:28 2019 -0400
-
-    small cleanupos to DEFAULT_MIDL_LINE macro; and new DEFAULT_RC_LINE macro (tested and works on LedIt)
-
-commit f3c0cdeaef17fa7299491a851643c17098e80f03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 1 16:33:31 2019 -0400
-
-    Added DEFAULT_MIDL_LINE macro to makefile and used it for ActiveLedIt to build ODL output
 
 commit 08f8a58c83646d289079af4e8cc48c641d8d4d31
 Author: Lewis Pringle <lewis@sophists.com>
@@ -695,18 +598,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 30 13:17:53 2019 -0400
 
     progress on ActiveLedIt (msbuild free) Makefile for windows - now call midl compiler
-
-commit 733519e81fc9e46685646558cf26ee5a37d80d88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 29 21:22:48 2019 -0400
-
-    sample Makefiles for LedIt and LedLineIt - now successfully compile/link
-
-commit 90d99f485cb4e33537886ac9782bc0b8443d02e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 29 21:18:13 2019 -0400
-
-    Build Led in makefiles support (Led Framework)
 
 commit b5b88702a64793f99cd46cbadfdad922b6bf2fd0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -731,60 +622,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 28 14:49:51 2019 -0400
 
     fixed configure --fto enable/disable for windows/visual studio; and fix it (and apply-release-settings) to set /LGCG for linker as well
-
-commit d3cd6fcdcb22326fdf3ddf6dfb480f2cf76c3ff6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 12:59:16 2019 -0400
-
-    tmphack to workaround incomplete no MSBUILD support in a few led app sample makefiles
-
-commit 83fb6b0c1aed605b57a1608fbb4282950e4bdcfa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 12:45:15 2019 -0400
-
-    more makefile cleanups - using ifeq (${USE_MSBUILD},1) instead of if PrkectPlatformDir tests
-
-commit 503e2d9838ff2da39b04f9c10ee88303121665d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 09:55:36 2019 -0400
-
-    sample makefile quote cleanups
-
-commit a05d4f39627e7789343774963307840e87c38de8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 01:30:42 2019 -0400
-
-    partly fix/undo regression to placement of SharedBuildRules-Default.mk
-
-commit 53441dc37bd30a8fc0d9ac7b439340aa8d91353d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 01:22:42 2019 -0400
-
-    partly fix/undo regression to placement of SharedBuildRules-Default.mk
-
-commit 0ed74eb1d8aefe4201705b1fc5bd542e50c886bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 01:13:36 2019 -0400
-
-    started fixing regressions caused my move of iptsLib/SharedMakeVariables-Default...
-
-commit 456b66438fc3cada5182e4615353d6187c737ea6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 01:09:22 2019 -0400
-
-    fixed another sample makefile regression from cleanups
-
-commit 4750344afc71ddac93235919f6ab46f7dce807a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 01:03:24 2019 -0400
-
-    workaround loss of pkgconfig line from SharedConfig... vars.mk - temporarily do from configure
-
-commit bb84da6f066e93fdca99bf2cb0c6cd8ebb625d94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 28 00:55:50 2019 -0400
-
-    cleanup samples makefile so most build under windows/visual studio with no MSBUILD (but more to cleanup - like Led makefiles)
 
 commit cf601228ba3af2a3cb4043d320b80dc1ca211b71
 Author: Lewis Pringle <lewis@sophists.com>
@@ -834,12 +671,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 27 16:40:06 2019 -0400
 
     support new configuration variable TARGET_PLATFORMS (properly defaulting) - and derived variables in COnfiguraiton.mk TARGET_PLATFORMS_POSIX, etc
-
-commit b41b2bae7f25f85353066bc652cab512d296e6cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 27 16:17:02 2019 -0400
-
-    small cleanups to SharedMakeVariables-Default.mk
 
 commit 17bad871bd4eca4083403524256fff167df80810
 Author: Lewis Pringle <lewis@sophists.com>
@@ -907,8 +738,6 @@ Date:   Wed Sep 25 15:06:00 2019 -0400
 
     reorder test for setting USE_MSBUILD so ONLY IF KNOWN to be vs2k we use MS_BUILD, and else (like if no config files) we dont
 
-
-
 commit c65af4994455ba13e57a901542c7d6616b73f259
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 25 14:50:13 2019 -0400
@@ -933,38 +762,6 @@ Date:   Tue Sep 24 23:16:45 2019 -0400
 
     doc https://stroika.atlassian.net/browse/STK-697 openssl issue fixed
 
-commit 92de86d569eed2f3d7dbbf2b80a26f2aad512a87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 24 21:49:51 2019 -0400
-
-    use cygpath --mixed instead of cygpath --windows in a bunch of places (forward slashes work better in bash based scripting so see if we can get away with this switch)  - testing
-
-
-commit c31f191af543cd5d6da08ae21d4b99c01fc514ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 24 21:25:59 2019 -0400
-
-    Cleanup SQLite and Zlib makefiels to use CFLAGS variable from config process, and not
-    need to manually construct much of it (part of eliminating dependency for VS harewired configs).
-    
-    New patch file for zlib (so I can externally set CFLAGS etc).
-    
-
-
-
-commit e19c7a461431cd777957eb02e122aa3f365b889d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 22 09:51:57 2019 -0400
-
-    minor cleanups to boost Makefile (esp using FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE)
-
-
-commit 43d5178f79807ae5e2f1db97a55d709dc1f46abd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 29 14:29:16 2019 -0400
-
-    use DISABLE_COMPILER_GCC_WARNING_START for -WComment cases instead of global compiler suppression
-
 
 #endif
 
@@ -984,7 +781,7 @@ Date:   Thu Aug 29 14:29:16 2019 -0400
     * lose more x64 arch settings and A-32 configuration support - smaller set and means nothign since
       now all semantics indirected to ConfigurationFiles configfiles
     * use UserMacros for JOBS_FLAG
-
+  * use cygpath --mixed instead of cygpath --windows in a bunch of places (forward slashes work better in bash based scripting so see if we can get away with this switch)
   * new LIBTOOL configuration variable (more or less replacing AR - but so easier to script in makefile lib with diff sets of options); ifeq ($(USE_MSBUILD_),0) prelim test for building on vs2k without msbuild (off still)
   * Lose obsolete ScriptsLib\MakeBuildRoot.sh (use without .sh)
   * deprecated OptimizerFlag/--cpp-optimize-flag for configure script and lose from docs
@@ -1004,6 +801,7 @@ Date:   Thu Aug 29 14:29:16 2019 -0400
   * Configure:
     * support new variables RC/MIDL (windows only/msvc)
   * disable valgrind testing on raspberrypi (by removing valgrind configs)
+  * Lose obsolete script ScriptsLib/GetVisualStudioConfigLine
 
 
 
@@ -1015,9 +813,11 @@ Date:   Thu Aug 29 14:29:16 2019 -0400
 
 
 * Compiler versions
+  * support vs2k17 15.9.16
   * support vs2k19 16.3.5
   * changed warnings so only done on MSC_VER not _MSC_FULL_VER so I dont need to do this update as often
   * update docs etc to say XCode 11 (not 10)
+
 
 * Removed Deprecated classes/components (so checkout v2.1a1 and try building with that if upgrading)
 
@@ -1045,6 +845,7 @@ Date:   Thu Aug 29 14:29:16 2019 -0400
 * Samples
 
   * tweak Led samples
+  * Got all samples (including Led - ActiveLedIt) - working with new makefile based build, including RC, and MIDL. Updated docs on how to run ActiveLedIt when built from cmdline and now have 64 bit builds of all these - including activeledit.
 
 
 
