@@ -7,7 +7,7 @@
 : ${RUN_IN_DOCKER:=0}
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
 : ${BUILD_DIR:=Sandbox/Stroika-Build-Dir-$USE_TEST_BASENAME}
-: ${BRANCH:=V2.1-Dev}
+: ${BRANCH:=v2.1-Dev}
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}
 : ${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}
