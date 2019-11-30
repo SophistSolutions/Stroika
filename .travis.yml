@@ -1,4 +1,4 @@
-language: g++
+language: c++
 
 compiler: gcc
 
