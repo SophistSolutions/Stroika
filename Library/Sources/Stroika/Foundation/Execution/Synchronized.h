@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \note *** EXPERIMENTAL API *** as of Stroika 2.1d27
          *
-         *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK. Beware.
+         *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK. Beware (or pass in small timeout to avoid deadlock).
          *
          *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
          *
@@ -533,9 +533,10 @@ namespace Stroika::Foundation::Execution {
          *          auto lockedStatus = fStatus_.cget ();
          *          // do a bunch of code that only needs read access
          *          if (some rare event) {
+         *              constexpr auto kTimeout_ = 1s;  // since otherwise can deadlock
          *              fStatus_.UpgradeLockAtomically ([=](auto&& writeLock) {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              });
+         *              }, kTimeout_);
          *          }
          *      \endcode
          */
@@ -568,9 +569,10 @@ namespace Stroika::Foundation::Execution {
          *          auto lockedStatus = fStatus_.cget ();
          *          // do a bunch of code that only needs read access
          *          if (some rare event) {
+         *              constexpr auto kTimeout_ = 1s;  // since otherwise can deadlock
          *              if (not fStatus_.UpgradeLockAtomicallyQuietly ([=](auto&& writeLock) {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              })) {
+         *              }, kTimeout_)) {
          *                  Execution::Sleep (1s);
          *                  goto again;     // re-acquire data since merge of results inadequate
          *              }
