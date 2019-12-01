@@ -22,8 +22,9 @@ matrix:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 
 install:
-    - ./configure Debug --apply-default-debug-flags --Xerces no
-    - make CONFIGURATION=Debug -j 2 all run-tests
+    - ./configure Debug --apply-default-debug-flags
+    - cat Configurations/Debug.xml
+    - make CONFIGURATION=Debug --jobs=4 all run-tests
 
 before_install:
     - eval "${MATRIX_EVAL}"
