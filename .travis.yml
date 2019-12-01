@@ -1,15 +1,16 @@
 language: cpp
 
-dist: bionic
+os: linux
 
 branches:
   only:
     - v2.1-Dev
     - v2.1-Release
 
-matrix:
+jobs:
   include:
     - os: linux
+      dist: bionic
       addons:
         apt:
           sources:
@@ -26,6 +27,7 @@ matrix:
         - make CONFIGURATION=Release samples
 
     - os: linux
+      dist: bionic
       addons:
         apt:
           sources:
