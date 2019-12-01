@@ -23,10 +23,21 @@ matrix:
 
 install:
 
-script:
-    - ./configure Debug --apply-default-debug-flags
-    - cat ConfigurationFiles/Debug.xml
-    - make CONFIGURATION=Debug --jobs=4 run-tests
+jobs:
+  include:
+    -stage Configure
+    script:
+      - ./configure Debug --apply-default-debug-flags
+      - cat ConfigurationFiles/Debug.xml
+    -stage ThirdPartyComponents
+    script:
+      - make CONFIGURATION=Debug third-party-components
+    -stage all
+    script:
+      - make CONFIGURATION=Debug all
+    -stage run-tests
+    script:
+      - make CONFIGURATION=Debug run-tests
 
 before_install:
     - eval "${MATRIX_EVAL}"
