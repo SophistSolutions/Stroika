@@ -23,7 +23,7 @@ matrix:
 
 install:
     - ./configure Debug --apply-default-debug-flags
-    - cat Configurations/Debug.xml
+    - cat ConfigurationFiles/Debug.xml
     - make CONFIGURATION=Debug --jobs=4 all run-tests
 
 before_install:
