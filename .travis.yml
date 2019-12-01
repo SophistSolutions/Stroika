@@ -1,8 +1,14 @@
-language: c++
+language: cpp
+
+branches:
+  only:
+    - v2.1-Dev
+    - v2.1-Release
 
 matrix:
   include:
     - os: linux
+    - dist: bionic
       addons:
         apt:
           sources:
@@ -15,8 +21,8 @@ matrix:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 
 install:
-    - make default-configurations
-    - make all run-tests
+    - ./configure Debug --apply-default-debug-flags --Xerces no
+    - make CONFIGURATION=Debug -j 2 all run-tests
 
 before_install:
     - eval "${MATRIX_EVAL}"
