@@ -1,7 +1,5 @@
 language: c++
 
-compiler: gcc
-
 matrix:
   include:
     - os: linux
@@ -14,6 +12,9 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 
+install:
+    - make default-configurations
+    - make all run-tests
+
 before_install:
     - eval "${MATRIX_EVAL}"
-    - make default-configurations
