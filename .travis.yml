@@ -9,6 +9,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-8
+            - libtool-bin
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 
