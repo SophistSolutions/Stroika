@@ -1,5 +1,7 @@
 language: cpp
 
+dist: bionic
+
 branches:
   only:
     - v2.1-Dev
@@ -8,7 +10,6 @@ branches:
 matrix:
   include:
     - os: linux
-    - dist: bionic
       addons:
         apt:
           sources:
