@@ -10,6 +10,7 @@ matrix:
           packages:
             - g++-8
             - libtool-bin
+            - p7zip-full
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 
