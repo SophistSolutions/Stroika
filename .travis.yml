@@ -20,18 +20,25 @@ matrix:
             - p7zip-full
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-      stage: Configure
+      script:
+        - ./configure Release --apply-default-release-flags
+        - cat ConfigurationFiles/Release.xml
+        - make CONFIGURATION=Release samples
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+            - libtool-bin
+            - p7zip-full
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       script:
         - ./configure Debug --apply-default-debug-flags
         - cat ConfigurationFiles/Debug.xml
-      stage: ThirdPartyComponents
-      script:
-        - make CONFIGURATION=Debug third-party-components
-      stage: all
-      script:
-        - make CONFIGURATION=Debug all
-      stage: run-tests
-      script:
         - make CONFIGURATION=Debug run-tests
 
 install:
