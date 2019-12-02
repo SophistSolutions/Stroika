@@ -17,6 +17,7 @@ branches:
 
 jobs:
   include:
+    # MacOS Configuration
     - os: osx
       osx_image: xcode11.2
       addons:
@@ -30,6 +31,7 @@ jobs:
       script:
         - make all
 
+    # Windows Configuration
     - os: windows
       addons:
       install:
@@ -38,6 +40,7 @@ jobs:
       script:
         - make all
 
+    # Linux (Ubuntu - 1804) Configuration - build all
     - os: linux
       dist: bionic
       addons:
@@ -56,6 +59,7 @@ jobs:
       script:
         - make all
 
+    # Linux (Ubuntu - 1804) Configuration - run-tests
     - os: linux
       dist: bionic
       addons:
