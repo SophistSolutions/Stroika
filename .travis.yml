@@ -24,7 +24,7 @@ jobs:
       script:
         - ./configure Release --apply-default-release-flags
         - cat ConfigurationFiles/Release.xml
-        - make CONFIGURATION=Release samples
+        - make CONFIGURATION=Release all
 
     - os: linux
       dist: bionic
@@ -39,9 +39,9 @@ jobs:
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       script:
-        - ./configure Debug --apply-default-debug-flags
-        - cat ConfigurationFiles/Debug.xml
-        - make CONFIGURATION=Debug run-tests
+        - ./configure Release --apply-default-release-flags
+        - cat ConfigurationFiles/Release.xml
+        - make CONFIGURATION=Release run-tests
 
 install:
 
