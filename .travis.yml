@@ -34,7 +34,8 @@ jobs:
           - gnu-sed
           - p7zip
       install:
-        - ./configure Release --apply-default-release-flags
+        # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
         - cat ConfigurationFiles/Release.xml
       script:
         - make all
@@ -43,7 +44,7 @@ jobs:
     - os: windows
       addons:
       install:
-        - ./configure Release-32 --arch x86 --apply-default-release-flags
+        - perl configure Release-32 --arch x86 --apply-default-release-flags
         - cat ConfigurationFiles/Release.xml
       script:
         - make all
@@ -59,10 +60,12 @@ jobs:
             - g++-8
             - libtool-bin
             - p7zip-full
+            - libcurl4-openssl-dev
+            - openssl
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       install:
-          - ./configure Release --apply-default-release-flags --openssl use-system
+          - ./configure Release --apply-default-release-flags --openssl use-system --libcurl use-system
           - cat ConfigurationFiles/Release.xml
       script:
         - make all
