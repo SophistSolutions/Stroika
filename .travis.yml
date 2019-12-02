@@ -21,10 +21,11 @@ jobs:
             - p7zip-full
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+      install:
+          - ./configure Release --apply-default-release-flags
+          - cat ConfigurationFiles/Release.xml
       script:
-        - ./configure Release --apply-default-release-flags
-        - cat ConfigurationFiles/Release.xml
-        - make CONFIGURATION=Release all
+        - make all
 
     - os: linux
       dist: bionic
@@ -38,12 +39,11 @@ jobs:
             - p7zip-full
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+      install:
+          - ./configure Release --apply-default-release-flags
+          - cat ConfigurationFiles/Release.xml
       script:
-        - ./configure Release --apply-default-release-flags
-        - cat ConfigurationFiles/Release.xml
-        - make CONFIGURATION=Release run-tests
-
-install:
+        - make run-tests
 
 before_install:
     - eval "${MATRIX_EVAL}"
