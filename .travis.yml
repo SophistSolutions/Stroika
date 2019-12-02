@@ -39,6 +39,8 @@ jobs:
         - cat ConfigurationFiles/Release.xml
       script:
         - make all
+      env:
+        - MATRIX_EVAL=""
 
     # Windows Configuration
     - os: windows
@@ -48,6 +50,8 @@ jobs:
         - cat ConfigurationFiles/Release.xml
       script:
         - make all
+      env:
+        - MATRIX_EVAL=""
 
     # Linux (Ubuntu - 1804) Configuration - build all
     - os: linux
