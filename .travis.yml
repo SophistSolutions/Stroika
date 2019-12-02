@@ -17,6 +17,27 @@ branches:
 
 jobs:
   include:
+    - os: osx
+      osx_image: xcode11.2
+      addons:
+        homebrew:
+          packages:
+          - gnu-sed
+          - p7zip
+      install:
+        - ./configure Release --apply-default-release-flags
+        - cat ConfigurationFiles/Release.xml
+      script:
+        - make all
+
+    - os: windows
+      addons:
+      install:
+        - ./configure Release-32 --arch x86 --apply-default-release-flags
+        - cat ConfigurationFiles/Release.xml
+      script:
+        - make all
+
     - os: linux
       dist: bionic
       addons:
