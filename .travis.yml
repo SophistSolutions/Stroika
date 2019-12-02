@@ -44,14 +44,14 @@ jobs:
 
     # Windows Configuration
     - os: windows
-      addons:
-        chocolatey:
+      #addons:
+        #chocolatey:
           #packages:
           #  - visualstudio2019community
-          before_install:
-            - activeperl
-            - choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional"
-            - choco install visualstudio2019-workload-vctools
+      before_install:
+        - choco install activeperl
+        - choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional"
+        - choco install visualstudio2019-workload-vctools
       install:
         - perl configure Release-32 --arch x86 --apply-default-release-flags
         - cat ConfigurationFiles/Release.xml
