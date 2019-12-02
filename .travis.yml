@@ -40,7 +40,7 @@ jobs:
       script:
         - make all
       env:
-        - MATRIX_EVAL=""
+        - MATRIX_EVAL="CC=clang CXX=clang++"
 
     # Windows Configuration
     - os: windows
