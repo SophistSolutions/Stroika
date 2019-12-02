@@ -5,6 +5,7 @@
 # \note We use the 'release' configuration because it builds a bit faster than the Debug configuration, and
 #       we are limited with travis ci to a build that takes 50 minutes. We run out of time otherwise, and maybe
 #       even to some degree with these settings. May need todo more to make this work.
+#       Similarly, use  --openssl use-system for speed of build.
 #
 language: cpp
 
@@ -61,7 +62,7 @@ jobs:
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       install:
-          - ./configure Release --apply-default-release-flags
+          - ./configure Release --apply-default-release-flags --openssl use-system
           - cat ConfigurationFiles/Release.xml
       script:
         - make all
@@ -80,7 +81,7 @@ jobs:
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       install:
-          - ./configure Release --apply-default-release-flags
+          - ./configure Release --apply-default-release-flags --openssl use-system
           - cat ConfigurationFiles/Release.xml
       script:
         - make run-tests
