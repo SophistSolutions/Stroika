@@ -10,6 +10,13 @@ language: cpp
 
 os: linux
 
+## I tried this directly and it didn't help, but try again as instructions on 
+## https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
+## suggested it.
+env:
+  global:
+    - MAKEFLAGS="-j 2"
+    
 branches:
   only:
     - v2.1-Dev
