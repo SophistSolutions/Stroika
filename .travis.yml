@@ -45,6 +45,10 @@ jobs:
     # Windows Configuration
     - os: windows
       addons:
+        chocolatey:
+          packages:
+            - activeperl
+            - visualstudio2019community
       install:
         - perl configure Release-32 --arch x86 --apply-default-release-flags
         - cat ConfigurationFiles/Release.xml
