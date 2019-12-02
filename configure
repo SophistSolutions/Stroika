@@ -1485,6 +1485,10 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-extra-compiler-and-linker-args") or (lc ($var) eq "--append-extra-compiler-and-linker-args")) {
 			$i++;
 			$var = $args[$i];
+
+			push @CFLAGS, $var;
+			push @CXXFLAGS, $var;
+
 			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
 				$EXTRA_PREFIX_LINKER_ARGS .= " ";
 			}
