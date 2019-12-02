@@ -1,3 +1,11 @@
+#
+# The purpose of this file is to configure Travis CI build system integration.
+#   @see https://travis-ci.com/SophistSolutions/Stroika
+#
+# \note We use the 'release' configuration because it builds a bit faster than the Debug configuration, and
+#       we are limited with travis ci to a build that takes 50 minutes. We run out of time otherwise, and maybe
+#       even to some degree with these settings. May need todo more to make this work.
+#
 language: cpp
 
 os: linux
