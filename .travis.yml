@@ -24,6 +24,25 @@ branches:
     - v2.1-Release
 
 jobs:
+  allow_failures:
+    # Windows Configuration
+    - os: windows
+      #addons:
+        #chocolatey:
+          #packages:
+          #  - visualstudio2019community
+      before_install:
+        - choco install activeperl
+        - choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional"
+        - choco install visualstudio2019-workload-vctools
+      install:
+        - perl configure Release-32 --arch x86 --apply-default-release-flags
+        - cat ConfigurationFiles/Release.xml
+      script:
+        - make all
+      env:
+        - MATRIX_EVAL=""
+
   include:
     # MacOS Configuration
     - os: osx
@@ -43,23 +62,6 @@ jobs:
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++"
 
-    # Windows Configuration
-    - os: windows
-      #addons:
-        #chocolatey:
-          #packages:
-          #  - visualstudio2019community
-      before_install:
-        - choco install activeperl
-        - choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional"
-        - choco install visualstudio2019-workload-vctools
-      install:
-        - perl configure Release-32 --arch x86 --apply-default-release-flags
-        - cat ConfigurationFiles/Release.xml
-      script:
-        - make all
-      env:
-        - MATRIX_EVAL=""
 
     # Linux (Ubuntu - 1804) Configuration - build all
     - os: linux
