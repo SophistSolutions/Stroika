@@ -25,6 +25,10 @@ branches:
 
 jobs:
   allow_failures:
+      env:
+        - MATRIX_EVAL=""
+
+  include:
     # Windows Configuration
     - os: windows
       before_install:
@@ -41,7 +45,6 @@ jobs:
       env:
         - MATRIX_EVAL=""
 
-  include:
     # MacOS Configuration
     - os: osx
       osx_image: xcode11.2
@@ -59,7 +62,6 @@ jobs:
         - make all ECHO_BUILD_LINES=1
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++"
-
 
     # Linux (Ubuntu - 1804) Configuration - build all
     - os: linux
