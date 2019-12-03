@@ -389,7 +389,11 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #ifndef qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
+if defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__>=101500
+#define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy 0
+#else
 #define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#endif
 #else
 #define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy 0
 #endif
