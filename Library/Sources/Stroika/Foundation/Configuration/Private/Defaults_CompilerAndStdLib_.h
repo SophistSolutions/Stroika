@@ -389,7 +389,10 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #ifndef qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-if defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__>=101500
+// -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
+// Figured out I can read __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__  to find setting of -mmacosx-version-min flag
+// And logic is - if this is set, the clang code works correctly, and so this hack isn't needed (and doesn't seem to work due to library name conflicts)
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500
 #define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy 0
 #else
 #define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
