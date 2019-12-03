@@ -52,11 +52,11 @@ jobs:
           - p7zip
       install:
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --append-lib-dependencies -lc++fs
         - cat ConfigurationFiles/Release.xml
       script:
         - clang++ --version
-        - make all
+        - make all ECHO_BUILD_LINES=1
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++"
 
