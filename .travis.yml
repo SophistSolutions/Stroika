@@ -29,7 +29,6 @@ branches:
 jobs:
   allow_failures:
       env:
-        - MATRIX_EVAL=""
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true" # https://stroika.atlassian.net/browse/STK-705 - retry mid december
 
   include:
