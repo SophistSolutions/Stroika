@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Time {
 /*
  *  If forced to use boost filesystem or experimental filesystem, make it look like std::filesystem.
  */
-#if !(__cpp_lib_filesystem >= 201603)
+#if !(__cpp_lib_filesystem >= 201603) || qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 #if (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>)) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 namespace std::filesystem {
     using namespace std::experimental::filesystem;
