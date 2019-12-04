@@ -35,7 +35,7 @@ jobs:
     # Windows Configuration
     - os: windows
       before_install:
-        #- choco install activeperl
+        - choco install activeperl
         #- choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional"
         #- choco install visualstudio2019-workload-vctools
         #- choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US"
