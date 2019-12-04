@@ -41,6 +41,7 @@ jobs:
         #- choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US"
         - choco install visualstudio2019community --package-parameters "--includeRecommended --includeOptional"
       install:
+        - set PATH=C:\Perl64\;%PATH%
         - perl configure Release-32 --arch x86 --apply-default-release-flags
         - cat ConfigurationFiles/Release.xml
       script:
