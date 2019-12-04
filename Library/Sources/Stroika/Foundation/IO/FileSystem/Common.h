@@ -6,7 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if __has_include(<filesystem>)
+#if __has_include(<filesystem>) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 #include <filesystem>
 #elif __has_include(<experimental/filesystem>) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 #include <experimental/filesystem>
