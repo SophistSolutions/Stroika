@@ -21,27 +21,15 @@ namespace Stroika::Foundation::Time {
     class DateTime;
 }
 
-/**
- * TODO:
- */
-#if qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
-#pragma message("****qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy*****")
-#else
-#pragma message("****!qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy*****")
-#endif
-
 /*
  *  If forced to use boost filesystem or experimental filesystem, make it look like std::filesystem.
  */
 #if !(__cpp_lib_filesystem >= 201603) || qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
-#pragma message("****case 1")
 #if (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>)) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
-#pragma message("****case 2")
 namespace std::filesystem {
     using namespace std::experimental::filesystem;
 }
 #elif qHasFeature_boost
-#pragma message("****case 3")
 namespace std::filesystem {
     using namespace boost::filesystem;
 }
