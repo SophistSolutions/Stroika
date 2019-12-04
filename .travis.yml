@@ -40,7 +40,7 @@ jobs:
         #- choco install visualstudio2019-workload-vctools
         #- choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US"
         - choco install visualstudio2019community --package-parameters "--includeRecommended --includeOptional"
-        install:
+      install:
         - perl configure Release-32 --arch x86 --apply-default-release-flags
         - cat ConfigurationFiles/Release.xml
       script:
