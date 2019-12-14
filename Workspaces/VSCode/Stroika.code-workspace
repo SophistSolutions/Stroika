@@ -15,7 +15,8 @@
 			"mutex": "cpp",
 			"xstring": "cpp",
 			"optional": "cpp",
-			"functional": "cpp"
+			"functional": "cpp",
+			"filesystem": "cpp"
 		}
 
 	}
