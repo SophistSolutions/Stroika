@@ -14,3 +14,8 @@ jobs:
     - run:
         name: ls
         command: ls
+
+    - run:
+        name: configure
+        command: ./configure Debug --config-tag Unix --apply-default-debug-flags
+
