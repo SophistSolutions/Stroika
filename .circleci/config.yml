@@ -8,5 +8,5 @@ jobs:
       - checkout
 
       - run:
-        name: configure
-        command: pwd && ls && make default-configurations
+        name: pwd
+        command: pwd
