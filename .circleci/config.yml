@@ -5,8 +5,8 @@ jobs:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
     steps:
-      - checkout
+    - checkout
 
-      - run:
+    - run:
         name: pwd
         command: pwd
