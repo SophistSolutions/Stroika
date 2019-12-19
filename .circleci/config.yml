@@ -11,6 +11,10 @@ jobs:
           name: Greeting
           command: echo Hello, world.
 
-      - run:
-          name: Print the Current Time
-          command: date
+          - run:
+            name: Print the Current Time
+            command: date
+
+        - run:
+            name: configure
+            command: make default-configurations
