@@ -10,7 +10,3 @@ jobs:
       - run:
         name: configure
         command: make default-configurations
-
-      - run:
-        name: build
-        command: make all
