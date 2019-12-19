@@ -19,3 +19,8 @@ jobs:
         name: configure
         command: ./configure Debug --config-tag Unix --apply-default-debug-flags
 
+
+    - run:
+        name: build
+        command: make all -j2
+
