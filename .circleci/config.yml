@@ -13,4 +13,4 @@ jobs:
 
       - run:
         name: build
-        command: make all -j2
+        command: make all
