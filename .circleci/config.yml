@@ -14,3 +14,7 @@ jobs:
     - run:
         name: build
         command: make all -j2
+
+    - run:
+        name: run-tests
+        command: make run-tests
