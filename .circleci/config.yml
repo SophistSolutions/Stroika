@@ -9,4 +9,4 @@ jobs:
 
       - run:
         name: configure
-        command: make default-configurations
+        command: pwd && ls && make default-configurations
