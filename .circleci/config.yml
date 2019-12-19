@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
     steps:
       - checkout
