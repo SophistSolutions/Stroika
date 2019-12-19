@@ -14,7 +14,25 @@ jobs:
     - run:
         name: build
         command: make all -j2
+  
+  test:
+    docker:
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+
+    steps:
+    - checkout
+
+    - run:
+        name: configure
+        command: ./configure Debug --config-tag Unix --apply-default-debug-flags
 
     - run:
         name: run-tests
         command: make run-tests
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test
