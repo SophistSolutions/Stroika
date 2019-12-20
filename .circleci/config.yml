@@ -30,7 +30,7 @@ jobs:
         name: run-tests
         command: |
           rm -rf test-results && mkdir -p test-results
-          make run-tests >> test-results/run-tests-log.txt
+          (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
 
     - store_test_results:
        path: test-results
