@@ -28,7 +28,12 @@ jobs:
 
     - run:
         name: run-tests
-        command: make run-tests
+        command: |
+          rm -rf test-results && mkdir -p test-results
+          make run-tests >> test-results/run-tests-log.txt
+
+    - store_test_results:
+       path: test-results
 
 workflows:
   version: 2
