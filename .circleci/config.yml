@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build-samples:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
@@ -8,14 +8,14 @@ jobs:
     - checkout
 
     - run:
-        name: configure
+        name: Configure
         command: ./configure Debug --config-tag Unix --apply-default-debug-flags
 
     - run:
         name: build
-        command: make all -j2
+        command: make all -j3
   
-  test:
+  run-tests:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
@@ -23,14 +23,21 @@ jobs:
     - checkout
 
     - run:
-        name: configure
+        name: Configure
         command: ./configure Debug --config-tag Unix --apply-default-debug-flags
+
+    - run:
+        name: build-tests
+        command: |
+          make CONFIGURATION=Debug tests -j3
 
     - run:
         name: run-tests
         command: |
           rm -rf test-results && mkdir -p test-results
-          (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+          pwd
+          ls -al
+          (make CONFIGURATION=Debug run-tests -j3 2>&1) | tee test-results/run-tests-log.txt
 
     - store_test_results:
        path: test-results
@@ -39,7 +46,5 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - build-samples
+      - run-tests
