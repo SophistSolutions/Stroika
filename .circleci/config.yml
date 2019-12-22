@@ -35,7 +35,27 @@ jobs:
        name: ls
        command: pwd && ls -l && ls -l Builds/Debug
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug
+       path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/AppSettings
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/ArchiveUtility
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-Containers/Containers
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/SSDPClient
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/SSDPServer
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-Serialization/Serialization
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-Service/*
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/Traceroute
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-WebServer/WebServer
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug/Samples-WebService/WebService
 
   run-tests:
     docker:
