@@ -3,7 +3,7 @@ jobs:
   build-library:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+      #- image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
     
     working_directory: ~/build-4-linux
     
@@ -21,7 +21,7 @@ jobs:
   
   build-samples:
     docker:
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 
     working_directory: ~/build-4-linux
 
@@ -39,7 +39,7 @@ jobs:
 
   run-tests:
     docker:
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 
     working_directory: ~/build-4-linux
 
@@ -58,7 +58,7 @@ jobs:
           ls -al
           (make CONFIGURATION=Debug run-tests -j3 2>&1) | tee test-results/run-tests-log.txt
       - store_test_results:
-         path: test-results
+         path: ~/build-4-linux/test-results
 
 
 workflows:
