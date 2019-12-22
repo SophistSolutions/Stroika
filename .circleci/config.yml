@@ -2,20 +2,19 @@ version: 2
 jobs:
   build-library:
     docker:
+      - image: sophistsolutionsinc/sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
-
-    working_directory: ~/circleci-demo-workflows
+    
+    working_directory: ~/build-4-linux
+    
     steps:
     - checkout
-
     - run:
         name: Configure
         command: ./configure Debug --config-tag Unix --apply-default-debug-flags
-
     - run:
         name: build
         command: make libraries -j3
-  
     - persist_to_workspace:
         root: .
         paths: .
@@ -24,24 +23,33 @@ jobs:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
-    working_directory: ~/circleci-demo-workflows
+    working_directory: ~/build-4-linux
+
     steps:
     - attach_workspace:
-       at: ~/circleci-demo-workflows
+       at: ~/build-4-linux
     - run:
        name: build
        command: make all -j3
-    - store_test_results:
-       path: Builds/Debug
+    - run:
+       name: ls
+       command: pwd && ls -l && ls -l Builds/Debug
+    - store_artifacts:
+       path: ~/build-4-linux/Builds/Debug
 
   run-tests:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
-    working_directory: ~/circleci-demo-workflows
+    working_directory: ~/build-4-linux
+
     steps:
       - attach_workspace:
-          at: ~/circleci-demo-workflows
+          at: ~/build-4-linux
+      - run:
+         name: build-tests
+         command: |
+          make CONFIGURATION=Debug tests -j3
       - run:
          name: run-tests
          command: |
@@ -49,7 +57,6 @@ jobs:
           pwd
           ls -al
           (make CONFIGURATION=Debug run-tests -j3 2>&1) | tee test-results/run-tests-log.txt
-
       - store_test_results:
          path: test-results
 
