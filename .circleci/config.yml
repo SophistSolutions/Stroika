@@ -17,8 +17,8 @@ jobs:
         command: make library -j3
   
     - persist_to_workspace:
-      root: .
-      paths: .
+        root: .
+        paths: .
   
   build-samples:
     docker:
