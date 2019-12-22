@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
+    working_directory: ~/circleci-demo-workflows
     steps:
     - checkout
 
@@ -15,11 +16,18 @@ jobs:
         name: build
         command: make library -j3
   
+    - persist_to_workspace:
+      root: .
+      paths: .
+  
   build-samples:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
+    working_directory: ~/circleci-demo-workflows
     steps:
+    - attach_workspace:
+      at: ~/circleci-demo-workflows
     - run:
         name: build
         command: make all -j3
@@ -30,7 +38,10 @@ jobs:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 
+    working_directory: ~/circleci-demo-workflows
     steps:
+      - attach_workspace:
+          at: ~/circleci-demo-workflows
     - run:
         name: run-tests
         command: |
