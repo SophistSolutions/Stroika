@@ -50,6 +50,6 @@ workflows:
       - build-samples:
         requires:
           - build-library
-      - run-tests
+      - run-tests:
         requires:
           - build-library
