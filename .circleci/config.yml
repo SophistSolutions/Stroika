@@ -14,7 +14,7 @@ jobs:
         command: ./configure Debug --config-tag Unix --apply-default-debug-flags
     - run:
         name: build
-        command: make libraries -j3
+        command: make libraries -j2
     - persist_to_workspace:
         root: .
         paths: .
@@ -30,7 +30,7 @@ jobs:
        at: ~/build-4-linux
     - run:
        name: build
-       command: make all -j3
+       command: make all -j2
     - run:
        name: ls
        command: pwd && ls -l && ls -l Builds/Debug
@@ -69,14 +69,14 @@ jobs:
       - run:
          name: build-tests
          command: |
-          make CONFIGURATION=Debug tests -j3
+          make CONFIGURATION=Debug tests -j2
       - run:
          name: run-tests
          command: |
           rm -rf test-results && mkdir -p test-results
           pwd
           ls -al
-          (make CONFIGURATION=Debug run-tests -j3 2>&1) | tee test-results/run-tests-log.txt
+          (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
       - store_test_results:
          path: ~/build-4-linux/test-results
 
