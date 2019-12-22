@@ -59,5 +59,9 @@ workflows:
   build_and_test:
     jobs:
       - build-library
-      - build-samples
-      - run-tests
+      - build-samples:
+         requires:
+           - build-library
+      - run-tests:
+         requires:
+           - build-library
