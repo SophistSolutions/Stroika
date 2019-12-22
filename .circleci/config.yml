@@ -29,10 +29,10 @@ jobs:
     - attach_workspace:
       at: ~/circleci-demo-workflows
     - run:
-        name: build
-        command: make all -j3
+      name: build
+      command: make all -j3
     - store_test_results:
-        path: Builds/Debug
+      path: Builds/Debug
 
   run-tests:
     docker:
@@ -42,7 +42,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/circleci-demo-workflows
-    - run:
+      - run:
         name: run-tests
         command: |
           rm -rf test-results && mkdir -p test-results
@@ -50,8 +50,9 @@ jobs:
           ls -al
           (make CONFIGURATION=Debug run-tests -j3 2>&1) | tee test-results/run-tests-log.txt
 
-    - store_test_results:
-       path: test-results
+      - store_test_results:
+        path: test-results
+
 
 workflows:
   version: 2
