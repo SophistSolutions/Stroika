@@ -13,7 +13,7 @@ jobs:
         name: Configure
         command: ./configure Debug --config-tag Unix --apply-default-debug-flags
     - run:
-        name: build
+        name: Build
         command: make libraries -j2
     - persist_to_workspace:
         root: .
@@ -29,33 +29,41 @@ jobs:
     - attach_workspace:
        at: ~/build-4-linux
     - run:
-       name: build
-       command: make all -j2
-    - run:
-       name: ls
-       command: pwd && ls -l && ls -l Builds/Debug
+       name: Build
+       command: make samples -j2
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/AppSettings
+       path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/ArchiveUtility
+       path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Containers/Containers
+       path: ~/build-4-linux/Builds/Debug/Samples-Containers/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/SSDPClient
+       path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/SSDPServer
+       path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Serialization/Serialization
+       path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Service/*
+       path: ~/build-4-linux/Builds/Debug/Samples-Service/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient
+       path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/Traceroute
+       path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-WebServer/WebServer
+       path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
+       destination: Samples
     - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-WebService/WebService
+       path: ~/build-4-linux/Builds/Debug/Samples-WebService/
+       destination: Samples
 
   run-tests:
     docker:
@@ -67,18 +75,18 @@ jobs:
       - attach_workspace:
           at: ~/build-4-linux
       - run:
-         name: build-tests
+         name: Build Tests
          command: |
           make CONFIGURATION=Debug tests -j2
       - run:
-         name: run-tests
+         name: Run Tests
          command: |
           rm -rf test-results && mkdir -p test-results
           pwd
           ls -al
           (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
       - store_test_results:
-         path: ~/build-4-linux/test-results
+         path: ~/build-4-linux/test-results/run-tests-log.txt
 
 
 workflows:
