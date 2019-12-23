@@ -1,4 +1,16 @@
 #
+#
+#	I was not able to get this working on Windows or MacOS (close on macos, just needed
+#	newer version of macos - but not yet available as of 2019-12-22)
+#
+#	From minimal experimentation, I liked circleci better, so try to learn/use that
+#	instead of travisci.
+#
+#	But keep this around in case I change my mind ;-)
+#		-- LGP 2019-12-22
+#
+
+#
 # The purpose of this file is to configure Travis CI build system integration.
 #   @see https://travis-ci.com/SophistSolutions/Stroika
 #
