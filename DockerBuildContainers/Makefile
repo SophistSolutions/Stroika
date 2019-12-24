@@ -28,6 +28,9 @@ docker-images:
 	docker build -f Centos-8-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-8-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 
+docker-win-images:
+	docker build -f Windows-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-VS2k19 .
+
 
 docker-pull-base-images:
 	docker pull ubuntu:18.04
