@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
             if (fAlive != rhs.fAlive) {
                 return false;
             }
-            if (fUSNs != rhs.fUSNs) {
+            if (fUSN != rhs.fUSN) {
                 return false;
             }
             if (fLocation != rhs.fLocation) {
