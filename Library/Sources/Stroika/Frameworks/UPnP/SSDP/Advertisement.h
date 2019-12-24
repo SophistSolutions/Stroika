@@ -70,6 +70,10 @@ namespace Stroika::Frameworks::UPnP::SSDP {
             }
             return true;
         }
+        bool operator!= (const Advertisement& rhs) const
+        {
+            return not(*this == rhs);
+        }
 #else
         auto operator<=> (const Advertisement&) const = default;
 #endif
