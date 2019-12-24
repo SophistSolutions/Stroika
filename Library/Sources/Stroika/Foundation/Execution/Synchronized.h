@@ -172,6 +172,13 @@ namespace Stroika::Foundation::Execution {
     }
 
     /**
+     */
+    template <typename MUTEX>
+    struct Tracing_Synchronized_Traits : Synchronized_Traits<MUTEX> {
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = true;
+    };
+
+    /**
      *  \brief  Wrap any object with Synchronized<> and it can be used similarly to the base type,
      *          but safely in a thread safe manner, from multiple threads. This is similar to std::atomic.
      *
