@@ -163,22 +163,6 @@ sub	ReadConfiguration_
 
 ParseCommandLine_ ();
 
-if ("$^O" eq "cygwin") {
-	if (
-		$activeConfiguration eq "Debug-U-32" ||
-		$activeConfiguration eq "Debug-U-64" ||
-		$activeConfiguration eq "Release-DbgMemLeaks-U-32" ||
-		$activeConfiguration eq "Release-Logging-U-32" ||
-		$activeConfiguration eq "Release-Logging-U-64" ||
-		$activeConfiguration eq "Release-U-32" ||
-		$activeConfiguration eq "Release-U-64"
-	  ) {
-	}
-	else {
-		die ("On windows - for now - $a is not a valid configuraiton name (Debug-U-32, Debug-U-64, Release-DbgMemLeaks-U-32, Release-Logging-U-32, Release-Logging-U-64, Release-U-32, Release-U-64)")
-	}
-}
-
 ReadConfiguration_();
 
 
