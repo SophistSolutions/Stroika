@@ -554,9 +554,8 @@ sub     FillInToolsPathAdditionsIfNeeded_
 			$TOOLS_PATH_ADDITIONS = trim ($x);
 			my $v = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) ;
 			if (IsMSVCCompiler_ () && 191627034 <= $v  && $v <= 191800000 ) {
-				#$x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
 				## only need the one, but this is easiest way to get the right path
-				$TOOLS_PATH_ADDITIONS_BUGWORKAROUND = '/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64';
+				## $TOOLS_PATH_ADDITIONS_BUGWORKAROUND = '/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64';
 				$TOOLS_PATH_ADDITIONS_BUGWORKAROUND = $TOOLS_PATH_ADDITIONS;
 			}
 		}
