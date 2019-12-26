@@ -241,7 +241,7 @@ format-code:
 	@ScriptsLib/FormatCode Samples *.h *.inl *.cpp
 	@ScriptsLib/FormatCode Tests *.h *.inl *.cpp
 	@ScriptsLib/FormatCode Tools *.h *.inl *.cpp
-	@ScriptsLib/FormatCode BuildToolsSrc *.h *.inl *.cpp
+	@ScriptsLib/FormatCode BootstrapToolsSrc *.h *.inl *.cpp
 
 
 
@@ -487,4 +487,4 @@ list-configuration-tags:
 
 
 install-realpath:
-	g++ --std=c++17 -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
+	g++ --std=c++17 -O -o /usr/local/bin/realpath BootstrapToolsSrc/realpath.cpp

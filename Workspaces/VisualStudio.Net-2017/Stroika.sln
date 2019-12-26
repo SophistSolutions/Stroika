@@ -2317,9 +2317,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{5D
 		..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\tsan_assist.h = ..\..\ThirdPartyComponents\openssl\CURRENT\include\internal\tsan_assist.h
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildToolsSrc", "BuildToolsSrc", "{40601CB5-D1E2-423D-A40B-338C603FA971}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BootstrapToolsSrc", "BootstrapToolsSrc", "{40601CB5-D1E2-423D-A40B-338C603FA971}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\BuildToolsSrc\realpath.cpp = ..\..\BuildToolsSrc\realpath.cpp
+		..\..\BootstrapToolsSrc\realpath.cpp = ..\..\BootstrapToolsSrc\realpath.cpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ActivePerl", "ActivePerl", "{922D134F-C34A-49F2-87DF-24FDEC35201D}"
