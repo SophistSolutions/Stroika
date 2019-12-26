@@ -233,7 +233,6 @@ sub	DoHelp_
 		print("	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */\n");
 		print("	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */\n");
 		print("	    --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */\n");
-		print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
 		print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
 		print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
 		print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
