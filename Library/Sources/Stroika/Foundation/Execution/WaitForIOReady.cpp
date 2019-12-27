@@ -89,7 +89,7 @@ auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<File
 {
     Set<FileDescriptorType> result = WaitQuietlyUntil (timeoutAt);
     if (result.empty ()) {
-        Execution::Throw (Execution::TimeOutException ());
+        Execution::Throw (Execution::TimeOutException::kThe);
     }
     return result;
 }
