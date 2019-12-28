@@ -29,7 +29,7 @@ docker-images:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 
 docker-win-images:
-	docker build -f Windows-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-VS2k19 .
+	docker build -f Windows-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19 -m 2G .
 
 
 docker-pull-base-images:
