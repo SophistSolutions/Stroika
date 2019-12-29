@@ -91,7 +91,7 @@ public:
         while (true) {
             for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
                 try {
-                    byte          buf[3 * 1024]; // not sure of max packet size
+                    byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));

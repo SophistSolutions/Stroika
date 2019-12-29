@@ -126,7 +126,7 @@ public:
         while (1) {
             for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::kInfinite))) {
                 try {
-                    byte          buf[4 * 1024]; // not sure of max packet size
+                    byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= NEltsOf (buf));
