@@ -94,6 +94,11 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
+    public:
+        /**
+         */
+        nonvirtual Traversal::Iterable<SOCKET_SUBTYPE> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+
     private:
         Containers::Bijection<SOCKET_SUBTYPE, Socket::PlatformNativeHandle> fMapping_;
     };

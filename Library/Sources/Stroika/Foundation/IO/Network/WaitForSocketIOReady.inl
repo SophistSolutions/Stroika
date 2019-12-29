@@ -79,6 +79,11 @@ namespace Stroika::Foundation::IO::Network {
     {
         return fMapping_.InverseMap (inherited::WaitUntil (timeoutAt));
     }
+    template <typename SOCKET_SUBTYPE>
+    inline Traversal::Iterable<SOCKET_SUBTYPE> WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt)
+    {
+        return fMapping_.InverseMap (inherited::WaitQuietlyUntil (timeoutAt));
+    }
 
 }
 
