@@ -59,7 +59,7 @@ namespace {
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             if (d.fAlive.has_value ()) {
-                cout << "\t\tAlive:    " << (*d.fAlive ? "true" : "false") << endl;
+                cout << "\t\tAlive:    " << Characters::ToString (d.fAlive).AsUTF8 () << endl;
             }
             cout << "\t\tST:       " << d.fTarget.AsUTF8 () << endl;
             cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8 () << endl;
