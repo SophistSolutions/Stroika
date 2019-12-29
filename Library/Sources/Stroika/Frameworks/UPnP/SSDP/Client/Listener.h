@@ -96,17 +96,6 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
         shared_ptr<Rep_> fRep_;
     };
 
-#if 0
-    /**
-     */
-    class Listener::Result : public Device {
-    public:
-        Containers::Mapping<String, String>     fRawHeaders;
-        String                                  fUSN;
-        optional<bool>                  fAlive; // else Bye notification, or empty if neither
-    };
-#endif
-
 }
 
 /*
