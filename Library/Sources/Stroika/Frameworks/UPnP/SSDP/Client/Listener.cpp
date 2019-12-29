@@ -120,7 +120,7 @@ public:
         Debug::TraceContextBumper ctx ("Read SSDP Packet");
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
-        const String kNOTIFY_LEAD = String_Constant (L"NOTIFY ");
+        const String kNOTIFY_LEAD = L"NOTIFY "sv;
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement d;
             while (true) {
