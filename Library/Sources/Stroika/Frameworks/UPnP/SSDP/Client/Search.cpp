@@ -95,7 +95,19 @@ public:
                 const unsigned int kMaxHops_ = 4;
                 stringstream       requestBuf;
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n";
-                requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << useSocketAddress.GetPort () << "\r\n";
+                UniformResourceIdentification::Authority hostAuthority = [&] () -> UniformResourceIdentification::Authority {
+                    switch (s.GetAddressFamily ()) {
+                        case SocketAddress::FamilyType::INET: {
+                            return UniformResourceIdentification::Authority{SSDP::V4::kSocketAddress.GetInternetAddress (), useSocketAddress.GetPort ()};
+                        } break;
+                        case SocketAddress::FamilyType::INET6: {
+                            return UniformResourceIdentification::Authority{SSDP::V6::kSocketAddress.GetInternetAddress (), useSocketAddress.GetPort ()};
+                        } break;
+                        default:
+                            AssertNotReached ();
+                    }
+                }();
+                requestBuf << "Host: " << hostAuthority.As<String> ().AsUTF8 () << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n";
                 requestBuf << "ST: " << serviceType.AsUTF8 ().c_str () << "\r\n";
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
