@@ -5,7 +5,6 @@
 
 #include <sstream>
 
-#include "../../../../Foundation/Characters/String_Constant.h"
 #include "../../../../Foundation/Containers/Collection.h"
 #include "../../../../Foundation/Debug/Trace.h"
 #include "../../../../Foundation/Execution/Activity.h"
@@ -142,7 +141,7 @@ public:
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
 
-        static const String kOKRESPONSELEAD_ = String_Constant (L"HTTP/1.1 200");
+        static const String kOKRESPONSELEAD_ = L"HTTP/1.1 200"sv;
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
             SSDP::Advertisement d;
             while (true) {
@@ -194,8 +193,8 @@ private:
  ********************************** Search **************************************
  ********************************************************************************
  */
-const String Search::kSSDPAny    = String_Constant{L"ssdp:any"};
-const String Search::kRootDevice = String_Constant{L"upnp:rootdevice"};
+const String Search::kSSDPAny    = L"ssdp:any"sv;
+const String Search::kRootDevice = L"upnp:rootdevice"sv;
 
 Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : fRep_ (make_shared<Rep_> (ipVersion))
