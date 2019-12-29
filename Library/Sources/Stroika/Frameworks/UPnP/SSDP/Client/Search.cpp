@@ -76,7 +76,10 @@ public:
     {
         // MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
     Retry:
-        Time::Duration lastSendsAt{Time::GetTickCount ()};
+        optional<Time::DurationSecondsType> retrySendAt;
+        if (autoRetryInterval.has_value ()) {
+            retrySendAt = Time::GetTickCount () + autoRetryInterval->As<Time::DurationSecondsType> ();
+        }
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Sending M-SEARCH");
@@ -109,7 +112,7 @@ public:
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
         WaitForSocketIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
-            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietly (autoRetryInterval.value_or (Time::Duration{Time::kInfinite}))) {
+            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::kInfinite))) {
                 try {
                     byte          buf[4 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -127,7 +130,7 @@ public:
                     Execution::Sleep (1s);
                 }
             }
-            if (autoRetryInterval.has_value () and Time::GetTickCount () + *autoRetryInterval > lastSendsAt) {
+            if (retrySendAt and *retrySendAt < Time::GetTickCount ()) {
                 goto Retry;
             }
         }
