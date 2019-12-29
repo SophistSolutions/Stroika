@@ -193,35 +193,35 @@ sub GetConfig32Or64_
 }
 
 
-### POSSIBLY SOON DEPRECATE - BUT STILL USED TO RUN MSBUILD - LGP 2018-12-12
-# sub RunSystemWithVCVarsSetInEnvironment
-# {
-# 	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
-# 	my $cmd2Run = $_[1];
-# 	my $tmpFileName = "";
-# 	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
-# 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
-# 	print $fh '@echo off' . "\r\n";
-# 	if (index($activeConfigBits, "32") != -1) {
-# 		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles_();
-# 		print $fh $result;
-# 	}
-# 	elsif (index($activeConfigBits, "64") != -1) {
-# 		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles_();
-# 		#print "64 case and result=$result\r\n";
-# 		print $fh $result;
-# 	}
-# 	else {
-# 		die ("hardwired/to fix logic about mapping config names to 32/64")
-# 	}
-# 	print $fh $cmd2Run . "\r\n";
-# 	close $fh;
+### POSSIBLY SOON DEPRECATE - BUT STILL USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars - which itself is soon to deprecate - LGP 2019-12-29
+sub RunSystemWithVCVarsSetInEnvironment
+{
+	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
+	my $cmd2Run = $_[1];
+	my $tmpFileName = "";
+	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
+	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
+	print $fh '@echo off' . "\r\n";
+	if (index($activeConfigBits, "32") != -1) {
+		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles_();
+		print $fh $result;
+	}
+	elsif (index($activeConfigBits, "64") != -1) {
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles_();
+		#print "64 case and result=$result\r\n";
+		print $fh $result;
+	}
+	else {
+		die ("hardwired/to fix logic about mapping config names to 32/64")
+	}
+	print $fh $cmd2Run . "\r\n";
+	close $fh;
 
-# 	#print "TMPFILENAME=$tmpFileName; cfg=$_[0], activeconfigbits=$activeConfigBits, and cmd2run=$cmd2Run\r\n";
-# 	my $result = system ("cmd /C $tmpFileName");
-# 	unlink ($tmpFileName);
-# 	return $result;
-# }
+	#print "TMPFILENAME=$tmpFileName; cfg=$_[0], activeconfigbits=$activeConfigBits, and cmd2run=$cmd2Run\r\n";
+	my $result = system ("cmd /C $tmpFileName");
+	unlink ($tmpFileName);
+	return $result;
+}
 
 
 # IF WE STILL NEEDEED THIS - cygpath --path does it faster/simpler

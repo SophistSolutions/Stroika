@@ -17,7 +17,7 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 my $activeConfig = $ARGV[0];
 my $cmd = $ARGV[1];
 
-### NEARLY DEPRECATED but not quite - still used to run MSBuild scripts - LGP 2018-12-12
+### NEARLY DEPRECATED but not quite - still used to run various ThirdPartyComponents scripts - LGP 2019-12-29
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
