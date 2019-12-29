@@ -74,10 +74,16 @@ public:
     }
     void DoRun_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
-        // MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
+        bool didFirstRetry = false; // because search unreliable/UDP, recomended to send two search requests
+                                    // a little bit apart even if addition to longer retry interval
+                                    // http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
     Retry:
         optional<Time::DurationSecondsType> retrySendAt;
-        if (autoRetryInterval.has_value ()) {
+        if (not didFirstRetry) {
+            retrySendAt   = Time::GetTickCount () + 2;
+            didFirstRetry = true;
+        }
+        else if (autoRetryInterval.has_value ()) {
             retrySendAt = Time::GetTickCount () + autoRetryInterval->As<Time::DurationSecondsType> ();
         }
         for (ConnectionlessSocket::Ptr s : fSockets_) {
