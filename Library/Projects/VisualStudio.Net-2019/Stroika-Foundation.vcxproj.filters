@@ -813,6 +813,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_WinHTTP.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Firewall.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2030,6 +2033,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_WinHTTP.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Firewall.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3308,6 +3314,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection_WinHTTP.inl">
       <Filter>Sources\IO\Network\Transfer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Firewall.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

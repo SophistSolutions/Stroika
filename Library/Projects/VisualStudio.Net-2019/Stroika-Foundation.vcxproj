@@ -205,6 +205,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Firewall.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp" />
@@ -566,6 +567,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Firewall.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
@@ -971,6 +973,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Firewall.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
