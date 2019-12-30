@@ -16,6 +16,7 @@
 #endif
 
 #include "../../../Configuration/Common.h"
+#include "../../../Debug/Assertions.h"
 
 /**
  * TODO:
