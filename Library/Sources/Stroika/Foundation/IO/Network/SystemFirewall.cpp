@@ -18,7 +18,7 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 
-#include "Firewall.h"
+#include "SystemFirewall.h"
 
 using namespace std;
 
@@ -31,7 +31,7 @@ using namespace Stroika::Foundation::Characters::Platform::Windows;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 #endif
 using namespace Stroika::Foundation::IO::Network;
-using namespace Stroika::Foundation::IO::Network::Firewall;
+using namespace Stroika::Foundation::IO::Network::SystemFirewall;
 
 #if qPlatform_Windows
 #pragma comment(lib, "ole32.lib")
@@ -40,14 +40,14 @@ using namespace Stroika::Foundation::IO::Network::Firewall;
 
 /*
  ********************************************************************************
- ************************** IO::Network::SystemFirewall *************************
+ ***************** IO::Network::SystemFirewall::Manager *************************
  ********************************************************************************
  */
-SystemFirewall SystemFirewall::sThe;
+SystemFirewall::Manager SystemFirewall::Manager::sThe;
 
-bool SystemFirewall::Register (const Rule& rule)
+bool SystemFirewall::Manager::Register (const Rule& rule)
 {
-    Debug::TraceContextBumper ctx{L"SystemFirewall::Register"};
+    Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::Register"};
 
 #if qPlatform_Windows
     long CurrentProfilesBitMask = 0;
@@ -137,7 +137,7 @@ bool SystemFirewall::Register (const Rule& rule)
     return true;
 }
 
-optional<Rule> SystemFirewall::Lookup (const String& ruleName)
+optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName)
 {
     return nullopt;
 }

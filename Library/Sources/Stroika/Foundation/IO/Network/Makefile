@@ -29,7 +29,6 @@ Objs	=	\
 	$(ObjDir)ConnectionOrientedMasterSocket${OBJ_SUFFIX}\
 	$(ObjDir)ConnectionOrientedStreamSocket${OBJ_SUFFIX}\
 	$(ObjDir)DNS${OBJ_SUFFIX}\
-	$(ObjDir)Firewall${OBJ_SUFFIX}\
 	$(ObjDir)Interface${OBJ_SUFFIX}\
 	$(ObjDir)InternetAddress${OBJ_SUFFIX}\
 	$(ObjDir)LinkMonitor${OBJ_SUFFIX}\
@@ -38,6 +37,7 @@ Objs	=	\
 	$(ObjDir)Socket${OBJ_SUFFIX}\
 	$(ObjDir)SocketAddress${OBJ_SUFFIX}\
 	$(ObjDir)SocketStream${OBJ_SUFFIX}\
+	$(ObjDir)SystemFirewall${OBJ_SUFFIX}\
 	$(ObjDir)UniformResourceIdentification${OBJ_SUFFIX}\
 	$(ObjDir)URI${OBJ_SUFFIX}\
 	$(ObjDir)WaitForSocketIOReady${OBJ_SUFFIX}\

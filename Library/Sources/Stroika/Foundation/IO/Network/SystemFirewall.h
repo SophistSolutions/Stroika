@@ -1,8 +1,8 @@
 /*
 * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
 */
-#ifndef _Stroika_Foundation_IO_Network_Firewall_h_
-#define _Stroika_Foundation_IO_Network_Firewall_h_ 1
+#ifndef _Stroika_Foundation_IO_Network_SystemFirewall_h_
+#define _Stroika_Foundation_IO_Network_SystemFirewall_h_ 1
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
@@ -15,7 +15,7 @@
 /**
 */
 
-namespace Stroika::Foundation::IO::Network::Firewall {
+namespace Stroika::Foundation::IO::Network::SystemFirewall {
 
     using namespace Stroika::Foundation;
 
@@ -38,6 +38,53 @@ namespace Stroika::Foundation::IO::Network::Firewall {
         NET_FW_ACTION fAction;
 #endif
         bool fEnabled;
+
+#if __cpp_impl_three_way_comparison < 201711
+        bool operator== (const Rule& rhs) const
+        {
+            if (fName != rhs.fName) {
+                return false;
+            }
+            if (fDescription != rhs.fDescription) {
+                return false;
+            }
+            if (fGroup != rhs.fGroup) {
+                return false;
+            }
+            if (fApplication != rhs.fApplication) {
+                return false;
+            }
+#if qPlatform_Windows
+            if (fProfileMask != rhs.fProfileMask) {
+                return false;
+            }
+            if (fDirection != rhs.fDirection) {
+                return false;
+            }
+            if (fProtocol != rhs.fProtocol) {
+                return false;
+            }
+#endif
+            if (fPorts != rhs.fPorts) {
+                return false;
+            }
+#if qPlatform_Windows
+            if (fAction != rhs.fAction) {
+                return false;
+            }
+#endif
+            if (fEnabled != rhs.fEnabled) {
+                return false;
+            }
+            return true;
+        }
+        bool operator!= (const Rule& rhs) const
+        {
+            return not(*this == rhs);
+        }
+#else
+        auto operator<=> (const Rule&) const = default;
+#endif
     };
 
     /**
@@ -47,12 +94,12 @@ namespace Stroika::Foundation::IO::Network::Firewall {
      *  this requires admin access (running as root or administrator). These functions will often fail
      *  (exceptions) due to inadequate access permissions.
      */
-    class SystemFirewall {
+    class Manager {
     public:
-        static SystemFirewall sThe;
+        static Manager sThe;
 
     private:
-        SystemFirewall () = default;
+        Manager () = default;
 
     public:
         /**
@@ -74,6 +121,6 @@ namespace Stroika::Foundation::IO::Network::Firewall {
 ***************************** Implementation Details ***************************
 ********************************************************************************
 */
-#include "Firewall.inl"
+#include "SystemFirewall.inl"
 
-#endif /*_Stroika_Foundation_IO_Network_Firewall_h_*/
+#endif /*_Stroika_Foundation_IO_Network_SystemFirewall_h_*/
