@@ -37,7 +37,8 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
         NET_FW_RULE_DIRECTION fDirection;
         NET_FW_IP_PROTOCOL_   fProtocol;
 #endif
-        String fPorts;
+        String fLocalPorts;
+        String fRemotePorts;
 #if qPlatform_Windows
         NET_FW_ACTION fAction;
 #endif
@@ -76,7 +77,10 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
                 return false;
             }
 #endif
-            if (fPorts != rhs.fPorts) {
+            if (fLocalPorts != rhs.fLocalPorts) {
+                return false;
+            }
+            if (fRemotePorts != rhs.fRemotePorts) {
                 return false;
             }
 #if qPlatform_Windows

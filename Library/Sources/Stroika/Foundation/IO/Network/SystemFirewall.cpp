@@ -33,6 +33,11 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::SystemFirewall;
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
 #if qPlatform_Windows
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")
@@ -55,7 +60,8 @@ String Rule::ToString () const
     sb += L"fDirection: " + Characters::ToString ((int)fDirection) + L",";
     sb += L"fProtocol: " + Characters::ToString ((int)fProtocol) + L",";
 #endif
-    sb += L"fPorts: " + Characters::ToString (fPorts) + L",";
+    sb += L"fLocalPorts: " + Characters::ToString (fLocalPorts) + L",";
+    sb += L"fRemotePorts: " + Characters::ToString (fRemotePorts) + L",";
 #if qPlatform_Windows
     sb += L"fAction: " + Characters::ToString ((int)fAction) + L",";
 #endif
@@ -76,7 +82,10 @@ namespace {
     optional<Rule> ReadRule_ (INetFwRules* pFwRules, const String& ruleName)
     {
         AssertNotNull (pFwRules);
-        INetFwRule*             pFwRule           = nullptr;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"{}ReadRule_"};
+#endif
+        INetFwRule*               pFwRule           = nullptr;
         [[maybe_unused]] auto&& cleanupCOMObjects = Execution::Finally ([=] () noexcept {
             if (pFwRule != nullptr) {
                 pFwRule->Release ();
@@ -84,6 +93,8 @@ namespace {
         });
         HRESULT                 hr                = pFwRules->Item (SmartBSTR{ruleName.c_str ()}, &pFwRule);
         if (hr == S_OK and pFwRule != nullptr) {
+// @todo FIX DISPOSING OF BSTR (maybe improve/use SmartBSTR)
+
             BSTR desc = nullptr;
             ThrowIfErrorHRESULT (pFwRule->get_Description (&desc));
             BSTR group = nullptr;
@@ -96,8 +107,10 @@ namespace {
             ThrowIfErrorHRESULT (pFwRule->get_Direction (&direction));
             LONG protocol = 0;
             ThrowIfErrorHRESULT (pFwRule->get_Protocol (&protocol));
-            BSTR ports = nullptr;
-            ThrowIfErrorHRESULT (pFwRule->get_LocalPorts (&ports));
+            BSTR localPorts = nullptr;
+            ThrowIfErrorHRESULT (pFwRule->get_LocalPorts (&localPorts));
+            BSTR remotePorts = nullptr;
+            ThrowIfErrorHRESULT (pFwRule->get_RemotePorts (&remotePorts));
             NET_FW_ACTION action = NET_FW_ACTION_MAX;
             ThrowIfErrorHRESULT (pFwRule->get_Action (&action));
             VARIANT_BOOL enabled = VARIANT_FALSE;
@@ -110,7 +123,8 @@ namespace {
                 (NET_FW_PROFILE_TYPE2) (profileMask),
                 direction,
                 (NET_FW_IP_PROTOCOL_) (protocol),
-                wstring (ports),
+                wstring (localPorts),
+                wstring (remotePorts),
                 action,
                 enabled != VARIANT_FALSE};
         }
@@ -175,7 +189,8 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     ThrowIfErrorHRESULT (pFwRule->put_Description (SmartBSTR{rule.fDescription.c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_ApplicationName (SmartBSTR{rule.fApplication.c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_Protocol (rule.fProtocol));
-    ThrowIfErrorHRESULT (pFwRule->put_LocalPorts (SmartBSTR{rule.fPorts.c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_LocalPorts (SmartBSTR{rule.fLocalPorts.c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_RemotePorts (SmartBSTR{rule.fRemotePorts.c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_Direction (rule.fDirection));
     ThrowIfErrorHRESULT (pFwRule->put_Grouping (SmartBSTR{rule.fGroup.c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_Profiles (rule.fProfileMask));
