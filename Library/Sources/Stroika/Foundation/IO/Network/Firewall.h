@@ -22,7 +22,7 @@ namespace Stroika::Foundation::IO::Network::Firewall {
     using Characters::String;
 
     /**
-         */
+     */
     struct Rule {
         String fName;
         String fDescription;
