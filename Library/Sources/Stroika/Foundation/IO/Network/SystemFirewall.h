@@ -6,6 +6,10 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #if qPlatform_Windows
 #include <netfw.h>
 #endif
