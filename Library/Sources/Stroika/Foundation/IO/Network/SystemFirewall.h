@@ -43,6 +43,13 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
 #endif
         bool fEnabled;
 
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
+
+    public:
 #if __cpp_impl_three_way_comparison < 201711
         bool operator== (const Rule& rhs) const
         {
