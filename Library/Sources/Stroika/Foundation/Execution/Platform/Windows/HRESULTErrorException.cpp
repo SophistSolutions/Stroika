@@ -36,9 +36,13 @@ namespace {
         }
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
-            //switch (ev) {
-            //}
-            return error_condition (errc::bad_message); // no idea what to return here
+            if (HRESULT_CODE (ev) || ev == 0) {
+                // system error condition
+                return system_category ().default_error_condition (HRESULT_CODE (ev));
+            }
+            else {
+                return {ev, HRESULT_error_category_ ()}; // special error condition
+            }
         }
         virtual string message (int hr) const override
         {
