@@ -15,6 +15,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Traversal/Iterable.h"
 
 /**
 */
@@ -127,6 +128,16 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
         /**
          */
         nonvirtual optional<Rule> Lookup (const String& ruleName);
+
+    public:
+        /**
+         */
+        nonvirtual Traversal::Iterable<Rule> LookupByGroup (const String& groupName);
+
+    public:
+        /**
+         */
+        nonvirtual Traversal::Iterable<Rule> LookupAll ();
     };
 
 }
