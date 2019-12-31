@@ -33,10 +33,8 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::SystemFirewall;
 
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
 
 #if qPlatform_Windows
 #pragma comment(lib, "ole32.lib")
@@ -85,7 +83,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"{}ReadRule_"};
 #endif
-        INetFwRule*               pFwRule           = nullptr;
+        INetFwRule*             pFwRule           = nullptr;
         [[maybe_unused]] auto&& cleanupCOMObjects = Execution::Finally ([=] () noexcept {
             if (pFwRule != nullptr) {
                 pFwRule->Release ();
@@ -93,7 +91,7 @@ namespace {
         });
         HRESULT                 hr                = pFwRules->Item (SmartBSTR{ruleName.c_str ()}, &pFwRule);
         if (hr == S_OK and pFwRule != nullptr) {
-// @todo FIX DISPOSING OF BSTR (maybe improve/use SmartBSTR)
+            // @todo FIX DISPOSING OF BSTR (maybe improve/use SmartBSTR)
 
             BSTR desc = nullptr;
             ThrowIfErrorHRESULT (pFwRule->get_Description (&desc));
