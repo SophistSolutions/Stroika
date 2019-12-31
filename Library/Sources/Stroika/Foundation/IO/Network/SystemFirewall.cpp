@@ -85,13 +85,13 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"{}ReadRule_"};
 #endif
-        BSTR name = nullptr;
-        BSTR desc = nullptr;
-        BSTR group = nullptr;
-        BSTR application = nullptr;
-        BSTR localPorts  = nullptr;
-        BSTR remotePorts = nullptr;
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([=] () noexcept {
+        BSTR                    name        = nullptr;
+        BSTR                    desc        = nullptr;
+        BSTR                    group       = nullptr;
+        BSTR                    application = nullptr;
+        BSTR                    localPorts  = nullptr;
+        BSTR                    remotePorts = nullptr;
+        [[maybe_unused]] auto&& cleanup     = Execution::Finally ([=] () noexcept {
             if (name != nullptr) {
                 ::SysFreeString (name);
             }
@@ -163,7 +163,7 @@ namespace {
 
 bool SystemFirewall::Manager::Register (const Rule& rule)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Register", L"rule=%s", Characters::ToString(rule).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Register", L"rule=%s", Characters::ToString (rule).c_str ())};
 
     for (auto r : LookupByGroup (rule.fGroup)) {
         if (r == rule) {
@@ -208,15 +208,6 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
 
     // Retrieve INetFwRules
     ThrowIfErrorHRESULT (pNetFwPolicy2->get_Rules (&pFwRules));
-
-    #if 0
-    if (auto o = ReadRule_ (pFwRules, rule.fName)) {
-        if (*o == rule) {
-            DbgTrace ("run unchanged, so returning false");
-            return false;
-        }
-    }
-    #endif
 
     // Create a new Firewall Rule object.
     ThrowIfErrorHRESULT (CoCreateInstance (__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule));
@@ -341,7 +332,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll ()
     ::VariantInit (&nextElt);
     for (; SUCCEEDED (pEnum->Next (1, &nextElt, &nRead)) and nRead == 1;) {
         INetFwRule* r = nullptr;
-        ThrowIfErrorHRESULT ((*nextElt.ppunkVal)->QueryInterface (&r));
+        ThrowIfErrorHRESULT (nextElt.punkVal->QueryInterface (&r));
         rules += ReadRule_ (r);
         r->Release ();
     }
