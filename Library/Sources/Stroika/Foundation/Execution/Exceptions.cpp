@@ -191,3 +191,21 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
     }
 #endif
 }
+
+/*
+ ********************************************************************************
+ *********************** Execution::GetAssociatedErrorCode **********************
+ ********************************************************************************
+ */
+optional<error_code> Execution::GetAssociatedErrorCode (const exception_ptr& e) noexcept
+{
+    try {
+        rethrow_exception (e);
+    }
+    catch (const system_error& se) {
+        return se.code ();
+    }
+    catch (...) {
+        return nullopt;
+    }
+}

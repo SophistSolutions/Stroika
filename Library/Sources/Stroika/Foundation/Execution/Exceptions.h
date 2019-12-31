@@ -255,6 +255,8 @@ namespace Stroika::Foundation::Execution {
      *              }
      *          }
      *      \endcode
+     *
+     *  @see also GetAssociatedErrorCode ()
      */
     template <typename BASE_EXCEPTION = system_error>
     class SystemErrorException : public Exception<BASE_EXCEPTION> {
@@ -371,6 +373,32 @@ namespace Stroika::Foundation::Execution {
      *  \note rarely useful, but some POSIX APIs such as getcwd() do return null on error.
      */
     void ThrowPOSIXErrNoIfNull (void* returnValue);
+
+    /**
+     *  This checks if the given exception_ptr is of a type that contains an error code, and if so
+     *  it extracts the error code, and returns it (else nullopt).
+     *
+     *  \par Example Usage
+     *      \code
+     *          try {
+     *              /// do something that throws
+     *          }
+     *          catch (...) {
+     *              if (auto err = GetAssociatedErrorCode (current_exception ())) {
+     *                  if (*err == errc::no_such_device) {
+     *                      // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
+     *                      DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
+     *                      Execution::Sleep (1);
+     *                      goto Again;
+     *                  }
+     *                  else {
+     *                      Execution::ReThrow ();
+     *                  }
+     *              }
+     *          }
+     *      \endcode
+     */
+    optional<error_code> GetAssociatedErrorCode (const exception_ptr& e) noexcept;
 
 }
 
