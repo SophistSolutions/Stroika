@@ -85,14 +85,35 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"{}ReadRule_"};
 #endif
-        // @todo FIX DISPOSING OF BSTR (maybe improve/use SmartBSTR)
         BSTR name = nullptr;
-        ThrowIfErrorHRESULT (pFwRule->get_Name (&name));
         BSTR desc = nullptr;
-        ThrowIfErrorHRESULT (pFwRule->get_Description (&desc));
         BSTR group = nullptr;
-        ThrowIfErrorHRESULT (pFwRule->get_Grouping (&group));
         BSTR application = nullptr;
+        BSTR localPorts  = nullptr;
+        BSTR remotePorts = nullptr;
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([=] () noexcept {
+            if (name != nullptr) {
+                ::SysFreeString (name);
+            }
+            if (desc != nullptr) {
+                ::SysFreeString (desc);
+            }
+            if (group != nullptr) {
+                ::SysFreeString (group);
+            }
+            if (application != nullptr) {
+                ::SysFreeString (application);
+            }
+            if (localPorts != nullptr) {
+                ::SysFreeString (localPorts);
+            }
+            if (remotePorts != nullptr) {
+                ::SysFreeString (remotePorts);
+            }
+        });
+        ThrowIfErrorHRESULT (pFwRule->get_Name (&name));
+        ThrowIfErrorHRESULT (pFwRule->get_Description (&desc));
+        ThrowIfErrorHRESULT (pFwRule->get_Grouping (&group));
         ThrowIfErrorHRESULT (pFwRule->get_ApplicationName (&application));
         long profileMask = 0;
         ThrowIfErrorHRESULT (pFwRule->get_Profiles (&profileMask));
@@ -100,24 +121,22 @@ namespace {
         ThrowIfErrorHRESULT (pFwRule->get_Direction (&direction));
         LONG protocol = 0;
         ThrowIfErrorHRESULT (pFwRule->get_Protocol (&protocol));
-        BSTR localPorts = nullptr;
         ThrowIfErrorHRESULT (pFwRule->get_LocalPorts (&localPorts));
-        BSTR remotePorts = nullptr;
         ThrowIfErrorHRESULT (pFwRule->get_RemotePorts (&remotePorts));
         NET_FW_ACTION action = NET_FW_ACTION_MAX;
         ThrowIfErrorHRESULT (pFwRule->get_Action (&action));
         VARIANT_BOOL enabled = VARIANT_FALSE;
         ThrowIfErrorHRESULT (pFwRule->get_Enabled (&enabled));
         return Rule{
-            wstring (name),
-            wstring (desc),
-            wstring (group),
-            wstring (application),
+            name == nullptr ? wstring () : wstring (name),
+            desc == nullptr ? wstring () : wstring (desc),
+            group == nullptr ? wstring () : wstring (group),
+            application == nullptr ? wstring () : wstring (application),
             (NET_FW_PROFILE_TYPE2) (profileMask),
             direction,
             (NET_FW_IP_PROTOCOL_) (protocol),
-            wstring (localPorts),
-            wstring (remotePorts),
+            localPorts == nullptr ? wstring () : wstring (localPorts),
+            remotePorts == nullptr ? wstring () : wstring (remotePorts),
             action,
             enabled != VARIANT_FALSE};
     }
@@ -144,10 +163,17 @@ namespace {
 
 bool SystemFirewall::Manager::Register (const Rule& rule)
 {
-    Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::Register"};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Register", L"rule=%s", Characters::ToString(rule).c_str ())};
+
+    for (auto r : LookupByGroup (rule.fGroup)) {
+        if (r == rule) {
+            DbgTrace ("run unchanged, so returning false");
+            return false;
+        }
+    }
 
 #if qPlatform_Windows
-    // Initialize COM.
+    // Initialize COM
     HRESULT                 hrComInit = CoInitializeEx (0, COINIT_APARTMENTTHREADED);
     [[maybe_unused]] auto&& cleanupCO = Execution::Finally ([hrComInit] () noexcept {
         if (SUCCEEDED (hrComInit)) {
@@ -183,12 +209,14 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     // Retrieve INetFwRules
     ThrowIfErrorHRESULT (pNetFwPolicy2->get_Rules (&pFwRules));
 
+    #if 0
     if (auto o = ReadRule_ (pFwRules, rule.fName)) {
         if (*o == rule) {
             DbgTrace ("run unchanged, so returning false");
             return false;
         }
     }
+    #endif
 
     // Create a new Firewall Rule object.
     ThrowIfErrorHRESULT (CoCreateInstance (__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule));
@@ -215,7 +243,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
 
 optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName)
 {
-    Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::Lookup"};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Lookup", L"ruleName=%s", ruleName.c_str ())};
 #if qPlatform_Windows
     // Initialize COM.
     HRESULT                 hrComInit = CoInitializeEx (0, COINIT_APARTMENTTHREADED);
@@ -255,12 +283,12 @@ optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName)
 
 Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& groupName)
 {
-    Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::LookupByGroup"};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::LookupByGroup", L"groupName=%s", groupName.c_str ())};
     Collection<Rule>          rules;
     for (Rule r : LookupAll ()) {
         if (r.fGroup == groupName) {
             rules += r;
-        }    
+        }
     }
     return rules;
 }
@@ -310,11 +338,13 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll ()
 
     VARIANT nextElt;
     ULONG   nRead = 0;
-    // @todo need to init nextElt and probably query-interface to get to INetFWRule
+    ::VariantInit (&nextElt);
     for (; SUCCEEDED (pEnum->Next (1, &nextElt, &nRead)) and nRead == 1;) {
-        rules += ReadRule_ ((INetFwRule*)nextElt.ppunkVal);
+        INetFwRule* r = nullptr;
+        ThrowIfErrorHRESULT ((*nextElt.ppunkVal)->QueryInterface (&r));
+        rules += ReadRule_ (r);
+        r->Release ();
     }
 #endif
     return rules;
 }
-    
