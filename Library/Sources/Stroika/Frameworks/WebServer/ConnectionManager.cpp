@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
@@ -106,7 +105,7 @@ namespace {
  */
 constexpr unsigned int                       ConnectionManager::Options::kDefault_MaxConnections;
 constexpr Socket::BindFlags                  ConnectionManager::Options::kDefault_BindFlags;
-const optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = String_Constant{L"Stroika/2.0"};
+const optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = L"Stroika/2.0"sv;
 constexpr ConnectionManager::CORSModeSupport ConnectionManager::Options::kDefault_CORSModeSupport;
 constexpr Time::DurationSecondsType          ConnectionManager::Options::kDefault_AutomaticTCPDisconnectOnClose;
 constexpr optional<int>                      ConnectionManager::Options::kDefault_Linger;
@@ -157,6 +156,8 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                  ComputeConnectionBacklog_ (options)}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
 {
+    // https://stroika.atlassian.net/browse/STK-706 - debug attempt
+    Assert (fWaitForReadyConnectionThread_ != nullptr);
 }
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
@@ -168,6 +169,10 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
     fInactiveOpenConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
+    {
+        // https://stroika.atlassian.net/browse/STK-706 - debug attempt
+        Assert (fWaitForReadyConnectionThread_ != nullptr);
+    }
     fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
