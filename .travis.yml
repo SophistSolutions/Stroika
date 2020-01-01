@@ -1,16 +1,4 @@
 #
-#
-#	I was not able to get this working on Windows or MacOS (close on macos, just needed
-#	newer version of macos - but not yet available as of 2019-12-22)
-#
-#	From minimal experimentation, I liked circleci better, so try to learn/use that
-#	instead of travisci.
-#
-#	But keep this around in case I change my mind ;-)
-#		-- LGP 2019-12-22
-#
-
-#
 # The purpose of this file is to configure Travis CI build system integration.
 #   @see https://travis-ci.com/SophistSolutions/Stroika
 #
@@ -19,8 +7,7 @@
 #       even to some degree with these settings. May need todo more to make this work.
 #       Similarly, use --openssl use-system for speed of build.
 #
-# See https://travis-ci.com/SophistSolutions/Stroika
-# for builds/status
+# See https://travis-ci.com/SophistSolutions/Stroika for builds/status
 #
 language: cpp
 
@@ -43,10 +30,10 @@ jobs:
       - env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true" # https://stroika.atlassian.net/browse/STK-705 - retry mid december
       - env:
-          - MATRIX_EVAL="Windows=true"
+        - MATRIX_EVAL="Windows=true"
 
   include:
-    # Windows Configuration
+    # Windows Configuration (still not working as of 2020-01-01)
     - os: windows
       before_install:
         - choco install activeperl
@@ -63,7 +50,7 @@ jobs:
       env:
         - MATRIX_EVAL="Windows=true"
 
-    # MacOS Configuration
+    # MacOS Configuration (still not working as of 2020-01-01 - due to https://stroika.atlassian.net/browse/STK-705 but should be soon)
     - os: osx
       osx_image: xcode11.3
       addons:
