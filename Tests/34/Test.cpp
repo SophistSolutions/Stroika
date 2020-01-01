@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 //  TEST    Foundation::Database
 #include "Stroika/Foundation/StroikaPreComp.h"

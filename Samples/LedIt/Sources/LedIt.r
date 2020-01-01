@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 
 
@@ -928,7 +928,7 @@ resource 'STR#' (STRx_Standards, "Standards", purgeable) {
 	{
 		"LedIt!",
 		"Save File As:",
-		"Can’t Undo"
+		"CanÔøΩt Undo"
 	}
 };
 
@@ -955,26 +955,26 @@ include	"PP DebugAlerts.rsrc" not 'ckid';
  */
 #if 1
 data 'aedt' (128, "Required Suite", purgeable) {
-	$"6165 7674 6F61 7070 0000 03E9 6165 7674 6F64 6F63 0000 03EA 6165 7674 7064 6F63"                    /* aevtoapp...Èaevtodoc...Íaevtpdoc */
-	$"0000 03EB 6165 7674 7175 6974 0000 03EC"                                                            /* ...Îaevtquit...Ï */
+	$"6165 7674 6F61 7070 0000 03E9 6165 7674 6F64 6F63 0000 03EA 6165 7674 7064 6F63"                    /* aevtoapp...ÔøΩaevtodoc...ÔøΩaevtpdoc */
+	$"0000 03EB 6165 7674 7175 6974 0000 03EC"                                                            /* ...ÔøΩaevtquit...ÔøΩ */
 };
 
 data 'aedt' (129, "Core Suite", purgeable) {
-	$"636F 7265 636C 6F6E 0000 07D1 636F 7265 636C 6F73 0000 07D2 636F 7265 636E 7465"                    /* coreclon...—coreclos...“corecnte */
-	$"0000 07D3 636F 7265 6372 656C 0000 07D4 636F 7265 6465 6C6F 0000 07D5 636F 7265"                    /* ...”corecrel...‘coredelo...’core */
-	$"646F 6578 0000 07D6 636F 7265 716F 626A 0000 07D7 636F 7265 6765 7464 0000 07D8"                    /* doex...÷coreqobj...◊coregetd...ÿ */
-	$"636F 7265 6473 697A 0000 07D9 636F 7265 6774 6569 0000 07DA 636F 7265 6D6F 7665"                    /* coredsiz...Ÿcoregtei...⁄coremove */
-	$"0000 07DB 636F 7265 7361 7665 0000 07DC 636F 7265 7365 7464 0000 07DD"                              /* ...€coresave...‹coresetd...› */
+	$"636F 7265 636C 6F6E 0000 07D1 636F 7265 636C 6F73 0000 07D2 636F 7265 636E 7465"                    /* coreclon...ÔøΩcoreclos...ÔøΩcorecnte */
+	$"0000 07D3 636F 7265 6372 656C 0000 07D4 636F 7265 6465 6C6F 0000 07D5 636F 7265"                    /* ...ÔøΩcorecrel...ÔøΩcoredelo...ÔøΩcore */
+	$"646F 6578 0000 07D6 636F 7265 716F 626A 0000 07D7 636F 7265 6765 7464 0000 07D8"                    /* doex...ÔøΩcoreqobj...ÔøΩcoregetd...ÔøΩ */
+	$"636F 7265 6473 697A 0000 07D9 636F 7265 6774 6569 0000 07DA 636F 7265 6D6F 7665"                    /* coredsiz...ÔøΩcoregtei...ÔøΩcoremove */
+	$"0000 07DB 636F 7265 7361 7665 0000 07DC 636F 7265 7365 7464 0000 07DD"                              /* ...ÔøΩcoresave...ÔøΩcoresetd...ÔøΩ */
 };
 
 data 'aedt' (130, "Misc Standards", purgeable) {
-	$"6165 7674 6F62 6974 0000 0BB9 6D69 7363 6265 6769 0000 0BBA 6D69 7363 636F 7079"                    /* aevtobit...πmiscbegi...∫misccopy */
-	$"0000 0BBB 6D69 7363 6370 7562 0000 0BBC 6D69 7363 6375 7420 0000 0BBD 6D69 7363"                    /* ...ªmisccpub...ºmisccut ...Ωmisc */
-	$"646F 7363 0000 0BBE 6D69 7363 6564 6974 0000 0BBF 6D69 7363 656E 6474 0000 0BC0"                    /* dosc...æmiscedit...ømiscendt...¿ */
-	$"6D69 7363 696D 6772 0000 0BC1 6D69 7363 6973 756E 0000 0BC2 6D69 7363 6D76 6973"                    /* miscimgr...¡miscisun...¬miscmvis */
-	$"0000 0BC3 6D69 7363 7061 7374 0000 0BC4 6D69 7363 7265 646F 0000 0C1F 6D69 7363"                    /* ...√miscpast...ƒmiscredo....misc */
-	$"7276 7274 0000 0BC6 6D69 7363 7474 726D 0000 0BC7 6D69 7363 756E 646F 0000 0BC8"                    /* rvrt...∆miscttrm...«miscundo...» */
-	$"6D69 7363 736C 6374 0000 0BC9"                                                                      /* miscslct...… */
+	$"6165 7674 6F62 6974 0000 0BB9 6D69 7363 6265 6769 0000 0BBA 6D69 7363 636F 7079"                    /* aevtobit...ÔøΩmiscbegi...ÔøΩmisccopy */
+	$"0000 0BBB 6D69 7363 6370 7562 0000 0BBC 6D69 7363 6375 7420 0000 0BBD 6D69 7363"                    /* ...ÔøΩmisccpub...ÔøΩmisccut ...ÔøΩmisc */
+	$"646F 7363 0000 0BBE 6D69 7363 6564 6974 0000 0BBF 6D69 7363 656E 6474 0000 0BC0"                    /* dosc...ÔøΩmiscedit...ÔøΩmiscendt...ÔøΩ */
+	$"6D69 7363 696D 6772 0000 0BC1 6D69 7363 6973 756E 0000 0BC2 6D69 7363 6D76 6973"                    /* miscimgr...ÔøΩmiscisun...ÔøΩmiscmvis */
+	$"0000 0BC3 6D69 7363 7061 7374 0000 0BC4 6D69 7363 7265 646F 0000 0C1F 6D69 7363"                    /* ...ÔøΩmiscpast...ÔøΩmiscredo....misc */
+	$"7276 7274 0000 0BC6 6D69 7363 7474 726D 0000 0BC7 6D69 7363 756E 646F 0000 0BC8"                    /* rvrt...ÔøΩmiscttrm...ÔøΩmiscundo...ÔøΩ */
+	$"6D69 7363 736C 6374 0000 0BC9"                                                                      /* miscslct...ÔøΩ */
 };
 
 #else
@@ -1031,12 +1031,12 @@ data 'aete' (0, "English", purgeable) {
 	$"6F72 7400 7265 7164 0001 0001 0000 0000 0000 0000 0E53 7461 6E64 6172 6420 5375"                    /* ort.reqd.............Standard Su */
 	$"6974 6522 436F 6D6D 6F6E 2074 6572 6D73 2066 6F72 206D 6F73 7420 6170 706C 6963"                    /* ite"Common terms for most applic */
 	$"6174 696F 6E73 436F 5265 0001 0001 0008 0563 6C6F 7365 0F43 6C6F 7365 2061 6E20"                    /* ationsCoRe.......close.Close an  */
-	$"6F62 6A65 6374 636F 7265 636C 6F73 6E75 6C6C 0000 8000 6F62 6A20 1474 6865 206F"                    /* objectcoreclosnull..Ä.obj .the o */
+	$"6F62 6A65 6374 636F 7265 636C 6F73 6E75 6C6C 0000 8000 6F62 6A20 1474 6865 206F"                    /* objectcoreclosnull..ÔøΩ.obj .the o */
 	$"626A 6563 7473 2074 6F20 636C 6F73 6500 1000 0002 0673 6176 696E 6700 7361 766F"                    /* bjects to close......saving.savo */
 	$"7361 766F 3F73 7065 6369 6669 6573 2077 6865 7468 6572 206F 7220 6E6F 7420 6368"                    /* savo?specifies whether or not ch */
 	$"616E 6765 7320 7368 6F75 6C64 2062 6520 7361 7665 6420 6265 666F 7265 2063 6C6F"                    /* anges should be saved before clo */
-	$"7369 6E67 A000 0269 6E00 6B66 696C 616C 6973 2474 6865 2066 696C 6520 696E 2077"                    /* sing†..in.kfilalis$the file in w */
-	$"6869 6368 2074 6F20 7361 7665 2074 6865 206F 626A 6563 7400 8000 0964 6174 6120"                    /* hich to save the object.Ä.∆data  */
+	$"7369 6E67 A000 0269 6E00 6B66 696C 616C 6973 2474 6865 2066 696C 6520 696E 2077"                    /* singÔøΩ..in.kfilalis$the file in w */
+	$"6869 6368 2074 6F20 7361 7665 2074 6865 206F 626A 6563 7400 8000 0964 6174 6120"                    /* hich to save the object.ÔøΩ.ÔøΩdata  */
 	$"7369 7A65 2552 6574 7572 6E20 7468 6520 7369 7A65 2069 6E20 6279 7465 7320 6F66"                    /* size%Return the size in bytes of */
 	$"2061 6E20 6F62 6A65 6374 636F 7265 6473 697A 6C6F 6E67 1F74 6865 2073 697A 6520"                    /*  an objectcoredsizlong.the size  */
 	$"6F66 2074 6865 206F 626A 6563 7420 696E 2062 7974 6573 0000 6F62 6A20 2C74 6865"                    /* of the object in bytes..obj ,the */
@@ -1047,44 +1047,44 @@ data 'aete' (0, "English", purgeable) {
 	$"626A 6563 7420 7768 6F73 6520 6461 7461 2069 7320 746F 2062 6520 7265 7475 726E"                    /* bject whose data is to be return */
 	$"6564 0000 0000 046D 616B 6512 4D61 6B65 2061 206E 6577 2065 6C65 6D65 6E74 636F"                    /* ed.....make.Make a new elementco */
 	$"7265 6372 656C 6F62 6A20 244F 626A 6563 7420 7370 6563 6966 6965 7220 666F 7220"                    /* recrelobj $Object specifier for  */
-	$"7468 6520 6E65 7720 656C 656D 656E 7400 0000 6E75 6C6C 0000 9000 0004 036E 6577"                    /* the new element...null..ê....new */
+	$"7468 6520 6E65 7720 656C 656D 656E 7400 0000 6E75 6C6C 0000 9000 0004 036E 6577"                    /* the new element...null..ÔøΩ....new */
 	$"6B6F 636C 7479 7065 1C74 6865 2063 6C61 7373 206F 6620 7468 6520 6E65 7720 656C"                    /* kocltype.the class of the new el */
 	$"656D 656E 7400 0000 0261 7400 696E 7368 696E 736C 2B74 6865 206C 6F63 6174 696F"                    /* ement....at.inshinsl+the locatio */
 	$"6E20 6174 2077 6869 6368 2074 6F20 696E 7365 7274 2074 6865 2065 6C65 6D65 6E74"                    /* n at which to insert the element */
-	$"8000 0977 6974 6820 6461 7461 6461 7461 2A2A 2A2A 2074 6865 2069 6E69 7469 616C"                    /* Ä.∆with datadata**** the initial */
-	$"2064 6174 6120 666F 7220 7468 6520 656C 656D 656E 7400 8000 0F77 6974 6820 7072"                    /*  data for the element.Ä..with pr */
+	$"8000 0977 6974 6820 6461 7461 6461 7461 2A2A 2A2A 2074 6865 2069 6E69 7469 616C"                    /* ÔøΩ.ÔøΩwith datadata**** the initial */
+	$"2064 6174 6120 666F 7220 7468 6520 656C 656D 656E 7400 8000 0F77 6974 6820 7072"                    /*  data for the element.ÔøΩ..with pr */
 	$"6F70 6572 7469 6573 7072 6474 7265 636F 3474 6865 2069 6E69 7469 616C 2076 616C"                    /* opertiesprdtreco4the initial val */
 	$"7565 7320 666F 7220 7468 6520 7072 6F70 6572 7469 6573 206F 6620 7468 6520 656C"                    /* ues for the properties of the el */
-	$"656D 656E 7400 8000 046F 7065 6E1C 4F70 656E 2074 6865 2073 7065 6369 6669 6564"                    /* ement.Ä..open.Open the specified */
-	$"206F 626A 6563 7428 7329 6165 7674 6F64 6F63 6E75 6C6C 0000 8000 6F62 6A20 3F4F"                    /*  object(s)aevtodocnull..Ä.obj ?O */
+	$"656D 656E 7400 8000 046F 7065 6E1C 4F70 656E 2074 6865 2073 7065 6369 6669 6564"                    /* ement.ÔøΩ..open.Open the specified */
+	$"206F 626A 6563 7428 7329 6165 7674 6F64 6F63 6E75 6C6C 0000 8000 6F62 6A20 3F4F"                    /*  object(s)aevtodocnull..ÔøΩ.obj ?O */
 	$"626A 6563 7473 2074 6F20 6F70 656E 2E20 4361 6E20 6265 2061 206C 6973 7420 6F66"                    /* bjects to open. Can be a list of */
 	$"2066 696C 6573 206F 7220 616E 206F 626A 6563 7420 7370 6563 6966 6965 722E 1000"                    /*  files or an object specifier... */
 	$"0000 0570 7269 6E74 1D50 7269 6E74 2074 6865 2073 7065 6369 6669 6564 206F 626A"                    /* ...print.Print the specified obj */
-	$"6563 7428 7329 6165 7674 7064 6F63 6E75 6C6C 0000 8000 6F62 6A20 404F 626A 6563"                    /* ect(s)aevtpdocnull..Ä.obj @Objec */
+	$"6563 7428 7329 6165 7674 7064 6F63 6E75 6C6C 0000 8000 6F62 6A20 404F 626A 6563"                    /* ect(s)aevtpdocnull..ÔøΩ.obj @Objec */
 	$"7473 2074 6F20 7072 696E 742E 2043 616E 2062 6520 6120 6C69 7374 206F 6620 6669"                    /* ts to print. Can be a list of fi */
 	$"6C65 7320 6F72 2061 6E20 6F62 6A65 6374 2073 7065 6369 6669 6572 2E00 0000 0000"                    /* les or an object specifier...... */
 	$"0473 6176 6515 7361 7665 2061 2073 6574 206F 6620 6F62 6A65 6374 7300 636F 7265"                    /* .save.save a set of objects.core */
 	$"7361 7665 6E75 6C6C 0000 0000 6F62 6A20 104F 626A 6563 7473 2074 6F20 7361 7665"                    /* savenull....obj .Objects to save */
 	$"2E00 0000 0002 0269 6E00 6B66 696C 616C 6973 2774 6865 2066 696C 6520 696E 2077"                    /* .......in.kfilalis'the file in w */
-	$"6869 6368 2074 6F20 7361 7665 2074 6865 206F 626A 6563 7428 7329 8000 0261 7300"                    /* hich to save the object(s)Ä..as. */
+	$"6869 6368 2074 6F20 7361 7665 2074 6865 206F 626A 6563 7428 7329 8000 0261 7300"                    /* hich to save the object(s)ÔøΩ..as. */
 	$"666C 7470 7479 7065 3774 6865 2066 696C 6520 7479 7065 206F 6620 7468 6520 646F"                    /* fltptype7the file type of the do */
 	$"6375 6D65 6E74 2069 6E20 7768 6963 6820 746F 2073 6176 6520 7468 6520 6461 7461"                    /* cument in which to save the data */
-	$"8000 0373 6574 1453 6574 2061 6E20 6F62 6A65 6374 D573 2064 6174 6100 636F 7265"                    /* Ä..set.Set an object’s data.core */
-	$"7365 7464 6E75 6C6C 0000 8000 6F62 6A20 1474 6865 206F 626A 6563 7420 746F 2063"                    /* setdnull..Ä.obj .the object to c */
-	$"6861 6E67 6500 1000 0001 0274 6F00 6461 7461 2A2A 2A2A 0D74 6865 206E 6577 2076"                    /* hange......to.data****¬the new v */
+	$"8000 0373 6574 1453 6574 2061 6E20 6F62 6A65 6374 D573 2064 6174 6100 636F 7265"                    /* ÔøΩ..set.Set an objectÔøΩs data.core */
+	$"7365 7464 6E75 6C6C 0000 8000 6F62 6A20 1474 6865 206F 626A 6563 7420 746F 2063"                    /* setdnull..ÔøΩ.obj .the object to c */
+	$"6861 6E67 6500 1000 0001 0274 6F00 6461 7461 2A2A 2A2A 0D74 6865 206E 6577 2076"                    /* hange......to.data****ÔøΩthe new v */
 	$"616C 7565 0000 0003 0B61 7070 6C69 6361 7469 6F6E 6361 7070 1641 6E20 6170 706C"                    /* alue.....applicationcapp.An appl */
 	$"6963 6174 696F 6E20 7072 6F67 7261 6D00 0000 0002 6377 696E 0003 696E 6478 6E61"                    /* ication program.....cwin..indxna */
 	$"6D65 7265 6C65 646F 6375 0001 6E61 6D65 0677 696E 646F 7700 6377 696E 0841 2057"                    /* mereledocu..name.window.cwin.A W */
 	$"696E 646F 7700 000C 0662 6F75 6E64 7300 7062 6E64 7164 7274 2574 6865 2062 6F75"                    /* indow....bounds.pbndqdrt%the bou */
 	$"6E64 6172 7920 7265 6374 616E 676C 6520 666F 7220 7468 6520 7769 6E64 6F77 1000"                    /* ndary rectangle for the window.. */
-	$"0963 6C6F 7365 6162 6C65 6863 6C62 626F 6F6C 2144 6F65 7320 7468 6520 7769 6E64"                    /* ∆closeablehclbbool!Does the wind */
+	$"0963 6C6F 7365 6162 6C65 6863 6C62 626F 6F6C 2144 6F65 7320 7468 6520 7769 6E64"                    /* ÔøΩcloseablehclbbool!Does the wind */
 	$"6F77 2068 6176 6520 6120 636C 6F73 6520 626F 783F 0000 0674 6974 6C65 6400 7074"                    /* ow have a close box?...titled.pt */
 	$"6974 626F 6F6C 2144 6F65 7320 7468 6520 7769 6E64 6F77 2068 6176 6520 6120 7469"                    /* itbool!Does the window have a ti */
 	$"746C 6520 6261 723F 0000 0569 6E64 6578 7069 6478 6C6F 6E67 1874 6865 206E 756D"                    /* tle bar?...indexpidxlong.the num */
 	$"6265 7220 6F66 2074 6865 2077 696E 646F 7700 1000 0866 6C6F 6174 696E 6700 6973"                    /* ber of the window....floating.is */
 	$"666C 626F 6F6C 1644 6F65 7320 7468 6520 7769 6E64 6F77 2066 6C6F 6174 3F00 0000"                    /* flbool.Does the window float?... */
 	$"056D 6F64 616C 706D 6F64 626F 6F6C 1449 7320 7468 6520 7769 6E64 6F77 206D 6F64"                    /* .modalpmodbool.Is the window mod */
-	$"616C 3F00 0000 0972 6573 697A 6162 6C65 7072 737A 626F 6F6C 1849 7320 7468 6520"                    /* al?...∆resizableprszbool.Is the  */
+	$"616C 3F00 0000 0972 6573 697A 6162 6C65 7072 737A 626F 6F6C 1849 7320 7468 6520"                    /* al?...ÔøΩresizableprszbool.Is the  */
 	$"7769 6E64 6F77 2072 6573 697A 6162 6C65 3F00 0000 087A 6F6F 6D61 626C 6500 6973"                    /* window resizable?....zoomable.is */
 	$"7A6D 626F 6F6C 1749 7320 7468 6520 7769 6E64 6F77 207A 6F6F 6D61 626C 653F 0000"                    /* zmbool.Is the window zoomable?.. */
 	$"067A 6F6F 6D65 6400 707A 756D 626F 6F6C 1549 7320 7468 6520 7769 6E64 6F77 207A"                    /* .zoomed.pzumbool.Is the window z */
@@ -1101,17 +1101,17 @@ data 'aete' (0, "English", purgeable) {
 	$"7320 6E6F 7700 026E 6F00 6E6F 2020 1344 6F20 6E6F 7420 7361 7665 206F 626A 6563"                    /* s now..no.no  .Do not save objec */
 	$"7473 0361 736B 6173 6B20 1C41 736B 2074 6865 2075 7365 7220 7768 6574 6865 7220"                    /* ts.askask .Ask the user whether  */
 	$"746F 2073 6176 6500 174D 6973 6365 6C6C 616E 656F 7573 2053 7461 6E64 6172 6473"                    /* to save..Miscellaneous Standards */
-	$"2C55 7365 6675 6C20 6576 656E 7473 2074 6861 7420 6172 656E D574 2069 6E20 616E"                    /* ,Useful events that aren’t in an */
+	$"2C55 7365 6675 6C20 6576 656E 7473 2074 6861 7420 6172 656E D574 2069 6E20 616E"                    /* ,Useful events that arenÔøΩt in an */
 	$"7920 6F74 6865 7220 7375 6974 6500 6D69 7363 0000 0000 0001 0672 6576 6572 7433"                    /* y other suite.misc.......revert3 */
 	$"5265 7665 7274 2061 6E20 6F62 6A65 6374 2074 6F20 7468 6520 6D6F 7374 2072 6563"                    /* Revert an object to the most rec */
 	$"656E 746C 7920 7361 7665 6420 7665 7273 696F 6E00 6D69 7363 7276 7274 6E75 6C6C"                    /* ently saved version.miscrvrtnull */
-	$"0000 8000 6F62 6A20 106F 626A 6563 7420 746F 2072 6576 6572 7400 0000 0000 0000"                    /* ..Ä.obj .object to revert....... */
-	$"0000 0000 0D6F 6464 7320 616E 6420 656E 6473 3854 6869 6E67 7320 7468 6174 2073"                    /* ....¬odds and ends8Things that s */
+	$"0000 8000 6F62 6A20 106F 626A 6563 7420 746F 2072 6576 6572 7400 0000 0000 0000"                    /* ..ÔøΩ.obj .object to revert....... */
+	$"0000 0000 0D6F 6464 7320 616E 6420 656E 6473 3854 6869 6E67 7320 7468 6174 2073"                    /* ....ÔøΩodds and ends8Things that s */
 	$"686F 756C 6420 6265 2069 6E20 736F 6D65 2073 7461 6E64 6172 6420 7375 6974 652C"                    /* hould be in some standard suite, */
-	$"2062 7574 2061 7265 6ED5 7400 4F64 6473 0001 0001 0001 0673 656C 6563 741B 5365"                    /*  but aren’t.Odds.......select.Se */
+	$"2062 7574 2061 7265 6ED5 7400 4F64 6473 0001 0001 0001 0673 656C 6563 741B 5365"                    /*  but arenÔøΩt.Odds.......select.Se */
 	$"6C65 6374 2074 6865 2073 7065 6369 6669 6564 206F 626A 6563 7400 6D69 7363 736C"                    /* lect the specified object.miscsl */
-	$"6374 6E75 6C6C 0000 8000 6F62 6A20 1474 6865 206F 626A 6563 7420 746F 2073 656C"                    /* ctnull..Ä.obj .the object to sel */
-	$"6563 7400 9000 0000 0000 0000 0000"                                                                 /* ect.ê......... */
+	$"6374 6E75 6C6C 0000 8000 6F62 6A20 1474 6865 206F 626A 6563 7420 746F 2073 656C"                    /* ctnull..ÔøΩ.obj .the object to sel */
+	$"6563 7400 9000 0000 0000 0000 0000"                                                                 /* ect.ÔøΩ......... */
 };
 
 
@@ -1149,7 +1149,7 @@ resource 'MENU' (kAppleMenuID) {
 	enabled,
 	apple,
 	{
-		"About LedIt!…", noIcon, noKey, noMark, plain,
+		"About LedIt!ÔøΩ", noIcon, noKey, noMark, plain,
 		"-", noIcon, noKey, noMark, plain
 	}
 };
@@ -1179,16 +1179,16 @@ resource 'MENU' (kFileMenuID) {
 	"File",
 	{
 		"New", noIcon, "N", noMark, plain,
-		"Open…", noIcon, "O", noMark, plain,
+		"OpenÔøΩ", noIcon, "O", noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
 		"Close", noIcon, "W", noMark, plain,
 		"Save", noIcon, "S", noMark, plain,
-		"Save As…", noIcon, noKey, noMark, plain,
-		"Save A Copy As…", noIcon, noKey, noMark, plain,
+		"Save AsÔøΩ", noIcon, noKey, noMark, plain,
+		"Save A Copy AsÔøΩ", noIcon, noKey, noMark, plain,
 		"Revert", noIcon, noKey, noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
-		"Page Setup…", noIcon, noKey, noMark, plain,
-		"Print…", noIcon, "P", noMark, plain,
+		"Page SetupÔøΩ", noIcon, noKey, noMark, plain,
+		"PrintÔøΩ", noIcon, "P", noMark, plain,
 		"Print One", noIcon, noKey, noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
 		"Quit", noIcon, "Q", noMark, plain
@@ -1401,13 +1401,13 @@ resource 'MENU' (kSelectMenuID) {
 		"-", noIcon, noKey, noMark, plain,
 		"Select All", noIcon, "A", noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
-		"Find…", noIcon, "F", noMark, plain,
+		"FindÔøΩ", noIcon, "F", noMark, plain,
 		"Find Again", noIcon, "G", noMark, plain,
 		"Enter 'Find' String", noIcon, "E", noMark, plain,
-		"Replace…", noIcon, "H", noMark, plain,
+		"ReplaceÔøΩ", noIcon, "H", noMark, plain,
 		"Replace Again", noIcon, "R", noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
-		"Spellcheck…", noIcon, "L", noMark, plain,
+		"SpellcheckÔøΩ", noIcon, "L", noMark, plain,
 	}
 };
 resource 'Mcmd' (kSelectMenuID, purgeable) {
@@ -1546,13 +1546,13 @@ resource 'MENU' (kInsertMenuID) {
 	enabled,
 	"Insert",
 	{
-		"Insert Table…", noIcon, noKey, noMark, plain,
+		"Insert TableÔøΩ", noIcon, noKey, noMark, plain,
 		"Insert Tabl Row Above", noIcon, noKey, noMark, plain,
 		"Insert Table Row Below", noIcon, noKey, noMark, plain,
 		"Insert Table Column Before", noIcon, noKey, noMark, plain,
 		"Insert Table Column After", noIcon, noKey, noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
-		"Insert URL…", noIcon, noKey, noMark, plain,
+		"Insert URLÔøΩ", noIcon, noKey, noMark, plain,
 	}
 };
 resource 'Mcmd' (kInsertMenuID, purgeable) {
@@ -1628,8 +1628,8 @@ resource 'MENU' (kFormatMenuID) {
 		"Color", noIcon, hierarchicalMenu, "\0Xfd", plain,
 		"-", noIcon, noKey, noMark, plain,
 		"Justification", noIcon, hierarchicalMenu, "\0Xfe", plain,
-		"Paragraph Indents…", noIcon, noKey, noMark, plain,
-		"Paragraph Spacing…", noIcon, noKey, noMark, plain,
+		"Paragraph IndentsÔøΩ", noIcon, noKey, noMark, plain,
+		"Paragraph SpacingÔøΩ", noIcon, noKey, noMark, plain,
 		"-", noIcon, noKey, noMark, plain,
 		"List Style", noIcon, hierarchicalMenu, "\0Xf9", plain,
 		"Increase List Indent", noIcon, noKey, noMark, plain,
@@ -1825,7 +1825,7 @@ resource 'MENU' (cmd_SizeMenu) {
 		"Smaller", noIcon, "-", noMark, plain,
 		"Larger", noIcon, "=", noMark, plain,
 		"-", noIcon, noKey, noMark, plain;
-		"Other…", noIcon, noKey, noMark, plain,
+		"OtherÔøΩ", noIcon, noKey, noMark, plain,
 	}
 };
 resource 'Mcmd' (cmd_SizeMenu, purgeable) {
@@ -2004,7 +2004,7 @@ resource 'MENU' (cmd_ColorMenu) {
 		"Aqua", noIcon, noKey, noMark, plain,
 		"White", noIcon, noKey, noMark, plain,
 		"-", noIcon, noKey, noMark, plain;
-		"Other…", noIcon, noKey, noMark, plain,
+		"OtherÔøΩ", noIcon, noKey, noMark, plain,
 	}
 };
 resource 'Mcmd' (cmd_ColorMenu, purgeable) {

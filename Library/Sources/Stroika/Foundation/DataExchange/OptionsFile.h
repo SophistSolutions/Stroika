@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_OptionsFile_h_
 #define _Stroika_Foundation_DataExchange_OptionsFile_h_ 1
@@ -29,8 +29,8 @@
  *      @todo   Look at http://s11n.net/
  *
  *  GIST:
- *      if you have mapper object for type T) – one line create object that writes/reads
- *      it to/from filessytem (defaults to good places) – and handles logging warning if created,
+ *      if you have mapper object for type T) ï¿½ one line create object that writes/reads
+ *      it to/from filessytem (defaults to good places) ï¿½ and handles logging warning if created,
  *      or bad, and rewrites for if changes detected (added/renamed etc).
  *      Maybe hook / configure options for these features.
  *

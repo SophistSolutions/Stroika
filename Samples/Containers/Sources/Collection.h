@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #ifndef _Sample_Containers_Collection_h_
 #define _Sample_Containers_Collection_h_ 1

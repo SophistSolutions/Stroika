@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 
 #if		defined (WIN32)
@@ -95,7 +95,7 @@
 		// Needed to assure __PowerPlant__ define is defined for Led.h
 		#include	"PP_Prefix.h"
 
-		// use MetrowerksÕ standard precompiled header file
+		// use Metrowerksï¿½ standard precompiled header file
 		//#include <PP_ClassHeaders.cp>	
 
 	#endif

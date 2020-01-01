@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_inl_
 #define _Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_inl_ 1

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #include "../../../StroikaPreComp.h"
 
@@ -122,7 +122,7 @@ void Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
             case ERROR_PATH_NOT_FOUND:
                 Execution::ThrowSystemErrNo (ERROR_PATH_NOT_FOUND); //  The specified path was not found.
             case ERROR_BAD_FORMAT:
-                Execution::ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image).
+                Execution::ThrowSystemErrNo (ERROR_BAD_FORMAT); //  The .exe file is invalid (non-Microsoft Win32ï¿½ .exe or error in .exe image).
             case SE_ERR_ACCESSDENIED:
                 Execution::Throw (SystemErrorException{E_ACCESSDENIED, HRESULT_error_category ()}); //  The operating system denied access to the specified file.
             case SE_ERR_ASSOCINCOMPLETE:

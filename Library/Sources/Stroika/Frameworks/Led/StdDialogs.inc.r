@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #ifndef	__Led_Std_Dialogs_r__
 #define	__Led_Std_Dialogs_r__	1
@@ -1150,7 +1150,7 @@
 				{131, 345, 131+20, 360+120},
 				Button {
 					enabled,
-					"OptionsÉ"
+					"Optionsï¿½"
 				},
 				{159, 345, 159+20, 360+120},
 				Button {

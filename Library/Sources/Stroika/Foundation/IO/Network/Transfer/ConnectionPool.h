@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2019.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_Transfer_ConnectionPool_h_
 #define _Stroika_Foundation_IO_Network_Transfer_ConnectionPool_h_ 1
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         * Only ‘schemeAndAuthority looked at from (optional) hint.
+         * Only ï¿½schemeAndAuthority looked at from (optional) hint.
          *
          * If timeout allocating connection (because all busy/in use), 
          *      throw TimeoutException
