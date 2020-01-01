@@ -39,6 +39,23 @@ modern, reliable and threaded applications easier to write.
 * Stroika v2.1
     <br/>Regularly tested on x86, arm, gcc7 thru gcc9, clang 6 thru clang 8, XCode 11 (but should support XCode 10).
 
+### CI System Integration
+
+* CircleCI
+
+  * <https://circleci.com/gh/SophistSolutions/Stroika>
+  * ./.circleci/config.yml
+
+  Nice CI system (docker based). Autobuilds Linux configurations.
+
+* Travis CI
+
+  * <https://travis-ci.com/SophistSolutions/Stroika>
+  * ./.travis.yml
+
+  Autobuilds Linux configurations.
+  MacOS and Windows may work in teh future.
+
 ### Random Features
 
 * Vanilla make based builds
