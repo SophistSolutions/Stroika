@@ -43,15 +43,15 @@ modern, reliable and threaded applications easier to write.
 
 * CircleCI
 
-  * <https://circleci.com/gh/SophistSolutions/Stroika>
-  * ./.circleci/config.yml
+  * Status: <https://circleci.com/gh/SophistSolutions/Stroika>
+  * Build/test script: [.circleci/config.yml](.circleci/config.yml)
 
   Nice CI system (docker based). Autobuilds Linux configurations.
 
 * Travis CI
 
-  * <https://travis-ci.com/SophistSolutions/Stroika>
-  * ./.travis.yml
+  * Status: <https://travis-ci.com/SophistSolutions/Stroika>
+  * Build/test script: [.travis.yml](.travis.yml)
 
   Autobuilds Linux configurations.
   MacOS and Windows may work in teh future.
