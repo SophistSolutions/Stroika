@@ -111,6 +111,7 @@ public:
                         } break;
                         default:
                             AssertNotReached ();
+                            return UniformResourceIdentification::Authority{};
                     }
                 }();
                 requestBuf << "Host: " << hostAuthority.As<String> ().AsUTF8 () << "\r\n";
