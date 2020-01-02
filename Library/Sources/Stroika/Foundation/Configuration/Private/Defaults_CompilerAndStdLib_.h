@@ -146,6 +146,10 @@
 #define _MS_VS_2k19_16Pt3Pt0_ 192328105
 #define _MS_VS_2k19_16Pt3Pt5_ 192328106
 
+// _MSC_VER=1924
+#define _MSC_VER_2k19_16Pt4_ 1924
+#define _MS_VS_2k19_16Pt4Pt2_ 192428314
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -161,11 +165,11 @@
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (#_MSC_FULL_VER ) - 15.9.x - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
-#elif _MSC_VER <= _MSC_VER_2k19_16Pt3_
+#elif _MSC_VER <= _MSC_VER_2k19_16Pt4_
 // We COULD look at _MSC_FULL_VER and compare to _MS_VS_2k19_16Pt3Pt5_ etc, but changes too often and too rarely makes a difference
 // Just assume all bug defines the same for a given _MSC_VER
 #else
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (> 16.3) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version (> 16.4) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
@@ -452,7 +456,8 @@ ABORTING...
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt1_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt2_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -507,6 +512,7 @@ ABORTING...
 // First broken in _MS_VS_2k19_16Pt1Pt0_
 // broken in _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
+// Verified FIXED in _MSC_VER_2k19_16Pt4_
 #define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy 0
@@ -898,7 +904,8 @@ lose those deprecated interfaces.
 // verified broken in _MSC_VER_2k19_16Pt1_
 // verified broken in _MSC_VER_2k19_16Pt2_
 // verified broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -912,13 +919,20 @@ Please choose the Technical Support command on the Visual C++
  Help menu, or open the Technical Support help file for more information
 C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(621): note: while compiling class template member function 'std::shared_ptr<Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader::IElementConsumer> `anonymous-namespace'::T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerMappingReader_<`anonymous-namespace'::T7_SAXObjectReader_BLKQCL_ReadSensors_::TemperatureType_>::HandleChildStart(const Stroika::Foundation::DataExchange::StructuredStreamEvents::Name &)'
 C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(656): note: see reference to class template insta
+
+C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(851): fatal error C1001: An internal error has occurred in the compiler.
+(compiler file 'd:\agent\_work\5\s\src\vctools\Compiler\CxxFE\sl\p1\c\ParseTreeActions.cpp', line 6142)
+ To work around this problem, try simplifying or changing the program near the locations listed above.
+Please choose the Technical Support command on the Visual C++
+ Help menu, or open the Technical Support help file for more information
  */
 #ifndef qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
 
 #if defined(_MSC_VER)
 
 // FIRST broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// veriried broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy 0
 #endif
@@ -1188,7 +1202,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // verified broken in _MSC_VER_2k19_16Pt1_ (debug builds only)
 // verified broken in _MSC_VER_2k19_16Pt2_
 // verified broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
 #endif
@@ -1231,7 +1246,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MSC_VER_2k19_16Pt1_
 // still broken in _MSC_VER_2k19_16Pt2_
 // still broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified still broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -1284,6 +1300,7 @@ WORKAROUND:
 // verified still broken _MSC_VER_2k19_16Pt1_
 // verified still broken _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
+// verified fixed in _MSC_VER_2k19_16Pt4_
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
@@ -1386,7 +1403,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // verified still broken in _MSC_VER_2k19_16Pt1_
 // verified still broken in _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified still broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1580,7 +1598,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // verified still broken in _MSC_VER_2k19_16Pt1_
 // verified still broken in _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified still broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
 #endif
@@ -1600,7 +1619,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // Verified still broken in _MSC_VER_2k19_16Pt1_
 // Verified still broken in _MSC_VER_2k19_16Pt2_
 // Verified still broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// Verified still broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -1726,7 +1746,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt1_
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt2_
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -1761,6 +1782,7 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k19_16Pt1_
 // verified still broken in _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
+// untested  in _MSC_VER_2k19_16Pt4_
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
@@ -1871,7 +1893,8 @@ namespace {
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k19_16Pt2_ (before was qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy or qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy)
 // verified still broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified still broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif
