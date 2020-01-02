@@ -112,7 +112,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -299,7 +299,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                     // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                     // This is more like the absence of a feature beacuse of the missing component.
-                    DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                    DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                     Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
 #endif
@@ -322,7 +322,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -372,7 +372,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -411,7 +411,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -457,7 +457,7 @@ namespace {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
                 Private_::T1_get_ (o);
 #if qHasFeature_LibCurl && !qHasFeature_OpenSSL
-// ingore this case, since we allow the failed connect above...
+// ignore this case, since we allow the failed connect above...
 #else
                 VerifyTestResultWarning (false);
 #endif
@@ -466,7 +466,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -482,7 +482,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -635,7 +635,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ingore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
