@@ -1782,8 +1782,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k19_16Pt1_
 // verified still broken in _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
-// untested  in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+// verified still broken in _MSC_VER_2k19_16Pt4_
+#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
 #endif
