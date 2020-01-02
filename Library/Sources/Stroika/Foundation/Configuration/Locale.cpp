@@ -67,7 +67,7 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
 
 /*
  ********************************************************************************
- *************************** Configuration::FindLocaleName **********************
+ ************************* Configuration::FindLocaleName ************************
  ********************************************************************************
  */
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
