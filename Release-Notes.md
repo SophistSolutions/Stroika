@@ -6,10 +6,13 @@ to be aware of when upgrading.
 
 # History
 
-## 2.1a3 {2020-01-02xxx}
+## 2.1a3 {2020-01-03xxx}
 
 * **TLDR**
   * Integrate with online CI systems TravisCI, and CircleCI
+  * Attempt at windows docker build support
+  * Small fixes to configuration code
+  * Small improvements to SSDP code
 
 * Online CI System Integration
   * CircleCI
