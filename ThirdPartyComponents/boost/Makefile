@@ -322,11 +322,11 @@ endif
 	@
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-	    $(ECHO) "${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
+	    ($(ECHO) "${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
 	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-	    $(ECHO) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
+	    $(ECHO) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT &&\
 	    ($(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild.OUT)
 endif
 	@
