@@ -35,11 +35,6 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 
 VERSION=1_72_0
 #VERSION=1_69_0
-
-#https://github.com/boostorg/build/issues/385 --- seems bug with boost_1_69_0/tools/build/src/tools\common.jam wait for next boost release to see if fixed
-#VERSION=1_70_0
-
-#VERSION=1_69_0
 #VERSION=1_68_0
 #VERSION=1_67_0_rc2
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
@@ -171,6 +166,15 @@ else
 B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
 endif
 
+ScriptsLibPath=$(shell realpath ../../ScriptsLib)
+
+ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+CXX:= $(shell cygpath -w "$(CXX)")
+B2FullPath:= $(shell cygpath -w "$(B2FullPath)")
+endif
+
+
+
 bootstrapIfNeeded_:	$(B2FullPath)
 
 $(B2FullPath):
@@ -180,8 +184,8 @@ bootstrap_:
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP.OUT"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($$SL/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($$SL/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
@@ -297,6 +301,7 @@ endif
 B2_CONFIGURATION_ARGS +=	$(JOBS_FLAG)
 
 
+
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Config+Build; see ${OUTPUT_WORKDIR_PRETTYNAME}ConfigureAndBuild.OUT"` "..."
 	@
@@ -309,15 +314,15 @@ endif
 	@
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
-	@echo 'using ${TOOLSET_NAME} : $(ARCH) : "${CXX}" : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
+	@$(ECHO) 'using ${TOOLSET_NAME} : $(ARCH) : "${CXX}" : <cflags>${CFLAGS} <cxxflags>${CXXFLAGS} <linkflags>${LDFLAGS} ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
 	@
 	@#
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
-	@#
-	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		cd  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-		(echo $(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT) && \
-		(sh -c "$(B2FullPath) $$CFA install >> ConfigureAndBuild.OUT")
+	@#(above comment maybe obsolete as of 2020-01-03)
+	@
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
+	    $(ECHO) (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
+	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT)
 	@
 	@#
 	@#NOT sure why this is needed: why boost doesnt do soemthing similar automatically?
