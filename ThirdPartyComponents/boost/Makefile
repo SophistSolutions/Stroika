@@ -321,7 +321,7 @@ endif
 	@#(above comment maybe obsolete as of 2020-01-03)
 	@
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-	    $(ECHO) (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
+	    $(ECHO) "${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
 	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT)
 	@
 	@#
