@@ -320,9 +320,15 @@ endif
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
 	@#(above comment maybe obsolete as of 2020-01-03)
 	@
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	    $(ECHO) "${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
 	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT)
+else
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
+	    $(ECHO) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
+	    ($(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild.OUT)
+endif
 	@
 	@#
 	@#NOT sure why this is needed: why boost doesnt do soemthing similar automatically?
