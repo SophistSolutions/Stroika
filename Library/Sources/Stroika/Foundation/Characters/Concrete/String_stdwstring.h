@@ -13,9 +13,9 @@
  *
  *
  * TODO:
- *      @todo   Do String_stdwstring() � as impl optimized to return std::wstring() a lot � saving that impl internally.
+ *      @todo   Do String_stdwstring() as impl optimized to return std::wstring() a lot saving that impl internally.
  *              Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
- *              (what about �into no-malloc semantics � I guess taken care of perhaps by this? Maybe not� THINKOUT �
+ *              (what about into no-malloc semantics; I guess taken care of perhaps by this? Maybe not - THINKOUT
  *              but pretty sure we want some sort of String_stdwstring().
  *
  *      @todo   Be sure can move-semantics into and out of String_stdwstring() - so can go back and forth between

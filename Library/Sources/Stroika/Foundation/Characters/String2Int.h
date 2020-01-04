@@ -13,7 +13,7 @@
  *      @todo   Add Int2String () module? Like Float2String, and this String2Int?
  *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
- *              AND SIMILARPT FOR hexString2Int. And for btoh � probably rewrite to use strtoul/strtol etc
+ *              AND SIMILARPT FOR hexString2Int. And for both - probably rewrite to use strtoul/strtol etc
  *
  *      @todo   Same changes to HexString2Int() as we did with String2Int() - template on return value.
  *              Or maybe get rid of HexString2Int () - and just have optional radix param?

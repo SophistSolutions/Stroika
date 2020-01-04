@@ -335,11 +335,7 @@ void StdColorPopupHelper::DoMenuAppends ()
     AppendMenuString (Led_SDK_TCHAROF ("Fuchsia"));
     AppendMenuString (Led_SDK_TCHAROF ("Aqua"));
     AppendMenuString (Led_SDK_TCHAROF ("White"));
-#if qPlatform_MacOS
-    AppendMenuString (Led_SDK_TCHAROF ("Other�"));
-#else
     AppendMenuString (Led_SDK_TCHAROF ("Other..."));
-#endif
 }
 #endif
 

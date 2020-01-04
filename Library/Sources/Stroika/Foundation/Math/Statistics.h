@@ -18,14 +18,14 @@
  *
  *      @todo   Consider something like  typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type for RESULT_TYPE
  *
- *      @todo   Math statuiscs utilities:
+ *      @todo   Math statistics utilities:
  *              Mean()
  *              Mode()
  *              Median()
- *          If random-accessable iterators, (array etc) � use
+ *          If random-accessable iterators, (array etc), use
  *          http://en.cppreference.com/w/cpp/algorithm/nth_element
  *          else copy to vector<> and then use nth_element?
- *          Just need something quickie�
+ *          Just need something quickie
  *
  *          Use std::nth_element from <algorithm> which is O(N):
  *          nth_element(a, a + size / 2, a + size);

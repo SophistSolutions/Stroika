@@ -22,7 +22,7 @@
  *                  eWCharT             =   eWChar
  *
  *              CHANGE DEFAULT TO NOT WITH BOM..
- *              (I�m NOT SURE ABOUT THIS CHANGE)
+ *              (I'm NOT SURE ABOUT THIS CHANGE)
  *              Probably REPLACE the 'Format' stuff with the same sort of parameters we passed to our older code converison code,
  *              either a locale, or a code page, and a separate overload with flags for BOM.
  *

@@ -24,7 +24,7 @@
  *              Stroika-string is just better? Maybe leave - but review.
  *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
- *              AND SIMILARPT FOR hexString2Int. And for btoh � probably rewrite to use strtoul/strtol etc
+ *              AND SIMILARPT FOR hexString2Int. And for both - probably rewrite to use strtoul/strtol etc
  *
  *      @todo   Same changes to HexString2Int() as we did with String2Int()
  *

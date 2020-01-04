@@ -67,7 +67,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         * Only �schemeAndAuthority looked at from (optional) hint.
+         * Only schemeAndAuthority is looked at from (optional) hint.
          *
          * If timeout allocating connection (because all busy/in use), 
          *      throw TimeoutException

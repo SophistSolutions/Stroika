@@ -33,11 +33,11 @@
  *
  *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
  *              Same format
- *              That doesn�t use std::locale()
+ *              That doesn't use std::locale()
  *              En.cppreference.com/w/cpp/io/manip/get_time
- *              istringstream xxx (�2011-feb��)
- *              ss.imbue(std::locale() (�de-DE�));
- *              ss >> std::get_time(&t, �%FT%T%z�)
+ *              istringstream xxx ('2011-feb')
+ *              ss.imbue(std::locale() ('de-DE'));
+ *              ss >> std::get_time(&t, '%FT%T%z')
  *
  *      @todo   Locale based parsing code seems quite poor. Haven't really evaluated locale-based
  *              print code (but I'm not optimistic). I'm not sure if I have it wrong, or if it just
@@ -47,7 +47,7 @@
  *              looks terrible - military format - full zero precision - even if not needed?).
  *              MAYBE try %EX is the locale's alternative time representation.
  *
- *      @todo   (minor) Consider if DateTime stuff should cache locale{} in some methods (static) �
+ *      @todo   (minor) Consider if DateTime stuff should cache locale{} in some methods (static);
  *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
  *              locking to bump refcount?
  *

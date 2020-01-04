@@ -17,9 +17,6 @@
 /**
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- *
- * TODO:
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer {

@@ -76,7 +76,7 @@
  *
  *      @todo   Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
  *          o   Number of seconds. Anything less than that number is truncated.
- *          o   So .001 �precision� means show 3.44444 as 3.444 and 60 means show 67 seconds as �one minute�
+ *          o   So .001 'precision' means show 3.44444 as 3.444 and 60 means show 67 seconds as 'one minute'
  *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentainl values?
  *
  *      @todo   template    <typename   DURATION_REP, typename DURATION_PERIOD>
@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Time {
      *
      *  Note that a Duration may be negative.
      *
-     *  It is best to logically think of Duration as a number of seconds (perhaps lossily) �
+     *  It is best to logically think of Duration as a number of seconds (perhaps lossily)
      *  since for comparisons that's how things are normalized. #days etc are dumbed down
      *  to number of seconds for comparison sakes.
      *
