@@ -6,7 +6,7 @@ to be aware of when upgrading.
 
 # History
 
-## 2.1a3 {2020-01-03xxx}
+## 2.1a3 {2020-01-04}
 
 * **TLDR**
   * Integrate with online CI systems TravisCI, and CircleCI
@@ -22,7 +22,7 @@ to be aware of when upgrading.
     * Got Linux builds working (moderately) - a few configurations. Not great. Not full regtests (like no valgrind). MacOS and Windows not working, but started scripting them.
 
 * Bug defines
-  * # if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500 check for
+  * if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500 check for
     qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy     
     and change .travis.yml macos build back to setting  -mmacosx-version-min=10.15
     
@@ -43,7 +43,7 @@ to be aware of when upgrading.
   * support vs2k19 16.4.2
 
 * Docker based builds
-  * start make target for windows docker images
+  * start work on windows docker images
 
 * Foundation::Debug
   * https://stroika.atlassian.net/browse/STK-706 assertions to help debug/trace the source issue
@@ -68,6 +68,7 @@ to be aware of when upgrading.
 
 * ThirdPartyComponents
   * boost 1.72.0
+    * and had to cleanup/fix makefile so we built boost with the correct/configured version of MSVC (fixing issue about link error from mixing compilers)
   * libcurl 7.67.0
 
 ----
