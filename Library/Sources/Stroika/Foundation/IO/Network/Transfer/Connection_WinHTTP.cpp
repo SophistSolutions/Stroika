@@ -252,7 +252,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
     String useHeaderStrBuf;
     {
         for (auto i = useHeadersMap.begin (); i != useHeadersMap.end (); ++i) {
-            useHeaderStrBuf += i->fKey + String_Constant (L": ") + i->fValue + String_Constant (L"\r\n");
+            useHeaderStrBuf += i->fKey + L": "sv + i->fValue + L"\r\n"sv;
         }
     }
 
@@ -481,7 +481,7 @@ RetryWithAuth:
         }
 
         if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost () or not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()) {
-            Execution::Throw (Execution::RuntimeErrorException (L"Cannot validate TLS without a host name"));
+            Execution::Throw (Execution::RuntimeErrorException (L"Cannot validate TLS without a host name"sv));
         }
         auto equalsComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
         if (not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), resultSSLInfo.fSubjectCommonName) and
@@ -553,7 +553,7 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
     RequireNotNull (fSessionHandle_);
     if (fConnectionHandle_ == nullptr) {
         if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost ()) {
-            Execution::Throw (Execution::RuntimeErrorException (L"Cannot connect without a host"));
+            Execution::Throw (Execution::RuntimeErrorException (L"Cannot connect without a host"sv));
         }
         // NOT SURE - for IPv6 address - if we want to pass encoded value here?
         fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (*fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->AsEncoded ().c_str (), fURL_.GetPortValue (), 0));
