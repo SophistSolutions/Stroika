@@ -68,6 +68,21 @@ namespace {
 
 /*
  ********************************************************************************
+ ********************** NeighborsMonitor::Neighbor ******************************
+ ********************************************************************************
+ */
+String NeighborsMonitor::Neighbor::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"fInternetAddress:" + Characters::ToString (fInternetAddress) + L",";
+    sb += L"fHardwareAddress:" + Characters::ToString (fHardwareAddress) + L",";
+    sb += L"}";
+    return sb.str ();
+}
+
+/*
+ ********************************************************************************
  ******************************** NeighborsMonitor ******************************
  ********************************************************************************
  */

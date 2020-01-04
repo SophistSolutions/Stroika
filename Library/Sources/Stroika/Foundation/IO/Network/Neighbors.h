@@ -35,6 +35,12 @@ namespace Stroika::Foundation::IO::Network {
         struct Neighbor {
             InternetAddress fInternetAddress;
             String          fHardwareAddress;
+
+        public:
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
         };
 
     public:
