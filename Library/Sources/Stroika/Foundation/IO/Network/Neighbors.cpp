@@ -37,7 +37,11 @@ namespace {
     {
         Collection<Neighbor> result;
         using std::byte;
-        ProcessRunner                    pr (L"arp -a");
+#if qPlatform_POSIX
+        ProcessRunner pr (L"arp -an"); // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
+#elif qPlatform_Windows
+        ProcessRunner pr (L"arp -a"); // -a means 'BSD-style output'
+#endif
         Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
         pr.SetStdOut (useStdOut);
         pr.Run ();
@@ -49,7 +53,17 @@ namespace {
             if (s.length () >= 4) {
                 // raspberrypi.34ChurchStreet.sophists.com (192.168.244.32) at b8:27:eb:cc:c7:80 [ether] on enp0s31f6
                 // ? (192.168.244.173) at b8:3e:59:88:71:06 [ether] on enp0s31f6
-                if (s[1].StartsWith (L"(") and s[1].EndsWith (L")")) {
+                //
+                // ? (192.168.244.70) at 50:dc:e7:7c:76:a0 [ether] on enp0s31f6
+                // ? (192.168.244.152) at <incomplete> on enp0s31f6
+                // ? (192.168.244.210) at <incomplete> on enp0s31f6
+                // ? (192.168.244.137) at <incomplete> on enp0s31f6
+                // ? (192.168.244.126) at 00:1a:62:04:0a:b1 [ether] on enp0s31f6
+                //
+                // According to https://unix.stackexchange.com/questions/192313/how-do-you-clear-the-arp-cache-on-linux
+                // 'incomplete' entries mean about to be removed from the ARP table (or mostly removed).
+                //
+                if (s[1].StartsWith (L"(") and s[1].EndsWith (L")") and not s[3].Contains("incomplete")) {
                     result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3]};
                 }
             }
