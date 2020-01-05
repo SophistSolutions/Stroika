@@ -35,6 +35,7 @@ namespace Stroika::Foundation::IO::Network {
         struct Neighbor {
             InternetAddress fInternetAddress;
             String          fHardwareAddress;
+            String          fInterfaceID; // SEE IO::Network::fInternalInterfaceID
 
         public:
             /**

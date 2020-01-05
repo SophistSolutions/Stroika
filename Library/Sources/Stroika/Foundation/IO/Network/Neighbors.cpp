@@ -45,7 +45,10 @@ namespace {
         Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
         pr.SetStdOut (useStdOut);
         pr.Run ();
-        String                   out;
+        String out;
+#if qPlatform_Windows
+        String curInterface;
+#endif
         Streams::TextReader::Ptr stdOut = Streams::TextReader::New (useStdOut);
         for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
 #if qPlatform_POSIX
@@ -67,14 +70,25 @@ namespace {
                     if (not includePurgedEntries and s[3].Contains ("incomplete")) {
                         continue;
                     }
-                    result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3]};
+                    String interfaceID;
+                    size_t l = s.length ();
+                    if (l >= 6 and s[l - 2] == L"on") {
+                        interfaceID = s[l - 1];
+                    }
+                    result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3], interfaceID};
                 }
             }
 #elif qPlatform_Windows
+            if (i.StartsWith (L"Interface:")) {
+                Sequence<String> s = i.Tokenize ();
+                if (s.length () >= 2) {
+                    curInterface = s[1];
+                }
+            }
             if (i.StartsWith (L" ")) {
                 Sequence<String> s = i.Tokenize ();
                 if (s.length () >= 3 and (s[2] == L"static" or s[2] == L"dynamic")) {
-                    result += Neighbor{InternetAddress{s[0]}, s[1]};
+                    result += Neighbor{InternetAddress{s[0]}, s[1], curInterface};
                 }
             }
 #endif
@@ -113,7 +127,7 @@ namespace {
             if (String2Int (line[2]) == 0) {
                 continue; // I think this means disabled item
             }
-            result += Neighbor{InternetAddress{line[0]}, s[3]};
+            result += Neighbor{InternetAddress{line[0]}, s[3], s[5]};
         }
         return result;
     }
@@ -131,6 +145,7 @@ String NeighborsMonitor::Neighbor::ToString () const
     sb += L"{";
     sb += L"fInternetAddress:" + Characters::ToString (fInternetAddress) + L",";
     sb += L"fHardwareAddress:" + Characters::ToString (fHardwareAddress) + L",";
+    sb += L"fInterfaceID:" + Characters::ToString (fInterfaceID) + L",";
     sb += L"}";
     return sb.str ();
 }
