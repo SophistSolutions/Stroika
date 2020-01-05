@@ -33,14 +33,14 @@ using Neighbor = NeighborsMonitor::Neighbor;
 // @todo perhaps add ability - background thread - to monitor, and always report up to date list?
 //
 namespace {
-    Collection<Neighbor> ArpDashA_ ()
+    Collection<Neighbor> ArpDashA_ (bool includePurgedEntries)
     {
         Collection<Neighbor> result;
         using std::byte;
 #if qPlatform_POSIX
         ProcessRunner pr (L"arp -an"); // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
 #elif qPlatform_Windows
-        ProcessRunner pr (L"arp -a"); // -a means 'BSD-style output'
+        ProcessRunner pr (includePurgedEntries ? L"arp -av" : L"arp -a"); // -a means 'BSD-style output', -v verbose(show invalid items)
 #endif
         Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
         pr.SetStdOut (useStdOut);
@@ -63,7 +63,10 @@ namespace {
                 // According to https://unix.stackexchange.com/questions/192313/how-do-you-clear-the-arp-cache-on-linux
                 // 'incomplete' entries mean about to be removed from the ARP table (or mostly removed).
                 //
-                if (s[1].StartsWith (L"(") and s[1].EndsWith (L")") and not s[3].Contains("incomplete")) {
+                if (s[1].StartsWith (L"(") and s[1].EndsWith (L")")) {
+                    if (not includePurgedEntries and s[3].Contains ("incomplete")) {
+                        continue;
+                    }
                     result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3]};
                 }
             }
@@ -108,7 +111,7 @@ public:
     }
     Collection<NeighborsMonitor::Neighbor> GetNeighbors () const
     {
-        return ArpDashA_ ();
+        return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false));
     }
     Options fOptions_;
 };

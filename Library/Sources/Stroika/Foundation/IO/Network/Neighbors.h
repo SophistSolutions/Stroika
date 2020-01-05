@@ -49,6 +49,7 @@ namespace Stroika::Foundation::IO::Network {
         struct Options {
             enum class Strategy {
                 eArpProgram,
+                eProc
             };
             optional<Containers::Set<Strategy>> fStategies;
             optional<Time::Duration>            fMaxLatnecy; // if monitoring in the background (e.g. in a thread) this configures polling frequency but maybe ignored)
@@ -56,6 +57,10 @@ namespace Stroika::Foundation::IO::Network {
             // if true, assure results always up to date (as if by polling in the background)
             // If false, minimize resource usage, and just fetch data on GetNeighbors call
             optional<bool> fMonitor;
+
+            // sometimes entries will remain in arp table after they have expired (just with address deleted).
+            // Probably best to not include those
+            optional<bool> fIncludePurgedEntries;
         };
 
     public:
