@@ -163,7 +163,7 @@ String NeighborsMonitor::Neighbor::ToString () const
     sb += L"{";
     sb += L"fInternetAddress:" + Characters::ToString (fInternetAddress) + L",";
     sb += L"fHardwareAddress:" + Characters::ToString (fHardwareAddress) + L",";
-    sb += L"fInterfaceID:" + Characters::ToString (fInterfaceID) + L",";
+    sb += L"fInterfaceID:" + Characters::ToString (fInterfaceID);
     sb += L"}";
     return sb.str ();
 }
