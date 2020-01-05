@@ -139,7 +139,7 @@ namespace {
                 readFirstLine = true;
                 continue;
             }
-            if (String2Int (line[2]) == 0) {
+            if (line[2] == L"0x0") {
                 continue; // I think this means disabled item
             }
             result += Neighbor{InternetAddress{line[0]}, line[3], line[5]};
