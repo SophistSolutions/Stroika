@@ -49,7 +49,9 @@ namespace Stroika::Foundation::IO::Network {
         struct Options {
             enum class Strategy {
                 eArpProgram,
-                eProc
+#if qPlatform_Linux
+                eProcNetArp,
+#endif
             };
             optional<Containers::Set<Strategy>> fStategies;
             optional<Time::Duration>            fMaxLatnecy; // if monitoring in the background (e.g. in a thread) this configures polling frequency but maybe ignored)

@@ -83,6 +83,43 @@ namespace {
     }
 }
 
+#if qPlatform_Linux
+namespace {
+    Collection<Neighbor> ProcNetArp_ (bool includePurgedEntries)
+    {
+        Collection<Neighbor> result;
+        using Characters::String2Int;
+        using IO::FileSystem::FileInputStream;
+        using Streams::TextReader;
+        DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
+        const String                                           kProcFileName_{L"/proc/net/arp"sv};
+        /*
+            IP address       HW type     Flags       HW address            Mask     Device
+            192.168.244.194  0x1         0x0         00:00:00:00:00:00     *        enp0s31f6
+            192.168.244.160  0x1         0x0         00:00:00:00:00:00     *        enp0s31f6
+            192.168.244.5    0x1         0x2         04:a1:51:cd:fc:4c     *        enp0s31f6
+            192.168.244.235  0x1         0x2         64:1c:ae:2a:95:7d     *        enp0s31f6
+        */
+        bool readFirstLine = false;
+        // Note - /procfs files always unseekable
+        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"in ProcNetArp_ capture_ line=%s", line.c_str ());
+#endif
+            if (not readFirstLine) {
+                readFirstLine = true;
+                continue;
+            }
+            if (String2Int (line[2]) == 0) {
+                continue; // I think this means disabled item
+            }
+            result += Neighbor{InternetAddress{line[0]}, s[3]};
+        }
+        return result;
+    }
+}
+#endif
+
 /*
  ********************************************************************************
  ********************** NeighborsMonitor::Neighbor ******************************
@@ -106,14 +143,47 @@ String NeighborsMonitor::Neighbor::ToString () const
 class NeighborsMonitor::Rep_ {
 public:
     Rep_ (const Options& o)
-        : fOptions_{o}
+        : fOptions_
     {
+        o
+    }
+#if qPlatform_Linux
+    , fUseStrategy_
+    {
+        Options::Strategy::eProcNetArp
+    }
+#else
+    , fUseStrategy_
+    {
+        Options::Strategy::eArpProgram
+    }
+#endif
+    {
+        if (o.fStategies.has_value () and o.fStategies->Contains (Options::Strategy::eArpProgram)) {
+            fUseStrategy_ = Options::Strategy::eArpProgram;
+        }
+#if qPlatform_Linux
+        if (o.fStategies.has_value () and o.fStategies->Contains (Options::Strategy::eProcNetArp)) {
+            fUseStrategy_ = Options::Strategy::eProcNetArp;
+        }
+#endif
     }
     Collection<NeighborsMonitor::Neighbor> GetNeighbors () const
     {
-        return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false));
+        switch (fUseStrategy_) {
+            case Options::Strategy::eArpProgram:
+                return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false));
+#if qPlatform_Linux
+            case Options::Strategy::eProcNetArp:
+                return ProcNetArp_ (fOptions_.fIncludePurgedEntries.value_or (false));
+#endif
+            default:
+                Assert (false);
+                return Collection<NeighborsMonitor::Neighbor>{};
+        }
     }
-    Options fOptions_;
+    Options           fOptions_;
+    Options::Strategy fUseStrategy_;
 };
 
 NeighborsMonitor::NeighborsMonitor (const Options& options)
