@@ -130,7 +130,7 @@ namespace {
         // Note - /procfs files always unseekable
         for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"in ProcNetArp_ capture_ line=%s", line.c_str ());
+            DbgTrace (L"in ProcNetArp_ capture_ line=%s", Characters::ToString (line).c_str ());
 #endif
             if (not readFirstLine) {
                 readFirstLine = true;
