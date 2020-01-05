@@ -102,6 +102,9 @@ namespace {
             }
 #endif
         }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("returning: %s", Characters::ToString (result).c_str ());
+#endif
         return result;
     }
 }
@@ -111,7 +114,7 @@ namespace {
     Collection<Neighbor> ProcNetArp_ (bool includePurgedEntries)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ProcNetArp_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
 #endif
         Collection<Neighbor> result;
         using Characters::String2Int;
@@ -141,6 +144,9 @@ namespace {
             }
             result += Neighbor{InternetAddress{line[0]}, line[3], line[5]};
         }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("returning: %s", Characters::ToString (result).c_str ());
+#endif
         return result;
     }
 }
