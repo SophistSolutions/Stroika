@@ -4,12 +4,18 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/Format.h"
+#include "../../Characters/String2Int.h"
+#include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/ProcessRunner.h"
+#include "../../IO/FileSystem/FileInputStream.h"
 #include "../../Streams/MemoryStream.h"
 #include "../../Streams/TextReader.h"
 
 #include "Neighbors.h"
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -35,6 +41,9 @@ using Neighbor = NeighborsMonitor::Neighbor;
 namespace {
     Collection<Neighbor> ArpDashA_ (bool includePurgedEntries)
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
+#endif
         Collection<Neighbor> result;
         using std::byte;
 #if qPlatform_POSIX
@@ -67,7 +76,7 @@ namespace {
                 // 'incomplete' entries mean about to be removed from the ARP table (or mostly removed).
                 //
                 if (s[1].StartsWith (L"(") and s[1].EndsWith (L")")) {
-                    if (not includePurgedEntries and s[3].Contains ("incomplete")) {
+                    if (not includePurgedEntries and s[3].Contains (L"incomplete")) {
                         continue;
                     }
                     String interfaceID;
@@ -101,6 +110,9 @@ namespace {
 namespace {
     Collection<Neighbor> ProcNetArp_ (bool includePurgedEntries)
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
+#endif
         Collection<Neighbor> result;
         using Characters::String2Int;
         using IO::FileSystem::FileInputStream;
@@ -116,7 +128,7 @@ namespace {
         */
         bool readFirstLine = false;
         // Note - /procfs files always unseekable
-        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
+        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in ProcNetArp_ capture_ line=%s", line.c_str ());
 #endif
@@ -127,7 +139,7 @@ namespace {
             if (String2Int (line[2]) == 0) {
                 continue; // I think this means disabled item
             }
-            result += Neighbor{InternetAddress{line[0]}, s[3], s[5]};
+            result += Neighbor{InternetAddress{line[0]}, line[3], line[5]};
         }
         return result;
     }
