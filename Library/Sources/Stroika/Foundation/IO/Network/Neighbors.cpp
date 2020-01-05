@@ -103,7 +103,7 @@ namespace {
 #endif
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("returning: %s", Characters::ToString (result).c_str ());
+        DbgTrace (L"returning: %s", Characters::ToString (result).c_str ());
 #endif
         return result;
     }
@@ -145,7 +145,7 @@ namespace {
             result += Neighbor{InternetAddress{line[0]}, line[3], line[5]};
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("returning: %s", Characters::ToString (result).c_str ());
+        DbgTrace (L"returning: %s", Characters::ToString (result).c_str ());
 #endif
         return result;
     }
