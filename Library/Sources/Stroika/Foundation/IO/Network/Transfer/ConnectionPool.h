@@ -27,8 +27,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  \par Example Usage
      *      \code
      *          ConnectionPool  connectionPool {ConnectionPool::Options{3}};
-     *          auto&&             connection = connectionPool.New (URI{L"http://myexternalip.com/});
-     *          auto&&             response = connection.GET (L"http://myexternalip.com/raw");
+     *          auto&&          connection = connectionPool.New (URI{L"http://myexternalip.com/});
+     *          auto&&          response = connection.GET (L"http://myexternalip.com/raw");
      *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
      *      \endcode
      */
