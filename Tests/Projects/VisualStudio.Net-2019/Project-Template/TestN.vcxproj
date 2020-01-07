@@ -10,10 +10,6 @@
       <Configuration>Debug-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-DbgMemLeaks-U-32|Win32">
-      <Configuration>Release-DbgMemLeaks-U-32</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-Logging-U-32|Win32">
       <Configuration>Release-Logging-U-32</Configuration>
       <Platform>Win32</Platform>

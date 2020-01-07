@@ -9,10 +9,6 @@
       <Configuration>Debug-U-64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-DbgMemLeaks-U-32|Win32">
-      <Configuration>Release-DbgMemLeaks-U-32</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release-Logging-U-32|Win32">
       <Configuration>Release-Logging-U-32</Configuration>
       <Platform>Win32</Platform>
@@ -50,12 +46,6 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
@@ -81,12 +71,6 @@
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -149,9 +133,6 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -165,9 +146,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'" Label="PropertySheets">
@@ -220,37 +198,31 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-AppSettings\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-AppSettings\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">false</LinkIncremental>
@@ -472,18 +444,6 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;qAllowBlockAllocation=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
     <Link>
       <AdditionalDependencies>urlmon.lib;rpcrt4.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -638,18 +598,6 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\..\Library\Sources\; $(ProjectDir)..\..\..\..\Builds\$(Configuration)\ThirdPartyComponents\include\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-    </ClCompile>
     <Link>
       <AdditionalDependencies>urlmon.lib;rpcrt4.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -769,7 +717,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -778,7 +725,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28407.52
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.960
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2019\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -3117,7 +3117,6 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-U-32|Unspecified = Debug-U-32|Unspecified
 		Debug-U-64|Unspecified = Debug-U-64|Unspecified
-		Release-DbgMemLeaks-U-32|Unspecified = Release-DbgMemLeaks-U-32|Unspecified
 		Release-Logging-U-32|Unspecified = Release-Logging-U-32|Unspecified
 		Release-Logging-U-64|Unspecified = Release-Logging-U-64|Unspecified
 		Release-U-32|Unspecified = Release-U-32|Unspecified
@@ -3126,32 +3125,28 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-64|Unspecified.Build.0 = Release-Logging-U-64|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-32|Unspecified.ActiveCfg = Release-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-32|Unspecified.Build.0 = Release-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-64|Unspecified.ActiveCfg = Release-U-64|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-64|Unspecified.Build.0 = Release-U-64|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-64|Unspecified.Build.0 = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Unspecified.Build.0 = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-64|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-64|Unspecified.Build.0 = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-32|Unspecified.Build.0 = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-64|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-U-64|Unspecified.Build.0 = Debug-U-32|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-64|Unspecified.Build.0 = Release-Logging-U-64|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-32|Unspecified.ActiveCfg = Release-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-32|Unspecified.Build.0 = Release-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-64|Unspecified.ActiveCfg = Release-U-64|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-64|Unspecified.Build.0 = Release-U-64|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-64|Unspecified.Build.0 = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-32|Unspecified.Build.0 = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-64|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-64|Unspecified.Build.0 = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-32|Unspecified.Build.0 = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-64|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-U-64|Unspecified.Build.0 = Debug-U-32|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

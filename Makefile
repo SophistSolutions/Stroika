@@ -376,7 +376,6 @@ default-configurations:
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
 		./configure Debug-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-debug-flags;\
 		./configure Debug-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-debug-flags;\
-		./configure Release-DbgMemLeaks-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags;\
 		./configure Release-Logging-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags --trace2file enable;\
 		./configure Release-Logging-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-release-flags --trace2file enable;\
 		./configure Release-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags;\

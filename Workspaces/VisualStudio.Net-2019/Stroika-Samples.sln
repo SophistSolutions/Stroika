@@ -109,7 +109,6 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-U-32|Unspecified = Debug-U-32|Unspecified
 		Debug-U-64|Unspecified = Debug-U-64|Unspecified
-		Release-DbgMemLeaks-U-32|Unspecified = Release-DbgMemLeaks-U-32|Unspecified
 		Release-Logging-U-32|Unspecified = Release-Logging-U-32|Unspecified
 		Release-Logging-U-64|Unspecified = Release-Logging-U-64|Unspecified
 		Release-U-32|Unspecified = Release-U-32|Unspecified
@@ -120,8 +119,6 @@ Global
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -134,8 +131,6 @@ Global
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -148,8 +143,6 @@ Global
 		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{CB990386-9FDE-4FBA-9B1F-8A373322E978}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -162,8 +155,6 @@ Global
 		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{5BD6F3C4-C037-43F4-9849-5751D35B8A76}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -176,8 +167,6 @@ Global
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -190,8 +179,6 @@ Global
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -203,7 +190,6 @@ Global
 		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Debug-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
 		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-U-64|Win32
 		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-U-32|Win32
 		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-U-32|Win32
 		{46038101-1D06-45D5-B0ED-5AD62E15AADD}.Release-U-32|Unspecified.ActiveCfg = Release-U-32|Win32
@@ -212,8 +198,6 @@ Global
 		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{8EA91AE8-5DE9-2A75-8211-18478ED91741}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -226,8 +210,6 @@ Global
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-32|Unspecified.Deploy.0 = Release-Logging-U-32|Win32
@@ -241,8 +223,6 @@ Global
 		{524A1EE0-309A-415C-0445-AF403B339C4B}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{524A1EE0-309A-415C-0445-AF403B339C4B}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{524A1EE0-309A-415C-0445-AF403B339C4B}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{524A1EE0-309A-415C-0445-AF403B339C4B}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{524A1EE0-309A-415C-0445-AF403B339C4B}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{524A1EE0-309A-415C-0445-AF403B339C4B}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{524A1EE0-309A-415C-0445-AF403B339C4B}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{524A1EE0-309A-415C-0445-AF403B339C4B}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -255,8 +235,6 @@ Global
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-Logging-U-32|Unspecified.Deploy.0 = Release-Logging-U-32|Win32
@@ -270,8 +248,6 @@ Global
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -284,8 +260,6 @@ Global
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -298,8 +272,6 @@ Global
 		{FA8668EC-9366-4862-85E2-67D2F686B937}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{FA8668EC-9366-4862-85E2-67D2F686B937}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{FA8668EC-9366-4862-85E2-67D2F686B937}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{FA8668EC-9366-4862-85E2-67D2F686B937}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{FA8668EC-9366-4862-85E2-67D2F686B937}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{FA8668EC-9366-4862-85E2-67D2F686B937}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{FA8668EC-9366-4862-85E2-67D2F686B937}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{FA8668EC-9366-4862-85E2-67D2F686B937}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -312,8 +284,6 @@ Global
 		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -326,8 +296,6 @@ Global
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -340,8 +308,6 @@ Global
 		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{709740B9-80FF-42D8-96A6-FE3A6A8F3AB4}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
@@ -354,8 +320,6 @@ Global
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
-		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-DbgMemLeaks-U-32|Unspecified.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
-		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-DbgMemLeaks-U-32|Unspecified.Build.0 = Release-DbgMemLeaks-U-32|Win32
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
