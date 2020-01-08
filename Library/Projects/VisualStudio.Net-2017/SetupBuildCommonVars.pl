@@ -82,6 +82,11 @@ sub fromCygPath_
 	return trim (`cygpath --mixed \"$arg\"`);
 }
 
+sub toExternallyUsedPath_
+{
+	my $arg = shift;
+	return trim (`cygpath --mixed \"$arg\"`);
+}
 
 
 
@@ -248,26 +253,26 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	if (index($activeConfigBits, "32") != -1) {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
-		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
-		$resEnv{"LD"} = toCygPath_ ($exe32Dir . "\\link");
-		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS"} = toExternallyUsedPath_ ($exe32Dir . "\\ml");
+		$resEnv{"CC"} = toExternallyUsedPath_ ($exe32Dir . "\\cl");
+		$resEnv{"LD"} = toExternallyUsedPath_ ($exe32Dir . "\\link");
+		$resEnv{"AR"} = toExternallyUsedPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
-		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");
-		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
-		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS"} = toExternallyUsedPath_ ($exe64Dir . "\\ml64");
+		$resEnv{"CC"} = toExternallyUsedPath_ ($exe64Dir . "\\cl");
+		$resEnv{"LD"} = toExternallyUsedPath_ ($exe64Dir . "\\link");
+		$resEnv{"AR"} = toExternallyUsedPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 
 	{
 		my $sdkPath = %resEnv{'WindowsSdkVerBinPath'};
 		$sdkPath = toCygPath_($sdkPath);
 		my $exeDir = "$sdkPath/x64/";
-		$resEnv{"MIDL"} = $exeDir . "midl";
-		$resEnv{"RC"} = $exeDir . "rc";
+		$resEnv{"MIDL"} = toExternallyUsedPath_ ($exeDir . "midl");
+		$resEnv{"RC"} = toExternallyUsedPath_ ($exeDir . "rc");
 	}
 
 	my $myOrigFullPath = $ENV{'PATH'};
@@ -315,6 +320,8 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$param_string.= "$ip";
 	}
 	$resEnv{"TOOLS_PATH_ADDITIONS"} = $param_string;
+	#todo must so similar but be careful about how to treat colon in paths.
+	#$resEnv{"TOOLS_PATH_ADDITIONS"} =`cygpath --unix --path \"$param_string\"`;
 
 	return %resEnv;
 }
