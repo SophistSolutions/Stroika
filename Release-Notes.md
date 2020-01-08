@@ -6,6 +6,29 @@ to be aware of when upgrading.
 
 # History
 
+## 2.1a4 {2020-01-08x}
+
+* **TLDR**
+  * lose support for Release-DbgMemLeaks-U-32 from vs2k projects
+  * IO::Network::NeighborsMonitor improvements
+
+* Build System
+  * predefined configurations
+    * lose support for Release-DbgMemLeaks-U-32 from vs2k project files and default-configurations
+  * deprecated WIN_CXX, , WIN_AS, WIN_CC, WIN_Linker, WIN_LIBTOOL: since now the non-WIN_prefix versions come out in unix mixed dos format c:/foo
+
+* Compiler versions
+  * support vs2k17 15.9.18
+  * support vs2k19 16.4.2
+
+* Foundation::IO
+  * Network::NeighborsMonitor
+    * Imporved ToString
+    * for IO/Network/Neighbors: on unix use arp -an (add -n), and skip incomplete entries (for now)
+    * support new IO/Network/Neighbors option fIncludePurgedEntries
+    * support Options::Strategy::eProcNetArp for NeighborsMonitor
+    * output InterafceID in ION::Network::Neighbors modules
+
 ## 2.1a3 {2020-01-04}
 
 * **TLDR**
