@@ -11,15 +11,22 @@ to be aware of when upgrading.
 * **TLDR**
   * lose support for Release-DbgMemLeaks-U-32 from vs2k projects
   * IO::Network::NeighborsMonitor improvements
+  * Added clang and ubuntu1910 builds to circleci
+  * fixed regression in 2.1a3 - which broke clang builds (boost build issue on linux)
 
 * Build System
   * predefined configurations
     * lose support for Release-DbgMemLeaks-U-32 from vs2k project files and default-configurations
   * deprecated WIN_CXX, , WIN_AS, WIN_CC, WIN_Linker, WIN_LIBTOOL: since now the non-WIN_prefix versions come out in unix mixed dos format c:/foo
+  * Added clang builds to circleci
+  * fixed regression in 2.1a3 - which broke clang builds (boost build issue on linux)
 
 * Compiler versions
   * support vs2k17 15.9.18
   * support vs2k19 16.4.2
+
+* ThirdPartyComponents
+  * libcurl 7.68.0
 
 * Foundation::IO
   * Network::NeighborsMonitor
