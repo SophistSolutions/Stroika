@@ -115,6 +115,32 @@ jobs:
     - store_test_results:
          path: ~/build-4-linux/test-results/run-tests-log.txt
 
+  basic-clang-8-builds-test-ubuntu1910:
+    docker:
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+    
+    working_directory: ~/build-4-linux
+    
+    steps:
+    - checkout
+    - run:
+        name: Configure
+        command: |
+          ./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+          ./configure clang++-8-release-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
+        - run:
+        name: Build
+        command: make all -j2
+    - run:
+         name: Run Tests
+         command: |
+            rm -rf test-results && mkdir -p test-results
+            pwd
+            ls -al
+            (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+    - store_test_results:
+         path: ~/build-4-linux/test-results/run-tests-log.txt
+
 
 
 workflows:
@@ -123,3 +149,4 @@ workflows:
     jobs:
       - basic-debug-builds-test-ubuntu1804
       - basic-debug-builds-test-ubuntu1910
+      - basic-clang-8-builds-test-ubuntu1910
