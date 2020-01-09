@@ -3,7 +3,6 @@ jobs:
   basic-debug-builds-test-ubuntu1804:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-      #- image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
     
     working_directory: ~/build-4-linux
     
