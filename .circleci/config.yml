@@ -18,55 +18,55 @@ jobs:
     - persist_to_workspace:
         root: .
         paths: .
-   - run:
-      name: Build
-      command: make samples -j2
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-Containers/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-Service/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
-      destination: Samples
-   - store_artifacts:
-      path: ~/build-4-linux/Builds/Debug/Samples-WebService/
-      destination: Samples
-   - run:
-      name: Build Tests
-      command: |
-         make CONFIGURATION=Debug tests -j2
-   - run:
-      name: Run Tests
-      command: |
-         rm -rf test-results && mkdir -p test-results
-         pwd
-         ls -al
-         (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
-   - store_test_results:
-      path: ~/build-4-linux/test-results/run-tests-log.txt
+    - run:
+         name: Build
+         command: make samples -j2
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-Containers/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-Service/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
+         destination: Samples
+    - store_artifacts:
+         path: ~/build-4-linux/Builds/Debug/Samples-WebService/
+         destination: Samples
+    - run:
+         name: Build Tests
+         command: |
+            make CONFIGURATION=Debug tests -j2
+    - run:
+         name: Run Tests
+         command: |
+            rm -rf test-results && mkdir -p test-results
+            pwd
+            ls -al
+            (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+    - store_test_results:
+         path: ~/build-4-linux/test-results/run-tests-log.txt
 
 
 
