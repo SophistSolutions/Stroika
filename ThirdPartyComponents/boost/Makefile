@@ -313,8 +313,13 @@ ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 endif
 	@
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
+	@#Note would probably be better to not use quotes around CFLAGS etc, then the boost configure file fails to read the full set of options properly.
+	@#I MAY need to break the <cxflags> etc lines into multple statements to avoid that. Docs not super clear.
+	@#see https://www.boost.org/doc/libs/1_66_0/doc/html/bbv2/overview.html
+	@#     If multiple of the same type of options are needed, they can be concatenated with quotes or have multiple instances of the option tag.
+	@#but note how this doesnt make clear about nested quotes as in quotes in the options themselves.
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
-	@$(ECHO) 'using ${TOOLSET_NAME} : $(ARCH) : "${CXX}" : <cflags>${CFLAGS} <cxxflags>${CXXFLAGS} <linkflags>${LDFLAGS} ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
+	@$(ECHO) 'using ${TOOLSET_NAME} : $(ARCH) : "${CXX}" : <cflags>"${CFLAGS}" <cxxflags>"${CXXFLAGS}" <linkflags>"${LDFLAGS}" ;' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/user-config.jam;
 	@
 	@#
 	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
