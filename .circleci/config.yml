@@ -1,9 +1,9 @@
 version: 2
 jobs:
-  build-library:
+  basic-debug-builds-test-ubuntu1804:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+      #- image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
     
     working_directory: ~/build-4-linux
     
@@ -18,85 +18,60 @@ jobs:
     - persist_to_workspace:
         root: .
         paths: .
-  
-  build-samples:
-    docker:
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+        - run:
+         name: Build
+         command: make samples -j2
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-Containers/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-Service/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
+      destination: Samples
+   - store_artifacts:
+      path: ~/build-4-linux/Builds/Debug/Samples-WebService/
+      destination: Samples
+   - run:
+      name: Build Tests
+      command: |
+         make CONFIGURATION=Debug tests -j2
+   - run:
+      name: Run Tests
+      command: |
+         rm -rf test-results && mkdir -p test-results
+         pwd
+         ls -al
+         (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+   - store_test_results:
+      path: ~/build-4-linux/test-results/run-tests-log.txt
 
-    working_directory: ~/build-4-linux
-
-    steps:
-    - attach_workspace:
-       at: ~/build-4-linux
-    - run:
-       name: Build
-       command: make samples -j2
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Containers/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Service/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
-       destination: Samples
-    - store_artifacts:
-       path: ~/build-4-linux/Builds/Debug/Samples-WebService/
-       destination: Samples
-
-  run-tests:
-    docker:
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-
-    working_directory: ~/build-4-linux
-
-    steps:
-      - attach_workspace:
-          at: ~/build-4-linux
-      - run:
-         name: Build Tests
-         command: |
-          make CONFIGURATION=Debug tests -j2
-      - run:
-         name: Run Tests
-         command: |
-          rm -rf test-results && mkdir -p test-results
-          pwd
-          ls -al
-          (make CONFIGURATION=Debug run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
-      - store_test_results:
-         path: ~/build-4-linux/test-results/run-tests-log.txt
 
 
 workflows:
   version: 2
-  build_and_test:
+  builds_and_tests:
     jobs:
-      - build-library
-      - build-samples:
-         requires:
-           - build-library
-      - run-tests:
-         requires:
-           - build-library
+      - basic-debug-builds-test-ubuntu1804
