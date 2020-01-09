@@ -18,9 +18,9 @@ jobs:
     - persist_to_workspace:
         root: .
         paths: .
-        - run:
-         name: Build
-         command: make samples -j2
+   - run:
+      name: Build
+      command: make samples -j2
    - store_artifacts:
       path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
       destination: Samples
