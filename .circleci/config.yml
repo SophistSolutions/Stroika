@@ -128,7 +128,7 @@ jobs:
         command: |
           ./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
           ./configure clang++-8-release-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-        - run:
+    - run:
         name: Build
         command: make all -j2
     - run:
