@@ -9,14 +9,14 @@ to be aware of when upgrading.
 ## 2.1a4 {2020-01-10}
 
 * **TLDR**
-  * lose support for Release-DbgMemLeaks-U-32 from vs2k projects
+  * lose support for configuration Release-DbgMemLeaks-U-32 from vs2k projects
   * IO::Network::NeighborsMonitor improvements
   * Added clang and ubuntu1910 builds to circleci
   * fixed regression in 2.1a3 - which broke clang builds (boost build issue on linux)
 
 * Build System
   * predefined configurations
-    * lose support for Release-DbgMemLeaks-U-32 from vs2k project files and default-configurations
+    * lose support for configuraiton Release-DbgMemLeaks-U-32 from vs2k project files and default-configurations
   * deprecated WIN_CXX, , WIN_AS, WIN_CC, WIN_Linker, WIN_LIBTOOL: since now the non-WIN_prefix versions come out in unix mixed dos format c:/foo
   * Added clang builds to circleci
   * fixed regression in 2.1a3 - which broke clang builds (boost build issue on linux)
@@ -35,6 +35,8 @@ to be aware of when upgrading.
     * support new IO/Network/Neighbors option fIncludePurgedEntries
     * support Options::Strategy::eProcNetArp for NeighborsMonitor
     * output InterafceID in ION::Network::Neighbors modules
+
+----
 
 ## 2.1a3 {2020-01-04}
 
