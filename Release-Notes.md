@@ -6,7 +6,7 @@ to be aware of when upgrading.
 
 # History
 
-## 2.1a4 {2020-01-08x}
+## 2.1a4 {2020-01-10}
 
 * **TLDR**
   * lose support for Release-DbgMemLeaks-U-32 from vs2k projects
