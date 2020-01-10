@@ -26,7 +26,7 @@ fi
 
 
 : ${RASPBERRYPI_REMOTE_MACHINE:=raspberrypi.local}
-: ${RASPBERRYPI_REMOTE_WITH_LOGIN:=lewis@$RASPBERRYPI_REMOTE_MACHINE}
+: ${RASPBERRYPI_REMOTE_WITH_LOGIN:=lewis@${RASPBERRYPI_REMOTE_MACHINE}}
 
 
 VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
@@ -45,7 +45,7 @@ if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
 fi
 
 
-ARM_TEST_MACHINE_AVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
+ARM_TEST_MACHINE_AVAIL=`(ping ${RASPBERRYPI_REMOTE_MACHINE} -c 4 2>/dev/null 1>/dev/null); echo $?`
 if [ $ARM_TEST_MACHINE_AVAIL -eq 0 ]; then
 	ARM_TEST_MACHINE_AVAIL=1
 else
