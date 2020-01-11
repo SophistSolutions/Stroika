@@ -79,8 +79,7 @@ sub	DoHelp_
 {
 	print("Usage:\n");
 	print("	ApplyConfiguration.pl OPTIONS where options can be:\n");
-	print("	    --force                      /* forces rebuild of the given configuration */\n");
-	print("	    --only-if-unconfigured       /* Opposite of --force - only rebuilds the configfiles if absent */\n");
+	print("	    --help       /* print this help */\n");
 	exit (0);
 }
 
@@ -528,7 +527,7 @@ sub WriteStroikaConfigMakeHeader
 			print (OUT "WIN_LIBTOOL=$tmp\n");
 		}
 		{
-			#Lib tool requires queer ARCH arguments (and probably Link) - so conert here
+			#Lib tool requires queer ARCH arguments (and probably Link) - so correct here
 			my $tmp = GetConfigurationParameter($activeConfiguration, "ARCH");
 			if ($tmp eq "x86_64") {
 				$tmp = "x64";
@@ -562,17 +561,17 @@ sub WriteStroikaConfigMakeHeader
 		{
 			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
 			my $tmp		=	trim (`cygpath --mixed --path "$LIBS_PATH"`);
-			print (OUT "WIN_LIBS_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
+			print (OUT "WIN_LIBS_PATH=$tmp \n");		#nb: space important if $tmp ends in backslash
 		}
 		{
 			my $INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
 			my $tmp		=	trim (`cygpath --mixed --path "$INCLUDES_PATH"`);
-			print (OUT "WIN_INCLUDES_PATH=$tmp \n");		#nb: space importnat if $tmp ends in backslash
+			print (OUT "WIN_INCLUDES_PATH=$tmp \n");		#nb: space important if $tmp ends in backslash
 		}
 		#{
 		#	my $TOOLS_PATH_ADDITIONS = GetConfigurationParameter($activeConfiguration, "TOOLS_PATH_ADDITIONS");
 		#	my $tmp		=	trim (`cygpath --mixed --path "$TOOLS_PATH_ADDITIONS"`);
-		#	print (OUT "WIN_TOOLS_PATH_ADDITIONS=$tmp \n");		#nb: space importnat if $tmp ends in backslash
+		#	print (OUT "WIN_TOOLS_PATH_ADDITIONS=$tmp \n");		#nb: space important if $tmp ends in backslash
 		#}
 		{
 			# Not a great way to test, but hopefully adequate for now
