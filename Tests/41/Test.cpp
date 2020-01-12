@@ -456,6 +456,7 @@ namespace {
         Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
         for (Interface iFace : Network::GetInterfaces ()) {
             Debug::TraceContextBumper trcCtx1 ("iface");
+            DbgTrace (L"interface-full-details: %s", Characters::ToString (iFace).c_str ());
             DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
 #if qPlatform_POSIX
             DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());
@@ -467,20 +468,8 @@ namespace {
             if (iFace.fType.has_value ()) {
                 DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>{}.GetName (*iFace.fType));
             }
-            for ([[maybe_unused]] auto binding : iFace.fBindings) {
-                DbgTrace (L"binding-addr: %s", Characters::ToString (binding).c_str ());
-            }
-            if (iFace.fStatus.has_value ()) {
-#if qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
-                for (Interface::Status s : *iFace.fStatus) {
-                    DbgTrace (L"status: %s", Configuration::DefaultNames<Interface::Status>{}.GetName (s));
-                }
-#else
-                for ([[maybe_unused]] Interface::Status s : *iFace.fStatus) {
-                    DbgTrace (L"status: %s", Configuration::DefaultNames<Interface::Status>{}.GetName (s));
-                }
-#endif
-            }
+            DbgTrace (L"bindings: %s", Characters::ToString (iFace.fBindings).c_str ());
+            DbgTrace (L"status: %s", Characters::ToString (iFace.fStatus).c_str ());
         }
     }
 }
@@ -540,8 +529,6 @@ namespace {
     }
 }
 
-
-
 namespace {
     namespace Test6_Neighbors_ {
         void DoTests_ ()
@@ -559,7 +546,6 @@ namespace {
         }
     }
 }
-
 
 namespace {
     void DoRegressionTests_ ()
