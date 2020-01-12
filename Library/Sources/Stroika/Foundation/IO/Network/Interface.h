@@ -54,7 +54,12 @@ namespace Stroika::Foundation::IO::Network {
          *
          *          This is interface AdapterName, which is not particularly printable (usualy a GUID)
          */
-        String fInternalInterfaceID;
+        using SystemIDType = String;
+
+        /**
+         * @see SystemIDType
+         */
+        SystemIDType fInternalInterfaceID;
 
 #if qPlatform_POSIX
         /**
@@ -306,7 +311,7 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  @see Interface::fInternalInterfaceID
      */
-    optional<Interface> GetInterfaceById (const String& internalInterfaceID);
+    optional<Interface> GetInterfaceById (const Interface::SystemIDType& internalInterfaceID);
 
 }
 

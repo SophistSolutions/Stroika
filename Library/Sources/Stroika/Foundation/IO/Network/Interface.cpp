@@ -902,7 +902,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
  ************************** Network::GetInterfaceById ***************************
  ********************************************************************************
  */
-optional<Interface> Network::GetInterfaceById (const String& internalInterfaceID)
+optional<Interface> Network::GetInterfaceById (const Interface::SystemIDType& internalInterfaceID)
 {
     // Made some progress but must refactor the above a little more to be able avoid iterating and just fetch the desired interface (esp on macos).
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
