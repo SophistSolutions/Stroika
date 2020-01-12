@@ -25,11 +25,6 @@ using namespace Stroika::Foundation::IO::Network;
  ******************************** Network::CIDR *********************************
  ********************************************************************************
  */
-CIDR::CIDR (const InternetAddress& internetAddress)
-    : CIDR (internetAddress, static_cast<unsigned int> (*internetAddress.GetAddressSize () * 8))
-{
-}
-
 namespace {
     InternetAddress MakeAddressBySignificantBits_ (const InternetAddress& internetAddress, unsigned int significantBits)
     {

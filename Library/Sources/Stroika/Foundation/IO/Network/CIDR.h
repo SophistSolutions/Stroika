@@ -35,8 +35,8 @@ namespace Stroika::Foundation::IO::Network {
          *      cidrNotation ends with "/NNN" where NNN are digits of an interger where the numberOfBits. This will
          *      throw an exception if the input is ill-formed (e.g. if number of bits too large for the address).
          */
-        CIDR (const InternetAddress& internetAddress);
         CIDR (const CIDR& src) = default;
+        CIDR (const InternetAddress& internetAddress, optional<unsigned int> significantBits = nullopt);
         CIDR (const InternetAddress& internetAddress, unsigned int significantBits);
         CIDR (const String& cidrNotation, InternetAddress::AddressFamily addressFamily = InternetAddress::AddressFamily::UNKNOWN);
 

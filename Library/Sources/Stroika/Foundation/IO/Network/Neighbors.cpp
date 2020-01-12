@@ -44,7 +44,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
 #endif
+#if qPlatform_Windows
         SystemInterfacesMgr  sysInterfacesMgr;
+#endif
         Collection<Neighbor> result;
         using std::byte;
 #if qPlatform_POSIX
@@ -97,7 +99,7 @@ namespace {
                         curInterface = iface->fInternalInterfaceID;
                     }
                     else {
-                        WeakAssert (false); // bad - 
+                        WeakAssert (false); // bad -
                         curInterface.clear ();
                     }
                 }
