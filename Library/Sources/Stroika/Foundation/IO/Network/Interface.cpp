@@ -912,15 +912,12 @@ optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAdd
 #endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
     for (Interface i : GetAll ()) {
-#if 0
-        if (i.fBindings.Any ([] (Interface::Binding b) {
-            return b.Contains (ia); } /*i.fInternalInterfaceID == internalInterfaceID*/) {
+        if (i.fBindings.Any ([&ia] (CIDR c) { return c.GetRange ().Contains (ia); })) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"found interface %s", internalInterfaceID.c_str ());
 #endif
             return i;
         }
-#endif
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"interface %s not found", internalInterfaceID.c_str ());
