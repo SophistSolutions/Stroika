@@ -195,7 +195,6 @@ namespace {
 #endif
         Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i, optional<Interface> prevInterfaceObject2Update)
     {
-        using Binding                     = Interface::Binding;
         Interface newInterface            = prevInterfaceObject2Update.value_or (Interface{});
         newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
         newInterface.fFriendlyName        = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
@@ -425,9 +424,9 @@ namespace {
             SocketAddress sa{i->ifr_addr};
             if (sa.IsInternetAddress ()) {
 #if qPlatform_Linux || qPlatform_MacOS
-                newInterface.fBindings.Add (Binding{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
+                newInterface.fBindings.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
 #else
-                newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
+                newInterface.fBindings.Add (sa.GetInternetAddress ());
 #endif
             }
         }
