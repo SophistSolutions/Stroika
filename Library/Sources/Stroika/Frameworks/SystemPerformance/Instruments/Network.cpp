@@ -222,6 +222,7 @@ namespace {
 #if qSupportProcNet_
         void Read_proc_net_dev_ (Collection<Instruments::Network::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
         {
+            SystemInterfacesMgr systemInterfacesMgr;
             using Instruments::Network::InterfaceInfo;
             RequireNotNull (interfaceResults);
             RequireNotNull (accumSummary);
@@ -243,7 +244,7 @@ namespace {
                 if (line.size () >= 17) {
                     constexpr int kOffset2XMit_ = 8;
                     InterfaceInfo ii;
-                    if (auto info = IO::Network::GetInterfaceById (line[0])) {
+                    if (auto info = systemInterfacesMgr.GetById (line[0])) {
                         ii.fInterface = *info;
                     }
                     else {
