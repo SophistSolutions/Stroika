@@ -11,8 +11,10 @@
 #include "../../Characters/String.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Set.h"
+#include "../../Time/Duration.h"
 
 #include "InternetAddress.h"
+#include "Interface.h"
 
 /**
  *  \file
@@ -33,9 +35,9 @@ namespace Stroika::Foundation::IO::Network {
     class NeighborsMonitor {
     public:
         struct Neighbor {
-            InternetAddress fInternetAddress;
-            String          fHardwareAddress;
-            String          fInterfaceID; // SEE IO::Network::fInternalInterfaceID
+            InternetAddress         fInternetAddress;
+            String                  fHardwareAddress;
+            Interface::SystemIDType fInterfaceID;
 
         public:
             /**
