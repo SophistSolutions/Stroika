@@ -3,9 +3,9 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 SHELL ["powershell"]
 
-RUN Invoke-WebRequest "https://aka.ms/vs/16/release/vs_community.exe" `
-    -OutFile "$env:TEMP\vs_community.exe" -UseBasicParsing
-RUN & "$env:TEMP\vs_community.exe" `
+RUN Invoke-WebRequest "https://aka.ms/vs/16/release/vs_buildtools.exe" `
+    -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+RUN & "$env:TEMP\vs_buildtools.exe" `
     --add Microsoft.VisualStudio.Workload.NetWeb `
     --quiet --wait --norestart --noUpdateInstaller | Out-Default
 
@@ -17,13 +17,5 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
 
 # 7zip
 RUN choco install -y 7zip.install
-
-# git
-#RUN choco install -y git
-#RUN git --version --build-options
-
-# nuget
-#RUN choco install -y nuget.commandline
-#RUN nuget help
 
 CMD ["powershell"]
