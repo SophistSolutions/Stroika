@@ -44,6 +44,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
 #endif
+        SystemInterfacesMgr  sysInterfacesMgr;
         Collection<Neighbor> result;
         using std::byte;
 #if qPlatform_POSIX
@@ -92,9 +93,16 @@ namespace {
                 Sequence<String> s = i.Tokenize ();
                 if (s.length () >= 2) {
                     curInterface = s[1];
+                    if (auto iface = sysInterfacesMgr.GetContainingAddress (InternetAddress{curInterface})) {
+                        curInterface = iface->fInternalInterfaceID;
+                    }
+                    else {
+                        WeakAssert (false); // bad - 
+                        curInterface.clear ();
+                    }
                 }
             }
-            if (i.StartsWith (L" ")) {
+            if (i.StartsWith (L" ") and not curInterface.empty ()) {
                 Sequence<String> s = i.Tokenize ();
                 if (s.length () >= 3 and (s[2] == L"static" or s[2] == L"dynamic")) {
                     result += Neighbor{InternetAddress{s[0]}, s[1], curInterface};
