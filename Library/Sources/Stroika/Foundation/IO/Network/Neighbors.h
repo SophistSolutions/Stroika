@@ -13,8 +13,8 @@
 #include "../../Containers/Set.h"
 #include "../../Time/Duration.h"
 
-#include "InternetAddress.h"
 #include "Interface.h"
+#include "InternetAddress.h"
 
 /**
  *  \file

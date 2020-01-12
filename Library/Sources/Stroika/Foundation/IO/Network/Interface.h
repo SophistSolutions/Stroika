@@ -302,16 +302,39 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
-     *  Collect all the interfaces (and their status) from the operating system.
+     *  @todo add some level of caching to this object, possible with arguments to CTOR saying allowed latency for fetch from OS
      */
-    Traversal::Iterable<Interface> GetInterfaces ();
+    class SystemInterfacesMgr {
+    public:
+        /**
+         *  Collect all the interfaces (and their status) from the operating system.
+         */
+        nonvirtual Traversal::Iterable<Interface> GetAll ();
 
-    /**
-     *  Find the interface object with the given ID.
-     *
-     *  @see Interface::fInternalInterfaceID
-     */
-    optional<Interface> GetInterfaceById (const Interface::SystemIDType& internalInterfaceID);
+    public:
+        /**
+         *  Find the interface object with the given ID.
+         *
+         *  @see Interface::fInternalInterfaceID
+         */
+        nonvirtual optional<Interface> GetById (const Interface::SystemIDType& internalInterfaceID);
+
+    public:
+        /**
+         *  A given address should be found in at most one interface.
+         */
+        nonvirtual optional<Interface> GetContainingAddress (const InternetAddress& ia);
+    };
+
+    [[deprecated ("use SystemInterfacesMgr{}.GetAll - deprecated in  in 2.1a5")]] inline Traversal::Iterable<Interface> GetInterfaces ()
+    {
+        return SystemInterfacesMgr{}.GetAll ();
+    }
+
+    [[deprecated ("use SystemInterfacesMgr{}.GetById - deprecated in  in 2.1a5")]] inline optional<Interface> GetInterfaceById (const Interface::SystemIDType& internalInterfaceID)
+    {
+        return SystemInterfacesMgr{}.GetById (internalInterfaceID);
+    }
 
 }
 

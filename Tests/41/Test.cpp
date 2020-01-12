@@ -454,7 +454,7 @@ namespace {
     void Test3_NetworkInterfaceList_ ()
     {
         Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
-        for (Interface iFace : Network::GetInterfaces ()) {
+        for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
             Debug::TraceContextBumper trcCtx1 ("iface");
             DbgTrace (L"interface-full-details: %s", Characters::ToString (iFace).c_str ());
             DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
