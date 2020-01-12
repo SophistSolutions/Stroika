@@ -45,7 +45,7 @@ namespace {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
 #endif
 #if qPlatform_Windows
-        SystemInterfacesMgr  sysInterfacesMgr;
+        SystemInterfacesMgr sysInterfacesMgr;
 #endif
         Collection<Neighbor> result;
         using std::byte;
