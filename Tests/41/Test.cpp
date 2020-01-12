@@ -24,8 +24,10 @@
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
+#include "Stroika/Foundation/IO/Network/Neighbors.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -487,6 +489,7 @@ namespace {
     namespace Test4_DNS_ {
         void DoTests_ ()
         {
+            Debug::TraceContextBumper ctx ("Test4_DNS_::DoTests_");
             {
                 DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.sophists.com");
                 VerifyTestResult (e.fCanonicalName.Contains (L".sophists.com"));
@@ -512,6 +515,7 @@ namespace {
     namespace Test5_CIDR_ {
         void DoTests_ ()
         {
+            Debug::TraceContextBumper ctx ("Test5_CIDR_::DoTests_");
             {
                 CIDR cidr{L"10.70.0.0/15"};
                 auto cidr2 = CIDR{InternetAddress{L"10.70.0.0"}, 15};
@@ -536,6 +540,27 @@ namespace {
     }
 }
 
+
+
+namespace {
+    namespace Test6_Neighbors_ {
+        void DoTests_ ()
+        {
+            Debug::TraceContextBumper ctx ("Test6_Neighbors_::DoTests_");
+            {
+                IO::Network::NeighborsMonitor monitor;
+                Time::DurationSecondsType     timeoutAt = (Time::GetTickCount () + Time::Duration{3s}).As<Time::DurationSecondsType> ();
+                while (Time::GetTickCount () < timeoutAt) {
+                    for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
+                        DbgTrace (L"discovered %s", Characters::ToString (n).c_str ());
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 namespace {
     void DoRegressionTests_ ()
     {
@@ -544,6 +569,7 @@ namespace {
         Test3_NetworkInterfaceList_ ();
         Test4_DNS_::DoTests_ ();
         Test5_CIDR_::DoTests_ ();
+        Test6_Neighbors_::DoTests_ ();
     }
 }
 
