@@ -124,23 +124,6 @@ namespace Stroika::Foundation::Configuration {
 
 /*
  ********************************************************************************
- ************************** Interface::Binding **********************************
- ********************************************************************************
- */
-String Interface::Binding::ToString () const
-{
-    Characters::StringBuilder sb;
-    sb += L"{";
-    sb += L"Internet-Address: " + Characters::ToString (fInternetAddress) + L", ";
-    if (fOnLinkPrefixLength) {
-        sb += L"On-Link-Prefix-Length: " + Characters::ToString (*fOnLinkPrefixLength) + L", ";
-    }
-    sb += L"}";
-    return sb.str ();
-}
-
-/*
- ********************************************************************************
  ********************** Interface::WirelessInfo *********************************
  ********************************************************************************
  */
@@ -720,7 +703,6 @@ namespace {
             }
             Execution::ReThrow ();
         }
-        using Binding = Interface::Binding;
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
         Mapping<String, Interface>     results;
@@ -791,19 +773,19 @@ namespace {
                 for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {
                     SocketAddress sa{pu->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.Add (Binding{sa.GetInternetAddress (), pu->OnLinkPrefixLength == 255 ? optional<uint8_t>{} : pu->OnLinkPrefixLength});
+                        newInterface.fBindings.Add (pu->OnLinkPrefixLength == 255 ? sa.GetInternetAddress () : CIDR{sa.GetInternetAddress (), pu->OnLinkPrefixLength});
                     }
                 }
                 for (PIP_ADAPTER_ANYCAST_ADDRESS pa = currAddresses->FirstAnycastAddress; pa != nullptr; pa = pa->Next) {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
+                        newInterface.fBindings.Add (sa.GetInternetAddress ());
                     }
                 }
                 for (PIP_ADAPTER_MULTICAST_ADDRESS pm = currAddresses->FirstMulticastAddress; pm != nullptr; pm = pm->Next) {
                     SocketAddress sa{pm->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.Add (Binding{sa.GetInternetAddress ()});
+                        newInterface.fBindings.Add (sa.GetInternetAddress ());
                     }
                 }
                 for (PIP_ADAPTER_GATEWAY_ADDRESS_LH pa = currAddresses->FirstGatewayAddress; pa != nullptr; pa = pa->Next) {

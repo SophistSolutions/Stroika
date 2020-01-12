@@ -15,6 +15,7 @@
 #include "../../Containers/Collection.h"
 #include "../../Containers/Set.h"
 
+#include "CIDR.h"
 #include "InternetAddress.h"
 
 /**
@@ -135,17 +136,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         optional<uint64_t> fReceiveLinkSpeedBaud;
 
-        /**
-         */
-        struct Binding {
-            InternetAddress        fInternetAddress;
-            optional<unsigned int> fOnLinkPrefixLength;
-
-            /**
-             *  @see Characters::ToString ();
-             */
-            nonvirtual String ToString () const;
-        };
+        using Binding [[deprecated ("use CIDR - Binding deprecated in  in 2.1a5")]] = CIDR;
 
         /**
          *  \note intentionally omitted fields 'Description' because included in parent object, connectionInfo state (cuz same as wireless adapater info state),
@@ -252,7 +243,7 @@ namespace Stroika::Foundation::IO::Network {
 
         /**
          */
-        Containers::Collection<Binding> fBindings; // can be IPv4 or IPv6
+        Containers::Collection<CIDR> fBindings; // can be IPv4 or IPv6
 
         /**
          *  Typically there will be zero or one, and if one, this is the default gateway. This maybe missing if it couldn't be retrieved from the operating system.
