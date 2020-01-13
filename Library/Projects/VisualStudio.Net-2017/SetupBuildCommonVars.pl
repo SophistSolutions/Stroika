@@ -72,6 +72,9 @@ sub toCygPath_
 			$arg = substr ($arg, 0, $len-1);
 		}
 	}
+	if ($arg eq "") {
+		return "";
+	}
 	my $result = trim (`cygpath --unix \"$arg\"`);
 	return $result;
 }
@@ -79,12 +82,18 @@ sub toCygPath_
 sub fromCygPath_
 {
 	my $arg = shift;
+	if ($arg eq "") {
+		return "";
+	}
 	return trim (`cygpath --mixed \"$arg\"`);
 }
 
 sub toExternallyUsedPath_
 {
 	my $arg = shift;
+	if ($arg eq "") {
+		return "";
+	}
 	return trim (`cygpath --mixed \"$arg\"`);
 }
 
