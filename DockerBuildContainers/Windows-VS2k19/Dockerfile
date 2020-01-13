@@ -28,14 +28,14 @@ RUN & "$env:TEMP\vs_buildtools.exe" `
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
 
 # 7zip
-RUN choco install -y 7zip.install
+#RUN choco install -y 7zip.install
 
-#   --params "/InstallDir:C:\CYGWIN /NoStartMenu"
-SHELL ["cmd"]
 RUN choco install -y cyg-get
-RUN cyg-get default make unzip git
-RUN set PATH=%PATH%;c:\tools\cygwin\bin\
+RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
+ENV PATH="${PATH};c:\tools\cygwin\bin\"
 
+
+COPY Windows-VS2k19/Getting-Started-With-Stroika.md ./
 
 
 CMD ["cmd"]
@@ -55,4 +55,4 @@ CMD ["cmd"]
 #CMD ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
 
 ### NOTE TO RUN
-###     docker run -v c:\Sandbox:c:\Sandbox -it testwinbld2:latest
+###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-vs2k19:latest
