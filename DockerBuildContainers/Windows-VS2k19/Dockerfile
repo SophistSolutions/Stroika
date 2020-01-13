@@ -32,8 +32,9 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
 
 RUN choco install -y cyg-get
 RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-ENV PATH="${PATH};c:\tools\cygwin\bin\"
-
+#ENV PATH=%PATH%;c:\tools\cygwin\bin
+SHELL ["cmd"]
+RUN setx path "%path%;c:\tools\cygwin\bin"
 
 COPY Windows-VS2k19/Getting-Started-With-Stroika.md ./
 
