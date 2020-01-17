@@ -16,6 +16,7 @@ help:
 
 
 docker-images:
+ifeq ($(shell uname),Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Ubuntu1810-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-small .
@@ -27,22 +28,28 @@ docker-images:
 	docker build -f Centos-7-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-7-small .
 	docker build -f Centos-8-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-8-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
-
-docker-win-images:
+endif
+ifeq (Windows,$(findstring Windows,$(OS)))
 	docker build -f Windows-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19 -m 2G .
+endif
 
 
 docker-pull-base-images:
+ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.04
 	docker pull ubuntu:18.10
 	docker pull ubuntu:19.04
 	docker pull ubuntu:19.10
 	docker pull centos:centos7
 	docker pull centos:centos8
-
+endif
+ifeq (Windows,$(findstring Windows,$(OS)))
+	docker pull mcr.microsoft.com/windows/servercore:ltsc2019
+endif
 
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
+ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-small
@@ -55,3 +62,7 @@ push-images:
 	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev
+endif
+ifeq (Windows,$(findstring Windows,$(OS)))
+	docker push sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+endif
