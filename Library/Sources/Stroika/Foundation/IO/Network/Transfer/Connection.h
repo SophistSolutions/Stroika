@@ -331,9 +331,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
         /**
          *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).
-         *  Disabled by default because curl and WinHTTP disable by default (they must have thought this out better than me).
+         *  
+         *  Set to 1 by default (a change from 0 before Stroika 2.1a5) because a single redirect can
+         *  make sense, and a typical fetcher would want to see the redirection. Most malicious or
+         *  broken cases involve more redirects.
          */
-        unsigned int fMaxAutomaticRedirects{0};
+        unsigned int fMaxAutomaticRedirects{1};
 
         /**
          */
