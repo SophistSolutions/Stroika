@@ -26,6 +26,8 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
 
 RUN choco install -y cyg-get
 RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
+## Sometimes helpful
+## cyg-get gdb
 RUN  `
     $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   `
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
@@ -37,3 +39,4 @@ CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.m
 
 ### NOTE TO RUN
 ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-vs2k19:latest
+###     docker run -it sophistsolutionsinc/stroika-buildvm-windows-vs2k19:latest
