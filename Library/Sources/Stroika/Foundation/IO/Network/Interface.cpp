@@ -486,6 +486,42 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
+    /* 
+     * This DLL is apparently only available if the Wireless Lan Service feature is installed
+     *  (see https://forum.kodi.tv/showthread.php?tid=333721&pid=2751888#pid2751888)
+     * It is also missing from the docker image mcr.microsoft.com/windows/servercore:ltsc2019.
+     * So don't statically link since that caused the whole app to not load. Instead, load the DLL conditionally.
+     */
+    struct WLANAPI_ {
+        WLANAPI_ ()
+            : fDLL (::LoadLibrary (_T ("wlanapi.dll")))
+        {
+            Execution::ThrowIfNull (fDLL);
+            fWlanOpenHandle     = (DWORD (WINAPI*) (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion, _Out_ PHANDLE phClientHandle)) (::GetProcAddress (fDLL, "WlanOpenHandle"));
+            fWlanCloseHandle    = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved)) (::GetProcAddress (fDLL, "WlanCloseHandle"));
+            fWlanFreeMemory     = (DWORD (WINAPI*) (_In_ PVOID pMemory)) (::GetProcAddress (fDLL, "WlanFreeMemory"));
+            fWlanEnumInterfaces = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved, _Outptr_ PWLAN_INTERFACE_INFO_LIST * ppInterfaceList)) (::GetProcAddress (fDLL, "WlanEnumInterfaces"));
+            fWlanQueryInterface = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _In_ CONST GUID * pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID * ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType)) (::GetProcAddress (fDLL, "WlanQueryInterface"));
+        }
+        WLANAPI_ (const WLANAPI_&) = delete;
+        ~WLANAPI_ ()
+        {
+            if (fDLL != nullptr) {
+                Verify (::FreeLibrary (fDLL));
+            }
+        }
+        HINSTANCE fDLL;
+        DWORD (WINAPI* fWlanOpenHandle)
+        (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion, _Out_ PHANDLE phClientHandle) = nullptr;
+        DWORD (WINAPI* fWlanCloseHandle)
+        (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved) = nullptr;
+        DWORD (WINAPI* fWlanFreeMemory)
+        (_In_ PVOID pMemory) = nullptr;
+        DWORD (WINAPI* fWlanEnumInterfaces)
+        (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved, _Outptr_ PWLAN_INTERFACE_INFO_LIST* ppInterfaceList) = nullptr;
+        DWORD (WINAPI* fWlanQueryInterface)
+        (_In_ HANDLE hClientHandle, _In_ CONST GUID* pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID* ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType) = nullptr;
+    };
     struct WirelessInfoPlus_ : Interface::WirelessInfo {
         // extra info so can be patched into Interface
         optional<uint64_t> fTransmitSpeedBaud;
@@ -496,202 +532,208 @@ namespace {
         using WirelessInfo = Interface::WirelessInfo;
         Mapping<Common::GUID, WirelessInfoPlus_> results;
 
-        HANDLE hClient = nullptr;
-        {
-            DWORD dwCurVersion = 0;
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::WlanOpenHandle (2, NULL, &dwCurVersion, &hClient));
-        }
-        [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&] () noexcept { if (hClient !=nullptr) {::WlanCloseHandle (hClient, nullptr);} });
+        static unique_ptr<WLANAPI_> sWlanAPI_;
+        static once_flag            sOnceFlag_;
+        call_once (sOnceFlag_, [&] () { IgnoreExceptionsForCall (sWlanAPI_ = make_unique<WLANAPI_> ()) });
 
-        PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
-        Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::WlanEnumInterfaces (hClient, nullptr, &pIfList));
-        [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { if (pIfList !=nullptr) {::WlanFreeMemory (pIfList);} });
+        if (sWlanAPI_) {
+            HANDLE hClient = nullptr;
+            {
+                DWORD dwCurVersion = 0;
+                Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (sWlanAPI_->fWlanOpenHandle (2, NULL, &dwCurVersion, &hClient));
+            }
+            [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&] () noexcept { if (hClient !=nullptr) {sWlanAPI_->fWlanCloseHandle (hClient, nullptr);} });
 
-        for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
-            PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
-            WirelessInfoPlus_    wInfo;
-            Common::GUID         interfaceGUID{pIfInfo->InterfaceGuid};
+            PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
+            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (sWlanAPI_->fWlanEnumInterfaces (hClient, nullptr, &pIfList));
+            [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { if (pIfList !=nullptr) {sWlanAPI_->fWlanFreeMemory (pIfList);} });
 
-            auto mapState = [] (WLAN_INTERFACE_STATE s) -> WirelessInfo::State {
-                switch (s) {
-                    case wlan_interface_state_not_ready:
-                        return WirelessInfo::State::eNotReady;
-                    case wlan_interface_state_connected:
-                        return WirelessInfo::State::eConnected;
-                    case wlan_interface_state_ad_hoc_network_formed:
-                        return WirelessInfo::State::eAdHocNetworkFormed;
-                    case wlan_interface_state_disconnecting:
-                        return WirelessInfo::State::eDisconnecting;
-                    case wlan_interface_state_disconnected:
-                        return WirelessInfo::State::eDisconnected;
-                    case wlan_interface_state_associating:
-                        return WirelessInfo::State::eAssociating;
-                    case wlan_interface_state_discovering:
-                        return WirelessInfo::State::eDiscovering;
-                    case wlan_interface_state_authenticating:
-                        return WirelessInfo::State::eAuthenticating;
-                    default:
-                        DbgTrace (L"Unknown state %ld\n", s);
-                        return WirelessInfo::State::eUnknown;
-                }
-            };
+            for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
+                PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
+                WirelessInfoPlus_    wInfo;
+                Common::GUID         interfaceGUID{pIfInfo->InterfaceGuid};
 
-            wInfo.fState = mapState (pIfInfo->isState);
-
-            // If interface state is connected, call WlanQueryInterface
-            // to get current connection attributes
-            if (pIfInfo->isState == wlan_interface_state_connected) {
-                PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
-                {
-                    DWORD                  connectInfoSize = sizeof (WLAN_CONNECTION_ATTRIBUTES);
-                    WLAN_OPCODE_VALUE_TYPE opCode          = wlan_opcode_value_type_invalid;
-                    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (
-                        ::WlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
-                                              nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
-                }
-                [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo !=nullptr) {::WlanFreeMemory (pConnectInfo);} });
-
-                if (pConnectInfo->isState != pIfInfo->isState) {
-                    DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
-                }
-
-                auto mapConnectionMode = [] (WLAN_CONNECTION_MODE s) -> WirelessInfo::ConnectionMode {
+                auto mapState = [] (WLAN_INTERFACE_STATE s) -> WirelessInfo::State {
                     switch (s) {
-                        case wlan_connection_mode_profile:
-                            return WirelessInfo::ConnectionMode::eProfile;
-                        case wlan_connection_mode_temporary_profile:
-                            return WirelessInfo::ConnectionMode::eTemporaryProfile;
-                        case wlan_connection_mode_discovery_secure:
-                            return WirelessInfo::ConnectionMode::eDiscoverSecrure;
-                        case wlan_connection_mode_discovery_unsecure:
-                            return WirelessInfo::ConnectionMode::eDiscoverInsecure;
-                        case wlan_connection_mode_auto:
-                            return WirelessInfo::ConnectionMode::eAuto;
-                        case wlan_connection_mode_invalid:
-                            return WirelessInfo::ConnectionMode::eInvalid;
+                        case wlan_interface_state_not_ready:
+                            return WirelessInfo::State::eNotReady;
+                        case wlan_interface_state_connected:
+                            return WirelessInfo::State::eConnected;
+                        case wlan_interface_state_ad_hoc_network_formed:
+                            return WirelessInfo::State::eAdHocNetworkFormed;
+                        case wlan_interface_state_disconnecting:
+                            return WirelessInfo::State::eDisconnecting;
+                        case wlan_interface_state_disconnected:
+                            return WirelessInfo::State::eDisconnected;
+                        case wlan_interface_state_associating:
+                            return WirelessInfo::State::eAssociating;
+                        case wlan_interface_state_discovering:
+                            return WirelessInfo::State::eDiscovering;
+                        case wlan_interface_state_authenticating:
+                            return WirelessInfo::State::eAuthenticating;
                         default:
-                            DbgTrace (L"Unknown connection mode %d\n", s);
-                            return WirelessInfo::ConnectionMode::eUnknown;
+                            DbgTrace (L"Unknown state %ld\n", s);
+                            return WirelessInfo::State::eUnknown;
                     }
                 };
-                wInfo.fConnectionMode = mapConnectionMode (pConnectInfo->wlanConnectionMode);
-                wInfo.fProfileName    = pConnectInfo->strProfileName;
 
-                //Association Attributes for this connection
-                if (pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength != 0) {
-                    wInfo.fSSID = String::FromNarrowSDKString (reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID + pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength));
+                wInfo.fState = mapState (pIfInfo->isState);
+
+                // If interface state is connected, call WlanQueryInterface
+                // to get current connection attributes
+                if (pIfInfo->isState == wlan_interface_state_connected) {
+                    PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
+                    {
+                        DWORD                  connectInfoSize = sizeof (WLAN_CONNECTION_ATTRIBUTES);
+                        WLAN_OPCODE_VALUE_TYPE opCode          = wlan_opcode_value_type_invalid;
+                        Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (
+                            ::WlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
+                                                  nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
+                    }
+                    [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo !=nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
+
+                    if (pConnectInfo->isState != pIfInfo->isState) {
+                        DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
+                    }
+
+                    auto mapConnectionMode = [] (WLAN_CONNECTION_MODE s) -> WirelessInfo::ConnectionMode {
+                        switch (s) {
+                            case wlan_connection_mode_profile:
+                                return WirelessInfo::ConnectionMode::eProfile;
+                            case wlan_connection_mode_temporary_profile:
+                                return WirelessInfo::ConnectionMode::eTemporaryProfile;
+                            case wlan_connection_mode_discovery_secure:
+                                return WirelessInfo::ConnectionMode::eDiscoverSecrure;
+                            case wlan_connection_mode_discovery_unsecure:
+                                return WirelessInfo::ConnectionMode::eDiscoverInsecure;
+                            case wlan_connection_mode_auto:
+                                return WirelessInfo::ConnectionMode::eAuto;
+                            case wlan_connection_mode_invalid:
+                                return WirelessInfo::ConnectionMode::eInvalid;
+                            default:
+                                DbgTrace (L"Unknown connection mode %d\n", s);
+                                return WirelessInfo::ConnectionMode::eUnknown;
+                        }
+                    };
+                    wInfo.fConnectionMode = mapConnectionMode (pConnectInfo->wlanConnectionMode);
+                    wInfo.fProfileName    = pConnectInfo->strProfileName;
+
+                    //Association Attributes for this connection
+                    if (pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength != 0) {
+                        wInfo.fSSID = String::FromNarrowSDKString (reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID + pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength));
+                    }
+
+                    auto mapBSSType = [] (DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
+                        switch (s) {
+                            case dot11_BSS_type_infrastructure:
+                                return WirelessInfo::BSSType::eInfrastructure;
+                            case dot11_BSS_type_independent:
+                                return WirelessInfo::BSSType::eIndependent;
+                            case dot11_BSS_type_any:
+                                return WirelessInfo::BSSType::eAny;
+                            default:
+                                DbgTrace (L"Unknown connection mode %d\n", s);
+                                return WirelessInfo::BSSType::eUnknown;
+                        }
+                    };
+                    wInfo.fBSSType = mapBSSType (pConnectInfo->wlanAssociationAttributes.dot11BssType);
+
+                    wInfo.fMACAddress = PrintMacAddr_ (std::begin (pConnectInfo->wlanAssociationAttributes.dot11Bssid), std::end (pConnectInfo->wlanAssociationAttributes.dot11Bssid));
+
+                    auto mapPhysicalConnectionType = [] (DOT11_PHY_TYPE s) -> WirelessInfo::PhysicalConnectionType {
+                        switch (s) {
+                            case dot11_phy_type_unknown:
+                                return WirelessInfo::PhysicalConnectionType::eUnknown;
+                            case dot11_phy_type_fhss:
+                                return WirelessInfo::PhysicalConnectionType::eFHSS;
+                            case dot11_phy_type_dsss:
+                                return WirelessInfo::PhysicalConnectionType::eDSSS;
+                            case dot11_phy_type_irbaseband:
+                                return WirelessInfo::PhysicalConnectionType::eIRBaseBand;
+                            case dot11_phy_type_ofdm:
+                                return WirelessInfo::PhysicalConnectionType::e80211a;
+                            case dot11_phy_type_hrdsss:
+                                return WirelessInfo::PhysicalConnectionType::e80211b;
+                            case dot11_phy_type_erp:
+                                return WirelessInfo::PhysicalConnectionType::e80211g;
+                            case dot11_phy_type_ht:
+                                return WirelessInfo::PhysicalConnectionType::e80211n;
+                            case dot11_phy_type_vht:
+                                return WirelessInfo::PhysicalConnectionType::e80211ac;
+                            case dot11_phy_type_dmg:
+                                return WirelessInfo::PhysicalConnectionType::e80211ad;
+                            case dot11_phy_type_he:
+                                return WirelessInfo::PhysicalConnectionType::e80211ax;
+                            default:
+                                DbgTrace (L"Unknown DOT11_PHY_TYPE %d\n", s);
+                                return WirelessInfo::PhysicalConnectionType::eUnknown;
+                        }
+                    };
+                    wInfo.fPhysicalConnectionType = mapPhysicalConnectionType (pConnectInfo->wlanAssociationAttributes.dot11PhyType);
+
+                    wInfo.fSignalQuality = pConnectInfo->wlanAssociationAttributes.wlanSignalQuality;
+
+                    {
+                        const ULONG kMagicFactor_{1000}; // empirical, so we get same answers from IP_ADAPTER_ADDRESSES_LH::TransmitLinkSpeed
+                        wInfo.fTransmitSpeedBaud    = pConnectInfo->wlanAssociationAttributes.ulTxRate * kMagicFactor_;
+                        wInfo.fReceiveLinkSpeedBaud = pConnectInfo->wlanAssociationAttributes.ulRxRate * kMagicFactor_;
+                    }
+
+                    wInfo.fSecurityEnabled = pConnectInfo->wlanSecurityAttributes.bSecurityEnabled;
+                    wInfo.f8021XEnabled    = pConnectInfo->wlanSecurityAttributes.bOneXEnabled;
+                    auto mapAuthAlgorithm  = [] (DOT11_AUTH_ALGORITHM s) -> WirelessInfo::AuthAlgorithm {
+                        switch (s) {
+                            case DOT11_AUTH_ALGO_80211_OPEN:
+                                return WirelessInfo::AuthAlgorithm::eOpen;
+                            case DOT11_AUTH_ALGO_80211_SHARED_KEY:
+                                return WirelessInfo::AuthAlgorithm::ePresharedKey;
+                            case DOT11_AUTH_ALGO_WPA:
+                                return WirelessInfo::AuthAlgorithm::eWPA;
+                            case DOT11_AUTH_ALGO_WPA_PSK:
+                                return WirelessInfo::AuthAlgorithm::eWPA_PSK;
+                            case DOT11_AUTH_ALGO_WPA_NONE:
+                                return WirelessInfo::AuthAlgorithm::eWPA_NONE;
+                            case DOT11_AUTH_ALGO_RSNA:
+                                return WirelessInfo::AuthAlgorithm::eRSNA;
+                            case DOT11_AUTH_ALGO_RSNA_PSK:
+                                return WirelessInfo::AuthAlgorithm::eRSNA_PSK;
+                            default:
+                                DbgTrace (L"Unknown AuthAlgorithm %d\n", s);
+                                return WirelessInfo::AuthAlgorithm::eUnknown;
+                        }
+                    };
+                    wInfo.fAuthAlgorithm = mapAuthAlgorithm (pConnectInfo->wlanSecurityAttributes.dot11AuthAlgorithm);
+
+                    auto mapCipher = [] (DOT11_CIPHER_ALGORITHM s) -> String {
+                        switch (s) {
+                            case DOT11_CIPHER_ALGO_NONE:
+                                return L"None"sv;
+                            case DOT11_CIPHER_ALGO_WEP40:
+                                return L"WEP-40"sv;
+                            case DOT11_CIPHER_ALGO_TKIP:
+                                return L"TKIP"sv;
+                            case DOT11_CIPHER_ALGO_CCMP:
+                                return L"CCMP"sv;
+                            case DOT11_CIPHER_ALGO_WEP104:
+                                return L"WEP-104"sv;
+                            case DOT11_CIPHER_ALGO_WEP:
+                                return L"WEP"sv;
+                            default:
+                                return Characters::Format (L"%d", s);
+                        }
+                    };
+                    wInfo.fCipher = mapCipher (pConnectInfo->wlanSecurityAttributes.dot11CipherAlgorithm);
+                    results.Add (interfaceGUID, wInfo);
                 }
-
-                auto mapBSSType = [] (DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
-                    switch (s) {
-                        case dot11_BSS_type_infrastructure:
-                            return WirelessInfo::BSSType::eInfrastructure;
-                        case dot11_BSS_type_independent:
-                            return WirelessInfo::BSSType::eIndependent;
-                        case dot11_BSS_type_any:
-                            return WirelessInfo::BSSType::eAny;
-                        default:
-                            DbgTrace (L"Unknown connection mode %d\n", s);
-                            return WirelessInfo::BSSType::eUnknown;
-                    }
-                };
-                wInfo.fBSSType = mapBSSType (pConnectInfo->wlanAssociationAttributes.dot11BssType);
-
-                wInfo.fMACAddress = PrintMacAddr_ (std::begin (pConnectInfo->wlanAssociationAttributes.dot11Bssid), std::end (pConnectInfo->wlanAssociationAttributes.dot11Bssid));
-
-                auto mapPhysicalConnectionType = [] (DOT11_PHY_TYPE s) -> WirelessInfo::PhysicalConnectionType {
-                    switch (s) {
-                        case dot11_phy_type_unknown:
-                            return WirelessInfo::PhysicalConnectionType::eUnknown;
-                        case dot11_phy_type_fhss:
-                            return WirelessInfo::PhysicalConnectionType::eFHSS;
-                        case dot11_phy_type_dsss:
-                            return WirelessInfo::PhysicalConnectionType::eDSSS;
-                        case dot11_phy_type_irbaseband:
-                            return WirelessInfo::PhysicalConnectionType::eIRBaseBand;
-                        case dot11_phy_type_ofdm:
-                            return WirelessInfo::PhysicalConnectionType::e80211a;
-                        case dot11_phy_type_hrdsss:
-                            return WirelessInfo::PhysicalConnectionType::e80211b;
-                        case dot11_phy_type_erp:
-                            return WirelessInfo::PhysicalConnectionType::e80211g;
-                        case dot11_phy_type_ht:
-                            return WirelessInfo::PhysicalConnectionType::e80211n;
-                        case dot11_phy_type_vht:
-                            return WirelessInfo::PhysicalConnectionType::e80211ac;
-                        case dot11_phy_type_dmg:
-                            return WirelessInfo::PhysicalConnectionType::e80211ad;
-                        case dot11_phy_type_he:
-                            return WirelessInfo::PhysicalConnectionType::e80211ax;
-                        default:
-                            DbgTrace (L"Unknown DOT11_PHY_TYPE %d\n", s);
-                            return WirelessInfo::PhysicalConnectionType::eUnknown;
-                    }
-                };
-                wInfo.fPhysicalConnectionType = mapPhysicalConnectionType (pConnectInfo->wlanAssociationAttributes.dot11PhyType);
-
-                wInfo.fSignalQuality = pConnectInfo->wlanAssociationAttributes.wlanSignalQuality;
-
-                {
-                    const ULONG kMagicFactor_{1000}; // empirical, so we get same answers from IP_ADAPTER_ADDRESSES_LH::TransmitLinkSpeed
-                    wInfo.fTransmitSpeedBaud    = pConnectInfo->wlanAssociationAttributes.ulTxRate * kMagicFactor_;
-                    wInfo.fReceiveLinkSpeedBaud = pConnectInfo->wlanAssociationAttributes.ulRxRate * kMagicFactor_;
-                }
-
-                wInfo.fSecurityEnabled = pConnectInfo->wlanSecurityAttributes.bSecurityEnabled;
-                wInfo.f8021XEnabled    = pConnectInfo->wlanSecurityAttributes.bOneXEnabled;
-                auto mapAuthAlgorithm  = [] (DOT11_AUTH_ALGORITHM s) -> WirelessInfo::AuthAlgorithm {
-                    switch (s) {
-                        case DOT11_AUTH_ALGO_80211_OPEN:
-                            return WirelessInfo::AuthAlgorithm::eOpen;
-                        case DOT11_AUTH_ALGO_80211_SHARED_KEY:
-                            return WirelessInfo::AuthAlgorithm::ePresharedKey;
-                        case DOT11_AUTH_ALGO_WPA:
-                            return WirelessInfo::AuthAlgorithm::eWPA;
-                        case DOT11_AUTH_ALGO_WPA_PSK:
-                            return WirelessInfo::AuthAlgorithm::eWPA_PSK;
-                        case DOT11_AUTH_ALGO_WPA_NONE:
-                            return WirelessInfo::AuthAlgorithm::eWPA_NONE;
-                        case DOT11_AUTH_ALGO_RSNA:
-                            return WirelessInfo::AuthAlgorithm::eRSNA;
-                        case DOT11_AUTH_ALGO_RSNA_PSK:
-                            return WirelessInfo::AuthAlgorithm::eRSNA_PSK;
-                        default:
-                            DbgTrace (L"Unknown AuthAlgorithm %d\n", s);
-                            return WirelessInfo::AuthAlgorithm::eUnknown;
-                    }
-                };
-                wInfo.fAuthAlgorithm = mapAuthAlgorithm (pConnectInfo->wlanSecurityAttributes.dot11AuthAlgorithm);
-
-                auto mapCipher = [] (DOT11_CIPHER_ALGORITHM s) -> String {
-                    switch (s) {
-                        case DOT11_CIPHER_ALGO_NONE:
-                            return L"None"sv;
-                        case DOT11_CIPHER_ALGO_WEP40:
-                            return L"WEP-40"sv;
-                        case DOT11_CIPHER_ALGO_TKIP:
-                            return L"TKIP"sv;
-                        case DOT11_CIPHER_ALGO_CCMP:
-                            return L"CCMP"sv;
-                        case DOT11_CIPHER_ALGO_WEP104:
-                            return L"WEP-104"sv;
-                        case DOT11_CIPHER_ALGO_WEP:
-                            return L"WEP"sv;
-                        default:
-                            return Characters::Format (L"%d", s);
-                    }
-                };
-                wInfo.fCipher = mapCipher (pConnectInfo->wlanSecurityAttributes.dot11CipherAlgorithm);
-                results.Add (interfaceGUID, wInfo);
             }
         }
+
         return results;
     }
 
     Traversal::Iterable<Interface> GetInterfaces_Windows_ ()
     {
         Mapping<Common::GUID, WirelessInfoPlus_> wirelessInfo2Merge;
-
         try {
             wirelessInfo2Merge = GetInterfaces_Windows_WirelessInfo_ ();
         }
