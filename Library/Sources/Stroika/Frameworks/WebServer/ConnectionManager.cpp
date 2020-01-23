@@ -187,6 +187,12 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
     // run til thread aboorted
     while (true) {
+
+        {
+            // https://stroika.atlassian.net/browse/STK-706 - debug attempt
+            Assert (fWaitForReadyConnectionThread_ != nullptr);
+        }
+
         try {
             Execution::CheckForThreadInterruption ();
 
@@ -215,6 +221,10 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif
+                        {
+                            // https://stroika.atlassian.net/browse/STK-706 - debug attempt
+                            Assert (fWaitForReadyConnectionThread_ != nullptr);
+                        }
                         bool keepAlive = (conn->ReadAndProcessMessage () == Connection::eTryAgainLater);
 
                         // no matter what, remove from active connecitons
