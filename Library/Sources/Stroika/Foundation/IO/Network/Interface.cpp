@@ -749,10 +749,13 @@ namespace {
         }
         catch (const std::system_error& e) {
             if (e.code () == error_code{ERROR_SERVICE_NOT_ACTIVE, system_category ()}) {
-                // this just means no wireless services active, so return empty iterable
+                // this just means no wireless services active, so leave wirelessInfo2Merge empty
                 return Traversal::Iterable<Interface>{};
             }
-            Execution::ReThrow ();
+            else {
+                // but other errors it makes sense to propagate
+                Execution::ReThrow ();
+            }
         }
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
@@ -799,10 +802,14 @@ namespace {
                         }
                         break;
                     default:
+                        DbgTrace ("Treating unknown currAddresses->IfType = %d type as eOther", currAddresses->IfType);
                         newInterface.fType = Interface::Type::eOther;
                         break;
                 }
                 if (currAddresses->TunnelType != TUNNEL_TYPE_NONE) {
+                    if (newInterface.fType) {
+                        DbgTrace (L"overwriting type %s with tunneltype", Characters::ToString (newInterface.fType).c_str ());
+                    }
                     newInterface.fType = Interface::Type::eTunnel;
                 }
                 switch (currAddresses->OperStatus) {
@@ -819,6 +826,7 @@ namespace {
                         break;
                     default:
                         // Don't know how to interpret the other status states
+                        DbgTrace (L"ignoring unrecognized status: %d", currAddresses->OperStatus);
                         break;
                 }
                 for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {
