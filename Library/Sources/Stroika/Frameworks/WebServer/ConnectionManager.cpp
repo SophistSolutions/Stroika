@@ -156,7 +156,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                  ComputeConnectionBacklog_ (options)}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"ConnectionMgr-Wait4IOReady"_k)}
 {
-    fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - https://stroika.atlassian.net/browse/STK-706
+    fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
 }
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
@@ -168,10 +168,6 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
     fInactiveOpenConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
-    {
-        // https://stroika.atlassian.net/browse/STK-706 - debug attempt
-        Assert (fWaitForReadyConnectionThread_ != nullptr);
-    }
     fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
@@ -186,12 +182,6 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
     // run til thread aboorted
     while (true) {
-
-        {
-            // https://stroika.atlassian.net/browse/STK-706 - debug attempt
-            Assert (fWaitForReadyConnectionThread_ != nullptr);
-        }
-
         try {
             Execution::CheckForThreadInterruption ();
 
@@ -220,10 +210,6 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif
-                        {
-                            // https://stroika.atlassian.net/browse/STK-706 - debug attempt
-                            Assert (fWaitForReadyConnectionThread_ != nullptr);
-                        }
                         bool keepAlive = (conn->ReadAndProcessMessage () == Connection::eTryAgainLater);
 
                         // no matter what, remove from active connecitons
