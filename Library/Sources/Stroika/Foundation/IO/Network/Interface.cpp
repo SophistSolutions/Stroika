@@ -582,7 +582,7 @@ namespace {
                         case wlan_interface_state_authenticating:
                             return WirelessInfo::State::eAuthenticating;
                         default:
-                            DbgTrace (L"Unknown state %ld\n", s);
+                            DbgTrace (L"Unknown state %ld", s);
                             return WirelessInfo::State::eUnknown;
                     }
                 };
@@ -750,7 +750,6 @@ namespace {
         catch (const std::system_error& e) {
             if (e.code () == error_code{ERROR_SERVICE_NOT_ACTIVE, system_category ()}) {
                 // this just means no wireless services active, so leave wirelessInfo2Merge empty
-                return Traversal::Iterable<Interface>{};
             }
             else {
                 // but other errors it makes sense to propagate
