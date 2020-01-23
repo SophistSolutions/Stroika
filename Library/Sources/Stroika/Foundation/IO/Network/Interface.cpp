@@ -76,8 +76,6 @@ using namespace Stroika::Foundation::IO::Network;
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
 // easiser to see/modularize (and only pulled in if this module is referenced)
 #pragma comment(lib, "Iphlpapi.lib")
-
-#pragma comment(lib, "wlanapi.lib")
 #endif
 
 #if qPlatform_Linux
@@ -501,6 +499,9 @@ namespace {
      *  (see https://forum.kodi.tv/showthread.php?tid=333721&pid=2751888#pid2751888)
      * It is also missing from the docker image mcr.microsoft.com/windows/servercore:ltsc2019.
      * So don't statically link since that caused the whole app to not load. Instead, load the DLL conditionally.
+     *
+     *      \note switched to this helper class from #pragma comment(lib, "wlanapi.lib") in Stroika v2.1a6, to avoid dependency on
+     *            that DLL (not met by simple docker containers).
      */
     struct WLANAPI_ {
         WLANAPI_ ()
@@ -597,8 +598,8 @@ namespace {
                         DWORD                  connectInfoSize = sizeof (WLAN_CONNECTION_ATTRIBUTES);
                         WLAN_OPCODE_VALUE_TYPE opCode          = wlan_opcode_value_type_invalid;
                         Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (
-                            ::WlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
-                                                  nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
+                            sWlanAPI_->fWlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
+                                                            nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
                     }
                     [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo !=nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
 
