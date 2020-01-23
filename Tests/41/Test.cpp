@@ -468,6 +468,7 @@ namespace {
             if (iFace.fType.has_value ()) {
                 DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>{}.GetName (*iFace.fType));
             }
+            DbgTrace (L"WirelessInfo: %s", Characters::ToString (iFace.fWirelessInfo).c_str ());
             DbgTrace (L"bindings: %s", Characters::ToString (iFace.fBindings).c_str ());
             DbgTrace (L"status: %s", Characters::ToString (iFace.fStatus).c_str ());
         }

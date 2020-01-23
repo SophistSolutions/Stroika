@@ -132,7 +132,17 @@ String Interface::WirelessInfo::ToString () const
     Characters::StringBuilder sb;
     sb += L"{";
     sb += L"SSID: " + Characters::ToString (fSSID) + L", ";
-    // todo add more
+    sb += L"State: " + Characters::ToString (fState) + L", ";
+    sb += L"ConnectionMode: " + Characters::ToString (fConnectionMode) + L", ";
+    sb += L"ProfileName: " + Characters::ToString (fProfileName) + L", ";
+    sb += L"BSSType: " + Characters::ToString (fBSSType) + L", ";
+    sb += L"MACAddress: " + Characters::ToString (fMACAddress) + L", ";
+    sb += L"PhysicalConnectionType: " + Characters::ToString (fPhysicalConnectionType) + L", ";
+    sb += L"SignalQuality: " + Characters::ToString (fSignalQuality) + L", ";
+    sb += L"SecurityEnabled: " + Characters::ToString (fSecurityEnabled) + L", ";
+    sb += L"8021XEnabled: " + Characters::ToString (f8021XEnabled) + L", ";
+    sb += L"AuthAlgorithm: " + Characters::ToString (fAuthAlgorithm) + L", ";
+    sb += L"Cipher: " + Characters::ToString (fCipher) + L", ";
     sb += L"}";
     return sb.str ();
 }
