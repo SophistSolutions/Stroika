@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Characters {
      *          String s2 = String_Constant { L"some-string" };
      *          String s3 = L"some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
      *      \endcode
+     *
+     *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
+     *        so it will work in some overload contexts where sv would fail.
      */
     String_Constant operator"" _k (const wchar_t* s, size_t len);
 
