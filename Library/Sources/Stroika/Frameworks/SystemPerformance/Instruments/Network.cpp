@@ -412,7 +412,8 @@ namespace {
             Info                      result;
             Collection<InterfaceInfo> interfaceResults;
             IOStatistics              accumSummary;
-            Iterable<Interface>       networkInterfacs{IO::Network::GetInterfaces ()};
+            SystemInterfacesMgr       systemInterfacesMgr;
+            Iterable<Interface>       networkInterfacs{systemInterfacesMgr.GetAll ()};
 #if qUseWMICollectionSupport_
             fNetworkWMICollector_.Collect ();
             fTCPv4WMICollector_.Collect ();
