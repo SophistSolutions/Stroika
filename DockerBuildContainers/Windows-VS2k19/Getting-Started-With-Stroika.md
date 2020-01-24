@@ -12,6 +12,12 @@ git clone https://github.com/SophistSolutions/Stroika.git
 
 make default-configurations
 
-OR FOR NOW
-    perl configure Debug-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-debug-flags --Xerces no
-    perl configure Debug-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-debug-flags --Xerces no
+## Make one configuration
+
+make CONFIGURATION=Debug-U-32 all -j4
+
+## Make all configurations
+
+make all -j4
+
+for now, not enuf disk space on windows docker containers, and broken resetting size
