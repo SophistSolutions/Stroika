@@ -182,7 +182,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@$(MAKE) --no-print-directory   doBuilds_
+	@$(MAKE) --no-print-directory doBuilds_
 
 
 clean:
@@ -259,6 +259,9 @@ CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(shell which $(CC))"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(shell which $(CXX))"
 CMAKE_ARGS+= -DCMAKE_AR="$(shell which $(AR))"
 CMAKE_ARGS+= -DCMAKE_RANLIB="$(shell which $(RANLIB))"
+else
+CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
+CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
 endif
 
 
@@ -268,8 +271,8 @@ endif
 ###  -- LGP 2019-09-26
 ##
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CFLAGS +=  /DWIN32
-CXXFLAGS +=  /DWIN32
+CFLAGS += /DWIN32
+CXXFLAGS += /DWIN32
 endif
 
 #
@@ -316,11 +319,7 @@ endif
 #### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
 CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq ($(ARCH), x86)
-CMAKE_USE_GENERATOR=Visual Studio 15 2017
-else ifeq ($(ARCH), x86_64)
-CMAKE_USE_GENERATOR=Visual Studio 15 2017 Win64
-endif
+CMAKE_USE_GENERATOR=Visual Studio 16 2019
 endif
 
 
@@ -366,5 +365,3 @@ else
 	@$(PATH_ADJUSTMENT_PREFIX) ; { type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(PATH_ADJUSTMENT_PREFIX) ../../ScriptsLib/GetMessageForMissingTool cmake && exit 1; }
 endif
 	@$(ECHO) "done";
-
-
