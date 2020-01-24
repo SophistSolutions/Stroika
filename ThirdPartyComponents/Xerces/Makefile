@@ -267,7 +267,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (x86_64,$(ARCH))
 CMAKE_ARGS+= -A x64
 else
-CMAKE_ARGS+= -A x86
+CMAKE_ARGS+= -A Win32
 endif
 endif
 
