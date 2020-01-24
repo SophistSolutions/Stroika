@@ -263,7 +263,11 @@ else
 CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
 endif
-
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (x86_64,$(ARCH))
+CMAKE_ARGS+= -A x64
+endif
+endif
 
 ##
 ### Avoid compile error in time_t XMLDateTime::getEpoch(bool duration) const
