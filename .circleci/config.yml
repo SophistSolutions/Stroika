@@ -9,6 +9,7 @@ jobs:
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     steps:
+    - checkout
 
   basic-debug-builds-test-ubuntu1804:
     docker:
