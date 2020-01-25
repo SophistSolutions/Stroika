@@ -4,6 +4,11 @@ orbs:
   win: circleci/windows@2.2.0
 
 jobs:
+  winbuild:
+    executor: win/default
+    docker:
+    - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+    
   basic-debug-builds-test-ubuntu1804:
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
