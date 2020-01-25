@@ -11,10 +11,18 @@ jobs:
 #    - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     
     steps:
-    - checkout
     - run:
-        name: docker
-        command: docker run -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+        name: start docker build environment
+        command: docker run -d -name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+    - run:
+        name: checkout code
+        command: docker exec fred git clone https://github.com/SophistSolutions/Stroika.git 
+    - run:
+        name: configure
+        command: docker exec fred cd Stroika && perl configure Debug --apply-default-debug-flags
+    - run:
+        name: run build
+        command: docker exec fred cd Stroika && make all -j2
 
   basic-debug-builds-test-ubuntu1804:
     docker:
