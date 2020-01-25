@@ -13,6 +13,12 @@ jobs:
     - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     steps:
     - checkout
+    - run:
+      name: Configure
+      command: ./configure Debug --config-tag Windows --apply-default-debug-flags
+    - run:
+      name: Build
+      command: make CONFIGURATION=Debug all -j2
 
   #
   # x64 Linux Ubuntu 1804 build
