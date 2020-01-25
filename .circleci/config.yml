@@ -7,12 +7,12 @@ jobs:
   #
   # Windows build
   #
-#  winbuild:
-#    executor: win/default
-#  docker:
-#    - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
-#  steps:
-#    - checkout
+  winbuild:
+    executor: win/default
+  docker:
+    - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+  steps:
+    - checkout
 
   #
   # x64 Linux Ubuntu 1804 build
