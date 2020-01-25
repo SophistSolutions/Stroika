@@ -24,6 +24,9 @@ jobs:
   winbuild-direct:
     executor: win/default
     
+    environment:
+      PATH: c:/tools/cygwin/bin;%PATH%
+    
     steps:
     - checkout
     - run:
