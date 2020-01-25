@@ -12,7 +12,9 @@ jobs:
     
     steps:
     - checkout
-    - docker run -it sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+    - run:
+        name: docker
+        command: docker run -it sophistsolutionsinc/stroika-buildvm-windows-vs2k19
 
   basic-debug-builds-test-ubuntu1804:
     docker:
