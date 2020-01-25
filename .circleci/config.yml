@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   basic-debug-builds-test-ubuntu1804:
     docker:
