@@ -13,7 +13,7 @@ jobs:
     steps:
     - run:
         name: start docker build environment
-        command: docker run -d -name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+        command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     - run:
         name: checkout code
         command: docker exec fred git clone https://github.com/SophistSolutions/Stroika.git 
