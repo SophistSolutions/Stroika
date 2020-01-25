@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   winbuild:
-    #executor: win/default
+    executor: win/default
     
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
