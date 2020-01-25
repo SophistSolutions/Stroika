@@ -8,7 +8,8 @@ jobs:
     executor: win/default
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
-    
+    steps:
+
   basic-debug-builds-test-ubuntu1804:
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
