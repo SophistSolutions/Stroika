@@ -9,9 +9,9 @@ jobs:
   #
   winbuild:
     executor: win/default
-  docker:
+    docker:
     - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
-  steps:
+    steps:
     - checkout
 
   #
