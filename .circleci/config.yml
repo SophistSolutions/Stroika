@@ -147,23 +147,23 @@ jobs:
     working_directory: ~/build-4-linux
     
     steps:
-    - checkout:
-    - run:
+     - checkout:
+     - run:
         name: Configure
         command: |
           ./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
           ./configure clang++-8-release-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-    - run:
+     - run:
         name: Build
         command: make all -j2
-    - run:
+     - run:
          name: Run Tests
          command: |
             rm -rf test-results && mkdir -p test-results
             pwd
             ls -al
             (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
-    - store_test_results:
+     - store_test_results:
          path: ~/build-4-linux/test-results/run-tests-log.txt
 
 
