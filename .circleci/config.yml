@@ -184,6 +184,7 @@ workflows:
   builds_and_tests:
     jobs:
       - winbuild-via-docker
+      - winbuild-direct
 #      - basic-debug-builds-test-ubuntu1804
 #      - basic-debug-builds-test-ubuntu1910
 #      - basic-clang-8-builds-test-ubuntu1910
