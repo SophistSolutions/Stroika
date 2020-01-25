@@ -205,7 +205,7 @@ sub GetConfig32Or64_
 }
 
 
-### POSSIBLY SOON DEPRECATE - BUT STILL USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars - which itself is soon to deprecate - LGP 2019-12-29
+### USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars
 sub RunSystemWithVCVarsSetInEnvironment
 {
 	my $activeConfigBits = GetConfig32Or64_ ($_[0]);

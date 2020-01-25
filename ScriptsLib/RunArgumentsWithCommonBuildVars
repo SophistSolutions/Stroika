@@ -1,5 +1,12 @@
 #!/usr/bin/env perl
 
+#
+# e.g.
+#		RunArgumentsWithCommonBuildVars Debug-U-32 make -k foo
+#
+#	First arg is configuration. The remaining args all passed along to the next command
+#
+
 use File::Temp qw(tempfile);
 
 BEGIN{ @INC = ( "./", @INC ); }
@@ -15,9 +22,8 @@ sub	GetThisScriptDir {
 my	$thisScriptDir	=	GetThisScriptDir ();
 
 my $activeConfig = $ARGV[0];
-my $cmd = $ARGV[1];
-
-### NEARLY DEPRECATED but not quite - still used to run various ThirdPartyComponents scripts - LGP 2019-12-29
+my $l = @ARGV-1;
+my $cmd = (join " ", @ARGV[1..$l]);
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
