@@ -4,7 +4,7 @@ orbs:
   win: circleci/windows@2.3.1
 
 jobs:
-  winbuild:
+  winbuild-via-docker:
     executor: win/default
     
 #    docker:
@@ -15,14 +15,26 @@ jobs:
         name: start docker build environment
         command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     - run:
-        name: checkout code
-        command: docker exec fred git clone https://github.com/SophistSolutions/Stroika.git 
+        name: checkout code (todo fix branch or see how to checkout locally and map drive with -v)
+        command: docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git 
     - run:
         name: configure
-        command: docker exec fred cd Stroika && perl configure Debug --apply-default-debug-flags
+        command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
     - run:
         name: run build
-        command: docker exec fred cd Stroika && make all -j2
+        command: docker exec fred sh -c "cd Stroika && make all -j2"
+
+  winbuild-direct:
+    executor: win/default
+    
+    steps:
+    - checkout
+    - run:
+        name: Configure
+        command: ./configure Debug --apply-default-debug-flags
+    - run:
+        name: Build
+        command: make all -j2
 
   basic-debug-builds-test-ubuntu1804:
     docker:
@@ -171,7 +183,7 @@ workflows:
   version: 2
   builds_and_tests:
     jobs:
-      - winbuild
+      - winbuild-via-docker
 #      - basic-debug-builds-test-ubuntu1804
 #      - basic-debug-builds-test-ubuntu1910
 #      - basic-clang-8-builds-test-ubuntu1910
