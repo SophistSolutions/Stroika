@@ -27,10 +27,11 @@ jobs:
     steps:
     - checkout
     - run:
-        name: Initialize tools
+        name: Install Required tools
         command: |
           choco install -y cyg-get
           cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
+          ls -lR /
     - run:
         name: Configure
         command: perl ./configure Debug --arch x86 --apply-default-debug-flags
