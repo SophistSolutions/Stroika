@@ -9,13 +9,15 @@ jobs:
   #
   winbuild:
     executor: win/default
+    
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+    
     steps:
     - checkout
     - run:
       name: Configure
-      command: ./configure Debug --config-tag Windows --apply-default-debug-flags
+      command: ./configure Debug --apply-default-debug-flags
     - run:
       name: Build
       command: make CONFIGURATION=Debug all -j2
