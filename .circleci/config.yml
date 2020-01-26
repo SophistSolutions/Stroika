@@ -99,7 +99,6 @@ jobs:
     - store_test_results:
          path: ~/build-4-linux/test-results/run-tests-log.txt
 
-
   basic-debug-builds-test-ubuntu1910:
     docker:
     - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
