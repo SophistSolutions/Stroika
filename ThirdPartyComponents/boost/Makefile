@@ -169,8 +169,8 @@ endif
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
 
 ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-CXX:= $(shell cygpath -w "$(CXX)")
-B2FullPath:= $(shell cygpath -w "$(B2FullPath)")
+CXX:= $(shell cygpath --mixed "$(CXX)")
+B2FullPath:= $(shell cygpath --mixed "$(B2FullPath)")
 endif
 
 
@@ -328,7 +328,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	    ($(ECHO) "${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT) &&\
-	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT)
+	    (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild.OUT)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	    $(ECHO) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild.OUT &&\
