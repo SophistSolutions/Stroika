@@ -129,8 +129,11 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
 		export ASFLAGS="$(ASFLAGS_)"; \
-		env --unset=MAKEFLAGS --unset=MFLAGS sh -c \
-		"$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"nmake -f win32/Makefile.msc OBJA=\\\"$(OBJA_)\\\" AS=\\\"$(AS)\\\" CC=\\\"$(CC)\\\" AR=\\\"$(LIBTOOL)\\\" zlib.lib\""
+		export AS="$(AS)"; \
+		export CC="$(CC)"; \
+		export AR="$(LIBTOOL)"; \
+		env --unset=MAKEFLAGS --unset=MFLAGS \
+		$(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake -E -f win32/Makefile.msc OBJA="$(OBJA_)" zlib.lib
 else
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory CC="$(CC)"
 endif
