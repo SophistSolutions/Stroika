@@ -16,7 +16,7 @@ Objs	=	\
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb)
+CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb)
 endif
 
 

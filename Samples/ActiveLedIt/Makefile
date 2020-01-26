@@ -40,7 +40,7 @@ endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /I"$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(ObjDir))"
+CXXFLAGS += /I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 endif
 
 
@@ -74,7 +74,7 @@ $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 
 MIDL_FLAGS +=	/env win32
-RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(ObjDir))"
+RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
@@ -132,8 +132,8 @@ $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 register:	$(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
 	@#NOTE - if you run into errors - this typically needs to be run as administrator (run as administrator shell that invokes this)
-	@#regsvr32 /s /c "$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(TARGETEXE))"
-	@regsvr32 /c "$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	@#regsvr32 /s /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	@regsvr32 /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
 
 
 launch-sample:

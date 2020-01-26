@@ -185,7 +185,7 @@ bootstrap_:
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
@@ -223,7 +223,7 @@ B2_CONFIGURATION_ARGS +=	--hash
 B2_CONFIGURATION_ARGS +=	-d2
 #SHOW VARIABLES - B2_CONFIGURATION_ARGS +=	-d7
 
-B2_CONFIGURATION_ARGS +=	--prefix=$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))
+B2_CONFIGURATION_ARGS +=	--prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))
 ifeq (0,$(ENABLE_ASSERTIONS))
 B2_CONFIGURATION_ARGS += variant=release
 else

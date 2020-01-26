@@ -592,11 +592,14 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "OUT_ARG_PREFIX_NATIVE=-o \n");
 	}
 
+	print (OUT "###FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE DEPRECATED\n");
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");
 	}
 	else {
 		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$1\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$1\n");
 	}
 
 	print (OUT "\n");

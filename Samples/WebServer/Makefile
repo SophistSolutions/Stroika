@@ -10,7 +10,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/
 
-CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/)
+CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/)
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebServer/
 TARGETEXE				=	$(TARGETDIR)WebServer${EXE_SUFFIX}
