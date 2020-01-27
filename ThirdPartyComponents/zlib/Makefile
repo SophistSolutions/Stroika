@@ -132,8 +132,9 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 		export AS="$(AS)"; \
 		export CC="$(CC)"; \
 		export AR="$(LIBTOOL)"; \
+		export OBJA="$(OBJA_)"; \
 		env --unset=MAKEFLAGS --unset=MFLAGS \
-		  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake -E -f win32/Makefile.msc OBJA="$(OBJA_)" zlib.lib
+		  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake -E -f win32/Makefile.msc zlib.lib
 else
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory CC="$(CC)"
 endif
