@@ -18,14 +18,17 @@ jobs:
         name: configure
         command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
     - run:
-        name: run build
+        name: Build
         command: docker exec fred sh -c "cd Stroika && make all -j2"
+    - run:
+        name: Run-Tests
+        command: docker exec fred sh -c "cd Stroika && make run-tests"
 
   winbuild-direct:
     executor: win/default
     
     environment:
-      PATH: c:/tools/cygwin/bin;%PATH%
+      PATH: C:\tools\cygwin;%PATH%
     
     steps:
     - checkout
@@ -41,6 +44,9 @@ jobs:
     - run:
         name: Build
         command: make all -j2
+    - run:
+        name: Run-Tests
+        command: make run-tests
 
   basic-debug-builds-test-ubuntu1804:
     docker:
