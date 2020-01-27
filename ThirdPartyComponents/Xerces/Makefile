@@ -234,6 +234,17 @@ endif
 
 
 
+#### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
+CMAKE_USE_GENERATOR=Unix Makefiles
+ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
+CMAKE_USE_GENERATOR=Visual Studio 16 2019
+else ifeq ($(ProjectPlatformSubdir,VisualStudio.Net-2017)
+CMAKE_USE_GENERATOR=Visual Studio 15 2017
+else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+$(error "unsupported version of visual studio.net")
+endif
+
+
 ###NOTE - because we set network:BOOL:OFF - Xerces doesn't depend on CURL (but we could make it so if we wanted, but then update dependencies
 ### in ThirdPartyLibs/Makefile
 CMAKE_ARGS=
@@ -260,10 +271,18 @@ CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
 ifeq (x86_64,$(ARCH))
 CMAKE_ARGS+= -A x64
 else
 CMAKE_ARGS+= -A Win32
+endif
+else ifeq ($(ProjectPlatformSubdir,VisualStudio.Net-2017)
+ifeq (x86_64,$(ARCH))
+CMAKE_USE_GENERATOR = Visual Studio 15 2017 Win64
+endif
+else
+$(error "unsupported version of visual studio.net")
 endif
 endif
 
@@ -317,12 +336,6 @@ endif
 
 
 
-
-#### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
-CMAKE_USE_GENERATOR=Unix Makefiles
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CMAKE_USE_GENERATOR=Visual Studio 16 2019
-endif
 
 
 # For reasons not totally understood - probably just that the cmake in cygwin is quite old - it doesn't work right here.
