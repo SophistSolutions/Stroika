@@ -238,7 +238,7 @@ endif
 CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
 CMAKE_USE_GENERATOR=Visual Studio 16 2019
-else ifeq ($(ProjectPlatformSubdir,VisualStudio.Net-2017)
+else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
 CMAKE_USE_GENERATOR=Visual Studio 15 2017
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(error "unsupported version of visual studio.net")
@@ -277,7 +277,7 @@ CMAKE_ARGS+= -A x64
 else
 CMAKE_ARGS+= -A Win32
 endif
-else ifeq ($(ProjectPlatformSubdir,VisualStudio.Net-2017)
+else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
 ifeq (x86_64,$(ARCH))
 CMAKE_USE_GENERATOR = Visual Studio 15 2017 Win64
 endif
