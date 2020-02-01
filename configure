@@ -2216,7 +2216,8 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 }
 
 
-
+my %GetMSVCVarName_e_;	### cache map of var 2 values since $ARCH and $BUILD_TOOLS_ROOT shouldn't change once we start calling this
+my $GetMSVCVarName_filled_ = false;
 sub GetMSVCVarName_
 {
 	my $envVarName= shift;
@@ -2226,9 +2227,14 @@ sub GetMSVCVarName_
 	if ($ARCH eq "") {
 		die ("reorg code so this set first");
 	}
-	### @todo fix arg to GetAugmentedEnvironmentVariablesForConfiguration so depends on arch (it does - so fix so we pass in right buildtoolsdir)
-	my %e = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, GetDefaultToolsBuildDir());
-	return "$e{$envVarName}"
+	if (!$GetMSVCVarName_filled_) {
+		if (! defined $BUILD_TOOLS_ROOT) {
+			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir();
+		}
+		%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BUILD_TOOLS_ROOT);
+		$GetMSVCVarName_filled_ = true;
+	}
+	return "$GetMSVCVarName_e_{$envVarName}"
 }
 
 
