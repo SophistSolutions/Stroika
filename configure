@@ -1923,7 +1923,7 @@ sub PostProcessOptions_ ()
 
 	if ($isVisualStudio) {
 		if (! defined $BUILD_TOOLS_ROOT) {
-			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir();
+			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir($PROJECTPLATFORMSUBDIR);
 		}
 	}
 
@@ -2229,7 +2229,7 @@ sub GetMSVCVarName_
 	}
 	if (!$GetMSVCVarName_filled_) {
 		if (! defined $BUILD_TOOLS_ROOT) {
-			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir();
+			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir($PROJECTPLATFORMSUBDIR);
 		}
 		%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BUILD_TOOLS_ROOT);
 		$GetMSVCVarName_filled_ = true;

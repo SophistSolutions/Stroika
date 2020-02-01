@@ -68,13 +68,39 @@ sub toExternallyUsedPath_
 ### Return the default (guessed) Visual Studio instllation directory
 ### e.g. $PROGRAMFILESDIR\\Microsoft Visual Studio\\2019
 ###
+### Example calls 
+###     GetDefaultToolsBuildDir ("VisualStudio.Net-2017")
+###     GetDefaultToolsBuildDir ("VisualStudio.Net")
 sub GetDefaultToolsBuildDir ()
 {
-### @todo consider somehow redoing this logic with use of vswhere, but not 100% sure how to fetch efficiently to use
-	local $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2019";
-	if (! (-e toCygPath_ ($VSDIR))) {
-		$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\2019";
+	local $PLATFORM = shift;
+
+	local @names = ("2017", "2019");
+	if ($PLATFORM eq "VisualStudio.Net-2017") {
+		@names = ("2017");
 	}
+	elsif ($PLATFORM eq "VisualStudio.Net-2019") {
+		@names = ("2019");
+	}
+	elsif ($PLATFORM eq "VisualStudio.Net") {
+		# keep default
+	}
+	else {
+		die ("PLATFORM unreconfigued in configure");
+	}
+	
+	local $VSDIR;
+	foreach $n ( @names ) {
+		$VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2019";
+		if (! (-e toCygPath_ ($VSDIR))) {
+			$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\2019";
+		}
+		if (!-e toCygPath_ ($VSDIR)) {
+			last;
+		}
+	}
+
+### @todo consider somehow redoing this logic with use of vswhere, but not 100% sure how to fetch efficiently to use
 	@VSDIRs = bsd_glob (toCygPath_ ("$VSDIR\\*"));
 	$VSDIR = fromCygPath_ (@VSDIRs[0]);
 	if (! (-e toCygPath_ ($VSDIR))) {
