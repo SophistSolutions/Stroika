@@ -280,6 +280,11 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory all > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT 2>&1;
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@# Note, lines in BUILD.OUT like
+	@#		cl : Command line warning D9025 : overriding '/MT' with '/MTd'
+	@#		cl : Command line warning D9025 : overriding '/Zi' with '/Z7'
+	@# are OK to ignore because openssl makefile structures rules that have defaults
+	@# for these values, and then overrides them with the provided values (from our calling script)
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 ((env --unset=MFLAGS --unset=MAKEFLAGS $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake) \
 	 2>&1)' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
