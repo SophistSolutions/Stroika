@@ -54,7 +54,7 @@ sub GetString2InsertIntoBatchFileToInitCompiles_
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x64_x86 > nul;\r\n";
+	$result 	.=	"\" $arg > nul;\r\n";
 	$result 	.=	"popd\r\n";
 	return $result;
 }
