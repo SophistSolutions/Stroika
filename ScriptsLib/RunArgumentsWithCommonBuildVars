@@ -36,9 +36,9 @@ require "$thisScriptDir/ConfigurationReader.pl";	## @todo for GetConfigurationPa
 
 sub GetString2InsertIntoBatchFileToInitCompiles_
 {
-	my $ARCH = GetConfigurationParameter($activeConfig, "ARCH");
-	my $VSDIR = GetConfigurationParameter($activeConfig, "BUILD_TOOLS_ROOT");
-	my $arg = undef;
+	local $ARCH = GetConfigurationParameter($activeConfig, "ARCH");
+	local $VSDIR = GetConfigurationParameter($activeConfig, "BUILD_TOOLS_ROOT");
+	local $arg = undef;
 	if ($ARCH eq "x86") {
 		$arg ="x64_x86";
 	}
@@ -48,8 +48,8 @@ sub GetString2InsertIntoBatchFileToInitCompiles_
 	else {
 		die ("hardwired/to fix logic about mapping config names to 32/64")
 	}
-	my $VSDIR_VC = "$VSDIR\\VC";
-	my $result = "";
+	local $VSDIR_VC = "$VSDIR\\VC";
+	local $result = "";
 	##pushd/popd needed cuz vcvars now changes directories (no idea why)
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
@@ -62,16 +62,16 @@ sub GetString2InsertIntoBatchFileToInitCompiles_
 
 sub RunSystemWithVCVarsSetInEnvironment_
 {
-	my $cmd2Run = $_[0];
-	my $tmpFileName = "";
+	local $cmd2Run = $_[0];
+	local $tmpFileName = "";
 	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
-	my $result = GetString2InsertIntoBatchFileToInitCompiles_();
+	local $result = GetString2InsertIntoBatchFileToInitCompiles_();
 	print $fh $result;
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
-	my $result = system ("cmd /C $tmpFileName");
+	local $result = system ("cmd /C $tmpFileName");
 	unlink ($tmpFileName);
 	return $result;
 }
