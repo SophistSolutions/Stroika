@@ -2,72 +2,39 @@
 #use strict;
 #use warnings;
 
-sub	GetThisScriptDir {
-	use File::Basename;
-	use Cwd 'abs_path';
-	my $p = __FILE__;
-	my $A = abs_path ($p);
-	my $dirname = dirname($A);
-	return $dirname;
-}
-my	$thisScriptDir	=	GetThisScriptDir ();
-
 use File::Glob ':bsd_glob';
 use File::Temp qw(tempfile);
-
-### This file is minimally acceptable but mostly wrong.
-### SEE http://bugzilla/show_bug.cgi?id=736
-###
-
-sub PRINT_ENV_
-{
- 	my $msg = shift;
-	print ($msg);
-	foreach $key (sort(keys %ENV)) {
-	   print "$key = $ENV{$key}<br>\n";
-	}
-}
-
-sub PRINT_PATH_
-{
- 	my $msg = shift;
-	print ($msg);
-	##### WRONG - must parse envpath as : sep list
-	foreach $key (sort(keys %ENV)) {
-	   print "$key = $ENV{$key}<br>\n";
-	}
-}
-
-if (0) {
-	PRINT_PATH_ ("BEFORE SETTING PATH ENV=$ENV{'PATH'}\n");
-}
-
-
-# WE SHOULD call
-# 		call vcvarsall.bat x86
-# and capture its results, but I'm not quite sore how yet....
-### SEE http://bugzilla/show_bug.cgi?id=736
-
 
 
 sub trim($)
 {
-	my $string = shift;
+	local $string = shift;
 	$string =~ s/^\s+//;
 	$string =~ s/\s+$//;
 	return $string;
 }
 
 
-local $PROGRAMFILESDIR= $ENV{'PROGRAMFILES'};
-local $PROGRAMFILESDIR86= $ENV{'ProgramFiles(x86)'};
+sub PRINT_ENV_
+{
+ 	local $msg = shift;
+	print ($msg);
+	foreach my $key (sort(keys %ENV)) {
+	   print "$key = $ENV{$key}<br>\n";
+	}
+}
+
+
+
+my $PROGRAMFILESDIR= $ENV{'PROGRAMFILES'};
+my $PROGRAMFILESDIR86= $ENV{'ProgramFiles(x86)'};
 
 
 sub toCygPath_
 {
-	my $arg = shift;
+	local $arg = shift;
 	{
-		my $len = length ($arg);
+		local $len = length ($arg);
 		if ($len > 0 and substr ($arg, -1, 1) eq "\\") {
 			$arg = substr ($arg, 0, $len-1);
 		}
@@ -75,13 +42,13 @@ sub toCygPath_
 	if ($arg eq "") {
 		return "";
 	}
-	my $result = trim (`cygpath --unix \"$arg\"`);
+	local $result = trim (`cygpath --unix \"$arg\"`);
 	return $result;
 }
 
 sub fromCygPath_
 {
-	my $arg = shift;
+	local $arg = shift;
 	if ($arg eq "") {
 		return "";
 	}
@@ -90,26 +57,12 @@ sub fromCygPath_
 
 sub toExternallyUsedPath_
 {
-	my $arg = shift;
+	local $arg = shift;
 	if ($arg eq "") {
 		return "";
 	}
 	return trim (`cygpath --mixed \"$arg\"`);
 }
-
-
-
-my $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2017";
-if (! (-e toCygPath_ ($VSDIR))) {
-	$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\2017";
-}
-@VSDIRs = bsd_glob (toCygPath_ ("$VSDIR\\*"));
-$VSDIR = fromCygPath_ (@VSDIRs[0]);
-if (! (-e toCygPath_ ($VSDIR))) {
-	die ("directory '$VSDIR' doesn't exist");
-} 
-
-
 
 ###
 ### Return the default (guessed) Visual Studio instllation directory
@@ -117,36 +70,44 @@ if (! (-e toCygPath_ ($VSDIR))) {
 ###
 sub GetDefaultToolsBuildDir ()
 {
+### @todo consider somehow redoing this logic with use of vswhere, but not 100% sure how to fetch efficiently to use
+	local $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2019";
+	if (! (-e toCygPath_ ($VSDIR))) {
+		$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\2019";
+	}
+	@VSDIRs = bsd_glob (toCygPath_ ("$VSDIR\\*"));
+	$VSDIR = fromCygPath_ (@VSDIRs[0]);
+	if (! (-e toCygPath_ ($VSDIR))) {
+		die ("directory '$VSDIR' doesn't exist");
+	}
 	return $VSDIR;
 }
 
 
 
+### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019 for docs on calling vcvarsall.bat
 
-my $VSDIR_VC = "$VSDIR\\VC";
-
-### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2017 for docs on calling vcvarsall.bat
-
-sub GetString2InsertIntoBatchFileToInit32BitCompiles_
+sub GetString2InsertIntoBatchFileToInitCompiles_
 {
+	my $ARCH = shift;
+	my $VSDIR = shift;
+	my $arg = undef;
+	if ($ARCH eq "x86") {
+		$arg ="x64_x86";
+	}
+	elsif ($ARCH eq "x86_64") {
+		$arg ="x64";
+	}
+	else {
+		die ("hardwired/to fix logic about mapping config names to 32/64")
+	}
+	my $VSDIR_VC = "$VSDIR\\VC";
 	my $result = "";
 	##pushd/popd needed cuz vcvars now changes directories (no idea why)
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x64_x86 > nul;\r\n";
-	$result 	.=	"popd\r\n";
-	return $result;
-}
-
-sub GetString2InsertIntoBatchFileToInit64BitCompiles_
-{
-	my $result = "";
-	##pushd/popd needed cuz vcvars now changes directories (no idea why)
-	$result 	.=	"pushd %TEMP%\r\n";
-	$result 	.=	"call \"";
-	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x64 > nul;\r\n";
+	$result 	.=	"\" $arg > nul;\r\n";
 	$result 	.=	"popd\r\n";
 	return $result;
 }
@@ -155,26 +116,17 @@ sub GetString2InsertIntoBatchFileToInit64BitCompiles_
 
 sub RunBackTickWithVCVarsSetInEnvironment_
 {
-	my $activeConfigBits = $_[0];
-	my $cmd2Run = $_[1];
-	my $tmpFileName = "";
+	local $ARCH = shift;
+	local $cmd2Run = shift;
+	local $tmpFileName = "";
 	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
-	if (index($activeConfigBits, "32") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles_();
-		print $fh $result;
-	}
-	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles_();
-		print $fh $result;
-	}
-	else {
-		die ("hardwired/to fix logic about mapping config names to 32/64")
-	}
+	local $result = GetString2InsertIntoBatchFileToInitCompiles_($ARCH, $VSDIR);
+	print $fh $result;
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
-	my $result = `cmd /C $tmpFileName`;
+	local $result = `cmd /C $tmpFileName`;
 	unlink ($tmpFileName);
 	return $result;
 }
@@ -182,8 +134,9 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 
 sub GetEnvironmentVariablesForConfiguration_
 {
-	my $activeConfigBits = $_[0];
-	my $resultStr = RunBackTickWithVCVarsSetInEnvironment_($activeConfigBits, "set");
+	local $ARCH = shift;
+	my $VSDIR = shift;
+	my $resultStr = RunBackTickWithVCVarsSetInEnvironment_($ARCH, "set");
 	my %result =     ();
 	foreach $line (split /[\r\n]/, $resultStr) {
 		my @splitLine = split (/=/, $line);
@@ -191,45 +144,26 @@ sub GetEnvironmentVariablesForConfiguration_
 		my $envVarValue = @splitLine[1];
 		$result{$envVar} .= $envVarValue;
 	}
+	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"WindowsSdkVerBinPath"} . "\n";
 	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"PATH"} . "\n";
 	return %result;
 }
 
 
-sub GetConfig32Or64_
-{
-	my $activeConfig = $_[0];
-	if ($activeConfig eq "x86") {
-		return "32";
-	}
-	if ($activeConfig eq "x86_64") {
-		return "64";
-	}
-	print STDERR "WARNING BAD ARCH passed to SetupBuildCommonVars module: ARCH= $activeConfig\n";
-	if ($activeConfig =~ m/32/) {
-	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 32\r\n");
-		return "32";
-	}
-	if ($activeConfig =~ m/64/) {
-	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 64\r\n");
-		return "64";
-	}
-	die ("failed to map config $activeConfig to 32/64")
-}
-
-
-
-
+#
+# Return a dictionary with all the configuration for the given argument ARCH string
+#
 sub GetAugmentedEnvironmentVariablesForConfiguration
 {
-	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
-	my %resEnv = GetEnvironmentVariablesForConfiguration_ ($activeConfigBits);
+	local $ARCH = shift;
+	local $VSDIR = shift;
+	my %resEnv = GetEnvironmentVariablesForConfiguration_ ($ARCH, $VSDIR);
 
 	my $cwVSDIR = toCygPath_ ($VSDIR);
 
 	#my $HOSTSTR="HostX86";	-- I doubt anyone develops on 32bit anymore, but if they do we can easily detect and fix this
 	my $HOSTSTR="HostX64";
-	if (index($activeConfigBits, "32") != -1) {
+	if ($ARCH eq "x86") {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
 		$resEnv{"AS"} = toExternallyUsedPath_ ($exe32Dir . "\\ml");
@@ -237,7 +171,7 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"LD"} = toExternallyUsedPath_ ($exe32Dir . "\\link");
 		$resEnv{"AR"} = toExternallyUsedPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
-	elsif (index($activeConfigBits, "64") != -1) {
+	elsif ($ARCH eq "x86_64") {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
 		$resEnv{"AS"} = toExternallyUsedPath_ ($exe64Dir . "\\ml64");
@@ -245,14 +179,19 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"LD"} = toExternallyUsedPath_ ($exe64Dir . "\\link");
 		$resEnv{"AR"} = toExternallyUsedPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
+	else {
+		die ("unrecongized ARCH")
+	}
 
 	{
 		my $sdkPath = %resEnv{'WindowsSdkVerBinPath'};
 		$sdkPath = toCygPath_($sdkPath);
+		$resEnv{"WindowsSdkVerBinPath"} = toExternallyUsedPath_ ($WindowsSdkVerBinPath);
 		my $exeDir = "$sdkPath/x64/";
 		$resEnv{"MIDL"} = toExternallyUsedPath_ ($exeDir . "midl");
 		$resEnv{"RC"} = toExternallyUsedPath_ ($exeDir . "rc");
 	}
+
 
 	my $myOrigFullPath = $ENV{'PATH'};
 	#print "myOrigFullPath=$myOrigFullPath\n";
@@ -298,8 +237,8 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		}
 		$param_string.= "$ip";
 	}
-	$resEnv{"TOOLS_PATH_ADDITIONS"} = $param_string;
 	#todo must so similar but be careful about how to treat colon in paths.
+	$resEnv{"TOOLS_PATH_ADDITIONS"} = $param_string;
 	#$resEnv{"TOOLS_PATH_ADDITIONS"} =`cygpath --unix --path \"$param_string\"`;
 
 	return %resEnv;

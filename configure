@@ -2219,17 +2219,15 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 
 sub GetMSVCVarName_
 {
-	my $useProjectDir= "$thisScriptDir/Library/Projects/" . $PROJECTPLATFORMSUBDIR;
-	if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
-		require "$useProjectDir/SetupBuildCommonVars.pl";
+	my $envVarName= shift;
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		require "$thisScriptDir/ScriptsLib/Configure-VisualStudio-Support.pl";
 	}
-
-	my $envVarName= $_[0];
-	#my %e = GetAugmentedEnvironmentVariablesForConfiguration ($configurationName);
 	if ($ARCH eq "") {
 		die ("reorg code so this set first");
 	}
-	my %e = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH);
+	### @todo fix arg to GetAugmentedEnvironmentVariablesForConfiguration so depends on arch (it does - so fix so we pass in right buildtoolsdir)
+	my %e = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, GetDefaultToolsBuildDir());
 	return "$e{$envVarName}"
 }
 
