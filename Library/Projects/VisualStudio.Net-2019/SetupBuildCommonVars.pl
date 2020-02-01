@@ -112,6 +112,16 @@ if (! (-e toCygPath_ ($VSDIR))) {
 } 
 
 
+###
+### Return the default (guessed) Visual Studio instllation directory
+### e.g. $PROGRAMFILESDIR\\Microsoft Visual Studio\\2019
+###
+sub GetDefaultToolsBuildDir ()
+{
+	return $VSDIR;
+}
+
+
 my $VSDIR_VC = "$VSDIR\\VC";
 
 ### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019 for docs on calling vcvarsall.bat

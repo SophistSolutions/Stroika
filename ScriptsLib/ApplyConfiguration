@@ -24,6 +24,7 @@ my $activeConfiguration	=	$ARGV[0];
 
 my $PROJECTPLATFORMSUBDIR='';
 my $TARGET_PLATFORMS='';
+my $BUILD_TOOLS_ROOT=undef;
 
 
 my @useExtraMakeDefines;
@@ -116,6 +117,7 @@ sub	ReadConfiguration_
 {
 	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter($activeConfiguration, "ProjectPlatformSubdir");
 	$TARGET_PLATFORMS = GetConfigurationParameter($activeConfiguration, "TARGET_PLATFORMS");
+	$BUILD_TOOLS_ROOT = GetConfigurationParameter($activeConfiguration, "BUILD_TOOLS_ROOT");
 	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
 	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++");
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
@@ -383,6 +385,7 @@ sub WriteStroikaConfigMakeHeader
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ProjectPlatformSubdir", $PROJECTPLATFORMSUBDIR);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TARGET_PLATFORMS", $TARGET_PLATFORMS);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("BUILD_TOOLS_ROOT", $BUILD_TOOLS_ROOT);
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");

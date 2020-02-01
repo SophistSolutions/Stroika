@@ -84,6 +84,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'TARGET_PLATFORMS'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<BUILD_TOOLS_ROOT>");
+		if (defined $pps) {
+			$configuration {'BUILD_TOOLS_ROOT'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<TOOLS_PATH_ADDITIONS>");
 		if (defined $pps) {
 			$configuration {'TOOLS_PATH_ADDITIONS'} = $pps;

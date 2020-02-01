@@ -66,6 +66,7 @@ my @EXTRA_ARGS = ();
 
 ########### CONFIG_Variables ###############
 my $ARCH='';
+my $BUILD_TOOLS_ROOT=undef;
 my $PROJECTPLATFORMSUBDIR='';
 my $TARGET_PLATFORMS='';
 
@@ -1914,6 +1915,12 @@ sub PostProcessOptions_ ()
 		$isVisualStudio = false;
 	}
 
+	if ($isVisualStudio) {
+		if (! defined $BUILD_TOOLS_ROOT) {
+			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir();
+		}
+	}
+
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 	}
@@ -2247,6 +2254,9 @@ sub	WriteConfigFile_
 
 
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
+	if (defined $BUILD_TOOLS_ROOT) {
+		print (OUT "    <BUILD_TOOLS_ROOT>$BUILD_TOOLS_ROOT</BUILD_TOOLS_ROOT>\n");
+	}
 	print (OUT "    <TARGET_PLATFORMS>$TARGET_PLATFORMS</TARGET_PLATFORMS>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
 	if (defined $Config_Tag) {
