@@ -6,6 +6,9 @@
 #
 #	First arg is configuration. The remaining args all passed along to the next command
 #
+#	On windows (Visual Studio), this creates a .bat file, runs vcvarsall.bat (right arch), and then puts the arguments
+#	to this script into that .bat file, and runs the full .bat file
+#
 
 use File::Temp qw(tempfile);
 
@@ -32,9 +35,8 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";
 }
 
-#my $result = RunSystemWithVCVarsSetInEnvironment ($activeConfig, $cmd);
 my $result = RunSystemWithVCVarsSetInEnvironment (GetConfigurationParameter($activeConfig, "ARCH"), $cmd);
-# exit int ($result) doesn't work - for reasons I don't understand, but since abanodoming perl, no point in debugging - just workaround for now --LGP 2017-10-29
+# exit int ($result) doesn't work - for reasons I don't understand, but since I intend to abaondo use of perl, no point in debugging - just workaround for now --LGP 2017-10-29
 if ($result == 0) {
 	exit 0;
 }

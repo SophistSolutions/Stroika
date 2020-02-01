@@ -99,6 +99,7 @@ sub toExternallyUsedPath_
 }
 
 
+### @todo consider somehow redoing this logic with use of vswhere, but not 100% sure how to fetch efficiently to use
 
 my $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2019";
 if (! (-e toCygPath_ ($VSDIR))) {
@@ -207,7 +208,7 @@ sub GetConfig32Or64_
 }
 
 
-### POSSIBLY SOON DEPRECATE - BUT STILL USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars - which itself is soon to deprecate - LGP 2019-12-29
+### STILL USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars - 2019-12-29
 sub RunSystemWithVCVarsSetInEnvironment
 {
 	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
