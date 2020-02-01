@@ -197,7 +197,8 @@ sub	DoHelp_
 		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */\n");
-		print("	    --targetPlatforms {TARGET_PLATFORMS}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
+		print("	    --target-platforms {TARGET_PLATFORMS}           /* Specifies the target-platforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
+		print("	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
 		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
 		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
@@ -1128,6 +1129,11 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$TARGET_PLATFORMS = $var;
+		}
+		elsif (lc ($var) eq "-build-tools-root" or lc ($var) eq "--build-tools-root") {
+			$i++;
+			$var = $args[$i];
+			$BUILD_TOOLS_ROOT = $var;
 		}
 		elsif (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
 			$i++;
