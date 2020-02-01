@@ -218,49 +218,6 @@ sub GetConfig32Or64_
 }
 
 
-### USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars
-sub RunSystemWithVCVarsSetInEnvironment
-{
-	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
-	my $cmd2Run = $_[1];
-	my $tmpFileName = "";
-	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
-	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
-	print $fh '@echo off' . "\r\n";
-	if (index($activeConfigBits, "32") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles_();
-		print $fh $result;
-	}
-	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles_();
-		#print "64 case and result=$result\r\n";
-		print $fh $result;
-	}
-	else {
-		die ("hardwired/to fix logic about mapping config names to 32/64")
-	}
-	print $fh $cmd2Run . "\r\n";
-	close $fh;
-
-	#print "TMPFILENAME=$tmpFileName; cfg=$_[0], activeconfigbits=$activeConfigBits, and cmd2run=$cmd2Run\r\n";
-	my $result = system ("cmd /C $tmpFileName");
-	unlink ($tmpFileName);
-	return $result;
-}
-
-
-# IF WE STILL NEEDEED THIS - cygpath --path does it faster/simpler
-#sub convertWinPathVar2CygwinPathVar_
-#{
-#	my $winPath = $_[0];
-#	#print "doing convertWinPathVar2CygwinPathVar_ (" . $winPath . ")\n";
-#	my $newCygPath = "";
-#	foreach $pathElt (split (";",$winPath)) {
-#		$newCygPath .= toCygPath_ ($pathElt) . ":";
-#	}
-#	#print "returning convertWinPathVar2CygwinPathVar_ (" . $newCygPath . ")\n";
-#	return $newCygPath;
-#}
 
 
 sub GetAugmentedEnvironmentVariablesForConfiguration

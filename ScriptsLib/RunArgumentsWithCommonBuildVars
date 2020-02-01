@@ -30,12 +30,56 @@ my $cmd = (join " ", @ARGV[1..$l]);
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
-my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
-if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
-	require "$useProjectDir/SetupBuildCommonVars.pl";
+
+
+### SEE https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019 for docs on calling vcvarsall.bat
+
+sub GetString2InsertIntoBatchFileToInitCompiles_
+{
+	my $arg = shift;
+	my $VSDIR = GetConfigurationParameter($activeConfig, "BUILD_TOOLS_ROOT");
+	my $VSDIR_VC = "$VSDIR\\VC";
+	my $result = "";
+	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	$result 	.=	"pushd %TEMP%\r\n";
+	$result 	.=	"call \"";
+	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
+	$result 	.=	"\" x64_x86 > nul;\r\n";
+	$result 	.=	"popd\r\n";
+	return $result;
 }
 
-my $result = RunSystemWithVCVarsSetInEnvironment (GetConfigurationParameter($activeConfig, "ARCH"), $cmd);
+
+sub RunSystemWithVCVarsSetInEnvironment_
+{
+	my $ARCH = GetConfigurationParameter($activeConfig, "ARCH");
+	my $cmd2Run = $_[0];
+	my $tmpFileName = "";
+	$template = "runCmdInVCVarsContext_XXXXXX"; # trailing Xs are changed
+	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
+	print $fh '@echo off' . "\r\n";
+	if ($ARCH eq "x86") {
+		my $result = GetString2InsertIntoBatchFileToInitCompiles_("x64_x86");
+		print $fh $result;
+	}
+	elsif ($ARCH eq "x86_64") {
+		my $result = GetString2InsertIntoBatchFileToInitCompiles_("x64");
+		#print "64 case and result=$result\r\n";
+		print $fh $result;
+	}
+	else {
+		die ("hardwired/to fix logic about mapping config names to 32/64")
+	}
+	print $fh $cmd2Run . "\r\n";
+	close $fh;
+
+	#print "TMPFILENAME=$tmpFileName; cfg=$_[0], activeconfigbits=$activeConfigBits, and cmd2run=$cmd2Run\r\n";
+	my $result = system ("cmd /C $tmpFileName");
+	unlink ($tmpFileName);
+	return $result;
+}
+
+my $result = RunSystemWithVCVarsSetInEnvironment_ ($cmd);
 # exit int ($result) doesn't work - for reasons I don't understand, but since I intend to abaondo use of perl, no point in debugging - just workaround for now --LGP 2017-10-29
 if ($result == 0) {
 	exit 0;
