@@ -30,7 +30,7 @@ ifeq ($(shell uname),Linux)
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
-	docker build -f Windows-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19 -m 2G .
+	docker build -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 -m 2G .
 endif
 
 
@@ -64,5 +64,5 @@ ifeq ($(shell uname),Linux)
 	#docker push sophistsolutionsinc/stroika-dev
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
-	docker push sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
 endif
