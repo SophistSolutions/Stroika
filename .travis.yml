@@ -40,7 +40,7 @@ jobs:
         #- choco install visualstudio2019-workload-vctools
         #- choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US"
         - choco install visualstudio2019community --package-parameters "--includeRecommended --includeOptional"
-        - chococo install -y cyg-get
+        - choco install -y cyg-get
         - cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
       install:
         - set PATH=c:\tools\cygwin\bin;%PATH%
