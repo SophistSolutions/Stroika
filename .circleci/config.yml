@@ -9,6 +9,9 @@ jobs:
     
     steps:
     - run:
+        name: pull docker image (avoid timeout)
+        command: docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+    - run:
         name: start docker build environment
         command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     - run:
