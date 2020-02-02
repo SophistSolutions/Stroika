@@ -40,7 +40,10 @@ jobs:
         command: |
           choco install -y cyg-get
           cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-          ls -lR /
+          
+    - run:
+        name: list all files on machine to find where missing install is
+        command: Get-ChildItem -Recurse.
     - run:
         name: Configure
         command: perl ./configure Debug --arch x86 --apply-default-debug-flags
@@ -197,7 +200,11 @@ workflows:
   version: 2
   builds_and_tests:
     jobs:
-    - winbuild-via-docker
+    - winbuild-via-docker:
+        filters:
+          branches:
+            ignore:
+              - v2.1-Dev
     - winbuild-direct
     - basic-debug-builds-test-ubuntu1804:
         filters:
