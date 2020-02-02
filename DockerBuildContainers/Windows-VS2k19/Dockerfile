@@ -10,7 +10,15 @@ SHELL ["powershell"]
 #    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools `
 #    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
 #
-RUN Invoke-WebRequest "https://aka.ms/vs/16/release/vs_buildtools.exe" `
+
+#
+# VS versions
+#       https://docs.microsoft.com/en-us/visualstudio/releases/2019/history
+#
+ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
+ARG VS_16_4_4=https://download.visualstudio.microsoft.com/download/pr/8ab6eab3-e151-4f4d-9ca5-07f8434e46bb/df2db8df6dbb2d9c22aa627ce065811926a7396cb7c8e421c1dd865aba2cf231/vs_BuildTools.exe
+
+RUN Invoke-WebRequest "$env:VS_16_4_4" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 RUN & "$env:TEMP\vs_buildtools.exe" `
     --add Microsoft.VisualStudio.Workload.VCTools `
