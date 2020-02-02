@@ -44,9 +44,11 @@ jobs:
         - dir
         - echo $PATH
         - choco install -y cyg-get
+        - choco install -y mingw-get
         - echo $PATH
         - which make || echo "which make failed"
-        - cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
+        - mingw-get install mingw32-make || echo failed
+        - cyg-get default make unzip git wget patch pkg-config dos2unix p7zip || echo failed
       install:
         - set PATH=c:\tools\cygwin\bin;%PATH%
         - perl configure Release-32 --arch x86 --apply-default-release-flags
