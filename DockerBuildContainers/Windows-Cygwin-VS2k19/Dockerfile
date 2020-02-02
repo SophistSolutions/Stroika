@@ -40,8 +40,8 @@ RUN  `
     $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   `
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
-COPY Windows-VS2k19/Getting-Started-With-Stroika.md ./
-COPY Windows-VS2k19/FixupPath.bat ./
+COPY Windows-Cygwin-VS2k19/Getting-Started-With-Stroika.md ./
+COPY Windows-Cygwin-VS2k19/FixupPath.bat ./
 
 CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
 
