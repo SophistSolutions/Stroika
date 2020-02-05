@@ -18,7 +18,7 @@ os: linux
 ## suggested it.
 env:
   global:
-    - MAKEFLAGS="-j 4"
+    - MAKEFLAGS="-j 2"
     
 branches:
   only:
