@@ -205,7 +205,11 @@ workflows:
           branches:
             ignore:
               - v2.1-Dev
-    - winbuild-direct
+    - winbuild-direct:
+        filters:
+          branches:
+            ignore:
+              - v2.1-Dev
     - basic-debug-builds-test-ubuntu1804:
         filters:
           branches:
