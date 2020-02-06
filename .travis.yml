@@ -44,13 +44,13 @@ jobs:
         - dir
         - echo $PATH
         - choco install -y cyg-get
-        - PATH=/c/tools/cygwin/bin:$PATH
-        - echo $PATH
-        - ls -l C:/tools/cygwin
+        #- PATH=/c/tools/cygwin/bin:$PATH
+        #- echo $PATH
+        #- ls -l C:/tools/cygwin
         #- where setup-x86.exe
         #- where cyg-get
         #- which make || echo "which make failed"
-        - cmd /C "cyg-get default make unzip git wget patch pkg-config dos2unix p7zip"
+        - cmd /C "cyg-get.bat default make unzip git wget patch pkg-config dos2unix p7zip"
       install:
         - PATH=/c/tools/cygwin/bin:$PATH
         - perl configure Release-32 --arch x86 --apply-default-release-flags
