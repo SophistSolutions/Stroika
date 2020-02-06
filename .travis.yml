@@ -46,7 +46,7 @@ jobs:
         - choco install -y cyg-get
         - PATH=/c/tools/cygwin/bin:$PATH
         - echo $PATH
-        - dir C:\tools\cygwin
+        - ls -l C:/tools/cygwin
         - where setup-x86.exe
         - where cyg-get
         - which make || echo "which make failed"
