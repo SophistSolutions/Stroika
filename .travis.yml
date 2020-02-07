@@ -129,6 +129,7 @@ jobs:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       install:
           - cat /etc/os-release
+          - cat /proc/cpuinfo
           - ./configure Release --apply-default-release-flags --openssl use-system
           - cat ConfigurationFiles/Release.xml
       script:
