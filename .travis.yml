@@ -79,7 +79,6 @@ jobs:
           - gnu-sed
           - p7zip
       install:
-        - echo "MacOS version" `sw_vers -productVersion`
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
         - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
         - cat ConfigurationFiles/Release.xml
