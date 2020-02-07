@@ -128,9 +128,11 @@ jobs:
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       install:
+          - cat /etc/os-release
           - ./configure Release --apply-default-release-flags --openssl use-system
           - cat ConfigurationFiles/Release.xml
       script:
+        - echo MAKEFILES=$MAKEFLAGS
         - make run-tests
 
 before_install:
