@@ -58,7 +58,7 @@ jobs:
         # THIS HANGS- cmd /C "cyg-get default make unzip git wget patch pkg-config dos2unix p7zip"
         # THIS HANGS - cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
         #suggested by https://travis-ci.community/t/cygwin-issue-cygheap-base-mismatch-detected/5359/2
-        C:/tools/cygwin/bin/bash.exe -c "cyg-get default make unzip git wget patch pkg-config dos2unix p7zip"
+        - C:/tools/cygwin/bin/bash.exe -c "cyg-get default make unzip git wget patch pkg-config dos2unix p7zip"
         ### TO TRY- powershell "cyg-get default make unzip git wget patch pkg-config dos2unix p7zip"
         #NEXT TO TEST- cmd /C "cyg-get default make unzip git wget patch pkg-config dos2unix p7zip"
       install:
