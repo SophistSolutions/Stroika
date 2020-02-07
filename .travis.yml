@@ -72,7 +72,7 @@ jobs:
 
     # MacOS Configuration (still not working as of 2020-01-01 - due to https://stroika.atlassian.net/browse/STK-705 but should be soon)
     - os: osx
-      osx_image: xcode11.4
+      osx_image: xcode11.3
       addons:
         homebrew:
           packages:
