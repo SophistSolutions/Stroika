@@ -10,6 +10,7 @@ jobs:
     steps:
     - run:
         name: pull docker image (avoid timeout)
+        no_output_timeout: 30m
         command: docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
     - run:
         name: start docker build environment
@@ -203,8 +204,6 @@ workflows:
     - winbuild-via-docker:
         filters:
           branches:
-            ignore:
-              - v2.1-Dev
     - winbuild-direct:
         filters:
           branches:
