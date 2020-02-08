@@ -422,18 +422,20 @@ namespace {
 
 namespace {
     namespace Test_5_SSLCertCheckTests_ {
-        namespace Private_ {
-            void T1_get_ (Connection::Options o)
-            {
+        void DoTests_ ()
+        {
+            Debug::TraceContextBumper ctx ("{}::Test_5_SSLCertCheckTests_");
+
+            // Note, this code used to use https://testssl-valid.disig.sk/index.en.html, but that site started failing (bad cert) around 2020-02-01,
+            // so switched to https://badssl.com/ (which seems to have good and bad ssl certs)
+            auto T1_get_ignore_SSLNotConfigured = [] (Connection::Options o, const URI& uri) {
                 Connection::Ptr c = IO::Network::Transfer::Connection::New (o);
                 try {
-                    Response r = c.GET (URI{L"https://testssl-valid.disig.sk/index.en.html"});
-                    VerifyTestResultWarning (r.GetSucceeded ());
+                    Response r = c.GET (uri);
                     VerifyTestResultWarning (r.GetData ().size () > 1);
                 }
-#if qHasFeature_LibCurl
-                catch (const system_error& lce) {
-#if !qHasFeature_OpenSSL
+                catch ([[maybe_unused]] const system_error& lce) {
+#if qHasFeature_LibCurl && !qHasFeature_OpenSSL
                     if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
@@ -441,70 +443,60 @@ namespace {
 #endif
                     Execution::ReThrow ();
                 }
+                catch (const Execution::RequiredComponentMissingException&) {
+#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+                    // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
+                    // This is more like the absence of a feature beacuse of the missing component.
+                    DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+#else
+                    Execution::ReThrow ();
 #endif
+                }
                 catch (...) {
                     Execution::ReThrow ();
                 }
-            }
-        }
-        void DoTests_ ()
-        {
-            Debug::TraceContextBumper     ctx ("{}::Test_5_SSLCertCheckTests_");
+            };
+
             constexpr Execution::Activity kActivity_{L"running Test_5_SSLCertCheckTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             Connection::Options           o = kDefaultTestOptions_;
+
+            // GOOD SSL SITE
+            const URI kGoodSite_{L"https://badssl.com/"}; // ironically this is a site with good SSL cert
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
-                Private_::T1_get_ (o);
-#if qHasFeature_LibCurl && !qHasFeature_OpenSSL
-// ignore this case, since we allow the failed connect above...
-#else
-                VerifyTestResultWarning (false);
-#endif
+                T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
             }
-            catch (const Execution::RequiredComponentMissingException&) {
-#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-                // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
-#else
-                Execution::ReThrow ();
-#endif
+            catch (...) {
+                // if transient issue, ignore
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).AsNarrowSDKString ().c_str ());
+            }
+            try {
+                o.fFailConnectionIfSSLCertificateInvalid = false;
+                T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
+            }
+            catch (...) {
+                // if transient issue, ignore
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).AsNarrowSDKString ().c_str ());
+            }
+
+            // BAD SSL SITE
+            const URI kBad_Expired_Site_{L"https://expired.badssl.com/"}; // see https://badssl.com/ - there are several other bads I could try
+            try {
+                o.fFailConnectionIfSSLCertificateInvalid = true;
+                T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
+                VerifyTestResult (false); // getting here means our check for invalid cert didn't work, so thats bad
             }
             catch (...) {
                 DbgTrace (L"Good - this should fail");
             }
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = false;
-                Private_::T1_get_ (o);
-            }
-            catch (const Execution::RequiredComponentMissingException&) {
-#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-                // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
-#else
-                Execution::ReThrow ();
-#endif
-            }
-            catch (const system_error& lce) {
-                if (lce.code () == errc::timed_out
-#if qHasFeature_LibCurl
-                    or (lce.code () == error_code{CURLE_COULDNT_CONNECT, LibCurl_error_category ()})
-#endif
-                ) {
-                    DbgTrace (L"Ignored '%s' on Test_5_SSLCertCheckTests_", Characters::ToString (current_exception ()).c_str ());
-                    cerr << endl
-                         << "WARNING: Ignored '" << Characters::ToString (current_exception ()).AsNarrowSDKString () << "' on Test_5_SSLCertCheckTests_"
-                         << endl;
-                }
-                else {
-                    Execution::ReThrow ();
-                }
+                T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
+                // Getting here is fine - we should be able to ignore the invalid CERT
             }
             catch (...) {
-                DbgTrace (L"e=%s", Characters::ToString (current_exception ()).c_str ());
-                VerifyTestResultWarning (false);
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).AsNarrowSDKString ().c_str ());
             }
         }
     }
