@@ -29,7 +29,7 @@
  *
  *
  * TODO:
- *      @todo   FIXUP Docs and code so on thrown response, and open stream in the response is replaced by
+ *      @todo   FIXUP Docs and code so on thrown response, an open stream in the response is replaced by
  *              a FULLY REALIZED STREAM (MEMORY STREAM)
  *
  *      @todo   Probably should redo Request so it can optionally use a BLOB or
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *      \code
          *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
          *          Response    r   =   c.GET (IO::Network::URI {L"http://www.google.com"});
-         *          Assert (r.GetSucceeded ());
+         *          Assert (r.GetSucceeded ()); // else it would have thrown
          *          String result = r.GetDataTextInputStream ().ReadAll ();
          *      \endcode
          *
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
          *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
          *
-         *  @see Response::GetSucceeded
+         *  \ensure (r.GetSucceeded());
          *
          *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
          */
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ().
          *
-         *  @see Response::GetSucceeded
+         *  \ensure (r.GetSucceeded());
          */
         nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
 
@@ -235,7 +235,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          *
-         *  @see Response::GetSucceeded
+         *  \ensure (r.GetSucceeded());
          */
         nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          *
-         *  @see Response::GetSucceeded
+         *  \ensure (r.GetSucceeded());
          */
         nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -269,13 +269,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          *
-         *  @see Response::GetSucceeded
+         *  \ensure (r.GetSucceeded());
          */
         nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*
-         *  Simple wrappers, with hardwired methods
+         *  Simple wrapper on Send() for the HTTP OPTIONS message
          *
          *  \par Example Usage
          *      \code
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ()
          *
-         *  @see Response::GetSucceeded
+         *  \ensure (r.GetSucceeded());
          */
         nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 

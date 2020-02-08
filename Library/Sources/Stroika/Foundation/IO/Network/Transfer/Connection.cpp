@@ -162,6 +162,7 @@ Response Connection::Ptr::Send (const Request& r)
         {
             Throw (Exception (response));
         }
+    Ensure (response.GetSucceeded ());
     return response;
 }
 
