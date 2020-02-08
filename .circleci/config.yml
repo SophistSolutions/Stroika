@@ -201,7 +201,11 @@ workflows:
   version: 2
   builds_and_tests:
     jobs:
-    - winbuild-via-docker
+    - winbuild-via-docker:
+        filters:
+          branches:
+            ignore:
+              - v2.1-Dev
     - winbuild-direct:
         filters:
           branches:
