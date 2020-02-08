@@ -96,6 +96,20 @@ Response Connection::Ptr::GET (const URI& l, const Mapping<String, String>& extr
     return Send (r);
 }
 
+Response Connection::Ptr::PATCH (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+{
+    if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
+        SetSchemeAndAuthority (schemeAndAuthority);
+    }
+    Request r;
+    r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
+    r.fMethod               = HTTP::Methods::kPatch;
+    r.fOverrideHeaders      = extraHeaders;
+    r.fData                 = data;
+    r.SetContentType (contentType);
+    return Send (r);
+}
+
 Response Connection::Ptr::POST (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {

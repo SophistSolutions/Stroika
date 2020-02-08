@@ -241,6 +241,25 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /*
+         *  Simple wrapper on Send () for method PATCH
+         *
+         *  \par Example Usage
+         *      \code
+         *          Request r = conn.PATCH (URI{L"https://www.sophists.com/obj/"}, data);
+         *          ...
+         *      \endcode
+         *
+         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+         *          at e.GetResponse ()
+         *
+         *  \ensure (r.GetSucceeded());
+         *
+         *  \note see https://tools.ietf.org/html/rfc5789 for docs on Patch
+         */
+        nonvirtual Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+    public:
+        /*
          *  Simple wrapper on Send () for method DELETE
          *
          *  \par Example Usage

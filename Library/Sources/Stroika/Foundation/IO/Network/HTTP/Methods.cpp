@@ -19,6 +19,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
  */
 const RegularExpression MethodsRegularExpressions::kGet       = L"GET"_RegEx;
 const RegularExpression MethodsRegularExpressions::kPut       = L"PUT"_RegEx;
+const RegularExpression MethodsRegularExpressions::kPatch     = L"PATCH"_RegEx;
 const RegularExpression MethodsRegularExpressions::kPost      = L"POST"_RegEx;
 const RegularExpression MethodsRegularExpressions::kPostOrPut = L"PUT|POST"_RegEx;
 const RegularExpression MethodsRegularExpressions::kDelete    = L"DELETE"_RegEx;

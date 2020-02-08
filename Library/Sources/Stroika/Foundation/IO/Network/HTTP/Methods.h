@@ -20,9 +20,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  \note https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1
      *        "The method is case-sensitive"
+     *
+     *  \note https://tools.ietf.org/html/rfc5789 (for PATCH)
      */
     namespace Methods {
         constexpr wstring_view kGet     = L"GET"sv;
+        constexpr wstring_view kPatch   = L"PATCH"sv;
         constexpr wstring_view kPut     = L"PUT"sv;
         constexpr wstring_view kPost    = L"POST"sv;
         constexpr wstring_view kDelete  = L"DELETE"sv;
@@ -31,6 +34,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     namespace MethodsRegularExpressions {
         extern const Characters::RegularExpression kGet;
+        extern const Characters::RegularExpression kPatch;
         extern const Characters::RegularExpression kPut;
         extern const Characters::RegularExpression kPost;
         extern const Characters::RegularExpression kPostOrPut;
