@@ -46,5 +46,6 @@ COPY Windows-Cygwin-VS2k19/FixupPath.bat ./
 CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
 
 ### NOTE TO RUN
-###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/ka-buildvm-windows-cygwin-vs2k19:latest
-###     docker run -it sophistsolutionsinc/ka-buildvm-windows-cygwin-vs2k19:latest
+###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+###     docker run -it --storage-opt "size=100GB" -m 8G --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19  sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch v2.1-Dev && cd Stroika && ScriptsLib/RegressionTests"
