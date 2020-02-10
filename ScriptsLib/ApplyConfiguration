@@ -179,7 +179,7 @@ mkdir ($intermediateFiles);
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
-my $vs2kIntellisenseCng	=	"Library/Projects/VisualStudio.Net-2019/Microsoft.Cpp.stroika.AllConfigs.props";
+my $vs2kIntellisenseCng	=	"Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.AllConfigs.props";
 
 
 my $stkRoot	=	trim(`realpath .`);
