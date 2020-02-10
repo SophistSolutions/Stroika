@@ -4,26 +4,26 @@ orbs:
      win: circleci/windows@2.3.1
 
 jobs:
-     winbuild-via-docker:
+     winbuild-via-docker: # This works as of 2020-02-10
           executor: win/default
 
           steps:
                - run:
-                      name: pull docker image (avoid timeout)
+                      name: Pull docker image # (avoid timeout)
                       no_output_timeout: 30m
                       command: docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
                - run:
-                      name: start docker build environment
+                      name: Start docker build environment
                       command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
                - run:
-                      name: checkout code (todo fix branch or see how to checkout locally and map drive with -v)
+                      name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
                       command: docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
                - run:
-                      name: configure
+                      name: Configure
                       command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
                - run:
                       name: Build
-                      command: docker exec fred sh -c "cd Stroika && make all -j2"
+                      command: docker exec fred sh -c "cd Stroika && make all -j4"
                - run:
                       name: Run-Tests
                       command: docker exec fred sh -c "cd Stroika && make run-tests"
