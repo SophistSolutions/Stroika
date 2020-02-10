@@ -1,228 +1,226 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@2.3.1
+     win: circleci/windows@2.3.1
 
 jobs:
-  winbuild-via-docker:
-    executor: win/default
-    
-    steps:
-    - run:
-        name: pull docker image (avoid timeout)
-        no_output_timeout: 30m
-        command: docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
-    - run:
-        name: start docker build environment
-        command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
-    - run:
-        name: checkout code (todo fix branch or see how to checkout locally and map drive with -v)
-        command: docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git 
-    - run:
-        name: configure
-        command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
-    - run:
-        name: Build
-        command: docker exec fred sh -c "cd Stroika && make all -j2"
-    - run:
-        name: Run-Tests
-        command: docker exec fred sh -c "cd Stroika && make run-tests"
+     winbuild-via-docker:
+          executor: win/default
 
-  winbuild-direct:
-    executor: win/default
-    
-    environment:
-      PATH: C:\tools\cygwin;%PATH%
-    
-    steps:
-    - checkout
-    - run:
-        name: Install Required tools
-        command: |
-          choco install -y cyg-get
-          cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-          
-    - run:
-        name: list all files on machine to find where missing install is
-        command: Get-ChildItem -Recurse.
-    - run:
-        name: Configure
-        command: perl ./configure Debug --arch x86 --apply-default-debug-flags
-    - run:
-        name: Build
-        command: make all -j2
-    - run:
-        name: Run-Tests
-        command: make run-tests
+          steps:
+               - run:
+                      name: pull docker image (avoid timeout)
+                      no_output_timeout: 30m
+                      command: docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+               - run:
+                      name: start docker build environment
+                      command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+               - run:
+                      name: checkout code (todo fix branch or see how to checkout locally and map drive with -v)
+                      command: docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
+               - run:
+                      name: configure
+                      command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
+               - run:
+                      name: Build
+                      command: docker exec fred sh -c "cd Stroika && make all -j2"
+               - run:
+                      name: Run-Tests
+                      command: docker exec fred sh -c "cd Stroika && make run-tests"
 
-  basic-debug-builds-test-ubuntu1804:
-    docker:
-    - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-    
-    working_directory: ~/build-4-linux
-    
-    steps:
-    - checkout
-    - run:
-        name: Configure
-        command: ./configure Debug --config-tag Unix --apply-default-debug-flags
-    - run:
-        name: Build
-        command: make all -j2
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Containers/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Service/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-WebService/
-         destination: Samples
-    - run:
-         name: Run Tests
-         command: |
-            rm -rf test-results && mkdir -p test-results
-            pwd
-            ls -al
-            (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
-    - store_test_results:
-         path: ~/build-4-linux/test-results/run-tests-log.txt
+     winbuild-direct:
+          executor: win/default
 
-  basic-debug-builds-test-ubuntu1910:
-    docker:
-    - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
-    
-    working_directory: ~/build-4-linux
-    
-    steps:
-    - checkout
-    - run:
-        name: Configure
-        command: ./configure Debug --config-tag Unix --apply-default-debug-flags
-    - run:
-        name: Build
-        command: make all -j2
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Containers/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Service/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
-         destination: Samples
-    - store_artifacts:
-         path: ~/build-4-linux/Builds/Debug/Samples-WebService/
-         destination: Samples
-    - run:
-         name: Run Tests
-         command: |
-            rm -rf test-results && mkdir -p test-results
-            pwd
-            ls -al
-            (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
-    - store_test_results:
-         path: ~/build-4-linux/test-results/run-tests-log.txt
+          environment:
+               PATH: C:\tools\cygwin;%PATH%
 
-  basic-clang-8-builds-test-ubuntu1910:
-    docker:
-    - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
-    
-    working_directory: ~/build-4-linux
-    
-    steps:
-    - checkout
-    - run:
-        name: Configure
-        command: |
-          ./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
-          ./configure clang++-8-release-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-    - run:
-        name: Build
-        command: make all -j2
-    - run:
-         name: Run Tests
-         command: |
-            rm -rf test-results && mkdir -p test-results
-            pwd
-            ls -al
-            (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
-    - store_test_results:
-         path: ~/build-4-linux/test-results/run-tests-log.txt
+          steps:
+               - checkout
+               - run:
+                      name: Install Required tools
+                      command: |
+                           choco install -y cyg-get
+                           cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
 
+               - run:
+                      name: list all files on machine to find where missing install is
+                      command: Get-ChildItem -Recurse.
+               - run:
+                      name: Configure
+                      command: perl ./configure Debug --arch x86 --apply-default-debug-flags
+               - run:
+                      name: Build
+                      command: make all -j2
+               - run:
+                      name: Run-Tests
+                      command: make run-tests
 
+     basic-debug-builds-test-ubuntu1804:
+          docker:
+               - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+
+          working_directory: ~/build-4-linux
+
+          steps:
+               - checkout
+               - run:
+                      name: Configure
+                      command: ./configure Debug --config-tag Unix --apply-default-debug-flags
+               - run:
+                      name: Build
+                      command: make all -j2
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Containers/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Service/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-WebService/
+                      destination: Samples
+               - run:
+                      name: Run Tests
+                      command: |
+                           rm -rf test-results && mkdir -p test-results
+                           pwd
+                           ls -al
+                           (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+               - store_test_results:
+                      path: ~/build-4-linux/test-results/run-tests-log.txt
+
+     basic-debug-builds-test-ubuntu1910:
+          docker:
+               - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+
+          working_directory: ~/build-4-linux
+
+          steps:
+               - checkout
+               - run:
+                      name: Configure
+                      command: ./configure Debug --config-tag Unix --apply-default-debug-flags
+               - run:
+                      name: Build
+                      command: make all -j2
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-ArchiveUtility/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Containers/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-SSDPClient/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-SSDPServer/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Serialization/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Service/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-SystemPerformanceClient/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-Traceroute/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-WebServer/
+                      destination: Samples
+               - store_artifacts:
+                      path: ~/build-4-linux/Builds/Debug/Samples-WebService/
+                      destination: Samples
+               - run:
+                      name: Run Tests
+                      command: |
+                           rm -rf test-results && mkdir -p test-results
+                           pwd
+                           ls -al
+                           (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+               - store_test_results:
+                      path: ~/build-4-linux/test-results/run-tests-log.txt
+
+     basic-clang-8-builds-test-ubuntu1910:
+          docker:
+               - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+
+          working_directory: ~/build-4-linux
+
+          steps:
+               - checkout
+               - run:
+                      name: Configure
+                      command: |
+                           ./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+                           ./configure clang++-8-release-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
+               - run:
+                      name: Build
+                      command: make all -j2
+               - run:
+                      name: Run Tests
+                      command: |
+                           rm -rf test-results && mkdir -p test-results
+                           pwd
+                           ls -al
+                           (make run-tests -j2 2>&1) | tee test-results/run-tests-log.txt
+               - store_test_results:
+                      path: ~/build-4-linux/test-results/run-tests-log.txt
 
 workflows:
-  version: 2
-  builds_and_tests:
-    jobs:
-    - winbuild-via-docker:
-        filters:
-          branches:
-            ignore:
-              - ignore-v2.1-Dev
-    - winbuild-direct:
-        filters:
-          branches:
-            ignore:
-              - v2.1-Dev
-    - basic-debug-builds-test-ubuntu1804:
-        filters:
-          branches:
-            ignore:
-              - v2.1-Dev
-    - basic-debug-builds-test-ubuntu1910:
-        filters:
-          branches:
-            ignore:
-              - v2.1-Dev
-    - basic-clang-8-builds-test-ubuntu1910:
-        filters:
-          branches:
-            ignore:
-              - v2.1-Dev
+     version: 2
+     builds_and_tests:
+          jobs:
+               - winbuild-via-docker:
+                      filters:
+                           branches:
+                                ignore:
+                                     - ignore-v2.1-Dev
+               - winbuild-direct:
+                      filters:
+                           branches:
+                                ignore:
+                                     - v2.1-Dev
+               - basic-debug-builds-test-ubuntu1804:
+                      filters:
+                           branches:
+                                ignore:
+                                     - v2.1-Dev
+               - basic-debug-builds-test-ubuntu1910:
+                      filters:
+                           branches:
+                                ignore:
+                                     - v2.1-Dev
+               - basic-clang-8-builds-test-ubuntu1910:
+                      filters:
+                           branches:
+                                ignore:
+                                     - v2.1-Dev
