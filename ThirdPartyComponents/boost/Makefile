@@ -229,9 +229,6 @@ B2_CONFIGURATION_ARGS += variant=release
 else
 B2_CONFIGURATION_ARGS += variant=debug
 endif
-ifeq (1,$(ENABLE_GLIBCXX_DEBUG))
-B2_CONFIGURATION_ARGS += define=_GLIBCXX_DEBUG
-endif
 
 # this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
 # darwin.jam file (basically) - and other defaults sort of related to that.

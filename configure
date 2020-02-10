@@ -2304,9 +2304,6 @@ sub	WriteConfigFile_
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_ASSERTIONS>$ENABLE_ASSERTIONS</ENABLE_ASSERTIONS>\n");
 	}
-	if ($ENABLE_GLIBCXX_DEBUG != DEFAULT_BOOL_OPTIONS) {
-		print (OUT "    <ENABLE_GLIBCXX_DEBUG>$ENABLE_GLIBCXX_DEBUG</ENABLE_GLIBCXX_DEBUG>\n");
-	}
 
 	
 	print (OUT "    <qFeatureFlag_ActivePerl>$FEATUREFLAG_ActivePerl</qFeatureFlag_ActivePerl>\n");

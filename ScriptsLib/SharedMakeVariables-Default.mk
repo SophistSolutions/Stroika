@@ -45,10 +45,6 @@ endif
 
 ECHO_BUILD_LINES	?=	0
 
-ENABLE_GLIBCXX_DEBUG?=0
-
-
-
 
 
 

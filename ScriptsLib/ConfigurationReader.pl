@@ -184,10 +184,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ENABLE_ASSERTIONS'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<ENABLE_GLIBCXX_DEBUG>");
-		if (defined $pps) {
-			$configuration {'ENABLE_GLIBCXX_DEBUG'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<CWARNING_FLAGS>");
 		if (defined $pps) {
 			$configuration {'CWARNING_FLAGS'} = $pps;
