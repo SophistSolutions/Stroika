@@ -205,7 +205,7 @@ workflows:
         filters:
           branches:
             ignore:
-              - v2.1-Dev
+              - ignore-v2.1-Dev
     - winbuild-direct:
         filters:
           branches:
