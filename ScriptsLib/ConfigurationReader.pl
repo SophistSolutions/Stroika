@@ -180,10 +180,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'IncludeDebugSymbolsInExecutables'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<ENABLE_TRACE2FILE>");
-		if (defined $pps) {
-			$configuration {'ENABLE_TRACE2FILE'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<ENABLE_ASSERTIONS>");
 		if (defined $pps) {
 			$configuration {'ENABLE_ASSERTIONS'} = $pps;

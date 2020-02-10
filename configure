@@ -2385,10 +2385,6 @@ sub	WriteConfigFile_
 
 	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
 
-	### @todo - can get rid of this once we get rid of MSBuild and #include of Stroika-Configuration.h... (since we can write as CFLAGS/CXXFLAGS /D arg)
-	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
-		print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");
-	}
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
 
