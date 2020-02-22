@@ -68,6 +68,8 @@ jobs:
               #  - run:
               #         name: list all files on machine to find where missing install is
               #         command: Get-ChildItem -Recurse \
+              #   to see output of this (in case need to find soemthing else), 
+              #             ttps://circleci.com/api/v1.1/project/github/SophistSolutions/Stroika/627/output/103/0?file=true&allocation-id=5e513f4067397b727ae1aa45-0-build%2F35C84935
                - run:
                       #### NEXT STEP IN DEBUGGING circleci and this job is why perl here fails
                       ####     Cannot identify ProjectPlatformSubdir at ./configure line 1660
@@ -233,12 +235,12 @@ workflows:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Devx
+                                     - v2.1-Dev
                - winbuild-direct:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Devx
+                                     - v2.1-Dev
                - basic-debug-builds-test-ubuntu1804:
                       filters:
                            branches:
