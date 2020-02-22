@@ -1,3 +1,22 @@
+#
+#      This CircleCI configuration file drives the circleci build system available on
+#             https://circleci.com/gh/SophistSolutions/Stroika
+#
+#      Status (as of 2020-02-22)
+#             The builds_and_tests workflow appears to completely support
+#                    - basic-debug-builds-test-ubuntu1804
+#                    - basic-debug-builds-test-ubuntu1910
+#                    - basic-clang-8-builds-test-ubuntu1910
+#                    - winbuild-via-docker
+#
+#                    (really it nicely supports ANY Linux docker based build)
+#                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
+#
+#             The job 'winbuild-direct' DOESNT work, and I'm in the process of trying to debug it, but that
+#             process is very slow due to the limits of using a free circleci account (about one or two runs and
+#             I run out of credits for a week); Also it fails sporadically, but this could be due to the flakies of windows
+#             or docker windows, or my build scripts.
+#
 version: 2.1
 
 orbs:
@@ -195,6 +214,8 @@ jobs:
                - store_test_results:
                       path: ~/build-4-linux/test-results/run-tests-log.txt
 
+### NB: we disable UNIX tests (on dev builds) since they work reliably, and we run out of credits.
+### Enable the windows builds cuz still testing them (winbuild-via-docker may work but is just a little flakey)
 workflows:
      version: 2
      builds_and_tests:
@@ -213,14 +234,14 @@ workflows:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Devx
+                                     - v2.1-Dev
                - basic-debug-builds-test-ubuntu1910:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Devx
+                                     - v2.1-Dev
                - basic-clang-8-builds-test-ubuntu1910:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Devx
+                                     - v2.1-Dev
