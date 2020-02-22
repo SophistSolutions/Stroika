@@ -42,13 +42,7 @@ jobs:
         - docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
         - docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --assertions disable
-        - docker exec fred sh -c >
-          "cd Stroika &&
-          perl configure Debug --arch x86 --apply-default-debug-flags
-          --Xerces no
-          --OpenSSL no
-          --lzma no
-          --assertions disable"
+        - docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --assertions disable"
       script:
         - docker exec fred sh -c "cd Stroika && make all run-tests -j3"
       env:
