@@ -37,7 +37,7 @@ jobs:
     # Windows Configuration (still not working as of 2020-01-01)
     - os: windows
       before_install:
-        - docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+        - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-vs2k19
       install:
         - docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
         - docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
