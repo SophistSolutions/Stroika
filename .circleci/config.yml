@@ -63,7 +63,7 @@ jobs:
 
                - run:
                       name: list all files on machine to find where missing install is
-                      command: Get-ChildItem -Recurse.
+                      command: Get-ChildItem -Recurse \
                - run:
                       name: Configure
                       command: perl ./configure Debug --arch x86 --apply-default-debug-flags
