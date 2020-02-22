@@ -16,7 +16,7 @@ namespace Stroika::Foundation::IO::Network {
      ********************************** LinkMonitor *********************************
      ********************************************************************************
      */
-    inline LinkMonitor::LinkMonitor (const LinkMonitor&& rhs) noexcept
+    inline LinkMonitor::LinkMonitor (LinkMonitor&& rhs) noexcept
         : fRep_ (move (rhs.fRep_))
     {
     }
