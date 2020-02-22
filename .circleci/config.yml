@@ -60,7 +60,6 @@ jobs:
                       command: |
                            choco install -y cyg-get
                            cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-
                - run:
                       name: list all files on machine to find where missing install is
                       command: Get-ChildItem -Recurse \

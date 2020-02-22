@@ -4,26 +4,63 @@ There is no need to use this, but it can provide a quickstart to building Stroik
 
 Just create one or more of these docker images, and run them as in:
 
+## Create Docker Images
+
+(or you can pull them from docker hub - skipping this step)
+
 - `make docker-images`
+
+## Run container interactively
+
+### Unix
+
 - `docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small`
-  - then inside the docker container find a /Getting-Started-With-Stroika.md, and follow its instructions
-    to build (basically clone Stroika and type make)
-  - n.b. you may need to use
 
-    ~~~bash
-    --security-opt seccomp=unconfined
-    ~~~
+  First thing when you run docker image, cat /Getting-Started-With-Stroika.md
 
-    to run debugger (ptrace/address randomization disable, or for debug builds that use sanitizers)
+  ```bash
+  cat /Getting-Started-With-Stroika.md
+  ```
+
+#### Unix - Fancy
+
+n.b. you may need to use
+
+```bash
+--security-opt seccomp=unconfined
+```
+
+to run debugger (ptrace/address randomization disable, or for debug builds that use sanitizers)
+
 - to create a fancier container with more options, consider using - ScriptsLib/RunInDockerEnvironment - which just sets a bunch of useful container options.
   for example:
 
-  ~~~bash
+  ```bash
   cd Sandbox/Stroika-Dev && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 ScriptsLib/RunInDockerEnvironment
-  ~~~
+  ```
+
+### Windows
+
+```bash
+docker run -it --storage-opt "size=100GB"
+```
+
+(defaults for RAM / disk space I found inadequate, but this maybe fixed by MSFT at some point)
+
+First thing when you run docker image, cat /Getting-Started-With-Stroika.md
+
+```bash
+cat /Getting-Started-With-Stroika.md
+```
+
+#### Windows - Fancy
+
+```bash
+docker run -it --storage-opt "size=100GB" -m 8G --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch v2.1-Dev && cd Stroika && ScriptsLib/RegressionTests"
+```
 
 And, first thing when you run docker image, cat /Getting-Started-With-Stroika.md
-  
-  ~~~bash
-  cat /Getting-Started-With-Stroika.md
-  ~~~
+
+```bash
+cat /Getting-Started-With-Stroika.md
+```
