@@ -203,24 +203,24 @@ workflows:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Dev
+                                     - v2.1-Devx
                - winbuild-direct:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Dev
+                                     - v2.1-Devx
                - basic-debug-builds-test-ubuntu1804:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Dev
+                                     - v2.1-Devx
                - basic-debug-builds-test-ubuntu1910:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Dev
+                                     - v2.1-Devx
                - basic-clang-8-builds-test-ubuntu1910:
                       filters:
                            branches:
                                 ignore:
-                                     - v2.1-Dev
+                                     - v2.1-Devx
