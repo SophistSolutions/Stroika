@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Traversal {
         /*
          *  Mostly internal type to select a constructor for the special END iterator.
          */
-        enum ConstructionFlagForceAtEnd_ {
+        enum class ConstructionFlagForceAtEnd_ {
             ForceAtEnd
         };
 

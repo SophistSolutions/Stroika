@@ -926,10 +926,14 @@ namespace Stroika::Foundation::Execution {
      */
     class Thread::CleanupPtr : public Ptr {
     public:
-        enum AbortFlag {
+        /**
+         */
+        enum class AbortFlag {
             eAbortBeforeWaiting,
             eDirectlyWait
         };
+        static constexpr AbortFlag eAbortBeforeWaiting = AbortFlag::eAbortBeforeWaiting;
+        static constexpr AbortFlag eDirectlyWait       = AbortFlag::eDirectlyWait;
 
     public:
         /**

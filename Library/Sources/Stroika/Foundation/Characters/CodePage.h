@@ -97,16 +97,18 @@ namespace Stroika::Foundation::Characters {
     class CodePageConverter {
     public:
         class CodePageNotSupportedException;
-        enum HandleBOMFlag { eHandleBOM };
+        enum class HandleBOMFlag { eHandleBOM };
+        static constexpr HandleBOMFlag eHandleBOM = HandleBOMFlag::eHandleBOM;
 
     public:
+        /**
+         */
         CodePageConverter (CodePage codePage);
         CodePageConverter (CodePage codePage, HandleBOMFlag h);
 
     public:
-        /*
-        @METHOD:        CodePageConverter::GetHandleBOM
-        @DESCRIPTION:   <p>In UNICODE, files are generally headed by a byte order mark (BOM). This
+        /**
+         *         <p>In UNICODE, files are generally headed by a byte order mark (BOM). This
                 mark is used to indicate if the file is big endian, or little-endian (if the
                 characters are wide-characters). This is true for 2 and 4 byte UNICODE (UCS-2, UCS-4)
                 UNICODE, as well as for UTF-X encodings (such as UTF-7 and UTF-8). It is also used
@@ -126,10 +128,9 @@ namespace Stroika::Foundation::Characters {
                 argument to automatically set this BOM converter flag.</p>
         */
         nonvirtual bool GetHandleBOM () const;
-        /*
-        @METHOD:        CodePageConverter::SetHandleBOM
-        @DESCRIPTION:   <p>See also @'CodePageConverter::GetHandleBOM'.</p>
-        */
+        /**
+         * See also @'CodePageConverter::GetHandleBOM'.</p>
+         */
         nonvirtual void SetHandleBOM (bool handleBOM);
 
     private:

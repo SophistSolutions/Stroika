@@ -61,11 +61,13 @@ namespace Stroika::Foundation::Characters {
 
         /**
          */
-        enum UseCLocale { eUseCLocale };
+        enum class UseCLocale { eUseCLocale };
+        static constexpr UseCLocale eUseCLocale = UseCLocale::eUseCLocale;
 
         /**
          */
-        enum UseCurrentLocale { eUseCurrentLocale };
+        enum class UseCurrentLocale { eUseCurrentLocale };
+        static constexpr UseCurrentLocale eUseCurrentLocale = UseCurrentLocale::eUseCurrentLocale;
 
         /**
          */
