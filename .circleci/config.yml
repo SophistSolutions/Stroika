@@ -12,6 +12,8 @@
 #                    (really it nicely supports ANY Linux docker based build)
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
 #
+#                    (note though winbuild-via-docker WORKED its not now, so must test more. I think its out of RAM/disk space, so maybe -j2 will fix or bigger arg to docker -m)
+#
 #             The job 'winbuild-direct' DOESNT work, and I'm in the process of trying to debug it, but that
 #             process is very slow due to the limits of using a free circleci account (about one or two runs and
 #             I run out of credits for a week); Also it fails sporadically, but this could be due to the flakies of windows
