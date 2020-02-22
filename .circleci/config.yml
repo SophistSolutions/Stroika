@@ -36,13 +36,17 @@ jobs:
                       command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
                - run:
                       name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
-                      command: docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
+                      command: docker exec fred git clone --branch %CIRCLE_BRANCH% https://github.com/SophistSolutions/Stroika.git
                - run:
                       name: Configure
                       command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
                - run:
                       name: Build
-                      command: docker exec fred sh -c "cd Stroika && make all -j4"
+                      ### TRY -j2 since getting failure on this step on circleci but not on my home computer
+                      ### (could also be when I create I need more disk space)
+                      command: |
+                            docker exec fred sh -c "df -h"
+                            docker exec fred sh -c "cd Stroika && make all -j4"
                - run:
                       name: Run-Tests
                       command: docker exec fred sh -c "cd Stroika && make run-tests"
@@ -60,12 +64,18 @@ jobs:
                       command: |
                            choco install -y cyg-get
                            cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
+              #      VIS STUD IN C:\Program Files (x86)\Microsoft Visual Studio\2019\Community, so this no longer needed
+              #  - run:
+              #         name: list all files on machine to find where missing install is
+              #         command: Get-ChildItem -Recurse \
                - run:
-                      name: list all files on machine to find where missing install is
-                      command: Get-ChildItem -Recurse \
-               - run:
+                      #### NEXT STEP IN DEBUGGING circleci and this job is why perl here fails
+                      ####     Cannot identify ProjectPlatformSubdir at ./configure line 1660
+                      #### most likely explanation is that -O doesnt say cygwin
                       name: Configure
-                      command: perl ./configure Debug --arch x86 --apply-default-debug-flags
+                      command: |
+                            where perl
+                            perl ./configure Debug --arch x86 --apply-default-debug-flags
                - run:
                       name: Build
                       command: make all -j2
