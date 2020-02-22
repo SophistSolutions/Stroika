@@ -41,8 +41,10 @@ jobs:
       install:
         - docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-vs2k19
         - docker exec fred git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
+        - docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
       script:
-        - echo WRONG - BUT TEST make all -j2
+        - docker exec fred sh -c "cd Stroika && make all -j4"
+        - docker exec fred sh -c "cd Stroika && make run-tests"
       env:
         - MATRIX_EVAL="Windows=true"
 
