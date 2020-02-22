@@ -43,7 +43,7 @@ jobs:
                - run:
                       name: Build
                       ### TRY -j2 since getting failure on this step on circleci but not on my home computer
-                      ### (could also be when I create I need more disk space)
+                      ### (could also be when I create I need more disk space - or memory - see flags I use on my laptop/instructions)
                       command: |
                             docker exec fred sh -c "df -h"
                             docker exec fred sh -c "cd Stroika && make all -j4"
