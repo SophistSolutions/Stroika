@@ -44,7 +44,8 @@ jobs:
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --assertions disable
         - docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no"
       script:
-        - travis_wait 60 docker exec fred sh -c "cd Stroika && make all run-tests -j4"
+        #- travis_wait 60 docker exec fred sh -c "cd Stroika && make all run-tests -j4"
+        - travis_wait 60 docker exec fred sh -c "cd Stroika && make libraries -j4"
       env:
         - MATRIX_EVAL="Windows=true"
 
