@@ -41,10 +41,9 @@ jobs:
       install:
         - docker run -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         - docker exec buildContainer git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --assertions disable
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec buildContainer sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
       script:
-        #- travis_wait 60 docker exec fred sh -c "cd Stroika && make all run-tests -j4"
         - docker exec buildContainer sh -c "cd Stroika && make run-tests -j3"
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
@@ -56,12 +55,12 @@ jobs:
       install:
         - docker run -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         - docker exec buildContainer git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --assertions disable
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec buildContainer sh -c "cd Stroika && perl configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
       script:
-        - docker exec buildContainer sh -c "cd Stroika && make all -j4"
+        - docker exec buildContainer sh -c "cd Stroika && make samples -j4"
       env:
-        - MATRIX_EVAL="Windows=true"
+        - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
     # GIVE UP ON THIS AND TRY DOCKER BUILD INSTEAD
     # # Windows Configuration (still not working as of 2020-01-01)
