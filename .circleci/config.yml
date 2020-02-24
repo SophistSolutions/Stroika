@@ -2,7 +2,7 @@
 #      This CircleCI configuration file drives the circleci build system available on
 #             https://circleci.com/gh/SophistSolutions/Stroika
 #
-#      Status (as of 2020-02-22)
+#      Status (as of 2020-02-24)
 #             The builds_and_tests workflow appears to completely support
 #                    - basic-debug-builds-test-ubuntu1804
 #                    - basic-debug-builds-test-ubuntu1910
@@ -13,11 +13,7 @@
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
 #
 #                    (note though winbuild-via-docker WORKED its not now, so must test more. I think its out of RAM/disk space, so maybe -j2 will fix or bigger arg to docker -m)
-#
-#             The job 'winbuild-direct' DOESNT work, and I'm in the process of trying to debug it, but that
-#             process is very slow due to the limits of using a free circleci account (about one or two runs and
-#             I run out of credits for a week); Also it fails sporadically, but this could be due to the flakies of windows
-#             or docker windows, or my build scripts.
+#                    Trying -m and --storage-opts args, but ran out of time, so disabled til next week.
 #
 version: 2.1
 
@@ -25,7 +21,7 @@ orbs:
        win: circleci/windows@2.3.1
 
 jobs:
-       winbuild-via-docker: # This works as of 2020-02-10
+       winbuild-via-docker: # This works as of 2020-02-10 (mostly, not quite note)
               executor: win/default
 
               steps:
@@ -35,59 +31,25 @@ jobs:
                               command: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Start docker build environment
-                              command: docker run --storage-opt "size=100GB" -m 8G -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              command: docker run --storage-opt "size=40GB" -m 8G -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
-                              command: docker exec fred git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
+                              command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
                      - run:
                               name: Configure
-                              command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
+                              command: docker exec buildContainer sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
                      - run:
                               name: Build
                               ### TRY -j2 since getting failure on this step on circleci but not on my home computer
                               ### (could also be when I create I need more disk space - or memory - see flags I use on my laptop/instructions)
                               command: |
-                                     docker exec fred sh -c "df -h"
-                                     docker exec fred sh -c "cd Stroika && make all -j4"
+                                     docker exec buildContainer sh -c "df -h"
+                                     docker exec buildContainer sh -c "cd Stroika && make all -j4 || df -H"
                      - run:
                               name: Run-Tests
-                              command: docker exec fred sh -c "cd Stroika && make run-tests"
+                              command: docker exec buildContainer sh -c "cd Stroika && make run-tests"
 
-       winbuild-direct:
-              executor: win/default
-
-              environment:
-                     PATH: C:\tools\cygwin;%PATH%
-
-              steps:
-                     - checkout
-                     - run:
-                              name: Install Required tools
-                              command: |
-                                     choco install -y cyg-get
-                                     cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-                     #      VIS STUD IN C:\Program Files (x86)\Microsoft Visual Studio\2019\Community, so this no longer needed
-                     #  - run:
-                     #         name: list all files on machine to find where missing install is
-                     #         command: Get-ChildItem -Recurse \
-                     #   to see output of this (in case need to find soemthing else),
-                     #             ttps://circleci.com/api/v1.1/project/github/SophistSolutions/Stroika/627/output/103/0?file=true&allocation-id=5e513f4067397b727ae1aa45-0-build%2F35C84935
-                     - run:
-                              #### NEXT STEP IN DEBUGGING circleci and this job is why perl here fails
-                              ####     Cannot identify ProjectPlatformSubdir at ./configure line 1660
-                              #### most likely explanation is that -O doesnt say cygwin
-                              name: Configure
-                              command: |
-                                     where perl
-                                     perl ./configure Debug --arch x86 --apply-default-debug-flags
-                     - run:
-                              name: Build
-                              command: make all -j2
-                     - run:
-                              name: Run-Tests
-                              command: make run-tests
-
-       basic-debug-builds-test-ubuntu1804:
+      basic-debug-builds-test-ubuntu1804:
               docker:
                      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 
