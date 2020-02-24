@@ -1,6 +1,6 @@
 # Building Stroika
 
----------
+---
 
 ## Common
 
@@ -8,7 +8,7 @@ Stroika is a C++ class library. The only fully supported build environment for S
 
 This build process is cross-platform. It supports cross-compiling, and builds on visual studio.net (windows), and Linux.
 
----------
+---
 
 ## Quick Start
 
@@ -18,11 +18,12 @@ This build process is cross-platform. It supports cross-compiling, and builds on
 or
 
     git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
+
 followed by:
-  
+
     make --directory Stroika-Dev all run-tests
 
-  If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
+If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
 ### Build with Docker
 
@@ -30,29 +31,29 @@ If you are missing any components and just want a quick environment to test that
 
 UNIX:
 
-  ~~~bash
-  docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
-  cat Getting-Started-With-Stroika.md
-  ~~~
+```bash
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
+cat Getting-Started-With-Stroika.md
+```
 
 Windows:
 
-  ~~~bash
-  docker run -it sophistsolutionsinc/stroika-buildvm-windows-vs2k19
-  cat Getting-Started-With-Stroika.md
-  ~~~
+```bash
+docker run -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+cat Getting-Started-With-Stroika.md
+```
 
-### ***Note***
+### **_Note_**
 
 It takes a while to build all of Stroika (10-20 minutes per configuration), so adding -j10 (or so) helps a lot.
 
----------
+---
 
 ## More Details on Getting Started
 
 ### Install required tools
 
- This mostly conists of GNU make, and perl (see details below depending on your platform). After that, the Stroika build process will prompt you for anything else you need.
+This mostly conists of GNU make, and perl (see details below depending on your platform). After that, the Stroika build process will prompt you for anything else you need.
 
 #### Required for ALL platforms
 
@@ -76,17 +77,17 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
   - Then from command line
     - xcode-select –install
     - Homebrew can be helpful (but use whatever package mgr you wish)
-      - ruby -e &quot;$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/master/install](https://raw.githubusercontent.com/Homebrew/install/master/install))&quot;
+      - ruby -e &quot;\$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/master/install](https://raw.githubusercontent.com/Homebrew/install/master/install))&quot;
       - to install apps with brew, use &quot;brew install APPNAME&quot;
     - brew install gnu-sed
-    - brew install p7zip  (if building lzma)
+    - brew install p7zip (if building lzma)
 
 #### For Windows
 
 - Visual Studio.net 2017 (or later)
   - Currently tested with Visual Studio.net 2017 and Visual Studio.net 2019 (see release notes for details)
 - Cygwin
-   Including
+  Including
   - dos2unix
   - unix2dos
 
@@ -97,32 +98,32 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
     - Stroika v2.1 is currently tested with gcc7, gcc8, and gcc9
   - llvm (clang++) 6 or later
     - Stroika v2.1 is currently tested with clang6, clang7, and clang8
-- automake  (if building curl)
+- automake (if building curl)
 - libtool (gnu version) – (if building curl)
 
 ### Things to try (explore)
 
 - `make help`
-  
-   Not needed, but gives some idea of make options.
+
+  Not needed, but gives some idea of make options.
 
 - `make check-prerequisite-tools`
 
-    Not needed, but tells you if you are missing anything critical.
+  Not needed, but tells you if you are missing anything critical.
 
 - `make default-configurations`
 
-   Not needed, but it&#39;s a springboard for setting up the configuration you want.
+  Not needed, but it&#39;s a springboard for setting up the configuration you want.
 
-   Review ConfigurationFiles/Debug.xml or any of the other default configuration files
+  Review ConfigurationFiles/Debug.xml or any of the other default configuration files
 
----------
+---
 
 ## The **configure** script
 
 Like many non-trivial C/C++ libraries, you run configure to establish some build parameters, before invoking make. But unlike most such configuration systems, Stroika creates 'named' configurations, and facilitates building multiple such named configurations at once.
 
-Each configuration is stored in in a file named ${CONFIGNAME}.xml in the top-level `ConfigurationFiles/` directory.
+Each configuration is stored in in a file named \${CONFIGNAME}.xml in the top-level `ConfigurationFiles/` directory.
 
 - Examples of generating configurations
   - `./configure Debug-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-debug-flags`
@@ -138,7 +139,7 @@ The command-line used to generate the configuration is the first element of the 
 
 #### Example Configuration file
 
-~~~~xml
+```xml
 <!--This file autogenerated by the configure command: see Configure-Command-Line, modify it, and re-run-->
 
 <Configuration>
@@ -188,7 +189,7 @@ The command-line used to generate the configuration is the first element of the 
     <STRIP></STRIP>
     <RUN_PREFIX></RUN_PREFIX>
 </Configuration>
-~~~~
+```
 
 ### Configuration Basic Concepts
 
@@ -198,20 +199,20 @@ The command-line used to generate the configuration is the first element of the 
 
 ### Sample default build rules
 
- Just to provide context for the defined configuration variables; see the samples Makefiles for how to construct your own makefiles
+Just to provide context for the defined configuration variables; see the samples Makefiles for how to construct your own makefiles
 
-~~~~make
+```make
 $(ObjDir)%.o : %.cpp
     @#n.b. no CPPFLAGS here - 'configure --append-CPPFLAGS' adds directly to CFLAGS and CXXFLAGS
     @$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGETEXE): $(Objs) $(StroikaLibs)
     @$(Linker) $(StroikaLinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerSuffixArgs)
-~~~~
+```
 
 ### Configure Command-line reference
 
-~~~~text
+```text
 Usage:
   configure CONFIGURATION-NAME [OPTIONS]* where options can be:
     --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */
@@ -285,7 +286,7 @@ Usage:
 Configure's behavior is also influenced by the following environment variables:
             CC, CXX, PLATFORM, TARGET_PLATFORMS, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure
             EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command
-~~~~
+```
 
 ### Amending a configuration
 
@@ -302,16 +303,18 @@ The reason this is so important, is that it allows an external build system like
 #### Examples
 
 - `./ScriptsLib/GetConfigurationParameter Debug-U-32 CFLAGS`
-  
+
   /Od /I"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include" /I"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include" /I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" /I"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt" /I"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\shared" /I"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\um" /I"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\winrt" /I"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\cppwinrt" /I"C:\Sandbox\Stroika\DevRoot\Builds\Debug-U-32\ThirdPartyComponents\include\\" /I"C:\Sandbox\Stroika\DevRoot\Library\Sources\\" /I"C:\Sandbox\Stroika\DevRoot\IntermediateFiles\Debug-U-32\\"
+
 - `./ScriptsLib/GetConfigurationParameter Debug Linker`
-  
+
   g++
+
 - `./ScriptsLib/GetConfigurationParameter Release CXXFLAGS`
 
   -flto --std=c++17 -O3 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Release/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Release/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g
 
----------
+---
 
 ## Static Linking vs. Dynamic Libraries
 
@@ -323,13 +326,13 @@ Of course, you can still use dynamic (shared library) linking however you wish f
 
 But this bias towards static linking is reflected in all the defaults and samples provided with Stroika.
 
----------
+---
 
 ## Third Party Components
 
 Stroika builds on, and neatly integrates functionality from several third-party compoenents. These components are automatically downloaded and built and integrated into Stroika (depending on configuration) or Stroika can be configured to use the system installed version of these components.
 
-- ActivePerl  (special case, just a hack to be able to build openssl)
+- ActivePerl (special case, just a hack to be able to build openssl)
 - boost
 - curl
 - openssl
@@ -339,18 +342,19 @@ Stroika builds on, and neatly integrates functionality from several third-party 
 - xerces
 - zlib
 
----------
+---
 
 ## Build Results
 
 Intermediate files (objs etc) go into
--  **IntermediateFiles/{CONFIGURATION-NAME}**. 
 
-Final build products (libraries and executables) go into 
+- **IntermediateFiles/{CONFIGURATION-NAME}**.
+
+Final build products (libraries and executables) go into
 
 - **Builds/{CONFIGURATION-NAME}**.
 
----------
+---
 
 ## Build Process
 
@@ -394,7 +398,7 @@ On any platform, building Stroika, and all is demo applications and regression t
 
 - `make apply-configurations`
 
-   To generate all the directories and files dependent on the defined configurations. Note – this is generally not necessary, and called automatically.
+  To generate all the directories and files dependent on the defined configurations. Note – this is generally not necessary, and called automatically.
 
 ### CONFIGURATION arguments to make
 
@@ -458,9 +462,9 @@ This uses ssh to run the tests remotely on the argument machine (I setup a hostn
 
 Using SSH, it&#39;s also helpful to setup ssh keys to avoid re-entering passwords
 
- [http://sshkeychain.sourceforge.net/mirrors/SSH-with-Keys-HOWTO/SSH-with-Keys-HOWTO-4.html](http://sshkeychain.sourceforge.net/mirrors/SSH-with-Keys-HOWTO/SSH-with-Keys-HOWTO-4.html)
+[http://sshkeychain.sourceforge.net/mirrors/SSH-with-Keys-HOWTO/SSH-with-Keys-HOWTO-4.html](http://sshkeychain.sourceforge.net/mirrors/SSH-with-Keys-HOWTO/SSH-with-Keys-HOWTO-4.html)
 
----------
+---
 
 ## Integration with IDEs
 
@@ -477,7 +481,7 @@ The workspsace contains pre-built 'tasks' to build Stroika (run makefiles).
 
 Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project files at the top level of your Stroika directory. Then you can open that .creator file in qtCreator, and build and debug Stroika-based applications.
 
----------
+---
 
 ## But Why? Build / Configuration Design
 
@@ -489,7 +493,7 @@ But just plain GNU make – appears to be a nearly universally available alterna
 
 But - even with just plain make, you need some sort of configure script to establish what compiler options will be defined. Again, lots of different alternatives here, but in the end I decided to just build custom scripts which build a very simple XML configuration declaration, and which drives the make process by #included 'config' makefile.
 
----------
+---
 
 ## Common Errors
 
@@ -509,14 +513,16 @@ But - even with just plain make, you need some sort of configure script to estab
 
 - On raspberry pi
 
-  >  /tmp/Test43: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/Test43)
+  > /tmp/Test43: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/Test43)
+
   - fix by
+
     - sudo vi /etc/apt/sources.list"
     - temporarily add
-        ~~~~bash
-        #tmphack to load GLIBC_2 2.28
-        deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
-        ~~~~
+      ```bash
+      #tmphack to load GLIBC_2 2.28
+      deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
+      ```
     - `sudo apt-get update`
     - `apt-cache policy libc6`
     - `sudo apt-get install libc6=2.28-5+rpi1`
@@ -527,22 +533,22 @@ But - even with just plain make, you need some sort of configure script to estab
 
 - Under Docker
 
-  ~~~text
+  ```text
   ==7192==LeakSanitizer has encountered a fatal error.
   ==7192==HINT: For debugging, try setting environment variable LSAN_OPTIONS=verbosity=1:log_threads=1
   ==7192==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
-  ~~~
+  ```
 
   OR
 
-  ~~~text
+  ```text
   warning: Error disabling address space randomization: Operation not permitted
   warning: Could not trace the inferior process.
   warning: ptrace: Operation not permitted
-  ~~~
+  ```
 
   run the docker container (docker run or docker exec line) - with:
-    `--security-opt seccomp=unconfined`
+  `--security-opt seccomp=unconfined`
 
   - See also
     [../ScriptsLib/RunInDockerEnvironment](../ScriptsLib/RunInDockerEnvironment)
