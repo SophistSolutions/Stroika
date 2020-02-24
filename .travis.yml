@@ -30,8 +30,6 @@ jobs:
   allow_failures:
     - env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true" # https://stroika.atlassian.net/browse/STK-705 - retry mid december
-    - env:
-        - MATRIX_EVAL="Windows=true"
 
   include:
     # Windows Configuration (working as of 2020-02-23)
