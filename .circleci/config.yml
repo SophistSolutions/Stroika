@@ -38,7 +38,8 @@ jobs:
                               command: docker run -d --name fred -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
-                              command: docker exec fred git clone --branch $CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
+                              #command: docker exec fred git clone --branch $CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
+                              command: docker exec fred git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
                      - run:
                               name: Configure
                               command: docker exec fred sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
