@@ -2,7 +2,7 @@
 #      This CircleCI configuration file drives the circleci build system available on
 #             https://circleci.com/gh/SophistSolutions/Stroika
 #
-#      Status (as of 2020-02-24)
+#      Status (as of 2020-02-22)
 #             The builds_and_tests workflow appears to completely support
 #                    - basic-debug-builds-test-ubuntu1804
 #                    - basic-debug-builds-test-ubuntu1910
@@ -13,7 +13,11 @@
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
 #
 #                    (note though winbuild-via-docker WORKED its not now, so must test more. I think its out of RAM/disk space, so maybe -j2 will fix or bigger arg to docker -m)
-#                    Trying -m and --storage-opts args, but ran out of time, so disabled til next week.
+#
+#             The job 'winbuild-direct' DOESNT work, and I'm in the process of trying to debug it, but that
+#             process is very slow due to the limits of using a free circleci account (about one or two runs and
+#             I run out of credits for a week); Also it fails sporadically, but this could be due to the flakies of windows
+#             or docker windows, or my build scripts.
 #
 version: 2.1
 
@@ -21,7 +25,7 @@ orbs:
        win: circleci/windows@2.3.1
 
 jobs:
-       winbuild-via-docker: # This works as of 2020-02-10 (mostly, not quite note)
+       winbuild-via-docker: # This works as of 2020-02-10
               executor: win/default
 
               steps:
@@ -31,7 +35,7 @@ jobs:
                               command: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Start docker build environment
-                              command: docker run --storage-opt "size=40GB" -m 8G -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              command: docker run --storage-opt "size=100GB" -m 8G -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
                               command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
@@ -44,12 +48,12 @@ jobs:
                               ### (could also be when I create I need more disk space - or memory - see flags I use on my laptop/instructions)
                               command: |
                                      docker exec buildContainer sh -c "df -h"
-                                     docker exec buildContainer sh -c "cd Stroika && make all -j4 || df -H"
+                                     docker exec buildContainer sh -c "cd Stroika && make all -j4 || df -h"
                      - run:
                               name: Run-Tests
                               command: docker exec buildContainer sh -c "cd Stroika && make run-tests"
 
-      basic-debug-builds-test-ubuntu1804:
+       basic-debug-builds-test-ubuntu1804:
               docker:
                      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 
@@ -199,7 +203,6 @@ workflows:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1804:
                               filters:
