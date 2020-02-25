@@ -1,0 +1,22 @@
+#!/bin/bash
+
+CONTAINER_NAME=phred
+BRANCH=v2.1-Dev
+VERSION=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
+# not sure why cygwin path setup with broken docker, but this works around it, for now... LGP 2020-02-25
+DOCKER=docker.exe
+
+$DOCKER rm $CONTAINER_NAME || false
+
+echo "Running docker build (usually takes about 7hrs)"
+$DOCKER run -it \
+    --storage-opt "size=100GB" \
+    -m 8G \
+    --name $CONTAINER_NAME \
+    --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker \
+    sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 \
+    sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch $BRANCH && cd Stroika && ScriptsLib/RegressionTests"
+
+echo "Done with build, so copying out results"
+$DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows_VS2k19-In-Docker-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
+$DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-Windows_VS2k19-In-Docker-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
