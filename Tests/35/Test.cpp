@@ -14,6 +14,7 @@
 #endif
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
@@ -268,6 +269,46 @@ namespace {
 }
 
 namespace {
+    namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_ {
+        namespace Private {
+            void ThrowCatchStringException_ ()
+            {
+                Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
+                {
+                    try {
+                        Throw (Exception (L"HiMom"));
+                        VerifyTestResult (false);
+                    }
+                    catch (const Exception<>& e) {
+                        VerifyTestResult (e.As<wstring> () == L"HiMom");
+                    }
+                }
+                {
+                    try {
+                        Throw (Exception (L"HiMom"));
+                        VerifyTestResult (false);
+                    }
+                    catch (const std::exception& e) {
+                        VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+                    }
+                }
+            }
+        }
+        void TestAll_ ()
+        {
+            Debug::TraceContextBumper ctx{L"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
+            auto                      prevValue                    = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
+            Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
+            Private::ThrowCatchStringException_ ();
+            Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
+            Private::ThrowCatchStringException_ ();
+            Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
+            Private::ThrowCatchStringException_ ();
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -276,6 +317,7 @@ namespace {
         Test3_SystemErrorException_::TestAll_ ();
         Test4_Activities_::TestAll_ ();
         Test5_error_code_condition_compares_::TestAll_ ();
+        Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_::TestAll_ ();
     }
 }
 

@@ -27,6 +27,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Debug;
 
 /*
  ********************************************************************************
@@ -35,12 +36,21 @@ using namespace Stroika::Foundation::Characters;
  */
 wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& options)
 {
-    unsigned int useSkipFrames = options.fSkipFrames;
+    [[maybe_unused]] unsigned int useSkipFrames = options.fSkipFrames.value_or (BackTrace::Options::sDefault_SkipFrames);
+
     useSkipFrames += 1; // always skip this frame, because anyone calling BackTrace() doens't care to see its implementation in the trace
 
+    [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 #if __has_include(<boost/stacktrace.hpp>)
     using namespace boost;
-    auto          bt = stacktrace::stacktrace ();
+
+    auto bt = stacktrace::stacktrace ();
+
+    //
+    // Simple default usage with boost
+    // auto x = String::FromNarrowSDKString (stacktrace::to_string (bt)).As<wstring> ();
+    //
+
     wstringstream result; // avoid use of StringBuild to avoid dependencies on the rest of stroika
     streamsize    w      = result.width ();
     size_t        frames = bt.size ();
@@ -48,8 +58,17 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     useSkipFrames += 2; // boost (as checking on windows as of 2020-03-01) appears to leave in two layers of its own
 
     if (useSkipFrames != 0 and frames != 0) {
-        result << wstring{L"..."} + Characters::GetEOL<wchar_t> ();
+        result << L"..." << Characters::GetEOL<wchar_t> ();
     }
+
+    bool                                         includeSrcLines = options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines);
+    boost::stacktrace::detail::debugging_symbols idebug;
+    if (includeSrcLines) {
+        if (!idebug.is_inited ()) {
+            includeSrcLines = false;
+        }
+    }
+
     for (size_t i = 0; i < frames; ++i) {
         if (i < useSkipFrames) {
             continue;
@@ -58,9 +77,16 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result << i;
         result.width (w);
         result << L"# ";
-        result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
+        if (includeSrcLines) {
+            std::string res;
+            idebug.to_string_impl (bt[i].address (), res);
+            result << String::FromNarrowSDKString (res).As<wstring> ();
+        }
+        else {
+            result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
+        }
         result << L";" << Characters::GetEOL<wchar_t> ();
-        if (i - useSkipFrames >= options.fMaxFrames) {
+        if (i - useSkipFrames >= usingMaxFrames) {
             break;
         }
     }
@@ -123,11 +149,15 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
 #endif
         out += symStr + L";" + Characters::GetEOL<wchar_t> ();
-        if (i - useSkipFrames >= options.fMaxFrames) {
+        if (i - useSkipFrames >= usingMaxFrames) {
             break;
         }
     }
     return out;
+#elif qPlatform_Windows
+    // No real need todo this becaues boost does so well, but could be done pretty easily - see
+    // http://www.debuginfo.com/examples/src/SymFromAddr.cpp -- LGP 2020-03-01
+    return wstring{};
 #else
     return wstring{};
 #endif

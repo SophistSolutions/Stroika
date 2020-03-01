@@ -13,21 +13,30 @@
 /**
  *  \file
  *
- * TODO
- *      @todo   https://stroika.atlassian.net/browse/STK-462 - do windows version (sb pretty easy)
- *
  */
 
 namespace Stroika::Foundation::Debug {
 
     namespace BackTrace {
         struct Options {
-            [[maybe_unused]] unsigned int fSkipFrames = 0;
+            /**
+             * SkipFrames allows skipping the initial couple of frames that are really implementation details of the stacktrace code
+             * and uninteresting.
+             */
+            optional<unsigned int>     fSkipFrames;
+            static inline unsigned int sDefault_SkipFrames = 0;
 
             /**
              * Max frames to return (doesn't count skipped frames)
              */
-            unsigned int fMaxFrames = numeric_limits<unsigned int>::max ();
+            optional<unsigned int>     fMaxFrames;
+            static inline unsigned int sDefault_MaxFrames = numeric_limits<unsigned int>::max ();
+
+            /**
+             * IncludeSourceLines wont always work, and defaults off cuz makes stacktrace longer without adding much value.
+             */
+            optional<bool>     fIncludeSourceLines;
+            static inline bool sDefault_IncludeSourceLines = false;
         };
 
         /**
