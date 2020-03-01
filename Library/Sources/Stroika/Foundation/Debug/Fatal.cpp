@@ -23,7 +23,7 @@ namespace {
         }
 #if qDefaultTracingOn
         {
-            wstring tmp{Debug::BackTrace ()};
+            wstring tmp{Debug::BackTrace::Capture ()};
             if (not tmp.empty ()) {
                 DbgTrace (L"BackTrace: %s", tmp.c_str ());
             }

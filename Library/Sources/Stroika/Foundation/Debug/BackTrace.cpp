@@ -30,16 +30,42 @@ using namespace Stroika::Foundation::Characters;
 
 /*
  ********************************************************************************
- ********************************* Debug::BackTrace *****************************
+ ************************ Debug::BackTrace::Capture *****************************
  ********************************************************************************
  */
-wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
+wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& options)
 {
+    unsigned int useSkipFrames = options.fSkipFrames;
+    useSkipFrames += 1; // always skip this frame, because anyone calling BackTrace() doens't care to see its implementation in the trace
+
 #if __has_include(<boost/stacktrace.hpp>)
     using namespace boost;
-    return String::FromNarrowSDKString (stacktrace::to_string (stacktrace::stacktrace ())).As<wstring> ();
-#endif
-#if qPlatform_Linux
+    auto          bt = stacktrace::stacktrace ();
+    wstringstream result; // avoid use of StringBuild to avoid dependencies on the rest of stroika
+    streamsize    w      = result.width ();
+    size_t        frames = bt.size ();
+
+    useSkipFrames += 2; // boost (as checking on windows as of 2020-03-01) appears to leave in two layers of its own
+
+    if (useSkipFrames != 0 and frames != 0) {
+        result << wstring{L"..."} + Characters::GetEOL<wchar_t> ();
+    }
+    for (size_t i = 0; i < frames; ++i) {
+        if (i < useSkipFrames) {
+            continue;
+        }
+        result.width (2);
+        result << i;
+        result.width (w);
+        result << L"# ";
+        result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
+        result << L";" << Characters::GetEOL<wchar_t> ();
+        if (i - useSkipFrames >= options.fMaxFrames) {
+            break;
+        }
+    }
+    return result.str ();
+#elif qPlatform_Linux
     /*
      *  @see http://man7.org/linux/man-pages/man3/backtrace.3.html
      */
@@ -61,7 +87,13 @@ wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
     };
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
     wstring                 out;
+    if (useSkipFrames != 0 and nPtrs != 0) {
+        out += L"..." + Characters::GetEOL<wchar_t> ();
+    }
     for (int j = 0; j < nptrs; j++) {
+        if (j < useSkipFrames) {
+            continue;
+        }
         wstring symStr = narrow2Wide (syms[j]);
 #if defined(__GNUC__) && defined(__GLIBCXX__)
         //
@@ -91,6 +123,9 @@ wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
         }
 #endif
         out += symStr + L";" + Characters::GetEOL<wchar_t> ();
+        if (i - useSkipFrames >= options.fMaxFrames) {
+            break;
+        }
     }
     return out;
 #else

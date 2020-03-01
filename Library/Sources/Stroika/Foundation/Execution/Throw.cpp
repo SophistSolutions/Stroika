@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Execution;
 string Private_::GetBT_s ()
 {
     // KISS, and don't use string if you don't want truncation
-    wstring tmp = GetBT_ws ();
+    wstring tmp = Debug::BackTrace::Capture (Debug::BackTrace::Options{1}); // skip this frame from stacktrace
     string  result;
     for (wchar_t c : tmp) {
         result += static_cast<char> (c);
@@ -34,7 +34,7 @@ string Private_::GetBT_s ()
 wstring Private_::GetBT_ws ()
 {
     // no need to use Thread::SuppressInterruptionInContext since not using any Stroika code that can throw
-    return Debug::BackTrace ();
+    return Debug::BackTrace::Capture (Debug::BackTrace::Options{1}); // skip this frame from stacktrace
 }
 #endif
 
