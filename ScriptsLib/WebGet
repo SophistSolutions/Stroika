@@ -42,52 +42,39 @@ fi
 
 RETRIES=2
 
-WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL "$WGET_CMD_BASE $SRCURL1 ... "
-$WGET_CMD_BASE $SRCURL1
-if [ $? -eq 0 ] ; then
-    	exit 0;
-fi
+doGetOne_ () {
+     local url=$1
+     local retrying=$2
 
-$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL2 ... "
-$WGET_CMD_BASE $SRCURL2
-if [ $? -eq 0 ] ; then
-    	exit 0;
-fi
+     if [ "$retrying" = true ] ; then
+          $MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
+          $MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+     fi
 
-$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL3 ... "
-$WGET_CMD_BASE -O $OUTPUTFILE $SRCURL3
-if [ $? -eq 0 ] ; then
-    	exit 0;
-fi
+     ### fix wget to handle file:///
+     if [[ $url == file:///* ]] ; then
+          WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
+          $MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL "cp ${url:8} $OUTPUTFILE"
+         cp ${url:8} $OUTPUTFILE
+     else
+          WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
+          $MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL "$WGET_CMD_BASE $url ... "
+          $WGET_CMD_BASE $url
+     fi
 
-$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL4 ... "
-$WGET_CMD_BASE $SRCURL4
-if [ $? -eq 0 ] ; then
-    	exit 0;
-fi
+     if [ $? -eq 0 ] ; then
+          exit 0;
+     fi
+}
 
-$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL5 ... "
-$WGET_CMD_BASE $SRCURL5
-if [ $? -eq 0 ] ; then
-    	exit 0;
-fi
 
-$MY_PATH/PrintProgressLine $((${MAKE_INDENT_LEVEL}+1)) failed
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
-$MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  "$WGET_CMD_BASE $SRCURL6 ... "
-$WGET_CMD_BASE $SRCURL6
-if [ $? -eq 0 ] ; then
-    	exit 0;
-fi
+doGetOne_ $SRCURL1 false
+doGetOne_ $SRCURL2 true
+doGetOne_ $SRCURL3 true
+doGetOne_ $SRCURL4 true
+doGetOne_ $SRCURL5 true
+doGetOne_ $SRCURL6 true
+
 
 $MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL  Failed downloading $OUTPUTFILE
 rm -f $OUTPUTFILE
