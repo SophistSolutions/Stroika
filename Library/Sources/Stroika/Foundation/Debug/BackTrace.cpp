@@ -15,6 +15,10 @@
 #include <Windows.h>
 #endif
 
+#if __has_include(<boost/stacktrace.hpp>)
+#include <boost/stacktrace.hpp>
+#endif
+
 #include "../Characters/LineEndings.h"
 #include "../Characters/StringBuilder.h"
 #include "../Execution/Finally.h"
@@ -31,6 +35,10 @@ using namespace Stroika::Foundation::Characters;
  */
 wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
 {
+#if __has_include(<boost/stacktrace.hpp>)
+    using namespace boost;
+    return String::FromNarrowSDKString (stacktrace::to_string (stacktrace::stacktrace ())).As<wstring> ();
+#endif
 #if qPlatform_Linux
     /*
      *  @see http://man7.org/linux/man-pages/man3/backtrace.3.html
