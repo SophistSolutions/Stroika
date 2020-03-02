@@ -62,12 +62,16 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     }
 
     bool                                         includeSrcLines = options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines);
+#ifdef __DBGENG_H__
     boost::stacktrace::detail::debugging_symbols idebug;
     if (includeSrcLines) {
         if (!idebug.is_inited ()) {
             includeSrcLines = false;
         }
     }
+#else
+    includeSrcLines = false;
+#endif
 
     for (size_t i = 0; i < frames; ++i) {
         if (i < useSkipFrames) {
@@ -78,9 +82,11 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result.width (w);
         result << L"# ";
         if (includeSrcLines) {
+#ifdef __DBGENG_H__
             std::string res;
             idebug.to_string_impl (bt[i].address (), res);
             result << String::FromNarrowSDKString (res).As<wstring> ();
+#endif
         }
         else {
             result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
