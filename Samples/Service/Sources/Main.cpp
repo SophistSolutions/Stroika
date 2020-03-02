@@ -64,7 +64,7 @@ namespace {
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
         if (std::exception_ptr exc = std::current_exception ()) {
             Logger::Get ().Log (Logger::Priority::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
         }
