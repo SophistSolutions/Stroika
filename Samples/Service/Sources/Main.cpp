@@ -78,7 +78,7 @@ namespace {
         DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
 #if qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
         Logger::Get ().Flush ();
 #endif
         std::_Exit (EXIT_FAILURE); // skip
