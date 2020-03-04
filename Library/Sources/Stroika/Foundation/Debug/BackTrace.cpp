@@ -61,18 +61,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result << L"..." << Characters::GetEOL<wchar_t> ();
     }
 
-    bool                                         includeSrcLines = options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines);
-#ifdef __DBGENG_H__
-    boost::stacktrace::detail::debugging_symbols idebug;
-    if (includeSrcLines) {
-        if (!idebug.is_inited ()) {
-            includeSrcLines = false;
-        }
-    }
-#else
-    includeSrcLines = false;
-#endif
-
+    bool includeSrcLines = options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines);
     for (size_t i = 0; i < frames; ++i) {
         if (i < useSkipFrames) {
             continue;
@@ -82,14 +71,10 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result.width (w);
         result << L"# ";
         if (includeSrcLines) {
-#ifdef __DBGENG_H__
-            std::string res;
-            idebug.to_string_impl (bt[i].address (), res);
-            result << String::FromNarrowSDKString (res).As<wstring> ();
-#endif
+            result << Characters::NarrowSDKStringToWide (boost::stacktrace::to_string (bt[i]));
         }
         else {
-            result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
+            result << Characters::NarrowSDKStringToWide (bt[i].name ());
         }
         result << L";" << Characters::GetEOL<wchar_t> ();
         if (i - useSkipFrames >= usingMaxFrames) {
@@ -119,8 +104,8 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     };
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
     wstring                 out;
-    if (useSkipFrames != 0 and nPtrs != 0) {
-        out += L"..." + Characters::GetEOL<wchar_t> ();
+    if (useSkipFrames != 0 and nptrs != 0) {
+        out += wstring{L"..."} + Characters::GetEOL<wchar_t> ();
     }
     for (int j = 0; j < nptrs; j++) {
         if (j < useSkipFrames) {
@@ -155,7 +140,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
 #endif
         out += symStr + L";" + Characters::GetEOL<wchar_t> ();
-        if (i - useSkipFrames >= usingMaxFrames) {
+        if (j - useSkipFrames >= usingMaxFrames) {
             break;
         }
     }
