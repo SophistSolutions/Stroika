@@ -297,11 +297,14 @@ namespace {
         void TestAll_ ()
         {
             Debug::TraceContextBumper ctx{L"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
-            auto                      prevValue                    = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
+            auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
+            DbgTrace ("sDefault_IncludeSourceLines = true");
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
             Private::ThrowCatchStringException_ ();
+            DbgTrace ("sDefault_IncludeSourceLines = false");
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
             Private::ThrowCatchStringException_ ();
+            DbgTrace ("sDefault_IncludeSourceLines = <<default>>");
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
             Private::ThrowCatchStringException_ ();
         }
