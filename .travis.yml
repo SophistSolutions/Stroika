@@ -47,11 +47,16 @@ jobs:
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         - docker run
-          --storage-opt "size=30GB" --memory 4G --cpus 2
-          --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          --detach --name buildContainer
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+        - docker exec buildContainer pwd
+        - docker exec buildContainer df -h
+        - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
+        - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
       env:
@@ -63,16 +68,21 @@ jobs:
         - pwd
         - df -h
         - systeminfo
-        - cmd /c "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
+        - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - docker docker run
+        - docker run
           --storage-opt "size=30GB" --memory 4G --cpus 2
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+        - docker exec buildContainer pwd
+        - docker exec buildContainer df -h
+        - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
+        - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "ConfigurationFiles/Release.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
       env:
@@ -88,6 +98,8 @@ jobs:
             - p7zip
           update: true
       install:
+        - system_profiler SPSoftwareDataType
+        - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
         - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
         - cat ConfigurationFiles/Release.xml
