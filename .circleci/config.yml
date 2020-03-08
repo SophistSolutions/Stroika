@@ -12,6 +12,10 @@
 #                    (really it nicely supports ANY Linux docker based build)
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
 #
+# TODO:
+#      @todo winbuild-via-docker: TravisCI windows build disables a few security things on startup - maybe I can do here as well? windows defender etc? Maybe not needed?
+#      @todo winbuild-via-docker: speedup docker pull with max-concurrent-downloads
+#      @todo winbuild-via-docker: see if we can go back to -j4 now that things building again (not sure why we failed to build before - never tried code to dump .OUT files)
 version: 2.1
 
 orbs:
@@ -20,41 +24,50 @@ orbs:
 jobs:
        winbuild-via-docker: # This works as of 2020-02-10
               executor: win/default
-              ### Note, CircleCI seems to default (for windows build)
-              ### to 4 CPU machine with 15GB of RAM
 
               steps:
-                     # DOESNT WORK - not sure how to easily update this?
                      # - run:
                      #          name: Update max-concurrent-downloads
+                     # DOESNT WORK - not sure how to easily update this?
                      #          command: docker-machine create --engine-opt max-concurrent-downloads=20
                      - run:
-                              name: Pull docker image # (avoid timeout, usually 11.5 minutes)
+                              name: Update max-concurrent-downloads
+                              ### see if we have sed installed, and maybe invoke that to update json file
+                              command: |
+                                     type %programdata%\docker\config\daemon.json
+                                     where sed
+                     - run:
+                              name: Pull docker image # (avoid timeout, usually 14 minutes)
                               no_output_timeout: 30m
                               command: |
                                      docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
+                              ### Note, CircleCI seems to default (for windows build)
+                              ### to 4 CPU machine with 15GB of RAM
                               name: Start docker build environment
                               ### @todo see if we can lose --tty
-                              command: docker run --storage-opt "size=100GB" -m 10G --cpus 4 --detach --name buildContainer --tty sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              command: docker run \
+                                     --storage-opt "size=100GB" --memory 10G --cpus 4 \
+                                     --detach --name buildContainer  \
+                                     sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
                               command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
                      - run:
-                              name: SHOW INFO
+                              name: Show Diagnostics About Container
                               command: |
-                                     docker exec buildContainer sh -c "pwd"
-                                     docker exec buildContainer sh -c "df -h"
+                                     docker exec buildContainer pwd
+                                     docker exec buildContainer df -h
                                      docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
-                                     docker exec buildContainer cmd /C "wmic MEMORYCHIP get BankLabel,DeviceLocator,Capacity,Speed"
-                                     docker exec buildContainer cmd /C "systeminfo"
+                                     docker exec buildContainer systeminfo
                      - run:
                               name: Configure
                               command: docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags"
                      - run:
                               name: Build
+                              # @todo lose echo FAILED or trick once we verify things building OK
                               command: |
-                                     docker exec --workdir c:/Stroika buildContainer sh -c "make all -j3 || echo failed"
+                                     docker exec --workdir c:/Stroika buildContainer sh -c "make all -j3 || echo FAILED"
                      - run:
                               name: DUMP FAIL LOGS
                               command: |
@@ -213,23 +226,23 @@ workflows:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1804:
                               filters:
                                      branches:
                                             only:
-                                                   #                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1910:
                               filters:
                                      branches:
                                             only:
-                                                   #                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - basic-clang-8-builds-test-ubuntu1910:
                               filters:
                                      branches:
                                             only:
-                                                   #                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
