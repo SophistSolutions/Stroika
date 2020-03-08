@@ -27,7 +27,9 @@ jobs:
                      - run:
                               name: Pull docker image # (avoid timeout, usually 11.5 minutes)
                               no_output_timeout: 30m
-                              command: docker pull --max-concurrent-downloads 20 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              command: |
+                                     docker-machine create --engine-opt max-concurrent-downloads=20
+                                     docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Start docker build environment
                               ### @todo see if we can lose --tty
