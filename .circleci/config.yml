@@ -12,13 +12,6 @@
 #                    (really it nicely supports ANY Linux docker based build)
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
 #
-#                    (note though winbuild-via-docker WORKED its not now, so must test more. I think its out of RAM/disk space, so maybe -j2 will fix or bigger arg to docker -m)
-#
-#             The job 'winbuild-direct' DOESNT work, and I'm in the process of trying to debug it, but that
-#             process is very slow due to the limits of using a free circleci account (about one or two runs and
-#             I run out of credits for a week); Also it fails sporadically, but this could be due to the flakies of windows
-#             or docker windows, or my build scripts.
-#
 version: 2.1
 
 orbs:
@@ -27,31 +20,30 @@ orbs:
 jobs:
        winbuild-via-docker: # This works as of 2020-02-10
               executor: win/default
+              ### Note, CircleCI seems to default (for windows build)
+              ### to 4 CPU machine with 15GB of RAM
 
               steps:
                      - run:
-                              name: Pull docker image # (avoid timeout)
+                              name: Pull docker image # (avoid timeout, usually 11.5 minutes)
                               no_output_timeout: 30m
                               command: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Start docker build environment
-                              command: docker run --storage-opt "size=100GB" -m 8G -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              command: docker run --storage-opt "size=100GB" -m 10G -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
                               command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
                      - run:
                               name: Configure
-                              command: docker exec buildContainer sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags"
+                              command: docker exec buildContainer --workdir c:/Stroika sh -c "perl configure Debug --arch x86 --apply-default-debug-flags"
                      - run:
                               name: Build
-                              ### TRY -j2 since getting failure on this step on circleci but not on my home computer
-                              ### (could also be when I create I need more disk space - or memory - see flags I use on my laptop/instructions)
                               command: |
-                                     docker exec buildContainer sh -c "df -h"
-                                     docker exec buildContainer sh -c "cd Stroika && make all -j4 || df -h"
+                                     docker exec buildContainer --workdir c:/Stroika sh -c "make all -j3"
                      - run:
                               name: Run-Tests
-                              command: docker exec buildContainer sh -c "cd Stroika && make run-tests"
+                              command: docker exec buildContainer --workdir c:/Stroika sh -c "make run-tests"
 
        basic-debug-builds-test-ubuntu1804:
               docker:
@@ -193,8 +185,7 @@ jobs:
                      - store_test_results:
                               path: ~/build-4-linux/test-results/run-tests-log.txt
 
-### NB: we disable UNIX tests (on dev builds) since they work reliably, and we run out of credits.
-### Enable the windows builds cuz still testing them (winbuild-via-docker may work but is just a little flakey)
+### NB: we disable most test (on dev builds) since they work reliably, and we run out of credits.
 workflows:
        version: 2
        builds_and_tests:
@@ -209,14 +200,17 @@ workflows:
                               filters:
                                      branches:
                                             only:
+                                                   #                                                   - v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1910:
                               filters:
                                      branches:
                                             only:
+                                                   #                                                   - v2.1-Dev
                                                    - v2.1-Release
                      - basic-clang-8-builds-test-ubuntu1910:
                               filters:
                                      branches:
                                             only:
+                                                   #                                                   - v2.1-Dev
                                                    - v2.1-Release
