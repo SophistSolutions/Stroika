@@ -1,5 +1,6 @@
 ﻿# escape=`
 
+# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 SHELL ["powershell"]
 
@@ -17,8 +18,9 @@ SHELL ["powershell"]
 #
 ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
 ARG VS_16_4_4=https://download.visualstudio.microsoft.com/download/pr/8ab6eab3-e151-4f4d-9ca5-07f8434e46bb/df2db8df6dbb2d9c22aa627ce065811926a7396cb7c8e421c1dd865aba2cf231/vs_BuildTools.exe
+ARG VS_16_4_5=https://download.visualstudio.microsoft.com/download/pr/378e5eb4-c1d7-4c05-8f5f-55678a94e7f4/b9619acc0f9a1dfbdc1b67fddf9972e169916ceae237cf95f286c9e5547f804f/vs_BuildTools.exe
 
-RUN Invoke-WebRequest "$env:VS_16_4_4" `
+RUN Invoke-WebRequest "$env:VS_16_4_5" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 RUN & "$env:TEMP\vs_buildtools.exe" `
     --add Microsoft.VisualStudio.Workload.VCTools `
@@ -43,9 +45,10 @@ RUN  `
 COPY Windows-Cygwin-VS2k19/Getting-Started-With-Stroika.md ./
 COPY Windows-Cygwin-VS2k19/FixupPath.bat ./
 
+# Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, and mcuh worse with windows (in part due to available shell commands)
 CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
 
 ### NOTE TO RUN
 ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
 ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-###     docker run -it --storage-opt "size=100GB" -m 8G --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19  sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch v2.1-Dev && cd Stroika && ScriptsLib/RegressionTests"
+###     see ScriptsLib/RunLocalWindowsDockerRegressionTests
