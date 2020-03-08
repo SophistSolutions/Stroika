@@ -43,7 +43,7 @@ jobs:
         - pwd
         - df -h
         - systeminfo
-        - cmd /C 'echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%'
+        - echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         - docker run
