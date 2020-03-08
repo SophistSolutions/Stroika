@@ -27,13 +27,22 @@ jobs:
                      - run:
                               name: Pull docker image # (avoid timeout, usually 11.5 minutes)
                               no_output_timeout: 30m
-                              command: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              command: docker pull --max-concurrent-downloads 20 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Start docker build environment
-                              command: docker run --storage-opt "size=100GB" -m 10G -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              ### @todo see if we can lose --tty
+                              ### @todo see if we can / should configure # of virtual CPUS
+                              command: docker run --storage-opt "size=100GB" -m 10G --cpus 4 --detach --name buildContainer --tty sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
                               command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
+                     - run:
+                              name: SHOW INFO
+                              command: |
+                                     docker exec buildContainer sh -c "pwd"
+                                     docker exec buildContainer sh -c "df -h"
+                                     docker exec buildContainer cmd /C "echo %NUMBER_OF_PROCESSORS=8%"
+                                     docker exec buildContainer cmd /C "wmic MEMORYCHIP get BankLabel,DeviceLocator,Capacity,Speed"
                      - run:
                               name: Configure
                               command: docker exec buildContainer --workdir c:/Stroika sh -c "perl configure Debug --arch x86 --apply-default-debug-flags"
