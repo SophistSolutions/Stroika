@@ -37,6 +37,13 @@ jobs:
                                      type %programdata%\docker\config\daemon.json
                                      where sed
                      - run:
+                              name: Disabling Windows Defender on host VM
+                              ### @todo if this works, try inside the docker container as well
+                              command: |
+                                     powershell -Command Set-MpPreference -DisableArchiveScanning \$true
+                                     powershell -Command Set-MpPreference -DisableRealtimeMonitoring \$true
+                                     powershell -Command Set-MpPreference -DisableBehaviorMonitoring \$true
+                     - run:
                               name: Pull docker image # (avoid timeout, usually 14 minutes)
                               no_output_timeout: 30m
                               command: |
