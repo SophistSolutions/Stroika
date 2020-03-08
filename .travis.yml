@@ -43,11 +43,11 @@ jobs:
         - pwd
         - df -h
         - systeminfo
-        - echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%
+        - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         - docker run
-          --storage-opt "size=30GB" --memory 8G --cpus 2
+          --storage-opt "size=30GB" --memory 4G --cpus 2
           --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
@@ -62,12 +62,12 @@ jobs:
       before_install:
         - pwd
         - df -h
-        - cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
         - systeminfo
+        - cmd /c "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         - docker docker run
-          --storage-opt "size=30GB" --memory 8G --cpus 2
+          --storage-opt "size=30GB" --memory 4G --cpus 2
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
@@ -84,9 +84,9 @@ jobs:
       addons:
         homebrew:
           packages:
-            - bundler
             - gnu-sed
             - p7zip
+          update: true
       install:
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
         - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
