@@ -24,11 +24,14 @@ jobs:
               ### to 4 CPU machine with 15GB of RAM
 
               steps:
+                     # DOESNT WORK - not sure how to easily update this?
+                     # - run:
+                     #          name: Update max-concurrent-downloads
+                     #          command: docker-machine create --engine-opt max-concurrent-downloads=20
                      - run:
                               name: Pull docker image # (avoid timeout, usually 11.5 minutes)
                               no_output_timeout: 30m
                               command: |
-                                     docker-machine create --engine-opt max-concurrent-downloads=20
                                      docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Start docker build environment
