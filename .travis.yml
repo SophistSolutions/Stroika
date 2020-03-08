@@ -9,6 +9,9 @@
 #
 # See https://travis-ci.com/SophistSolutions/Stroika for builds/status
 #
+# TODO
+#   > Consider rewriting the travis build scripts for UNIX to use docker (as I do for windows, and circleci)
+#
 language: cpp
 
 os: linux
@@ -37,14 +40,14 @@ jobs:
     # Windows Configuration (RunTests)
     - os: windows
       before_install:
+        - pwd
+        - df -h
+        - cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
+        - systeminfo
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-        - docker exec buildContainer pwd
-        - docker exec buildContainer df -h
-        - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
-        - docker exec buildContainer systeminfo
       install:
-        - docker run \
-          --storage-opt "size=30GB" --memory 8G --cpus 2 \
+        - docker run
+          --storage-opt "size=30GB" --memory 8G --cpus 2
           --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
@@ -57,11 +60,15 @@ jobs:
     # Windows Configuration (Build Samples)
     - os: windows
       before_install:
+        - pwd
+        - df -h
+        - cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
+        - systeminfo
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - docker docker run \
-          --storage-opt "size=100GB" --memory 10G --cpus 4 \
-          --detach --name buildContainer  \
+        - docker docker run
+          --storage-opt "size=30GB" --memory 8G --cpus 2
+          --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
@@ -77,6 +84,7 @@ jobs:
       addons:
         homebrew:
           packages:
+            - bundler
             - gnu-sed
             - p7zip
       install:
