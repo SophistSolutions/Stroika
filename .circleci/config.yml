@@ -36,7 +36,6 @@ jobs:
                      - run:
                               name: Start docker build environment
                               ### @todo see if we can lose --tty
-                              ### @todo see if we can / should configure # of virtual CPUS
                               command: docker run --storage-opt "size=100GB" -m 10G --cpus 4 --detach --name buildContainer --tty sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
@@ -46,18 +45,24 @@ jobs:
                               command: |
                                      docker exec buildContainer sh -c "pwd"
                                      docker exec buildContainer sh -c "df -h"
-                                     docker exec buildContainer cmd /C "echo %NUMBER_OF_PROCESSORS=8%"
+                                     docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
                                      docker exec buildContainer cmd /C "wmic MEMORYCHIP get BankLabel,DeviceLocator,Capacity,Speed"
+                                     docker exec buildContainer cmd /C "systeminfo"
                      - run:
                               name: Configure
-                              command: docker exec buildContainer --workdir c:/Stroika sh -c "perl configure Debug --arch x86 --apply-default-debug-flags"
+                              command: docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags"
                      - run:
                               name: Build
                               command: |
-                                     docker exec buildContainer --workdir c:/Stroika sh -c "make all -j3"
+                                     docker exec --workdir c:/Stroika buildContainer sh -c "make all -j3 || echo failed"
+                     - run:
+                              name: DUMP FAIL LOGS
+                              command: |
+                                     docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/Xerces/CONFIGURE.OUT"
+                                     docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
                      - run:
                               name: Run-Tests
-                              command: docker exec buildContainer --workdir c:/Stroika sh -c "make run-tests"
+                              command: docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
 
        basic-debug-builds-test-ubuntu1804:
               docker:
