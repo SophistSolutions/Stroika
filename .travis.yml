@@ -31,32 +31,43 @@ jobs:
     - env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true" # https://stroika.atlassian.net/browse/STK-705 - retry mid december
 
+  ## Windows builds notes
+  ##   - We break the build into RunTests and RunSamples due to timeout if we try to run both together -- LGP 2020-03-08
   include:
-    # Windows Configuration (working as of 2020-02-23)
+    # Windows Configuration (RunTests)
     - os: windows
       before_install:
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+        - docker exec buildContainer pwd
+        - docker exec buildContainer df -h
+        - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
+        - docker exec buildContainer systeminfo
       install:
-        - docker run -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-        - docker exec buildContainer git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
+        - docker run \
+          --storage-opt "size=30GB" --memory 8G --cpus 2 \
+          --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+        - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec buildContainer sh -c "cd Stroika && perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
       script:
-        - docker exec buildContainer sh -c "cd Stroika && make run-tests -j3"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
-    # Windows Configuration (working as of 2020-02-23) (try config 2)
+    # Windows Configuration (Build Samples)
     - os: windows
       before_install:
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - docker run -d --name buildContainer -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-        - docker exec buildContainer git clone --branch v2.1-Dev https://github.com/SophistSolutions/Stroika.git
+        - docker docker run \
+          --storage-opt "size=100GB" --memory 10G --cpus 4 \
+          --detach --name buildContainer  \
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+        - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec buildContainer sh -c "cd Stroika && perl configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
       script:
-        - docker exec buildContainer sh -c "cd Stroika && make samples -j4"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
       env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
