@@ -272,12 +272,14 @@ namespace {
             {
                 Debug::TraceContextBumper           ctx1{L"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSecondsType kMarginOfError_ = 10;  // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
-                constexpr Time::DurationSecondsType kWaitOnAbortFor = 3.0; // use such a long timeout cuz we run this on 'debug' builds,
+                constexpr Time::DurationSecondsType kWaitOnAbortFor = 4.0; // use such a long timeout cuz we run this on 'debug' builds,
                                                                            // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
                                                                            // due to timeout on raspberrypi (rare even there)
                                                                            //
                                                                            // Upped from 2.5 to 3.0 because failed twice between July and August 2017 on
                                                                            // raspberrypi -- LGP 2017-08-23
+                                                                           //
+                                                                           // Upped from 3 to 4 since failed running under docker / windows on laptop -- LGP 2020-03-08
                 Time::DurationSecondsType startTestAt = Time::GetTickCount ();
                 try {
                     t.AbortAndWaitForDone (kWaitOnAbortFor);
