@@ -23,8 +23,8 @@ env:
     # suggested by https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
     # -j2 makes sense, -j3 empirically slightly faster (unix), but occasionally runs out of RAM--LGP 2020-03-09
-    # retrying -j3 I THINK I did -j SPACE  3
-    - MAKEFLAGS="-j3"
+    # retrying -j3 I THINK I did -j SPACE  3 (no space was right use --jobs= which is clearer and retry 2/3)
+    - MAKEFLAGS="--jobs=2"
 
 branches:
   only:
@@ -42,15 +42,15 @@ jobs:
     # Windows Configuration (RunTests)
     - os: windows
       before_install:
-        - pwd
         - df -h
         - systeminfo
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
+        # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
         - "docker run
           --interactive
-          --memory 4G --cpus 2
+          --memory 4G --cpus 2 --storage-opt 'size=30GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker ps -a
@@ -59,8 +59,8 @@ jobs:
         - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no --sqlite no
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
@@ -71,16 +71,15 @@ jobs:
     #     @todo - this is basically the same as the build steps for Windows (RunTests) - find way to refactor so the spec is shared
     - os: windows
       before_install:
-        - pwd
         - df -h
         - systeminfo
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        # For reasons not understood, --storage-opt "size=30GB" causes failure of docker run
+        # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
         - "docker run
-          --tty
-          --memory 4G --cpus 2
+          --interactive
+          --memory 4G --cpus 2 --storage-opt 'size=30GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker exec buildContainer pwd
@@ -88,8 +87,8 @@ jobs:
         - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no --sqlite no
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Release.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
@@ -109,7 +108,8 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
+        # Only for build speed: --Xerces no --OpenSSL no
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no
         - cat ConfigurationFiles/Release.xml
         - clang++ --version
       script:
