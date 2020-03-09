@@ -21,8 +21,8 @@ os: linux
 ## suggested it.
 env:
   global:
-    # cat /proc/cpuinfo showed 2 CPUs, so -j 2
-    - MAKEFLAGS="-j 2"
+    # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
+    ###TMPHACK TO TEST - - MAKEFLAGS="-j 2"
 
 branches:
   only:
@@ -46,9 +46,10 @@ jobs:
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - docker run
+        - docker run -it
           --detach --name buildContainer
-          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo failed: $?
+        - docker ps -a
         - docker exec buildContainer pwd
         - docker exec buildContainer df -h
         - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
@@ -105,6 +106,8 @@ jobs:
         - cat ConfigurationFiles/Release.xml
       script:
         - clang++ --version
+        # We dont get output building third-party-components for a while in openssl
+        - travis_wait 30 make third-party-components
         - make all ECHO_BUILD_LINES=1
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true"
