@@ -16,14 +16,11 @@ language: cpp
 
 os: linux
 
-## I tried this directly and it didn't help, but try again as instructions on
-## https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
-## suggested it.
 env:
   global:
-    - IGNORE=3
+    # suggested by https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
-    ###TMPHACK TO TEST - - MAKEFLAGS="-j 2"
+    - MAKEFLAGS="-j 2"
 
 branches:
   only:
@@ -48,8 +45,9 @@ jobs:
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         - "docker run -it
+          --memory 4G --cpus 2
           --detach --name buildContainer
-          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'failed: $?'"
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker ps -a
         - docker exec buildContainer pwd
         - docker exec buildContainer df -h
@@ -58,7 +56,7 @@ jobs:
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "ConfigurationFiles/Debug.xml"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
       env:
@@ -84,7 +82,7 @@ jobs:
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "ConfigurationFiles/Release.xml"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Release.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
       env:
@@ -108,7 +106,7 @@ jobs:
       script:
         - clang++ --version
         # We dont get output building third-party-components for a while in openssl
-        - travis_wait 30 make third-party-components
+        - travis_wait 40 make third-party-components
         - make all ECHO_BUILD_LINES=1
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true"
