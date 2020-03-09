@@ -21,6 +21,7 @@ os: linux
 ## suggested it.
 env:
   global:
+    - IGNORE=3
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
     ###TMPHACK TO TEST - - MAKEFLAGS="-j 2"
 
