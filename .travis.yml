@@ -22,7 +22,7 @@ env:
   global:
     # suggested by https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
-    ### experiment with -j3 to see if faster
+    # -j2 makes sense, but -j3 empirically slightly faster (unix) so go with that for now --LGP 2020-03-09
     - MAKEFLAGS="-j 3"
 
 branches:
@@ -48,6 +48,7 @@ jobs:
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         - "docker run
+          --tty
           --memory 4G --cpus 2
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
@@ -77,6 +78,7 @@ jobs:
       install:
         # For reasons not understood, --storage-opt "size=30GB" causes failure of docker run
         - "docker run
+          -i
           --memory 4G --cpus 2
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
