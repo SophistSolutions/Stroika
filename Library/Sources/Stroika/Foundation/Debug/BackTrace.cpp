@@ -11,6 +11,8 @@
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
 #endif
+#elif qPlatform_MacOS
+#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED 1
 #elif qPlatform_Windows
 #include <Windows.h>
 #endif
