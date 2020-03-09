@@ -11,6 +11,8 @@
 #
 # See https://travis-ci.com/SophistSolutions/Stroika for builds/status
 #
+# See https://config.travis-ci.com/, https://github.com/travis-ci/travis-yml/blob/master/schema.json for format of this file.
+#
 # TODO
 #   > Consider rewriting the travis build scripts for UNIX to use docker (as I do for windows, and circleci)
 #
@@ -92,6 +94,8 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Release.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
+      after_failure:
+        - docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Release/Samples-Service/WIX-Installer-Build.Out"
       env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
