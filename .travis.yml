@@ -7,6 +7,8 @@
 #       even to some degree with these settings. May need todo more to make this work.
 #       Similarly, use --openssl use-system for speed of build.
 #
+#       Sometimes use Debug configurations since that provides better library testing (generally)
+#
 # See https://travis-ci.com/SophistSolutions/Stroika for builds/status
 #
 # TODO
@@ -20,7 +22,8 @@ env:
   global:
     # suggested by https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
-    - MAKEFLAGS="-j 2"
+    ### experiment with -j3 to see if faster
+    - MAKEFLAGS="-j 3"
 
 branches:
   only:
@@ -44,7 +47,7 @@ jobs:
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - "docker run -it
+        - "docker run
           --memory 4G --cpus 2
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
@@ -55,7 +58,7 @@ jobs:
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
@@ -63,6 +66,7 @@ jobs:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
     # Windows Configuration (Build Samples)
+    #     @todo - this is basically the same as the build steps for Windows (RunTests) - find way to refactor so the spec is shared
     - os: windows
       before_install:
         - pwd
@@ -71,17 +75,18 @@ jobs:
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - docker run
-          --storage-opt "size=30GB" --memory 4G --cpus 2
+        # For reasons not understood, --storage-opt "size=30GB" causes failure of docker run
+        - "docker run
+          --memory 4G --cpus 2
           --detach --name buildContainer
-          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker exec buildContainer pwd
         - docker exec buildContainer df -h
         - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Release.xml"
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
@@ -103,11 +108,12 @@ jobs:
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
         - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15
         - cat ConfigurationFiles/Release.xml
-      script:
         - clang++ --version
+      script:
         # We dont get output building third-party-components for a while in openssl
-        - travis_wait 40 make third-party-components
-        - make all ECHO_BUILD_LINES=1
+        - travis_wait 30 make third-party-components
+        #- make all ECHO_BUILD_LINES=1
+        - make all
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true"
 
