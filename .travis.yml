@@ -47,9 +47,9 @@ jobs:
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 30 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
-        - docker run -it
+        - "docker run -it
           --detach --name buildContainer
-          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo failed: $?
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'failed: $?'"
         - docker ps -a
         - docker exec buildContainer pwd
         - docker exec buildContainer df -h
