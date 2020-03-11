@@ -95,7 +95,11 @@ jobs:
       script:
         - docker exec --workdir c:/Stroika buildContainer sh -c "make samples"
       after_failure:
+        - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Release/Samples-Service/WIX-Installer-Build.Out"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "ls -l ThirdPartyComponents/WIX/CURRENT/"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "cd ThirdPartyComponents/WIX/CURRENT/ && ./candle -v"
+        - echo "ENDING DEBUG STUFF DUMP"
       env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
