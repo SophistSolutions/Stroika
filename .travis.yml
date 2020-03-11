@@ -26,7 +26,7 @@ env:
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
     # -j2 makes sense, -j3 empirically slightly faster (unix), but occasionally runs out of RAM--LGP 2020-03-09
     # retrying -j3 I THINK I did -j SPACE  3 (no space was right use --jobs= which is clearer and retry 2/3)
-    - MAKEFLAGS="--jobs=2"
+    - MAKEFLAGS="--jobs=3"
 
 branches:
   only:
