@@ -19,8 +19,9 @@ SHELL ["powershell"]
 ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
 ARG VS_16_4_4=https://download.visualstudio.microsoft.com/download/pr/8ab6eab3-e151-4f4d-9ca5-07f8434e46bb/df2db8df6dbb2d9c22aa627ce065811926a7396cb7c8e421c1dd865aba2cf231/vs_BuildTools.exe
 ARG VS_16_4_5=https://download.visualstudio.microsoft.com/download/pr/378e5eb4-c1d7-4c05-8f5f-55678a94e7f4/b9619acc0f9a1dfbdc1b67fddf9972e169916ceae237cf95f286c9e5547f804f/vs_BuildTools.exe
+ARG VS_16_4_6=https://download.visualstudio.microsoft.com/download/pr/5714a1fb-d8a9-4e24-b6b7-c1a40a001d4c/f68093ddf8d523354d63ac326697473c98439c92c7df09159fe974ea6622b2f5/vs_BuildTools.exe
 
-RUN Invoke-WebRequest "$env:VS_16_4_5" `
+RUN Invoke-WebRequest "$env:VS_16_4_6" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 RUN & "$env:TEMP\vs_buildtools.exe" `
     --add Microsoft.VisualStudio.Workload.VCTools `
