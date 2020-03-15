@@ -7,7 +7,8 @@
 #                    - basic-debug-builds-test-ubuntu1804
 #                    - basic-debug-builds-test-ubuntu1910
 #                    - basic-clang-8-builds-test-ubuntu1910
-#                    - winbuild-via-docker
+#                    - winbuild-via-tests
+#                    - winbuild-via-samples
 #
 #                    (really it nicely supports ANY Linux docker based build)
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
@@ -291,7 +292,13 @@ workflows:
        version: 2
        builds_and_tests:
               jobs:
-                     - winbuild-via-docker:
+                     - winbuild-tests:
+                              filters:
+                                     branches:
+                                            only:
+                                                   - v2.1-Dev
+                                                   - v2.1-Release
+                     - winbuild-samples:
                               filters:
                                      branches:
                                             only:
