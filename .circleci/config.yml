@@ -39,9 +39,9 @@ jobs:
                      - run:
                               name: Disabling Windows Defender on host VM
                               command: |
-                                     powershell -Command Set-MpPreference -DisableArchiveScanning $true
-                                     powershell -Command Set-MpPreference -DisableRealtimeMonitoring $true
-                                     powershell -Command Set-MpPreference -DisableBehaviorMonitoring $true
+                                     powershell -Command Set-MpPreference -DisableArchiveScanning 1
+                                     powershell -Command Set-MpPreference -DisableRealtimeMonitoring 1
+                                     powershell -Command Set-MpPreference -DisableBehaviorMonitoring 1
                      - run:
                               name: Pull docker image # (avoid timeout, usually 14 minutes)
                               no_output_timeout: 30m
