@@ -26,7 +26,7 @@ orbs:
        win: circleci/windows@2.3.1
 
 jobs:
-       winbuild-via-docker: # This works as of 2020-02-10
+       winbuild-tests:
               executor: win/default
 
               steps:
@@ -35,8 +35,8 @@ jobs:
                      # DOESNT WORK - not sure how to easily update this?
                      #          command: docker-machine create --engine-opt max-concurrent-downloads=20
                      - run:
+                              # see if we have sed installed, and maybe invoke that to update daemon.json file; none of it works however
                               name: Update max-concurrent-downloads
-                              ### see if we have sed installed, and maybe invoke that to update json file
                               command: |
                                      type $env:programdata\docker\config\daemon.json
                                      where sed
@@ -55,7 +55,67 @@ jobs:
                               ### Note, CircleCI seems to default (for windows build)
                               ### to 4 CPU machine with 15GB of RAM
                               name: Start docker build environment
-                              ### @todo see if we can lose --tty (-tty appears needed since else the container just shuts down)
+                              command: docker run --storage-opt "size=100GB" --memory 10G --cpus 4 --tty --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                     - run:
+                              name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
+                              command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
+                     - run:
+                              name: Show Diagnostics About Container
+                              command: |
+                                     docker exec buildContainer pwd
+                                     docker exec buildContainer df -h
+                                     docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
+                                     docker exec buildContainer systeminfo
+                     - run:
+                              # Run Release mode since running in DEBUG mode some tests timed out with 10 minutes+ of no output
+                              # (Foundation::Execution::Threads)
+                              name: Configure
+                              command: docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Release --arch x86 --apply-default-release-flags"
+                     - run:
+                              name: Build
+                              # @todo lose echo FAILED or trick once we verify things building OK
+                              # AND SEE (see above if we can use -j4 since 4 cpus or use ENV setting of #processors)
+                              command: |
+                                     docker exec --workdir c:/Stroika buildContainer sh -c "make tests -j4 || echo FAILED"
+                     # - run:
+                     #          name: DUMP FAIL LOGS
+                     #          #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
+                     #          command: |
+                     #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/Xerces/CONFIGURE.OUT"
+                     #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
+                     - run:
+                              name: Run-Tests
+                              command: docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
+
+       winbuild-samples:
+              executor: win/default
+
+              steps:
+                     # - run:
+                     #          name: Update max-concurrent-downloads
+                     # DOESNT WORK - not sure how to easily update this?
+                     #          command: docker-machine create --engine-opt max-concurrent-downloads=20
+                     - run:
+                              # see if we have sed installed, and maybe invoke that to update daemon.json file; none of it works however
+                              name: Update max-concurrent-downloads
+                              command: |
+                                     type $env:programdata\docker\config\daemon.json
+                                     where sed
+                     - run:
+                              name: Disabling Windows Defender on host VM
+                              command: |
+                                     powershell -Command Set-MpPreference -DisableArchiveScanning 1
+                                     powershell -Command Set-MpPreference -DisableRealtimeMonitoring 1
+                                     powershell -Command Set-MpPreference -DisableBehaviorMonitoring 1
+                     - run:
+                              name: Pull docker image # (avoid timeout, usually 14 minutes)
+                              no_output_timeout: 30m
+                              command: |
+                                     docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                     - run:
+                              ### Note, CircleCI seems to default (for windows build)
+                              ### to 4 CPU machine with 15GB of RAM
+                              name: Start docker build environment
                               command: docker run --storage-opt "size=100GB" --memory 10G --cpus 4 --tty --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
@@ -75,13 +135,13 @@ jobs:
                               # @todo lose echo FAILED or trick once we verify things building OK
                               # AND SEE (see above if we can use -j4 since 4 cpus or use ENV setting of #processors)
                               command: |
-                                     docker exec --workdir c:/Stroika buildContainer sh -c "make all -j3 || echo FAILED"
-                     - run:
-                              name: DUMP FAIL LOGS
-                              #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
-                              command: |
-                                     docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/Xerces/CONFIGURE.OUT"
-                                     docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
+                                     docker exec --workdir c:/Stroika buildContainer sh -c "make samples -j4 || echo FAILED"
+                     # - run:
+                     #          name: DUMP FAIL LOGS
+                     #          #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
+                     #          command: |
+                     #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/Xerces/CONFIGURE.OUT"
+                     #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
                      - run:
                               name: Run-Tests
                               command: docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
