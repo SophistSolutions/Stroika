@@ -55,8 +55,8 @@ jobs:
                               ### Note, CircleCI seems to default (for windows build)
                               ### to 4 CPU machine with 15GB of RAM
                               name: Start docker build environment
-                              ### @todo see if we can lose --tty
-                              command: docker run --storage-opt "size=100GB" --memory 10G --cpus 4 --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+                              ### @todo see if we can lose --tty (-tty appears needed since else the container just shuts down)
+                              command: docker run --storage-opt "size=100GB" --memory 10G --cpus 4 --tty --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
                               command: docker exec buildContainer git clone --branch $env:CIRCLE_BRANCH https://github.com/SophistSolutions/Stroika.git
