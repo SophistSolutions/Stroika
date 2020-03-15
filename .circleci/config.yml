@@ -14,7 +14,11 @@
 #
 # TODO:
 #      @todo winbuild-via-docker: TravisCI windows build disables a few security things on startup - maybe I can do here as well? windows defender etc? Maybe not needed?
+#             TESTING RIGHT NOW
+
 #      @todo winbuild-via-docker: speedup docker pull with max-concurrent-downloads
+### ADD JIRA TICKET
+
 #      @todo winbuild-via-docker: see if we can go back to -j4 now that things building again (not sure why we failed to build before - never tried code to dump .OUT files)
 version: 2.1
 
@@ -51,10 +55,11 @@ jobs:
                               ### Note, CircleCI seems to default (for windows build)
                               ### to 4 CPU machine with 15GB of RAM
                               name: Start docker build environment
-                              ### @todo see if we can lose --tty
+                              ### @todo see if we can lose --tty (got failure)
                               command: docker run \
+                                     --tty \
                                      --storage-opt "size=100GB" --memory 10G --cpus 4 \
-                                     --detach --name buildContainer  \
+                                     --detach --name buildContainer \
                                      sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
                      - run:
                               name: Checkout code # todo fix branch or see how to checkout locally and map drive with -v
@@ -72,10 +77,12 @@ jobs:
                      - run:
                               name: Build
                               # @todo lose echo FAILED or trick once we verify things building OK
+                              # AND SEE (see above if we can use -j4 since 4 cpus or use ENV setting of #processors)
                               command: |
                                      docker exec --workdir c:/Stroika buildContainer sh -c "make all -j3 || echo FAILED"
                      - run:
                               name: DUMP FAIL LOGS
+                              #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
                               command: |
                                      docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/Xerces/CONFIGURE.OUT"
                                      docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
