@@ -24,7 +24,7 @@ env:
   global:
     # suggested by https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
-    # -j2 makes sense, -j3 empirically slightly faster (maybe - not consistent), but occasionally runs out of RAM--LGP 2020-03-09
+    # -j2 makes sense, -j3 empirically slightly faster (maybe - not consistent), but occasionally runs out of RAM (virtual mem exhuasted)--LGP 2020-03-09
     - MAKEFLAGS="--jobs=2"
 
 branches:
@@ -36,11 +36,14 @@ jobs:
   allow_failures:
     - env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true" # https://stroika.atlassian.net/browse/STK-705 - retry mid december
+        - MATRIX_EVAL="Windows=true && BuildSamples=true" # https://stroika.atlassian.net/browse/STK-708
 
-  ## Windows builds notes
-  ##   - We break the build into RunTests and RunSamples due to timeout if we try to run both together -- LGP 2020-03-08
   include:
+    ## Windows builds notes
+    ##   - We break the build into RunTests and RunSamples due to timeout if we try to run both together -- LGP 2020-03-08
+    #
     # Windows Configuration (RunTests)
+    #
     - os: windows
       before_install:
         - df -h
@@ -68,6 +71,7 @@ jobs:
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
+    #
     # Windows Configuration (Build Samples)
     #     @todo - this is basically the same as the build steps for Windows (RunTests) - find way to refactor so the spec is shared
     - os: windows
@@ -103,7 +107,9 @@ jobs:
       env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
+    #
     # MacOS Configuration (still not working as of 2020-01-01 - due to https://stroika.atlassian.net/browse/STK-705 but should be soon)
+    #
     - os: osx
       osx_image: xcode11.3
       addons:
@@ -128,7 +134,9 @@ jobs:
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true"
 
+    #
     # Linux (Ubuntu - 1804) Configuration - build all
+    #
     - os: linux
       dist: bionic
       addons:
