@@ -9,7 +9,7 @@ DOCKER="${DOCKER:-docker.exe}"
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
 ## Unclear why we need --interactive, but without it, the shell stops and we cannot exec anything -- LGP 2020-03-09
-echo "Running docker build (usually takes about 4hrs)"
+echo "Running docker build (usually takes about 6 hrs)"
 $DOCKER run \
     --detach \
     --interactive \
