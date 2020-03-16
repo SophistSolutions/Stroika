@@ -8,9 +8,11 @@ DOCKER="${DOCKER:-docker.exe}"
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
-### FIX START THEN RUN EXEC so we can later re-attach withhotu changing CMD
-echo "Running docker build (usually takes about 7hrs)"
-$DOCKER run --detach --interactive\
+## Unclear why we need --interactive, but without it, the shell stops and we cannot exec anything -- LGP 2020-03-09
+echo "Running docker build (usually takes about 4hrs)"
+$DOCKER run \
+    --detach \
+    --interactive \
     --storage-opt "size=100GB" \
     --memory 8G \
     --cpus 4\
@@ -28,3 +30,4 @@ $DOCKER stop $CONTAINER_NAME
 echo "Done with build, so copying out results"
 $DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows_VS2k19-In-Docker-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
 $DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-Windows_VS2k19-In-Docker-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
+echo "Container $CONTAINER_NAME stopped but still around to examine/post-mortem"
