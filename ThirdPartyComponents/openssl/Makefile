@@ -22,10 +22,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-VERSION=1.1.1d
+VERSION=1.1.1e
+#VERSION=1.1.1d
 ### 1.1.1c BUILDS AND WORKS but has DPURIFY broken - see ### https://stroika.atlassian.net/browse/STK-697 fixed in 1.1.1d
 #VERSION=1.1.1b
-#VERSION=1.1.1c
 
 
 BASENAME=openssl-$(VERSION)
