@@ -15,10 +15,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-VERSION=3300100
+VERSION=3310100
+#VERSION=3300100
 #VERSION=3290000
 #VERSION=3280000
-#VERSION=3270200
 
 AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 
