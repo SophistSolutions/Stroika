@@ -1309,7 +1309,7 @@ namespace {
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
             66000,
-            0.55,
+            0.57,
             &failedTests);
         Tester (
             L"Simple String append test (+='string object') 10x",
@@ -1380,7 +1380,7 @@ namespace {
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([] (const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
             220000,
-            .18,
+            .21,
             &failedTests);
 #endif
         Tester (
