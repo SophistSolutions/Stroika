@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Streams {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpen ());
-        static_assert (is_pod_v<POD_TYPE>);
+        static_assert (is_trivial_v<POD_TYPE> and is_standard_layout_v<POD_TYPE>);
         Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     template <typename ELEMENT_TYPE>

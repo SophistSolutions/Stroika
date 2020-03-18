@@ -151,6 +151,10 @@
 #define _MSC_VER_2k19_16Pt4_ 1924
 #define _MS_VS_2k19_16Pt4Pt2_ 192428314
 
+// _MSC_VER=1925
+#define _MSC_VER_2k19_16Pt5_ 1925
+#define _MS_VS_2k19_16Pt5P0_ 192528610
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_

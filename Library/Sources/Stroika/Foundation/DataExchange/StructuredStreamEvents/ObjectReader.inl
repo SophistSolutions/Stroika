@@ -871,7 +871,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return MakeCommonReader_NamedEnumerations<T> ();
     }
     template <typename T>
-    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_pod_v<T> and not is_enum_v<T>>*)
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_trivial_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>*)
     {
         return MakeCommonReader_SimpleReader_<T> ();
     }

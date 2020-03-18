@@ -458,7 +458,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>* = nullptr);
         template <typename T>
-        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_pod_v<T> and not is_enum_v<T>>* = nullptr);
+        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_trivial_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>* = nullptr);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
         template <typename T>

@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Streams {
          *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
          *            non-POD data, not hard, but we don't want to encourage it.
          *
-         *  \req is_pod_v<POD_TYPE>
+         *  \req is_trivial_v<POD_TYPE> and is_standard_layout_v<POD_TYPE>
          *  \req ELEMENT_TYPE==byte
          *  \req IsOpen ()
          *
