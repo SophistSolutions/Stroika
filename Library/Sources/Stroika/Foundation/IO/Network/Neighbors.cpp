@@ -27,14 +27,9 @@ using namespace Stroika::Foundation::IO::Network;
 
 using Neighbor = NeighborsMonitor::Neighbor;
 
-// @todo
+// @todo Consider supporting ip neigh show and/or ip -6 neigh show
 //- https://www.midnightfreddie.com/how-to-arp-a-in-ipv6.html
 //-http ://man7.org/linux/man-pages/man8/ip-neighbour.8.html
-//  -arp - a
-//  - ip neigh show
-//  - ip -6 neigh show
-//  - cat /proc/net/arp
-//  - use that to fill in new devices / info for discovery
 //
 // @todo perhaps add ability - background thread - to monitor, and always report up to date list?
 //
@@ -186,34 +181,46 @@ String NeighborsMonitor::Neighbor::ToString () const
 class NeighborsMonitor::Rep_ {
 public:
     Rep_ (const Options& o)
-        : fOptions_
+        : fOptions_{o}
     {
-        o
-    }
-#if qPlatform_Linux
-    , fUseStrategy_
-    {
-        Options::Strategy::eProcNetArp
-    }
-#else
-    , fUseStrategy_
-    {
-        Options::Strategy::eArpProgram
-    }
-#endif
-    {
-        if (o.fStategies.has_value () and o.fStategies->Contains (Options::Strategy::eArpProgram)) {
-            fUseStrategy_ = Options::Strategy::eArpProgram;
-        }
-#if qPlatform_Linux
-        if (o.fStategies.has_value () and o.fStategies->Contains (Options::Strategy::eProcNetArp)) {
-            fUseStrategy_ = Options::Strategy::eProcNetArp;
-        }
-#endif
     }
     Collection<NeighborsMonitor::Neighbor> GetNeighbors () const
     {
-        switch (fUseStrategy_) {
+        std::exception_ptr e           = nullptr; // try best approach, and then try other fallbacks, but rethrow exception from best
+        auto               tryStrategy = [&] (Options::Strategy s) -> optional<Collection<NeighborsMonitor::Neighbor>> {
+            // if strategies not specified, try any we are handed
+            if (not fOptions_.fStategies or fOptions_.fStategies->Contains (s)) {
+                try {
+                    return GetNeighbors_ (s);
+                }
+                catch (...) {
+                    if (e == nullptr) {
+                        e = current_exception ();
+                    }
+                }
+            }
+            return nullopt;
+        };
+        // try strategies in best to worst order (filtered by caller restriction on which we can try)
+#if qPlatform_Linux
+        if (auto o = tryStrategy (Options::Strategy::eProcNetArp)) {
+            return *o;
+        }
+#endif
+        if (auto o = tryStrategy (Options::Strategy::eArpProgram)) {
+            return *o;
+        }
+        if (e != nullptr) {
+            rethrow_exception (e);
+        }
+        Execution::Throw (Execution::Exception (L"No matching / available neighbors strategy"sv));
+    }
+    Collection<NeighborsMonitor::Neighbor> GetNeighbors_ (Options::Strategy s) const
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"NeighborsMonitor::Rep_::GetNeighbors_", L"s=%s", Characters::ToString ((int)s).c_str ())};
+#endif
+        switch (s) {
             case Options::Strategy::eArpProgram:
                 return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false));
 #if qPlatform_Linux
@@ -225,8 +232,7 @@ public:
                 return Collection<NeighborsMonitor::Neighbor>{};
         }
     }
-    Options           fOptions_;
-    Options::Strategy fUseStrategy_;
+    Options fOptions_;
 };
 
 NeighborsMonitor::NeighborsMonitor (const Options& options)
