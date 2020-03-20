@@ -24,6 +24,8 @@
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
 
+#include "Exception.h"
+
 #include "FileOutputStream.h"
 
 using std::byte;
@@ -41,6 +43,7 @@ using Execution::ThrowSystemErrNo;
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
+
 
 /*
  ********************************************************************************
@@ -62,15 +65,16 @@ public:
         int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
         errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
         if (e != 0) {
-            ThrowPOSIXErrNo (e);
+            FileSystem::Exception::ThrowPOSIXErrNo (e, path (fileName.As<wstring> ()));
         }
         if (fFD_ == -1) {
             ThrowSystemErrNo ();
+            FileSystem::Exception::ThrowSystemErrNo (path (fileName.As<wstring> ()));
         }
 #else
         int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
         const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-        ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), path (fileName.As<wstring> ()));
 #endif
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)

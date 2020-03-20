@@ -29,6 +29,8 @@
 #endif
 #include "../../Streams/BufferedInputStream.h"
 
+#include "Exception.h"
+
 #include "FileInputStream.h"
 
 using std::byte;
@@ -64,13 +66,13 @@ public:
 #if qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
         if (e != 0) {
-            ThrowPOSIXErrNo (e);
+            FileSystem::Exception::ThrowPOSIXErrNo (e, path (fileName.As<wstring> ()));
         }
         if (fFD_ == -1) {
-            ThrowSystemErrNo ();
+            FileSystem::Exception::ThrowSystemErrNo (path (fileName.As<wstring> ()));
         }
 #else
-        ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY), path (fileName.As<wstring> ()));
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"opened fd: %d", fFD_);
