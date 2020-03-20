@@ -229,7 +229,7 @@ namespace {
             {
                 Debug::TraceContextBumper           ctx1{L"expect-failed-wait"};
                 constexpr Time::DurationSecondsType kMarginOfErrorLo_       = .5;
-                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_  = 5.0;  // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_  = qDebug? 3.0: 5.0;  // if sys busy, thread could be put to sleep almost any amount of time
                 constexpr Time::DurationSecondsType kMarginOfErrorHi_Error_ = 10.0; // ""
                 constexpr Time::DurationSecondsType kWaitOnAbortFor         = 1.0;
                 Time::DurationSecondsType           startTestAt             = Time::GetTickCount ();
@@ -272,7 +272,8 @@ namespace {
             {
                 Debug::TraceContextBumper           ctx1{L"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSecondsType kMarginOfError_ = 10;  // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
-                constexpr Time::DurationSecondsType kWaitOnAbortFor = 6.0; // use such a long timeout cuz we run this on 'debug' builds,
+                constexpr Time::DurationSecondsType kWaitOnAbortFor = qDebug ? 7.0 : 3.0;
+                                                                           // use such a long timeout cuz we run this on 'debug' builds,
                                                                            // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
                                                                            // due to timeout on raspberrypi (rare even there)
                                                                            //
@@ -280,6 +281,7 @@ namespace {
                                                                            // raspberrypi -- LGP 2017-08-23
                                                                            //
                                                                            // Upped from 3 to 6 since failed running under docker / windows on laptop -- LGP 2020-03-09
+                                                                           // Upped to 7 for debug, but back to 3 otherwise -- LGP 2020-03-20
                 Time::DurationSecondsType startTestAt = Time::GetTickCount ();
                 try {
                     t.AbortAndWaitForDone (kWaitOnAbortFor);
