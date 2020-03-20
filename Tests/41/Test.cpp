@@ -21,6 +21,7 @@
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
+#include "Stroika/Foundation/IO/FileSystem/Common.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
@@ -539,8 +540,26 @@ namespace {
                 IO::Network::NeighborsMonitor monitor;
                 Time::DurationSecondsType     timeoutAt = (Time::GetTickCount () + Time::Duration{3s}).As<Time::DurationSecondsType> ();
                 while (Time::GetTickCount () < timeoutAt) {
-                    for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
-                        DbgTrace (L"discovered %s", Characters::ToString (n).c_str ());
+                    // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
+                    try {
+                        for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
+                            DbgTrace (L"discovered %s", Characters::ToString (n).c_str ());
+                        }
+                    }
+                    catch (const IO::FileSystem::filesystem_error& e) {
+#if qPlatform_Linux
+                        if (
+#if qCompilerAndStdLib_error_code_compare_condition_Buggy
+                            e.code ().value () == static_cast<int> (errc::no_such_file_or_directory)
+#else
+                            e.code () == errc::no_such_file_or_directory
+#endif
+                        ) {
+                            TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure:" + Characters::ToString (current_exception ())).AsNarrowSDKString ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                            return;
+                        }
+#endif
+                        Execution::ReThrow ();
                     }
                 }
             }
