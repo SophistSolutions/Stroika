@@ -200,6 +200,7 @@ foo.cpp:
  */
 #define GLIBCXX_7x_ 20180720
 #define GLIBCXX_8x_ 20180728
+#define GLIBCXX_9x_ 20191008
 
 /*
  *
