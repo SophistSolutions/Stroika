@@ -457,6 +457,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class StyledTextIOWriter::SrcStream::Table {
     public:
+        virtual ~Table () = default;
+
+    public:
         struct CellInfo {
             CellInfo ();
             Led_TWIPS f_cellx;
