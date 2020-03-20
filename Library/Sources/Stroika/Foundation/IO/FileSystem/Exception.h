@@ -137,6 +137,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          */
         [[noreturn]] static void ThrowSystemErrNo (int sysErr, const path& p1 = {}, const path& p2 = {});
+        [[noreturn]] static void ThrowSystemErrNo (const path& p1, const path& p2 = {});
 
 #if qPlatform_Windows
     public:
