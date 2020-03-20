@@ -44,7 +44,6 @@ using Execution::ThrowSystemErrNo;
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
-
 /*
  ********************************************************************************
  ************************* FileSystem::FileOutputStream *************************
