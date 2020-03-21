@@ -69,6 +69,8 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
+        - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug/Tests
+        - docker exec --workdir c:/Stroika buildContainer Builds/Debug/Tests/Test01
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
