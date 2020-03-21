@@ -229,7 +229,7 @@ namespace {
             {
                 Debug::TraceContextBumper           ctx1{L"expect-failed-wait"};
                 constexpr Time::DurationSecondsType kMarginOfErrorLo_       = .5;
-                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_  = qDebug ? 3.0 : 5.0; // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_  = qDebug ? 5.0 : 3.0; // if sys busy, thread could be put to sleep almost any amount of time
                 constexpr Time::DurationSecondsType kMarginOfErrorHi_Error_ = 10.0;               // ""
                 constexpr Time::DurationSecondsType kWaitOnAbortFor         = 1.0;
                 Time::DurationSecondsType           startTestAt             = Time::GetTickCount ();
