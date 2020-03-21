@@ -68,7 +68,7 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
-        - docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
+        - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
