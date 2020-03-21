@@ -44,6 +44,7 @@ jobs:
     ##   - We break the build into RunTests and RunSamples due to timeout if we try to run both together -- LGP 2020-03-08
     #
     # Windows Configuration (RunTests)
+    #     @todo FIX issue tests run correctly (build works but test files run dont)
     #
     - os: windows
       before_install:
@@ -64,8 +65,8 @@ jobs:
         - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no --sqlite no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --sqlite no
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --sqlite no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
@@ -76,7 +77,9 @@ jobs:
 
     #
     # Windows Configuration (Build Samples)
-    #     @todo - this is basically the same as the build steps for Windows (RunTests) - find way to refactor so the spec is shared
+    #     @todo - this is basically the same as the build steps for Windows (RunTests)
+    #       - find way to refactor so the spec is shared
+    #     @todo FIX issue running candle - so actually builds samples correctly
     - os: windows
       before_install:
         - df -h
