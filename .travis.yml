@@ -65,13 +65,14 @@ jobs:
         - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --sqlite no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --sqlite no"
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no --sqlite no
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
+        - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug
         - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug/Tests
-        - docker exec --workdir c:/Stroika buildContainer Builds/Debug/Tests/Test01
+        - docker exec --workdir c:/Stroika buildContainer "./Builds/Debug/Tests/Test01.exe && echo $?"
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
@@ -110,7 +111,7 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Release/Samples-Service/WIX-Installer-Build.Out"
         - docker exec --workdir c:/Stroika buildContainer sh -c "ls -l ThirdPartyComponents/WIX/CURRENT/"
         - docker exec --workdir c:/Stroika buildContainer sh -c "chmod +x ThirdPartyComponents/WIX/CURRENT/*.exe"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "cd ThirdPartyComponents/WIX/CURRENT/ && ./candle -v"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "cd ThirdPartyComponents/WIX/CURRENT/ && ./candle -v; echo $?"
         - echo "ENDING DEBUG STUFF DUMP"
       env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
