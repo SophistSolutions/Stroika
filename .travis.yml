@@ -72,7 +72,7 @@ jobs:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
         - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug
         - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug/Tests
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./Builds/Debug/Tests/Test01.exe && echo $?"
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./Builds/Debug/Tests/Test01.exe; echo $?"
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
