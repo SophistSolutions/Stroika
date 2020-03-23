@@ -55,8 +55,8 @@ jobs:
       install:
         # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
         - "docker run
-          --interactive
-          --memory 4G --cpus 2 --storage-opt 'size=30GB'
+          --tty
+          --memory 4G --cpus 2 --storage-opt 'size=35GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker ps -a
@@ -90,8 +90,8 @@ jobs:
       install:
         # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
         - "docker run
-          --interactive
-          --memory 4G --cpus 2 --storage-opt 'size=30GB'
+          --tty
+          --memory 4G --cpus 2 --storage-opt 'size=35GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker exec buildContainer pwd
