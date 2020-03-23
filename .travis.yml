@@ -2,9 +2,6 @@
 # The purpose of this file is to configure Travis CI build system integration.
 #   @see https://travis-ci.com/SophistSolutions/Stroika
 #
-# \@todo lose Command Set-MpPreference
-#       stuff if doesnt help with fail to exec windows executables
-#
 # \note We use 'Release' configurations because they builds a bit faster than the 'Debug' configurations, and
 #       we are limited with travis ci to a build that takes 50 minutes. We run out of time otherwise, and maybe
 #       even to some degree with these settings. May need todo more to make this work.
@@ -55,15 +52,13 @@ jobs:
         - systeminfo
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 45 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-        #EXPERIMENT TO SEE IF THIS FIXES ISSUE WITH cannot EXE stuff in container
-        - powershell -Command Set-MpPreference -DisableArchiveScanning 1
-        - powershell -Command Set-MpPreference -DisableRealtimeMonitoring 1
-        - powershell -Command Set-MpPreference -DisableBehaviorMonitoring 1
 
       install:
         # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
+        # TEST BOTH INTERACTIVE AND --tty? to fix run test failure
         - "docker run
           --tty
+          --interactive
           --memory 4G --cpus 2 --storage-opt 'size=35GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
@@ -78,6 +73,7 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
+        # Hacks to test why running tests doesn't work
         - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug
         - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug/Tests
         - docker exec --workdir c:/Stroika buildContainer sh -c "./Builds/Debug/Tests/Test01.exe; echo $?"
@@ -95,10 +91,6 @@ jobs:
         - systeminfo
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 45 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-        #EXPERIMENT TO SEE IF THIS FIXES ISSUE WITH cannot EXE stuff in container
-        - powershell -Command Set-MpPreference -DisableArchiveScanning 1
-        - powershell -Command Set-MpPreference -DisableRealtimeMonitoring 1
-        - powershell -Command Set-MpPreference -DisableBehaviorMonitoring 1
       install:
         # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
         - "docker run
@@ -106,9 +98,6 @@ jobs:
           --memory 4G --cpus 2 --storage-opt 'size=35GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
-        - docker exec buildContainer powershell -Command Set-MpPreference -DisableArchiveScanning 1
-        - docker exec buildContainer powershell -Command Set-MpPreference -DisableRealtimeMonitoring 1
-        - docker exec buildContainer powershell -Command Set-MpPreference -DisableBehaviorMonitoring 1
         - docker exec buildContainer pwd
         - docker exec buildContainer df -h
         - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
@@ -119,7 +108,6 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Release.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make third-party-components
-        - docker exec --workdir c:/Stroika buildContainer powershell "dir -Path ThirdPartyComponents/WIX/CURRENT/ -Recurse | Unblock-File"
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make samples
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
