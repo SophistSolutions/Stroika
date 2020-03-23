@@ -587,7 +587,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Abort gracefully shuts down and terminates the given thread.
          *
-         *  This works by setting a flag in that thread, which is chekced at each 'cancelation point', and
+         *  This works by setting a flag in that thread, which is checked at each 'cancelation point', and
          *  can interrupt certain cancelation waiting cancelation points.
          *
          *  This causes the given thread to throw an AbortException whenever it reaches one of these cancelation points
