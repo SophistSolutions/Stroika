@@ -102,6 +102,12 @@ command -v lsb_release 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    lsb_release=`lsb_release -d`" >>$TEST_OUT_FILE 2>&1
 fi
+command -v systeminfo 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    systeminfo=`systeminfo`" >>$TEST_OUT_FILE 2>&1
+fi
+
+
 
 if [ "$LOCAL_VALGRIND_CONFIGS" != "" ]; then
 	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
