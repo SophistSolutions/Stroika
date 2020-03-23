@@ -13,6 +13,9 @@
 #
 # See https://config.travis-ci.com/, https://github.com/travis-ci/travis-yml/blob/master/schema.json for format of this file.
 #
+# See https://travis-ci.community/t/i-have-several-executables-that-just-dont-run-on-your-build-system-under-docker-and-no-way-i-can-see-to-debug/7693/3
+# for discussion of why the windows build of test apps and running samples from WIX not working
+#
 # TODO
 #   > Consider rewriting the travis build scripts for UNIX to use docker (as I do for windows, and circleci)
 #
@@ -51,17 +54,15 @@ jobs:
         - df -h
         - systeminfo
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
-        - travis_wait 45 docker pull sophistsolutionsinc/stroika-buildvm-windows-1809-cygwin-vs2k19
+        - travis_wait 45 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
 
       install:
         # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
-        # TEST BOTH INTERACTIVE AND --tty? to fix run test failure
         - "docker run
           --tty
-          --interactive
           --memory 4G --cpus 2 --storage-opt 'size=35GB'
           --detach --name buildContainer
-          sophistsolutionsinc/stroika-buildvm-windows-1809-cygwin-vs2k19 || echo 'Failed: $?'"
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker ps -a
         - docker exec buildContainer pwd
         - docker exec buildContainer df -h
