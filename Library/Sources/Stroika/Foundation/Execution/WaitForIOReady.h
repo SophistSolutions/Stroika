@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Execution {
      *  \note   Calls to Add/Remove/clear/SetDescriptors () doesn't affect already running calls to Wait()
      *
      *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
-     *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
+     *          externally 'Synchronized', because then adds would block for the entire time a Wait was going on.
      *
      *
      *  \par Example Usage
