@@ -74,7 +74,7 @@ jobs:
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec --workdir c:/Stroika buildContainer ./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
@@ -115,7 +115,7 @@ jobs:
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
-        - docker exec --workdir c:/Stroika buildContainer ./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no
+        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Release.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make third-party-components
