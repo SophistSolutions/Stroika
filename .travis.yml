@@ -65,9 +65,9 @@ jobs:
         - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no --sqlite no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Debug.xml"
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
+        - docker exec --workdir c:/Stroika buildContainer ./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no
+        - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
         - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug
@@ -99,9 +99,9 @@ jobs:
         - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
         - docker exec buildContainer systeminfo
         - docker exec buildContainer git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git
-        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no --sqlite no
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no --sqlite no"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "cat ConfigurationFiles/Release.xml"
+        # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
+        - docker exec --workdir c:/Stroika buildContainer ./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no
+        - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Release.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make third-party-components
         - docker exec --workdir c:/Stroika buildContainer powershell "dir -Path ThirdPartyComponents/WIX/CURRENT/ -Recurse | Unblock-File"
