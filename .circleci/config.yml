@@ -68,16 +68,13 @@ jobs:
                                      docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
                                      docker exec buildContainer systeminfo
                      - run:
-                              # Run Release mode since running in DEBUG mode some tests timed out with 10 minutes+ of no output
-                              # (Foundation::Execution::Threads)
                               name: Configure
-                              command: docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Release --arch x86 --apply-default-release-flags"
+                              command: docker exec --workdir c:/Stroika buildContainer perl configure Debug --arch x86 --apply-default-debug-flags
                      - run:
                               name: Build
-                              # @todo lose echo FAILED or trick once we verify things building OK
-                              # AND SEE (see above if we can use -j4 since 4 cpus or use ENV setting of #processors)
+                              no_output_timeout: 30m
                               command: |
-                                     docker exec --workdir c:/Stroika buildContainer sh -c "make tests -j4 || echo FAILED"
+                                     docker exec --workdir c:/Stroika buildContainer make tests -j4
                      # - run:
                      #          name: DUMP FAIL LOGS
                      #          #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
@@ -86,7 +83,7 @@ jobs:
                      #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
                      - run:
                               name: Run-Tests
-                              command: docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
+                              command: docker exec --workdir c:/Stroika buildContainer make run-tests
 
        winbuild-samples:
               executor: win/default
@@ -130,22 +127,12 @@ jobs:
                                      docker exec buildContainer systeminfo
                      - run:
                               name: Configure
-                              command: docker exec --workdir c:/Stroika buildContainer sh -c "perl configure Debug --arch x86 --apply-default-debug-flags"
+                              command: docker exec --workdir c:/Stroika buildContainer perl configure Release --arch x86 --apply-default-release-flags
                      - run:
                               name: Build
-                              # @todo lose echo FAILED or trick once we verify things building OK
-                              # AND SEE (see above if we can use -j4 since 4 cpus or use ENV setting of #processors)
+                              no_output_timeout: 30m
                               command: |
-                                     docker exec --workdir c:/Stroika buildContainer sh -c "make samples -j4 || echo FAILED"
-                     # - run:
-                     #          name: DUMP FAIL LOGS
-                     #          #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
-                     #          command: |
-                     #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/Xerces/CONFIGURE.OUT"
-                     #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
-                     - run:
-                              name: Run-Tests
-                              command: docker exec --workdir c:/Stroika buildContainer sh -c "make run-tests"
+                                     docker exec --workdir c:/Stroika buildContainer make samples -j4
 
        basic-debug-builds-test-ubuntu1804:
               docker:
