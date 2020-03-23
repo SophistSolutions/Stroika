@@ -1,7 +1,8 @@
 ﻿# escape=`
 
 # SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
+FROM ${BASE_IMAGE}
 SHELL ["powershell"]
 
 #

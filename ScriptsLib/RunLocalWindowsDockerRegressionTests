@@ -1,6 +1,8 @@
 #!/bin/bash
 
+CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
+USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k19-In-Docker}"
 BRANCH="${BRANCH:-v2.1-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 # not sure why cygwin path setup with broken docker, but this works around it, for now... LGP 2020-02-25
@@ -17,17 +19,17 @@ $DOCKER run \
     --memory 8G \
     --cpus 4\
     --name $CONTAINER_NAME \
-    sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+    $CONTAINER_IMAGE
 $DOCKER exec \
     $CONTAINER_NAME \
     sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch $BRANCH"
 $DOCKER exec \
     --workdir c:/Stroika \
-    --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker \
+    --env USE_TEST_BASENAME=$USE_TEST_BASENAME \
     $CONTAINER_NAME \
     sh -c "./ScriptsLib/RegressionTests"
 $DOCKER stop $CONTAINER_NAME
 echo "Done with build, so copying out results"
-$DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows_VS2k19-In-Docker-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
-$DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-Windows_VS2k19-In-Docker-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
+$DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
+$DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
 echo "Container $CONTAINER_NAME stopped but still around to examine/post-mortem"
