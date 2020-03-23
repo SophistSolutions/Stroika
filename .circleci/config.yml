@@ -2,6 +2,13 @@
 #      This CircleCI configuration file drives the circleci build system available on
 #             https://circleci.com/gh/SophistSolutions/Stroika
 #
+#      Status (as of 2020-03-22)
+#             Close to having windows samples/tests both working, but tough to test since can only run one
+#             test per week ;-(
+#
+#             This last pass reversed debug/release on two configs (may still need todo release on tests due to time to run threads test).
+#             Last try failed due to timeout, so added no_output_timeout (but may not be enuf cuz of Threads test)
+#
 #      Status (as of 2020-02-22)
 #             The builds_and_tests workflow appears to completely support
 #                    - basic-debug-builds-test-ubuntu1804
@@ -83,6 +90,7 @@ jobs:
                      #                 docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Debug/ThirdPartyComponents/openssl/CONFIG.OUT"
                      - run:
                               name: Run-Tests
+                              no_output_timeout: 30m
                               command: docker exec --workdir c:/Stroika buildContainer make run-tests
 
        winbuild-samples:
@@ -283,29 +291,29 @@ workflows:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - winbuild-samples:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1804:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1910:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
                      - basic-clang-8-builds-test-ubuntu1910:
                               filters:
                                      branches:
                                             only:
-                                                   - v2.1-Dev
+                                                   #- v2.1-Dev
                                                    - v2.1-Release
