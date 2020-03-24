@@ -42,7 +42,7 @@ to run debugger (ptrace/address randomization disable, or for debug builds that 
 ### Windows
 
 ```bash
-docker run -it --storage-opt "size=100GB"
+docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
 ```
 
 (defaults for RAM / disk space I found inadequate, but this maybe fixed by MSFT at some point)
@@ -56,7 +56,23 @@ cat /Getting-Started-With-Stroika.md
 #### Windows - Fancy
 
 ```bash
-docker run -it --storage-opt "size=100GB" -m 8G --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch v2.1-Dev && cd Stroika && ScriptsLib/RegressionTests"
+docker run --detach --interactive --tty\
+    --storage-opt "size=100GB" \
+    -m 8G \
+    --name FRED \
+    sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+docker exec \
+    FRED \
+    git clone https://github.com/SophistSolutions/Stroika.git
+docker exec \
+    --workdir c:/Stroika \
+    --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker \
+    FRED \
+    sh -c "ScriptsLib/RegressionTests"
+# root around and fiddle inside the container (even while above running)
+docker exec  --interactive --tty \
+    FRED \
+    cmd
 ```
 
 And, first thing when you run docker image, cat /Getting-Started-With-Stroika.md
