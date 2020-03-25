@@ -154,6 +154,12 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
+- Must be done on Windows machine (currently doesnt work on - even windows - vm)
+
+  ```bash
+  sh ScriptsLib\RunLocalWindowsDockerRegressionTests
+  ```
+
 ## Checkin results
 
 ```bash
