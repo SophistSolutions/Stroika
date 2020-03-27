@@ -143,7 +143,9 @@ jobs:
         # We dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
         #- make all ECHO_BUILD_LINES=1
-        - make all
+        # -k to make to try workaround wrong verison of MacOS (https://stroika.atlassian.net/browse/STK-705)
+        - make all -k
+        - make run-tests -k
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true"
 
