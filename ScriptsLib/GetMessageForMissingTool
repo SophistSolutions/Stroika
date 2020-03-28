@@ -39,11 +39,11 @@ esac
 echo -n "Missing component $TOOL"
 if [ $TOOL == "libtool" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install libtool-bin" && echo && exit 0
+		echo -n ": try apt-get install -y libtool-bin" && echo && exit 0
 	fi
 elif [ $TOOL == "7za" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install p7zip-full" && echo && exit 0
+		echo -n ": try apt-get install -y p7zip-full" && echo && exit 0
 	elif [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try cygwin setup, package name p7zip" && echo && exit 0
 	elif [ $DistroBasedOn == "Darwin" ] ; then
@@ -51,11 +51,11 @@ elif [ $TOOL == "7za" ] ; then
 	fi
 elif [ $TOOL == "tr" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install coreutils" && echo && exit 0
+		echo -n ": try apt-get install -y coreutils" && echo && exit 0
 	fi
 elif [ $TOOL == "unix2dos" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install dos2unix" && echo && exit 0
+		echo -n ": try apt-get install -y dos2unix" && echo && exit 0
 	elif [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try cygwin setup, package name dos2unix" && echo && exit 0
 	fi
@@ -63,13 +63,13 @@ elif [ $TOOL == "realpath" ] ; then
 	if [ $DistroBasedOn == "Darwin" ] ; then
 		echo -n ": try make install-realpath" && echo && exit 0
 	elif [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install coreutils" && echo && exit 0
+		echo -n ": try apt-get install -y coreutils" && echo && exit 0
 	fi
 elif [ $TOOL == "node" ] ; then
 	if [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try installing https://nodejs.org/en/ msi installer" && echo && exit 0
 	else 
-		echo -n ": try apt-get install nodejs" && echo && exit 0
+		echo -n ": try apt-get install -y nodejs" && echo && exit 0
 	fi
 elif [ $TOOL == "sed" ] ; then
 	if [ $DistroBasedOn == "Darwin" ] ; then
@@ -79,7 +79,7 @@ fi
 if [ $DistroBasedOn == "Darwin" ] ; then
 	echo -n ": try brew install $TOOL" && echo && exit 0
 elif [ $DistroBasedOn == "Debian" ] ; then
-	echo -n ": try apt-get install $TOOL" && echo && exit 0
+	echo -n ": try apt-get install -y $TOOL" && echo && exit 0
 elif [ $DistroBasedOn == "cygwin" ] ; then
 	echo -n ": try cygwin setup, package name $TOOL" && echo && exit 0
 fi
