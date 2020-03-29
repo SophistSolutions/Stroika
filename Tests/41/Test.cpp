@@ -546,7 +546,7 @@ namespace {
                             DbgTrace (L"discovered %s", Characters::ToString (n).c_str ());
                         }
                     }
-                    catch ([[maybe_unused]]const IO::FileSystem::filesystem_error& e) {
+                    catch ([[maybe_unused]] const IO::FileSystem::filesystem_error& e) {
 #if qPlatform_Linux
                         if (
 #if qCompilerAndStdLib_error_code_compare_condition_Buggy
