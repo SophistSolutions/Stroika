@@ -135,6 +135,7 @@ namespace Stroika::Foundation::Memory {
         if (nElements > size ()) {
             resize (nElements);
         }
+        Ensure (size () >= nElements);
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::GrowToSize_uninitialized (size_t nElements)
@@ -143,6 +144,7 @@ namespace Stroika::Foundation::Memory {
         if (nElements > size ()) {
             resize_uninitialized (nElements);
         }
+        Ensure (size () >= nElements);
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::resize (size_t nElements)
