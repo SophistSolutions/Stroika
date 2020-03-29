@@ -87,7 +87,7 @@ public:
     void DoRun_ ()
     {
         // only stopped by thread abort
-        WaitForSocketIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
+        Execution::WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (true) {
             for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
                 try {

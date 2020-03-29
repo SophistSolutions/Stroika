@@ -287,6 +287,22 @@ namespace Stroika::Foundation::IO::Network {
     };
 }
 
+namespace Stroika::Foundation::Execution::WaitForIOReady_Support {
+
+    // Specialize to override GetSDKPollable
+    template <typename T>
+    struct WaitForIOReady_Traits;
+    template <>
+    struct WaitForIOReady_Traits<IO::Network::ConnectionOrientedStreamSocket::Ptr> {
+        using HighLevelType = IO::Network::ConnectionOrientedStreamSocket::Ptr;
+        static inline auto GetSDKPollable (const HighLevelType& t)
+        {
+            return t.GetNativeSocket ();
+        }
+    };
+
+}
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

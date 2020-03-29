@@ -651,9 +651,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.cpp">
-      <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>

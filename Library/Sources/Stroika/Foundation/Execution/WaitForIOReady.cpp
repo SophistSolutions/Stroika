@@ -14,7 +14,6 @@
 #include <ws2tcpip.h>
 #endif
 
-#include "../Execution/TimeOutException.h"
 #include "../Memory/SmallStackBuffer.h"
 #include "../Time/Realtime.h"
 
@@ -29,84 +28,29 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
 
 using Memory::SmallStackBuffer;
 using Time::DurationSecondsType;
 
 /*
  ********************************************************************************
- ************************** Execution::WaitForIOReady ***************************
+ **************** Execution::WaitForIOReady::WaitForIOReady_Base ****************
  ********************************************************************************
  */
-const WaitForIOReady::TypeOfMonitorSet WaitForIOReady::kDefaultTypeOfMonitor{WaitForIOReady::TypeOfMonitor::eRead};
+const WaitForIOReady_Base::TypeOfMonitorSet WaitForIOReady_Base::kDefaultTypeOfMonitor{WaitForIOReady_Base::TypeOfMonitor::eRead};
 
-WaitForIOReady::WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags)
-{
-    AddAll (fds, flags);
-}
-
-WaitForIOReady::WaitForIOReady (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
-{
-    AddAll (fds);
-}
-
-WaitForIOReady::WaitForIOReady (FileDescriptorType fd, const TypeOfMonitorSet& flags)
-{
-    Add (fd, flags);
-}
-
-void WaitForIOReady::Add (FileDescriptorType fd, const TypeOfMonitorSet& flags)
-{
-    fPollData_.rwget ()->Add (pair<FileDescriptorType, TypeOfMonitorSet>{fd, flags});
-}
-
-void WaitForIOReady::Remove ([[maybe_unused]] FileDescriptorType fd)
-{
-    AssertNotImplemented ();
-}
-
-void WaitForIOReady::Remove ([[maybe_unused]] FileDescriptorType fd, [[maybe_unused]] const TypeOfMonitorSet& flags)
-{
-    AssertNotImplemented ();
-}
-
-void WaitForIOReady::RemoveAll ([[maybe_unused]] const Traversal::Iterable<FileDescriptorType>& fds)
-{
-    AssertNotImplemented ();
-}
-
-void WaitForIOReady::RemoveAll ([[maybe_unused]] const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
-{
-    AssertNotImplemented ();
-}
-
-void WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
-{
-    fPollData_.store (Collection<pair<FileDescriptorType, TypeOfMonitorSet>>{fds});
-}
-
-auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType>
-{
-    Set<FileDescriptorType> result = WaitQuietlyUntil (timeoutAt);
-    if (result.empty ()) {
-        Execution::Throw (Execution::TimeOutException::kThe);
-    }
-    return result;
-}
-
-auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<FileDescriptorType>
+auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>
 {
     DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
     CheckForThreadInterruption ();
     SmallStackBuffer<pollfd> pollData;
     {
-        auto   lockedPollData = fPollData_.cget ();
-        size_t sz             = lockedPollData->size ();
-        pollData.GrowToSize_uninitialized (sz);
+        pollData.GrowToSize_uninitialized (end - start);
         size_t idx = 0;
-        for (auto i : lockedPollData.cref ()) {
+        for (auto i = start; i != end; ++i) {
             short events = 0;
-            for (TypeOfMonitor ii : i.second) {
+            for (TypeOfMonitor ii : i->second) {
                 switch (ii) {
                     case TypeOfMonitor::eRead:
                         events |= POLLIN;
@@ -122,7 +66,7 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
                         break;
                 }
             }
-            pollData[idx] = pollfd{i.first, events, 0};
+            pollData[idx] = pollfd{i->first, events, 0};
             Assert (pollData[idx].revents == 0);
             idx++;
         }
@@ -155,11 +99,11 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
 #else
     pollResult = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
 #endif
-    Set<FileDescriptorType> result;
+    Set<size_t> result;
     if (pollResult != 0) {
         for (size_t i = 0; i < pollData.GetSize (); ++i) {
             if (pollData[i].revents != 0) {
-                result.Add (pollData[i].fd);
+                result.Add (i);
             }
         }
     }

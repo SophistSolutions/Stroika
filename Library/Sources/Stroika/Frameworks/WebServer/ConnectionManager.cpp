@@ -185,7 +185,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
         try {
             Execution::CheckForThreadInterruption ();
 
-            Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
+            Bijection<shared_ptr<Connection>, Execution::WaitForIOReady<>::SDKPollableType> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());

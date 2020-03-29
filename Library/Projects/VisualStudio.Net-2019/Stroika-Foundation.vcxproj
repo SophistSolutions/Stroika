@@ -230,7 +230,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp" />

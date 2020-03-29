@@ -263,7 +263,7 @@ namespace Stroika::Frameworks::WebServer {
         // new tasks into an already destroyed threadpool.
         IO::Network::Listener fListener_;
         // Inactive connections are those we are waiting (select/epoll) for incoming data
-        Execution::RWSynchronized<Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType>> fInactiveOpenConnections_;
+        Execution::RWSynchronized<Bijection<shared_ptr<Connection>, Execution::WaitForIOReady<>::SDKPollableType>> fInactiveOpenConnections_;
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::RWSynchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
         Execution::Thread::CleanupPtr                                 fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};

@@ -44,7 +44,7 @@ struct Listener::Rep_ {
         }
         fListenThread = Execution::Thread::New (
             [this] () {
-                Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady::FileDescriptorType> socket2FDBijection;
+                Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady<>::SDKPollableType> socket2FDBijection;
                 for (auto&& s : fMasterSockets) {
                     socket2FDBijection.Add (s, s.GetNativeSocket ());
                 }

@@ -49,6 +49,99 @@ namespace Stroika::Foundation::Execution {
 #endif
 #endif
 
+    namespace WaitForIOReady_Support {
+        /**
+         *  This is the underlying native type 'HighLevelType objects must be converted to in order to be used with the OLD poll/select feature.
+         */
+#if qPlatform_Windows
+        using SDKPollableType = SOCKET;
+#else
+        using SDKPollableType = int;
+#endif
+
+        /**
+         */
+        class WaitForIOReady_Base {
+        public:
+            using FileDescriptorType [[deprecated ("use SDKPollableType in  in 2.1a5")]] = WaitForIOReady_Support::SDKPollableType;
+
+        public:
+            /**
+             *  This is the underlying native type 'T' objects mustbe converted to in order to be used with the OLD poll/select feature.
+             */
+            using SDKPollableType = WaitForIOReady_Support::SDKPollableType;
+
+        public:
+            /**
+             *  @todo consider adding more params - like out of band flags - but doesn't immediately seem helpful -- LGP 2017-04-16
+             */
+            enum class TypeOfMonitor {
+                /**
+                 *  There is data to read.
+                 *
+                 *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
+                 */
+                eRead,
+
+                /**
+                 *  Writing is now possible.
+                 *
+                 *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLOUT
+                 */
+                eWrite,
+
+                /**
+                 *  Error condition.
+                 *
+                 *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLERR
+                 */
+                eError,
+
+                /**
+                 *  stream-oriented connection was either disconnected or aborted.
+                 *
+                 *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLHUP
+                 */
+                eHUP,
+
+                Stroika_Define_Enum_Bounds (eRead, eHUP)
+            };
+
+        public:
+            using TypeOfMonitorSet = Containers::Set<TypeOfMonitor>;
+
+        public:
+            static const TypeOfMonitorSet kDefaultTypeOfMonitor;
+
+        protected:
+            /**
+             *  Take an array of pair<SDKPollableType, TypeOfMonitorSet> objects, and return a Set{} with the INDEXES of 'ready' pollable objects.
+             *  
+             *  \note Design Note: This could have returned a set of pointer to SDKPollableType which would in some sense be simpler and
+             *                     clearer, but its easier to validate/assert the returned INDEXES are valid than the returned POINTERS are valid.
+             */
+            static auto _WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>;
+        };
+
+        template <typename T>
+        struct WaitForIOReady_Traits {
+            /**
+             *  This is the underlying native type 'T' objects mustbe converted to in order to be used with the OLD poll/select feature.
+             */
+            using HighLevelType = T;
+
+            /**
+             *  To use WaitForIOReady, the high level 'descriptor' objects used mustbe convertible to associated low level
+             *  file descriptor objects to use with select/poll/etc...
+             */
+            static inline WaitForIOReady_Support::SDKPollableType GetSDKPollable (const HighLevelType& t)
+            {
+                return t;
+            }
+        };
+
+    }
+
     /**
      *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), etc
      *
@@ -87,64 +180,19 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
-    class WaitForIOReady {
+    template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
+    class WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
     public:
-#if qPlatform_Windows
-        using FileDescriptorType = SOCKET;
-#else
-        using FileDescriptorType = int;
-#endif
-
-    public:
-        /**
-         *  @todo consider adding more params - like out of band flags - but doesn't immediately seem helpful -- LGP 2017-04-16
-         */
-        enum class TypeOfMonitor {
-            /**
-             *  There is data to read.
-             *
-             *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLIN
-             */
-            eRead,
-
-            /**
-             *  Writing is now possible.
-             *
-             *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLOUT
-             */
-            eWrite,
-
-            /**
-             *  Error condition.
-             *
-             *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLERR
-             */
-            eError,
-
-            /**
-             *  stream-oriented connection was either disconnected or aborted.
-             *
-             *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLHUP
-             */
-            eHUP,
-
-            Stroika_Define_Enum_Bounds (eRead, eHUP)
-        };
-
-    public:
-        using TypeOfMonitorSet = Containers::Set<TypeOfMonitor>;
-
-    public:
-        static const TypeOfMonitorSet kDefaultTypeOfMonitor;
+        using TraitsType = TRAITS;
 
     public:
         /**
          */
         WaitForIOReady ()                      = default;
         WaitForIOReady (const WaitForIOReady&) = default;
-        WaitForIOReady (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
-        WaitForIOReady (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
-        WaitForIOReady (FileDescriptorType fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
+        WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
         ~WaitForIOReady () = default;
@@ -155,36 +203,36 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        nonvirtual void Add (FileDescriptorType fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        nonvirtual void Add (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
         /**
          */
-        nonvirtual void AddAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
-        nonvirtual void AddAll (const Traversal::Iterable<FileDescriptorType>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        nonvirtual void AddAll (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
+        nonvirtual void AddAll (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
         /*
             *  If no flags specified, remove all occurences of fd.
             */
-        nonvirtual void Remove (FileDescriptorType fd);
-        nonvirtual void Remove (FileDescriptorType fd, const TypeOfMonitorSet& flags);
+        nonvirtual void Remove (T fd);
+        nonvirtual void Remove (T fd, const TypeOfMonitorSet& flags);
 
     public:
         /**
          */
-        nonvirtual void RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds);
-        nonvirtual void RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
+        nonvirtual void RemoveAll (const Traversal::Iterable<T>& fds);
+        nonvirtual void RemoveAll (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
 
     public:
         /**
          */
-        nonvirtual Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>> GetDescriptors () const;
+        nonvirtual Containers::Collection<pair<T, TypeOfMonitorSet>> GetDescriptors () const;
 
     public:
         /**
          */
-        nonvirtual void SetDescriptors (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds);
+        nonvirtual void SetDescriptors (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
 
     public:
         /**
@@ -203,8 +251,8 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitUntil
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<FileDescriptorType> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
-        nonvirtual Containers::Set<FileDescriptorType> Wait (const Time::Duration& waitFor);
+        nonvirtual Containers::Set<T> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<T> Wait (const Time::Duration& waitFor);
 
     public:
         /*
@@ -218,8 +266,8 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitUntil
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<FileDescriptorType> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
-        nonvirtual Containers::Set<FileDescriptorType> WaitQuietly (const Time::Duration& waitFor);
+        nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitQuietly (const Time::Duration& waitFor);
 
     public:
         /*
@@ -233,7 +281,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<FileDescriptorType> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
     public:
         /*
@@ -249,10 +297,15 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitUntil
          */
-        nonvirtual Containers::Set<FileDescriptorType> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
     private:
-        Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>>> fPollData_;
+        // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
+        // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
+        nonvirtual void FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer);
+
+    private:
+        Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fPollData_;
     };
 
 }

@@ -40,7 +40,6 @@ Objs	=	\
 	$(ObjDir)SystemFirewall${OBJ_SUFFIX}\
 	$(ObjDir)UniformResourceIdentification${OBJ_SUFFIX}\
 	$(ObjDir)URI${OBJ_SUFFIX}\
-	$(ObjDir)WaitForSocketIOReady${OBJ_SUFFIX}\
 
 all:	$(Objs) $(SubDirs)
 

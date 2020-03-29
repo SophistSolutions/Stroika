@@ -129,7 +129,7 @@ public:
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
-        WaitForSocketIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
+        Execution::WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
             for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::kInfinite))) {
                 try {
