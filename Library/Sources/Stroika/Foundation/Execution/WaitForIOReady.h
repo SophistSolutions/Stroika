@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
      *          externally 'Synchronized', because then adds would block for the entire time a Wait was going on.
-     *
+     *&&& @todo WRONG UPDTATE -0 C++ NORMAL FOR THIS GUY AND ADD OVERWRITE CHECKS
      *
      *  \par Example Usage
      *      \code
@@ -203,6 +203,103 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
+        nonvirtual Traversal::Iterable<pair<T, TypeOfMonitorSet>> GetDescriptors () const;
+
+    public:
+        /*
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *  \note   Throws TimeOutException () on timeout.
+         *  
+         *  \note   ***Cancelation Point***
+         *
+         *  @see WaitQuietly
+         *  @see WaitUntil
+         *  @see WaitQuietlyUntil
+         */
+        nonvirtual Containers::Set<T> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<T> Wait (const Time::Duration& waitFor);
+
+    public:
+        /*
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *   Returns set of file descriptors which are ready, or empty set if timeout.
+         *
+         *  \note   ***Cancelation Point***
+         *
+         *  @see Wait
+         *  @see WaitUntil
+         *  @see WaitQuietlyUntil
+         */
+        nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitQuietly (const Time::Duration& waitFor);
+
+    public:
+        /*
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *  \note   Throws TimeOutException () on timeout.
+         *
+         *  \note   ***Cancelation Point***
+         *
+         *  @see Wait
+         *  @see WaitQuietly
+         *  @see WaitQuietlyUntil
+         */
+        nonvirtual Containers::Set<T> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+
+    public:
+        /*
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *
+         *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
+         *
+         *  if timeout is <= 0, this will not wait (but may still find some file desciptors ready).
+         *
+         *  \note   ***Cancelation Point***
+         *
+         *  @see Wait
+         *  @see WaitQuietly
+         *  @see WaitUntil
+         */
+        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+
+    private:
+        // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
+        // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
+        nonvirtual void FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer);
+
+    private:
+        Traversal::Iterable<pair<T, TypeOfMonitorSet>> fPollData_;
+    };
+
+    /**
+    *   @todo redo by aggregating WaitForIOReady
+     * wiith our own collection with extra item...
+
+     MUST IMPLEMENT TRICK WITH PIPE/socket/fdevent handler to 'wakeup' select without thread interrupt
+     */
+    template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
+    class UpdatableWaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
+    public:
+        /**
+         */
+        UpdatableWaitForIOReady ()                               = default;
+        UpdatableWaitForIOReady (const UpdatableWaitForIOReady&) = delete;
+        UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
+        UpdatableWaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+
+    public:
+        ~UpdatableWaitForIOReady () = default;
+
+    public:
+        nonvirtual UpdatableWaitForIOReady& operator= (const UpdatableWaitForIOReady&) = delete;
+
+    public:
+        /**
+         */
         nonvirtual void Add (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
@@ -213,8 +310,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-            *  If no flags specified, remove all occurences of fd.
-            */
+         *  If no flags specified, remove all occurences of fd.
+         */
         nonvirtual void Remove (T fd);
         nonvirtual void Remove (T fd, const TypeOfMonitorSet& flags);
 
@@ -300,12 +397,15 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
     private:
-        // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
-        // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
-        nonvirtual void FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer);
+        /*
+         *  note: lock design - keep short locks on fData_, and make a new 'waiter' with a copy of the FDs list (COW copy)
+         *  so don't hold fData synchronized lock during wait on 'select'
+         */
+    private:
+        nonvirtual WaitForIOReady<T, TRAITS> mkWaiter_ ();
 
     private:
-        Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fPollData_;
+        Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
     };
 
 }
