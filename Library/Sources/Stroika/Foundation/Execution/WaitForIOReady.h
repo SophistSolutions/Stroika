@@ -145,11 +145,20 @@ namespace Stroika::Foundation::Execution {
     /**
      *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), etc
      *
-     *  \note   Calls to Add/Remove/clear/SetDescriptors () doesn't affect already running calls to Wait()
+     *  \note   pollable2Wakeup specifies an OPTIONAL file descriptor, which, if signalled (written to or whatever signal sent to it
+     *          depending on the POLL arg to this field) - any pending waits will return prematurely.
+     *
+     *          This can be used to trigger premature wakeup (without being treated as a timeout) - like if the list of file descriptors to watch
+     *          changes.
+
+     **@TTODO EXPLIAN WHY THIS IS BETTER THAN OLD THJREADE INTERRUPT (stacktrace code slow, and interreupt means if there were real answers mixed with 
+     non-nanswer we would miss the real ansers and this way captures them too)
+
      *
      *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
      *          externally 'Synchronized', because then adds would block for the entire time a Wait was going on.
      *&&& @todo WRONG UPDTATE -0 C++ NORMAL FOR THIS GUY AND ADD OVERWRITE CHECKS
+     &&& AND FIX REGTESTS TO DO USE SMARTPTR - and without mappin to image/ etcc - and use tempate<>
      *
      *  \par Example Usage
      *      \code
@@ -188,11 +197,10 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        WaitForIOReady ()                      = default;
         WaitForIOReady (const WaitForIOReady&) = default;
-        WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
-        WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
-        WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
+        WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
+        WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
 
     public:
         ~WaitForIOReady () = default;
@@ -271,12 +279,15 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer);
 
     private:
-        Traversal::Iterable<pair<T, TypeOfMonitorSet>> fPollData_;
+        optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
+        Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
     };
 
     /**
     *   @todo redo by aggregating WaitForIOReady
      * wiith our own collection with extra item...
+     *  \note   Calls to Add/Remove/clear/SetDescriptors () cause Wait() to return prematurely, almost as if a timeout, except that
+     *        a timeout exception won't be caused by this return (per-se).
 
      MUST IMPLEMENT TRICK WITH PIPE/socket/fdevent handler to 'wakeup' select without thread interrupt
      */
@@ -287,8 +298,8 @@ namespace Stroika::Foundation::Execution {
          */
         UpdatableWaitForIOReady ()                               = default;
         UpdatableWaitForIOReady (const UpdatableWaitForIOReady&) = delete;
-        UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
         UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
+        UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
         UpdatableWaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
@@ -405,6 +416,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual WaitForIOReady<T, TRAITS> mkWaiter_ ();
 
     private:
+        pair<T, TypeOfMonitorSet>                                                  fPollable2Wakeup_;
         Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
     };
 

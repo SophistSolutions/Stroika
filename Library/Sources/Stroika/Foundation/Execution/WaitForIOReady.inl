@@ -20,8 +20,15 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
+    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
+        : fPollData_{fds}
+        , fPollable2Wakeup_{pollable2Wakeup}
+    {
+    }
+    template <typename T, typename TRAITS>
+    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
         : fPollData_{}
+        , fPollable2Wakeup_{pollable2Wakeup}
     {
         Containers::Collection<pair<T, TypeOfMonitorSet>> tmp;
         for (auto i : fds) {
@@ -30,13 +37,9 @@ namespace Stroika::Foundation::Execution {
         fPollData_ = tmp;
     }
     template <typename T, typename TRAITS>
-    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
-        : fPollData_{fds}
-    {
-    }
-    template <typename T, typename TRAITS>
-    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (T fd, const TypeOfMonitorSet& flags)
+    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (T fd, const TypeOfMonitorSet& flags, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
         : fPollData_{Containers::Collection<pair<T, TypeOfMonitorSet>>{pair<T, TypeOfMonitorSet>{fd, flags}}}
+        , fPollable2Wakeup_{pollable2Wakeup}
     {
     }
     template <typename T, typename TRAITS>
@@ -69,7 +72,7 @@ namespace Stroika::Foundation::Execution {
     {
         Containers::Set<T> result = WaitQuietlyUntil (timeoutAt);
         if (result.empty ()) {
-            Execution::Throw (Execution::TimeOutException::kThe);
+            Execution::ThrowTimeoutExceptionAfter (timeoutAt); // maybe returning 0 entries without timeout, because of fPollable2Wakeup_
         }
         return result;
     }
@@ -81,11 +84,16 @@ namespace Stroika::Foundation::Execution {
         vector<T>                                       mappedObjectBuffer;
         // @todo REDO THIS calling FillBuffer_ from CTOR (since always used at least once, but could be more than once.
         FillBuffer_ (&pollBuffer, &mappedObjectBuffer);
-        Assert (pollBuffer.size () == mappedObjectBuffer.size ());
+        Assert (pollBuffer.size () == mappedObjectBuffer.size () or pollBuffer.size () == mappedObjectBuffer.size () + 1);
         Containers::Set<T> result;
         for (size_t i : _WaitQuietlyUntil (Containers::Start (pollBuffer), Containers::End (pollBuffer), timeoutAt)) {
-            Assert (i < mappedObjectBuffer.size ());
-            result.Add (mappedObjectBuffer[i]);
+            if (i == mappedObjectBuffer.size ()) {
+                Assert (fPollable2Wakeup_); // externally signalled to wakeup
+            }
+            else {
+                Assert (i < mappedObjectBuffer.size ());
+                result.Add (mappedObjectBuffer[i]);
+            }
         }
         return result;
     }
@@ -102,6 +110,9 @@ namespace Stroika::Foundation::Execution {
             pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{TRAITS::GetSDKPollable (i.first), i.second});
             mappedObjectBuffer->push_back (i.first);
         }
+        if (fPollable2Wakeup_) {
+            pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{fPollable2Wakeup_.value ().first, fPollable2Wakeup_.value ().second});
+        }
     }
 
     /*
@@ -110,23 +121,23 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
-        : fData_{}
-    {
-        Containers::Collection<pair<T, TypeOfMonitorSet>> tmp;
-        for (auto i : fds) {
-            tmp.Add (pair<T, TypeOfMonitorSet>{i, flags});
-        }
-        fData_ = tmp;
-    }
-    template <typename T, typename TRAITS>
     inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
         : fData_{fds}
+    {
+        /// @todo invoke
+        // SET
+        // fPollable2Wakeup_
+        // here - 3 ways
+        // and ALSO include FD for where to WRITE to signal wakeup
+    }
+    template <typename T, typename TRAITS>
+    inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
+        : UpdatableWaitForIOReady (fds.Select<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return pair<T, TypeOfMonitorSet>{t, flags}; }))
     {
     }
     template <typename T, typename TRAITS>
     inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (T fd, const TypeOfMonitorSet& flags)
-        : fData_{Containers::Collection<pair<T, TypeOfMonitorSet>>{pair<T, TypeOfMonitorSet>{fd, flags}}}
+        : UpdatableWaitForIOReady (Containers::Collection<pair<T, TypeOfMonitorSet>>{pair<T, TypeOfMonitorSet>{fd, flags}})
     {
     }
     template <typename T, typename TRAITS>
@@ -177,6 +188,7 @@ namespace Stroika::Foundation::Execution {
     void UpdatableWaitForIOReady<T, TRAITS>::Add (T fd, const TypeOfMonitorSet& flags)
     {
         fData_.rwget ()->fData_.Add (pair<T, TypeOfMonitorSet>{fd, flags});
+        // @todo wakeup
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Remove ([[maybe_unused]] T fd)
@@ -202,27 +214,26 @@ namespace Stroika::Foundation::Execution {
     void UpdatableWaitForIOReady<T, TRAITS>::SetDescriptors (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
     {
         fData_.store (fds);
+        // @todo wakeup
     }
     template <typename T, typename TRAITS>
     auto UpdatableWaitForIOReady<T, TRAITS>::WaitUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
     {
         Containers::Set<T> result = WaitQuietlyUntil (timeoutAt);
         if (result.empty ()) {
-            Execution::Throw (Execution::TimeOutException::kThe);
+            Execution::ThrowTimeoutExceptionAfter (timeoutAt); // maybe returning 0 entries without timeout, because of fPollable2Wakeup_
         }
         return result;
     }
     template <typename T, typename TRAITS>
-    auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
+    inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
     {
-        // @todo must enhance this to add extra 'fake' waiter we can use to wakeup on change, and store it someplace in 'this' so we
-        // can signal that to wakeup these waiters when the list changes.
         return mkWaiter_ ().WaitQuietlyUntil (timeoutAt);
     }
     template <typename T, typename TRAITS>
     inline WaitForIOReady<T, TRAITS> UpdatableWaitForIOReady<T, TRAITS>::mkWaiter_ ()
     {
-        return WaitForIOReady<T, TRAITS>{fData_.load ()};
+        return WaitForIOReady<T, TRAITS>{fData_.load (), fPollable2Wakeup_};
     }
 
 }
