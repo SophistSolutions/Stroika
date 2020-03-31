@@ -37,6 +37,10 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \note see https://stroika.atlassian.net/browse/STK-653
      *
+     ***** @todo revisit - maybe default off - cuz not using interrupt () anymore (probably still do cuz of abort, but at least do a bit less often)
+     Or force teh abort/intererupt to somehow use our write mechanism? NO - that only works with updatbale... Probs can do no better than upping timeout
+     *
+     *
      *  WSAPoll is not (fully/mostly) alertable, in the Windows API. So for Windows, this trick is needed to make
      *  WaitForIOReady::Wait* a ***Cancelation Point***.
      *
@@ -279,8 +283,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer);
 
     private:
-        optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
         Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
+        optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
     };
 
     /**
