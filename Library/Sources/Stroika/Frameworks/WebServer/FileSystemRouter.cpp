@@ -81,7 +81,7 @@ namespace {
             if (fURLPrefix2Strip) {
                 if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {
                     urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip->length ());
-                    if (urlHostRelPath.StartsWith (L"/")) {
+                    if (urlHostRelPath.StartsWith (L"/"sv)) {
                         urlHostRelPath = urlHostRelPath.SubString (1);
                     }
                 }
@@ -96,8 +96,6 @@ namespace {
             return (fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ())).wstring ();
         }
     };
-
-    thread_local shared_ptr<FSRouterRep_> tBuilding_;
 }
 
 /*
@@ -106,8 +104,6 @@ namespace {
  ********************************************************************************
  */
 FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
-    : RequestHandler ((tBuilding_ = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames), [rep = tBuilding_] (Message* m) -> void { rep->HandleMessage (m); }))
+    : RequestHandler ([rep = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames)] (Message* m) -> void { rep->HandleMessage (m); })
 {
-    Assert (tBuilding_ != nullptr); // @todo use this hack to add instance variable to FileSystemRouter so it can be referenced from above handler
-    tBuilding_ = nullptr;
 }
