@@ -15,6 +15,8 @@
 #define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED 1
 #elif qPlatform_Windows
 #include <Windows.h>
+// BOOST_STACKTRACE_USE_WINDBG seems to be default on windows, and very slow
+#define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
 #endif
 
 #if __has_include(<boost/stacktrace.hpp>)
