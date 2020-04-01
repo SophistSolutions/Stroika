@@ -154,7 +154,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                  options.fBindFlags.value_or (Options::kDefault_BindFlags),
                  [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  ComputeConnectionBacklog_ (options)}
-    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"ConnectionMgr-Wait4IOReady"_k)}
+    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
 {
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
 }
