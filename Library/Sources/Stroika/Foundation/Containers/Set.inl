@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Containers {
     inline void Set<T>::_AssertRepValidType () const
     {
 #if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
+        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
 

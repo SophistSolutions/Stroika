@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
     inline void SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssertRepValidType () const
     {
 #if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
+        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
