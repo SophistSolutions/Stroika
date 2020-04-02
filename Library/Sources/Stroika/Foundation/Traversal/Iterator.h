@@ -623,6 +623,10 @@ namespace Stroika::Foundation::Traversal {
      *
      *  IRep is a support class used to implement the @ref Iterator<T> pattern.
      *
+     *  \note IRep subclasses are constructed already pointing at the first element.
+     *        So a leading call to More (&value, false); can be used to fetch the first vale
+     *        and value.has_value() will be false if there were no values
+     *
      *  Subclassed by front-end container writers.
      *  Most of the work is done in More, which does a lot of work because it is the
      *  only virtual function called during iteration, and will need to lock its
