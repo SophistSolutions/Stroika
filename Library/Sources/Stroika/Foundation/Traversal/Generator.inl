@@ -11,46 +11,37 @@ namespace Stroika::Foundation::Traversal {
 
     namespace Private_ {
 
-        // @todo - I think we can lose fAtEnd and use the fCur.has_value ()
         template <typename T>
         struct GenItWrapper_ : Iterator<T>::IRep {
             function<optional<T> ()> fFun_;
             optional<T>              fCur_;
-            bool                     fAtEnd_{false};
-            GenItWrapper_ (function<optional<T> ()> f)
+            bool                     fSuppressMore_{false}; // needed cuz we need to be able to answer 'isdone' before advance begins
+            GenItWrapper_ () = delete;
+            GenItWrapper_ (const function<optional<T> ()>& f)
                 : fFun_ (f)
+                , fCur_{fFun_ ()}
             {
-                fCur_ = fFun_ ();
-                if (not fCur_.has_value ()) {
-                    fAtEnd_ = true;
-                }
             }
             virtual void More (optional<T>* result, bool advance) override
             {
                 RequireNotNull (result);
                 *result = nullopt;
                 if (advance) {
-                    Require (not fAtEnd_);
-                    optional<T> n = fFun_ ();
-                    if (not n.has_value ()) {
-                        fAtEnd_ = true;
-                    }
-                    else {
-                        fCur_ = n;
+                    // Iterator<T, ITERATOR_TRAITS>::IRep::More() docs say legal to call More(advance) even if at end
+                    if (fCur_.has_value ()) {
+                        fCur_ = fFun_ ();
                     }
                 }
-                if (not fAtEnd_) {
-                    Assert (fCur_.has_value ());
-                    *result = fCur_;
-                }
+                *result = fCur_;
             }
             virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
             {
                 RequireNotNull (rhs);
-                // No way to tell equality (some must rethink definition in Iterator<T>::Equals()!!! @todo
                 AssertMember (rhs, GenItWrapper_);
                 const GenItWrapper_& rrhs = *dynamic_cast<const GenItWrapper_*> (rhs);
-                return fAtEnd_ == rrhs.fAtEnd_;
+                // No way to tell equality (so must rethink definition in Iterator<T>::Equals()!!! @todo
+                WeakAssert (not fCur_.has_value () or not rrhs.fCur_.has_value ());
+                return fCur_.has_value () == rrhs.fCur_.has_value ();
             }
             virtual typename Iterator<T>::RepSmartPtr Clone () const override
             {
