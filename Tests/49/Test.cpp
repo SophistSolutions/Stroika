@@ -834,6 +834,41 @@ namespace {
             VerifyTestResult (seeIfReady.size () == 2);
         };
         t1 ();
+        auto t2 = [] () {
+            Containers::Bijection<int, int> seeIfReady;
+            seeIfReady.Add (1, 1);
+            seeIfReady.Add (2, 2);
+            VerifyTestResult (seeIfReady.size () == 2);
+            DbgTrace (L"seeIfReady=%s", Characters::ToString (seeIfReady).c_str ());
+            VerifyTestResult (seeIfReady.size () == 2);
+
+            const bool               kFails_ = true;
+            Traversal::Iterable<int> fds     = kFails_ ? seeIfReady.Image () : Traversal::Iterable<int>{1, 2};
+
+            VerifyTestResult (fds.size () == 2);
+            VerifyTestResult (seeIfReady.size () == 2);
+            DbgTrace (L"fds=%s", Characters::ToString (fds).c_str ()); // not this is critical step in reproducing old bug - iterating over fds
+            VerifyTestResult (fds.size () == 2);
+            VerifyTestResult (seeIfReady.size () == 2);
+
+            const bool               kFails2_ = true;
+            Traversal::Iterable<int> o1       = kFails2_ ? fds.Select<int> ([&] (const int& t) { return t; }) : fds;
+
+            VerifyTestResult (seeIfReady.size () == 2);
+            VerifyTestResult (o1.size () == 2);
+
+            // this iteration seems to break the list o1 if kFails_
+            DbgTrace (L"o1=%s", Characters::ToString (o1).c_str ());
+
+            VerifyTestResult (o1.size () == 2);
+
+            auto c1 = Containers::Collection<int>{o1};
+            //DbgTrace (L"****CTOR2 top1: o1=%s", Characters::ToString (o1).c_str ());
+            VerifyTestResult (o1.size () == 2);
+            //DbgTrace (L"****CTOR2 top1: c1=%s", Characters::ToString (c1).c_str ());
+            VerifyTestResult (c1.size () == 2);
+        };
+        //t2 ();    -- @todo debug still failing
     }
 }
 
