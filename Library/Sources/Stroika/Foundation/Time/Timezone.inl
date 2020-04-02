@@ -42,7 +42,8 @@ namespace Stroika::Foundation::Time {
     }
     inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {
-        return 60 * GetBiasInMinutesFromUTC (date, tod);
+        // Cast to avoid warning, but no chance of overflow cuz GetBiasInMinutesFromUTC range restricted and time_t at least 4 bytes
+        return static_cast<make_signed_t<time_t>> (60) * GetBiasInMinutesFromUTC (date, tod);
     }
     inline constexpr bool Timezone::operator== (const Timezone& rhs) const
     {
