@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
+#include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -812,6 +813,31 @@ namespace {
 }
 
 namespace {
+    void Test19_CreateGeneratorBug_ ()
+    {
+        Debug::TraceContextBumper ctx{L"{}::Test19_CreateGeneratorBug_"};
+        auto                      t1 = [] () {
+            Containers::Bijection<int, int> seeIfReady;
+            seeIfReady.Add (1, 1);
+            seeIfReady.Add (2, 2);
+            VerifyTestResult (seeIfReady.size () == 2);
+            DbgTrace (L"seeIfReady=%s", Characters::ToString (seeIfReady).c_str ());
+            VerifyTestResult (seeIfReady.size () == 2);
+
+            const bool               kFails_ = true;
+            Traversal::Iterable<int> fds     = kFails_ ? seeIfReady.Image () : Traversal::Iterable<int>{1, 2};
+
+            VerifyTestResult (fds.size () == 2);
+            VerifyTestResult (seeIfReady.size () == 2);
+            DbgTrace (L"fds=%s", Characters::ToString (fds).c_str ()); // not this is critical step in reproducing old bug - iterating over fds
+            VerifyTestResult (fds.size () == 2);
+            VerifyTestResult (seeIfReady.size () == 2);
+        };
+        t1 ();
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
@@ -833,6 +859,7 @@ namespace {
         Test16_LinqLikeFunctions_ ();
         Test17_DurationRange_ ();
         Test18_IterableConstructors_ ();
+        Test19_CreateGeneratorBug_ ();
     }
 }
 
