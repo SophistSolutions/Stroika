@@ -398,7 +398,7 @@ namespace Stroika::Foundation::Containers {
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssertRepValidType () const
     {
 #if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
+        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
 
