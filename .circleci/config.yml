@@ -291,13 +291,13 @@ workflows:
                               filters:
                                      branches:
                                             only:
-                                                   #- v2.1-Dev
+                                                   - v2.1-Dev
                                                    - v2.1-Release
                      - winbuild-samples:
                               filters:
                                      branches:
                                             only:
-                                                   #- v2.1-Dev
+                                                   - v2.1-Dev
                                                    - v2.1-Release
                      - basic-debug-builds-test-ubuntu1804:
                               filters:
