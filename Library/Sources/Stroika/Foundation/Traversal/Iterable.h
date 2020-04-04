@@ -143,6 +143,12 @@ namespace Stroika::Foundation::Traversal {
      *      Note - instead - you can 'assign' (operator=) to replace the value (and dynamic type) of
      *      an Iterable<> (or subclass) instance.
      *
+     *  *Important Design Note*:
+     *      Iterable's - unlike all Stroika containers - do NOT necessarily implement 'copy on write' - COW. This is because the data can
+     *      come from arbitrary, programatic sources (like a sequence of uncomputed random numbers). If you wish to capture something
+     *      like an Iterable for later use, but don't want its value to change once you've captured it, consider using Collection<T> which is
+     *      almost the same, but will make a copy of the data, and not allow it to change without preserve COW semantics.
+     *
      *  *Design Note*:
      *      Why does Iterable<T> contain a GetLength () method?
      *

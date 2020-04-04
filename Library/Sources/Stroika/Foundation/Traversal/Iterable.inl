@@ -618,7 +618,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const
     {
-        vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
+        vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
