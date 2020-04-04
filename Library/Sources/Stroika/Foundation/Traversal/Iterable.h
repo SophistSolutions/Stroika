@@ -653,10 +653,6 @@ namespace Stroika::Foundation::Traversal {
         template <typename RESULT, typename EQUALS_COMPARER = equal_to<RESULT>>
         nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
-    private:
-        template <typename RESULT>
-        static Iterable<RESULT> Distinct_mkGenerator_ (const vector<RESULT>& container);
-
     public:
         /**
          *  \brief  Compute a projection of the given type T to some argument set of subtypes, and apply that projection

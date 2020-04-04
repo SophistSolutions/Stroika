@@ -466,7 +466,16 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
         }
-        return Distinct_mkGenerator_<T> (tmp);
+        size_t                   idx{0};
+        function<optional<T> ()> getNext = [container = move (tmp), idx] () mutable -> optional<T> {
+            if (idx < container.size ()) {
+                return container[idx++];
+            }
+            else {
+                return nullopt;
+            }
+        };
+        return CreateGenerator (getNext);
     }
     template <typename T>
     template <typename RESULT, typename EQUALS_COMPARER>
@@ -489,14 +498,8 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
         }
-        return Distinct_mkGenerator_<RESULT> (tmp);
-    }
-    template <typename T>
-    template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::Distinct_mkGenerator_ (const vector<RESULT>& container)
-    {
         size_t                        idx{0};
-        function<optional<RESULT> ()> getNext = [container, idx] () mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [container = move (tmp), idx] () mutable -> optional<RESULT> {
             if (idx < container.size ()) {
                 return container[idx++];
             }
