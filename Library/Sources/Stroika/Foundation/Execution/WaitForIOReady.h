@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Execution {
         UpdatableWaitForIOReady (const UpdatableWaitForIOReady&) = delete;
         UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
         UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
-        UpdatableWaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
+        UpdatableWaitForIOReady (const T& fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
         ~UpdatableWaitForIOReady () = default;
