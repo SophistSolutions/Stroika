@@ -420,14 +420,16 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         RequireNotNull (includeIfTrue);
-        Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue] () mutable -> optional<T> {
-            while (tmpIt and not includeIfTrue (*tmpIt)) {
-                ++tmpIt;
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), includeIfTrue] () mutable -> optional<T> {
+            while (perIteratorContextBaseIterator and not includeIfTrue (*perIteratorContextBaseIterator)) {
+                ++perIteratorContextBaseIterator;
             }
-            if (tmpIt) {
-                return *tmpIt++;
+            if (perIteratorContextBaseIterator) {
+                return *perIteratorContextBaseIterator++;
             }
             return nullopt;
         };
@@ -514,11 +516,13 @@ namespace Stroika::Foundation::Traversal {
     Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1) const
     {
         RequireNotNull (extract1);
-        Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1] () mutable -> optional<RESULT> {
-            if (tmpIt) {
-                return RESULT (extract1 (*tmpIt++));
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1] () mutable -> optional<RESULT> {
+            if (perIteratorContextBaseIterator) {
+                return RESULT (extract1 (*perIteratorContextBaseIterator++));
             }
             return nullopt;
         };
@@ -530,12 +534,14 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (extract1);
         RequireNotNull (extract2);
-        Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2] () mutable -> optional<RESULT> {
-            if (tmpIt) {
-                RESULT result{extract1 (*tmpIt), extract2 (*tmpIt)};
-                tmpIt++;
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2] () mutable -> optional<RESULT> {
+            if (perIteratorContextBaseIterator) {
+                RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator)};
+                perIteratorContextBaseIterator++;
                 return result;
             }
             return nullopt;
@@ -546,12 +552,14 @@ namespace Stroika::Foundation::Traversal {
     template <typename T1, typename T2, typename T3, typename RESULT>
     Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const
     {
-        Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2, extract3] () mutable -> optional<RESULT> {
-            if (tmpIt) {
-                RESULT result{extract1 (*tmpIt), extract2 (*tmpIt), extract3 (*tmpIt)};
-                tmpIt++;
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2, extract3] () mutable -> optional<RESULT> {
+            if (perIteratorContextBaseIterator) {
+                RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator), extract3 (*perIteratorContextBaseIterator)};
+                perIteratorContextBaseIterator++;
                 return result;
             }
             return nullopt;
@@ -561,16 +569,18 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     Iterable<T> Iterable<T>::Skip (size_t nItems) const
     {
-        size_t                   nItemsToSkip                         = nItems;
-        Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip] () mutable -> optional<T> {
-            while (tmpIt and nItemsToSkip > 0) {
-                nItemsToSkip--;
-                ++tmpIt;
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        // perIteratorContextNItemsToSkip also must be cloned per iterator instance
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = nItems] () mutable -> optional<T> {
+            while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
+                perIteratorContextNItemsToSkip--;
+                ++perIteratorContextBaseIterator;
             }
-            if (tmpIt) {
-                return *tmpIt++;
+            if (perIteratorContextBaseIterator) {
+                return *perIteratorContextBaseIterator++;
             }
             return nullopt;
         };
@@ -579,16 +589,18 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     Iterable<T> Iterable<T>::Take (size_t nItems) const
     {
-        size_t                   nItemsToTake                         = nItems;
-        Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToTake] () mutable -> optional<T> {
-            if (nItemsToTake == 0) {
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        // perIteratorContextNItemsToTake also must be cloned per iterator instance
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToTake = nItems] () mutable -> optional<T> {
+            if (perIteratorContextNItemsToTake == 0) {
                 return nullopt;
             }
-            nItemsToTake--;
-            if (tmpIt) {
-                return *tmpIt++;
+            perIteratorContextNItemsToTake--;
+            if (perIteratorContextBaseIterator) {
+                return *perIteratorContextBaseIterator++;
             }
             return nullopt;
         };
@@ -597,21 +609,23 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     Iterable<T> Iterable<T>::Slice (size_t from, size_t to) const
     {
-        size_t                   nItemsToSkip                         = from;
-        size_t                   nItemsToTake                         = to - from;
-        Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
-        Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-        function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip, nItemsToTake] () mutable -> optional<T> {
-            while (tmpIt and nItemsToSkip > 0) {
-                nItemsToSkip--;
-                ++tmpIt;
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        // perIteratorContextNItemsToSkip also must be cloned per iterator instance
+        // perIteratorContextNItemsToTake also must be cloned per iterator instance
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = from, perIteratorContextNItemsToTake = to - from] () mutable -> optional<T> {
+            while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
+                perIteratorContextNItemsToSkip--;
+                ++perIteratorContextBaseIterator;
             }
-            if (nItemsToTake == 0) {
+            if (perIteratorContextNItemsToTake == 0) {
                 return nullopt;
             }
-            nItemsToTake--;
-            if (tmpIt) {
-                return *tmpIt++;
+            perIteratorContextNItemsToTake--;
+            if (perIteratorContextBaseIterator) {
+                return *perIteratorContextBaseIterator++;
             }
             return nullopt;
         };
