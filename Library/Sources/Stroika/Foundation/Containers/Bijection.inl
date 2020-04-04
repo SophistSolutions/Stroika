@@ -421,14 +421,17 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
-                    auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                    auto getNext   = [myContext] () -> optional<DOMAIN_TYPE> {
-                        if (myContext->Done ()) {
+                    // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
+                    auto sharedContext = make_shared<MyBijection_> (fBijection_);
+                    // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+                    // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+                    auto getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator ()] () mutable -> optional<DOMAIN_TYPE> {
+                        if (perIteratorContextBaseIterator.Done ()) {
                             return nullopt;
                         }
                         else {
-                            auto result = (*myContext)->first;
-                            (*myContext)++;
+                            auto result = perIteratorContextBaseIterator->first;
+                            perIteratorContextBaseIterator++;
                             return result;
                         }
                     };
@@ -468,14 +471,17 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
-                    auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                    auto getNext   = [myContext] () -> optional<RANGE_TYPE> {
-                        if (myContext->Done ()) {
+                    // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
+                    auto sharedContext = make_shared<MyBijection_> (fBijection_);
+                    // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+                    // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+                    auto getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator ()] () mutable -> optional<RANGE_TYPE> {
+                        if (perIteratorContextBaseIterator.Done ()) {
                             return nullopt;
                         }
                         else {
-                            auto result = (*myContext)->second;
-                            (*myContext)++;
+                            auto result = perIteratorContextBaseIterator->second;
+                            perIteratorContextBaseIterator++;
                             return result;
                         }
                     };
