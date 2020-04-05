@@ -2,14 +2,7 @@
 #      This CircleCI configuration file drives the circleci build system available on
 #             https://circleci.com/gh/SophistSolutions/Stroika
 #
-#      Status (as of 2020-03-22)
-#             Close to having windows samples/tests both working, but tough to test since can only run one
-#             test per week ;-(
-#
-#             This last pass reversed debug/release on two configs (may still need todo release on tests due to time to run threads test).
-#             Last try failed due to timeout, so added no_output_timeout (but may not be enuf cuz of Threads test)
-#
-#      Status (as of 2020-02-22)
+#      Status (as of 2020-04-04)
 #             The builds_and_tests workflow appears to completely support
 #                    - basic-debug-builds-test-ubuntu1804
 #                    - basic-debug-builds-test-ubuntu1910
@@ -25,9 +18,8 @@
 #             TESTING RIGHT NOW
 
 #      @todo winbuild-via-docker: speedup docker pull with max-concurrent-downloads
-### ADD JIRA TICKET
+#            ## ADD JIRA TICKET
 
-#      @todo winbuild-via-docker: see if we can go back to -j4 now that things building again (not sure why we failed to build before - never tried code to dump .OUT files)
 version: 2.1
 
 orbs:
