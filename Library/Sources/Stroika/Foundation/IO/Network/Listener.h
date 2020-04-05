@@ -67,7 +67,7 @@ namespace Stroika::Foundation::IO::Network {
         Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
         Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
         Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (const Listener&& rhs);
+        Listener (Listener&& rhs) noexcept;
         Listener (const Listener&) = delete;
 
     public:

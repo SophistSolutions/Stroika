@@ -4,7 +4,6 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/ToString.h"
-#include "../../Containers/Bijection.h"
 #include "../../Containers/Sequence.h"
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Thread.h"
@@ -95,7 +94,7 @@ Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socke
 {
 }
 
-Listener::Listener (const Listener&& rhs)
+Listener::Listener (Listener&& rhs) noexcept
     : fRep_ (move (rhs.fRep_))
 {
 }
