@@ -55,7 +55,7 @@ struct Listener::Rep_ {
                         Execution::ReThrow ();
                     }
                     catch (...) {
-                        // unclear what todo with expcetions here
+                        // unclear what todo with exceptions here
                         // probably ignore all but for threadabort.
                         // may need virtual fucntions to handle? Or std::function passed in?
                         DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
