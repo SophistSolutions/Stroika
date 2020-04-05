@@ -882,7 +882,7 @@ namespace {
             VerifyTestResult (o1.size () == 3);
 
             // this iteration seems to break the list o1 if kFails_
-            int a = o1.size ();
+            [[maybe_unused]] size_t a = o1.size ();
             //DbgTrace (L"o1=%s", Characters::ToString (o1).c_str ());
 
             VerifyTestResult (o1.size () == 3);
