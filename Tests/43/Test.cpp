@@ -66,6 +66,14 @@ namespace {
                     VerifyTestResult (r.GetSucceeded ());
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
+                catch (const IO::Network::HTTP::Exception& e) {
+                    if (e.IsServerError ()) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
@@ -283,6 +291,14 @@ namespace {
                         T3_httpbin_SimplePUT_ (conn);
                     }
                 }
+                catch (const IO::Network::HTTP::Exception& e) {
+                    if (e.IsServerError ()) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
 #if qHasFeature_LibCurl
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
                 catch (const system_error& lce) {
@@ -368,6 +384,14 @@ namespace {
             try {
                 DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
+            catch (const IO::Network::HTTP::Exception& e) {
+                if (e.IsServerError ()) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                }
+                else {
+                    Execution::ReThrow ();
+                }
+            }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
@@ -406,6 +430,14 @@ namespace {
             Execution::DeclareActivity    declareActivity{&kActivity_};
             try {
                 Private_::T1_get_ ();
+            }
+            catch (const IO::Network::HTTP::Exception& e) {
+                if (e.IsServerError ()) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                }
+                else {
+                    Execution::ReThrow ();
+                }
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -536,14 +568,24 @@ namespace {
                         continue; // sigill in c.GET (u) under valgrind, just on raspberrypi. just with valgrind, inside libcurl code, so not obviously our bug
                     }
 #endif
-                    Response r = c.GET (u);
-                    VerifyTestResult (r.GetSucceeded ());
-                    VerifyTestResult (r.GetData ().size () > 1);
-                    Response r2           = c.GET (u);
-                    bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
-                    VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
-                    VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
-                    DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
+                    try {
+                        Response r = c.GET (u);
+                        VerifyTestResult (r.GetSucceeded ());
+                        VerifyTestResult (r.GetData ().size () > 1);
+                        Response r2           = c.GET (u);
+                        bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
+                        VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
+                        VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
+                        DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
+                    }
+                    catch (const IO::Network::HTTP::Exception& e) {
+                        if (e.IsServerError ()) {
+                            Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                        }
+                        else {
+                            Execution::ReThrow ();
+                        }
+                    }
                 }
             }
             void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory)
@@ -643,6 +685,14 @@ namespace {
                 DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
                     return connectionPoolWithCache.New (uriHint);
                 });
+            }
+            catch (const IO::Network::HTTP::Exception& e) {
+                if (e.IsServerError ()) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                }
+                else {
+                    Execution::ReThrow ();
+                }
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
