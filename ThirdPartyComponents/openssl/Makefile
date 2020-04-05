@@ -46,7 +46,8 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/1.0.2/$(BASENAME).tar.gz
+FETCHURLS+=http://www.openssl.org/source/old/1.1.1/$(BASENAME).tar.gz
+FETCHURLS+=http://www.openssl.org/source/old/1.1.0/$(BASENAME).tar.gz
 FETCHURLS+=ftp://mirror.switch.ch/mirror/openssl/source/$(BASENAME).tar.gz
 FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
