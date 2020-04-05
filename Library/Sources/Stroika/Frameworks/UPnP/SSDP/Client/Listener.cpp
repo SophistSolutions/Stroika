@@ -102,8 +102,8 @@ public:
                     Execution::ReThrow ();
                 }
                 catch (...) {
-// ignore errors - and keep on trucking
-// but avoid wasting too much time if we get into an error storm
+                    // ignore errors - and keep on trucking
+                    // but avoid wasting too much time if we get into an error storm
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Caught/ignored exception for SSDP advertisement packet: %s", Characters::ToString (current_exception ()).c_str ());
 #endif
