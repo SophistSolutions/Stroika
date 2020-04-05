@@ -31,30 +31,25 @@ using namespace Stroika::Foundation::Traversal;
  */
 struct Listener::Rep_ {
     Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor)
-        : fNewConnectionAcceptor (newConnectionAcceptor)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Listener::Rep_::CTOR (addres=%s, ...)", Characters::ToString (addrs).c_str ());
 #endif
+        Sequence<ConnectionOrientedMasterSocket::Ptr> masterSockets;
         for (auto addr : addrs) {
             ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket::New (addr.GetAddressFamily (), Socket::STREAM);
-            ms.Bind (addr, bindFlags); // do in CTOR so throw propagated
+            ms.Bind (addr, bindFlags); // do in CTOR (not thread) so throw propagated
             ms.Listen (backlog);
-            fMasterSockets += ms;
+            masterSockets += ms;
         }
         fListenThread = Execution::Thread::New (
-            [this] () {
-                Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady<>::SDKPollableType> socket2FDBijection;
-                for (auto&& s : fMasterSockets) {
-                    socket2FDBijection.Add (s, s.GetNativeSocket ());
-                }
-                WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
+            [masterSockets, newConnectionAcceptor] () {
+                WaitForIOReady<ConnectionOrientedMasterSocket::Ptr> sockSetPoller{masterSockets};
                 while (true) {
                     try {
-                        for (auto readyFD : sockSetPoller.WaitQuietly ()) {
-                            ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                            ConnectionOrientedStreamSocket::Ptr s                     = localSocketToAcceptOn.Accept ();
-                            fNewConnectionAcceptor (s);
+                        for (auto readyMasterSocket : sockSetPoller.WaitQuietly ()) {
+                            ConnectionOrientedStreamSocket::Ptr s = readyMasterSocket.Accept ();
+                            newConnectionAcceptor (s);
                         }
                     }
                     catch (const Execution::Thread::AbortException&) {
@@ -62,7 +57,7 @@ struct Listener::Rep_ {
                     }
                     catch (...) {
                         // unclear what todo with expcetions here
-                        // probnably ignore all but for theradabort.
+                        // probably ignore all but for threadabort.
                         // may need virtual fucntions to handle? Or std::function passed in?
                         DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
                     }
@@ -72,9 +67,7 @@ struct Listener::Rep_ {
             L"Socket Listener: " + Characters::ToString (addrs));
     }
 
-    function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)> fNewConnectionAcceptor;
-    Sequence<ConnectionOrientedMasterSocket::Ptr>                             fMasterSockets;
-    Execution::Thread::CleanupPtr                                             fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    Execution::Thread::CleanupPtr fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
