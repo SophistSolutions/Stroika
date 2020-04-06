@@ -444,6 +444,17 @@ namespace Stroika::Foundation::Execution {
          *          otherwise.
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        nonvirtual bool try_lock () const;
+
+    public:
+        /**
+         *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+         *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
+         *
+         *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+         *          otherwise.
+         */
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
         nonvirtual void unlock () const;
 
     public:

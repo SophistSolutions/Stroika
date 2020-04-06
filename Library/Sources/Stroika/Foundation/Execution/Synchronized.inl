@@ -176,6 +176,20 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    inline bool Synchronized<T, TRAITS>::try_lock () const
+    {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::try_lock", L"&fMutex_=%p", &fMutex_};
+#endif
+        bool result = fMutex_.try_lock ();
+        if (result) {
+            NoteLockStateChanged_ (L"Locked");
+            fWriteLockCount_++;
+        }
+        return result;
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
     inline void Synchronized<T, TRAITS>::unlock () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
