@@ -253,17 +253,17 @@ namespace Stroika::Frameworks::WebServer {
         //
         // But for now - KISS
         //
-        // Note - for now - we don't even handle servicing connections in the threadpool!!! - just one thread
+        // Note - for now - we don't even handle 'accepting' connections in the threadpool!!! - just one thread
         Execution::ThreadPool fActiveConnectionThreads_;
 
         // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
         // new tasks into an already destroyed threadpool.
         IO::Network::Listener fListener_;
         // Inactive connections are those we are waiting (select/epoll) for incoming data
-        Execution::RWSynchronized<Collection<shared_ptr<Connection>>> fInactiveOpenConnections_;
+        Execution::Synchronized<Collection<shared_ptr<Connection>>> fInactiveOpenConnections_;
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
-        Execution::RWSynchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
-        Execution::Thread::CleanupPtr                                 fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+        Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
+        Execution::Thread::CleanupPtr                               fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
     };
 
     struct ConnectionManager::Options {

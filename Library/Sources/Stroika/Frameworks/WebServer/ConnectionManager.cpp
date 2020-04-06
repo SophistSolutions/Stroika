@@ -171,7 +171,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     fInactiveOpenConnections_.rwget ()->Add (conn);
     fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+    DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (fInactiveOpenConnections_.load ()).c_str ());
 #endif
 }
 
@@ -188,7 +188,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
             // I THINK WE MAY NEED THIS BIJECTION? or should have - or use TRAITS override on WaitForIOReady so it can take list of
             // Connection objects and traits saying how to extract the FD?
-            Collection<shared_ptr<Connection>> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
+            Collection<shared_ptr<Connection>> seeIfReady = fInactiveOpenConnections_.load ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
@@ -211,32 +211,46 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
                 Execution::Thread::SuppressInterruptionInContext suppressInterruption;
 
-                // @todo these three steps SB atomic/and transactional
-                fInactiveOpenConnections_.rwget ().rwref ().Remove (readyConnection);
-                fActiveConnections_.rwget ().rwref ().Add (readyConnection);
-                fActiveConnectionThreads_.AddTask (
-                    [this, readyConnection] () mutable {
+                auto handleActivatedConnection = [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
+                    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif
-                        bool keepAlive = (readyConnection->ReadAndProcessMessage () == Connection::eTryAgainLater);
 
-                        // no matter what, remove from active connecitons
-                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection);
+                    /*
+                     * Process the request
+                     */
+                    bool keepAlive = (readyConnection->ReadAndProcessMessage () == Connection::eTryAgainLater);
 
+                    /*
+                     * Handle the Connection object, moving it to the appropriate list etc...
+                     */
+                    {
+                        //scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection);             // no matter what, remove from active connecitons
                         if (keepAlive) {
                             fInactiveOpenConnections_.rwget ().rwref ().Add (readyConnection);
                             fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
                         }
-                        else {
-                            if (readyConnection->GetResponse ().GetState () != Response::State::eCompleted) {
-                                IgnoreExceptionsForCall (readyConnection->GetResponse ().End ());
-                            }
+                    }
+
+                    if (not keepAlive) {
+                        if (readyConnection->GetResponse ().GetState () != Response::State::eCompleted) {
+                            IgnoreExceptionsForCall (readyConnection->GetResponse ().End ());
                         }
+                    }
+
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+                    DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
-                    });
+                };
+
+                
+                {
+                    //scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+                    fInactiveOpenConnections_.rwget ().rwref ().Remove (readyConnection);
+                    fActiveConnections_.rwget ().rwref ().Add (readyConnection);
+                }
+                fActiveConnectionThreads_.AddTask (handleActivatedConnection);
             }
         }
         catch (Thread::AbortException&) {
@@ -290,7 +304,8 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    return fInactiveOpenConnections_.cget ().load () + fActiveConnections_.cget ().load ();
+    //scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+    return fInactiveOpenConnections_.load () + fActiveConnections_.load ();
 }
 
 void ConnectionManager::SetServerHeader (optional<String> server)
