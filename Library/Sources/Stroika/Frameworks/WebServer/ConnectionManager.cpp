@@ -225,8 +225,8 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                      * Handle the Connection object, moving it to the appropriate list etc...
                      */
                     {
-                        //scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
-                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection);             // no matter what, remove from active connecitons
+                        scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connecitons
                         if (keepAlive) {
                             fInactiveOpenConnections_.rwget ().rwref ().Add (readyConnection);
                             fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
@@ -244,9 +244,8 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #endif
                 };
 
-                
                 {
-                    //scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+                    scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
                     fInactiveOpenConnections_.rwget ().rwref ().Remove (readyConnection);
                     fActiveConnections_.rwget ().rwref ().Add (readyConnection);
                 }
@@ -304,7 +303,7 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    //scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+    scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
     return fInactiveOpenConnections_.load () + fActiveConnections_.load ();
 }
 
