@@ -13,6 +13,7 @@
 #include "../../Foundation/Debug/Trace.h"
 #include "../../Foundation/Execution/Sleep.h"
 #include "../../Foundation/Execution/Throw.h"
+#include "../../Foundation/Execution/WaitForIOReady.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
@@ -167,7 +168,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
-    fInactiveOpenConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
+    fInactiveOpenConnections_.rwget ()->Add (conn);
     fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
@@ -180,48 +181,56 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_"));
 #endif
 
-    // run til thread aboorted
+    // run til thread aborted
     while (true) {
         try {
             Execution::CheckForThreadInterruption ();
 
-            Bijection<shared_ptr<Connection>, Execution::WaitForIOReady<>::SDKPollableType> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
+            // I THINK WE MAY NEED THIS BIJECTION? or should have - or use TRAITS override on WaitForIOReady so it can take list of
+            // Connection objects and traits saying how to extract the FD?
+            Collection<shared_ptr<Connection>> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
 
             // This will wake up early if another thread adds an inactive connection (thread gets interruppted)
-            if (seeIfReady.Image ().empty ()) {
+            if (seeIfReady.empty ()) {
                 Execution::Sleep (2h); // can be any amount of time, since we will be interuppted
                 continue;
             }
-            Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
-            for (auto readyFD : sockSetPoller.WaitQuietly ()) {
-                shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
+            struct MyWaitForIOReady_Traits_ {
+                using HighLevelType = shared_ptr<Connection>;
+                static inline auto GetSDKPollable (const HighLevelType& t)
+                {
+                    return t->GetSocket ().GetNativeSocket ();
+                }
+            };
+            Execution::WaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> sockSetPoller{seeIfReady};
+            for (shared_ptr<Connection> readyConnection : sockSetPoller.WaitQuietly ()) {
 
                 Execution::Thread::SuppressInterruptionInContext suppressInterruption;
 
                 // @todo these three steps SB atomic/and transactional
-                fInactiveOpenConnections_.rwget ().rwref ().RemoveDomainElement (conn);
-                fActiveConnections_.rwget ().rwref ().Add (conn);
+                fInactiveOpenConnections_.rwget ().rwref ().Remove (readyConnection);
+                fActiveConnections_.rwget ().rwref ().Add (readyConnection);
                 fActiveConnectionThreads_.AddTask (
-                    [this, conn] () mutable {
+                    [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif
-                        bool keepAlive = (conn->ReadAndProcessMessage () == Connection::eTryAgainLater);
+                        bool keepAlive = (readyConnection->ReadAndProcessMessage () == Connection::eTryAgainLater);
 
                         // no matter what, remove from active connecitons
-                        fActiveConnections_.rwget ().rwref ().Remove (conn);
+                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection);
 
                         if (keepAlive) {
-                            fInactiveOpenConnections_.rwget ().rwref ().Add (conn, conn->GetSocket ().GetNativeSocket ());
+                            fInactiveOpenConnections_.rwget ().rwref ().Add (readyConnection);
                             fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
                         }
                         else {
-                            if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
-                                IgnoreExceptionsForCall (conn->GetResponse ().End ());
+                            if (readyConnection->GetResponse ().GetState () != Response::State::eCompleted) {
+                                IgnoreExceptionsForCall (readyConnection->GetResponse ().End ());
                             }
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -281,7 +290,7 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    return Collection<shared_ptr<Connection>>{fInactiveOpenConnections_.cget ().cref ().Preimage ()} + fActiveConnections_.cget ().load ();
+    return fInactiveOpenConnections_.cget ().load () + fActiveConnections_.cget ().load ();
 }
 
 void ConnectionManager::SetServerHeader (optional<String> server)

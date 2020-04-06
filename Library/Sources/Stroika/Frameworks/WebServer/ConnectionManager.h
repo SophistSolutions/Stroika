@@ -9,11 +9,9 @@
 #include <list>
 #include <memory>
 
-#include "../../Foundation/Containers/Bijection.h"
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
-#include "../../Foundation/Execution/WaitForIOReady.h"
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 
@@ -30,7 +28,6 @@ namespace Stroika::Frameworks::WebServer {
 
     using namespace Stroika::Foundation;
     using Characters::String;
-    using Containers::Bijection;
     using Containers::Collection;
     using IO::Network::ConnectionOrientedStreamSocket;
     using IO::Network::Socket;
@@ -263,7 +260,7 @@ namespace Stroika::Frameworks::WebServer {
         // new tasks into an already destroyed threadpool.
         IO::Network::Listener fListener_;
         // Inactive connections are those we are waiting (select/epoll) for incoming data
-        Execution::RWSynchronized<Bijection<shared_ptr<Connection>, Execution::WaitForIOReady<>::SDKPollableType>> fInactiveOpenConnections_;
+        Execution::RWSynchronized<Collection<shared_ptr<Connection>>> fInactiveOpenConnections_;
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::RWSynchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
         Execution::Thread::CleanupPtr                                 fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
