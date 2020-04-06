@@ -226,7 +226,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                      */
                     {
                         scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
-                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connecitons
+                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
                             fInactiveOpenConnections_.rwget ().rwref ().Add (readyConnection);
                             fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
