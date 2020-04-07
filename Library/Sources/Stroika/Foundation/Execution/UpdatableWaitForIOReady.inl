@@ -125,6 +125,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
     {
+        fEventFD_.Clear ();  // Clear all pending 'list of sockets' change notificitions before we mkWaiter_ () - which grabs the current list to avoid race
         return mkWaiter_ ().WaitQuietlyUntil (timeoutAt);
     }
     template <typename T, typename TRAITS>
