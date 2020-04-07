@@ -53,10 +53,6 @@ namespace Stroika::Foundation::IO::Network {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         _ref ().Write (start, end);
     }
-    inline void ConnectionOrientedStreamSocket::Ptr::Write (const Memory::BLOB& b) const
-    {
-        Write (b.begin (), b.end ());
-    }
     inline optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

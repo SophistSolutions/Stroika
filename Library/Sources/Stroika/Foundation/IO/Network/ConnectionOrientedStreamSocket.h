@@ -8,6 +8,10 @@
 
 #include "Socket.h"
 
+namespace Stroika::Foundation::Memory {
+    class BLOB;
+}
+
 namespace Stroika::Foundation::IO::Network {
 
     using std::byte;
