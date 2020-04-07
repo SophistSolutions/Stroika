@@ -2034,6 +2034,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SystemFirewall.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UpdatableWaitForIOReady.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3314,6 +3317,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SystemFirewall.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\UpdatableWaitForIOReady.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
