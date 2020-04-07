@@ -1294,7 +1294,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
          *  @see http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html for some considerations in daemonizing a child process.
          * 
          *
-         * Very primitive code to detatch the console. No error checking cuz at this stage, not too much to be done.
+         * Very primitive code to detach the console. No error checking cuz at this stage, not too much to be done.
          */
 
         /*
