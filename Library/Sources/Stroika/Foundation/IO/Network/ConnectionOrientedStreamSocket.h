@@ -198,6 +198,7 @@ namespace Stroika::Foundation::IO::Network {
          *  @todo   Need timeout on this API? Or global (for instance) timeout?
          */
         nonvirtual void Write (const byte* start, const byte* end) const;
+        nonvirtual void Write (const Memory::BLOB& b) const;
 
     public:
         /**
