@@ -21,13 +21,10 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
-        : fData_{fds}
+        : fEventFD_{WaitForIOReady_Support::mkEventFD ()}
+        , fPollable2Wakeup_{fEventFD_->GetWaitInfo ()}
+        , fData_{fds}
     {
-        /// @todo invoke
-        // SET
-        // fPollable2Wakeup_
-        // here - 3 ways
-        // and ALSO include FD for where to WRITE to signal wakeup
     }
     template <typename T, typename TRAITS>
     UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
@@ -43,6 +40,7 @@ namespace Stroika::Foundation::Execution {
     inline void UpdatableWaitForIOReady<T, TRAITS>::clear ()
     {
         fData_.rwget ().clear ();
+        fEventFD_.Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::GetDescriptors () const -> Containers::Collection<pair<T, TypeOfMonitorSet>>
@@ -87,7 +85,7 @@ namespace Stroika::Foundation::Execution {
     void UpdatableWaitForIOReady<T, TRAITS>::Add (T fd, const TypeOfMonitorSet& flags)
     {
         fData_.rwget ()->fData_.Add (pair<T, TypeOfMonitorSet>{fd, flags});
-        // @todo wakeup
+        fEventFD_.Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Remove ([[maybe_unused]] T fd)
@@ -113,7 +111,7 @@ namespace Stroika::Foundation::Execution {
     void UpdatableWaitForIOReady<T, TRAITS>::SetDescriptors (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
     {
         fData_.store (fds);
-        // @todo wakeup
+        fEventFD_.Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     auto UpdatableWaitForIOReady<T, TRAITS>::WaitUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>

@@ -151,6 +151,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual WaitForIOReady<T, TRAITS> mkWaiter_ ();
 
     private:
+        shared_ptr<WaitForIOReady_Support::EventFD>                                fEventFD_;
         pair<T, TypeOfMonitorSet>                                                  fPollable2Wakeup_;
         Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
     };
