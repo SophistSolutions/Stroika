@@ -58,7 +58,7 @@ namespace Stroika::Foundation::IO::Network {
      *  underlying (_IRep*) socket is finally disposed of when the last reference to it
      *  goes away (or when it is 'Closed').
      *
-     *  Closing one, closes them all (though overwriting one just has the effect of detatching
+     *  Closing one, closes them all (though overwriting one just has the effect of detaching
      *  from the underlying socket.
      *
      * TODO:
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::IO::Network {
      *  underlying (_IRep*) socket is finally disposed of when the last reference to it
      *  goes away (or when it is 'Closed').
      *
-     *  Closing one, closes them all (though overwriting one just has the effect of detatching
+     *  Closing one, closes them all (though overwriting one just has the effect of detaching
      *  from the underlying socket.
      *
      *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::IO::Network {
          *      o   ConnectionOrientedStreamSocket::New ()
          *      o   ConnectionOrientedMasterSocket::New ()
          *
-         * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+         * \note unless you call @Detach() - socket is CLOSED in DTOR of rep, so when final reference goes away
          */
     public:
         Ptr (const Ptr& s)     = default;

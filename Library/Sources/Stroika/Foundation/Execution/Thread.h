@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Execution {
      *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
      *
      *  \note   Considered adding an API to return the underlying std::thread or std::thread::native_handle (), but
-     *          have not needed this so far, and it might create some confusion about ownership? Detatching would be
+     *          have not needed this so far, and it might create some confusion about ownership? Detaching would be
      *          a problem because the owned thread object has hooks into the Stroika Thread object, so that kind of
      *          needs to be left around. I suppose we might want to allow an accessor to std::thread* which is like an
      *          internal pointer (thread safety questions too with that). MAYBE better to just allow construction of a 
@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Execution {
          *          been constructed (generally) - or at least before started (sucks swapping stacks out on a running thread ;-))
          *
          *  \note   Unlike std::thread, a Stroika Thread is not started automatically (unless you pass eAutoStart as a constructor argument),
-         *          and it can run in the background after the Thread has gone out of scope (std::thread you can do this but must call detatch).
+         *          and it can run in the background after the Thread has gone out of scope (std::thread you can do this but must call detach).
          *
          *  \par Example Usage
          *      \code

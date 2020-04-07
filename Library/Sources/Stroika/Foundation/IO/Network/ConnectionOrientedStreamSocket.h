@@ -46,7 +46,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \note - use ConnectionOrientedStreamSocket::Attach () instead of a normal constructor to emphasize that
          *          The newly created object takes ownership of the socket.
          *
-         *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+         *  \note unless you call @Detach() - socket is CLOSED in DTOR of rep, so when final reference goes away
          *
          *  \note ConnectionOrientedStreamSocket is not copyable, but it can be copied into a ConnectionOrientedStreamSocket::Ptr or
          *        Socket::Ptr. This is critical to save them in a container, for example.

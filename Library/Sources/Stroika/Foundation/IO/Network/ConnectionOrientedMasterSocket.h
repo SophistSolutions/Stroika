@@ -42,7 +42,7 @@ namespace Stroika::Foundation::IO::Network {
          *          ms.Listen (backlog);
          *      \endcode
          *
-         *  \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
+         *  \note unless you call @Detach() - socket is CLOSED in DTOR of rep, so when final reference goes away
          *
          *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
          *        Socket::Ptr.  This is critical to save them in a container, for example.
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::IO::Network {
          *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
          *  when the last reference to the socket disappears (or when someone calls close).
          *
-         *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
+         *  To prevent that behavior, you can Detach the PlatformNativeHandle before destroying
          *  the associated Socket object.
          */
         static Ptr Attach (PlatformNativeHandle sd);

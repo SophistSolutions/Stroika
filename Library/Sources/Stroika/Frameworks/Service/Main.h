@@ -545,7 +545,7 @@ namespace Stroika::Frameworks::Service {
          *
          *  Must be attached before other methods can be called (at least most - document which).
          *
-         *  Must be detatched before DTOR.
+         *  Must be detached before DTOR.
          */
         virtual void _Attach (const shared_ptr<IApplicationRep>& appRep) = 0;
 
