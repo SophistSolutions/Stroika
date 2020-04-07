@@ -63,6 +63,17 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  \brief create a ConnectionOrientedStreamSocket::Ptr, and connect to the given address.
+         *
+         *  Shorthand for:
+         *          ConnectionOrientedStreamSocket::Ptr  s = ConnectionOrientedStreamSocket::New (sockAddr.GetAddressFamily (), Socket::STREAM);
+         *          s.Connect (someSocketAddress);
+         *          return s;
+         */
+        static Ptr NewConnection (const SocketAddress& sockAddr);
+
+    public:
+        /**
          *  For copyability, use ConnectionOrientedStreamSocket::Ptr for assigned-to type.
          */
         nonvirtual ConnectionOrientedStreamSocket& operator= (ConnectionOrientedStreamSocket&& s) = delete;
@@ -75,7 +86,7 @@ namespace Stroika::Foundation::IO::Network {
          *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
          *  when the last reference to the socket disappears (or when someone calls close).
          *
-         *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
+         *  To prevent that behavior, you can Detach the PlatformNativeHandle before destroying
          *  the associated Socket object.
          */
         static Ptr Attach (PlatformNativeHandle sd);

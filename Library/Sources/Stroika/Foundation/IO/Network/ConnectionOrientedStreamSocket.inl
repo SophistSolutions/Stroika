@@ -94,6 +94,18 @@ namespace Stroika::Foundation::IO::Network {
         return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
     }
 
+    /*
+     ********************************************************************************
+     ********* Foundation::IO::Network::ConnectionOrientedStreamSocket **************
+     ********************************************************************************
+     */
+    inline ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::NewConnection (const SocketAddress& sockAddr)
+    {
+        ConnectionOrientedStreamSocket::Ptr s = ConnectionOrientedStreamSocket::New (sockAddr.GetAddressFamily (), Socket::STREAM);
+        s.Connect (sockAddr);
+        return s;
+    }
+
 }
 
 #endif /*_Stroika_Foundation_IO_Network_ConnectionOrientedStreamSocket_inl_*/
