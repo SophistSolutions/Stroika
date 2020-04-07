@@ -14,6 +14,7 @@
 #include <ws2tcpip.h>
 #endif
 
+#include "../Memory/BLOB.h"
 #include "../Memory/SmallStackBuffer.h"
 #include "../Time/Realtime.h"
 
@@ -22,6 +23,9 @@
 #include "Platform/Windows/Exception.h"
 #include "Platform/Windows/WaitSupport.h"
 #endif
+
+#include "../IO/Network/ConnectionOrientedMasterSocket.h"
+#include "../IO/Network/ConnectionOrientedStreamSocket.h"
 
 #include "WaitForIOReady.h"
 
@@ -32,6 +36,96 @@ using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
 
 using Memory::SmallStackBuffer;
 using Time::DurationSecondsType;
+
+namespace {
+    struct EventFD_Based_ : public EventFD {
+
+        EventFD_Based_ () = default;
+        virtual bool IsSet () const override
+        {
+            return fIsSet_;
+        }
+        virtual void Set () override
+        {
+            // If already set, nothing todo. To set, we set flag, and write so anybody selecting will wakeup
+            if (not IsSet ()) {
+                fIsSet_ = true;
+                _WriteOne (); // so select calls wake
+            }
+        }
+        virtual void Clear () override
+        {
+            if (IsSet ()) {
+                fIsSet_ = false;
+                _ReadAllAvail (); // so select calls don't prematurely wake
+            }
+        }
+        virtual void Wait () override
+        {
+            //@todo - not sure we need this
+        }
+
+    protected:
+        virtual void _ReadAllAvail () = 0;
+        virtual void _WriteOne ()     = 0;
+
+    private:
+        bool fIsSet_{false};
+    };
+
+    /*
+     *  This strategy may not be the most efficient (esp to construct) but it should work
+     *  portably, so implemented first.
+     */
+    struct EventFD_Based_SocketPair_ : EventFD_Based_ {
+        static const inline Memory::BLOB sSingleEltDatum{Memory::BLOB ({1})};
+
+        EventFD_Based_SocketPair_ ()
+        {
+            using namespace IO::Network;
+
+            // Create a Listening master socket, bind it, and get it listening
+            // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
+            auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
+            connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
+            connectionOrientedMaster.Listen (1);
+
+            // now make a NEW socket, with the bound addres and connect;
+            fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
+            fWriteSocket_ = connectionOrientedMaster.Accept ();
+        }
+        IO::Network::ConnectionOrientedStreamSocket::Ptr fReadSocket_{nullptr};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr fWriteSocket_{nullptr};
+
+        virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () override
+        {
+            // Poll on read FD to see if data available to read
+            return pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet>{fReadSocket_.GetNativeSocket (), WaitForIOReady_Base::TypeOfMonitorSet{WaitForIOReady_Base::TypeOfMonitor::eRead}};
+        }
+        virtual void _ReadAllAvail () override
+        {
+            std::byte buf[1024];
+            while (fReadSocket_.ReadNonBlocking (begin (buf), end (buf)))
+                ;
+        }
+        virtual void _WriteOne () override
+        {
+            fWriteSocket_.Write (sSingleEltDatum);
+        }
+    };
+
+}
+
+/*
+ ********************************************************************************
+ *********** Execution::WaitForIOReady::WaitForIOReady_Support::mkEventFD *******
+ ********************************************************************************
+ */
+shared_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
+{
+    /// need ifdefs to allow build based on eventfd, or pipe
+    return make_shared<EventFD_Based_SocketPair_> ();
+}
 
 /*
  ********************************************************************************

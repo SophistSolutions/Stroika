@@ -125,6 +125,35 @@ namespace Stroika::Foundation::Execution {
             static auto _WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>;
         };
 
+        /**
+         *  (Private) utility to allow select() to wakeup without sending EINTR such signals...
+         *          @todo add REFERENCE (stackoverflow) for the idea
+         */
+        class EventFD {
+        public:
+            EventFD () = default;
+
+        public:
+            virtual ~EventFD () = default;
+
+        public:
+            virtual bool IsSet () const = 0;
+
+        public:
+            virtual void Set () = 0;
+
+        public:
+            virtual void Clear () = 0;
+
+        public:
+            virtual void Wait () = 0;
+
+        public:
+            // return low level FD + set of poll events
+            virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () = 0;
+        };
+        shared_ptr<EventFD> mkEventFD ();
+
         template <typename T>
         struct WaitForIOReady_Traits {
             /**
