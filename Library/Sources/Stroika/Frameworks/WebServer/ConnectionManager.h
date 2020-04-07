@@ -195,12 +195,16 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  These 'before' and 'after' values are releative to the router, which towards the end of the chain.
          */
-        enum InterceptorAddRelativeTo {
+        enum class InterceptorAddRelativeTo {
             ePrependsToEarly,
             ePrepend,
             eAppend,
             eAfterBeforeInterceptors,
         };
+        static constexpr InterceptorAddRelativeTo ePrependsToEarly         = InterceptorAddRelativeTo::ePrependsToEarly;
+        static constexpr InterceptorAddRelativeTo ePrepend                 = InterceptorAddRelativeTo::ePrepend;
+        static constexpr InterceptorAddRelativeTo eAppend                  = InterceptorAddRelativeTo::eAppend;
+        static constexpr InterceptorAddRelativeTo eAfterBeforeInterceptors = InterceptorAddRelativeTo::eAfterBeforeInterceptors;
 
     public:
         /**

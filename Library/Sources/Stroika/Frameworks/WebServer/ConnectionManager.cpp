@@ -356,16 +356,16 @@ void ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& after
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {
     switch (relativeTo) {
-        case ePrependsToEarly:
+        case InterceptorAddRelativeTo::ePrependsToEarly:
             fEarlyInterceptors_.rwget ()->Prepend (i);
             break;
-        case ePrepend:
+        case InterceptorAddRelativeTo::ePrepend:
             fBeforeInterceptors_.rwget ()->Prepend (i);
             break;
-        case eAppend:
+        case InterceptorAddRelativeTo::eAppend:
             fAfterInterceptors_.rwget ()->Append (i);
             break;
-        case eAfterBeforeInterceptors:
+        case InterceptorAddRelativeTo::eAfterBeforeInterceptors:
             fBeforeInterceptors_.rwget ()->Append (i);
             break;
     }
