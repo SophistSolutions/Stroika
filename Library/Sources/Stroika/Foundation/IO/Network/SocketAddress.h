@@ -41,6 +41,12 @@ namespace Stroika::Foundation::IO::Network {
         static constexpr FamilyType INET6 = FamilyType::INET6;
 
     public:
+        /** 
+         *  This value can only be used in the SocketAddress constructor to mean for the OS to select a random (available) port.
+         */
+        static constexpr uint16_t kAnyPort{0};
+
+    public:
         /**
          *  any raw sock_addr, sockaddr_in, or sockaddr_storage arguments must already be in network order.
          *
@@ -55,7 +61,7 @@ namespace Stroika::Foundation::IO::Network {
 #if qPlatform_Windows
         SocketAddress (const SOCKET_ADDRESS& sockaddr);
 #endif
-        SocketAddress (const InternetAddress& iaddr, uint16_t portNumber);
+        explicit SocketAddress (const InternetAddress& iaddr, uint16_t portNumber = kAnyPort);
 
     public:
         /**
