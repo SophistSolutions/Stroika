@@ -50,16 +50,19 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline void UpdatableWaitForIOReady<T, TRAITS>::AddAll (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
     {
-        for (auto i : fds) {
-            Add (i, flags);
+        {
+            auto lk = fData_.rwget ();
+            for (auto i : fds) {
+                lk->Add (i, flags);
+            }
         }
+        fEventFD_.Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     inline void UpdatableWaitForIOReady<T, TRAITS>::AddAll (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
     {
-        for (auto i : fds) {
-            Add (i.first, i.second);
-        }
+        fData_.rwget ()->fData_.AddAll (fds);
+        fEventFD_.Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::Wait (Time::DurationSecondsType waitFor) -> Containers::Set<T>
@@ -125,7 +128,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
     {
-        fEventFD_.Clear ();  // Clear all pending 'list of sockets' change notificitions before we mkWaiter_ () - which grabs the current list to avoid race
+        fEventFD_.Clear (); // Clear all pending 'list of sockets' change notificitions before we mkWaiter_ () - which grabs the current list to avoid race
         return mkWaiter_ ().WaitQuietlyUntil (timeoutAt);
     }
     template <typename T, typename TRAITS>
