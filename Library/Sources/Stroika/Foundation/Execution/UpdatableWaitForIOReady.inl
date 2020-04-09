@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::RemoveAll ([[maybe_unused]] const Traversal::Iterable<T>& fds)
     {
-        Set<T> fdsSet{fds};
+        Containers::Set<T> fdsSet{fds};
         if (fData_.rwget ()->RemoveAll ([&] (auto p) { return fdsSet.Contains (p.first); }) != 0) {
             fEventFD_->Set (); // force wakeup of any waits
         }
