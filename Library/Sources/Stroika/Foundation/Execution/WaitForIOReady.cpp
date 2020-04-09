@@ -60,10 +60,6 @@ namespace {
                 _ReadAllAvail (); // so select calls don't prematurely wake
             }
         }
-        virtual void Wait () override
-        {
-            //@todo - not sure we need this
-        }
 
     protected:
         virtual void _ReadAllAvail () = 0;
@@ -123,6 +119,8 @@ namespace {
  */
 shared_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 {
+    // @todo - See https://stroika.atlassian.net/browse/STK-709
+    // to support eventfd and pipe based helper classes
     /// need ifdefs to allow build based on eventfd, or pipe
     return make_shared<EventFD_Based_SocketPair_> ();
 }

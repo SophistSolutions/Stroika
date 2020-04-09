@@ -26,8 +26,6 @@
  *
  *      @todo   See if some way to make WaitForIOReady work with stuff other than sockets - on windows
  *              (WaitFormUltipleEventsEx didnt work well at all)
- *
- *      @todo   better error handling in WaitForIOReady::WaitUntil () - some errors OK, but others should throw
  */
 
 namespace Stroika::Foundation::Execution {
@@ -35,25 +33,26 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \note see https://stroika.atlassian.net/browse/STK-653
      *
-     ***** @todo revisit - maybe default off - cuz not using interrupt () anymore (probably still do cuz of abort, but at least do a bit less often)
-     Or force teh abort/intererupt to somehow use our write mechanism? NO - that only works with updatbale... Probs can do no better than upping timeout
-     *
-     *
      *  WSAPoll is not (fully/mostly) alertable, in the Windows API. So for Windows, this trick is needed to make
      *  WaitForIOReady::Wait* a ***Cancelation Point***.
      *
      *  Set qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks to a number of milliseconds between WSAPoll
      *  forced wakeups. A smaller value means more responsive, but more wasted CPU time.
+     *
+     *  \note Since Stroika 2.1a5, we no longer (generally use but still support) using Thread::Interrupt() to break the sleep.
+     *        So this doesn't need to be quite as rapid. Changed from 1000ms to 3000ms --LGP 2020-04-09
+     *        STILL NEEDED however, due to aborting threads (and cuz some users may still choose to use the thread interruption approach to wakeup)
      */
 #ifndef qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks
 #if qPlatform_Windows
-#define qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 1000
+#define qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 3000
 #endif
 #endif
 
     namespace WaitForIOReady_Support {
         /**
-         *  This is the underlying native type 'HighLevelType objects must be converted to in order to be used with the OLD poll/select feature.
+         *  This is the underlying native type 'HighLevelType objects must be converted to in order to
+         *  be used with the operating-system poll/select feature.
          */
 #if qPlatform_Windows
         using SDKPollableType = SOCKET;
@@ -127,7 +126,8 @@ namespace Stroika::Foundation::Execution {
 
         /**
          *  (Private) utility to allow select() to wakeup without sending EINTR such signals...
-         *          @todo add REFERENCE (stackoverflow) for the idea
+         *  
+         *  \note idea originally from https://stackoverflow.com/questions/12050072/how-to-wake-up-a-thread-being-blocked-by-select-poll-poll-function-from-anothe/22239521
          */
         class EventFD {
         public:
@@ -146,9 +146,6 @@ namespace Stroika::Foundation::Execution {
             virtual void Clear () = 0;
 
         public:
-            virtual void Wait () = 0;
-
-        public:
             // return low level FD + set of poll events
             virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () = 0;
         };
@@ -157,7 +154,7 @@ namespace Stroika::Foundation::Execution {
         template <typename T>
         struct WaitForIOReady_Traits {
             /**
-             *  This is the underlying native type 'T' objects mustbe converted to in order to be used with the OLD poll/select feature.
+             *  This is the type of object which is being wrapped (around a SDKPollableType object) and used with WiatForIOReady
              */
             using HighLevelType = T;
 
@@ -181,15 +178,13 @@ namespace Stroika::Foundation::Execution {
      *
      *          This can be used to trigger premature wakeup (without being treated as a timeout) - like if the list of file descriptors to watch
      *          changes.
-
-     **@TTODO EXPLIAN WHY THIS IS BETTER THAN OLD THJREADE INTERRUPT (stacktrace code slow, and interreupt means if there were real answers mixed with 
-     non-nanswer we would miss the real ansers and this way captures them too)
-
      *
-     *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
-     *          externally 'Synchronized', because then adds would block for the entire time a Wait was going on.
-     *&&& @todo WRONG UPDTATE -0 C++ NORMAL FOR THIS GUY AND ADD OVERWRITE CHECKS
-     &&& AND FIX REGTESTS TO DO USE SMARTPTR - and without mappin to image/ etcc - and use tempate<>
+     *          Alternatively, users may interrupt Execution::WaitForIOReady portably using 
+     *          Thread::Interrupt () (which is what Stroika generally did until v2.1a5) - but this is less efficeint, and generates
+     *          lots of log noise (dbgtrace). Also, interreupt means if there were real answers mixed with 
+     *          non-nanswer we would miss the real ansers and this way captures them too)
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \par Example Usage
      *      \code
@@ -206,7 +201,7 @@ namespace Stroika::Foundation::Execution {
      *          Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
      *          while (true) {
      *              try {
-     *                  for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
+     *                  for (auto readyFD : sockSetPoller.WaitQuietly ()) {
      *                      ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
      *                      ConnectionOrientedStreamSocket::Ptr s                     = localSocketToAcceptOn.Accept ();
      *                      fNewConnectionAcceptor (s);
@@ -216,9 +211,8 @@ namespace Stroika::Foundation::Execution {
      *          }
      *      \endcode
      *
-     *  \note   WaitForIOReady only works for type SOCKET on Windows
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *  \note   WaitForIOReady internally uses SDKPollableType, which is a UNIX file descriptor or Windows SOCKET. TRAITS
+     *          must be provided to map 'T' objects to that SDKPollableType. These are provided by default for most appropriate types.
      */
     template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
     class WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
