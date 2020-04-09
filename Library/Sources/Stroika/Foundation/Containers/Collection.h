@@ -215,10 +215,15 @@ namespace Stroika::Foundation::Containers {
          * This function requires that the iterator 'i' came from this container.
          *
          * The value pointed to by 'i' is removed.
+         *
+         * The overload Remove(PREDICATE) applies the function p(T) -> bool and deletes the first entry (if any) that return true for the predicate.
+         * Returns true iff an entry was removed.
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
         nonvirtual void Remove (const Iterator<T>& i);
+        template <typename PREDICATE>
+        nonvirtual bool Remove (const PREDICATE& p);
 
     public:
         /**
@@ -226,13 +231,18 @@ namespace Stroika::Foundation::Containers {
          * (or each item for the 'items' overload), meaning that another instance of item could still be in the
          * Collection<T> after the remove. Thus function just reduces the MultiSet() by one (or zero if item wasn't found).
          *
-         *  The no-argument verison Produces an empty bag.
+         *  The no-argument verison Produces an empty collection.
+         *
+         * The overload RemoveAll(PREDICATE) applies the function p(T) -> bool and deletes all entries that return true for the predicate.
+         * Returns the number of items removed in this way.
          */
         nonvirtual void RemoveAll ();
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, const EQUALS_COMPARER& equalsComparer = {});
         template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
+        template <typename PREDICATE>
+        nonvirtual size_t RemoveAll (const PREDICATE& p);
 
     public:
         /**
