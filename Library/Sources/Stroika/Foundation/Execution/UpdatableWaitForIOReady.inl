@@ -101,17 +101,7 @@ namespace Stroika::Foundation::Execution {
         AssertNotImplemented ();
     }
     template <typename T, typename TRAITS>
-    void UpdatableWaitForIOReady<T, TRAITS>::Remove ([[maybe_unused]] T fd, [[maybe_unused]] const TypeOfMonitorSet& flags)
-    {
-        AssertNotImplemented ();
-    }
-    template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::RemoveAll ([[maybe_unused]] const Traversal::Iterable<T>& fds)
-    {
-        AssertNotImplemented ();
-    }
-    template <typename T, typename TRAITS>
-    void UpdatableWaitForIOReady<T, TRAITS>::RemoveAll ([[maybe_unused]] const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
     {
         AssertNotImplemented ();
     }
