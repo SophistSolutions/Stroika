@@ -293,7 +293,12 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
-     *  @todo add some level of caching to this object, possible with arguments to CTOR saying allowed latency for fetch from OS
+     *  \todo   @todo https://stroika.atlassian.net/browse/STK-710
+     *          add some level of caching to this object, possible with arguments to CTOR saying
+     *          allowed latency for fetch from OS
+     *
+     *          IF I can do with netlink or something similar, probably at least optionally do this statically so that
+     *          all instances can easily leverage the cache.
      */
     class SystemInterfacesMgr {
     public:
