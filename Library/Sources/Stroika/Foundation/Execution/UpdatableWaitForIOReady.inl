@@ -20,15 +20,15 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady ()
+    UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
         : fEventFD_ (WaitForIOReady_Support::mkEventFD ())
         , fPollable2Wakeup_{fEventFD_->GetWaitInfo ()}
+        , fData_{fds}
     {
     }
     template <typename T, typename TRAITS>
-    inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
-        : UpdatableWaitForIOReady ()
-        , fData_{fds}
+    inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady ()
+        : UpdatableWaitForIOReady (Traversal::Iterable<pair<T, TypeOfMonitorSet>>{})
     {
     }
     template <typename T, typename TRAITS>
