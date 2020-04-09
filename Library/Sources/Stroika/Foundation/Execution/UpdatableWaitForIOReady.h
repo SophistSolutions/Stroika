@@ -54,6 +54,11 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
+     *  \todo @todo DECIDE IF T is a KEY - that is - if allowed to appear more than once in the list.
+     *        Update the logic for Add/Remove and constructors accordingly!!!
+     *        PROBABLY best definition is that its a KEY, but you can in construcotr/add pass in more than once, and tehy get merged togther like a set.
+     *        (NOTE - NYI but easy). Then Remove functions need overloads letting you specify the POLL params too.
+     *
      */
     template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
     class UpdatableWaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
@@ -85,7 +90,6 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  If no flags specified, remove all occurences of fd.
          */
         nonvirtual void Remove (T fd);
 

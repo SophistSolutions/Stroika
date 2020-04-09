@@ -92,18 +92,23 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Add (T fd, const TypeOfMonitorSet& flags)
     {
-        fData_.rwget ()->fData_.Add (pair<T, TypeOfMonitorSet>{fd, flags});
+        fData_.rwget ()->Add (pair<T, TypeOfMonitorSet>{fd, flags});
         fEventFD_->Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Remove ([[maybe_unused]] T fd)
     {
-        AssertNotImplemented ();
+        if (fData_.rwget ()->Remove ([&] (auto p) { return p.first == fd; })) {
+            fEventFD_->Set (); // force wakeup of any waits
+        }
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::RemoveAll ([[maybe_unused]] const Traversal::Iterable<T>& fds)
     {
-        AssertNotImplemented ();
+        Set<T> fdsSet{fds};
+        if (fData_.rwget ()->RemoveAll ([&] (auto p) { return fdsSet.Contains (p.first); }) != 0) {
+            fEventFD_->Set (); // force wakeup of any waits
+        }
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::SetDescriptors (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
