@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        UpdatableWaitForIOReady ()                               = default;
+        UpdatableWaitForIOReady ();
         UpdatableWaitForIOReady (const UpdatableWaitForIOReady&) = delete;
         UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
         UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
@@ -76,6 +76,7 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         nonvirtual void SetDescriptors (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds);
+        nonvirtual void SetDescriptors (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
         /**
@@ -152,7 +153,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         shared_ptr<WaitForIOReady_Support::EventFD>                                fEventFD_;
-        pair<T, TypeOfMonitorSet>                                                  fPollable2Wakeup_;
+        pair<SDKPollableType, TypeOfMonitorSet>                                    fPollable2Wakeup_;
         Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
     };
 

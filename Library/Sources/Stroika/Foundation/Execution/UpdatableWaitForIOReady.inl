@@ -20,9 +20,14 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
-        : fEventFD_{WaitForIOReady_Support::mkEventFD ()}
+    UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady ()
+        : fEventFD_ (WaitForIOReady_Support::mkEventFD ())
         , fPollable2Wakeup_{fEventFD_->GetWaitInfo ()}
+    {
+    }
+    template <typename T, typename TRAITS>
+    inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
+        : UpdatableWaitForIOReady ()
         , fData_{fds}
     {
     }
@@ -40,7 +45,7 @@ namespace Stroika::Foundation::Execution {
     inline void UpdatableWaitForIOReady<T, TRAITS>::clear ()
     {
         fData_.rwget ().clear ();
-        fEventFD_.Set (); // force wakeup of any waits
+        fEventFD_->Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::GetDescriptors () const -> Containers::Collection<pair<T, TypeOfMonitorSet>>
@@ -56,13 +61,13 @@ namespace Stroika::Foundation::Execution {
                 lk->Add (i, flags);
             }
         }
-        fEventFD_.Set (); // force wakeup of any waits
+        fEventFD_->Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     inline void UpdatableWaitForIOReady<T, TRAITS>::AddAll (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
     {
         fData_.rwget ()->fData_.AddAll (fds);
-        fEventFD_.Set (); // force wakeup of any waits
+        fEventFD_->Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::Wait (Time::DurationSecondsType waitFor) -> Containers::Set<T>
@@ -88,7 +93,7 @@ namespace Stroika::Foundation::Execution {
     void UpdatableWaitForIOReady<T, TRAITS>::Add (T fd, const TypeOfMonitorSet& flags)
     {
         fData_.rwget ()->fData_.Add (pair<T, TypeOfMonitorSet>{fd, flags});
-        fEventFD_.Set (); // force wakeup of any waits
+        fEventFD_->Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Remove ([[maybe_unused]] T fd)
@@ -114,7 +119,12 @@ namespace Stroika::Foundation::Execution {
     void UpdatableWaitForIOReady<T, TRAITS>::SetDescriptors (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
     {
         fData_.store (fds);
-        fEventFD_.Set (); // force wakeup of any waits
+        fEventFD_->Set (); // force wakeup of any waits
+    }
+    template <typename T, typename TRAITS>
+    void UpdatableWaitForIOReady<T, TRAITS>::SetDescriptors (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
+    {
+        SetDescriptors (fds.template Select<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); }));
     }
     template <typename T, typename TRAITS>
     auto UpdatableWaitForIOReady<T, TRAITS>::WaitUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
@@ -128,7 +138,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
     {
-        fEventFD_.Clear (); // Clear all pending 'list of sockets' change notificitions before we mkWaiter_ () - which grabs the current list to avoid race
+        fEventFD_->Clear (); // Clear all pending 'list of sockets' change notificitions before we mkWaiter_ () - which grabs the current list to avoid race
         return mkWaiter_ ().WaitQuietlyUntil (timeoutAt);
     }
     template <typename T, typename TRAITS>
