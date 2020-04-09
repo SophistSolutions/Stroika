@@ -169,7 +169,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
     fInactiveOpenConnections_.rwget ()->Add (conn);
-    fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
+    fSockSetPoller_.SetDescriptors (fInactiveOpenConnections_.load ());
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (fInactiveOpenConnections_.load ()).c_str ());
 #endif
@@ -186,30 +186,14 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
         try {
             Execution::CheckForThreadInterruption ();
 
-            // I THINK WE MAY NEED THIS BIJECTION? or should have - or use TRAITS override on WaitForIOReady so it can take list of
-            // Connection objects and traits saying how to extract the FD?
-            Collection<shared_ptr<Connection>> seeIfReady = fInactiveOpenConnections_.load ();
-
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
+            for (shared_ptr<Connection> readyConnection : fSockSetPoller_.WaitQuietly ()) {
 
-            // This will wake up early if another thread adds an inactive connection (thread gets interruppted)
-            if (seeIfReady.empty ()) {
-                Execution::Sleep (2h); // can be any amount of time, since we will be interuppted
-                continue;
-            }
-            struct MyWaitForIOReady_Traits_ {
-                using HighLevelType = shared_ptr<Connection>;
-                static inline auto GetSDKPollable (const HighLevelType& t)
-                {
-                    return t->GetSocket ().GetNativeSocket ();
-                }
-            };
-            Execution::WaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> sockSetPoller{seeIfReady};
-            for (shared_ptr<Connection> readyConnection : sockSetPoller.WaitQuietly ()) {
-
+#if 0
                 Execution::Thread::SuppressInterruptionInContext suppressInterruption;
+#endif
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -229,9 +213,9 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                         fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
                             fInactiveOpenConnections_.rwget ().rwref ().Add (readyConnection);
-                            fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
                         }
                     }
+                    fSockSetPoller_.SetDescriptors (fInactiveOpenConnections_.load ());
 
                     if (not keepAlive) {
                         if (readyConnection->GetResponse ().GetState () != Response::State::eCompleted) {
@@ -250,6 +234,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     fActiveConnections_.rwget ().rwref ().Add (readyConnection);
                 }
                 fActiveConnectionThreads_.AddTask (handleActivatedConnection);
+                fSockSetPoller_.SetDescriptors (fInactiveOpenConnections_.load ());
             }
         }
         catch (Thread::AbortException&) {

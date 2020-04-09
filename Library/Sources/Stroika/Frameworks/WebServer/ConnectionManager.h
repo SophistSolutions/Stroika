@@ -12,6 +12,7 @@
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
+#include "../../Foundation/Execution/UpdatableWaitForIOReady.h"
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 
@@ -264,10 +265,21 @@ namespace Stroika::Frameworks::WebServer {
         // new tasks into an already destroyed threadpool.
         IO::Network::Listener fListener_;
         // Inactive connections are those we are waiting (select/epoll) for incoming data
+        // nb: fInactiveOpenConnections_ is REDUNDANT, and also stored in fSockSetPoller_, so maybe eliminate
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fInactiveOpenConnections_;
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
-        Execution::Thread::CleanupPtr                               fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+
+        struct MyWaitForIOReady_Traits_ {
+            using HighLevelType = shared_ptr<Connection>;
+            static inline auto GetSDKPollable (const HighLevelType& t)
+            {
+                return t->GetSocket ().GetNativeSocket ();
+            }
+        };
+        Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fSockSetPoller_{};
+
+        Execution::Thread::CleanupPtr fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
     };
 
     struct ConnectionManager::Options {
