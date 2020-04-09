@@ -168,10 +168,12 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
-    fInactiveOpenConnections_.rwget ()->Add (conn);
-    fSockSetPoller_.SetDescriptors (fInactiveOpenConnections_.load ());
+    fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (fInactiveOpenConnections_.load ()).c_str ());
+    {
+        scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+        DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
+    }
 #endif
 }
 
@@ -187,13 +189,12 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
             Execution::CheckForThreadInterruption ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+            {
+                scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+                DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
+            }
 #endif
-            for (shared_ptr<Connection> readyConnection : fSockSetPoller_.WaitQuietly ()) {
-
-#if 0
-                Execution::Thread::SuppressInterruptionInContext suppressInterruption;
-#endif
+            for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietly ()) {
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -209,13 +210,12 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                      * Handle the Connection object, moving it to the appropriate list etc...
                      */
                     {
-                        scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
+                        scoped_lock critSec{fActiveConnections_};
                         fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
-                            fInactiveOpenConnections_.rwget ().rwref ().Add (readyConnection);
+                            fInactiveSockSetPoller_.Add (readyConnection);
                         }
                     }
-                    fSockSetPoller_.SetDescriptors (fInactiveOpenConnections_.load ());
 
                     if (not keepAlive) {
                         if (readyConnection->GetResponse ().GetState () != Response::State::eCompleted) {
@@ -224,17 +224,19 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+                    {
+                        scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+                        DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (readyConnection).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
+                    }
 #endif
                 };
 
                 {
-                    scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
-                    fInactiveOpenConnections_.rwget ().rwref ().Remove (readyConnection);
+                    scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+                    fInactiveSockSetPoller_.Remove (readyConnection);
                     fActiveConnections_.rwget ().rwref ().Add (readyConnection);
                 }
                 fActiveConnectionThreads_.AddTask (handleActivatedConnection);
-                fSockSetPoller_.SetDescriptors (fInactiveOpenConnections_.load ());
             }
         }
         catch (Thread::AbortException&) {
@@ -255,6 +257,11 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 void ConnectionManager::FixupInterceptorChain_ ()
 {
     fInterceptorChain_ = InterceptorChain{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)};
+}
+
+Collection<shared_ptr<Connection>> ConnectionManager::GetInactiveConnections_ () const
+{
+    return fInactiveSockSetPoller_.GetDescriptors ().Select<shared_ptr<Connection>> ([] (auto i) { return i.first; });
 }
 
 void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue)
@@ -288,8 +295,9 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    scoped_lock critSec{fInactiveOpenConnections_, fActiveConnections_};
-    return fInactiveOpenConnections_.load () + fActiveConnections_.load ();
+    scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+    Ensure (Set<shared_ptr<Connection>>{fActiveConnections_.load ()}.Intersection (GetInactiveConnections_ ()).empty ());
+    return GetInactiveConnections_ () + fActiveConnections_.load ();
 }
 
 void ConnectionManager::SetServerHeader (optional<String> server)

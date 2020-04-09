@@ -238,6 +238,10 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void FixupInterceptorChain_ ();
 
     private:
+        // Inactive connections are those we are waiting (select/epoll) for incoming data; these are stored in fInactiveSockSetPoller_
+        nonvirtual Collection<shared_ptr<Connection>> GetInactiveConnections_ () const;
+
+    private:
         nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
 
     private:
@@ -264,9 +268,6 @@ namespace Stroika::Frameworks::WebServer {
         // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
         // new tasks into an already destroyed threadpool.
         IO::Network::Listener fListener_;
-        // Inactive connections are those we are waiting (select/epoll) for incoming data
-        // nb: fInactiveOpenConnections_ is REDUNDANT, and also stored in fSockSetPoller_, so maybe eliminate
-        Execution::Synchronized<Collection<shared_ptr<Connection>>> fInactiveOpenConnections_;
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
 
@@ -277,7 +278,8 @@ namespace Stroika::Frameworks::WebServer {
                 return t->GetSocket ().GetNativeSocket ();
             }
         };
-        Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fSockSetPoller_{};
+        // No need to lock fInactiveSockSetPoller_ since its internally synchronized;
+        Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fInactiveSockSetPoller_{};
 
         Execution::Thread::CleanupPtr fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
     };
