@@ -3,10 +3,22 @@ FROM ubuntu:20.04
 # Get latest packages system, so can do installs
 RUN apt-get update
 
+# Tried but cannot silence warning about apt-utils missing
+#RUN apt-get install -y --no-install-recommends apt-utils
+
+# This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04 - pre-release
+#https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y tzdata
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
+
 # cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
 # to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
 RUN apt-get install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+#locale support not strictly required, but some regression tests depend on it
+#and as of Ubuntu 20.04 (prerelease) appears must be included for other apt-get install programs to complete
+RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
 
 # Used to unpack sources for lzma SDK
 RUN apt-get install -y p7zip-full
@@ -35,9 +47,6 @@ RUN apt-get install -y git
 
 #Only needed to use sanitizer builds
 RUN apt-get install -y libasan5 libubsan1
-
-#locale support not strictly required, but some regression tests depend on it
-RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
 
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 
