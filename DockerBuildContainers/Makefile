@@ -19,8 +19,6 @@ docker-images:
 ifeq ($(shell uname),Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
-	docker build -f Ubuntu1810-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-small .
-	docker build -f Ubuntu1810-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests .
 	docker build -f Ubuntu1904-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1904-small .
 	docker build -f Ubuntu1904-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests .
 	docker build -f Ubuntu1910-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1910-small .
@@ -55,11 +53,9 @@ push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small

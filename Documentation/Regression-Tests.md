@@ -64,19 +64,6 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Ubuntu1810_x86_64
-
-  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Ubuntu1810_x86_64 \
-      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=default-configurations \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1810-regression-tests \
-      MACHINE=Hercules \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
 - \$TEST_TARGET=Ubuntu1904_x86_64
 
   (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
