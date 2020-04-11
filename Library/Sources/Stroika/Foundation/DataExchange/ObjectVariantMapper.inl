@@ -934,7 +934,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  -- now since those don't work no matter what and give a warning (unrecognized attribute) on gcc8, using "address"
          */
-        FromObjectMapperType<CLASS> fromObjectMapper = [fields] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ("address") -> VariantValue {
+        FromObjectMapperType<CLASS> fromObjectMapper = [fields] Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ("address") (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
@@ -951,7 +951,7 @@ namespace Stroika::Foundation::DataExchange {
             }
             return VariantValue (m);
         };
-        ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ("address") -> void {
+        ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject] Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ("address") (const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) -> void {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper");
 #endif
