@@ -2112,7 +2112,8 @@ sub PostProcessOptions_ ()
 					if ($STDCXXLIB eq "libc++") {
 						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 						push @LIB_DEPENDENCIES_ADD, "-lc++";
-						if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
+						# from https://libcxx.llvm.org/docs/UsingLibcxx.html: Starting with LLVM 9.0, support for <filesystem> is provided in the main library and nothing special is required to use <filesystem>.
+						if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
 							push @LIB_DEPENDENCIES_ADD, "-lc++fs";
 						}
 					}
