@@ -173,6 +173,15 @@ namespace Stroika::Foundation::Configuration {
          */
         RequireNotNull (name);
         for (const_iterator i = fEnumNames_.begin (); i != fEnumNames_.end (); ++i) {
+#if qCompilerAndStdLib_GlobalNamespaceLookupWCSCOMPARE_Buggy
+            if (wcscmp (i->second, name) == 0) {
+                return &i->first;
+            }
+#else
+            if (::wcscmp (i->second, name) == 0) {
+                return &i->first;
+            }
+#endif
             if (::wcscmp (i->second, name) == 0) {
                 return &i->first;
             }
