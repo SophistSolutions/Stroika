@@ -2112,7 +2112,9 @@ sub PostProcessOptions_ ()
 					if ($STDCXXLIB eq "libc++") {
 						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 						push @LIB_DEPENDENCIES_ADD, "-lc++";
-						push @LIB_DEPENDENCIES_ADD, "-lc++fs";
+						if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
+							push @LIB_DEPENDENCIES_ADD, "-lc++fs";
+						}
 					}
 					else {
 						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
