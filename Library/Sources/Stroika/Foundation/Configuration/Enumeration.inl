@@ -182,9 +182,6 @@ namespace Stroika::Foundation::Configuration {
                 return &i->first;
             }
 #endif
-            if (::wcscmp (i->second, name) == 0) {
-                return &i->first;
-            }
         }
         return nullptr;
     }
