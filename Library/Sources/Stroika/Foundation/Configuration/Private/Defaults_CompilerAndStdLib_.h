@@ -577,17 +577,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
-#ifndef qCompilerAndStdLib_GlobalNamespaceLookupWCSCOMPARE_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// First BROKEN IN GCC 10.x
-#define qCompilerAndStdLib_GlobalNamespaceLookupWCSCOMPARE_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 10)
-#else
-#define qCompilerAndStdLib_GlobalNamespaceLookupWCSCOMPARE_Buggy 0
-#endif
-
-#endif
-
 #ifndef qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
 
 // Generates internal compiler error
