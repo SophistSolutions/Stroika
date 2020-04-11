@@ -59,7 +59,7 @@
 // see
 //      clang++-3.8 -dM -E - < /dev/null
 #if (__clang_major__ < 10) || (__clang_major__ == 10 && (__clang_minor__ < 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by v2.0) does not support versions prior to APPLE clang++ 10 (XCode 10)"
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by Stroika v2.0) does not support versions prior to APPLE clang++ 10 (XCode 10)"
 #endif
 #if (__clang_major__ > 11) || (__clang_major__ == 11 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -72,8 +72,8 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 8) || (__clang_major__ == 8 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>8.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#if (__clang_major__ > 9) || (__clang_major__ == 9 && (__clang_minor__ > 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>9.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -156,7 +156,7 @@
 #define _MS_VS_2k19_16Pt5P0_ 192528610
 
 #if _MSC_VER < 1910
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017 (use Stroika v2.0 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
 // check which pointer-version of MSVC2k17 (15.7.x)
 #if _MSC_FULL_VER > _MS_VS_2k17_15Pt7Pt6_
@@ -899,7 +899,8 @@ lose those deprecated interfaces.
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // APPEARS still broken with clang++-8
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
+// still broken with clang++-9
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
@@ -1027,7 +1028,7 @@ STILL:
 // appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompiler_noSanitizeAttribute_Buggy ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
 //todo retest with gnu::no_sanitize
@@ -1054,7 +1055,8 @@ In file included from ./ObjectVariantMapper.h:883:
 #define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // tested still generates error with clang++-8
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
+// tested still generates error with clang++-9
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
 // appears fixed (at least no warning) with gcc9
@@ -1377,6 +1379,7 @@ clang says:
 // VERIFIED FIXED on XCode 11.0
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
+// Appears FIXED with clang++-9
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
 // verified broken _MS_VS_2k19_16Pt0Pt0_
@@ -1429,7 +1432,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++-8
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
+// still broken in clang++-9
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -1475,7 +1479,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-8
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
+// verified still broken in clang++-9
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1737,6 +1742,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #if defined(__clang__) && !defined(__APPLE__)
 // This appears still an issue (dont want to say broken exactly) in clang++-8 - real issue, but I cannot get suppression to work so far
+// APPEARS MAYBE FIXED in Clang++-9 - marking as so - but we still have UBSAN disabled in configure (see if I can get rid of that)
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 8)
 #else
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
