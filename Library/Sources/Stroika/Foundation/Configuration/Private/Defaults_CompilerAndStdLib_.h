@@ -1866,7 +1866,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #if defined(_GLIBCXX_RELEASE)
 // VERIFIED BROKEN IN GCC8
 // VERIFIED BROKEN IN GCC9.0
-#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 9)
+// VERIFIED BROKEN IN GCC10.0
+#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 10)
 #else
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy 0
 #endif
