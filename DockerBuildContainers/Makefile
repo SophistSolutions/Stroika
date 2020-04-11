@@ -55,9 +55,11 @@ ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1904-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small
 	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small
 	#no need to push this yet/now
