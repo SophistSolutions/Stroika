@@ -172,7 +172,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s, l=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
@@ -188,7 +188,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s, l=%s, formatPatterns=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), Characters::ToString (formatPatterns).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s', formatPatterns=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), Characters::ToString (formatPatterns).c_str ())};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
