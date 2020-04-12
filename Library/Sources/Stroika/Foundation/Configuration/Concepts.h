@@ -209,8 +209,10 @@ namespace Stroika::Foundation::Configuration {
     template <class T>
     using remove_cvref_t = typename remove_cvref<T>::type;
 #else
-    using remove_cvref = std::remove_cvref;
-    using remove_cvref_t = std::remove_cvref_t;
+    template <class T>
+    using remove_cvref = std::remove_cvref<T>;
+    template <class T>
+    using remove_cvref_t = std::remove_cvref_t<T>;
 #endif
 
 }
