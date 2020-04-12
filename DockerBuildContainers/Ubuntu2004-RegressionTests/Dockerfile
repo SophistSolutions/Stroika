@@ -10,9 +10,13 @@ RUN apt-get install -y lsb-release
 RUN apt-get install -y g++-7 g++-8 g++-9 g++-10
 
 #install the latest (C++17 compat) clang compilers (and libs)
+# must include clang++-VERSION on different lines due to issue with some python dependency
 # UNCLEAR why some interdependency - cannot install different versions of libc++-10-dev at the same time??
 # See https://stackoverflow.com/questions/61165575/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
-RUN apt-get install -y clang++-7 clang++-8 clang++-9 clang++-10
+RUN apt-get install -y clang++-7
+RUN apt-get install -y clang++-8
+RUN apt-get install -y clang++-9
+RUN apt-get install -y clang++-10
 RUN apt-get install -y libc++-10-dev libc++abi-10-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
