@@ -142,6 +142,7 @@ jobs:
       script:
         # We dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
+        - cat IntermediateFiles/Debug/ThirdPartyComponents/boost/BOOTSTRAP.OUT
         - cat IntermediateFiles/Debug/ThirdPartyComponents/boost/ConfigureAndBuild.OUT
         - cat /Users/lewis/Sandbox/StroikaDev/IntermediateFiles/Debug/ThirdPartyComponents/boost/user-config.jam
         #- make all ECHO_BUILD_LINES=1
