@@ -2418,35 +2418,42 @@ sub	WriteConfigFile_
 mkdir ($configurationFiles);
 
 my $generate = true;
+my $generateBecause = '';
 if ($onlyGenerateIfCompilerExists) {
 	if (trim (`./ScriptsLib/HasCompiler $COMPILER_DRIVER_CPlusPlus`) eq "0") {
 		$generate = false;
+		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
 	# if flag to use libc++ - check if right version is available
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++')) {
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
 			if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
 				$generate = false;
+				$generateBecause = "/usr/lib/llvm-6/include/c++/v1/cstddef not present";
 			}
 		}
 		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8.0') {
 			if (! -e ('/usr/lib/llvm-7/include/c++/v1/cstddef')) {
 				$generate = false;
+				$generateBecause = "/usr/lib/llvm-7/include/c++/v1/cstddef not present";
 			}
 		}
 		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
 			if (! -e ('/usr/lib/llvm-8/include/c++/v1/cstddef')) {
 				$generate = false;
+				$generateBecause = "/usr/lib/llvm-8/include/c++/v1/cstddef not present";
 			}
 		}
 		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
 			if (! -e ('/usr/lib/llvm-9/include/c++/v1/cstddef')) {
 				$generate = false;
+				$generateBecause = "/usr/lib/llvm-9/include/c++/v1/cstddef not present";
 			}
 		}
 		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
 			if (! -e ('/usr/lib/llvm-10/include/c++/v1/cstddef')) {
 				$generate = false;
+				$generateBecause = "/usr/lib/llvm-10/include/c++/v1/cstddef not present";
 			}
 		}
 	}
@@ -2461,5 +2468,5 @@ if ($generate) {
 	print("done\n");
 }
 else {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoked with --only-if-has-compiler\n");
+	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because $generateBecause and configuration invoked with --only-if-has-compiler\n");
 }
