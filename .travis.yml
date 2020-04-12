@@ -142,9 +142,6 @@ jobs:
       script:
         # We dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
-        - cat IntermediateFiles/Release/ThirdPartyComponents/boost/BOOTSTRAP.OUT
-        - cat IntermediateFiles/Release/ThirdPartyComponents/boost/ConfigureAndBuild.OUT
-        - cat /Users/lewis/Sandbox/StroikaDev/IntermediateFiles/Release/ThirdPartyComponents/boost/user-config.jam
         #- make all ECHO_BUILD_LINES=1
         # -k to make to try workaround wrong verison of MacOS (https://stroika.atlassian.net/browse/STK-705)
         - make all -k || true
