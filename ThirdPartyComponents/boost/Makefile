@@ -238,19 +238,14 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 TOOLSET_NAME=msvc
 else ifeq ($(shell uname -s),Darwin)
-TOOLSET_NAME=darwin
+#using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
+#TOOLSET_NAME=darwin
+TOOLSET_NAME=clang-darwin
 else
 TOOLSET_NAME=gcc
 endif
 
-#-arch may not work for msvc
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-B2_CONFIGURATION_ARGS +=	toolset=${TOOLSET_NAME}
-else
-B2_CONFIGURATION_ARGS +=	toolset=${TOOLSET_NAME}-$(ARCH)
-endif
-
-### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE file
+### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE (JAM) file
 ### MAYBE can do soemthing like toolset=${TOOLSET_NAME}-$(ARCH) change; but didn't appear to work
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq ($(ARCH),x86)
