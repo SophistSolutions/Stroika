@@ -132,11 +132,13 @@ wstring Duration::As () const
 
 namespace {
     template <typename T>
-    inline T DoPin_ (double d, double multiplier)
+    inline T DoPin_ (Duration::rep d, Duration::rep multiplier)
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::chrono::duration<long long, std::__1::ratio<1, 1> >::rep' (aka 'long long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
         if (d > T::max ().count () / multiplier) {
             return T::max ();
         }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
         return T (typename T::rep (d * multiplier));
     }
 }
@@ -144,7 +146,7 @@ namespace {
 template <>
 chrono::seconds Duration::AsPinned () const
 {
-    return DoPin_<chrono::seconds> (count (), 1);
+    return DoPin_<chrono::seconds> (count (), 1.0);
 }
 
 template <>
