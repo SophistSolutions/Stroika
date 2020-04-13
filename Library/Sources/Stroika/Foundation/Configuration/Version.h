@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Configuration {
         /**
          *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
          */
-        constexpr std::strong_ordering operator<=> (const Version& rhs)
+        constexpr std::strong_ordering operator<=> (const Version& rhs);
 #endif
     };
 
