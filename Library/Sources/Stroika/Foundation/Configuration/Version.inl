@@ -54,7 +54,6 @@ namespace Stroika::Foundation::Configuration {
         return AsPrettyVersionString ();
     }
 #if __cpp_lib_three_way_comparison >= 201711
-public:
     constexpr std::strong_ordering Version::operator<=> (const Version& rhs) const
     {
         return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) <=> make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
