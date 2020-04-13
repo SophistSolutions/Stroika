@@ -1509,7 +1509,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 // Broken in _LIBCPP_VERSION  6000
 // Broken in _LIBCPP_VERSION  7000
 // Broken in _LIBCPP_VERSION  8000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 8000))
+// never tested 9000
+// Broken in _LIBCPP_VERSION  10000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 10000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
