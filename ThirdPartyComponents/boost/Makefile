@@ -194,12 +194,18 @@ else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
 endif
 
-
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
 
+### https://stroika.atlassian.net/browse/STK-711
+### WORKAROUND BUG BUILDING GCC-10/C++2a & this version of BOOST
+ifeq (1_72_0,$(VERSION))
+ifeq (g++-10,$(findstring g++-10,$(CXX)))
+CXXFLAGS:=$(filter-out --std=c++2a, $(CXXFLAGS)) --std=c++17
+endif
+endif
 
 
 ### Run b2.exe --help
