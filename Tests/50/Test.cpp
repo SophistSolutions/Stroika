@@ -166,9 +166,9 @@ namespace {
 
     DurationSecondsType RunTest_ (function<void ()> t, unsigned int runCount)
     {
-#if 1
         const size_t                                  kNParts2Divide_{10};
         Memory::SmallStackBuffer<DurationSecondsType> times (kNParts2Divide_);
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
             DurationSecondsType start = Time::GetTickCount ();
             // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
@@ -177,16 +177,9 @@ namespace {
             }
             times[i] = Time::GetTickCount () - start;
         }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
         DurationSecondsType m = Math::Median (times.begin (), times.end ());
         return m * kNParts2Divide_; // this should provide a more stable estimate than the total time
-#else
-        DurationSecondsType start = Time::GetTickCount ();
-        // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
-        for (volatile unsigned int i = 0; i < runCount; ++i) {
-            t ();
-        }
-        return Time::GetTickCount () - start;
-#endif
     }
 
     // return true if test failed (slower than expected)
@@ -685,6 +678,7 @@ namespace {
         size_t                 s3len = s3.length ();
         size_t                 s4len = s4.length ();
         size_t                 s5len = s5.length ();
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
         for (volatile int i = 0; i < 200; ++i) {
             VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
             VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
@@ -692,6 +686,7 @@ namespace {
             VerifyTestResult (s4len == ::wcslen (s4.c_str ()));
             VerifyTestResult (s5len == ::wcslen (s5.c_str ()));
         }
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-volatile\"");
     }
 }
 
