@@ -6,6 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
 #include <locale>
 #include <string>
 #include <string_view>
