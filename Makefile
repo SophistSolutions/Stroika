@@ -408,7 +408,7 @@ basic-unix-test-configurations:
 	# g++-10\
 	./configure g++-10-debug-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 	./configure g++-10-release-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-	#./configure g++-10-debug-c++2a --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
+	./configure g++-10-debug-c++2a --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
 	#\
 	# clang++-6\
 	#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
