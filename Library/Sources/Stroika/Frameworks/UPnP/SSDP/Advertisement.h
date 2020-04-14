@@ -47,7 +47,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         String                  fTarget; // usually ST header (or NT for notify)
         Mapping<String, String> fRawHeaders;
 
-#if __cpp_impl_three_way_comparison < 201711
+#if __cpp_lib_three_way_comparison < 201907
         bool operator== (const Advertisement& rhs) const
         {
             if (fAlive != rhs.fAlive) {

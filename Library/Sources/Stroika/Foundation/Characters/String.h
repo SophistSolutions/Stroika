@@ -1168,7 +1168,7 @@ namespace Stroika::Foundation::Characters {
     public:
         struct LessCI;
 
-#if __cpp_lib_three_way_comparison >= 201711
+#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate

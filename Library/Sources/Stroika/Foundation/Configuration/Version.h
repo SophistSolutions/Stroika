@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Configuration {
     public:
         struct ThreeWayComparer;
 
-#if __cpp_lib_three_way_comparison >= 201711
+#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Configuration {
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
-#if __cpp_lib_three_way_comparison < 201711
+#if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Version& lhs, const Version& rhs);
     constexpr bool operator<= (const Version& lhs, const Version& rhs);
     constexpr bool operator== (const Version& lhs, const Version& rhs);

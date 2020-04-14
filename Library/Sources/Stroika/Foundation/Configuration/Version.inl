@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Configuration {
     {
         return AsPrettyVersionString ();
     }
-#if __cpp_lib_three_way_comparison >= 201711
+#if __cpp_impl_three_way_comparison >= 201907
     constexpr std::strong_ordering Version::operator<=> (const Version& rhs) const
     {
         return make_signed_t<Binary32BitFullVersionType> (AsFullVersionNum ()) <=> make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Configuration {
         return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) - make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
     }
 
-#if __cpp_lib_three_way_comparison < 201711
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ***************************** Version operators ********************************
