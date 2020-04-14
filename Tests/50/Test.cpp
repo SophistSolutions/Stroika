@@ -1058,7 +1058,7 @@ namespace {
                 : Mapping<double, double>{Containers::Concrete::Mapping_stdmap<double, double>{CompareNumbersLess_{}}}
             {
             }
-            bool operator== (const Mapping& rhs) const
+            bool operator== (const SpectrumType& rhs) const
             {
                 return EqualsComparer<CompareNumbersEqual_>{}(*this, rhs); // must compare values with 'nearlyequals'
             }
