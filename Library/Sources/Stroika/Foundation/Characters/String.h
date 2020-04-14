@@ -1168,6 +1168,14 @@ namespace Stroika::Foundation::Characters {
     public:
         struct LessCI;
 
+#if __cpp_lib_three_way_comparison >= 201711
+    public:
+        /**
+         *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+         */
+        std::strong_ordering operator<=> (const String& rhs) const;
+#endif
+
     public:
         /**
          *  Alias for basic_string>char>::npos - except this is constexpr.

@@ -619,6 +619,12 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, thisLen, from, to);
     }
+#if __cpp_lib_three_way_comparison >= 201711
+    inline std::strong_ordering String::operator<=> (const String& rhs) const
+    {
+        retrun ThreeWayComparer{}(rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
