@@ -177,7 +177,7 @@ namespace {
             }
             times[i] = Time::GetTickCount () - start;
         }
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-volatile\"");
         DurationSecondsType m = Math::Median (times.begin (), times.end ());
         return m * kNParts2Divide_; // this should provide a more stable estimate than the total time
     }
