@@ -169,7 +169,7 @@ namespace {
         const size_t                                  kNParts2Divide_{10};
         Memory::SmallStackBuffer<DurationSecondsType> times (kNParts2Divide_);
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\""); // warning: '++' expression of 'volatile'-qualified type is deprecated 
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\"");                // warning: '++' expression of 'volatile'-qualified type is deprecated
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
             DurationSecondsType start = Time::GetTickCount ();
             // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
@@ -681,7 +681,7 @@ namespace {
         size_t                 s4len = s4.length ();
         size_t                 s5len = s5.length ();
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\""); // warning: '++' expression of 'volatile'-qualified type is deprecated 
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\"");                // warning: '++' expression of 'volatile'-qualified type is deprecated
         for (volatile int i = 0; i < 200; ++i) {
             VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
             VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
