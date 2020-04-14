@@ -1375,7 +1375,7 @@ namespace {
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([] (const StringBuilder& w) { return w.As<String> (); }); }, L"StringBuilder",
             220000,
-            .22,
+            .23,
             &failedTests);
 #endif
         Tester (
