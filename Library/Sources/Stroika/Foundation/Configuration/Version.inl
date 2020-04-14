@@ -70,12 +70,12 @@ namespace Stroika::Foundation::Configuration {
         return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) - make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
     }
 
-#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ***************************** Version operators ********************************
      ********************************************************************************
      */
+#if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Version& lhs, const Version& rhs)
     {
         return Common::ThreeWayCompare (lhs, rhs) < 0;
@@ -84,6 +84,8 @@ namespace Stroika::Foundation::Configuration {
     {
         return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
+#endif
+#if __cpp_lib_three_way_comparison < 201907
     constexpr bool operator== (const Version& lhs, const Version& rhs)
     {
         return Common::ThreeWayCompare (lhs, rhs) == 0;
@@ -92,6 +94,8 @@ namespace Stroika::Foundation::Configuration {
     {
         return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
+#endif
+#if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator>= (const Version& lhs, const Version& rhs)
     {
         return Common::ThreeWayCompare (lhs, rhs) >= 0;
