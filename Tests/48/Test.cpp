@@ -106,17 +106,7 @@ namespace {
             VerifyTestResult (not t.has_value ());
             TimeOfDay t2 (2);
             VerifyTestResult (t < t2);
-#if 0
-            DISABLE_COMPILER_MSC_WARNING_START (4996);
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-#endif
             VerifyTestResult (not t2.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
-#if 0
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-#endif
             VerifyTestResult (t2.GetHours () == 0);
             VerifyTestResult (t2.GetMinutes () == 0);
             VerifyTestResult (t2.GetSeconds () == 2);
