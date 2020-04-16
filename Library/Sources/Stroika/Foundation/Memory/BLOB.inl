@@ -309,12 +309,12 @@ namespace Stroika::Foundation::Memory {
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }
-    #if 0
+#if 0
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
         return EqualsComparer{}(*this, rhs) == 0;
     }
-    #endif
+#endif
 #endif
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
