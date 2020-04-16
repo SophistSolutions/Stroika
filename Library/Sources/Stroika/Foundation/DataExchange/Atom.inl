@@ -93,6 +93,18 @@ namespace Stroika::Foundation::DataExchange {
     {
         return GetPrintName ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename ATOM_MANAGER>
+    inline strong_ordering Atom<ATOM_MANAGER>::operator<=> (const Atom& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    template <typename ATOM_MANAGER>
+    inline bool Atom<ATOM_MANAGER>::operator== (const Atom& rhs) const
+    {
+        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -105,6 +117,7 @@ namespace Stroika::Foundation::DataExchange {
         return Common::ThreeWayCompareNormalizer (lhs.fValue_, rhs.fValue_);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ****************************** Atom operators **********************************
@@ -140,6 +153,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) > 0;
     }
+#endif
 
     namespace Private_ {
         struct AtomModuleData {

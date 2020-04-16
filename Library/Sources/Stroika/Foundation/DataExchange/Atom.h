@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include "../Characters/String.h"
 
 /**
@@ -143,6 +147,18 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual String GetPrintName () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Atom& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Atom& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -208,6 +224,7 @@ namespace Stroika::Foundation::DataExchange {
         constexpr int operator() (const Atom& lhs, const Atom& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
      *
@@ -225,6 +242,7 @@ namespace Stroika::Foundation::DataExchange {
     bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
     template <typename ATOM_MANAGER>
     bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+#endif
 
 }
 

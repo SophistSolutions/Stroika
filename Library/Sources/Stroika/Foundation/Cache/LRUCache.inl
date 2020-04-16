@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Cache {
         {
             return fCur == rhs.fCur;
         }
-#if 0
+#if __cpp_impl_three_way_comparison < 201907
         bool operator!= (CacheIterator_ rhs)
         {
             return fCur != rhs.fCur;
