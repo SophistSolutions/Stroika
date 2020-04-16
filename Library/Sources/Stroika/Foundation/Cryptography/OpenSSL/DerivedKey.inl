@@ -38,6 +38,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return NormalizePassword (passwd.AsUTF8 ());
     }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const DerivedKey& lhs, const DerivedKey& rhs)
     {
         return lhs.fKey == rhs.fKey and lhs.fIV == rhs.fIV;
@@ -46,6 +47,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return not(lhs == rhs);
     }
+#endif
 
     /*
      ********************************************************************************

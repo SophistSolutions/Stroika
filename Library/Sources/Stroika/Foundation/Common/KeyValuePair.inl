@@ -139,6 +139,7 @@ namespace Stroika::Foundation::Common {
         return Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ********************** KeyValuePair comparison operators ***********************
@@ -174,6 +175,7 @@ namespace Stroika::Foundation::Common {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 

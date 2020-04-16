@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <optional>
 
 #include "../../Characters/String.h"
@@ -39,18 +43,25 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         BLOB fIV;
 
         /*
-            * Gen key & IV. This requires the cipher algorithm (for the key / iv length) and the hash algorithm.
-            * nrounds is the number of times the we hash the material. More rounds are more secure but
-            * slower.
-            *
-            *  For the string overload, we treat the strings as an array of bytes (len bytes) long.
-            *  For the String overload, we convert to UTF8 and treat as string (so L"fred" and "fred" produce the same thing).
-            */
+         * Gen key & IV. This requires the cipher algorithm (for the key / iv length) and the hash algorithm.
+         * nrounds is the number of times the we hash the material. More rounds are more secure but
+         * slower.
+         *
+         *  For the string overload, we treat the strings as an array of bytes (len bytes) long.
+         *  For the String overload, we convert to UTF8 and treat as string (so L"fred" and "fred" produce the same thing).
+         */
         DerivedKey (const BLOB& key, const BLOB& iv);
         DerivedKey (const pair<BLOB, BLOB>& keyAndIV);
 
-        /*
-            */
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const DerivedKey& rhs) const = default;
+#endif
+
+        /**
+         */
         nonvirtual String ToString () const;
 
         /**
@@ -75,8 +86,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         static size_t IVLength (CipherAlgorithm cipherAlgorithm);
         static size_t IVLength (const EVP_CIPHER* cipherAlgorithm);
     };
+#if __cpp_impl_three_way_comparison < 201907
     bool operator== (const DerivedKey& lhs, const DerivedKey& rhs);
     bool operator!= (const DerivedKey& lhs, const DerivedKey& rhs);
+#endif
 
     /**
      *  WinCryptDeriveKey CAN be object sliced. Its a simple construction wrapper on a DerivedKey. WinCryptDeriveKey

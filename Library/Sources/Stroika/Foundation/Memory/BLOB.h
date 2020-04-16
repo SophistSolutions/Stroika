@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <array>
 #include <memory>
 #include <vector>
@@ -277,6 +281,18 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual size_t GetSize () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const BLOB& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const BLOB& rhs) const;
+#endif
+
     public:
         struct EqualsComparer;
 
@@ -377,6 +393,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual int operator() (const BLOB& lhs, const BLOB& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare () (and @Blob::EqualsComparer)
      */
@@ -386,6 +403,7 @@ namespace Stroika::Foundation::Memory {
     bool operator!= (const BLOB& lhs, const BLOB& rhs);
     bool operator>= (const BLOB& lhs, const BLOB& rhs);
     bool operator> (const BLOB& lhs, const BLOB& rhs);
+#endif
 
 }
 

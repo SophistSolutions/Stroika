@@ -304,6 +304,16 @@ namespace Stroika::Foundation::Memory {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return GetSize ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline auto BLOB::operator<=> (const BLOB& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool BLOB::operator== (const BLOB& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs) == 0;
+    }
+#endif
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -359,6 +369,7 @@ namespace Stroika::Foundation::Memory {
         return (lSize < rSize) ? -1 : 1;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ****************************** BLOB operators **********************************
@@ -388,6 +399,7 @@ namespace Stroika::Foundation::Memory {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 
