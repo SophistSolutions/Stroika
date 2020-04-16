@@ -309,10 +309,12 @@ namespace Stroika::Foundation::Memory {
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }
+    #if 0
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
         return EqualsComparer{}(*this, rhs) == 0;
     }
+    #endif
 #endif
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
@@ -369,12 +371,12 @@ namespace Stroika::Foundation::Memory {
         return (lSize < rSize) ? -1 : 1;
     }
 
-#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ****************************** BLOB operators **********************************
      ********************************************************************************
      */
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator< (const BLOB& lhs, const BLOB& rhs)
     {
         return Common::ThreeWayCompare (lhs, rhs) < 0;
@@ -382,10 +384,6 @@ namespace Stroika::Foundation::Memory {
     inline bool operator<= (const BLOB& lhs, const BLOB& rhs)
     {
         return Common::ThreeWayCompare (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const BLOB& lhs, const BLOB& rhs)
-    {
-        return BLOB::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const BLOB& lhs, const BLOB& rhs)
     {
@@ -400,6 +398,10 @@ namespace Stroika::Foundation::Memory {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
 #endif
+    inline bool operator== (const BLOB& lhs, const BLOB& rhs)
+    {
+        return BLOB::EqualsComparer{}(lhs, rhs);
+    }
 
 }
 

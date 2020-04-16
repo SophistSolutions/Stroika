@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual bool operator== (const BLOB& rhs) const;
+        //nonvirtual bool operator== (const BLOB& rhs) const;
 #endif
 
     public:
@@ -393,17 +393,18 @@ namespace Stroika::Foundation::Memory {
         nonvirtual int operator() (const BLOB& lhs, const BLOB& rhs) const;
     };
 
-#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare () (and @Blob::EqualsComparer)
      */
+#if __cpp_impl_three_way_comparison < 201907
     bool operator< (const BLOB& lhs, const BLOB& rhs);
     bool operator<= (const BLOB& lhs, const BLOB& rhs);
-    bool operator== (const BLOB& lhs, const BLOB& rhs);
     bool operator!= (const BLOB& lhs, const BLOB& rhs);
     bool operator>= (const BLOB& lhs, const BLOB& rhs);
     bool operator> (const BLOB& lhs, const BLOB& rhs);
 #endif
+    // @todo UNDERSTAND WHY THIS NEEDED EVEN WITH C++20?
+    bool operator== (const BLOB& lhs, const BLOB& rhs);
 
 }
 
