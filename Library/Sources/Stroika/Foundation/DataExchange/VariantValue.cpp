@@ -817,6 +817,8 @@ bool std::equal_to<Stroika::Foundation::DataExchange::VariantValue>::operator() 
     switch (lt) {
         case VariantValue::eNull:
             return true;
+        case VariantValue::eBLOB:
+            return lhs.As<Memory::BLOB> () == rhs.As<Memory::BLOB> ();
         case VariantValue::eBoolean:
             return lhs.As<bool> () == rhs.As<bool> ();
         case VariantValue::eInteger:
