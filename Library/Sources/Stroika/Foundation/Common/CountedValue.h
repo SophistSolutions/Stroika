@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <utility>
 
 #include "../Configuration/Common.h"
@@ -58,6 +62,18 @@ namespace Stroika::Foundation::Common {
         ValueType   fValue;
         CounterType fCount;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr auto operator<=> (const CountedValue&) const;
+
+    public:
+        /**
+         */
+        constexpr bool operator== (const CountedValue&) const = default;
+#endif
+
     public:
         struct EqualsComparer;
 
@@ -80,6 +96,7 @@ namespace Stroika::Foundation::Common {
         constexpr int operator() (const CountedValue& lhs, const CountedValue& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @CountedValue<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
      *
@@ -97,6 +114,7 @@ namespace Stroika::Foundation::Common {
     bool operator> (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     bool operator>= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+#endif
 
 }
 

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Cache {
             RequireNotNull (fCur);
             return &fCur->fElement;
         }
-        bool operator== (CacheIterator_ rhs)
+        bool operator== (const CacheIterator_& rhs) const
         {
             return fCur == rhs.fCur;
         }

@@ -39,6 +39,13 @@ namespace Stroika::Foundation::Common {
         , fCount (src.fCount)
     {
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -65,6 +72,7 @@ namespace Stroika::Foundation::Common {
         return Common::ThreeWayCompare (lhs.fCount, rhs.fCount);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ********************** Common::CountedValue operators **************************
@@ -100,6 +108,7 @@ namespace Stroika::Foundation::Common {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 
