@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        constexpr bool operator== (const CountedValue&) const = default;
+        constexpr bool operator== (const CountedValue&) const;
 #endif
 
     public:
