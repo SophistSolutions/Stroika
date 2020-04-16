@@ -1,4 +1,4 @@
-FROM sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+FROM sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
 
 # Get latest packages system, so can do installs
 RUN apt-get update
