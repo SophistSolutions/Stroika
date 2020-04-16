@@ -122,6 +122,11 @@ namespace Stroika::Foundation::Configuration {
          *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
          */
         constexpr std::strong_ordering operator<=> (const Version& rhs) const;
+
+    public:
+        /**
+         */
+        constexpr bool operator== (const Version& rhs) const;
 #endif
     };
 
@@ -140,12 +145,8 @@ namespace Stroika::Foundation::Configuration {
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Version& lhs, const Version& rhs);
     constexpr bool operator<= (const Version& lhs, const Version& rhs);
-#endif
-#if __cpp_lib_three_way_comparison < 201907
     constexpr bool operator== (const Version& lhs, const Version& rhs);
     constexpr bool operator!= (const Version& lhs, const Version& rhs);
-#endif
-#if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator>= (const Version& lhs, const Version& rhs);
     constexpr bool operator> (const Version& lhs, const Version& rhs);
 #endif
