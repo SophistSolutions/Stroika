@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const
     {
-        return EqualsComparer{}(*this, rhs) <=> 0;
+        return EqualsComparer{}(*this, rhs);
     }
 #endif
 

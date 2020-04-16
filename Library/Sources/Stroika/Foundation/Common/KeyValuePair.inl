@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
     {
-        return EqualsComparer{}(*this, rhs) <=> 0;
+        return EqualsComparer{}(*this, rhs);
     }
 #endif
 
