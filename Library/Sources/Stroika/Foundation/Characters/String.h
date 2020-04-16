@@ -1521,7 +1521,7 @@ namespace Stroika::Foundation::Characters {
 #endif
     bool operator== (const String& lhs, const wchar_t* rhs);
     bool operator== (const wchar_t* lhs, const String& rhs);
-#if 0
+#if 1
     bool operator!= (const String& lhs, const String& rhs);
     bool operator!= (const String& lhs, const wchar_t* rhs);
     bool operator!= (const wchar_t* lhs, const String& rhs);
