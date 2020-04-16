@@ -271,6 +271,7 @@ namespace {
         {
             vector<uint8_t> b  = {1, 2, 3, 4, 5};
             Memory::BLOB    bl = b;
+            VerifyTestResult (bl.size () == 5 and b == bl.As<vector<byte>> ());
             VerifyTestResult (bl.size () == 5 and bl.As<vector<byte>> () == b);
         }
         {
