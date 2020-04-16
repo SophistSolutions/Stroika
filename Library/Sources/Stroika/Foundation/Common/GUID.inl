@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Common {
         return memcmp (&lhs, &rhs, sizeof (GUID));
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************* Common::GUID operators *******************************
@@ -77,6 +78,7 @@ namespace Stroika::Foundation::Common {
     {
         return GUID::ThreeWayComparer{}(lhs, rhs) > 0;
     }
+#endif
 
 }
 

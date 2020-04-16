@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include "../Common/Compare.h"
 #include "../Configuration/Enumeration.h"
 
@@ -130,6 +134,13 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual Character ToUpperCase () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const Character&) const = default;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -159,6 +170,7 @@ namespace Stroika::Foundation::Characters {
         CompareOptions fCompareOptions;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Character::ThreeWayComparer{}
      *
@@ -170,6 +182,7 @@ namespace Stroika::Foundation::Characters {
     bool operator!= (Character lhs, Character rhs);
     bool operator>= (Character lhs, Character rhs);
     bool operator> (Character lhs, Character rhs);
+#endif
 
     /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
     /// SO I CAN SEARCH FOR IT AND FIX IT WHEN I HAVE A GOOD IDEA HOW.

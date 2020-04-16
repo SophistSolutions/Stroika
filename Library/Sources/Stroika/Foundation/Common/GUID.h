@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #if qPlatform_Windows
 #include <guiddef.h>
 #endif
@@ -49,6 +53,13 @@ namespace Stroika::Foundation::Common {
          */
         static GUID GenerateNew ();
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const GUID&) const = default;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -68,6 +79,7 @@ namespace Stroika::Foundation::Common {
         nonvirtual int operator() (const GUID& lhs, const GUID& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @GUID::ThreeWayComparer ()
      *
@@ -79,6 +91,7 @@ namespace Stroika::Foundation::Common {
     bool operator!= (const GUID& lhs, const GUID& rhs);
     bool operator>= (const GUID& lhs, const GUID& rhs);
     bool operator> (const GUID& lhs, const GUID& rhs);
+#endif
 
 }
 

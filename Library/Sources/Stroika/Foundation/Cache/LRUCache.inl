@@ -56,10 +56,12 @@ namespace Stroika::Foundation::Cache {
         {
             return fCur == rhs.fCur;
         }
+#if 0
         bool operator!= (CacheIterator_ rhs)
         {
             return fCur != rhs.fCur;
         }
+#endif
 
     private:
         CacheElement_** fCurV;

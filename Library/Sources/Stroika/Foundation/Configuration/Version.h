@@ -8,6 +8,10 @@
 
 #include <cstdint>
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include "../Characters/String.h"
 
 #include "VersionDefs.h"
@@ -121,7 +125,7 @@ namespace Stroika::Foundation::Configuration {
         /**
          *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
          */
-        constexpr std::strong_ordering operator<=> (const Version& rhs) const;
+        constexpr strong_ordering operator<=> (const Version& rhs) const;
 
     public:
         /**

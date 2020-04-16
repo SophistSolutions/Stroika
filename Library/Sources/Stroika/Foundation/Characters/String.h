@@ -1174,9 +1174,13 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
          */
-        std::strong_ordering operator<=> (const String& rhs) const;
+        nonvirtual strong_ordering operator<=> (const String& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const String& rhs) const;
 #endif
 
     public:
@@ -1512,12 +1516,16 @@ namespace Stroika::Foundation::Characters {
     bool operator<= (const String& lhs, const String& rhs);
     bool operator<= (const String& lhs, const wchar_t* rhs);
     bool operator<= (const wchar_t* lhs, const String& rhs);
+#if __cpp_impl_three_way_comparison < 201907
     bool operator== (const String& lhs, const String& rhs);
+#endif
     bool operator== (const String& lhs, const wchar_t* rhs);
     bool operator== (const wchar_t* lhs, const String& rhs);
+#if 0
     bool operator!= (const String& lhs, const String& rhs);
     bool operator!= (const String& lhs, const wchar_t* rhs);
     bool operator!= (const wchar_t* lhs, const String& rhs);
+#endif
     bool operator>= (const String& lhs, const String& rhs);
     bool operator>= (const String& lhs, const wchar_t* rhs);
     bool operator>= (const wchar_t* lhs, const String& rhs);

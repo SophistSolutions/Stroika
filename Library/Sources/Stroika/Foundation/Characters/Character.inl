@@ -146,6 +146,7 @@ namespace Stroika::Foundation::Characters {
         }
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************* Character operators **********************************
@@ -175,6 +176,7 @@ namespace Stroika::Foundation::Characters {
     {
         return Character::ThreeWayComparer{}(lhs, rhs) > 0;
     }
+#endif
 
 }
 
