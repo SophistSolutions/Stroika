@@ -113,6 +113,18 @@ namespace Stroika::Foundation::Common {
         fValue = forward<VALUE_TYPE2> (rhs.fValue);
         return *this;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    constexpr auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    constexpr bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs) <=> 0;
+    }
+#endif
 
     /*
      ********************************************************************************

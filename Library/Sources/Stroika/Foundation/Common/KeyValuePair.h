@@ -95,7 +95,12 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        constexpr auto operator<=> (const KeyValuePair&) const = default;
+        constexpr auto operator<=> (const KeyValuePair&) const;
+
+    public:
+        /**
+         */
+        constexpr bool operator== (const KeyValuePair&) const;
 #endif
 
     public:
