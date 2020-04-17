@@ -314,9 +314,6 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
     public:
-        struct EqualsComparer;
-
-    public:
         struct ThreeWayComparer;
 
     private:
@@ -386,13 +383,6 @@ namespace Stroika::Foundation::DataExchange {
     vector<VariantValue> VariantValue::As () const;
     template <>
     Sequence<VariantValue> VariantValue::As () const;
-
-    /**
-     *  Like ThreeWayComparer checking for 0, but often faster
-     */
-    struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const VariantValue& lhs, const VariantValue& rhs) const;
-    };
 
     /**
      */

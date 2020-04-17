@@ -151,7 +151,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool VariantValue::operator== (const VariantValue& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return equal_to<VariantValue>{}(*this, rhs);
     }
 #endif
 

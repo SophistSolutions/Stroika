@@ -703,17 +703,7 @@ Sequence<VariantValue> VariantValue::As () const
 
 /*
  ********************************************************************************
- ************************* VariantValue::EqualsComparer *************************
- ********************************************************************************
- */
-bool VariantValue::EqualsComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
-{
-    return equal_to<Stroika::Foundation::DataExchange::VariantValue>{}(lhs, rhs);
-}
-
-/*
- ********************************************************************************
- ************************* VariantValue::ThreeWayComparer *******************************
+ ************************* VariantValue::ThreeWayComparer ***********************
  ********************************************************************************
  */
 int VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
