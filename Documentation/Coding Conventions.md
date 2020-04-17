@@ -22,9 +22,9 @@ Stroika methods will start with an upper case letter, EXCEPT in the case where t
 
 For example:
 
- String:: SubString () follows Stroika semantics (asserting if values out of range).
+String:: SubString () follows Stroika semantics (asserting if values out of range).
 
- String::substr() follows the semantics of STL&#39;s basic\_string\&lt;\&gt;::substr().
+String::substr() follows the semantics of STL&#39;s basic_string\&lt;\&gt;::substr().
 
 Note – this &#39;convention&#39; doesn&#39;t replace documentation (the behavior of each method is documented). It just provides the user/reader a quick subtle convenient visual cue which semantics to expect without reading the docs.
 
@@ -32,14 +32,14 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 
 - clear()
 - empty()
-- push\_back
+- push_back
 - erase
-- c\_str()
+- c_str()
 - length()
 - size()
 - compare()
-- begin()     // sort of – usually using Stroika iterators
-- end()           // ditto
+- begin() // sort of – usually using Stroika iterators
+- end() // ditto
 
 ---
 
@@ -50,7 +50,7 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 - the &#39;f&#39; prefix for data members
 - &#39;k&#39; prefix for constants
 - We use the &#39;e&#39; prefix for enumerators
-- &#39;t&#39; prefix for thread\_local variables
+- &#39;t&#39; prefix for thread_local variables
 - &#39;s&#39; prefix for static varaibles.
 - &#39;\_&#39; prefix for PROTECTED instance variables or functions
 
@@ -70,20 +70,20 @@ One, this gives more consistent expectations. That&#39;s especially important fo
 
 And it avoids problems with overflow. For example, if you had an API like:
 
-~~~c++
+```c++
 basic_string substr(
    size_type _Off = 0,
    size_type _Count = npos
 ) const
-~~~
+```
 
 To map this to an internal representation you have todo:
 
- char\* s = m\_bufPtr + \_Off;
+char\* s = m_bufPtr + \_Off;
 
- char\* e = m\_bufPtr + \_Off + \_Count;
+char\* e = m_bufPtr + \_Off + \_Count;
 
-but if count was numeric\_limits\&lt;size\_t\&gt;::max(), then the e pointer computation would overflow. There are ways around this, but mixing the two styles creates a number of problems - but for implementations – and for use.
+but if count was numeric_limits\&lt;size_t\&gt;::max(), then the e pointer computation would overflow. There are ways around this, but mixing the two styles creates a number of problems - but for implementations – and for use.
 
 ---
 
@@ -93,21 +93,21 @@ but if count was numeric\_limits\&lt;size\_t\&gt;::max(), then the e pointer com
 
   Stroika also provides `operator"" _k` which does about the same thing (producing String_Constant) but we use internally and encourage use of operator"" sv (since its a standard and does about the same thing). `operator"" _k` is only provided as an option because there are a few cases of ambiguity where its helpful.
 
-- `operator"" _RegEx () can be used as a shortcut for defining regular expressions
+- `operator"" \_RegEx () can be used as a shortcut for defining regular expressions
 
-  ~~~c++
+  ```c++
   RegularExpression re = L"foo.*"_RegEx;
-  ~~~
+  ```
 
 ---
 
 ## New static methods and Factories
 
-In Stroika, a New () is static method, which allocates an instance of some class, but returns some kind of shared\_ptr/smart pointer to the type – not a bare C++ pointer.
+In Stroika, a New () is static method, which allocates an instance of some class, but returns some kind of shared_ptr/smart pointer to the type – not a bare C++ pointer.
 
 Stroika doesn&#39;t make much use of the factory pattern, but occasionally – it is useful. If the type provided by the factory is exactly the type of a given class, then we generally use
 
-struct T\_Factory {
+struct T_Factory {
 
     static T New();
 
@@ -128,20 +128,22 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 For types Stroika defines, it generally uses the convention of providing a ThreeWayComparer function object (generally fully constexpr).
 
 e.g.
-~~~C++
+
+```C++
     struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
     };
-~~~
+```
 
-and provides non-member (#if __cpp_lib_three_way_comparison < 201711)
- bool operator<, operator<=, operator>, operator>=, operator==, operator!= which inline trivially maps to this.
+and provides non-member (#if \_\_cpp_lib_three_way_comparison < 201907)
+bool operator<, operator<=, operator>, operator>=, operator==, operator!= which inline trivially maps to this.
 
 Stroika code which COUNTS on comparison doesn't directly call T::ThreeWayCompare{}(), but instead uses **a < b** or **Common::ThreeWayCompare**, or **Common:ThreeWayComparer**.
 
 Note - Stroika classes will occasionally define T::EqualsComparer - very similer to T::ThreeWayComparer. This will ONLY be done when it provides a more efficient implementation than the ThreeWayComparer. In those cases, operator== and operator!= will map to that.
 
 Reasons:
+
 - Working with builtin types (e.g. in)
 - Working with STL types, and 3rd-party libraries
 - Probably more likely to seamlessly fit with user code
@@ -150,10 +152,10 @@ Note that we choose to use non-member operator overloads for these comparison fu
 
 So for example:
 
-~~~C++
+```C++
     if (L"aa" < String (L"ss")) {
     }
-~~~
+```
 
 Works as expected, so long as either the left or right side is a String class, and the other side is convertible to a String.
 
@@ -187,34 +189,36 @@ For this reason, a handful of Stroika APIs follow the convention of a suffix of:
 - \_A for string returns which are guaranteed to be ASCII
 
 ---
+
 ## kThe for some final singleton objects
 
 Some objects which are only usable after the start of main (and until end of main), may be slightly more convenient and performant to use pre-existing ones. For example, EOFException::kThe, InterruptException::kThe, etc.
 
 ---
+
 ## enable_if<> usage
 
 I’ve experiment with a number of different styles of enable_if usage, and finally standardized on an approach.
 
 This may change – as I see more alternatives and gain more experience.
 
-- First – just use enable\_if\_t.
+- First – just use enable_if_t.
 - For values, use \_v type traits variants (brevity)
 
 Tried and rejected approaches:
 
-- typename ENABLE\_IF= typename enable\_if\_t\&lt;TEST\&gt;
-  - The problem with this approach is that you cannot repeat the enable\_if in the implementation (.inl) file definition – just in the declaration. This is confusing.
-- Enable\_if\_t\&lt;TEST,int\&gt; = 0
-  - Value – not type; this works well, since the identical enable\_if\_t\&lt;\&gt; line can be included in the .inl file in the definition. But its needlessly confusing to define the &#39;int&#39; type on the enable\_if\_t.
+- typename ENABLE_IF= typename enable_if_t\&lt;TEST\&gt;
+  - The problem with this approach is that you cannot repeat the enable_if in the implementation (.inl) file definition – just in the declaration. This is confusing.
+- Enable_if_t\&lt;TEST,int\&gt; = 0
+  - Value – not type; this works well, since the identical enable_if_t\&lt;\&gt; line can be included in the .inl file in the definition. But its needlessly confusing to define the &#39;int&#39; type on the enable_if_t.
 
 USE:
 
-enable\_if\_t\&lt;is\_function\_v\&lt;FUNCTION\&gt;\&gt;\* = nullptr
+enable_if_t\&lt;is_function_v\&lt;FUNCTION\&gt;\&gt;\* = nullptr
 
 Reasons:
 
-- No extra confusing types as args to enable\_if\_t.
+- No extra confusing types as args to enable_if_t.
 - \* (to make it a type that can be initialized) is modest and any easy pattern to follow. Seems needed since else you cannot provide a default value
 - Nullptr value maybe would be clearer with =0, which works, but everywhere else we initialize void\* ptr with nullptr.
 - CAN be repeated (without default value) – in the .inl file (definition).
