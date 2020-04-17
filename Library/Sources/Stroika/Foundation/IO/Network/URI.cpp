@@ -60,7 +60,7 @@ namespace {
         if (not accumulatingSegment.empty ()) {
             segments.push_back (accumulatingSegment.str ());
         }
-        vector<String> segments2;                         // apply ../. removeal
+        vector<String> segments2;                         // apply ../. removal
         bool           lastSegmentShouldHaveSlash{false}; // not sure about this
         for (String segment : segments) {
             lastSegmentShouldHaveSlash = false;
