@@ -98,7 +98,7 @@ namespace Stroika::Foundation::DataExchange {
         return As<String> ().As<wstring> ();
     }
 #if __cpp_impl_three_way_comparison >= 201907
-    inline auto InternetMediaType::operator<=> (const InternetMediaType& rhs) const
+    inline strong_ordering InternetMediaType::operator<=> (const InternetMediaType& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }

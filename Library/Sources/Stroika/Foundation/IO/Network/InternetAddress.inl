@@ -247,7 +247,7 @@ namespace Stroika::Foundation::IO::Network {
         }
     }
 #if __cpp_impl_three_way_comparison >= 201907
-    inline auto InternetAddress::operator<=> (const InternetAddress& rhs) const
+    inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }

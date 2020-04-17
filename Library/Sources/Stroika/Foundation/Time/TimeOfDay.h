@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        constexpr auto operator<=> (const TimeOfDay& rhs) const = default;
+        constexpr strong_ordering operator<=> (const TimeOfDay& rhs) const = default;
 #endif
 
     public:

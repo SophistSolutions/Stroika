@@ -73,7 +73,7 @@ namespace Stroika::Foundation::DataExchange {
         Require (type_index (typeid (T)) == forTypeInfo);
     }
 #if __cpp_impl_three_way_comparison >= 201907
-    inline auto ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
+    inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
 #if __cpp_lib_three_way_comparison >= 201907
         return std::compare_3way (fForType, rhs.fForType);

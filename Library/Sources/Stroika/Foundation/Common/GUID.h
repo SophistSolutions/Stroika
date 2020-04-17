@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const GUID&) const = default;
+        nonvirtual strong_ordering operator<=> (const GUID&) const = default;
 #endif
 
     public:

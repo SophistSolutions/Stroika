@@ -95,7 +95,7 @@ namespace Stroika::Foundation::DataExchange {
     }
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename ATOM_MANAGER>
-    inline auto Atom<ATOM_MANAGER>::operator<=> (const Atom& rhs) const
+    inline strong_ordering Atom<ATOM_MANAGER>::operator<=> (const Atom& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }

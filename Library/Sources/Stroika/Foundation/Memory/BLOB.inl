@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Memory {
         return GetSize ();
     }
 #if __cpp_impl_three_way_comparison >= 201907
-    inline auto BLOB::operator<=> (const BLOB& rhs) const
+    inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }

@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const BLOB& rhs) const;
+        nonvirtual strong_ordering operator<=> (const BLOB& rhs) const;
 
     public:
         /**

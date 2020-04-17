@@ -1068,8 +1068,6 @@ In file included from ./ObjectVariantMapper.h:883:
 #endif
 #endif
 
-
-
 /*
  *  https://timsong-cpp.github.io/cppwp/draft.pdf documents
             if (n > 5) [[unlikely]] { // n > 5 is considered to be arbitrarily unlikely
@@ -1468,8 +1466,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 #endif
 
-
-
 #ifndef qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1485,7 +1481,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #endif
 
 #endif
-
 
 /*
  * NOW ALLOWED IN C++17

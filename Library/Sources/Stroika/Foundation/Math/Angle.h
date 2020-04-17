@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Math {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const Angle& rhs) const = default;
+        nonvirtual strong_ordering operator<=> (const Angle& rhs) const = default;
 #endif
 
     public:

@@ -270,7 +270,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const InternetAddress& rhs) const;
+        nonvirtual strong_ordering operator<=> (const InternetAddress& rhs) const;
 
     public:
         /**

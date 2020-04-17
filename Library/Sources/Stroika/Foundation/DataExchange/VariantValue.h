@@ -305,7 +305,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const VariantValue& rhs) const;
+        nonvirtual strong_ordering operator<=> (const VariantValue& rhs) const;
 
     public:
         /**

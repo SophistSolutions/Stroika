@@ -129,7 +129,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const InternetMediaType& rhs) const;
+        nonvirtual strong_ordering operator<=> (const InternetMediaType& rhs) const;
 
     public:
         /**

@@ -248,7 +248,7 @@ namespace Stroika::Foundation::DataExchange {
 #if __cpp_impl_three_way_comparison >= 201907
             /**
              */
-            nonvirtual auto operator<=> (const TypeMappingDetails& rhs) const;
+            nonvirtual strong_ordering operator<=> (const TypeMappingDetails& rhs) const;
 
 #else
             nonvirtual bool operator< (const TypeMappingDetails& rhs) const;

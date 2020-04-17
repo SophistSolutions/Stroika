@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const SignalHandler& rhs) const = default;
+        nonvirtual strong_ordering operator<=> (const SignalHandler& rhs) const = default;
 #else
     public:
         nonvirtual bool                operator== (const SignalHandler& rhs) const;

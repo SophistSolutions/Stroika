@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        nonvirtual auto operator<=> (const Character&) const = default;
+        nonvirtual strong_ordering operator<=> (const Character&) const = default;
 #endif
 
     public:
