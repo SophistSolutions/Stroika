@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Time {
      *      whose lifetime is controlled (an object). So now - just call As<String> ().c_str () or
      *      As<wstring> ().c_str ()
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *  \note   comparisons (operator <=>) inherited from chrono::duration
      */
     class Duration final : public chrono::duration<double> {
     private:
