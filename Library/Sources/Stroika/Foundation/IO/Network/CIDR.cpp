@@ -25,29 +25,8 @@ using namespace Stroika::Foundation::IO::Network;
  ******************************** Network::CIDR *********************************
  ********************************************************************************
  */
-namespace {
-    InternetAddress MakeAddressBySignificantBits_ (const InternetAddress& internetAddress, unsigned int significantBits)
-    {
-        // Mask address by significant bits
-        vector<uint8_t> r;
-        unsigned int    sigBitsLeft = significantBits;
-        for (uint8_t b : internetAddress.As<vector<uint8_t>> ()) {
-            if (sigBitsLeft >= 8) {
-                r.push_back (b);
-                sigBitsLeft -= 8;
-            }
-            else {
-                unsigned int topBit = 8;
-                unsigned int botBit = topBit - sigBitsLeft;
-                r.push_back (BitSubstring<uint8_t> (b, botBit, topBit) << botBit);
-                sigBitsLeft = 0;
-            }
-        }
-        return InternetAddress (r, internetAddress.GetAddressFamily ());
-    }
-}
 CIDR::CIDR (const InternetAddress& internetAddress, unsigned int significantBits)
-    : fBaseAddress_ (MakeAddressBySignificantBits_ (internetAddress, significantBits))
+    : fBaseAddress_ (internetAddress.KeepSignifcantBits (significantBits))
     , fSignificantBits_ (significantBits)
 {
 }

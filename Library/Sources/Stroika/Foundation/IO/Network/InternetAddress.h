@@ -289,6 +289,11 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         */
+        nonvirtual InternetAddress KeepSignifcantBits (unsigned int significantBits) const;
+
+    public:
+        /**
          *  \brief offset this IP Address by 'o' discrete addresses (positive only, unsigned offset).
          *
          * @todo support different kinds of offsets

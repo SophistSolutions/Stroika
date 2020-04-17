@@ -367,6 +367,26 @@ String InternetAddress::ToString () const
     return As<String> ();
 }
 
+InternetAddress InternetAddress::KeepSignifcantBits (unsigned int significantBits) const
+{
+    // Mask address by significant bits
+    vector<uint8_t> r;
+    unsigned int    sigBitsLeft = significantBits;
+    for (uint8_t b : this->As<vector<uint8_t>> ()) {
+        if (sigBitsLeft >= 8) {
+            r.push_back (b);
+            sigBitsLeft -= 8;
+        }
+        else {
+            unsigned int topBit = 8;
+            unsigned int botBit = topBit - sigBitsLeft;
+            r.push_back (BitSubstring<uint8_t> (b, botBit, topBit) << botBit);
+            sigBitsLeft = 0;
+        }
+    }
+    return InternetAddress (r, this->GetAddressFamily ());
+}
+
 InternetAddress InternetAddress::Offset (uint64_t o) const
 {
     // rough draft - NEEDS TESTING - LGP 2019-02-17
