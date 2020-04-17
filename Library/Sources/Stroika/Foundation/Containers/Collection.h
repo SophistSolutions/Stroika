@@ -85,12 +85,12 @@ namespace Stroika::Foundation::Containers {
      *      since a Collection<> intrinsically has no ordering, I'm not totally sure what it would
      *      mean to Shake/change its ordering?
      *
-     *  \note   EqualsComparer (operator==, operator!=)
+     *  \note   EQUALS_COMPARER (operator==, operator!=)
      *          We do not provide a notion of 'Equals' or operator==, operator!=, because
      *          its not clear how to compare collections.
      *
      *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequenceEquals()
-     *          as appropriate.
+     *          as appropriate. Methods that require and equals comparer, take one as argument with appropriate defaulting.
      *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
