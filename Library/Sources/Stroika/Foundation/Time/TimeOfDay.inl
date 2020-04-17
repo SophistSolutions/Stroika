@@ -78,6 +78,7 @@ namespace Stroika::Foundation::Time {
         return lhs.GetAsSecondsCount () - rhs.GetAsSecondsCount ();
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************* TimeOfDay operators **********************************
@@ -107,6 +108,7 @@ namespace Stroika::Foundation::Time {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 

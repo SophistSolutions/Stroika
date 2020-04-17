@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <climits>
 #include <locale>
 #include <string>
@@ -247,14 +251,21 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr auto operator<=> (const TimeOfDay& rhs) const = default;
+#endif
+
+    public:
+        struct ThreeWayComparer;
+
     public:
         /**
          *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
-
-    public:
-        struct ThreeWayComparer;
 
     private:
         uint32_t fTime_;
@@ -278,6 +289,7 @@ namespace Stroika::Foundation::Time {
         constexpr int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -289,6 +301,7 @@ namespace Stroika::Foundation::Time {
     constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator>= (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator> (TimeOfDay lhs, TimeOfDay rhs);
+#endif
 
 }
 

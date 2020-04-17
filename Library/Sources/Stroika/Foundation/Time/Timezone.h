@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <ctime>
 #include <optional>
 
@@ -241,12 +245,13 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual optional<bool> IsDaylightSavingsTime (const Date& date, const optional<TimeOfDay>& tod);
 
+#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  @see Characters::ToString ();
          */
-        nonvirtual Characters::String ToString () const;
+        nonvirtual constexpr bool operator== (const Timezone& rhs) const = default;
 
+#else
     public:
         /**
          */
@@ -256,6 +261,14 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
+
+#endif
+
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
 
     private:
         TZ_                      fTZ_ : 16;

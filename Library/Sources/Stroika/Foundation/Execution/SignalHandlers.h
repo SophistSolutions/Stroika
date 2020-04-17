@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <csignal>
 
 #include "../Configuration/Common.h"
@@ -124,10 +128,17 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual Characters::String ToString () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
     public:
-        nonvirtual bool operator== (const SignalHandler& rhs) const;
-        nonvirtual bool operator!= (const SignalHandler& rhs) const;
-        nonvirtual bool operator< (const SignalHandler& rhs) const;
+        /**
+         */
+        nonvirtual auto operator<=> (const SignalHandler& rhs) const = default;
+#else
+    public:
+        nonvirtual bool                operator== (const SignalHandler& rhs) const;
+        nonvirtual bool                operator!= (const SignalHandler& rhs) const;
+        nonvirtual bool                operator< (const SignalHandler& rhs) const;
+#endif
 
     private:
         Type                      fType_;

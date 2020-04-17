@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Execution {
     {
         fCall_ (i);
     }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool SignalHandler::operator== (const SignalHandler& rhs) const
     {
         return fType_ == rhs.fType_ and fCall_ == rhs.fCall_;
@@ -63,6 +64,7 @@ namespace Stroika::Foundation::Execution {
             return fType_ < rhs.fType_;
         }
     }
+#endif
 
 }
 

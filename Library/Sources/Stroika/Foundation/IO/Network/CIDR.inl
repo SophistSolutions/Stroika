@@ -29,6 +29,19 @@ namespace Stroika::Foundation::IO::Network {
     {
         return fSignificantBits_;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering CIDR::operator<=> (const CIDR& rhs) const
+    {
+        auto r = fSignificantBits_ <=> rhs.fSignificantBits_;
+        if (r == strong_ordering::equal) {
+            // @todo - FIX to ONLY examine significant bits of the address!!!
+            return fBaseAddress_ <=> rhs.fBaseAddress_;
+        }
+        else {
+            return r;
+        }
+    }
+#endif
     inline bool CIDR::operator== (const CIDR& rhs) const
     {
         // @todo - FIX to ONLY examine significant bits of the address!!!

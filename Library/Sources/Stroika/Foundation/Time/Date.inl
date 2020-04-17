@@ -211,6 +211,7 @@ namespace Stroika::Foundation::Time {
         return l < r ? -1 : 1;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************* Time::Date operators *********************************
@@ -240,6 +241,7 @@ namespace Stroika::Foundation::Time {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 }
 
 namespace Stroika::Foundation::Configuration {

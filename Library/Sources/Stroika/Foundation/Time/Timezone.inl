@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Time {
         // Cast to avoid warning, but no chance of overflow cuz GetBiasInMinutesFromUTC range restricted and time_t at least 4 bytes
         return static_cast<make_signed_t<time_t>> (60) * GetBiasInMinutesFromUTC (date, tod);
     }
+#if __cpp_impl_three_way_comparison < 201907
     inline constexpr bool Timezone::operator== (const Timezone& rhs) const
     {
         return fTZ_ == rhs.fTZ_ and fBiasInMinutesFromUTC_ == rhs.fBiasInMinutesFromUTC_;
@@ -53,6 +54,7 @@ namespace Stroika::Foundation::Time {
     {
         return fTZ_ != rhs.fTZ_ or fBiasInMinutesFromUTC_ != rhs.fBiasInMinutesFromUTC_;
     }
+#endif
 
 }
 

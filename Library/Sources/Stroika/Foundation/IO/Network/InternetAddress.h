@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <optional>
 
 #if qPlatform_POSIX
@@ -262,6 +266,18 @@ namespace Stroika::Foundation::IO::Network {
         template <typename T>
         nonvirtual T As (ByteOrder byteOrder) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const InternetAddress& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const InternetAddress& rhs) const;
+#endif
+
     public:
         /**
          *  @see Characters::ToString ()
@@ -348,6 +364,7 @@ namespace Stroika::Foundation::IO::Network {
         constexpr int operator() (const InternetAddress& lhs, const InternetAddress& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetAddress::ThreeWayComparer ()
      *
@@ -359,6 +376,7 @@ namespace Stroika::Foundation::IO::Network {
     bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
+#endif
 
     /**
      *  IN_ADDR_ANY

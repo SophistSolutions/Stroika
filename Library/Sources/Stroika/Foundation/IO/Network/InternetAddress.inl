@@ -246,6 +246,16 @@ namespace Stroika::Foundation::IO::Network {
             return tmp;
         }
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline auto InternetAddress::operator<=> (const InternetAddress& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool InternetAddress::operator== (const InternetAddress& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -272,6 +282,7 @@ namespace Stroika::Foundation::IO::Network {
         return 0;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************* InternetAddress operators ****************************
@@ -301,6 +312,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
     namespace V4 {
         constexpr InternetAddress kAddrAny{in_addr{}};

@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include "../../Characters/String.h"
 
 #include "InternetAddressRange.h"
@@ -73,9 +77,16 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual InternetAddressRange GetRange () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  return true if the CIDRs are equal. This SHOULD only pay attention to the 'significant bits' of the base address, but currently doesn't (@todo fix/bug)
+         *  Compare CIDRs. This SHOULD only pay attention to the 'significant bits' of the base address, but currently doesn't (@todo fix/bug)
+         */
+        nonvirtual strong_ordering operator<=> (const CIDR& rhs) const;
+#endif
+
+    public:
+        /**
          */
         nonvirtual bool operator== (const CIDR& rhs) const;
 

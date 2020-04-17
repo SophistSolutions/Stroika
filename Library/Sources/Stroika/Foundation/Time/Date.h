@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <climits>
 #include <string>
 
@@ -426,6 +430,13 @@ namespace Stroika::Foundation::Time {
         nonvirtual SignedJulianRepType operator- (const Date& rhs) const;
         nonvirtual Date operator- (SignedJulianRepType daysOffset) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const Date& rhs) const = default;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -461,6 +472,7 @@ namespace Stroika::Foundation::Time {
         constexpr int operator() (const Date& lhs, const Date& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -472,6 +484,7 @@ namespace Stroika::Foundation::Time {
     constexpr bool operator!= (const Date& lhs, const Date& rhs);
     constexpr bool operator>= (const Date& lhs, const Date& rhs);
     constexpr bool operator> (const Date& lhs, const Date& rhs);
+#endif
 
     Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
     int                       YearDifference (const Date& lhs, const Date& rhs);

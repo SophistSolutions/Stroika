@@ -151,7 +151,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Atom& rhs) const;
+        nonvirtual auto operator<=> (const Atom& rhs) const;
 
     public:
         /**
