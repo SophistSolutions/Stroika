@@ -10,6 +10,7 @@
 #include <compare>
 #endif
 
+#include "../Common/Compare.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
 

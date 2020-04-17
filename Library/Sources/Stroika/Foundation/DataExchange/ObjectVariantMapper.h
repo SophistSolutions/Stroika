@@ -257,7 +257,6 @@ namespace Stroika::Foundation::DataExchange {
              */
             nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
 
-
             template <typename T>
             static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
             template <typename T>
