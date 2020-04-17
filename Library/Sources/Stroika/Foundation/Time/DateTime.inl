@@ -80,7 +80,18 @@ namespace Stroika::Foundation::Time {
     {
         return fTimezone_;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering DateTime::operator<=> (const DateTime& rhs) const
+    {
+        return Common::ThreeWayCompare (*this, rhs) <=> 0;
+    }
+    inline bool DateTime::operator== (const DateTime& rhs) const
+    {
+        return Common::ThreeWayCompare (*this, rhs) == 0;
+    }
+#endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************** DateTime operators **********************************
@@ -110,6 +121,7 @@ namespace Stroika::Foundation::Time {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 

@@ -26,7 +26,7 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Complete removeal of deprecated empty and no-arg constructor
+ *      @todo   Complete removal of deprecated empty and no-arg constructor
  *
  *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
  *

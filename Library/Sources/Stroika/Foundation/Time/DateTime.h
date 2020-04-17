@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <climits>
 #include <ctime>
 #include <locale>
@@ -451,6 +455,18 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual Duration Difference (const DateTime& rhs) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const DateTime& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const DateTime& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -498,6 +514,7 @@ namespace Stroika::Foundation::Time {
         nonvirtual int operator() (const DateTime& lhs, const DateTime& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -509,6 +526,7 @@ namespace Stroika::Foundation::Time {
     bool operator!= (const DateTime& lhs, const DateTime& rhs);
     bool operator>= (const DateTime& lhs, const DateTime& rhs);
     bool operator> (const DateTime& lhs, const DateTime& rhs);
+#endif
 
     /**
      *  Syntactic sugar on Add()
