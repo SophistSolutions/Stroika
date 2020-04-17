@@ -256,16 +256,6 @@ namespace Stroika::Foundation::Time {
     {
         return Duration{numeric_limits<InternalNumericFormatType_>::max ()};
     }
-#if __cpp_impl_three_way_comparison >= 201907
-    inline strong_ordering Duration::operator<=> (const Duration& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
-    }
-    inline bool Duration::operator== (const Duration& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs) == 0;
-    }
-#endif
 
     /*
      ********************************************************************************

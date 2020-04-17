@@ -6,10 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
-
 #include <chrono>
 #include <climits>
 #include <string>
@@ -227,18 +223,6 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T AsPinned () const;
-
-#if __cpp_impl_three_way_comparison >= 201907
-    public:
-        /**
-         */
-        nonvirtual strong_ordering operator<=> (const Duration& rhs) const;
-
-    public:
-        /**
-         */
-        nonvirtual bool operator== (const Duration& rhs) const;
-#endif
 
     public:
         /**
