@@ -125,6 +125,18 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const InternetMediaType& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const InternetMediaType& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -156,6 +168,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual int operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
      *
@@ -167,6 +180,7 @@ namespace Stroika::Foundation::DataExchange {
     bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs);
+#endif
 
     /**
      */

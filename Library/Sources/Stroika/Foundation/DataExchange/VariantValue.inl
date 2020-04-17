@@ -144,7 +144,18 @@ namespace Stroika::Foundation::DataExchange {
     {
         return AsString_ ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline auto VariantValue::operator<=> (const VariantValue& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool VariantValue::operator== (const VariantValue& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs) == 0;
+    }
+#endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************* VariantValue operators *******************************
@@ -174,6 +185,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 

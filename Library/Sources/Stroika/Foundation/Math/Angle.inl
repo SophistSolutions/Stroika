@@ -80,6 +80,7 @@ namespace Stroika::Foundation::Math {
         return Common::ThreeWayCompareNormalizer (lhs.AsRadians (), rhs.AsRadians ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ******************** Math::Angle relationship operators ************************
@@ -109,6 +110,7 @@ namespace Stroika::Foundation::Math {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
     /*
      ********************************************************************************

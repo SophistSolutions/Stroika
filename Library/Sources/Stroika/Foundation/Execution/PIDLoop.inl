@@ -30,6 +30,7 @@ namespace Stroika::Foundation::Execution {
         , D (d)
     {
     }
+#if __cpp_impl_three_way_comparison < 201907
     template <typename CONTROL_VAR_TYPE>
     inline bool PIDLoop<CONTROL_VAR_TYPE>::ControlParams::operator== (const ControlParams& rhs) const
     {
@@ -40,6 +41,7 @@ namespace Stroika::Foundation::Execution {
     {
         return not operator== (rhs);
     }
+#endif
     template <typename CONTROL_VAR_TYPE>
     inline Characters::String PIDLoop<CONTROL_VAR_TYPE>::ControlParams::ToString () const
     {

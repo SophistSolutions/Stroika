@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <map>
 #include <vector>
 
@@ -297,6 +301,21 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual FloatType_ AsFloatType_ () const;
         nonvirtual String AsString_ () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const VariantValue& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const VariantValue& rhs) const;
+#endif
+
+    public:
+        struct EqualsComparer;
+
     public:
         struct ThreeWayComparer;
 
@@ -368,10 +387,20 @@ namespace Stroika::Foundation::DataExchange {
     template <>
     Sequence<VariantValue> VariantValue::As () const;
 
-    struct VariantValue::ThreeWayComparer {
-        int operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+    /**
+     *  Like ThreeWayComparer checking for 0, but often faster
+     */
+    struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        nonvirtual bool operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };
 
+    /**
+     */
+    struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        nonvirtual int operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+    };
+
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
      *  @Version::ThreeWayComparer and equal_to<VariantValue>
@@ -384,6 +413,7 @@ namespace Stroika::Foundation::DataExchange {
     bool operator!= (const VariantValue& lhs, const VariantValue& rhs);
     bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
     bool operator> (const VariantValue& lhs, const VariantValue& rhs);
+#endif
 
 }
 

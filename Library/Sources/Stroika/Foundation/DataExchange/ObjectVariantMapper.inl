@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <algorithm>
+
 #include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Adapters/Adder.h"
@@ -70,13 +72,34 @@ namespace Stroika::Foundation::DataExchange {
     {
         Require (type_index (typeid (T)) == forTypeInfo);
     }
-    inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
+#if __cpp_impl_three_way_comparison >= 201907
+    inline auto ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
-        return fForType == rhs.fForType;
+#if __cpp_lib_three_way_comparison >= 201907
+        return std::compare_3way (fForType, rhs.fForType);
+#else
+        if (fForType < rhs.fForType) {
+            return strong_ordering::less;
+        }
+        if (fForType == rhs.fForType) {
+            return strong_ordering::equal;
+        }
+        if (fForType > rhs.fForType) {
+            return strong_ordering::greater;
+        }
+        AssertNotReached ();
+        return strong_ordering::equal;
+#endif
     }
+#else
     inline bool ObjectVariantMapper::TypeMappingDetails::operator< (const TypeMappingDetails& rhs) const
     {
         return fForType < rhs.fForType;
+    }
+#endif
+    inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
+    {
+        return fForType == rhs.fForType;
     }
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)

@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <type_traits>
 #include <typeindex>
 
@@ -241,8 +245,18 @@ namespace Stroika::Foundation::DataExchange {
 
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
 
-            nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
+#if __cpp_impl_three_way_comparison >= 201907
+            /**
+             */
+            nonvirtual auto operator<=> (const TypeMappingDetails& rhs) const;
+
+#else
             nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
+#endif
+            /**
+             */
+            nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
+
 
             template <typename T>
             static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
