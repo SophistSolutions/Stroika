@@ -45,6 +45,30 @@ namespace Stroika::Foundation::DataExchange {
     }
 #endif
 
+#if __cpp_impl_three_way_comparison >= 201907 && qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+    inline strong_ordering StructFieldMetaInfo::operator<=> (const StructFieldMetaInfo& rhs) const
+    {
+        auto r = fOffset <=> rhs.fOffset;
+        if (r == 0) {
+            if (fTypeInfo < rhs.fTypeInfo) {
+                r = strong_ordering::less;
+            }
+            else if (fTypeInfo == rhs.fTypeInfo) {
+                r = strong_ordering::equal;
+            }
+            else {
+                r = strong_ordering::greater;
+            }
+        }
+        return r;
+    }
+
+    inline bool StructFieldMetaInfo::operator== (const StructFieldMetaInfo& rhs) const
+    {
+        return fOffset == rhs.fOffset and fTypeInfo == rhs.fTypeInfo;
+    }
+#endif
+
 }
 
 #endif /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_*/

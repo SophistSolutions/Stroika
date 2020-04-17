@@ -1068,6 +1068,8 @@ In file included from ./ObjectVariantMapper.h:883:
 #endif
 #endif
 
+
+
 /*
  *  https://timsong-cpp.github.io/cppwp/draft.pdf documents
             if (n > 5) [[unlikely]] { // n > 5 is considered to be arbitrarily unlikely
@@ -1466,6 +1468,25 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 #endif
 
+
+
+#ifndef qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// VERIFIED BROKEN on XCode 11.0
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+#elif defined(__clang__) && !defined(__APPLE__)
+// still broken in clang++-8
+// still broken in clang++-9
+// still broken in clang++-10
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#else
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
+#endif
+
+#endif
+
+
 /*
  * NOW ALLOWED IN C++17
 Test.cpp:173:31: error: template template argument has different template parameters than its corresponding template template parameter
@@ -1478,11 +1499,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #ifndef qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-// VERIFIED BROKEN on XCode 11.0
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
-// verified still broken in clang++-8
-// verified still broken in clang++-9
 // verified still broken in clang++-10
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else

@@ -39,11 +39,23 @@ namespace Stroika::Foundation::DataExchange {
          */
         StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo);
 
-#if __cpp_impl_three_way_comparison >= 201907
+#if __cpp_impl_three_way_comparison >= 201907 && !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     public:
         /**
          */
-        nonvirtual auto operator<=> (const StructFieldMetaInfo& rhs) const = default;
+        nonvirtual strong_ordering operator<=> (const StructFieldMetaInfo& rhs) const = default;
+#endif
+
+#if __cpp_impl_three_way_comparison >= 201907 && qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const StructFieldMetaInfo& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const StructFieldMetaInfo& rhs) const;
 #endif
 
     public:
@@ -87,7 +99,7 @@ namespace Stroika::Foundation::DataExchange {
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-offsetof\"") \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-offsetof\"")
 #elif defined(__GNUC__) && 0
-    // sadly, this macro stuff breaks with gcc 48..62 - not sure why...
+    // sadly, this macro stuff breaks with gcc 48..10.x - not sure why...
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)               \
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"") \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
