@@ -168,7 +168,7 @@ namespace {
     {
         const size_t                                  kNParts2Divide_{10};
         Memory::SmallStackBuffer<DurationSecondsType> times (kNParts2Divide_);
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 9)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
 #endif
 #if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
@@ -185,7 +185,7 @@ namespace {
 #if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wvolatile\"");
 #endif
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 9)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-volatile\"");
 #endif
         DurationSecondsType m = Math::Median (times.begin (), times.end ());
@@ -688,7 +688,7 @@ namespace {
         size_t                 s3len = s3.length ();
         size_t                 s4len = s4.length ();
         size_t                 s5len = s5.length ();
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 9)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
 #endif
 #if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
@@ -704,7 +704,7 @@ namespace {
 #if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wvolatile\"");
 #endif
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 9)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-volatile\"");
 #endif
     }

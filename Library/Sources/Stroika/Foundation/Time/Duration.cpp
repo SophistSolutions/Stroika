@@ -134,13 +134,13 @@ namespace {
     template <typename T>
     inline T DoPin_ (Duration::rep d, Duration::rep multiplier)
     {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 9)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::chrono::duration<long long, std::__1::ratio<1, 1> >::rep' (aka 'long long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
 #endif
         if (d > T::max ().count () / multiplier) {
             return T::max ();
         }
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 9)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
 #endif
         return T (typename T::rep (d * multiplier));
