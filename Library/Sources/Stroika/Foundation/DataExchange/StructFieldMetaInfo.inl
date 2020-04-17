@@ -23,6 +23,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ********************* StructFieldMetaInfo operators ****************************
@@ -42,6 +43,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         return lhs.fOffset == rhs.fOffset and lhs.fTypeInfo == rhs.fTypeInfo;
     }
+#endif
 
 }
 

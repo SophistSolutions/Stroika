@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <type_traits>
 #include <typeindex>
 
@@ -35,12 +39,24 @@ namespace Stroika::Foundation::DataExchange {
          */
         StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo);
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const StructFieldMetaInfo& rhs) const = default;
+#endif
+
     public:
         /**
          *  @see Characters::ToString ()
          */
         nonvirtual Characters::String ToString () const;
     };
+
+#if __cpp_impl_three_way_comparison < 201907
+    bool operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
+    bool operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
+#endif
 
     /**
      *  Regret adding a macro, but it just seems helpful (makes things much more terse,
@@ -58,12 +74,12 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *      struct  Person {
-     *          String  firstName;
-     *          String  lastName;
-     *      };
-     *      StructFieldMetaInfo firstNameFieldInfo      =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, firstName)
-     *      StructFieldMetaInfo lastNameFieldInfo       =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, lastName)
+     *          struct  Person {
+     *              String  firstName;
+     *              String  lastName;
+     *          };
+     *          StructFieldMetaInfo firstNameFieldInfo      =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, firstName)
+     *          StructFieldMetaInfo lastNameFieldInfo       =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, lastName)
      *      \endcode
      */
 #if defined(__clang__)
@@ -72,7 +88,8 @@ namespace Stroika::Foundation::DataExchange {
     Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-offsetof\"")
 #elif defined(__GNUC__) && 0
     // sadly, this macro stuff breaks with gcc 48..62 - not sure why...
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
+#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)               \
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"") \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
 #else
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
