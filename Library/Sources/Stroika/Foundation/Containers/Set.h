@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers {
          *  assures the item is no longer present, but returns true iff the call made a change (removed
          *  the item).
          *
-         *  Note - we chose to return true in the case of removeal because this is the case most likely
+         *  Note - we chose to return true in the case of removal because this is the case most likely
          *  when a caller would want to take action.
          *
          *  \par Example Usage
