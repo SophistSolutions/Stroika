@@ -68,11 +68,15 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     constexpr int ThreeWayComparerDefaultImplementation<T>::operator() (const T& lhs, const T& rhs) const
     {
+#if __cpp_lib_three_way_comparison >= 201907L
+        return compare_three_way{}(lhs, rhs);
+#else
         // in general, can do this much more efficiently (subtract left and right), but for now, KISS
         if (equal_to<T>{}(lhs, rhs)) {
             return 0;
         }
         return less<T>{}(lhs, rhs) ? -1 : 1;
+#endif
     }
 
     /*
