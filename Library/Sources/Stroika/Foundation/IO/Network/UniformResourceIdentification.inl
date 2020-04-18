@@ -432,11 +432,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator== (const Query& lhs, const Query& rhs)
     {
-        return ThreeWayComparer{}(lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs, rhs) == 0;
     }
     inline bool operator!= (const Query& lhs, const Query& rhs)
     {
-        return ThreeWayComparer{}(lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs, rhs) != 0;
     }
     inline bool operator>= (const Query& lhs, const Query& rhs)
     {
