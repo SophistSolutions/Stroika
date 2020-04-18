@@ -316,7 +316,12 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const URI& rhs) const = default;
+        nonvirtual strong_ordering operator<=> (const URI& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const URI& rhs) const;
 #endif
 
     public:

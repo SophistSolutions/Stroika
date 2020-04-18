@@ -169,6 +169,16 @@ namespace Stroika::Foundation::IO::Network {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fFragment_ = fragment;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering URI::operator<=> (const URI& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool URI::operator== (const URI& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
