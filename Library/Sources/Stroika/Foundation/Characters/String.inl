@@ -641,7 +641,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring_view& s)
     {
-        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*s.begin ()), reinterpret_cast<const Character*> (&*s.begin () + s.size ()));
+        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ()) + s.size ()));
     }
     inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const Character* s)
     {
@@ -747,7 +747,9 @@ namespace Stroika::Foundation::Characters {
     }
     inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wstring_view& s)
     {
-        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (&*s.begin ()), reinterpret_cast<const Character*> (&*s.begin () + s.size ()));
+        return s.empty ()
+                   ? make_pair<const Character*, const Character*> (nullptr, nullptr)
+                   : make_pair (reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ()) + s.size ()));
     }
     inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const Character* s)
     {

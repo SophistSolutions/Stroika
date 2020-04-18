@@ -483,7 +483,6 @@ size_t ReadWriteMemBufferPackage::ReadFlavorData (Led_ClipFormat clipFormat, siz
     for (size_t i = 0; i < fPackages.size (); i++) {
         if (fPackages[i].fFormat == clipFormat) {
             size_t copyNBytes = min (bufSize, fPackages[i].fData.size ());
-            // Note - this kookie &* stuff is to work around bugs in some STLs - that don't let you convert an iterator to a pointer.- SPR#0847
             memcpy (buf, Traversal::Iterator2Pointer (fPackages[i].fData.begin ()), copyNBytes);
             Ensure (copyNBytes <= bufSize);
             return copyNBytes;
