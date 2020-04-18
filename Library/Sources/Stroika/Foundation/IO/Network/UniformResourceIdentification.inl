@@ -412,7 +412,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool Query::operator== (const Query& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return ThreeWayComparer{}(*this, rhs) == 0;
     }
 #endif
 
@@ -432,11 +432,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator== (const Query& lhs, const Query& rhs)
     {
-        return EqualsComparer{}(lhs, rhs);
+        return ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (const Query& lhs, const Query& rhs)
     {
-        return not EqualsComparer{}(lhs, rhs);
+        return ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const Query& lhs, const Query& rhs)
     {

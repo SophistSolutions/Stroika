@@ -610,9 +610,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #endif
 
     public:
-        struct EqualsComparer;
-
-    public:
         struct ThreeWayComparer;
 
     public:
@@ -624,21 +621,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     private:
         Containers::Mapping<String, String> fMap_;
-    };
-
-    /**
-     *  Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
-     *
-     * comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
-     * So pick a preferred ordering (alphabetical) - and compare one after the other
-     * @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
-     *
-     *  \note provided equals comparer cuz commonly used and significant performance benefit
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
-     */
-    struct Query::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        int operator() (const Query& lhs, const Query& rhs) const;
     };
 
     /**
