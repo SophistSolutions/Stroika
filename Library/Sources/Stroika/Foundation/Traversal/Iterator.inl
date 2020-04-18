@@ -180,6 +180,11 @@ namespace Stroika::Foundation::Traversal {
         return lhsRep->Equals (rhsRep);
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
+    {
+        return this->Equals (rhs);
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     inline typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
     {
         return rep.Clone ();
@@ -190,6 +195,7 @@ namespace Stroika::Foundation::Traversal {
         return Iterator<T, ITERATOR_TRAITS> (ConstructionFlagForceAtEnd_::ForceAtEnd);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      **************************** Iterator operators ********************************
@@ -206,6 +212,7 @@ namespace Stroika::Foundation::Traversal {
     {
         return not lhs.Equals (rhs);
     }
+#endif
 
     /*
      ********************************************************************************

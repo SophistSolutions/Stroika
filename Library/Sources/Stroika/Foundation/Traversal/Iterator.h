@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -488,6 +492,14 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual bool Equals (const Iterator& rhs) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  @todo - in C++20 (stk 2.2), DEPRECATE Equals() in favor of this method
+         */
+        nonvirtual bool operator== (const Iterator& rhs) const;
+#endif
+
     public:
         /**
          *  \brief
@@ -696,6 +708,7 @@ namespace Stroika::Foundation::Traversal {
         virtual bool Equals (const IRep* rhs) const = 0;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  \brief  operator== is a shorthand for lhs.Equals (rhs)
      */
@@ -707,6 +720,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename ITERATOR_TRAITS>
     bool operator!= (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs);
+#endif
 
     /**
      *  Sometimes (especially when interacting with low level code) its handy to convert an iterator
