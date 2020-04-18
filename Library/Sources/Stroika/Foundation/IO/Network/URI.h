@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <string>
 
 #include "../../Characters/String.h"
@@ -308,6 +312,13 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual URI Combine (const URI& uri) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const URI& rhs) const = default;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -357,6 +368,7 @@ namespace Stroika::Foundation::IO::Network {
         int operator() (const URI& lhs, const URI& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -368,6 +380,7 @@ namespace Stroika::Foundation::IO::Network {
     bool operator!= (const URI& lhs, const URI& rhs);
     bool operator>= (const URI& lhs, const URI& rhs);
     bool operator> (const URI& lhs, const URI& rhs);
+#endif
 
 }
 

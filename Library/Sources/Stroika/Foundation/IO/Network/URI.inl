@@ -170,6 +170,7 @@ namespace Stroika::Foundation::IO::Network {
         fFragment_ = fragment;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ******************************** URI operators *********************************
@@ -199,6 +200,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 

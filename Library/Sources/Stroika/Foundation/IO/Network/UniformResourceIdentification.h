@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <string>
 
 #include "../../Characters/String.h"
@@ -142,6 +146,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual bool IsSecure () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const SchemeType& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const SchemeType& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -158,6 +174,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         constexpr ThreeWayComparer ();
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
@@ -167,6 +184,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
     bool operator>= (const SchemeType& lhs, const SchemeType& rhs);
     bool operator> (const SchemeType& lhs, const SchemeType& rhs);
+#endif
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:
@@ -246,6 +264,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         template <typename RESULT_TYPE = String>
         nonvirtual RESULT_TYPE AsEncoded () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Host& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Host& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -285,6 +315,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         int operator() (const Host& lhs, const Host& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -296,6 +327,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator!= (const Host& lhs, const Host& rhs);
     bool operator>= (const Host& lhs, const Host& rhs);
     bool operator> (const Host& lhs, const Host& rhs);
+#endif
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
@@ -347,6 +379,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         template <typename RESULT_TYPE = String>
         nonvirtual RESULT_TYPE AsEncoded () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const UserInfo& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const UserInfo& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -384,6 +428,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         int operator() (const UserInfo& lhs, const UserInfo& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -395,6 +440,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
     bool operator>= (const UserInfo& lhs, const UserInfo& rhs);
     bool operator> (const UserInfo& lhs, const UserInfo& rhs);
+#endif
 
     /**
      *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
@@ -472,6 +518,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual void SetUserInfo (const optional<UserInfo>& userInfo);
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Authority& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Authority& rhs) const;
+#endif
+
     public:
         struct ThreeWayComparer;
 
@@ -495,6 +553,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         int operator() (const Authority& lhs, const Authority& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -506,6 +565,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator!= (const Authority& lhs, const Authority& rhs);
     bool operator>= (const Authority& lhs, const Authority& rhs);
     bool operator> (const Authority& lhs, const Authority& rhs);
+#endif
 
     /**
      */
@@ -536,6 +596,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         // Return wide string, but all ascii characters
         // http://tools.ietf.org/html/rfc3986
         nonvirtual String ComputeQueryString () const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Query& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Query& rhs) const;
+#endif
 
     public:
         struct EqualsComparer;
@@ -582,6 +654,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         int operator() (const Query& lhs, const Query& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -593,6 +666,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     bool operator!= (const Query& lhs, const Query& rhs);
     bool operator>= (const Query& lhs, const Query& rhs);
     bool operator> (const Query& lhs, const Query& rhs);
+#endif
 
     /*
      *  See http://tools.ietf.org/html/rfc3986

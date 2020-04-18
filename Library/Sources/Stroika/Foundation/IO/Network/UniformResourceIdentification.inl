@@ -30,6 +30,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         : inherited{s}
     {
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering SchemeType::operator<=> (const SchemeType& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool SchemeType::operator== (const SchemeType& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -41,6 +51,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      **************************** SchemeType operators ******************************
@@ -70,6 +81,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
     /*
      ********************************************************************************
@@ -123,6 +135,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fEncodedName_.AsASCII<string> ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering Host::operator<=> (const Host& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool Host::operator== (const Host& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -138,6 +160,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
             String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ******************************** Host operators ********************************
@@ -167,6 +190,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
     /*
      ********************************************************************************
@@ -201,6 +225,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fEncodedUserInfo_.AsASCII<string> ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool UserInfo::operator== (const UserInfo& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -212,6 +246,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ****************************** UserInfo operators ******************************
@@ -241,6 +276,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
     /*
      ********************************************************************************
@@ -277,6 +313,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         fUserInfo_ = userInfo;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering Authority::operator<=> (const Authority& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool Authority::operator== (const Authority& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -294,6 +340,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************** Authority comparison operators *************************
@@ -323,6 +370,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
     /*
      ********************************************************************************
@@ -357,7 +405,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering Query::operator<=> (const Query& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
+    inline bool Query::operator== (const Query& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+#endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      **************************** Query::operators **********************************
@@ -373,11 +432,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool operator== (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return not EqualsComparer{}(lhs, rhs);
     }
     inline bool operator>= (const Query& lhs, const Query& rhs)
     {
@@ -387,6 +446,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 
