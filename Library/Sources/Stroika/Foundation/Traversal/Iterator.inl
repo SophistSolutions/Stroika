@@ -179,11 +179,13 @@ namespace Stroika::Foundation::Traversal {
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
     }
+#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
     {
         return this->Equals (rhs);
     }
+#endif
     template <typename T, typename ITERATOR_TRAITS>
     inline typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
     {
