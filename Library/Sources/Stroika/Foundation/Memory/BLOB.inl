@@ -309,12 +309,10 @@ namespace Stroika::Foundation::Memory {
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }
-#if 0
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
-        return EqualsComparer{}(*this, rhs) == 0;
+        return EqualsComparer{}(*this, rhs);
     }
-#endif
 #endif
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
@@ -397,11 +395,11 @@ namespace Stroika::Foundation::Memory {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
-#endif
     inline bool operator== (const BLOB& lhs, const BLOB& rhs)
     {
         return BLOB::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
 }
 

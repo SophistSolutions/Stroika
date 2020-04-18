@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        //nonvirtual bool operator== (const BLOB& rhs) const;
+        nonvirtual bool operator== (const BLOB& rhs) const;
 #endif
 
     public:
@@ -402,9 +402,8 @@ namespace Stroika::Foundation::Memory {
     bool operator!= (const BLOB& lhs, const BLOB& rhs);
     bool operator>= (const BLOB& lhs, const BLOB& rhs);
     bool operator> (const BLOB& lhs, const BLOB& rhs);
-#endif
-    // @todo UNDERSTAND WHY THIS NEEDED EVEN WITH C++20?
     bool operator== (const BLOB& lhs, const BLOB& rhs);
+#endif
 
 }
 
