@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Math {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Angle& rhs) const = default;
+        nonvirtual partial_ordering operator<=> (const Angle& rhs) const = default;
 #endif
 
     public:
