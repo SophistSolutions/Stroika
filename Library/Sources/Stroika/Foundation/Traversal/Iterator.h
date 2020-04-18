@@ -723,6 +723,8 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     /**
+     *  \brief More clear way of writing '&*' - convert iterator to pointer.
+     *
      *  Sometimes (especially when interacting with low level code) its handy to convert an iterator
      *  to a pointer. This is always legal for a short period (@todo reference to docs/why).
      *
