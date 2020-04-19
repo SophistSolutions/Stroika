@@ -4,7 +4,9 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/Format.h"
+#include "../../../Characters/StringBuilder.h"
 #include "../../../Characters/String_Constant.h"
+#include "../../../Characters/ToString.h"
 #include "../../../Execution/RequiredComponentMissingException.h"
 #include "../../../Streams/TextReader.h"
 #include "../HTTP/Headers.h"
@@ -20,6 +22,23 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
+
+/*
+ ********************************************************************************
+ ********************* Transfer::Response::SSLResultInfo ************************
+ ********************************************************************************
+ */
+String Response::SSLResultInfo::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Subject-Common-Name: " + Characters::ToString (fSubjectCommonName) + L",";
+    sb += L"Subject-Company-Name: " + Characters::ToString (fSubjectCompanyName) + L",";
+    sb += L"Issuer: " + Characters::ToString (fIssuer) + L",";
+    sb += L"Validation-Status: " + Characters::ToString (fValidationStatus) + L",";
+    sb += L"}";
+    return sb.str ();
+}
 
 /*
  ********************************************************************************
@@ -45,12 +64,16 @@ optional<String> Response::GetCharset () const
     return {};
 }
 
-#if 0
-void    Response::ThrowIfFailed () const
+String Response::ToString () const
 {
-    HTTP::Exception::ThrowIfError (fStatus_);
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Headers: " + Characters::ToString (fHeaders_) + L",";
+    sb += L"Status: " + Characters::ToString (fStatus_) + L",";
+    sb += L"fServerEndpointSSLInfo_: " + Characters::ToString (fServerEndpointSSLInfo_) + L",";
+    sb += L"}";
+    return sb.str ();
 }
-#endif
 
 InputStream<byte>::Ptr Response::GetDataBinaryInputStream () const
 {

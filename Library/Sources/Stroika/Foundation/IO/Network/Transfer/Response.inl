@@ -48,4 +48,26 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
 }
 
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
+    template <>
+#endif
+    constexpr EnumNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus> DefaultNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>::k{
+        EnumNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>::BasicArrayInitializer{{
+            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eNoSSL, L"No-SSL"},
+            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eSSLOK, L"SSL-OK"},
+            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eCertNotYetValid, L"Cert-Not-Yet-Valid"},
+            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eCertExpired, L"Cert-Expired"},
+            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eHostnameMismatch, L"Hostname-Mismatch"},
+            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eSSLFailure, L"SSL-Failure"},
+        }}};
+
+}
+
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Response_inl_*/

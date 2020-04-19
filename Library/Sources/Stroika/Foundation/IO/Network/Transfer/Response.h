@@ -104,6 +104,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
                 Stroika_Define_Enum_Bounds (eNoSSL, eSSLFailure)
             };
             ValidationStatus fValidationStatus{ValidationStatus::eNoSSL};
+
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
         };
 
     public:
@@ -189,14 +194,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          */
         nonvirtual optional<String> GetCharset () const;
 
-#if 0
-        // now done automatically
-        public:
-            /**
-             *  Throws HTTP::Exception if not 'GetSucceeded'
-             */
-            nonvirtual  void    ThrowIfFailed () const;
-#endif
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
 
     private:
         BLOB                                                      fData_;                  // usually empty, but provided for some methods like POST
