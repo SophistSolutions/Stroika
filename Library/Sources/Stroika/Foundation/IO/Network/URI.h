@@ -288,7 +288,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Supported conversion-targets (T):
          *      String - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
-         *      string - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
+         *      string - ditto
          */
         template <typename T>
         nonvirtual T As () const;
