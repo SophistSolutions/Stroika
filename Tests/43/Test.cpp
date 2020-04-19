@@ -570,12 +570,12 @@ namespace {
 #endif
                     try {
                         Response r = c.GET (u);
+                        VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
                         VerifyTestResult (r.GetSucceeded ());
                         VerifyTestResult (r.GetData ().size () > 1);
-                        Response r2           = c.GET (u);
-                        bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
-                        VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
-                        VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
+                        Response r2 = c.GET (u);
+                        bool wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
+                        VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache);                                                           // if not from cache, sources can give different answers
                         DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                     }
                     catch (const IO::Network::HTTP::Exception& e) {
