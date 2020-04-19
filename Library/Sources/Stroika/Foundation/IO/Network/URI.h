@@ -297,7 +297,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Returns true iff one or more sub-elements have a value
          */
-        nonvirtual operator bool () const;
+        nonvirtual explicit operator bool () const;
 
     public:
         /**
