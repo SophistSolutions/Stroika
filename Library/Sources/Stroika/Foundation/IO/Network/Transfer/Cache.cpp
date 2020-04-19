@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Time;
 using Stroika::Foundation::Cache::SynchronizedLRUCache;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const String Transfer::Cache::DefaultOptions::kCachedResultHeaderDefault{L"X-Stroika-Cached-Result"sv};
@@ -75,7 +75,7 @@ namespace {
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DefaultCacheRep_::OnBeforeFetch", L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch", L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
 #endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {

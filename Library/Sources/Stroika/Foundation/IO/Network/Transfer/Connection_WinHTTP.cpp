@@ -50,7 +50,7 @@ using Stroika::Foundation::Memory::SmallStackBufferCommon;
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  *  TODO:
@@ -189,6 +189,9 @@ URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const
 
 void Connection_WinHTTP::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Connection_WinHTTP::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
+#endif
     URI newURL = fURL_;
     newURL.SetScheme (schemeAndAuthority.GetScheme ());
     newURL.SetAuthority (schemeAndAuthority.GetAuthority ());
