@@ -294,6 +294,26 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
+//
+// Issue APPEARS to be operator bool called, and that is what gets compared on!!!
+// Also breaks other operators
+// REPORTED TO MSFT  - https://developercommunity.visualstudio.com/content/problem/997235/operator-bool-buggy-interaction-with-auto-generate.html
+//
+// Simple workaround appears to be to use explicit operator==
+// Cannot TEST this now (expect using code from https://developercommunity.visualstudio.com/content/problem/997235/operator-bool-buggy-interaction-with-auto-generate)
+// so probably remove this bug before long - leave define around for POINTER to discussion/reproduction details in case I run into this again anytime soon
+//
+#ifndef qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy
+
+#if defined(_MSC_VER)
+// first found broken in _MSC_VER_2k19_16Pt5_
+#define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
+#else
+#define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy 0
+#endif
+
+#endif
+
 /*
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled

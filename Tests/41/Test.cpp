@@ -233,6 +233,7 @@ namespace {
             }
             void TestEmptyURI_ ()
             {
+                Debug::TraceContextBumper ctx{"TestEmptyURI_"};
                 {
                     URI u{};
                     VerifyTestResult (u.As<String> () == L"");
@@ -249,6 +250,7 @@ namespace {
             }
             void TestSamplesFromPythonURLParseDocs_ ()
             {
+                Debug::TraceContextBumper ctx{"TestSamplesFromPythonURLParseDocs_"};
                 using namespace IO::Network::UniformResourceIdentification;
                 {
                     /*
@@ -345,6 +347,7 @@ namespace {
             }
             void Test_PatternUsedInHealthFrame_ ()
             {
+                Debug::TraceContextBumper ctx{"Test_PatternUsedInHealthFrame_"};
                 using namespace IO::Network::UniformResourceIdentification;
                 {
                     auto o = URI{"dyn:/Reminders/Home.htm"};
@@ -358,6 +361,30 @@ namespace {
                     VerifyTestResult ((*o.GetQuery<Query> ()) (L"ThemeName") == L"Cupertino");
                 }
             }
+            void Test_RegressionDueToBugInCompareURIsC20Spaceship_ ()
+            {
+                Debug::TraceContextBumper ctx{"Test_RegressionDueToBugInCompareURIsC20Spaceship_"};
+                URI                       fred = URI{L"http://abc.com/bar"};
+                if (fred) {
+                    // make sure operator bool working
+                }
+                else {
+                    VerifyTestResult (false);
+                }
+                for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}}) {
+                    auto schemeAndAuthority = fred.GetSchemeAndAuthority ();
+                    URI  fURL_              = u;
+                    URI  newURL             = u;
+                    newURL.SetScheme (schemeAndAuthority.GetScheme ());
+                    newURL.SetAuthority (schemeAndAuthority.GetAuthority ());
+                    auto b1 = (fURL_ == newURL);
+                    auto b2 = (fURL_ < newURL);
+                    auto b3 = (fURL_ > newURL);
+                    auto b4 = (fURL_ != newURL);
+                    VerifyTestResult (b1 != b4); // if this fails, qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy (but for now worked around with explicit bool)
+                    VerifyTestResult (b2 != b3 or b1);
+                }
+            }
         }
         void DoTests_ ()
         {
@@ -368,6 +395,7 @@ namespace {
             Private_::TestEmptyURI_ ();
             Private_::TestSamplesFromPythonURLParseDocs_ ();
             Private_::Test_PatternUsedInHealthFrame_ ();
+            Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ ();
         }
     }
 }
