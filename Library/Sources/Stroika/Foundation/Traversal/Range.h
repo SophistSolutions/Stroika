@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Traversal {
      *  A Range<> is analagous to a mathematical range. It's left and and its right sides can
      *  be optionally open or closed.
      *
-     *  This Range<> template is similar to Ruby range.
+     *  This Range<> template is similar to Ruby range, and fairly DIFFERENT from the std::range<> template.
      *
      *  Somewhat inspired by, and at least influenced by, the definition in
      *      http://ruby-doc.org/core-2.0/Range.html
