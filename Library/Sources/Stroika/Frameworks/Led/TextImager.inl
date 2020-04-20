@@ -123,11 +123,12 @@ namespace Stroika::Frameworks::Led {
     {
         return fDefaultTabWidth == rhs.fDefaultTabWidth and fTabStops == rhs.fTabStops;
     }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool TextImager::StandardTabStopList::operator!= (const StandardTabStopList& rhs) const
     {
         return not(*this == rhs);
     }
-
+#endif
     inline void TextImager::SetWindowRect_ (const Led_Rect& windowRect)
     {
         fWindowRect = windowRect;
@@ -144,7 +145,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline bool TextImager::GetForceAllRowsShowing () const
     {
-        return (fForceAllRowsShowing);
+        return fForceAllRowsShowing;
     }
     /*
     @METHOD:        TextImager::SetForceAllRowsShowing

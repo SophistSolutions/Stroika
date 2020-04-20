@@ -117,6 +117,11 @@ namespace Stroika::Frameworks::Led {
         nonvirtual Led_tString GetVirtualText () const;
         nonvirtual Led_tString GetVirtualText (const ScriptRunElt& scriptRunElt) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        nonvirtual bool operator== (const TextLayoutBlock& rhs) const;
+#endif
+
         // Debug support
     public:
         nonvirtual void Invariant () const;
@@ -126,7 +131,9 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     bool operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs);
+#endif
 
     /*
     @CLASS:         TextLayoutBlock::LessThanVirtualStart

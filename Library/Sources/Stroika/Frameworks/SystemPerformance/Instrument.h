@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <memory>
 
 #include "../../Foundation/Containers/Set.h"
@@ -98,6 +102,24 @@ namespace Stroika::Frameworks::SystemPerformance {
         template <typename T>
         nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Instrument& rhs) const
+        {
+            return fInstrumentName <=> rhs.fInstrumentName;
+        }
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Instrument& rhs) const
+        {
+            return fInstrumentName == rhs.fInstrumentName;
+        }
+#endif
+#if __cpp_impl_three_way_comparison < 201907
         bool operator== (const Instrument& rhs) const
         {
             return fInstrumentName == rhs.fInstrumentName;
@@ -106,6 +128,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         {
             return fInstrumentName < rhs.fInstrumentName;
         }
+#endif
     };
 
 }

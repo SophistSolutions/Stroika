@@ -71,6 +71,14 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual void CompleteNormally (Message* m);
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  Two interceptors are equal if they share the same underlying rep.
+         */
+        nonvirtual auto operator<=> (const Interceptor& rhs) const = default;
+#endif
+
     protected:
         /**
          */
@@ -83,8 +91,10 @@ namespace Stroika::Frameworks::WebServer {
     private:
         class MyRep_;
 
+#if __cpp_impl_three_way_comparison < 201907
     private:
         friend bool operator== (const Interceptor& lhs, const Interceptor& rhs);
+#endif
     };
 
     /**
@@ -119,6 +129,7 @@ namespace Stroika::Frameworks::WebServer {
         virtual void CompleteNormally (Message* m);
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Two interceptors are equal if they share the same underlying rep.
      */
@@ -127,6 +138,7 @@ namespace Stroika::Frameworks::WebServer {
     /**
      */
     bool operator!= (const Interceptor& lhs, const Interceptor& rhs);
+#endif
 
 }
 

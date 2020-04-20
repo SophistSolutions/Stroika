@@ -13,16 +13,10 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-    // defined out of order cuz used earlier
-    inline MultiRowTextImager::RowReference::RowReference (PartitionMarker* partitionMarker, size_t subRow)
-        : fPartitionMarker (partitionMarker)
-        , fSubRow (subRow)
-    {
-    }
+     ********************************************************************************
+     ****************************** MultiRowTextImager ******************************
+     ********************************************************************************
+     */
     inline void MultiRowTextImager::InvalidateTotalRowsInWindow ()
     {
         fTotalRowsInWindow = 0; // zero is sentinal meaning invalid
@@ -44,7 +38,11 @@ namespace Stroika::Frameworks::Led {
         return (fTotalRowsInWindow);
     }
 
-    //  class   MultiRowTextImager::PartitionElementCacheInfo::Rep
+    /*
+     ********************************************************************************
+     ************ MultiRowTextImager::PartitionElementCacheInfo::Rep ****************
+     ********************************************************************************
+     */
     inline MultiRowTextImager::PartitionElementCacheInfo::Rep::Rep ()
         : fPixelHeightCache (Led_Distance (-1))
         , fInterlineSpace (0)
@@ -63,7 +61,11 @@ namespace Stroika::Frameworks::Led {
         }
     }
 
-    //  class   MultiRowTextImager::PartitionElementCacheInfo
+    /*
+     ********************************************************************************
+     *************** MultiRowTextImager::PartitionElementCacheInfo ******************
+     ********************************************************************************
+     */
     inline MultiRowTextImager::PartitionElementCacheInfo::PartitionElementCacheInfo ()
         : fRep (make_shared<Rep> ())
     {
@@ -85,7 +87,6 @@ namespace Stroika::Frameworks::Led {
         Assert (interlineSpace != Led_Distance (-1));
         fRep->fInterlineSpace = interlineSpace;
     }
-
     /*
     @METHOD:        MultiRowTextImager::PartitionElementCacheInfo::GetPixelHeight
     @DESCRIPTION:   <p>Return the cached height of the given partition element. This is the sum of the
@@ -248,10 +249,14 @@ namespace Stroika::Frameworks::Led {
         return (0); // if we get here - must have been before our line...
     }
 
-    //  class   MultiRowTextImager::RowReference
-    inline MultiRowTextImager::RowReference::RowReference (const RowReference& from)
-        : fPartitionMarker (from.fPartitionMarker)
-        , fSubRow (from.fSubRow)
+    /*
+     ********************************************************************************
+     ************************ MultiRowTextImager::RowReference **********************
+     ********************************************************************************
+     */
+    inline MultiRowTextImager::RowReference::RowReference (PartitionMarker* partitionMarker, size_t subRow)
+        : fPartitionMarker (partitionMarker)
+        , fSubRow (subRow)
     {
     }
     inline MultiRowTextImager::RowReference& MultiRowTextImager::RowReference::operator= (const MultiRowTextImager::RowReference& rhs)
@@ -268,8 +273,18 @@ namespace Stroika::Frameworks::Led {
     {
         return (fSubRow);
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline bool MultiRowTextImager::RowReference::operator== (MultiRowTextImager::RowReference rhs) const
+    {
+        return this->GetPartitionMarker () == rhs.GetPartitionMarker () and this->GetSubRow () == rhs.GetSubRow ();
+    }
+#endif
 
-    //  class   MultiRowTextImager
+    /*
+     ********************************************************************************
+     ********************************* MultiRowTextImager ***************************
+     ********************************************************************************
+     */
     /*
     @METHOD:        MultiRowTextImager::GetNextRowReference
     @DESCRIPTION:   <p>Advance the given row reference argument to the next row. Return true if there
@@ -391,6 +406,7 @@ namespace Stroika::Frameworks::Led {
         return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs)
     {
         return (lhs.GetPartitionMarker () == rhs.GetPartitionMarker () and
@@ -401,6 +417,7 @@ namespace Stroika::Frameworks::Led {
         return (lhs.GetPartitionMarker () != rhs.GetPartitionMarker () or
                 lhs.GetSubRow () != rhs.GetSubRow ());
     }
+#endif
 
 }
 

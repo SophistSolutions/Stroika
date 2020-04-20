@@ -433,6 +433,33 @@ void TextLayoutBlock::Invariant_ () const
 }
 #endif
 
+#if __cpp_impl_three_way_comparison >= 201907
+bool TextLayoutBlock::operator== (const TextLayoutBlock& rhs) const
+{
+    if (this->GetTextLength () != rhs.GetTextLength ()) {
+        return false;
+    }
+    if (this->GetRealText () != rhs.GetRealText ()) {
+        return false;
+    }
+    if (this->GetVirtualText () != rhs.GetVirtualText ()) {
+        return false;
+    }
+    vector<TextLayoutBlock::ScriptRunElt> lhsSR = this->GetScriptRuns ();
+    vector<TextLayoutBlock::ScriptRunElt> rhsSR = rhs.GetScriptRuns ();
+    if (lhsSR.size () != rhsSR.size ()) {
+        return false;
+    }
+    for (size_t i = 0; i < lhsSR.size (); ++i) {
+        if (lhsSR[i] != rhsSR[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+#endif
+
+#if __cpp_impl_three_way_comparison < 201907
 bool operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
 {
     if (lhs.GetTextLength () != rhs.GetTextLength ()) {
@@ -456,6 +483,7 @@ bool operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
     }
     return true;
 }
+#endif
 
 /*
  ********************************************************************************

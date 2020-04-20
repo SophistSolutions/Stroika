@@ -176,13 +176,14 @@ namespace Stroika::Foundation::Traversal {
      *      sequence of numbers each time you make an iterate and run.
      *
      *  *Design Note*:
-     *      Chose NOT to include an equal_to<Iterable<T>> partial specialization here, but instead duplicatively in
-     *      each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
-     *      importantly because it doesn't appear to me to make sense so say that a Stack<T> == Set<T>, even if
-     *      their values were the same. In other words, the meaning of 'equals' varies between different kinds of
-     *      iterables (over the same type).
+     *      Comparisons (operator==, operator<=>, etc):
+     *          Chose NOT to include an equal_to<Iterable<T>> partial specialization here, but instead duplicatively in
+     *          each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
+     *          importantly because it doesn't appear to me to make sense so say that a Stack<T> == Set<T>, even if
+     *          their values were the same. In other words, the meaning of 'equals' varies between different kinds of
+     *          iterables (over the same type).
      *
-     *      We DO have methods SetEquals/MultiSetEquals/SequenceEquals (see below).
+     *          We DO have methods SetEquals/MultiSetEquals/SequenceEquals (see below), as well as SequentialThreeWayComparer<> etc.
      *
      *  *Important Design Note*:
      *      Probably important - for performance??? - that all these methods are const,

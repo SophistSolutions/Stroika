@@ -757,7 +757,22 @@ namespace Stroika::Frameworks::Led {
                     break;
             }
         }
+#if __cpp_impl_three_way_comparison >= 201907
+        inline bool operator== (Led_LineSpacing rhs) const
+        {
+            if (this->fRule != rhs.fRule) {
+                return false;
+            }
+            if (this->fRule == Led_LineSpacing::eAtLeastTWIPSSpacing or this->fRule == Led_LineSpacing::eExactTWIPSSpacing or this->fRule == Led_LineSpacing::eExactLinesSpacing) {
+                if (this->fArg != rhs.fArg) {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif
     };
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (Led_LineSpacing lhs, Led_LineSpacing rhs)
     {
         if (lhs.fRule != rhs.fRule) {
@@ -774,7 +789,7 @@ namespace Stroika::Frameworks::Led {
     {
         return not(lhs == rhs);
     }
-
+#endif
     class Led_IncrementalFontSpecification;
     /*
     @CLASS:         Led_FontSpecification

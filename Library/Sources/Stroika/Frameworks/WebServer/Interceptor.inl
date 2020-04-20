@@ -46,6 +46,7 @@ namespace Stroika::Frameworks::WebServer {
         return *dynamic_cast<const T*> (fRep_.get ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ***************************** WebServer::operator== ****************************
@@ -65,6 +66,7 @@ namespace Stroika::Frameworks::WebServer {
     {
         return not(lhs == rhs);
     }
+#endif
 
 }
 #endif /*_Stroika_Frameworks_WebServer_Interceptor_inl_*/

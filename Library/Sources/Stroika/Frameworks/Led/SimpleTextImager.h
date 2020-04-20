@@ -283,11 +283,6 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
         virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
-
-    private:
-        friend class RowReference;
-        friend bool operator== (RowReference lhs, RowReference rhs);
-        friend bool operator!= (RowReference lhs, RowReference rhs);
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
