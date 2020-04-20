@@ -74,7 +74,7 @@ namespace Stroika::Frameworks::WebServer {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  Two interceptors are equal if they share the same underlying rep.
+         *  Two interceptors are equal if they have the same address, or are copies of one another by copy constructor or assignment.
          */
         nonvirtual bool operator== (const Interceptor& rhs) const;
 #endif
@@ -131,7 +131,7 @@ namespace Stroika::Frameworks::WebServer {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Two interceptors are equal if they share the same underlying rep.
+     *  Two interceptors are equal if they have the same address, or are copies of one another by copy constructor or assignment.
      */
     bool operator== (const Interceptor& lhs, const Interceptor& rhs);
 
