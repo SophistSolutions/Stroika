@@ -38,6 +38,12 @@ namespace Stroika::Frameworks::WebServer {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         fRep_->CompleteNormally (m);
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline bool Interceptor::operator== (const Interceptor& rhs) const
+    {
+        return fRep_ == rhs.fRep_;
+    }
+#endif
     template <typename T>
     inline auto Interceptor::_GetRep () const -> const T&
     {

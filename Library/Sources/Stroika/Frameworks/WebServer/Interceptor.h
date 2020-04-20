@@ -76,7 +76,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Two interceptors are equal if they share the same underlying rep.
          */
-        nonvirtual auto operator<=> (const Interceptor& rhs) const = default;
+        nonvirtual bool operator== (const Interceptor& rhs) const;
 #endif
 
     protected:
