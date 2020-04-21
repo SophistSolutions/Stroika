@@ -106,10 +106,10 @@ namespace Stroika::Foundation::Traversal {
             {
                 // DiscreteRange doesn't track specific 'envelope' owner
                 if (fForcedEnd) {
-                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange<T, TRAITS>::MyIteratorRep_> ());
+                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ());
                 }
                 else {
-                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange<T, TRAITS>::MyIteratorRep_> (fStart, fEnd));
+                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> (fStart, fEnd));
                 }
             }
             virtual size_t GetLength () const
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Traversal {
                     return static_cast<SignedDifferenceType> (0);
                 }
                 else {
-                    return 1 + DiscreteRange<T, TRAITS>{fStart, fEnd}.GetDistanceSpanned ();
+                    return 1 + DiscreteRange{fStart, fEnd}.GetDistanceSpanned ();
                 }
             }
             virtual bool IsEmpty () const
@@ -157,18 +157,18 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
+    constexpr DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
         : inherited (begin, end)
     {
         Require (begin <= end);
     }
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS>::DiscreteRange (const optional<T>& begin, const optional<T>& end)
+    constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const optional<T>& begin, const optional<T>& end)
         : inherited (begin, end)
     {
     }
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r)
+    constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r)
         : inherited ()
     {
         // Could do more efficiently
@@ -177,9 +177,9 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename TRAITS>
-    inline DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::FullRange ()
+    constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::FullRange ()
     {
-        return DiscreteRange<T, TRAITS> (TRAITS::kLowerBound, TRAITS::kUpperBound);
+        return DiscreteRange (TRAITS::kLowerBound, TRAITS::kUpperBound);
     }
     template <typename T, typename TRAITS>
     inline Range<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
@@ -187,9 +187,9 @@ namespace Stroika::Foundation::Traversal {
         return inherited::Intersection (rhs);
     }
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange<T, TRAITS>& rhs) const
+    DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange& rhs) const
     {
-        return DiscreteRange<T, TRAITS> (inherited::Intersection (rhs));
+        return DiscreteRange (inherited::Intersection (rhs));
     }
     template <typename T, typename TRAITS>
     inline Range<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
@@ -197,10 +197,10 @@ namespace Stroika::Foundation::Traversal {
         return inherited::UnionBounds (rhs);
     }
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const
+    DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange& rhs) const
     {
         auto r = inherited::UnionBounds (rhs);
-        return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
+        return DiscreteRange (r.GetLowerBound (), r.GetUpperBound ());
     }
     template <typename T, typename TRAITS>
     typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const

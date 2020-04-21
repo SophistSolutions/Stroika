@@ -138,30 +138,30 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req begin <= end (after substitution of optional values)
          */
-        explicit DiscreteRange () = default;
-        explicit DiscreteRange (T begin, T end);
-        explicit DiscreteRange (const optional<T>& begin, const optional<T>& end);
-        explicit DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r);
+        explicit constexpr DiscreteRange () = default;
+        explicit constexpr DiscreteRange (T begin, T end);
+        explicit constexpr DiscreteRange (const optional<T>& begin, const optional<T>& end);
+        explicit constexpr DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r);
 
     public:
         /**
          *  Like Range<>::FullRange () but returing a DiscreteRange<> type.
          */
-        static DiscreteRange<T, TRAITS> FullRange ();
+        static constexpr DiscreteRange FullRange ();
 
     public:
         /**
          *  Like Range<>::Intersection (), but returing a DiscreteRange<> type.
          */
         nonvirtual Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
-        nonvirtual DiscreteRange<T, TRAITS> Intersection (const DiscreteRange<T, TRAITS>& rhs) const;
+        nonvirtual DiscreteRange Intersection (const DiscreteRange& rhs) const;
 
     public:
         /**
          *  Like Range<>::UnionBounds (), but returing a DiscreteRange<> type.
          */
         nonvirtual Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
-        nonvirtual DiscreteRange<T, TRAITS> UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const;
+        nonvirtual DiscreteRange UnionBounds (const DiscreteRange& rhs) const;
 
     public:
         /**
