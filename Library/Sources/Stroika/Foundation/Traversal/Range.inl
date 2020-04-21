@@ -140,12 +140,12 @@ namespace Stroika::Foundation::Traversal {
     inline constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
     {
         // note the case of begin==end is depends on openness, and already handled in normal CTOR - just avoid assert for having begin/end reversed
-        return begin > end ? Range<T, TRAITS>{} : Range<T, TRAITS>{begin, end};
+        return begin > end ? Range{} : Range{begin, end};
     }
     template <typename T, typename TRAITS>
     inline constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
     {
-        return Range<T, TRAITS> (
+        return Range (
             TraitsType::kLowerBound, TraitsType::kUpperBound,
             TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness);
     }
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Traversal {
     inline constexpr bool Range<T, TRAITS>::empty () const
     {
         if (fBegin_ > fEnd_) {
-            // internal hack done in Range<T, TRAITS>::Range() - empty range - otherwise not possible to create this situation
+            // internal hack done in Range::Range() - empty range - otherwise not possible to create this situation
             return true;
         }
         else if (fBegin_ == fEnd_) {
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Traversal {
         return false;
     }
     template <typename T, typename TRAITS>
-    inline bool Range<T, TRAITS>::Contains (const Range<T, TRAITS>& containee) const
+    inline bool Range<T, TRAITS>::Contains (const Range& containee) const
     {
         // @todo fix - NOT QUITE RIGHT!!!
         if (containee.empty ()) {
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Traversal {
     inline constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const
     {
         Require (not empty ());
-        return Range<T, TRAITS> (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
+        return Range (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
     }
 #if 0
     template    <typename T, typename TRAITS>
@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
+    Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const
     {
         if (empty () or rhs.empty ()) {
             return Range ();
@@ -281,19 +281,19 @@ namespace Stroika::Foundation::Traversal {
             // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
             Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
             Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;
-            return Range<T, TRAITS> (l, r, lhsO, rhsO);
+            return Range (l, r, lhsO, rhsO);
         }
         else {
             return Range ();
         }
     }
     template <typename T, typename TRAITS>
-    inline DisjointRange<T, Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range<T, TRAITS>& rhs) const
+    inline DisjointRange<T, Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range& rhs) const
     {
-        return DisjointRange<T, Range<T, TRAITS>>{{*this, rhs}};
+        return DisjointRange<T, Range>{{*this, rhs}};
     }
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
+    Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range& rhs) const
     {
         if (empty ()) {
             return rhs;
@@ -303,12 +303,12 @@ namespace Stroika::Foundation::Traversal {
         }
         T                l = min (GetLowerBound (), rhs.GetLowerBound ());
         T                r = max (GetUpperBound (), rhs.GetUpperBound ());
-        Range<T, TRAITS> result;
+        Range            result;
         if (l <= r) {
             // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
             Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
             Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;
-            result        = Range<T, TRAITS> (l, r, lhsO, rhsO);
+            result        = Range (l, r, lhsO, rhsO);
         }
         Ensure (result.GetLowerBound () <= GetLowerBound ());
         Ensure (result.GetLowerBound () <= GetUpperBound ());
@@ -401,12 +401,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+        return typename Range::EqualsComparer{}(lhs, rhs);
     }
     template <typename T, typename TRAITS>
     inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return not typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+        return not typename Range::EqualsComparer{}(lhs, rhs);
     }
 #endif
 

@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Range () creates an empty range.
          *
-         *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as openness).
+         *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as 'TRAITs' default openness).
          *
          *  \req begin <= end (after substitution of optional values)
          *
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /** 
          */
-        static Range<T, TRAITS> Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
+        static Range Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
     public:
         /**
@@ -225,19 +225,19 @@ namespace Stroika::Foundation::Traversal {
          *
          *  The Range(begin/end) CTOR REQUIRES begin<=end). This does not, and just produces an empty range in that case.
          */
-        static constexpr Range<T, TRAITS> ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
+        static constexpr Range ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
 
     public:
         /**
-         *  This returns Range<T, TRAITS> (
+         *  This returns Range (
          *              TraitsType::kLowerBound, TraitsType::kUpperBound,
          *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
          *          );
          */
 #if qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-        static Range<T, TRAITS> FullRange ();
+        static Range FullRange ();
 #else
-        static constexpr Range<T, TRAITS> FullRange ();
+        static constexpr Range FullRange ();
 #endif
 
     public:
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Traversal {
          *  of the range, we check <= if the edge is closed, and < if the edge is open.
          */
         nonvirtual constexpr bool Contains (Configuration::ArgByValueType<T> r) const;
-        nonvirtual bool           Contains (const Range<T, TRAITS>& containee) const;
+        nonvirtual bool           Contains (const Range& containee) const;
 
     public:
         /**
@@ -300,19 +300,19 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req not empty ();
          */
-        nonvirtual constexpr Range<T, TRAITS> Closure () const;
+        nonvirtual constexpr Range Closure () const;
 
 #if 0
     public:
         /**
          */
-        nonvirtual  bool    Overlaps (const Range<T, TRAITS>& rhs) const;
+        nonvirtual  bool    Overlaps (const Range& rhs) const;
 #endif
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  Simply indirect to @Range<T, TRAITS>::EqualsComparer
+         *  Simply indirect to @Range::EqualsComparer
          */
         constexpr bool operator== (const Range& rhs) const;
 #endif
@@ -333,19 +333,19 @@ namespace Stroika::Foundation::Traversal {
          *
          *      @see operator^ - an operator alias for this function
          */
-        nonvirtual Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
+        nonvirtual Range Intersection (const Range& rhs) const;
 
     public:
         /**
          * if two regions are disjoint, this can encompass a larger region than the actual union would
          */
-        nonvirtual DisjointRange<T, Range<T, TRAITS>> Union (const Range<T, TRAITS>& rhs) const;
+        nonvirtual DisjointRange<T, Range> Union (const Range& rhs) const;
 
     public:
         /**
          * if two regions are disjoint, this can encompass a larger region than the actual union would
          */
-        nonvirtual Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
+        nonvirtual Range UnionBounds (const Range& rhs) const;
 
     public:
         /**
