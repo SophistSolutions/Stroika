@@ -84,29 +84,29 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    constexpr inline Range<T, TRAITS>::Range ()
+    constexpr Range<T, TRAITS>::Range ()
         : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
     {
         Ensure (empty ());
     }
     template <typename T, typename TRAITS>
     template <typename T2, typename TRAITS2>
-    constexpr inline Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
+    constexpr Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
         : Range (src.GetLowerBound (), src.GetUpperBound (), src.GetLowerBoundOpenness (), src.GetUpperBoundOpenness ())
     {
     }
     template <typename T, typename TRAITS>
-    constexpr inline Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
+    constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
         : Range (begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
     {
     }
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end)
+    constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end)
         : Range (begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
     {
     }
     template <typename T, typename TRAITS>
-    constexpr inline Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
         : fBegin_ (TRAITS::kUpperBound)
         , fEnd_ (TRAITS::kLowerBound)
         , fBeginOpenness_ (lhsOpen)
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Traversal {
         Ensure (empty ());
     }
     template <typename T, typename TRAITS>
-    constexpr inline Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
         : fBegin_ (begin)
         , fEnd_ (end)
         , fBeginOpenness_ (lhsOpen)
@@ -127,30 +127,30 @@ namespace Stroika::Foundation::Traversal {
         Require (end <= TRAITS::kUpperBound);
     }
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen)
         : Range (begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, lhsOpen, rhsOpen)
     {
     }
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> Range<T, TRAITS>::Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
     {
-        return Range<T, TRAITS>{center - radius, center + radius, lhsOpen, rhsOpen};
+        return Range{center - radius, center + radius, lhsOpen, rhsOpen};
     }
     template <typename T, typename TRAITS>
-    inline constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
     {
         // note the case of begin==end is depends on openness, and already handled in normal CTOR - just avoid assert for having begin/end reversed
         return begin > end ? Range{} : Range{begin, end};
     }
     template <typename T, typename TRAITS>
-    inline constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
     {
         return Range (
             TraitsType::kLowerBound, TraitsType::kUpperBound,
             TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness);
     }
     template <typename T, typename TRAITS>
-    inline constexpr bool Range<T, TRAITS>::empty () const
+    constexpr bool Range<T, TRAITS>::empty () const
     {
         if (fBegin_ > fEnd_) {
             // internal hack done in Range::Range() - empty range - otherwise not possible to create this situation
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Traversal {
         return false;
     }
     template <typename T, typename TRAITS>
-    inline constexpr typename Range<T, TRAITS>::UnsignedDifferenceType Range<T, TRAITS>::GetDistanceSpanned () const
+    constexpr typename Range<T, TRAITS>::UnsignedDifferenceType Range<T, TRAITS>::GetDistanceSpanned () const
     {
         if (empty ())
             [[UNLIKELY_ATTR]]
@@ -172,13 +172,13 @@ namespace Stroika::Foundation::Traversal {
         return static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_));
     }
     template <typename T, typename TRAITS>
-    inline constexpr T Range<T, TRAITS>::GetMidpoint () const
+    constexpr T Range<T, TRAITS>::GetMidpoint () const
     {
         Require (not empty ());
         return GetLowerBound () + GetDistanceSpanned () / 2;
     }
     template <typename T, typename TRAITS>
-    inline T Range<T, TRAITS>::Pin (T v) const
+    constexpr T Range<T, TRAITS>::Pin (T v) const
     {
         if (v < fBegin_) {
             T tmp{fBeginOpenness_ == Openness::eClosed ? fBegin_ : TraitsType::GetNext (fBegin_)};
@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Traversal {
         return v;
     }
     template <typename T, typename TRAITS>
-    inline constexpr bool Range<T, TRAITS>::Contains (Configuration::ArgByValueType<T> r) const
+    constexpr bool Range<T, TRAITS>::Contains (Configuration::ArgByValueType<T> r) const
     {
         if (empty ()) {
             return false;
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Traversal {
         return false;
     }
     template <typename T, typename TRAITS>
-    inline bool Range<T, TRAITS>::Contains (const Range& containee) const
+    constexpr bool Range<T, TRAITS>::Contains (const Range& containee) const
     {
         // @todo fix - NOT QUITE RIGHT!!!
         if (containee.empty ()) {
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Traversal {
         return GetLowerBound () <= containee.GetLowerBound () and containee.GetUpperBound () <= GetUpperBound ();
     }
     template <typename T, typename TRAITS>
-    inline constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const
     {
         Require (not empty ());
         return Range (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Traversal {
 #endif
     template <typename T, typename TRAITS>
     template <typename T2, typename TRAITS2>
-    bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
+    constexpr bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
     {
         if (empty () or rhs.empty ()) {
             return false;
@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const
     {
         if (empty () or rhs.empty ()) {
             return Range ();
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Traversal {
         return DisjointRange<T, Range>{{*this, rhs}};
     }
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range& rhs) const
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range& rhs) const
     {
         if (empty ()) {
             return rhs;
@@ -321,29 +321,29 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T, typename TRAITS>
-    inline constexpr T Range<T, TRAITS>::GetLowerBound () const
+    constexpr T Range<T, TRAITS>::GetLowerBound () const
     {
         Require (not empty ());
         return fBegin_;
     }
     template <typename T, typename TRAITS>
-    inline constexpr Openness Range<T, TRAITS>::GetLowerBoundOpenness () const
+    constexpr Openness Range<T, TRAITS>::GetLowerBoundOpenness () const
     {
         return fBeginOpenness_;
     }
     template <typename T, typename TRAITS>
-    inline constexpr T Range<T, TRAITS>::GetUpperBound () const
+    constexpr T Range<T, TRAITS>::GetUpperBound () const
     {
         Require (not empty ());
         return fEnd_;
     }
     template <typename T, typename TRAITS>
-    inline constexpr Openness Range<T, TRAITS>::GetUpperBoundOpenness () const
+    constexpr Openness Range<T, TRAITS>::GetUpperBoundOpenness () const
     {
         return fEndOpenness_;
     }
     template <typename T, typename TRAITS>
-    inline auto Range<T, TRAITS>::Offset (SignedDifferenceType o) const -> Range
+    constexpr auto Range<T, TRAITS>::Offset (SignedDifferenceType o) const -> Range
     {
         Require (not empty ());
         return Range (static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());

@@ -182,28 +182,28 @@ namespace Stroika::Foundation::Traversal {
         return DiscreteRange (TRAITS::kLowerBound, TRAITS::kUpperBound);
     }
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
+    constexpr Range<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
     {
         return inherited::Intersection (rhs);
     }
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange& rhs) const
+    constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange& rhs) const
     {
         return DiscreteRange (inherited::Intersection (rhs));
     }
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
+    constexpr Range<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
     {
         return inherited::UnionBounds (rhs);
     }
     template <typename T, typename TRAITS>
-    DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange& rhs) const
+    constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange& rhs) const
     {
         auto r = inherited::UnionBounds (rhs);
         return DiscreteRange (r.GetLowerBound (), r.GetUpperBound ());
     }
     template <typename T, typename TRAITS>
-    typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
+    constexpr typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
     {
         if (this->empty ()) {
             return 0;
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename TRAITS>
-    inline auto DiscreteRange<T, TRAITS>::Offset (SignedDifferenceType o) const -> DiscreteRange
+    constexpr auto DiscreteRange<T, TRAITS>::Offset (SignedDifferenceType o) const -> DiscreteRange
     {
         Require (not this->empty ());
         return DiscreteRange (inherited::Offset (o));

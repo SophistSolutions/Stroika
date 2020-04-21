@@ -209,15 +209,15 @@ namespace Stroika::Foundation::Traversal {
         template <typename T2, typename TRAITS2>
         constexpr explicit Range (const Range<T2, TRAITS>& src);
         constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
-        explicit Range (const optional<T>& begin, const optional<T>& end);
+        constexpr explicit Range (const optional<T>& begin, const optional<T>& end);
         constexpr explicit Range (Openness lhsOpen, Openness rhsOpen);
         constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
-        explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
+        constexpr explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
     public:
         /** 
          */
-        static Range Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
+        static constexpr Range Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
     public:
         /**
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Traversal {
          *  But if GetLowerBound () == GetUpperBound (), and one one side is open, and the other closed,
          *  the one closed point endpoint is in the range, so the range is non-empty.
          */
-        nonvirtual constexpr bool empty () const;
+        constexpr bool empty () const;
 
     public:
         /**
@@ -265,12 +265,12 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   For discrete Ranges, this does NOT correspond to the number of points (this is one less)
          */
-        nonvirtual constexpr UnsignedDifferenceType GetDistanceSpanned () const;
+        constexpr UnsignedDifferenceType GetDistanceSpanned () const;
 
     public:
         /**
          */
-        nonvirtual constexpr T GetMidpoint () const;
+        constexpr T GetMidpoint () const;
 
     public:
         /**
@@ -284,15 +284,15 @@ namespace Stroika::Foundation::Traversal {
          *
          *  @see Math::PinInRange ()
          */
-        nonvirtual T Pin (T v) const;
+        constexpr T Pin (T v) const;
 
     public:
         /**
          *  This corresponds to the mathematical set containment. When comparing with the edges
          *  of the range, we check <= if the edge is closed, and < if the edge is open.
          */
-        nonvirtual constexpr bool Contains (Configuration::ArgByValueType<T> r) const;
-        nonvirtual bool           Contains (const Range& containee) const;
+        constexpr bool Contains (Configuration::ArgByValueType<T> r) const;
+        constexpr bool Contains (const Range& containee) const;
 
     public:
         /**
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Traversal {
          *  Returns true iff there are any points shared in common between this range and the rhs range.
          */
         template <typename T2, typename TRAITS2>
-        nonvirtual bool Intersects (const Range<T2, TRAITS2>& rhs) const;
+        constexpr bool Intersects (const Range<T2, TRAITS2>& rhs) const;
 
     public:
         /**
@@ -333,7 +333,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *      @see operator^ - an operator alias for this function
          */
-        nonvirtual Range Intersection (const Range& rhs) const;
+        constexpr Range Intersection (const Range& rhs) const;
 
     public:
         /**
@@ -345,36 +345,36 @@ namespace Stroika::Foundation::Traversal {
         /**
          * if two regions are disjoint, this can encompass a larger region than the actual union would
          */
-        nonvirtual Range UnionBounds (const Range& rhs) const;
+        constexpr Range UnionBounds (const Range& rhs) const;
 
     public:
         /**
          *  \req not empty ();
          */
-        nonvirtual constexpr T GetLowerBound () const;
+        constexpr T GetLowerBound () const;
 
     public:
         /**
          */
-        nonvirtual constexpr Openness GetLowerBoundOpenness () const;
+        constexpr Openness GetLowerBoundOpenness () const;
 
     public:
         /**
          *  \req not empty ();
          */
-        nonvirtual constexpr T GetUpperBound () const;
+        constexpr T GetUpperBound () const;
 
     public:
         /**
          */
-        nonvirtual constexpr Openness GetUpperBoundOpenness () const;
+        constexpr Openness GetUpperBoundOpenness () const;
 
     public:
         /**
          *  \req not empty
          *  \req the Range produced by applying the given offset to *this remains valid with respect to the constraints on this Range.
          */
-        nonvirtual Range Offset (SignedDifferenceType o) const;
+        constexpr Range Offset (SignedDifferenceType o) const;
 
     public:
         /**

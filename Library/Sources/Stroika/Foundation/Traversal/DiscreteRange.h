@@ -153,15 +153,15 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Like Range<>::Intersection (), but returing a DiscreteRange<> type.
          */
-        nonvirtual Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
-        nonvirtual DiscreteRange Intersection (const DiscreteRange& rhs) const;
+        constexpr Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
+        constexpr DiscreteRange    Intersection (const DiscreteRange& rhs) const;
 
     public:
         /**
          *  Like Range<>::UnionBounds (), but returing a DiscreteRange<> type.
          */
-        nonvirtual Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
-        nonvirtual DiscreteRange UnionBounds (const DiscreteRange& rhs) const;
+        constexpr Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
+        constexpr DiscreteRange    UnionBounds (const DiscreteRange& rhs) const;
 
     public:
         /**
@@ -169,14 +169,14 @@ namespace Stroika::Foundation::Traversal {
          *  This equals GetDistancespanned () + 1 (roughly).
          *  If (empty ()) .... this returns 0;
          */
-        nonvirtual UnsignedDifferenceType GetNumberOfContainedPoints () const;
+        constexpr UnsignedDifferenceType GetNumberOfContainedPoints () const;
 
     public:
         /**
          *  \req not empty
          *  \req the DiscreteRange produced by applying the given offset to *this remains valid with respect to the constraints on this DiscreteRange.
          */
-        nonvirtual DiscreteRange Offset (SignedDifferenceType o) const;
+        constexpr DiscreteRange Offset (SignedDifferenceType o) const;
 
     public:
         /**
@@ -194,6 +194,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  Alias for 'Elements' ()
          */
         nonvirtual operator Iterable<T> () const;
 
