@@ -309,6 +309,14 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual  bool    Overlaps (const Range<T, TRAITS>& rhs) const;
 #endif
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  Simply indirect to @Range<T, TRAITS>::EqualsComparer
+         */
+        constexpr bool operator== (const Range& rhs) const;
+#endif
+
     public:
         struct EqualsComparer;
 
@@ -394,9 +402,10 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS>
     struct Range<T, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const Range& lhs, const Range& rhs) const;
+        constexpr bool operator() (const Range& lhs, const Range& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Range<T, TRAITS>::EqualsComparer
      */
@@ -404,6 +413,7 @@ namespace Stroika::Foundation::Traversal {
     bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
     template <typename T, typename TRAITS>
     bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+#endif
 
     /**
      *  Alias forlhs.Union (rhs)

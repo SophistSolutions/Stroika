@@ -370,6 +370,13 @@ namespace Stroika::Foundation::Traversal {
         }
         return out.str ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T, typename TRAITS>
+    constexpr bool Range<T, TRAITS>::operator== (const Range& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -377,7 +384,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline bool Range<T, TRAITS>::EqualsComparer::operator() (const Range& lhs, const Range& rhs) const
+    constexpr bool Range<T, TRAITS>::EqualsComparer::operator() (const Range& lhs, const Range& rhs) const
     {
         if (lhs.empty ()) {
             return rhs.empty ();
@@ -385,6 +392,7 @@ namespace Stroika::Foundation::Traversal {
         return lhs.GetLowerBound () == rhs.GetLowerBound () and lhs.GetUpperBound () == rhs.GetUpperBound () and lhs.GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and lhs.GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ********************* Range<T,TRAITS> Comparisons Operators ********************
@@ -400,6 +408,7 @@ namespace Stroika::Foundation::Traversal {
     {
         return not typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
     /*
      ********************************************************************************
