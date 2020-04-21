@@ -401,12 +401,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return typename Range::EqualsComparer{}(lhs, rhs);
+        return typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T, typename TRAITS>
     inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return not typename Range::EqualsComparer{}(lhs, rhs);
+        return not typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
 #endif
 
