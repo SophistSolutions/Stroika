@@ -301,9 +301,9 @@ namespace Stroika::Foundation::Traversal {
         if (rhs.empty ()) {
             return *this;
         }
-        T                l = min (GetLowerBound (), rhs.GetLowerBound ());
-        T                r = max (GetUpperBound (), rhs.GetUpperBound ());
-        Range            result;
+        T     l = min (GetLowerBound (), rhs.GetLowerBound ());
+        T     r = max (GetUpperBound (), rhs.GetUpperBound ());
+        Range result;
         if (l <= r) {
             // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
             Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
