@@ -32,7 +32,7 @@ If you are missing any components and just want a quick environment to test that
 UNIX:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2004-small
 cat Getting-Started-With-Stroika.md
 ```
 
