@@ -84,9 +84,9 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \par Example Usage
          *      \code
-         *      DisjointDiscreteRange<DiscreteRange<int>> t;
-         *      for (T i : t.Elements ()) {
-         *      }
+         *          DisjointDiscreteRange<DiscreteRange<int>> t;
+         *          for (T i : t.Elements ()) {
+         *          }
          *      \endcode
          *
          *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Find the last element of the DisjointDiscreteRange that passes the argument function test.
          &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
-            */
+         */
         nonvirtual optional<value_type> FindLastThat (const function<bool (value_type)>& testF) const;
         nonvirtual optional<value_type> FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const;
 

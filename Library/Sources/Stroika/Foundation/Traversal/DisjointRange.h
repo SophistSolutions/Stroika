@@ -110,6 +110,14 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual RangeType GetBounds () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  Simply indirect to @DisjointRange::EqualsComparer
+         */
+        constexpr bool operator== (const DisjointRange& rhs) const;
+#endif
+
     public:
         struct EqualsComparer;
 
@@ -162,6 +170,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual bool operator() (const DisjointRange& lhs, const DisjointRange& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @DisjointRange<T, RANGE_TYPE>::EqualsComparer
      */
@@ -169,6 +178,7 @@ namespace Stroika::Foundation::Traversal {
     bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
     template <typename T, typename RANGE_TYPE>
     bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
+#endif
 
     /**
      */
