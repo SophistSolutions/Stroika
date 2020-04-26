@@ -2,7 +2,7 @@
 #      This CircleCI configuration file drives the circleci build system available on
 #             https://circleci.com/gh/SophistSolutions/Stroika
 #
-#      Status (as of 2020-04-04)
+#      Status (as of 2020-04-26)
 #             The builds_and_tests workflow appears to completely support
 #                    - basic-debug-builds-test-ubuntu1804
 #                    - basic-debug-builds-test-ubuntu1910
@@ -13,12 +13,12 @@
 #                    (really it nicely supports ANY Linux docker based build)
 #                    The only downside of the use of docker on windows, is that it is VERY EXPENSIVE/SLOW
 #
-# TODO:
-#      @todo winbuild-via-docker: TravisCI windows build disables a few security things on startup - maybe I can do here as well? windows defender etc? Maybe not needed?
-#             TESTING RIGHT NOW
-
-#      @todo winbuild-via-docker: speedup docker pull with max-concurrent-downloads
-#            ## ADD JIRA TICKET
+#             Example:
+#                    https://app.circleci.com/pipelines/github/SophistSolutions/Stroika/566/workflows/6118cb6c-1827-4242-9519-dc9709e2faed
+#
+#             ONLY build 'Release' branches because it reports failures when it runs out of credits
+#             which it does after apx one build (of 5 targets - esp bad cuz of windows).
+#
 
 version: 2.1
 
