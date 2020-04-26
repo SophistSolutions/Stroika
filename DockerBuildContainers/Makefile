@@ -15,7 +15,7 @@ help:
 	@echo "And first thing when you run docker image, cat /Getting-Started-With-Stroika.md"
 
 
-docker-images:
+build-images:
 ifeq ($(shell uname),Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
@@ -35,7 +35,7 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 endif
 
 
-docker-pull-base-images:
+pull-base-images:
 ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.04
 	docker pull ubuntu:18.10
