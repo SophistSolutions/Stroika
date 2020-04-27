@@ -22,6 +22,17 @@ EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
 SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 
+# Consider exposing this explicitly (as we once did) in the configuration file
+# But for now this is fine...LGP 2020-04-27
+ifeq (qAllowBlockAllocation=1,$(findstring qAllowBlockAllocation=1,$(CPPFLAGS)))
+USING_BLOCK_ALLOCATION?=1
+else ifeq (qAllowBlockAllocation=0,$(findstring qAllowBlockAllocation=0,$(CPPFLAGS)))
+USING_BLOCK_ALLOCATION?=0
+else ifeq (qDebug=1,$(findstring qDebug=1,$(CPPFLAGS)))
+USING_BLOCK_ALLOCATION?=1
+else
+USING_BLOCK_ALLOCATION?=0
+endif
 
 EXTRA_VALGRIND_SUPPRESSIONS?=
 
@@ -30,6 +41,9 @@ DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-MemCheck-Common.supp
 #DEFAULT_VALGRIND_SUPPRESSIONS_+= BlockAllocation-Valgrind.supp
 ifneq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-Common-$(ARCH).supp
+endif
+ifeq (1,$(USING_BLOCK_ALLOCATION))
+DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-BlockAllocation.supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
 else ifeq (helgrind,$(VALGRIND))

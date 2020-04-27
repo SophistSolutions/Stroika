@@ -367,7 +367,7 @@ fi
 		RunLocalValgrind_ memcheck g++-valgrind-release-SSLPurify-NoBlockAlloc ""
 
 		#MEMCHECK: debug (with block alloc)
-		RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify 'export EXTRA_VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-BlockAllocation.supp"'
+		RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify ""
 
 		#MEMCHECK: debug (without block alloc)
 		RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify-NoBlockAlloc ""
