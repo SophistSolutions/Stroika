@@ -103,10 +103,6 @@ $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(call DEFAULT_LINK_LINE,$@)
 
 
-clean::
-	@rm -rf ${ObjDir}/*
-
-
 $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$@ ; see $(ObjDir)CAB-Build.OUT"` ... "
 	@rm -rf $(ObjDir)CabBld
