@@ -57,6 +57,13 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T, typename... INDEXES>
+    constexpr bool DataHyperRectangle<T, INDEXES...>::operator== (const DataHyperRectangle& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -76,6 +83,7 @@ namespace Stroika::Foundation::Containers {
         return lhs.SequenceEquals (rhs, fElementComparer_);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *************** DataHyperRectangle comparison operators ************************
@@ -91,6 +99,7 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename DataHyperRectangle<T, INDEXES...>::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
 }
 

@@ -399,6 +399,13 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator== (const Bijection& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -537,6 +544,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ******************** Bijection comparison operators ****************************
@@ -552,6 +560,7 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
 }
 

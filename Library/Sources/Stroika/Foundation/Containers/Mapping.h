@@ -19,6 +19,10 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Add three-way-comparer support - operator<=> etc - for Mapping. I Think it can be
+ *              easily defined as operator<> on key, followed by operator<> on value and then as a string
+ *              of those operations.
+ *
  *      @todo   Add an "Update (iterator<T> i, Value)" method, similar to other containers
  *              like Sequence. Note - intentionally don't allow updating the key???
  *
@@ -444,6 +448,14 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_OF_Key_T>
         nonvirtual CONTAINER_OF_Key_T As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesDefaultIterableImpl = 0) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         * simply indirect to @Mapping<>::EqualsComparer
+         */
+        nonvirtual bool operator== (const Mapping& rhs) const;
+#endif
+
     public:
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         struct EqualsComparer;
@@ -580,6 +592,7 @@ namespace Stroika::Foundation::Containers {
         VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Mapping<>::EqualsComparer
      */
@@ -587,6 +600,7 @@ namespace Stroika::Foundation::Containers {
     bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
+#endif
 
 }
 

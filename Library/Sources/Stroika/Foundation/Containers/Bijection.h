@@ -419,6 +419,13 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_PAIR_RANGE_DOMAIN>
         nonvirtual CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Bijection& rhs) const;
+#endif
+
     public:
         struct EqualsComparer;
 
@@ -541,6 +548,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual bool operator() (const Bijection& lhs, const Bijection& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
@@ -548,6 +556,7 @@ namespace Stroika::Foundation::Containers {
     nonvirtual bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
+#endif
 
 }
 

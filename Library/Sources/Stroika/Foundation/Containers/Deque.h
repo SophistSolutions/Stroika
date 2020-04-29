@@ -119,6 +119,14 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual T Tail () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  Interpret equality on two Deques as Iterable<T>::SequenceEquals 
+         */
+        nonvirtual bool operator== (const Deque& rhs) const;
+#endif
+
     protected:
         /**
          */

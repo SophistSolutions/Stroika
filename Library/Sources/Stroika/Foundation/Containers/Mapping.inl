@@ -401,6 +401,13 @@ namespace Stroika::Foundation::Containers {
         [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator== (const Mapping& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -568,6 +575,7 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ******************** Mapping comparison operators ******************************
@@ -583,6 +591,8 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
     }
+#endif
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Mapping_inl_ */
