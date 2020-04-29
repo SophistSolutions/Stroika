@@ -13,8 +13,9 @@
 #
 # See https://config.travis-ci.com/, https://github.com/travis-ci/travis-yml/blob/master/schema.json for format of this file.
 #
-# See https://travis-ci.community/t/i-have-several-executables-that-just-dont-run-on-your-build-system-under-docker-and-no-way-i-can-see-to-debug/7693/3
+# See https://travis-ci.community/t/i-have-several-executables-that-just-dont-run-on-your-build-system-under-docker-and-no-way-i-can-see-to-debug
 # for discussion of why the windows build of test apps and running samples from WIX not working
+#   https://stroika.atlassian.net/browse/STK-712
 #
 # TODO
 #   > Consider rewriting the travis build scripts for UNIX to use docker (as I do for windows, and circleci)
@@ -48,6 +49,7 @@ jobs:
     #
     # Windows Configuration (RunTests)
     #     @todo FIX issue tests run correctly (build works but test files run dont)
+    #     @see https://stroika.atlassian.net/browse/STK-712
     #
     - os: windows
       before_install:
@@ -86,6 +88,8 @@ jobs:
     #     @todo - this is basically the same as the build steps for Windows (RunTests)
     #       - find way to refactor so the spec is shared
     #     @todo FIX issue running candle - so actually builds samples correctly
+    #     @see https://stroika.atlassian.net/browse/STK-708 for info about this failre
+    #
     - os: windows
       before_install:
         - df -h
