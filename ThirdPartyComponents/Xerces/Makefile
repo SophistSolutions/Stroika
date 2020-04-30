@@ -23,8 +23,8 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 .PHONY:	all clean clobber check doBuilds_
 
 
-VERSION=3.2.3
-#VERSION=3.2.2
+#VERSION=3.2.3
+VERSION=3.2.2
 #VERSION=3.2.1
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
