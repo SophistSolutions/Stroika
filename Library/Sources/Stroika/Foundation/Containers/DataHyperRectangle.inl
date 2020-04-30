@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename... INDEXES>
     constexpr bool DataHyperRectangle<T, INDEXES...>::operator== (const DataHyperRectangle& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return EqualsComparer<>{}(*this, rhs);
     }
 #endif
 

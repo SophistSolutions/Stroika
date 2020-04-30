@@ -24,6 +24,10 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Add three-way-comparer support - operator<=> etc - for Multiset. I Think it can be
+ *              easily defined as operator<> on key/value, followed by operator<> on value and then as a string
+ *              of those operations.
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-428 - See how to map EqualsComparer to CountedValue we use
  *              probably added template param to CountedValue - TRAITS.
  *
@@ -309,9 +313,17 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Return the function used to compare if two elements are equal
+         *  Return the function used to compare if two elements are equal (not to be confused with MultiSet<>::EqualsComparer)
          */
         nonvirtual EqualityComparerType GetEqualsComparer () const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         * simply indirect to @MultiSet<>::EqualsComparer
+         */
+        nonvirtual bool operator== (const MultiSet& rhs) const;
+#endif
 
     public:
         struct EqualsComparer;
@@ -436,6 +448,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual bool operator() (const MultiSet& lhs, const MultiSet& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @MultiSet<>::EqualsComparer
      */
@@ -443,6 +456,7 @@ namespace Stroika::Foundation::Containers {
     bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
     template <typename T, typename TRAITS>
     bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
+#endif
 
 }
 

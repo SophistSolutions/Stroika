@@ -18,6 +18,10 @@
  *
  *
  *  TODO:
+ *      @todo   Add three-way-comparer support - operator<=> etc - for Queue. I Think it can be
+ *              easily defined as operator<> on ELT, followed by operator<> on value and then as a string
+ *              of those operations.
+ *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
@@ -199,6 +203,14 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void clear ();
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         * simply indirect to @Queue<>::EqualsComparer (only defined if equal_to<T> is defined)
+         */
+        nonvirtual bool operator== (const Queue& rhs) const;
+#endif
+
     public:
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         struct EqualsComparer;
@@ -275,6 +287,7 @@ namespace Stroika::Foundation::Containers {
         T_EQUALS_COMPARER fElementComparer;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
@@ -282,6 +295,7 @@ namespace Stroika::Foundation::Containers {
     bool operator== (const Queue<T>& lhs, const Queue<T>& rhs);
     template <typename T>
     bool operator!= (const Queue<T>& lhs, const Queue<T>& rhs);
+#endif
 
 }
 

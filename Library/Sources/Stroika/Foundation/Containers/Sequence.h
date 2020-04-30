@@ -21,6 +21,10 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo       Add three-way-comparer support - operator<=> etc - for Sequence. I Think it can be
+ *                  easily defined as operator<> on ELT, followed by operator<> on value and then as a string
+ *                  of those operations.
+ *
  *      @todo       Provide Slice () overload to mask inherited one from Iterable, but more efficient, and return
  *                  sequence. Mention alias 'SubSequence' from older todo.
  *
@@ -310,6 +314,14 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Sequence OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         * simply indirect to @Sequence<>::EqualsComparer (only defined if equal_to<T> is defined)
+         */
+        nonvirtual bool operator== (const Sequence& rhs) const;
+#endif
 
     public:
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
@@ -630,10 +642,12 @@ namespace Stroika::Foundation::Containers {
     bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+#if __cpp_impl_three_way_comparison < 201907
     template <typename T>
     bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+#endif
     template <typename T>
     bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>

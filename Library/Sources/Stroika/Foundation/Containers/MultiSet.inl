@@ -517,6 +517,13 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T, typename TRAITS>
+    inline bool MultiSet<T, TRAITS>::operator== (const MultiSet& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -529,6 +536,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      **************************** MultiSet operators ********************************
@@ -544,6 +552,7 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename MultiSet<T, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
 }
 
