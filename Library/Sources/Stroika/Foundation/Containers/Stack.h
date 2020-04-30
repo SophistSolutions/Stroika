@@ -139,6 +139,14 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void RemoveAll ();
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         * simply indirect to @Stack<>::EqualsComparer
+         */
+        nonvirtual bool operator== (const Stack& rhs) const;
+#endif
+
     public:
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         struct EqualsComparer;
@@ -209,6 +217,7 @@ namespace Stroika::Foundation::Containers {
         T_EQUALS_COMPARER fElementComparer;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
@@ -216,6 +225,7 @@ namespace Stroika::Foundation::Containers {
     bool operator== (const Stack<T>& lhs, const Stack<T>& rhs);
     template <typename T>
     bool operator!= (const Stack<T>& lhs, const Stack<T>& rhs);
+#endif
 
 }
 

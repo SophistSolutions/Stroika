@@ -18,6 +18,10 @@
  *
  *
  *  TODO:
+ *      @todo   Add/FIX three-way-comparer support - operator<=> etc - for Set. I Think it can be
+ *              easily defined as operator<> on ELT, followed by operator<> on value and then as a string
+ *              of those operations.
+ *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
@@ -306,6 +310,15 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual Set<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         * simply indirect to @Set<>::EqualsComparer
+         */
+        nonvirtual bool operator== (const Set& rhs) const;
+        nonvirtual bool operator== (const Iterable<T>& rhs) const;
+#endif
+
     public:
         struct EqualsComparer;
 
@@ -470,6 +483,7 @@ namespace Stroika::Foundation::Containers {
      *        But thats probably OK, becase when we have ambiguity, we can always explicitly resolve it. So keep these
      *        overloads which are pretty convenient.
      */
+#if __cpp_impl_three_way_comparison < 201907
     template <typename T>
     bool operator== (const Set<T>& lhs, const Set<T>& rhs);
     template <typename T>
@@ -482,6 +496,7 @@ namespace Stroika::Foundation::Containers {
     bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs);
     template <typename T>
     bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs);
+#endif
 
     /**
      *  Alias for Set<>::Union

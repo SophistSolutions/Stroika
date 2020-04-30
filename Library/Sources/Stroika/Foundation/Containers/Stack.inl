@@ -86,6 +86,13 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T>
+    inline bool Stack<T>::operator== (const Stack& rhs) const
+    {
+        return EqualsComparer<>{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -105,6 +112,7 @@ namespace Stroika::Foundation::Containers {
         return lhs.SequenceEquals (rhs, fElementComparer);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      **************************** Stack compare operators ***************************
@@ -120,6 +128,7 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename Stack<T>::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
 }
 

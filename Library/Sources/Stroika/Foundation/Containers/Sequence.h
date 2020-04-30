@@ -21,7 +21,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo       Add three-way-comparer support - operator<=> etc - for Sequence. I Think it can be
+ *      @todo       Add/FIX three-way-comparer support - operator<=> etc - for Sequence. I Think it can be
  *                  easily defined as operator<> on ELT, followed by operator<> on value and then as a string
  *                  of those operations.
  *
