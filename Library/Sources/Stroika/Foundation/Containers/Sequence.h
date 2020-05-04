@@ -202,6 +202,9 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note Note About Comparisons
+     *      o    using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
+     *      o    using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<T_EQUALS_COMPARER>;
      */
     template <typename T>
     class Sequence : public Iterable<T> {
@@ -353,6 +356,12 @@ namespace Stroika::Foundation::Containers {
          * simply indirect to @Sequence<>::EqualsComparer (only defined if equal_to<T> is defined)
          */
         nonvirtual bool operator== (const Sequence& rhs) const;
+
+    public:
+        /**
+         * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
+         */
+        nonvirtual bool operator<=> (const Sequence& rhs) const;
 #endif
 
     public:

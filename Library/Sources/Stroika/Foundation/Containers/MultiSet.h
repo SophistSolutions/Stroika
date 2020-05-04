@@ -212,6 +212,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<T> item);
         nonvirtual void Add (ArgByValueType<T> item, CounterType count);
@@ -221,6 +222,8 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<CountedValue<T>>
+         *
+         *  \note mutates container
          */
         template <typename COPY_FROM_ITERATOR>
         nonvirtual void AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
@@ -234,6 +237,8 @@ namespace Stroika::Foundation::Containers {
          * The value pointed to by 'i' is removed.
          *
          *  If using the item/count or just item overloads, then MultiSet<> requires that the removed items are present.
+         *
+         *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<T> item);
         nonvirtual void Remove (ArgByValueType<T> item, CounterType count);
@@ -241,6 +246,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
         nonvirtual void RemoveAll (ArgByValueType<T> item);
@@ -248,12 +254,16 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * if newCount == 0, equivalent to Remove(i). Require not i.Done () - so it must point to a given item.
+         *
+         *  \note mutates container
          */
         nonvirtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount);
 
     public:
         /**
          *  It's perfectly legal for i to be missing before or after.
+         *
+         *  \note mutates container
          */
         nonvirtual void SetCount (ArgByValueType<T> i, CounterType newCount);
 
@@ -275,6 +285,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * \brief STL-ish alias for RemoveAll ().
+         *
+         *  \note mutates container
          */
         nonvirtual void clear ();
 
@@ -317,6 +329,9 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual EqualityComparerType GetEqualsComparer () const;
 
+    public:
+        struct EqualsComparer;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -326,11 +341,10 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     public:
-        struct EqualsComparer;
-
-    public:
         /**
          *  Synonym for Add (), or AddAll() (depending on argument);
+         *
+         *  \note mutates container
          */
         nonvirtual MultiSet& operator+= (ArgByValueType<T> item);
         nonvirtual MultiSet& operator+= (const MultiSet& t);

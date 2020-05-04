@@ -147,6 +147,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Add the given item to the end of the Q, so it will be removed last of all the items currently in the Q.
+         *
+         *  \note mutates container
          */
         nonvirtual void AddTail (ArgByValueType<T> item);
 
@@ -164,23 +166,29 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual T RemoveHead ();
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual optional<T> RemoveHeadIf ();
 
     public:
         /**
          *  \brief Alias for AddTail () - add item to the end of the Q (line).
+         *
+         *  \note mutates container
          */
         nonvirtual void Enqueue (ArgByValueType<T> item);
 
     public:
         /**
          *  \brief Alias for RemoveHead () - remove item from the head of the Q (line).
+         *
+         *  \note mutates container
          */
         nonvirtual T Dequeue ();
 
@@ -189,6 +197,8 @@ namespace Stroika::Foundation::Containers {
          *  Items are appended to the tail of the Q in same order they are encountered iterating from start to end of the container (or start to end iterators given).
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
         nonvirtual void AddAllToTail (CONTAINER_OF_ADDABLE&& s);
@@ -197,12 +207,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
 
     public:
         /**
          * \brief STL-ish alias for RemoveAll ().
+         *
+         *  \note mutates container
          */
         nonvirtual void clear ();
 

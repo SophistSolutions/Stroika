@@ -87,6 +87,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v);
 
@@ -110,16 +111,16 @@ namespace Stroika::Foundation::Containers {
         template <typename INDEX, typename... REST_OF_INDEXES>
         nonvirtual TemporarySliceReference_<REST_OF_INDEXES...> operator[] (INDEX i1) const;
 
+    public:
+        template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
+        struct EqualsComparer;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr bool operator== (const DataHyperRectangle& rhs) const;
 #endif
-
-    public:
-        template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
-        struct EqualsComparer;
 
     protected:
         /**

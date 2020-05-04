@@ -228,6 +228,8 @@ namespace Stroika::Foundation::Containers {
          *  item make it into the Set.
          *
          *  If you really want an association list (Mapping) from one thing to another, use that.
+         *
+         *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<T> item);
 
@@ -243,12 +245,16 @@ namespace Stroika::Foundation::Containers {
          *              write_to_disk (n);
          *          }
          *      \endcode
+         *
+         *  \note mutates container
          */
         nonvirtual bool AddIf (ArgByValueType<T> item);
 
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
+         *
+         *  \note mutates container
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -261,6 +267,8 @@ namespace Stroika::Foundation::Containers {
          *  The overload taking an iterator requires the iterator is valid.
          *
          *  @see RemoveIf ()
+         *
+         *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<T> item);
         nonvirtual void Remove (const Iterator<T>& i);
@@ -282,11 +290,14 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          *
          *  @see Remove ()
+         *
+         *  \note mutates container
          */
         nonvirtual bool RemoveIf (ArgByValueType<T> item);
 
     public:
         /**
+         *  \note mutates container
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -310,6 +321,9 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual Set<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
+    public:
+        struct EqualsComparer;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -318,9 +332,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual bool operator== (const Set& rhs) const;
         nonvirtual bool operator== (const Iterable<T>& rhs) const;
 #endif
-
-    public:
-        struct EqualsComparer;
 
     public:
         /**
@@ -349,6 +360,8 @@ namespace Stroika::Foundation::Containers {
          *      Synonym for Add/AddAll.
          *
          *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
+         *
+         *  \note mutates container
          */
         nonvirtual Set<T>& operator+= (ArgByValueType<T> item);
         nonvirtual Set<T>& operator+= (const Iterable<T>& items);
@@ -358,6 +371,8 @@ namespace Stroika::Foundation::Containers {
          *      Synonym for Remove/RemoveAll.
          *
          *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
+         *
+         *  \note mutates container
          */
         nonvirtual Set<T>& operator-= (ArgByValueType<T> item);
         nonvirtual Set<T>& operator-= (const Iterable<T>& items);
@@ -365,24 +380,32 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *      Synonym for *this = *this ^ Set<T> {items }
+         *
+         *  \note mutates container
          */
         nonvirtual Set<T>& operator^= (const Iterable<T>& items);
 
     public:
         /**
          * \brief STL-ish alias for RemoveAll ().
+         *
+         *  \note mutates container
          */
         nonvirtual void clear ();
 
     public:
         /**
          * \brief STL-ish alias for Add ().
+         *
+         *  \note mutates container
          */
         nonvirtual void insert (ArgByValueType<T> item);
 
     public:
         /**
          * \brief STL-ish alias for Remove ().
+         *
+         *  \note mutates container
          */
         nonvirtual void erase (ArgByValueType<T> item);
         nonvirtual void erase (const Iterator<T>& i);

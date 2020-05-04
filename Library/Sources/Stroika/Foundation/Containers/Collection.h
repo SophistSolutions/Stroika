@@ -98,6 +98,9 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note Note About Comparisons
+     *      o   No comparisons are provided, because there is no intrinsic way to compare collections for equality, less etc.
+     *          See inherited Iterable<>::SequentialEquals, Iterable<>::MultiSetEquals, , Iterable<>::SetEquals.
      */
     template <typename T>
     class Collection : public Iterable<T> {
@@ -179,12 +182,16 @@ namespace Stroika::Foundation::Containers {
         /**
          * Add the given item(s) to this Collection<T>. Note - if the given items are already present, another
          * copy will be added. No promises are made about where the added value will appear in iteration.
+         *
+         *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<T> item);
 
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
+         *
+         *  \note mutates container
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -202,6 +209,8 @@ namespace Stroika::Foundation::Containers {
          *      and document promised semantics about if you will encounter newvalue again when you continue iterating!
          *
          *      MAYBE best answer is to LOSE this Update() method for bag<> - useful for Sequence<> - but maybe not here!
+         *
+         *  \note mutates container
          */
         nonvirtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue);
 
@@ -218,6 +227,8 @@ namespace Stroika::Foundation::Containers {
          *
          * The overload Remove(PREDICATE) applies the function p(T) -> bool and deletes the first entry (if any) that return true for the predicate.
          * Returns true iff an entry was removed.
+         *
+         *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
@@ -235,6 +246,8 @@ namespace Stroika::Foundation::Containers {
          *
          * The overload RemoveAll(PREDICATE) applies the function p(T) -> bool and deletes all entries that return true for the predicate.
          * Returns the number of items removed in this way.
+         *
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
@@ -255,12 +268,16 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * \brief STL-ish alias for RemoveAll ().
+         *
+         *  \note mutates container
          */
         nonvirtual void clear ();
 
     public:
         /**
          * \brief STL-ish alias for Remove ().
+         *
+         *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
@@ -275,6 +292,8 @@ namespace Stroika::Foundation::Containers {
          *      of Collection<T> for the container case instead of a template, because I'm not sure how to use specializations
          *      to distinguish the two cases. If I can figure that out, this can transparently be
          *      replaced with operator+= (X), with appropriate specializations.
+         *
+         *  \note mutates container
          */
         nonvirtual Collection<T>& operator+= (ArgByValueType<T> item);
         nonvirtual Collection<T>& operator+= (const Iterable<T>& items);

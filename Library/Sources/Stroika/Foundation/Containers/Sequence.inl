@@ -420,6 +420,11 @@ namespace Stroika::Foundation::Containers {
     {
         return EqualsComparer<>{}(*this, rhs);
     }
+    template <typename T>
+    inline bool Sequence<T>::operator<=> (const Sequence& rhs) const
+    {
+        return ThreeWayComparer<>{}(*this, rhs);
+    }
 #endif
 
     /*

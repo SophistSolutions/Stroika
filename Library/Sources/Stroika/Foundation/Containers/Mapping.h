@@ -331,6 +331,8 @@ namespace Stroika::Foundation::Containers {
          *  \note This behavior when the entry already exists differs from the behavior of std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
          *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
          *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
+         *
+         *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
         nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
@@ -338,6 +340,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
         nonvirtual void AddAll (CONTAINER_OF_KEYVALUE&& items);
@@ -351,12 +355,15 @@ namespace Stroika::Foundation::Containers {
          *  @todo CONSIDER:::
          *      TBD in the case of Remove() on in iterator???? Probably should have consistent
          *      answers but review Remove()for other containers as well.
+         *
+         *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<key_type> key);
         nonvirtual void Remove (const Iterator<value_type>& i);
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
         template <typename CONTAINER_OF_ADDABLE>
@@ -384,6 +391,8 @@ namespace Stroika::Foundation::Containers {
          *
          * \todo    Consider having const function Intersects() - or Subset() - that produces a copy of the results of RetrainAll()
          *          without modifying this object.
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_KEY_TYPE>
         nonvirtual void RetainAll (const CONTAINER_OF_KEY_TYPE& items);
@@ -448,6 +457,10 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_OF_Key_T>
         nonvirtual CONTAINER_OF_Key_T As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesDefaultIterableImpl = 0) const;
 
+    public:
+        template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
+        struct EqualsComparer;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -455,10 +468,6 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual bool operator== (const Mapping& rhs) const;
 #endif
-
-    public:
-        template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
-        struct EqualsComparer;
 
     public:
         /**

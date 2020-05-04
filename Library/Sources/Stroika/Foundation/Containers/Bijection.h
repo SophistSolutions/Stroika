@@ -351,6 +351,8 @@ namespace Stroika::Foundation::Containers {
          *  else, the association is silently updated, and the size of the iterable does not change.
          *  Also - we guarantee that even if the association is different, if the key has not changed,
          *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
+         *
+         *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
         nonvirtual void Add (const pair<DomainType, RangeType>& p);
@@ -360,6 +362,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
         nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
@@ -368,23 +372,30 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i);
 
     public:
         /**
          *  This removes any mapping from 'd' to anything. It is not an error if 'd' isn not already in the domain.
+         *
+         *  \note mutates container
          */
         nonvirtual void RemoveDomainElement (ArgByValueType<DomainType> d);
 
     public:
         /**
          *  This removes any mapping from anything to 'r'. It is not an error if 'r' isn not already in the range.
+         *
+         *  \note mutates container
          */
         nonvirtual void RemoveRangeElement (ArgByValueType<RangeType> r);
 
     public:
         /**
+         *
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
 
@@ -419,6 +430,9 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_PAIR_RANGE_DOMAIN>
         nonvirtual CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
+    public:
+        struct EqualsComparer;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -427,22 +441,25 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     public:
-        struct EqualsComparer;
-
-    public:
         /**
          * \brief STL-ish alias for RemoveAll ().
+         *
+         *  \note mutates container
          */
         nonvirtual void clear ();
 
     public:
         /**
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
         nonvirtual Bijection& operator+= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
 
     public:
         /**
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
         nonvirtual Bijection& operator-= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
