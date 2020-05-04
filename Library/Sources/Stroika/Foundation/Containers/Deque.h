@@ -53,6 +53,8 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note Note About Comparisons
+     *      o   inherited from Queue<T>
      */
     template <typename T>
     class Deque : public Queue<T> {
@@ -106,11 +108,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void AddHead (ArgByValueType<T> item);
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual T RemoveTail ();
 
@@ -118,14 +122,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual T Tail () const;
-
-#if __cpp_impl_three_way_comparison >= 201907
-    public:
-        /**
-         *  Interpret equality on two Deques as Iterable<T>::SequenceEquals 
-         */
-        nonvirtual bool operator== (const Deque& rhs) const;
-#endif
 
     protected:
         /**

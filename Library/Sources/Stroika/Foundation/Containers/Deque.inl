@@ -77,13 +77,6 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
-    template <typename T>
-    inline bool Deque<T>::operator== (const Deque& rhs) const
-    {
-        return typename inherited::SequenceEquals (rhs);
-    }
-#endif
 
 }
 

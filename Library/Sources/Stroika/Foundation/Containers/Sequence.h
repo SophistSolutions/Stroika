@@ -315,6 +315,38 @@ namespace Stroika::Foundation::Containers {
         template <typename INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Sequence OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
+    public:
+        /**
+         * simply indirect to @Iterable<T>::SequentialEqualsComparer
+         *
+         *  A Sequence<T> doesn't generally require a comparison for individual elements
+         *  be be defined, but obviously to compare if the containers are equal, you must
+         *  compare the individual elements (at least sometimes).
+         *
+         *  If operator==(T,T) is predefined, you can just call:
+         *  \par Example Usage
+         *      \code
+         *          Sequence<int> a, b;
+         *          if (a == b) {
+         *          }
+         *      \endcode
+         *
+         *  or
+         *      \code
+         *          Sequence<int> a, b;
+         *          if (Sequence<int>::EqualsComparer{eltComparer} (a, b)) {
+         *          }
+         *      \endcode
+         *
+         *  to compare with an alternative comparer.
+         */
+        template <typename T_EQUALS_COMPARER = equal_to<T>>
+        using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
+
+    public:
+        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
+        using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -324,16 +356,10 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     public:
-        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
-        using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
-
-    public:
-        template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
-        struct EqualsComparer;
-
-    public:
         /**
          *  \ens size () == 0
+         *
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
 
@@ -346,6 +372,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \req i < size ()
+         *
+         *  \note mutates container
          */
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
@@ -371,6 +399,8 @@ namespace Stroika::Foundation::Containers {
          *  \req i < size ()
          *
          *  \note - variant returning TemporaryElementReference_ is EXPERIMENTAL as of 2017-02-21 - if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
+         *
+         *  \note mutates container
          */
         nonvirtual TemporaryElementReference_<T> operator() (size_t i);
 #endif
@@ -408,6 +438,8 @@ namespace Stroika::Foundation::Containers {
          *
          *      NB: Adding an item at the CURRENT index has no effect on
          *  what the iterator says is the current item.
+         *
+         *  \note mutates container
          */
         nonvirtual void Insert (size_t i, ArgByValueType<T> item);
         nonvirtual void Insert (const Iterator<T>& i, ArgByValueType<T> item);
@@ -423,11 +455,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void Prepend (ArgByValueType<T> item);
 
     public:
         /**
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         nonvirtual void PrependAll (CONTAINER_OF_ADDABLE&& s);
@@ -438,6 +472,8 @@ namespace Stroika::Foundation::Containers {
         /**
          *  This is roughly Insert (GetLength(), item), except that there is a race after you call GetLength, and before
          *  Insert, which calling Append () avoids.
+         *
+         *  \note mutates container
          */
         nonvirtual void Append (ArgByValueType<T> item);
 
@@ -447,6 +483,8 @@ namespace Stroika::Foundation::Containers {
          *  and before Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment,
          *  the appended items wont necesarily all get appended at once, since other threads could make
          *  changes in between.
+         *
+         *  \note mutates container
          */
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         nonvirtual void AppendAll (CONTAINER_OF_ADDABLE&& s);
@@ -458,6 +496,8 @@ namespace Stroika::Foundation::Containers {
          * This function requires that the iterator 'i' came from this container.
          *
          * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
+         *
+         *  \note mutates container
          */
         nonvirtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue);
 
@@ -473,6 +513,8 @@ namespace Stroika::Foundation::Containers {
          *  that iteration is not disturbed by this removal. In particular, any
          *  items (other than the one at index) that would have been seen, will
          *  still be, and no new items will be seen that wouldn't have been.
+         *
+         *  \note mutates container
          */
         nonvirtual void Remove (size_t i);
         nonvirtual void Remove (size_t start, size_t end);
@@ -519,7 +561,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-             */
+         *  \note mutates container
+         */
         nonvirtual void push_back (ArgByValueType<T> item);
 
     public:
@@ -560,36 +603,6 @@ namespace Stroika::Foundation::Containers {
     };
 
     using Traversal::IteratorOwnerID;
-
-    /**
-     *  A Sequence<T> doesn't generally require a comparison for individual elements
-     *  be be defined, but obviously to compare if the containers are equal, you must
-     *  compare the individual elements (at least sometimes).
-     *
-     *  If operator==(T,T) is predefined, you can just call:
-     *  \par Example Usage
-     *      \code
-     *          Sequence<int> a, b;
-     *          if (a == b) {
-     *          }
-     *      \endcode
-     *
-     *  or
-     *      \code
-     *          Sequence<int> a, b;
-     *          if (Sequence<int>::EqualsComparer{eltComparer} (a, b)) {
-     *          }
-     *      \endcode
-     *
-     *  to compare with an alternative comparer.
-     */
-    template <typename T>
-    template <typename ELEMENT_EQUALS_COMPARER>
-    struct Sequence<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer = {});
-        nonvirtual int          operator() (const Sequence& lhs, const Sequence& rhs) const;
-        ELEMENT_EQUALS_COMPARER fElementComparer_;
-    };
 
     /**
      *  \brief  Implementation detail for Sequence<T> implementors.

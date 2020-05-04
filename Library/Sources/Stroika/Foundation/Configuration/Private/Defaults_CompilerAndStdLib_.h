@@ -623,6 +623,17 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
+#ifndef qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
+
+#if defined(_MSC_VER)
+// First noticed broken _MSC_VER_2k19_16Pt5_
+#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
+#else
+#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
+#endif
+
+#endif
+
 /**
  * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
  */

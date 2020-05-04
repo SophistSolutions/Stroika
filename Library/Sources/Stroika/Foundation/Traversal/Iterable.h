@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Traversal {
      *          their values were the same. In other words, the meaning of 'equals' varies between different kinds of
      *          iterables (over the same type).
      *
-     *          We DO have methods SetEquals/MultiSetEquals/SequenceEquals (see below), as well as SequentialThreeWayComparer<> etc.
+     *          We DO have methods SetEquals/MultiSetEquals/SequentialEquals (see below), as well as SequentialThreeWayComparer<> etc.
      *
      *  *Important Design Note*:
      *      Probably important - for performance??? - that all these methods are const,
@@ -419,39 +419,36 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  SequentialEquals () - measures if iteration over the two containers produces identical sequences
-         *  of elements (identical by compare with EQUALS_COMPARER). It does not call 'GetLength' - but just iterates.
+         *  of elements (identical by compare with EQUALS_COMPARER). It does not call 'size' - by default - but just iterates (unless the paraemter useIterableSize)
          *
          *  \note - RHS_CONTAINER_TYPE can be any iterable, including an STL container like vector or initializer_list
          *
-         *  @see also SequenceEquals
+         *  \note If useIterableSize == true (Defaults false), size() method must be quick, and unchanged during the lifetime of the the comparison.
          *
          *  \em Performance:
          *      This algorithm is O(N)
+         *
+         *  @todo We DO want the check IsEqualsComparer() on these templates, but I've had trouble getting it to compile, and will be changing
+         *        that to the new C++20 style soon anyhow... LGP 2020-05-03
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>* = nullptr>
+        static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
+        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>* = nullptr>
+        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false) const;
+
+    public:
+        template <typename T_EQUALS_COMPARER = equal_to<T>>
+        struct SequentialEqualsComparer;
 
     public:
         template <typename T_THREEWAY_COMPARER = Common::ThreeWayComparer<T>>
         struct SequentialThreeWayComparer;
 
     public:
-        /**
-         *  SequenceEquals () - like SequentialEquals - measures if iteration over the two containers produces identical sequences
-         *  of elements (identical by compare with EQUALS_COMPARER), but it calls GetLength, and uses this as an optimization
-         *  in iterating, and so REQUIRES GetLength doesn't change during its execution (see Iterable::GetLength () and consider directory iterator).
-         *
-         *  @see also SequentialEquals
-         *
-         *  \em Performance:
-         *      This algorithm is O(N)
-         */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        static bool SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
+        [[deprecated ("Since Stroika 2.1a5 - use SequentialEquals (....true)")]] static bool SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        [[deprecated ("Since Stroika 2.1a5 - use SequentialEquals (....true)")]] bool SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -622,7 +619,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequenceEquals (Iterable<int> { 2, 4, 6 }));
+         *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequentialEquals (Iterable<int> { 2, 4, 6 }));
          *      \endcode
          *
          *  \note   Could have been called EachWith, EachWhere, EachThat (), Filter, or SubsetWhere.
@@ -664,14 +661,14 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-         *          VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequenceEquals (Iterable<int> { 1, 2, 3 }));
+         *          VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  This can also easily be used to TRANSFORM an iterable.
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequenceEquals (Iterable<String> { L"3", L"4", L"7" }));
+         *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { L"3", L"4", L"7" }));
          *      \endcode
          *
          *  \par Example Usage
@@ -705,7 +702,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Skip (3).SequenceEquals (Iterable<int> { 4, 5, 6 }));
+         *          VerifyTestResult (c.Skip (3).SequentialEquals (Iterable<int> { 4, 5, 6 }));
          *      \endcode
          *
          *  @see https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -724,7 +721,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Take (3).SequenceEquals (Iterable<int> { 1, 2, 3 }));
+         *          VerifyTestResult (c.Take (3).SequentialEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  @see    https://msdn.microsoft.com/en-us/library/bb503062(v=vs.110).aspx
@@ -741,7 +738,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Slice (3, 5).SequenceEquals (Iterable<int> { 4, 5 }));
+         *          VerifyTestResult (c.Slice (3, 5).SequentialEquals (Iterable<int> { 4, 5 }));
          *      \endcode
          *
          *  \req from <= to
@@ -762,13 +759,13 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ().SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ().SequentialEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequenceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
@@ -1258,6 +1255,27 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual bool _IsEmpty () const;
         nonvirtual void _Apply (_APPLY_ARGTYPE doToElement) const;
         nonvirtual Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
+    };
+
+    /**
+     *  Compare any two iterables as a sequence of elements that can themselves be compared - like strcmp().
+     *  The first pair which is unequally compared - defines the ordering relationship between the two iterables.
+     *  And if one ends before the other, if the LHS ends first, treat that as less (like with alphabetizing) and
+     *  if the right ends first, treat that as >.
+     *
+     *  \note If useIterableSize == true (Defaults false), size() method must be quick, and unchanged during the lifetime of the the comparison.
+     *
+     *  SequentialEqualsComparer is commutative().
+     *
+     *  Computational Complexity: O(N)
+     */
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
+        nonvirtual bool   operator() (const Iterable& lhs, const Iterable& rhs) const;
+        T_EQUALS_COMPARER fElementComparer;
+        bool              fUseIterableSize;
     };
 
     /**

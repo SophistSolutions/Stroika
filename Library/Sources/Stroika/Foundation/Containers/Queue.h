@@ -84,6 +84,9 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note Note About Comparisons
+     *      o   EqualsComparer provided as alias to SequentialEqualsComparer
+     *      o   For now, no ThreeWayCompare, but probably should be
      */
     template <typename T>
     class Queue : public Iterable<T> {
@@ -203,6 +206,21 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void clear ();
 
+    public:
+        /**
+         * \brief Simply indirect to @Iterable<T>::SequentialEqualsComparer
+         *
+         *  Two Queues are considered equal if they contain the same elements (by comparing them
+         *  with EQUALS_COMPARER (which defaults to equal_to<T>)
+         *  in exactly the same order (iteration).
+         *
+         *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+         *  to compare with an alternative comparer, just pass it as a template parameter.
+         *
+         */
+        template <typename T_EQUALS_COMPARER = equal_to<T>>
+        using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -210,10 +228,6 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual bool operator== (const Queue& rhs) const;
 #endif
-
-    public:
-        template <typename T_EQUALS_COMPARER = equal_to<T>>
-        struct EqualsComparer;
 
     protected:
         /**
@@ -265,31 +279,8 @@ namespace Stroika::Foundation::Containers {
 #endif
     };
 
-    /**
-     *  \brief Compare Queue<>s for equality. 
-     *
-     *  Two Queues are considered equal if they contain the same elements (by comparing them
-     *  with EQUALS_COMPARER (which defaults to operator== (T,T))
-     *  in exactly the same order (iteration).
-     *
-     *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-     *  to compare with an alternative comparer, just pass it as a template parameter.
-     *
-     *  Equals is commutative().
-     *
-     *  Computational Complexity: O(N)
-     */
-    template <typename T>
-    template <typename T_EQUALS_COMPARER>
-    struct Queue<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer = {});
-        nonvirtual bool   operator() (const Queue& lhs, const Queue& rhs) const;
-        T_EQUALS_COMPARER fElementComparer;
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
     template <typename T>
     bool operator== (const Queue<T>& lhs, const Queue<T>& rhs);

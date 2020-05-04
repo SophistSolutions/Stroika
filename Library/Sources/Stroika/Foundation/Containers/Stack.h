@@ -121,11 +121,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void Push (ArgByValueType<T> item);
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual T Pop ();
 
@@ -136,8 +138,20 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note mutates container
          */
         nonvirtual void RemoveAll ();
+
+    public:
+        /**
+         * \brief simply indirect to @Iterable<T>::SequentialEqualsComparer
+         *
+         *  Two Stack are considered equal if they contain the same elements in the same order.
+         *  That is - @Iterable<T>::SequenceEquals.
+         *
+         */
+        template <typename T_EQUALS_COMPARER = equal_to<T>>
+        using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -148,12 +162,10 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     public:
-        template <typename T_EQUALS_COMPARER = equal_to<T>>
-        struct EqualsComparer;
-
-    public:
         /**
          * \brief STL-ish alias for RemoveAll ().
+         *
+         *  \note mutates container
          */
         nonvirtual void clear ();
 
@@ -197,24 +209,6 @@ namespace Stroika::Foundation::Containers {
         virtual void               Push (ArgByValueType<T> item)                          = 0;
         virtual T                  Pop ()                                                 = 0;
         virtual T                  Top () const                                           = 0;
-    };
-
-    /**
-     *  \brief Compare Stack<>s for equality. 
-     *
-     *  Two Stack are considered equal if they contain the same elements in the same order.
-     *  That is - @Iterable<T>::SequenceEquals.
-     *
-     *  EqualsComparer is commutative().
-     *
-     *  Computational Complexity: O(N)
-     */
-    template <typename T>
-    template <typename T_EQUALS_COMPARER>
-    struct Stack<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer = {});
-        nonvirtual bool   operator() (const Stack& lhs, const Stack& rhs) const;
-        T_EQUALS_COMPARER fElementComparer;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

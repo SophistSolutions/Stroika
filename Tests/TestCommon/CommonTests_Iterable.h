@@ -54,7 +54,11 @@ namespace CommonTests {
         void Test5_SequenceEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template SequenceEquals<EQUALS_COMPARER> (container, equalsComparer)));
+#if qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
+            VerifyTestResult ((iterableCopy.SequentialEquals (container, equalsComparer)));
+#else
+            VerifyTestResult ((iterableCopy.template SequentialEquals (container, equalsComparer)));
+#endif
         }
 
         template <typename USING_ITERABLE_CONTAINER>

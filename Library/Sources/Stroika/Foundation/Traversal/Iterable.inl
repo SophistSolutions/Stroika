@@ -366,55 +366,63 @@ namespace Stroika::Foundation::Traversal {
         return MultiSetEquals (*this, rhs, equalsComparer);
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
-    bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer)
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /* and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>*>
+    bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer, bool useIterableSize)
     {
-        auto li{lhs.begin ()};
-        auto le{lhs.end ()};
-        auto ri{rhs.begin ()};
-        auto re{rhs.end ()};
-        for (; li != le and ri != re; ++ri, ++li) {
-            if (not equalsComparer (*li, *ri)) {
+        if (useIterableSize) {
+            if (lhs.size () != rhs.size ()) {
                 return false;
             }
         }
-        // one caused us to end (or more likely both)
-        Assert (li == le or ri == re);
-        // only true if we get to end at the same time
-        return li == le and ri == re;
+        auto li{lhs.begin ()};
+        auto ri{rhs.begin ()};
+        auto le{lhs.end ()};
+        if (useIterableSize) {
+#if qDebug
+            auto re{rhs.end ()};
+#endif
+            Assert ((li != le) == (ri != re)); // cuz same length, and this requires GetLength cannot change during call
+            while (li != le) {
+                if (not equalsComparer (*li, *ri)) {
+                    return false;
+                }
+                ++li;
+                ++ri;
+                Assert ((li != le) == (ri != re)); // cuz same length, and this requires GetLength cannot change during call
+            }
+            Assert (li == le and ri == re);
+            return true;
+        }
+        else {
+            auto re{rhs.end ()};
+            for (; li != le and ri != re; ++ri, ++li) {
+                if (not equalsComparer (*li, *ri)) {
+                    return false;
+                }
+            }
+            // one caused us to end (or more likely both)
+            Assert (li == le or ri == re);
+            // only true if we get to end at the same time
+            return li == le and ri == re;
+        }
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
-    inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>*>
+    inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer, bool useIterableSize) const
     {
-        return SequentialEquals (*this, rhs, equalsComparer);
+        return SequentialEquals (*this, rhs, equalsComparer, useIterableSize);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    bool Iterable<T>::SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer)
+    inline bool Iterable<T>::SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer)
     {
-        if (lhs.GetLength () != rhs.GetLength ()) {
-            return false;
-        }
-        auto li = lhs.MakeIterator ();
-        auto ri = rhs.MakeIterator ();
-        Assert (li.Done () == ri.Done ()); // cuz same length, and this requires GetLength cannot change during call
-        while (not li.Done ()) {
-            if (not equalsComparer (*li, *ri)) {
-                return false;
-            }
-            ++li;
-            ++ri;
-            Assert (li.Done () == ri.Done ()); // cuz same length, and this requires GetLength cannot change during call
-        }
-        Assert (li.Done () and ri.Done ());
-        return true;
+        return SequentialEquals (lhs, rhs, equalsComparer, true);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
     inline bool Iterable<T>::SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
-        return SequenceEquals (*this, rhs, equalsComparer);
+        return SequentialEquals (*this, rhs, equalsComparer, true);
     }
     template <typename T>
     Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
@@ -916,6 +924,30 @@ namespace Stroika::Foundation::Traversal {
         return defaultValue;
     }
 
+    /*
+     ********************************************************************************
+     ******************** Iterable<T>::SequentialEqualsComparer *********************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer, bool useIterableSize)
+        : fElementComparer{elementEqualsComparer}
+        , fUseIterableSize{useIterableSize}
+    {
+    }
+    template <typename T>
+    template <typename T_EQUALS_COMPARER>
+    inline bool Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
+    {
+        return SequentialEquals (lhs, rhs, fElementComparer, fUseIterableSize);
+    }
+
+    /*
+     ********************************************************************************
+     ******************** Iterable<T>::SequentialThreeWayComparer *******************
+     ********************************************************************************
+     */
     template <typename T>
     template <typename T_THREEWAY_COMPARER>
     constexpr Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer)

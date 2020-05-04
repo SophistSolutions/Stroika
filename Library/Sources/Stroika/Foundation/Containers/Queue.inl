@@ -150,24 +150,6 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
 
-    /*
-     ********************************************************************************
-     **************************** Queue<T>::EqualsComparer **************************
-     ********************************************************************************
-     */
-    template <typename T>
-    template <typename T_EQUALS_COMPARER>
-    constexpr Queue<T>::EqualsComparer<T_EQUALS_COMPARER>::EqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer)
-        : fElementComparer{elementEqualsComparer}
-    {
-    }
-    template <typename T>
-    template <typename T_EQUALS_COMPARER>
-    inline bool Queue<T>::EqualsComparer<T_EQUALS_COMPARER>::operator() (const Queue& lhs, const Queue& rhs) const
-    {
-        return lhs.SequenceEquals (rhs, fElementComparer);
-    }
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
