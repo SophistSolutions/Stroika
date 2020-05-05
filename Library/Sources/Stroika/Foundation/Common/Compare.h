@@ -418,12 +418,20 @@ namespace Stroika::Foundation::Common {
      *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      */
     template <typename BASE_COMPARER>
-    constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
+    [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
+    {
+        return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
+    }
     template <typename BASE_COMPARER>
-    constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
+    [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
+    {
+        return EqualsComparerAdapter<BASE_COMPARER>{move (baseComparer)};
+    }
 
     /**
      *  \brief Use this to wrap any basic comparer, and produce a Less comparer
+     *
+     *  \note this requires the argument comparer is eStrictInOrder, eInOrderOrEquals, or eThreeWayCompare
      */
     template <typename BASE_COMPARER>
     struct InOrderComparerAdapter {
@@ -451,12 +459,20 @@ namespace Stroika::Foundation::Common {
      *        Whereas this function looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename BASE_COMPARER>
-    constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
+    [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
+    {
+        return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
+    }
     template <typename BASE_COMPARER>
-    constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
+    [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
+    {
+        return InOrderComparerAdapter<BASE_COMPARER>{move (baseComparer)};
+    }
 
     /**
      *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer
+     *
+     *  \note - this requires the argument comparer be already a three-way-comparer or a less (strict inorder) comparer
      */
     template <typename BASE_COMPARER>
     struct ThreeWayComparerAdapter {
@@ -479,9 +495,15 @@ namespace Stroika::Foundation::Common {
      *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      */
     template <typename BASE_COMPARER>
-    constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>;
+    [[deprecated ("Since Stroika v2.1a5 - use ThreeWayComparerAdapter directly")]] constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
+    {
+        return ThreeWayComparerAdapter<BASE_COMPARER>{baseComparer};
+    }
     template <typename BASE_COMPARER>
-    constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>;
+    [[deprecated ("Since Stroika v2.1a5 - use ThreeWayComparerAdapter directly")]] constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
+    {
+        return ThreeWayComparerAdapter<BASE_COMPARER>{move (baseComparer)};
+    }
 
 }
 

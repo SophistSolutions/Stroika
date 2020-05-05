@@ -36,7 +36,7 @@ namespace {
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    VerifyTestResult (Common::mkThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
+                    VerifyTestResult (Common::ThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
                 }
                 last = i;
             }
@@ -55,7 +55,7 @@ namespace {
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    VerifyTestResult (Common::mkThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
+                    VerifyTestResult (Common::ThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
                 }
                 last = i;
             }

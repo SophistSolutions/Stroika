@@ -287,22 +287,6 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ********************* mkInOrderComparerAdapter<BASE_COMPARER> ******************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    inline constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
-    {
-        return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
-    }
-    template <typename BASE_COMPARER>
-    inline constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
-    {
-        return InOrderComparerAdapter<BASE_COMPARER>{move (baseComparer)};
-    }
-
-    /*
-     ********************************************************************************
      ********************* EqualsComparerAdapter<BASE_COMPARER> *********************
      ********************************************************************************
      */
@@ -344,22 +328,6 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ********************* mkEqualsComparerAdapter<BASE_COMPARER> *******************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    inline constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
-    {
-        return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
-    }
-    template <typename BASE_COMPARER>
-    inline constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
-    {
-        return EqualsComparerAdapter<BASE_COMPARER>{move (baseComparer)};
-    }
-
-    /*
-     ********************************************************************************
      ********************* ThreeWayComparerAdapter<BASE_COMPARER> *******************
      ********************************************************************************
      */
@@ -387,22 +355,6 @@ namespace Stroika::Foundation::Common {
         }
         AssertNotReached ();
         return kEqual;
-    }
-
-    /*
-     ********************************************************************************
-     ********************* mkThreeWayComparerAdapter<BASE_COMPARER> *****************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    inline constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
-    {
-        return ThreeWayComparerAdapter<BASE_COMPARER>{baseComparer};
-    }
-    template <typename BASE_COMPARER>
-    inline constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
-    {
-        return ThreeWayComparerAdapter<BASE_COMPARER>{move (baseComparer)};
     }
 
 }

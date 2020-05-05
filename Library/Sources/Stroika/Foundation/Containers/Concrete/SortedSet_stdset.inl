@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual EqualityComparerType GetEqualsComparer () const override
         {
-            return EqualityComparerType{Common::mkEqualsComparerAdapter (fData_.key_comp ())};
+            return EqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
         virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
