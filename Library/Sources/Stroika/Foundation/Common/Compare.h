@@ -25,7 +25,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
-#if qCompilerAndStdLib_strong_ordering_equals_Buggy
+#if defined(__cpp_impl_three_way_comparison) && qCompilerAndStdLib_strong_ordering_equals_Buggy
 namespace std {
     inline bool operator== (const strong_ordering& lhs, const strong_ordering& rhs)
     {
