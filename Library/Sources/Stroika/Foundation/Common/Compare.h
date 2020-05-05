@@ -113,6 +113,8 @@ namespace Stroika::Foundation::Common {
      *
      *  Generally DONT call this function EXCEPT if you explicitly wish to use the combo of == and < to produce a new
      *  three-way-comparer object.
+     *
+     *      @todo PROBABLY TO MARK AS DEPRECATED - UNUSED FOR NOW - AND PROBABLY NOT USEFUL DIRECTLY? At least not clear yet.
      */
     template <typename T>
     struct ThreeWayComparerDefaultImplementation {
@@ -303,6 +305,12 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<ThreeWayComparer<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
+#if __cpp_lib_three_way_comparison >= 201907
+    template <typename T>
+    struct ExtractComparisonTraits<compare_three_way<T>> {
+        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    };
+#endif
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is an Equals comparer - one that takes two arguments of type T, and returns a bool, and compares
