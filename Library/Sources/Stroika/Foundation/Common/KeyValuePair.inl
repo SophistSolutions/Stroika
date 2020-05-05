@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Common {
     constexpr strong_ordering KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer::operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const
     {
         strong_ordering cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey);
-        if (cmp != kEqual) {
+        if (not (cmp == kEqual)) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
