@@ -112,6 +112,16 @@ namespace Stroika::Foundation::IO::Network {
         socklen_t                                          optvallen = sizeof (arg);
         _ref ().setsockopt (level, optname, &arg, optvallen);
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline bool Socket::Ptr::operator== (const Ptr& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+    inline strong_ordering Socket::Ptr::operator<=> (const Ptr& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -123,15 +133,16 @@ namespace Stroika::Foundation::IO::Network {
         shared_lock<const AssertExternallySynchronizedLock> critSec1{lhs}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
         shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
         /* 
-         *  Used to check Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
+         *  Used to check Common::ThreeWayCompare (GetNativeSocket (), rhs.GetNativeSocket ());
          *  but this is better. It practically always amounts to the same thing (since one typically constructs
          *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
          *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
          *  being careful about null ptrs.
          */
-        return Common::ThreeWayCompareNormalizer (lhs._GetSharedRep (), rhs._GetSharedRep ());
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ());
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ****************************** Socket operators ********************************
@@ -161,6 +172,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 #if qPlatform_Windows
     /*

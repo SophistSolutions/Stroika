@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline Common::strong_ordering Function<FUNCTION_SIGNATURE>::ThreeWayComparer::operator() (const Function& lhs, const Function& rhs) const
     {
-        return Common::ThreeWayCompareNormalizer (lhs.fOrdering_, rhs.fOrdering_);
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_);
     }
 
     /*

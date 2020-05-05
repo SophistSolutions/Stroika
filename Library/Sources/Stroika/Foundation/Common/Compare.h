@@ -161,16 +161,12 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  \par Example Usage
-     *      \code
-     *        return Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
-     *      \endcode
-
-
-     &&& todo I think we can deprecate
      */
     template <typename TYPE>
-    constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs);
+    [[deprecated ("Since Stroika 2.1a5 - use CompareResultNormalizer or ThreeWayCompare")]] constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
+    {
+        return ThreeWayCompare (lhs, rhs);
+    }
 
     /**
      * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
@@ -184,7 +180,6 @@ namespace Stroika::Foundation::Common {
     {
         return CompareResultNormalizer (f);
     }
-
 
     /**
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and

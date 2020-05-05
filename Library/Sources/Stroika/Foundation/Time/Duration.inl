@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Time {
      */
     inline Common::strong_ordering Duration::ThreeWayComparer::operator() (const Duration& lhs, const Duration& rhs) const
     {
-        return Common::ThreeWayCompareNormalizer (lhs.As<Duration::InternalNumericFormatType_> (), rhs.As<Duration::InternalNumericFormatType_> ());
+        return Common::ThreeWayCompare (lhs.As<Duration::InternalNumericFormatType_> (), rhs.As<Duration::InternalNumericFormatType_> ());
     }
 
     /*

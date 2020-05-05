@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Math {
      */
     constexpr Common::strong_ordering Angle::ThreeWayComparer::operator() (const Angle& lhs, const Angle& rhs) const
     {
-        return Common::ThreeWayCompareNormalizer (lhs.AsRadians (), rhs.AsRadians ());
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ());
     }
 
 #if __cpp_impl_three_way_comparison < 201907

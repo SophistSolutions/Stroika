@@ -120,37 +120,6 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ************************ ThreeWayCompareNormalizer *****************************
-     ********************************************************************************
-     */
-    namespace PRIVATE_ {
-        template <typename TYPE, enable_if_t<is_arithmetic_v<TYPE>>*>
-        constexpr strong_ordering ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, void*)
-        {
-            return strong_ordering{lhs - rhs};
-        }
-        template <typename TYPE>
-        constexpr strong_ordering ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ...)
-        {
-            if (lhs < rhs) {
-                return kLess;
-            }
-            else if (lhs == rhs) {
-                return kEqual;
-            }
-            else {
-                return kGreater;
-            }
-        }
-    }
-    template <typename TYPE>
-    constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
-    {
-        return PRIVATE_::ThreeWayCompareNormalizer_ (lhs, rhs, nullptr);
-    }
-
-    /*
-     ********************************************************************************
      *************************** CompareResultNormalizer ****************************
      ********************************************************************************
      */
@@ -162,7 +131,7 @@ namespace Stroika::Foundation::Common {
         }
         else {
             Assert (f < 0 or f > 0);
-            return f < 0 : Common::kLess : Common::kGreater;
+            return f < 0 ? Common::kLess : Common::kGreater;
         }
     }
 

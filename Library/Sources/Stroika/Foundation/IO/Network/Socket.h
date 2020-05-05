@@ -319,6 +319,18 @@ namespace Stroika::Foundation::IO::Network {
     public:
         struct ThreeWayComparer;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Ptr& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Ptr&) const;
+#endif
+
     public:
         /**
          *  Return the native platform handle object associated with this socket
@@ -394,6 +406,7 @@ namespace Stroika::Foundation::IO::Network {
         Common::strong_ordering operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      *
@@ -405,6 +418,7 @@ namespace Stroika::Foundation::IO::Network {
     bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+#endif
 
     /**
      */

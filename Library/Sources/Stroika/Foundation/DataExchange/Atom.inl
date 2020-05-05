@@ -114,7 +114,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ATOM_MANAGER>
     constexpr Common::strong_ordering Atom<ATOM_MANAGER>::ThreeWayComparer::operator() (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs) const
     {
-        return Common::ThreeWayCompareNormalizer (lhs.fValue_, rhs.fValue_);
+        return Common::ThreeWayCompare (lhs.fValue_, rhs.fValue_);
     }
 
 #if __cpp_impl_three_way_comparison < 201907
