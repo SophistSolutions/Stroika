@@ -364,9 +364,11 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
+     *
+     *  @todo this probably SHOULD be doable as constexpr - but disabled cuz failing to compiler on clang++10 --LGP 2020-05-04
      */
     struct InternetAddress::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const InternetAddress& lhs, const InternetAddress& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const InternetAddress& lhs, const InternetAddress& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

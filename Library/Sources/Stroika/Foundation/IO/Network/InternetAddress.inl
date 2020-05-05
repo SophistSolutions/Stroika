@@ -263,7 +263,7 @@ namespace Stroika::Foundation::IO::Network {
      ********************** InternetAddress::ThreeWayComparer ***********************
      ********************************************************************************
      */
-    constexpr Common::strong_ordering InternetAddress::ThreeWayComparer::operator() (const InternetAddress& lhs, const InternetAddress& rhs) const
+    inline Common::strong_ordering InternetAddress::ThreeWayComparer::operator() (const InternetAddress& lhs, const InternetAddress& rhs) const
     {
         Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_);
         if (cmp != Common::kEqual) {
