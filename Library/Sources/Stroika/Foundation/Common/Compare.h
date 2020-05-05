@@ -27,9 +27,9 @@
 
 #if qCompilerAndStdLib_strong_ordering_equals_Buggy
 namespace std {
-    bool operator== (const strong_ordering& lhs, const strong_ordering& rhs)
+    inline bool operator== (const strong_ordering& lhs, const strong_ordering& rhs)
     {
-        if (((lhs == 0) == (rhs == 0)) and ((lhs > 0) == (rhs > 0))) {
+        if (((lhs == 0) == (rhs == 0)) and ((lhs > 0) == (rhs > 0)) and ((lhs < 0) == (rhs < 0))) {
             return true;
         }
         return false;
