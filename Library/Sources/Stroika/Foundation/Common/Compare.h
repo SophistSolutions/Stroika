@@ -151,7 +151,11 @@ namespace Stroika::Foundation::Common {
     constexpr Common::strong_ordering ThreeWayCompare (const T& lhs, const T& rhs);
 
     /**
-     *  EXPERIMENTAL - API subject to change - see if I can find a way to mix  with (partial specialization) of ThreeWayCompare but still pass in other base comparer (to say case insensitive)
+     *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
+     *
+     *  You dont need this when the default comparer for 'T' works as you wish. But for example, ThreeWayComparer<optional<String>> - where you want
+     *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
+     *  'base comparer'.
      */
     template <typename T, typename TCOMPARER = ThreeWayComparer<T>>
     struct OptionalThreeWayCompare {
