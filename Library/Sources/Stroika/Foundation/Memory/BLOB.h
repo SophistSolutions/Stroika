@@ -376,7 +376,6 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      *
      *  Like ThreeWayComparer checking for 0, but often faster
      */
@@ -385,8 +384,6 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
-     *
      *  This is like memcmp() - bytewise unsigned comparison
      */
     struct BLOB::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {

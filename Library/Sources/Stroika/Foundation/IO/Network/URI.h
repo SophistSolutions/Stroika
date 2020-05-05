@@ -367,7 +367,6 @@ namespace Stroika::Foundation::IO::Network {
     optional<String> URI::GetAbsPath () const;
 
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct URI::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         Common::strong_ordering operator() (const URI& lhs, const URI& rhs) const;
@@ -376,8 +375,6 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const URI& lhs, const URI& rhs);
     bool operator<= (const URI& lhs, const URI& rhs);

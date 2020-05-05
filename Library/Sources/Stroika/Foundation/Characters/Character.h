@@ -162,7 +162,6 @@ namespace Stroika::Foundation::Characters {
     char32_t Character::As () const;
 
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Character::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
@@ -173,8 +172,6 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Character::ThreeWayComparer{}
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (Character lhs, Character rhs);
     bool operator<= (Character lhs, Character rhs);

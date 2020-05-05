@@ -215,8 +215,6 @@ namespace Stroika::Foundation::Containers {
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
      *  @Sequence<>::EqualsComparer
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename T, typename... INDEXES>
     bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);

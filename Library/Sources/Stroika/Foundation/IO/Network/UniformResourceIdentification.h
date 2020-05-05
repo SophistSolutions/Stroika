@@ -168,8 +168,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     /**
      *  schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct SchemeType::ThreeWayComparer : String::ThreeWayComparer {
         constexpr ThreeWayComparer ();
@@ -177,7 +175,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const SchemeType& lhs, const SchemeType& rhs);
     bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
@@ -309,8 +306,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     /**
      *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
      *  @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Host::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         Common::strong_ordering operator() (const Host& lhs, const Host& rhs) const;
@@ -319,8 +314,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Host& lhs, const Host& rhs);
     bool operator<= (const Host& lhs, const Host& rhs);
@@ -422,8 +415,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     /**
      *  Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
      *  These are compared as case-senstive strings.
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct UserInfo::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         Common::strong_ordering operator() (const UserInfo& lhs, const UserInfo& rhs) const;
@@ -432,8 +423,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const UserInfo& lhs, const UserInfo& rhs);
     bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
@@ -548,7 +537,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
 
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Authority::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         Common::strong_ordering operator() (const Authority& lhs, const Authority& rhs) const;
@@ -557,8 +545,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Authority& lhs, const Authority& rhs);
     bool operator<= (const Authority& lhs, const Authority& rhs);
@@ -630,8 +616,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      * comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
      * So pick a preferred ordering (alphabetical) - and compare one after the other
      * @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Query::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         Common::strong_ordering operator() (const Query& lhs, const Query& rhs) const;
@@ -640,8 +624,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Query& lhs, const Query& rhs);
     bool operator<= (const Query& lhs, const Query& rhs);

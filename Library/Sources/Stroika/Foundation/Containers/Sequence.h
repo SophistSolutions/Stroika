@@ -661,8 +661,6 @@ namespace Stroika::Foundation::Containers {
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
      *  @Sequence<>::ThreeWayComparer and equal_to<Sequence<>>
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     template <typename T>
     bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);

@@ -282,8 +282,6 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr Common::strong_ordering operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
@@ -292,8 +290,6 @@ namespace Stroika::Foundation::Time {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs);

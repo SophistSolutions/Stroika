@@ -161,8 +161,6 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \note NO GUARANTEE about the meaning of the ordering? for now. May use atom ordering
      *        or case insensitive string ordering, or other. Just legal total ordering.
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct InternetMediaType::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual Common::strong_ordering operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
@@ -171,8 +169,6 @@ namespace Stroika::Foundation::DataExchange {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);

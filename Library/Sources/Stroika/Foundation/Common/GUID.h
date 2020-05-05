@@ -72,8 +72,6 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  @see Common::ThreeWayComparer<> template
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct GUID::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         nonvirtual Common::strong_ordering operator() (const GUID& lhs, const GUID& rhs) const;
@@ -82,8 +80,6 @@ namespace Stroika::Foundation::Common {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @GUID::ThreeWayComparer ()
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const GUID& lhs, const GUID& rhs);
     bool operator<= (const GUID& lhs, const GUID& rhs);

@@ -85,7 +85,6 @@ namespace Stroika::Foundation::Math {
     };
 
     /**
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Angle::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr Common::strong_ordering operator() (const Angle& lhs, const Angle& rhs) const;
@@ -94,8 +93,6 @@ namespace Stroika::Foundation::Math {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare ()
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     constexpr bool operator< (const Angle& lhs, const Angle& rhs);
     constexpr bool operator<= (const Angle& lhs, const Angle& rhs);

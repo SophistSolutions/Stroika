@@ -399,8 +399,6 @@ namespace Stroika::Foundation::IO::Network {
      *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
      *          the same thing, but can be different in the case of multiple objects attached to the same
      *          socket. This is probably a better defintiion, and definitely more efficient.
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Socket::Ptr::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         Common::strong_ordering operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const;
@@ -409,8 +407,6 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);

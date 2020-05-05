@@ -74,8 +74,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const Name& lhs, const Name& rhs);
     bool operator<= (const Name& lhs, const Name& rhs);

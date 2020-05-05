@@ -363,8 +363,6 @@ namespace Stroika::Foundation::IO::Network {
 
     /**
      *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
-     *
      *  @todo this probably SHOULD be doable as constexpr - but disabled cuz failing to compiler on clang++10 --LGP 2020-05-04
      */
     struct InternetAddress::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
@@ -374,8 +372,6 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetAddress::ThreeWayComparer ()
-     *
-     *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
