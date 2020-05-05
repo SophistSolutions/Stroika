@@ -377,10 +377,10 @@ namespace Stroika::Foundation::Common {
      *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      *
      *  @see DeclareInOrderComparer
-     *  @see mkEqualsComparerAdapter
+     *  @see EqualsComparerAdapter
      *
-     *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
-     *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
+     *  \note similar to InOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
+     *        Whereas InOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename FUNCTOR>
     constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (const FUNCTOR& f);
@@ -394,10 +394,10 @@ namespace Stroika::Foundation::Common {
      *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      *
      *  @see DeclareEqualsComparer
-     *  @see mkInOrderComparerAdapter
+     *  @see InOrderComparerAdapter
      *
-     *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
-     *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
+     *  \note similar to InOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
+     *        Whereas InOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename FUNCTOR>
     constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f);
@@ -426,8 +426,6 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  mkEqualsComparerAdapter is a trivial wrapper on EqualsComparerAdapter, but takes advantage of the fact that you
-     *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      */
     template <typename BASE_COMPARER>
     [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
@@ -462,13 +460,6 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  mkInOrderComparerAdapter is a trivial wrapper on InOrderComparerAdapter, but takes advantage of the fact that you
-     *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
-     *
-     *  @see DeclareInOrderComparer
-     *
-     *  \note similar to DeclareInOrderComparer(), except DeclareInOrderComparer ignores the TYEP of 'f' and just marks it as an InOrder comparer
-     *        Whereas this function looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename BASE_COMPARER>
     [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
@@ -503,8 +494,6 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  mkThreeWayComparerAdapter is a trivial wrapper on ThreeWayComparerAdapter, but takes advantage of the fact that you
-     *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      */
     template <typename BASE_COMPARER>
     [[deprecated ("Since Stroika v2.1a5 - use ThreeWayComparerAdapter directly")]] constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
