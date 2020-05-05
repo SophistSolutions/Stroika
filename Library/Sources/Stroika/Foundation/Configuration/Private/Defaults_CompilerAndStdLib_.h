@@ -1563,6 +1563,17 @@ Test.cpp:173:31: error: template template argument has different template parame
 
 #endif
 
+#ifndef qCompilerAndStdLib_strong_ordering_equals_Buggy
+
+#if defined(_LIBCPP_VERSION)
+// Broken in _LIBCPP_VERSION  10000
+#define qCompilerAndStdLib_strong_ordering_equals_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 10000))
+#else
+#define qCompilerAndStdLib_strong_ordering_equals_Buggy 0
+#endif
+
+#endif
+
 /**
  *  @see https://bugs.llvm.org/show_bug.cgi?id=37818
  *
