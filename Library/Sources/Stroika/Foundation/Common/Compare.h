@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Common {
 #endif
 
     /**
-     *  Stand-in until C++20, three way compare - used for Calling three-way-comparer
+     *  \brief - std::compare_three_way - Stand-in until C++20, three way compare - used for Calling three-way-comparer
      *
      *  Not every class implements the three-way comparer (spaceship operator) - especailly before C++20.
      *  @see ThreeWayComparerDefaultImplementation<>
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  @todo replace this with https://en.cppreference.com/w/cpp/algorithm/compare_3way when available
+     *  \brief trivial wrapper calling ThreeWayComparer<T>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
      *      \code
@@ -165,6 +165,9 @@ namespace Stroika::Foundation::Common {
      *      \code
      *        return Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
      *      \endcode
+
+
+     &&& todo I think we can deprecate
      */
     template <typename TYPE>
     constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs);
@@ -174,7 +177,14 @@ namespace Stroika::Foundation::Common {
      * different sized values and just returning an int, but don't want the warnings about overflow etc.
      */
     template <typename FROM_INT_TYPE>
-    strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f);
+    strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
+
+    template <typename FROM_INT_TYPE>
+    [[deprecated ("since Stroika 2.1a5 - use CompareResultNormalizer")]] inline strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f)
+    {
+        return CompareResultNormalizer (f);
+    }
+
 
     /**
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and

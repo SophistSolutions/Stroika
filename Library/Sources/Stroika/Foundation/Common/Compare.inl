@@ -151,20 +151,18 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     *************************** CompareResultNormalizeHelper ***********************
+     *************************** CompareResultNormalizer ****************************
      ********************************************************************************
      */
     template <typename FROM_INT_TYPE>
-    inline strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f)
+    inline strong_ordering CompareResultNormalizer (FROM_INT_TYPE f)
     {
-        if (f < 0) {
-            return Common::kLess;
-        }
-        else if (f > 0) {
-            return Common::kGreater;
+        if (f == 0) {
+            return Common::kEqual;
         }
         else {
-            return Common::kEqual;
+            Assert (f < 0 or f > 0);
+            return f < 0 : Common::kLess : Common::kGreater;
         }
     }
 

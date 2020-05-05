@@ -25,7 +25,7 @@ namespace {
         if constexpr (kUseMemCmpAsSpeedTweek_) {
             int tmp = ::memcmp (lhsStart, rhsStart, length * sizeof (Character));
             if (tmp != 0) {
-                return Common::CompareResultNormalizeHelper (tmp);
+                return Common::CompareResultNormalizer (tmp);
             }
         }
         else {
@@ -35,7 +35,7 @@ namespace {
                 }
             }
         }
-        return Common::CompareResultNormalizeHelper (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+        return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
     }
 
     inline Common::strong_ordering Compare_CI_ (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd)
@@ -54,7 +54,7 @@ namespace {
                 return Common::ThreeWayCompare (lc.GetCharacterCode (), rc.GetCharacterCode ());
             }
         }
-        return Common::CompareResultNormalizeHelper (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+        return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
     }
 }
 
