@@ -432,6 +432,7 @@ namespace Stroika::Foundation::Containers {
      ************************** Sequence<T> operators *******************************
      ********************************************************************************
      */
+#if __cpp_impl_three_way_comparison < 201907
     template <typename T>
     inline bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
@@ -442,7 +443,6 @@ namespace Stroika::Foundation::Containers {
     {
         return Common::ThreeWayCompare (lhs, rhs) <= 0;
     }
-#if __cpp_impl_three_way_comparison < 201907
     template <typename T>
     inline bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
@@ -453,7 +453,6 @@ namespace Stroika::Foundation::Containers {
     {
         return not typename Sequence<T>::template EqualsComparer<>{}(lhs, rhs);
     }
-#endif
     template <typename T>
     inline bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
@@ -464,6 +463,7 @@ namespace Stroika::Foundation::Containers {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 

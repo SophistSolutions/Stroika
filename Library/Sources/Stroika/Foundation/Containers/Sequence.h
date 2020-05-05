@@ -658,6 +658,7 @@ namespace Stroika::Foundation::Containers {
         friend Sequence<T>;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to 
      *  @Sequence<>::ThreeWayComparer and equal_to<Sequence<>>
@@ -666,16 +667,15 @@ namespace Stroika::Foundation::Containers {
     bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-#if __cpp_impl_three_way_comparison < 201907
     template <typename T>
     bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-#endif
     template <typename T>
     bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
+#endif
 
 }
 
