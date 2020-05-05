@@ -427,12 +427,12 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************** Sequence<T> operators *******************************
      ********************************************************************************
      */
-#if __cpp_impl_three_way_comparison < 201907
     template <typename T>
     inline bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
