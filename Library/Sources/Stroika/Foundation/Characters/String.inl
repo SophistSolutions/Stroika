@@ -768,57 +768,57 @@ namespace Stroika::Foundation::Characters {
         return _SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
     }
     template <typename LT, typename RT>
-    inline int String::ThreeWayComparer::Cmp_ (LT lhs, RT rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::Cmp_ (LT lhs, RT rhs) const
     {
         pair<const Character*, const Character*> l = Access_ (lhs);
         pair<const Character*, const Character*> r = Access_ (rhs);
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
-    inline int String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const Character* lhs, const wstring_view& rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const wstring_view& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const Character* rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const Character* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const Character* lhs, const Character* rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const Character* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const String& rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const String& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const String& lhs, const wchar_t* rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const wchar_t* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
-    inline int String::ThreeWayComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
+    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }

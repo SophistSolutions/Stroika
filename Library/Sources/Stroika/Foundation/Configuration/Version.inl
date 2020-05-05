@@ -69,9 +69,9 @@ namespace Stroika::Foundation::Configuration {
      *********************** Version::ThreeWayComparer ******************************
      ********************************************************************************
      */
-    constexpr int Version::ThreeWayComparer::operator() (const Version& lhs, const Version& rhs) const
+    constexpr Common::strong_ordering Version::ThreeWayComparer::operator() (const Version& lhs, const Version& rhs) const
     {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) - make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
+        return Common::ThreeWayCompare (make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()), make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
 
     /*

@@ -151,9 +151,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ************************** Host::ThreeWayComparer ******************************
      ********************************************************************************
      */
-    inline int Host::ThreeWayComparer::operator() (const Host& lhs, const Host& rhs) const
+    inline Common::strong_ordering Host::ThreeWayComparer::operator() (const Host& lhs, const Host& rhs) const
     {
-        if (int cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ())) {
+        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ());
+        if (cmp != Common::kEqual) {
             return cmp;
         }
         return Common::OptionalThreeWayCompare<String, String::ThreeWayComparer>{
@@ -241,7 +242,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *********************** UserInfo::ThreeWayComparer *****************************
      ********************************************************************************
      */
-    inline int UserInfo::ThreeWayComparer::operator() (const UserInfo& lhs, const UserInfo& rhs) const
+    inline Common::strong_ordering UserInfo::ThreeWayComparer::operator() (const UserInfo& lhs, const UserInfo& rhs) const
     {
         return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
     }
@@ -329,12 +330,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ************************ ThreeWayComparer<Authority> ***************************
      ********************************************************************************
      */
-    inline int Authority::ThreeWayComparer::operator() (const Authority& lhs, const Authority& rhs) const
+    inline Common::strong_ordering Authority::ThreeWayComparer::operator() (const Authority& lhs, const Authority& rhs) const
     {
-        if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
+        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ());
+        if (cmp != Common::kEqual) {
             return cmp;
         }
-        if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+        cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ());
+        if (cmp != Common::kEqual) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());

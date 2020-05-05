@@ -132,17 +132,17 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    constexpr int Character::ThreeWayComparer::operator() (const Character& lhs, const Character& rhs) const
+    constexpr Common::strong_ordering Character::ThreeWayComparer::operator() (const Character& lhs, const Character& rhs) const
     {
         using SIGNED_WCHART_ = make_signed_t<wchar_t>;
         switch (fCompareOptions) {
             case CompareOptions::eCaseInsensitive:
                 return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive);
             case CompareOptions::eWithCase:
-                return static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()) - static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
+                return Common::ThreeWayCompare (static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()), static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ()));
             default:
                 AssertNotReached ();
-                return 0;
+                return Common::kEqual;
         }
     };
 

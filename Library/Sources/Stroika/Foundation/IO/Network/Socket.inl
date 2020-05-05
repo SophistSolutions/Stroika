@@ -118,7 +118,7 @@ namespace Stroika::Foundation::IO::Network {
      ************************* Socket::Ptr::ThreeWayComparer ************************
      ********************************************************************************
      */
-    inline int Socket::Ptr::ThreeWayComparer::operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const
+    inline Common::strong_ordering Socket::Ptr::ThreeWayComparer::operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec1{lhs}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
         shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};

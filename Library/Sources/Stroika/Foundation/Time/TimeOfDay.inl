@@ -73,9 +73,9 @@ namespace Stroika::Foundation::Time {
      *************************** TimeOfDay::ThreeWayComparer ************************
      ********************************************************************************
      */
-    constexpr int TimeOfDay::ThreeWayComparer::operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const
+    constexpr Common::strong_ordering TimeOfDay::ThreeWayComparer::operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const
     {
-        return lhs.GetAsSecondsCount () - rhs.GetAsSecondsCount ();
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ());
     }
 
 #if __cpp_impl_three_way_comparison < 201907

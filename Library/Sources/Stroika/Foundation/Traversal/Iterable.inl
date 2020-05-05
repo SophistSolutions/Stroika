@@ -957,7 +957,7 @@ namespace Stroika::Foundation::Traversal {
     DISABLE_COMPILER_MSC_WARNING_START (4701)
     template <typename T>
     template <typename T_THREEWAY_COMPARER>
-    inline int Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
+    inline Common::strong_ordering Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
     {
         auto li = lhs.begin ();
         auto le = lhs.end ();
@@ -967,26 +967,26 @@ namespace Stroika::Foundation::Traversal {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
         // no need for c' initialization cuz only used in else return at end, but never get there
         // unless set at least once
-        int c;
-        while ((li != le) and (ri != re) and (c = fElementComparer (*li, *ri)) == 0) {
+        optional<Common::strong_ordering> c;
+        while ((li != le) and (ri != re) and (c = fElementComparer (*li, *ri)) == Common::kEqual) {
             ++li;
             ++ri;
         }
         if (li == le) {
             if (ri == re) {
-                return 0; // all items same and loop ended with both things at end
+                return Common::kEqual; // all items same and loop ended with both things at end
             }
             else {
-                return -1; // lhs shorter but an initial sequence of rhs
+                return Common::kLess; // lhs shorter but an initial sequence of rhs
             }
         }
         else if (ri == re) {
-            return 1; // rhs shorter but an initial sequence of lhs
+            return Common::kGreater; // rhs shorter but an initial sequence of lhs
         }
         else {
             Assert (li != le and ri != re);
             Assert (c == fElementComparer (*li, *ri));
-            return c;
+            return c.value ();
         }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
         DISABLE_COMPILER_MSC_WARNING_END (6001)

@@ -327,21 +327,21 @@ String Query::ToString () const
  *************************** Query::ThreeWayComparer ****************************
  ********************************************************************************
  */
-int Query::ThreeWayComparer::operator() (const Query& lhs, const Query& rhs) const
+Common::strong_ordering Query::ThreeWayComparer::operator() (const Query& lhs, const Query& rhs) const
 {
     // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
 
     // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
     // So pick a preferred ordering (alphabetical) - and compare one after the other
     for (String i : (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).OrderBy (less<String>{})) {
-        optional<String> lhsVal = lhs.GetMap ().Lookup (i);
-        optional<String> rhsVal = rhs.GetMap ().Lookup (i);
-        int              cmp    = Common::ThreeWayCompare (lhsVal, rhsVal);
-        if (cmp != 0) {
+        optional<String>        lhsVal = lhs.GetMap ().Lookup (i);
+        optional<String>        rhsVal = rhs.GetMap ().Lookup (i);
+        Common::strong_ordering cmp    = Common::ThreeWayCompare (lhsVal, rhsVal);
+        if (cmp != Common::kEqual) {
             return cmp;
         }
     }
-    return 0;
+    return Common::kEqual;
 }
 
 /*

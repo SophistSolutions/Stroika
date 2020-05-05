@@ -143,9 +143,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    constexpr int KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer::operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const
+    constexpr strong_ordering KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer::operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const
     {
-        if (int cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey)) {
+        strong_ordering cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey);
+        if (cmp != kEqual) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.fValue, rhs.fValue);

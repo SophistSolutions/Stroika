@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename FUNCTION_SIGNATURE>
     struct Function<FUNCTION_SIGNATURE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual int operator() (const Function& lhs, const Function& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Function& lhs, const Function& rhs) const;
     };
 
     /**

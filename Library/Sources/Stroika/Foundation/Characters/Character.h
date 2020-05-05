@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        static int Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
+        static Common::strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
     private:
         wchar_t fCharacterCode_;
@@ -166,8 +166,8 @@ namespace Stroika::Foundation::Characters {
      */
     struct Character::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
-        constexpr int  operator() (const Character& lhs, const Character& rhs) const;
-        CompareOptions fCompareOptions;
+        constexpr Common::strong_ordering operator() (const Character& lhs, const Character& rhs) const;
+        CompareOptions                    fCompareOptions;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

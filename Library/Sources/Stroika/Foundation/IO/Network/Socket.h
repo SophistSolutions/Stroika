@@ -391,7 +391,7 @@ namespace Stroika::Foundation::IO::Network {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Socket::Ptr::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const;
+        Common::strong_ordering operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const;
     };
 
     /**

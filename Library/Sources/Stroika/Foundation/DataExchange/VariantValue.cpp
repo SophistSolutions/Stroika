@@ -706,13 +706,13 @@ Sequence<VariantValue> VariantValue::As () const
  ************************* VariantValue::ThreeWayComparer ***********************
  ********************************************************************************
  */
-int VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
+Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
 {
     VariantValue::Type lt = lhs.GetType ();
     VariantValue::Type rt = rhs.GetType ();
     switch (lt) {
         case VariantValue::eNull:
-            return rt == VariantValue::eNull ? 0 : 1;
+            return rt == VariantValue::eNull ? Common::kEqual : Common::kGreater;
         case VariantValue::eBoolean:
             return Common::ThreeWayCompare (lhs.As<bool> (), rhs.As<bool> ());
         case VariantValue::eInteger:
@@ -724,13 +724,13 @@ int VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const V
             FloatType_ l = lhs.As<FloatType_> ();
             FloatType_ r = rhs.As<FloatType_> ();
             if (Math::NearlyEquals (l, r)) {
-                return 0;
+                return Common::kEqual;
             }
             else if (l < r) {
-                return -1;
+                return Common::kLess;
             }
             else {
-                return 1;
+                return Common::kGreater;
             }
         }
         case VariantValue::eDate:
@@ -754,23 +754,24 @@ int VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const V
             auto                          ri = rhsM.begin ();
             for (; li != lhsM.end (); ++li, ++ri) {
                 if (ri == rhsM.end ()) {
-                    return -1;
+                    return Common::kLess;
                 }
                 if (*li != *ri) {
-                    return false;
+                    //return false; CHANGE IN BEHAVIOR (I THINK FIX) 2020-05-04
+                    return Common::ThreeWayCompare (*li, *ri);
                 }
             }
             Ensure (li == lhsM.end ());
             if (ri == rhsM.end ()) {
-                return 0;
+                return Common::kEqual;
             }
             else {
-                return 1;
+                return Common::kGreater;
             }
         }
         default:
             AssertNotReached ();
-            return false;
+            return Common::kEqual;
     }
 }
 

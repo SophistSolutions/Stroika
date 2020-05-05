@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Memory {
      *  Like ThreeWayComparer checking for 0, but often faster
      */
     struct BLOB::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual int operator() (const BLOB& lhs, const BLOB& rhs) const;
+        nonvirtual bool operator() (const BLOB& lhs, const BLOB& rhs) const;
     };
 
     /**
@@ -390,7 +390,7 @@ namespace Stroika::Foundation::Memory {
      *  This is like memcmp() - bytewise unsigned comparison
      */
     struct BLOB::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual int operator() (const BLOB& lhs, const BLOB& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const BLOB& lhs, const BLOB& rhs) const;
     };
 
     /**

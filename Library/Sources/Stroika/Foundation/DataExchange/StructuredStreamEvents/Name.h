@@ -69,7 +69,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      *  Treat EITHER side missing namespace as 'wildcard' matching any namespace
      */
     struct Name::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const Name& lhs, const Name& rhs) const;
+        Common::strong_ordering operator() (const Name& lhs, const Name& rhs) const;
     };
 
     /**

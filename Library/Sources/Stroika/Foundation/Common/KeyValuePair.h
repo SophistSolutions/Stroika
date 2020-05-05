@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
     struct KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const;
+        constexpr strong_ordering operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

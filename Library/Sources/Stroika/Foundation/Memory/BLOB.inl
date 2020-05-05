@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Memory {
      ************************* BLOB::EqualsComparer *********************************
      ********************************************************************************
      */
-    inline int BLOB::EqualsComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
+    inline bool BLOB::EqualsComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         shared_lock<const AssertExternallySynchronizedLock> critSecR{rhs};
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Memory {
      ************************* BLOB::ThreeWayComparer *******************************
      ********************************************************************************
      */
-    inline int BLOB::ThreeWayComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
+    inline Common::strong_ordering BLOB::ThreeWayComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         shared_lock<const AssertExternallySynchronizedLock> critSecR{rhs};
@@ -360,13 +360,13 @@ namespace Stroika::Foundation::Memory {
         size_t                                              rSize        = r.second - r.first;
         size_t                                              nCommonBytes = min (lSize, rSize);
         if (int tmp = ::memcmp (l.first, r.first, nCommonBytes)) {
-            return tmp;
+            return Common::ThreeWayCompare (tmp, 0);
         }
         // if tmp is zero, and same size - its really zero. But if lhs shorter than right, say lhs < right
         if (lSize == rSize) {
-            return 0;
+            return Common::kEqual;
         }
-        return (lSize < rSize) ? -1 : 1;
+        return (lSize < rSize) ? Common::kLess : Common::kGreater;
     }
 
     /*

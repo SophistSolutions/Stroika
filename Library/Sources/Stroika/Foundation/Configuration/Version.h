@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Configuration {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Version::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const Version& lhs, const Version& rhs) const;
+        constexpr Common::strong_ordering operator() (const Version& lhs, const Version& rhs) const;
     };
 
     /**

@@ -158,16 +158,18 @@ String InternetMediaType::As () const
  ********************** InternetMediaType::ThreeWayComparer *********************
  ********************************************************************************
  */
-int InternetMediaType::ThreeWayComparer::operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const
+Common::strong_ordering InternetMediaType::ThreeWayComparer::operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const
 {
-    if (int cmp = Common::ThreeWayCompare (lhs.fType_, rhs.fType_)) {
+    Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fType_, rhs.fType_);
+    if (cmp != Common::kEqual) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayCompare (lhs.fSubType_, rhs.fSubType_)) {
+    cmp = Common::ThreeWayCompare (lhs.fSubType_, rhs.fSubType_);
+    if (cmp != Common::kEqual) {
         return cmp;
     }
     if (lhs.fParameters_.empty () and rhs.fParameters_.empty ()) {
-        return 0; // very common case, shortcut
+        return Common::kEqual; // very common case, shortcut
     }
     else {
         // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)

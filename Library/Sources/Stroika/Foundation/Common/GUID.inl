@@ -42,10 +42,10 @@ namespace Stroika::Foundation::Common {
      ************************* GUID::ThreeWayComparer *******************************
      ********************************************************************************
      */
-    inline int GUID::ThreeWayComparer::operator() (const GUID& lhs, const GUID& rhs) const
+    inline Common::strong_ordering GUID::ThreeWayComparer::operator() (const GUID& lhs, const GUID& rhs) const
     {
         static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return memcmp (&lhs, &rhs, sizeof (GUID));
+        return Common::ThreeWayCompareNormalizer (memcmp (&lhs, &rhs, sizeof (GUID)), 0);
     }
 
 #if __cpp_impl_three_way_comparison < 201907

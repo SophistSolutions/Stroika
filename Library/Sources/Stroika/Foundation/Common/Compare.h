@@ -33,6 +33,25 @@ namespace Stroika::Foundation::Common {
     }
 
     /**
+     *  In C++, you can only use strong_ordering, strong_ordering::less, strong_ordering::equal, strong_ordering::greater if 
+     *  __cpp_impl_three_way_comparison >= 201907
+     *
+     *  In Stroika, these defines are usable no matter what (in in C++ correspond to the C++ type/value)
+     */
+#if __cpp_impl_three_way_comparison < 201907
+    using strong_ordering              = int;
+    using strong_ordering              = int;
+    constexpr strong_ordering kLess    = -1;
+    constexpr strong_ordering kEqual   = 0;
+    constexpr strong_ordering kGreater = 1;
+#else
+    using strong_ordering              = std::strong_ordering;
+    constexpr strong_ordering kLess    = strong_ordering::less;
+    constexpr strong_ordering kEqual   = strong_ordering::equal;
+    constexpr strong_ordering kGreater = strong_ordering::greater;
+#endif
+
+    /**
      *  Stand-in until C++20, three way compare - used for Calling three-way-comparer
      *
      *  Not every class implements the three-way comparer (spaceship operator) - especailly before C++20.
@@ -67,12 +86,12 @@ namespace Stroika::Foundation::Common {
     struct ThreeWayComparer {
         constexpr ThreeWayComparer (ARGS... args);
         template <typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
-        constexpr int operator() (const T& lhs, const T& rhs) const;
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
         template <typename Q = T, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
-        constexpr int operator() (const T& lhs, const T& rhs) const;
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
         template <typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
-        constexpr int  operator() (const T& lhs, const T& rhs) const;
-        tuple<ARGS...> fArgs_;
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
+        tuple<ARGS...>            fArgs_;
     };
 
     /**
@@ -85,7 +104,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     struct ThreeWayComparerDefaultImplementation {
-        constexpr int operator() (const T& lhs, const T& rhs) const;
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
     };
 
     /**
@@ -117,7 +136,7 @@ namespace Stroika::Foundation::Common {
      *              -- LGP 2019-05-07
      */
     template <typename T>
-    constexpr int ThreeWayCompare (const T& lhs, const T& rhs);
+    constexpr Common::strong_ordering ThreeWayCompare (const T& lhs, const T& rhs);
 
     /**
      *  EXPERIMENTAL - API subject to change - see if I can find a way to mix  with (partial specialization) of ThreeWayCompare but still pass in other base comparer (to say case insensitive)
@@ -125,8 +144,8 @@ namespace Stroika::Foundation::Common {
     template <typename T, typename TCOMPARER = ThreeWayComparer<T>>
     struct OptionalThreeWayCompare {
         constexpr OptionalThreeWayCompare (const TCOMPARER& tComparer);
-        constexpr int operator() (const optional<T>& lhs, const optional<T>& rhs) const;
-        TCOMPARER     fTComparer_;
+        constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
+        TCOMPARER                 fTComparer_;
     };
 
     /**
@@ -136,7 +155,14 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename TYPE>
-    constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs);
+    constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs);
+
+    /**
+     * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
+     * different sized values and just returning an int, but don't want the warnings about overflow etc.
+     */
+    template <typename FROM_INT_TYPE>
+    strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f);
 
     /**
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and
@@ -425,7 +451,7 @@ namespace Stroika::Foundation::Common {
         /**
          */
         template <typename T>
-        constexpr int operator() (const T& lhs, const T& rhs) const;
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
 
     private:
         BASE_COMPARER fBASE_COMPARER_;

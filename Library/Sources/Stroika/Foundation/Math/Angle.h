@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Math {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Angle::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const Angle& lhs, const Angle& rhs) const;
+        constexpr Common::strong_ordering operator() (const Angle& lhs, const Angle& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

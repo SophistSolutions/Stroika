@@ -387,7 +387,7 @@ namespace Stroika::Foundation::DataExchange {
     /**
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual int operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

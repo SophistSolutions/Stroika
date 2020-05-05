@@ -263,24 +263,25 @@ namespace Stroika::Foundation::IO::Network {
      ********************** InternetAddress::ThreeWayComparer ***********************
      ********************************************************************************
      */
-    constexpr int InternetAddress::ThreeWayComparer::operator() (const InternetAddress& lhs, const InternetAddress& rhs) const
+    constexpr Common::strong_ordering InternetAddress::ThreeWayComparer::operator() (const InternetAddress& lhs, const InternetAddress& rhs) const
     {
-        if (int cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_)) {
+        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_);
+        if (cmp != Common::kEqual) {
             return cmp;
         }
         switch (lhs.fAddressFamily_) {
             case AddressFamily::UNKNOWN: {
-                return 0;
+                return Common::kEqual;
             } break;
             case AddressFamily::V4: {
-                return Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4);
+                return Common::ThreeWayCompare (Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4), 0);
             } break;
             case AddressFamily::V6: {
-                return Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_16_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_16_uint_.begin ()), 16);
+                return Common::ThreeWayCompare (Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_16_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_16_uint_.begin ()), 16), 0);
             } break;
         }
         //AssertNotReached ();  @todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
-        return 0;
+        return Common::kEqual;
     }
 
 #if __cpp_impl_three_way_comparison < 201907

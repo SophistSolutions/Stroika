@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Time {
      *  this comparison function - see the notes about 'empty' in the class description.
      */
     struct Duration::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual int operator() (const Duration& lhs, const Duration& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Duration& lhs, const Duration& rhs) const;
     };
 
     /**

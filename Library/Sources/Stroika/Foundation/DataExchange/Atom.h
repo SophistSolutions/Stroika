@@ -11,6 +11,7 @@
 #endif
 
 #include "../Characters/String.h"
+#include "../Common/Compare.h"
 
 /**
  *  \file
@@ -221,7 +222,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     template <typename ATOM_MANAGER>
     struct Atom<ATOM_MANAGER>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const Atom& lhs, const Atom& rhs) const;
+        constexpr Common::strong_ordering operator() (const Atom& lhs, const Atom& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

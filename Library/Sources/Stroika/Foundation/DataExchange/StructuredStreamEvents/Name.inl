@@ -54,15 +54,17 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      ************** StructuredStreamEvents::Name::ThreeWayComparer ******************
      ********************************************************************************
      */
-    inline int Name::ThreeWayComparer::operator() (const Name& lhs, const Name& rhs) const
+    inline Common::strong_ordering Name::ThreeWayComparer::operator() (const Name& lhs, const Name& rhs) const
     {
         // Treat EITHER side missing namespace as 'wildcard' matching any namespace
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            if (int cmp = Common::ThreeWayCompare (*lhs.fNamespaceURI, *rhs.fNamespaceURI)) {
+            Common::strong_ordering cmp = Common::ThreeWayCompare (*lhs.fNamespaceURI, *rhs.fNamespaceURI);
+            if (cmp != Common::kEqual) {
                 return cmp;
             }
         }
-        if (int cmp = Common::ThreeWayCompare (lhs.fLocalName, rhs.fLocalName)) {
+        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fLocalName, rhs.fLocalName);
+        if (cmp != Common::kEqual) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.fType, rhs.fType);

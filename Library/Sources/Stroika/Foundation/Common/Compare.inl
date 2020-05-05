@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename T, typename... ARGS>
     template <typename Q, enable_if_t<Private_::HasThreeWayComparer_v<Q>>*>
-    constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
 #if qCompilerAndStdLib_make_from_tuple_Buggy
         if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename T, typename... ARGS>
     template <typename Q, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>*>
-    constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
 #if qCompilerAndStdLib_make_from_tuple_Buggy
         if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename T, typename... ARGS>
     template <typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
-    constexpr int ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
         return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
     }
@@ -66,16 +66,16 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    constexpr int ThreeWayComparerDefaultImplementation<T>::operator() (const T& lhs, const T& rhs) const
+    constexpr strong_ordering ThreeWayComparerDefaultImplementation<T>::operator() (const T& lhs, const T& rhs) const
     {
 #if __cpp_lib_three_way_comparison >= 201907L
         return compare_three_way{}(lhs, rhs);
 #else
         // in general, can do this much more efficiently (subtract left and right), but for now, KISS
         if (equal_to<T>{}(lhs, rhs)) {
-            return 0;
+            return kEqual;
         }
-        return less<T>{}(lhs, rhs) ? -1 : 1;
+        return less<T>{}(lhs, rhs) ? kLess : kGreater;
 #endif
     }
 
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T>
-    constexpr int ThreeWayCompare (const T& lhs, const T& rhs)
+    constexpr Common::strong_ordering ThreeWayCompare (const T& lhs, const T& rhs)
     {
         return ThreeWayComparer<T>{}(lhs, rhs);
     }
@@ -101,20 +101,20 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T, typename TCOMPARER>
-    constexpr int OptionalThreeWayCompare<T, TCOMPARER>::operator() (const optional<T>& lhs, const optional<T>& rhs) const
+    constexpr strong_ordering OptionalThreeWayCompare<T, TCOMPARER>::operator() (const optional<T>& lhs, const optional<T>& rhs) const
     {
         if (lhs and rhs) {
             return fTComparer_ (*lhs, *rhs);
         }
         if (not lhs and not rhs) {
-            return 0;
+            return kEqual;
         }
         // treat missing as less than present
         if (lhs) {
-            return 1;
+            return kGreater;
         }
         else {
-            return -1;
+            return kLess;
         }
     }
 
@@ -125,28 +125,47 @@ namespace Stroika::Foundation::Common {
      */
     namespace PRIVATE_ {
         template <typename TYPE, enable_if_t<is_arithmetic_v<TYPE>>*>
-        constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, void*)
+        constexpr strong_ordering ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, void*)
         {
-            return lhs - rhs;
+            return strong_ordering{lhs - rhs};
         }
         template <typename TYPE>
-        constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ...)
+        constexpr strong_ordering ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ...)
         {
             if (lhs < rhs) {
-                return -1;
+                return kLess;
             }
             else if (lhs == rhs) {
-                return 0;
+                return kEqual;
             }
             else {
-                return 1;
+                return kGreater;
             }
         }
     }
     template <typename TYPE>
-    constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
+    constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
     {
         return PRIVATE_::ThreeWayCompareNormalizer_ (lhs, rhs, nullptr);
+    }
+
+    /*
+     ********************************************************************************
+     *************************** CompareResultNormalizeHelper ***********************
+     ********************************************************************************
+     */
+    template <typename FROM_INT_TYPE>
+    inline strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f)
+    {
+        if (f < 0) {
+            return Common::kLess;
+        }
+        else if (f > 0) {
+            return Common::kGreater;
+        }
+        else {
+            return Common::kEqual;
+        }
     }
 
     /*
@@ -284,17 +303,19 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
     {
-        switch (ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
-            case ComparisonRelationType::eStrictInOrder:
-                return fBASE_COMPARER_ (lhs, rhs);
-            case ComparisonRelationType::eInOrderOrEquals:
-                return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-            case ComparisonRelationType::eThreeWayCompare:
-                return fBASE_COMPARER_ (lhs, rhs) < 0;
-            default:
-                AssertNotReached ();
-                return false;
+        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
+        auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            return kRelationKind;
         }
+        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
+            return baseComparison and not fBASE_COMPARER_ (rhs, lhs);
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison < 0;
+        }
+        AssertNotReached ();
+        return false;
     }
 
     /*
@@ -332,19 +353,26 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
     {
-        switch (ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
-            case ComparisonRelationType::eEquals:
-                return fBASE_COMPARER_ (lhs, rhs);
-            case ComparisonRelationType::eStrictInOrder:
-                return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-            case ComparisonRelationType::eInOrderOrEquals:
-                return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
-            case ComparisonRelationType::eThreeWayCompare:
-                return fBASE_COMPARER_ (lhs, rhs) == 0;
-            default:
-                AssertNotReached ();
-                return false;
+        /*
+         *  It would be nice to be able to write this as a switch statement, but some expressions in some cases would not
+         *  compile.
+         */
+        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
+        auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
+        if constexpr (kRelationKind == ComparisonRelationType::eEquals) {
+            return baseComparison;
         }
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            return not baseComparison and not fBASE_COMPARER_ (rhs, lhs);
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
+            return baseComparison and fBASE_COMPARER_ (rhs, lhs);
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison == kEqual;
+        }
+        AssertNotReached ();
+        return false;
     }
 
     /*
@@ -380,17 +408,18 @@ namespace Stroika::Foundation::Common {
     }
     template <typename BASE_COMPARER>
     template <typename T>
-    constexpr int ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
+    constexpr strong_ordering ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
     {
-        switch (ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
-            case ComparisonRelationType::eStrictInOrder:
-                return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
-            case ComparisonRelationType::eThreeWayCompare:
-                return fBASE_COMPARER_ (lhs, rhs);
-            default:
-                AssertNotReached ();
-                return false;
+        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
+        auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            return baseComparison ? kLess : (fBASE_COMPARER_ (rhs, lhs) ? kGreater : kEqual);
         }
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison;
+        }
+        AssertNotReached ();
+        return kEqual;
     }
 
     /*

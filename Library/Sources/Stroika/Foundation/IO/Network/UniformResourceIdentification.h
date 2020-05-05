@@ -13,6 +13,7 @@
 #include <string>
 
 #include "../../Characters/String.h"
+#include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
 #include "InternetAddress.h"
@@ -312,7 +313,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Host::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const Host& lhs, const Host& rhs) const;
+        Common::strong_ordering operator() (const Host& lhs, const Host& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -425,7 +426,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct UserInfo::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const UserInfo& lhs, const UserInfo& rhs) const;
+        Common::strong_ordering operator() (const UserInfo& lhs, const UserInfo& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -550,7 +551,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Authority::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const Authority& lhs, const Authority& rhs) const;
+        Common::strong_ordering operator() (const Authority& lhs, const Authority& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -633,7 +634,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct Query::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const Query& lhs, const Query& rhs) const;
+        Common::strong_ordering operator() (const Query& lhs, const Query& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

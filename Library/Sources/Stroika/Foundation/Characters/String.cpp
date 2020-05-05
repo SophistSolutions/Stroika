@@ -808,7 +808,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
         return false;
     }
 #if qDebug
-    bool referenceResult = String::ThreeWayComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString) == 0; // this check isnt threadsafe - redo
+    bool referenceResult = String::ThreeWayComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString) == Common::kEqual; // this check isnt threadsafe - redo
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();

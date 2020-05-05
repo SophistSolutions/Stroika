@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     struct CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const CountedValue& lhs, const CountedValue& rhs) const;
+        constexpr Common::strong_ordering operator() (const CountedValue& lhs, const CountedValue& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

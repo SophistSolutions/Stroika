@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Time {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
+        constexpr Common::strong_ordering operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

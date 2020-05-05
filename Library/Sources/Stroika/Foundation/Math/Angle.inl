@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Math {
      ************************* Angle::ThreeWayComparer ******************************
      ********************************************************************************
      */
-    constexpr int Angle::ThreeWayComparer::operator() (const Angle& lhs, const Angle& rhs) const
+    constexpr Common::strong_ordering Angle::ThreeWayComparer::operator() (const Angle& lhs, const Angle& rhs) const
     {
         return Common::ThreeWayCompareNormalizer (lhs.AsRadians (), rhs.AsRadians ());
     }

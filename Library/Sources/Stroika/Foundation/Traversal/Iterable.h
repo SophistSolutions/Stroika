@@ -10,6 +10,10 @@
 #include <shared_mutex>
 #include <vector>
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
@@ -1288,8 +1292,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
-        nonvirtual int      operator() (const Iterable& lhs, const Iterable& rhs) const;
-        T_THREEWAY_COMPARER fElementComparer;
+        nonvirtual Common::strong_ordering operator() (const Iterable& lhs, const Iterable& rhs) const;
+        T_THREEWAY_COMPARER                fElementComparer;
     };
 
 }

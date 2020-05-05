@@ -857,16 +857,17 @@ Duration DateTime::Difference (const DateTime& rhs) const
  ************************* DateTime::ThreeWayComparer ***************************
  ********************************************************************************
  */
-int DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
+Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
 {
     if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
-        if (int cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ())) {
+        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ());
+        if (cmp != Common::kEqual) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
     }
     else {
-        return this->operator() (lhs.AsUTC (), rhs.AsUTC ());
+        return operator() (lhs.AsUTC (), rhs.AsUTC ());
     }
 }
 

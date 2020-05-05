@@ -200,15 +200,10 @@ namespace Stroika::Foundation::Time {
      ***************************** Date::ThreeWayComparer ***************************
      ********************************************************************************
      */
-    constexpr int Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
+    constexpr Common::strong_ordering Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
     {
         // careful of signed/unsigned converstions - esp because of kMax which is very large
-        JulianRepType l = lhs.GetJulianRep ();
-        JulianRepType r = rhs.GetJulianRep ();
-        if (l == r) {
-            return 0;
-        }
-        return l < r ? -1 : 1;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ());
     }
 
 #if __cpp_impl_three_way_comparison < 201907

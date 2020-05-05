@@ -355,23 +355,28 @@ URI URI::Combine (const URI& uri) const
  **************************** URI::ThreeWayComparer *****************************
  ********************************************************************************
  */
-int URI::ThreeWayComparer::operator() (const URI& lhs, const URI& rhs) const
+Common::strong_ordering URI::ThreeWayComparer::operator() (const URI& lhs, const URI& rhs) const
 {
     using namespace UniformResourceIdentification;
-    if (int cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ())) {
+    Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ());
+    if (cmp != Common::kEqual) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayCompare (lhs.GetAuthority (), rhs.GetAuthority ())) {
+    cmp = Common::ThreeWayCompare (lhs.GetAuthority (), rhs.GetAuthority ());
+    if (cmp != Common::kEqual) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayCompare (lhs.GetPath (), rhs.GetPath ())) {
+    cmp = Common::ThreeWayCompare (lhs.GetPath (), rhs.GetPath ());
+    if (cmp != Common::kEqual) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayCompare (lhs.GetQuery (), rhs.GetQuery ())) {
+    cmp = Common::ThreeWayCompare (lhs.GetQuery (), rhs.GetQuery ());
+    if (cmp != Common::kEqual) {
         return cmp;
     }
-    if (int cmp = Common::ThreeWayCompare (lhs.GetFragment (), rhs.GetFragment ())) {
+    cmp = Common::ThreeWayCompare (lhs.GetFragment (), rhs.GetFragment ());
+    if (cmp != Common::kEqual) {
         return cmp;
     }
-    return 0;
+    return Common::kEqual;
 }

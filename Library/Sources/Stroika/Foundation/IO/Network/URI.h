@@ -370,7 +370,7 @@ namespace Stroika::Foundation::IO::Network {
      *  @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator and replicate
      */
     struct URI::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        int operator() (const URI& lhs, const URI& rhs) const;
+        Common::strong_ordering operator() (const URI& lhs, const URI& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

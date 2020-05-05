@@ -8,6 +8,10 @@
 
 #include <limits>
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
@@ -361,7 +365,7 @@ namespace Stroika::Foundation::Containers {
         /**
          * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
-        nonvirtual bool operator<=> (const Sequence& rhs) const;
+        nonvirtual strong_ordering operator<=> (const Sequence& rhs) const;
 #endif
 
     public:
