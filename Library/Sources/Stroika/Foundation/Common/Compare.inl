@@ -96,12 +96,12 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T, typename TCOMPARER>
-    constexpr OptionalThreeWayCompare<T, TCOMPARER>::OptionalThreeWayCompare (const TCOMPARER& comparer)
+    constexpr OptionalThreeWayComparer<T, TCOMPARER>::OptionalThreeWayComparer (const TCOMPARER& comparer)
         : fTComparer_ (comparer)
     {
     }
     template <typename T, typename TCOMPARER>
-    constexpr strong_ordering OptionalThreeWayCompare<T, TCOMPARER>::operator() (const optional<T>& lhs, const optional<T>& rhs) const
+    constexpr strong_ordering OptionalThreeWayComparer<T, TCOMPARER>::operator() (const optional<T>& lhs, const optional<T>& rhs) const
     {
         if (lhs and rhs) {
             return fTComparer_ (*lhs, *rhs);

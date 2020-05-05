@@ -158,8 +158,8 @@ namespace Stroika::Foundation::Common {
      *  'base comparer'.
      */
     template <typename T, typename TCOMPARER = ThreeWayComparer<T>>
-    struct OptionalThreeWayCompare {
-        constexpr OptionalThreeWayCompare (const TCOMPARER& tComparer);
+    struct OptionalThreeWayComparer {
+        constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
         constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
         TCOMPARER                 fTComparer_;
     };

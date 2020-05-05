@@ -157,7 +157,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         if (cmp != Common::kEqual) {
             return cmp;
         }
-        return Common::OptionalThreeWayCompare<String, String::ThreeWayComparer>{
+        return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{
             String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
