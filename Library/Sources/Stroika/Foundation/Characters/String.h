@@ -1165,22 +1165,18 @@ namespace Stroika::Foundation::Characters {
     public:
         struct LessComparer;
 
-    public:
-        struct EqualToCI;
-
-    public:
-        struct LessCI;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual strong_ordering operator<=> (const String& rhs) const;
+        nonvirtual strong_ordering operator<=> (const wchar_t* rhs) const;
 
     public:
         /**
          */
         nonvirtual bool operator== (const String& rhs) const;
+        nonvirtual bool operator== (const wchar_t* rhs) const;
 #endif
 
     public:
@@ -1507,6 +1503,7 @@ namespace Stroika::Foundation::Characters {
      */
     wostream& operator<< (wostream& out, const String& s);
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @String::ThreeWayComparer
      */
@@ -1516,22 +1513,19 @@ namespace Stroika::Foundation::Characters {
     bool operator<= (const String& lhs, const String& rhs);
     bool operator<= (const String& lhs, const wchar_t* rhs);
     bool operator<= (const wchar_t* lhs, const String& rhs);
-#if __cpp_impl_three_way_comparison < 201907
     bool operator== (const String& lhs, const String& rhs);
-#endif
     bool operator== (const String& lhs, const wchar_t* rhs);
     bool operator== (const wchar_t* lhs, const String& rhs);
-#if 1
     bool operator!= (const String& lhs, const String& rhs);
     bool operator!= (const String& lhs, const wchar_t* rhs);
     bool operator!= (const wchar_t* lhs, const String& rhs);
-#endif
     bool operator>= (const String& lhs, const String& rhs);
     bool operator>= (const String& lhs, const wchar_t* rhs);
     bool operator>= (const wchar_t* lhs, const String& rhs);
     bool operator> (const String& lhs, const String& rhs);
     bool operator> (const String& lhs, const wchar_t* rhs);
     bool operator> (const wchar_t* lhs, const String& rhs);
+#endif
 
     /**
      *  Basic operator overload with the obivous meaning, and simply indirect to @String::Concatenate (const String& rhs)

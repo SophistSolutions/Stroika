@@ -624,11 +624,20 @@ namespace Stroika::Foundation::Characters {
     {
         return ThreeWayComparer{}(*this, rhs) <=> 0;
     }
+    inline strong_ordering String::operator<=> (const wchar_t* rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) <=> 0;
+    }
     inline bool String::operator== (const String& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
+    inline bool String::operator== (const wchar_t* rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
 #endif
+
 
     /*
      ********************************************************************************
@@ -825,7 +834,7 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     *********************************** operator< **********************************
+     *********************************** operator"" *********************************
      ********************************************************************************
      */
     inline String operator"" _ASCII (const char* str, size_t len)
@@ -835,6 +844,7 @@ namespace Stroika::Foundation::Characters {
         return String::FromASCII (str, str + len);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator< **********************************
@@ -853,7 +863,9 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (lhs);
         return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
+#endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator<= *********************************
@@ -871,18 +883,18 @@ namespace Stroika::Foundation::Characters {
     {
         return String::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
+#endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator== *********************************
      ********************************************************************************
      */
-#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const String& lhs, const String& rhs)
     {
         return String::EqualsComparer{}(lhs, rhs);
     }
-#endif
     inline bool operator== (const String& lhs, const wchar_t* rhs)
     {
         return String::EqualsComparer{}(lhs, rhs);
@@ -892,8 +904,9 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (lhs);
         return String::EqualsComparer{}(lhs, rhs);
     }
+#endif
 
-#if 1
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator!= *********************************
@@ -913,6 +926,7 @@ namespace Stroika::Foundation::Characters {
     }
 #endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator>= *********************************
@@ -931,7 +945,9 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (lhs);
         return String::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
+#endif
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator> **********************************
@@ -950,6 +966,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (lhs);
         return String::ThreeWayComparer{}(lhs, rhs) > 0;
     }
+#endif
 
     /*
      ********************************************************************************
