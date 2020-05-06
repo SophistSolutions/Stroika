@@ -270,6 +270,10 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
     {
+        /*
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
+         */
         constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
         auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
         if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
@@ -305,8 +309,8 @@ namespace Stroika::Foundation::Common {
     constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
     {
         /*
-         *  It would be nice to be able to write this as a switch statement, but some expressions in some cases would not
-         *  compile.
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
          */
         constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
         auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
@@ -345,6 +349,10 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     constexpr strong_ordering ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
     {
+        /*
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
+         */
         constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
         auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
         if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
