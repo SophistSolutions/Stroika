@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <optional>
 
 #include "../../Characters/String.h"
@@ -59,6 +63,16 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
         struct ThreeWayComparer;
 
+#if __cpp_impl_three_way_comparison >= 201907
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Name& rhs) const;
+
+        /**
+         */
+        nonvirtual bool operator== (const Name& rhs) const;
+#endif
+
         /**
          *  Purely for debugging / diagnostic purposes. Don't count on this format.
          */
@@ -72,6 +86,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         Common::strong_ordering operator() (const Name& lhs, const Name& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
      */
@@ -81,6 +96,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     bool operator!= (const Name& lhs, const Name& rhs);
     bool operator>= (const Name& lhs, const Name& rhs);
     bool operator> (const Name& lhs, const Name& rhs);
+#endif
 
 }
 

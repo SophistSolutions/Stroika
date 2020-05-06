@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <functional>
 #include <memory>
 
@@ -90,6 +94,18 @@ namespace Stroika::Foundation::Execution {
     public:
         struct ThreeWayComparer;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Function& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Function& rhs) const;
+#endif
+
     private:
         STDFUNCTION fFun_;
         void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
@@ -103,6 +119,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Common::strong_ordering operator() (const Function& lhs, const Function& rhs) const;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @Function<FUNCTION_SIGNATURE>::ThreeWayComparer ()
      */
@@ -122,6 +139,7 @@ namespace Stroika::Foundation::Execution {
     bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
     template <typename FUNCTION_SIGNATURE>
     bool operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+#endif
 
 }
 

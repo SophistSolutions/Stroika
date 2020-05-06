@@ -45,6 +45,18 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (fFun_);
         return fFun_ (forward<Args> (args)...);
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename FUNCTION_SIGNATURE>
+    inline strong_ordering Function<FUNCTION_SIGNATURE>::operator<=> (const Function& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
+    template <typename FUNCTION_SIGNATURE>
+    inline bool Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const
+    {
+        return fOrdering_ == rhs.fOrdering_;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -57,6 +69,7 @@ namespace Stroika::Foundation::Execution {
         return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************** Function<FUNCTION_SIGNATURE> operators **************************
@@ -102,6 +115,7 @@ namespace Stroika::Foundation::Execution {
     {
         return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
+#endif
 
 }
 

@@ -48,6 +48,16 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         result += fLocalName;
         return result;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline strong_ordering Name::operator<=> (const Name& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
+    inline bool Name::operator== (const Name& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs) == 0;
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -70,6 +80,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         return Common::ThreeWayCompare (lhs.fType, rhs.fType);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************** StructuredStreamEvents::Name comparison operators ***************
@@ -99,6 +110,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     {
         return Common::ThreeWayCompare (lhs, rhs) > 0;
     }
+#endif
 
 }
 
