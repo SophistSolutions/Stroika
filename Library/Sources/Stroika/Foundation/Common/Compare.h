@@ -52,7 +52,6 @@ namespace Stroika::Foundation::Common {
      */
 #if __cpp_impl_three_way_comparison < 201907
     using strong_ordering              = int;
-    using strong_ordering              = int;
     constexpr strong_ordering kLess    = -1;
     constexpr strong_ordering kEqual   = 0;
     constexpr strong_ordering kGreater = 1;
@@ -61,6 +60,26 @@ namespace Stroika::Foundation::Common {
     constexpr strong_ordering kLess    = strong_ordering::less;
     constexpr strong_ordering kEqual   = strong_ordering::equal;
     constexpr strong_ordering kGreater = strong_ordering::greater;
+#endif
+
+    /**
+     *  Portable to C++17 version of std::compare_three_way (in Stroika::Foundation::Common namespace to avoid rule of not adding stuff to std namespace)
+     */
+#if __cpp_lib_three_way_comparison < 201907L
+    template <class T, class U>
+    struct compare_three_way {
+        constexpr auto operator() (T&& lhs, U&& rhs) const
+        {
+            // in general, can do this much more efficiently (subtract left and right), but for now, KISS
+            if (equal_to<T>{}(lhs, rhs)) {
+                return Stroika::Foundation::Common::kEqual;
+            }
+            return less<T>{}(lhs, rhs) ? Stroika::Foundation::Common::kLess : Stroika::Foundation::Common::kGreater;
+        }
+    };
+#else
+    template <class T, class U>
+    using compare_three_way = std::compare_three_way<T, U>;
 #endif
 
     /**
