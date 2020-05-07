@@ -193,6 +193,20 @@ namespace Stroika::Foundation::Characters {
 
 }
 
+#if __cpp_lib_three_way_comparison < 201907L
+namespace Stroika::Foundation::Common
+#else
+namespace std
+#endif
+{
+    template <>
+    struct compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character> {
+        constexpr compare_three_way (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+        constexpr auto                                  operator() (Stroika::Foundation::Characters::Character&& lhs, Stroika::Foundation::Characters::Character&& rhs) const;
+        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
+    };
+}
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

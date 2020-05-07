@@ -180,4 +180,30 @@ namespace Stroika::Foundation::Characters {
 
 }
 
+#if __cpp_lib_three_way_comparison < 201907L
+namespace Stroika::Foundation::Common
+#else
+namespace std
+#endif
+{
+    constexpr compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::compare_three_way (Stroika::Foundation::Characters::CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    constexpr auto compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character&& lhs, Stroika::Foundation::Characters::Character&& rhs) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
+        switch (fCompareOptions) {
+            case CompareOptions::eCaseInsensitive:
+                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive);
+            case CompareOptions::eWithCase:
+                return Common::ThreeWayCompare (static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()), static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ()));
+            default:
+                AssertNotReached ();
+                return Common::kEqual;
+        }
+    }
+}
+
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/

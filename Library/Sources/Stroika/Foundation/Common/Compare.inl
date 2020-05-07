@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Common {
     template <class TT, class UU, typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
     constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
     {
-        return compare_three_way<TT,UU>{}(forward<TT> (lhs), forward<TT> (rhs));
+        return compare_three_way<TT, UU>{}(forward<TT> (lhs), forward<TT> (rhs));
     }
 
     /*
