@@ -126,21 +126,6 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  Stand-in until C++20, three way compare - used for implementing three-way-comparer
-     *
-     *  @see ThreeWayComparer<>
-     *
-     *  Generally DONT call this function EXCEPT if you explicitly wish to use the combo of == and < to produce a new
-     *  three-way-comparer object.
-     *
-     *      @todo PROBABLY TO MARK AS DEPRECATED - UNUSED FOR NOW - AND PROBABLY NOT USEFUL DIRECTLY? At least not clear yet.
-     */
-    template <typename T>
-    struct ThreeWayComparerDefaultImplementation {
-        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
-    };
-
-    /**
      *  \brief trivial wrapper calling ThreeWayComparer<T>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
@@ -515,6 +500,22 @@ namespace Stroika::Foundation::Common {
         return ThreeWayComparerAdapter<BASE_COMPARER>{move (baseComparer)};
     }
 
+    // clang-format off
+    template <typename T>
+    struct [[deprecated ("Since Stroika 2.1a5")]] ThreeWayComparerDefaultImplementation{
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const {
+#if __cpp_lib_three_way_comparison >= 201907L
+            return compare_three_way{}(lhs, rhs);
+#else
+            if (equal_to<T>{}(lhs, rhs)){
+                return kEqual;
+}
+return less<T>{}(lhs, rhs) ? kLess : kGreater;
+#endif
+}
+}
+;
+// clang-format on
 }
 
 /*

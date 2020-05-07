@@ -57,9 +57,17 @@ namespace Stroika::Foundation::Common {
     template <typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
     constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
     {
-        return ThreeWayComparerDefaultImplementation<T>{}(lhs, rhs);
+#if __cpp_lib_three_way_comparison >= 201907L
+        return compare_three_way{}(lhs, rhs);
+#else
+        // in general, can do this much more efficiently (subtract left and right), but for now, KISS
+        if (equal_to<T>{}(lhs, rhs)) {
+            return kEqual;
+        }
+        return less<T>{}(lhs, rhs) ? kLess : kGreater;
+#endif
     }
-
+    #if 0
     /*
      ********************************************************************************
      ********************* ThreeWayComparerDefaultImplementation<T> *****************
@@ -78,6 +86,7 @@ namespace Stroika::Foundation::Common {
         return less<T>{}(lhs, rhs) ? kLess : kGreater;
 #endif
     }
+    #endif
 
     /*
      ********************************************************************************
