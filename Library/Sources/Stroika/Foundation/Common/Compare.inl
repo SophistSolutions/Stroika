@@ -24,8 +24,8 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T, typename... ARGS>
-    template <typename Q, enable_if_t<Private_::HasThreeWayComparer_v<Q>>*>
-    constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    template <class TT, class UU, typename Q, enable_if_t<Private_::HasThreeWayComparer_v<Q>>*>
+    constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
     {
 #if qCompilerAndStdLib_make_from_tuple_Buggy
         if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
@@ -39,8 +39,8 @@ namespace Stroika::Foundation::Common {
 #endif
     }
     template <typename T, typename... ARGS>
-    template <typename Q, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>*>
-    constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    template <class TT, class UU, typename Q, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>*>
+    constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
     {
 #if qCompilerAndStdLib_make_from_tuple_Buggy
         if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
@@ -54,18 +54,10 @@ namespace Stroika::Foundation::Common {
 #endif
     }
     template <typename T, typename... ARGS>
-    template <typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
-    constexpr strong_ordering ThreeWayComparer<T, ARGS...>::operator() (const T& lhs, const T& rhs) const
+    template <class TT, class UU, typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
+    constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
     {
-#if __cpp_lib_three_way_comparison >= 201907L
-        return compare_three_way{}(lhs, rhs);
-#else
-        // in general, can do this much more efficiently (subtract left and right), but for now, KISS
-        if (equal_to<T>{}(lhs, rhs)) {
-            return kEqual;
-        }
-        return less<T>{}(lhs, rhs) ? kLess : kGreater;
-#endif
+        return compare_three_way<TT,UU>{}(forward<TT> (lhs), forward<TT> (rhs));
     }
 
     /*

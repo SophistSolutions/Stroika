@@ -70,7 +70,8 @@ namespace Stroika::Foundation::Common {
     struct compare_three_way {
         constexpr auto operator() (T&& lhs, U&& rhs) const
         {
-            // in general, can do this much more efficiently (subtract left and right), but for now, KISS
+            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
+            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
             if (equal_to<T>{}(lhs, rhs)) {
                 return Stroika::Foundation::Common::kEqual;
             }
@@ -83,10 +84,21 @@ namespace Stroika::Foundation::Common {
 #endif
 
     /**
+     * @todo  MAYBE DEPRECATE THIS - IN FAVOR OF Common::compare_three_way
+
+     RATIONALE TO KEEP THIS:
+            EITHER we need nested class approach T::ThreeWayCompare - even in c++20 - for things like String::EqualsComparer (with extra args)
+            OR we need this 
+
+            CONSIDERING. RARE ISSUE where we need the extra params. More modular to do T::Comparer... C++ DOES appear to allow specialization 
+            of stuff in std namespace for this purpose???
+
+            TRY in a few places, like String/Character to see how it goes...
+
+     *
      *  \brief - std::compare_three_way - Stand-in until C++20, three way compare - used for Calling three-way-comparer
      *
      *  Not every class implements the three-way comparer (spaceship operator) - especailly before C++20.
-     *  @see ThreeWayComparerDefaultImplementation<>
      *
      *  \note   Common::ThreeWayComparer<> will work for any type for which:
      *          o   Common::ThreeWayComparer<> has already been explicitly specialized
@@ -110,19 +122,21 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      *
      *  \note TODO
+     *      @todo   Consider if this is needed - MAYBE OK (with both pre/post C++20) to use three_way_compare function cuz its impl
+     *              should be Ok - just use Stroika::Foundation::Common::compare_three_way for portability.
      *      @todo   Support spaceship operator - like we do with HasComparer_v - detecting if class Q has spaceship operator and
-     *              using that (after check for HasComparer_v and before default using ThreeWayComparerDefaultImplementation).
+     *              using that (after check for HasComparer_v and before default using default implementation).
      */
     template <typename T, typename... ARGS>
     struct ThreeWayComparer {
         constexpr ThreeWayComparer (ARGS... args);
-        template <typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
-        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
-        template <typename Q = T, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
-        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
-        template <typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
-        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
-        tuple<ARGS...>            fArgs_;
+        template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
+        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
+        template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
+        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
+        template <class TT, class UU, typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
+        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
+        tuple<ARGS...> fArgs_;
     };
 
     /**
@@ -516,7 +530,6 @@ namespace Stroika::Foundation::Common {
         }
     };
 // clang-format on
-
 }
 
 /*
