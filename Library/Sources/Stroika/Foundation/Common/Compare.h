@@ -499,7 +499,6 @@ namespace Stroika::Foundation::Common {
     {
         return ThreeWayComparerAdapter<BASE_COMPARER>{move (baseComparer)};
     }
-
     // clang-format off
     template <typename T>
     struct [[deprecated ("Since Stroika 2.1a5")]] ThreeWayComparerDefaultImplementation{
