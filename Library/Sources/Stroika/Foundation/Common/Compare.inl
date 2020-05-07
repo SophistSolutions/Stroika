@@ -67,26 +67,6 @@ namespace Stroika::Foundation::Common {
         return less<T>{}(lhs, rhs) ? kLess : kGreater;
 #endif
     }
-    #if 0
-    /*
-     ********************************************************************************
-     ********************* ThreeWayComparerDefaultImplementation<T> *****************
-     ********************************************************************************
-     */
-    template <typename T>
-    constexpr strong_ordering ThreeWayComparerDefaultImplementation<T>::operator() (const T& lhs, const T& rhs) const
-    {
-#if __cpp_lib_three_way_comparison >= 201907L
-        return compare_three_way{}(lhs, rhs);
-#else
-        // in general, can do this much more efficiently (subtract left and right), but for now, KISS
-        if (equal_to<T>{}(lhs, rhs)) {
-            return kEqual;
-        }
-        return less<T>{}(lhs, rhs) ? kLess : kGreater;
-#endif
-    }
-    #endif
 
     /*
      ********************************************************************************

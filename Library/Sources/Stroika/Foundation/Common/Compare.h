@@ -507,15 +507,16 @@ namespace Stroika::Foundation::Common {
 #if __cpp_lib_three_way_comparison >= 201907L
             return compare_three_way{}(lhs, rhs);
 #else
-            if (equal_to<T>{}(lhs, rhs)){
+            if (equal_to<T>{}(lhs, rhs))
                 return kEqual;
-}
-return less<T>{}(lhs, rhs) ? kLess : kGreater;
+            if ( less<T>{}(lhs, rhs) ) 
+                return kLess ;
+            else 
+                return kGreater;
 #endif
-}
-}
-;
-// clang-format on
+        }
+    };
+    // clang-format on
 }
 
 /*
