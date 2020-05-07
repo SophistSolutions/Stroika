@@ -37,7 +37,6 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 - c_str()
 - length()
 - size()
-- compare()
 - begin() // sort of – usually using Stroika iterators
 - end() // ditto
 
@@ -119,15 +118,19 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 
 ---
 
-## Compare () and operator<, operator>, etc…
+## Comparisons: shapceship, operator==, operator<=> and operator<, operator>, etc…
 
 - Note this has materially changed in Stroika v2.1, due to the upcoming
   changes in C++20 to support the spaceship operator and automatic compare
   operation functions from it.
 
-For types Stroika defines, it generally uses the convention of providing a ThreeWayComparer function object (generally fully constexpr).
+Stroika types generally support the c++20 operator== and operator<=> semantics and operators.
 
-e.g.
+But sometimes you want to have a compare functor that takes parameters (e.g. string optionally case insensitive).
+
+Stroika types follow the convention of providing a ThreeWayComparer function object (generally fully constexpr) and an EqualsComparer object. These are generally available as nested members of the given type T. These are **not always** available, but will be where to look if there are options for how to compare a given object.
+
+### Definition of comparison
 
 ```C++
     struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
@@ -135,18 +138,89 @@ e.g.
     };
 ```
 
-and provides non-member (#if \_\_cpp_lib_three_way_comparison < 201907)
-bool operator<, operator<=, operator>, operator>=, operator==, operator!= which inline trivially maps to this.
+and if
+
+```C++
+#if \_\__cpp_impl_three_way_comparison < 201907
+  ...bool operator<, operator<=, operator>, operator>=, operator==, operator!=
+#endif
+```
+
+which inline trivially maps to this.
+
+and if
+
+```C++
+#if \_\__cpp_impl_three_way_comparison >= 201907
+class T { ...
+  bool operator== (const T& rhs) {
+    return EqualsComparer{} (*this, rhs);
+  }
+  strong_ordering operator<=> (const T& rhs) {
+    return ThreeWayComparer{} (*this, rhs);
+  }
+#endif
+```
+
+### Call for comparison
+
+#### Using default comparison
+
+This works beautifully. Just writing code naturally as
+
+```C++
+    if (L"aa" < String (L"ss")) {
+    }
+```
+
+All the various operators should just work with no effort, on both C++ 17, and with C++ 20 and later.
+
+#### Using possibly explicit comparison functor
+
+Use templates to capture a 'compare' function (either Equals, or ThreeWay). And then call it directly. If using ThreeWay comparison, and with code that may need to use C++17 (or earlier) - use the helpful
+
+```C++
+  Common::strong_ordering   (alias for std::strong_ordering)
+  Common::kLess             (alias for std::strong_ordering::less)
+  Common::kEqual            (alias for std::strong_ordering::equal)
+  Common::kGreater          (alias for std::strong_ordering::greater)
+```
+
+##### Example
+
+```C++
+  var cmp1 = String::EqualsComparer{};
+  String s1 = "abc";
+  String s2 = "ABC";
+  if (s1 == s2) {
+    // NOT REACHED
+  }
+  if (cmp1(s1, s2)) {
+    // NOT REACHED
+  }
+  var cmp2 = String::EqualsComparer{String::CaseInsensivie};
+  if (cmp2(s1, s2)) {
+    // REACHED
+  }
+
+  var cmp3 = String::ThreeWayComparer{String::CaseInsensivie};
+  if (cmp2(s1, s2) == Common::kEqual) { // can say == 0, if C++20 or later
+    // REACHED
+  }
+```
+
+### OLD COMMENTS
 
 Stroika code which COUNTS on comparison doesn't directly call T::ThreeWayCompare{}(), but instead uses **a < b** or **Common::ThreeWayCompare**, or **Common:ThreeWayComparer**.
 
 Note - Stroika classes will occasionally define T::EqualsComparer - very similer to T::ThreeWayComparer. This will ONLY be done when it provides a more efficient implementation than the ThreeWayComparer. In those cases, operator== and operator!= will map to that.
 
-Reasons:
+### Comparisons Rationale
 
-- Working with builtin types (e.g. in)
+- Working with builtin types (e.g. int)
 - Working with STL types, and 3rd-party libraries
 - Probably more likely to seamlessly fit with user code
+- Works with C++17, and the newer operator<=> () code interoperably
 
 Note that we choose to use non-member operator overloads for these comparison functions because putting them in the namespace where the class is defined provides the same convenience of use (name lookup) as member functions, but allows for cases like C \&lt; O where C is some time convertible to O, and O is the class we are adding operator\&lt; support for.
 
