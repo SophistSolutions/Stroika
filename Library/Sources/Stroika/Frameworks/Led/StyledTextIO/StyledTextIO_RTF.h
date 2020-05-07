@@ -328,8 +328,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             nonvirtual Led_IncrementalFontSpecification GetFontSpec (int fontNumber);        // throws if not present
             nonvirtual const FontTableEntry* LookupEntryByNumber (int fontNumber);           // return nullptr if not present
             nonvirtual const FontTableEntry* LookupEntryByName (const Led_SDK_String& name); // return nullptr if not present
-            nonvirtual FontTableEntry Add (const FontTableEntry& newEntry);                  // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
-            nonvirtual int            FindSmallestUnusedFontNumber () const;
+            nonvirtual FontTableEntry        Add (const FontTableEntry& newEntry);           // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
+            nonvirtual int                   FindSmallestUnusedFontNumber () const;
 
         public:
             vector<FontTableEntry> fEntries;
@@ -341,9 +341,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             ColorTable (const vector<Led_Color>& colorTable);
 
         public:
-            nonvirtual Led_Color LookupColor (size_t colorNumber) const;  // throws if not present
-            nonvirtual size_t LookupColor (const Led_Color& color) const; // asserts if not present
-            nonvirtual size_t EnterColor (const Led_Color& color);        // LookupColor, and if not present, add it. Either way, return index
+            nonvirtual Led_Color LookupColor (size_t colorNumber) const;     // throws if not present
+            nonvirtual size_t    LookupColor (const Led_Color& color) const; // asserts if not present
+            nonvirtual size_t    EnterColor (const Led_Color& color);        // LookupColor, and if not present, add it. Either way, return index
 
         public:
             vector<Led_Color> fEntries;
@@ -616,9 +616,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         // utility functions to help reading/low level scanning rtf
     protected:
         nonvirtual unsigned char GetNextRTFHexByte () const;
-        nonvirtual string ReadInGroupAndSave ();
-        nonvirtual void   SkipToEndOfCurrentGroup ();
-        nonvirtual void   ScanForwardFor (const char* setOfChars); // stop when next char is a member of 'setOfChars'
+        nonvirtual string        ReadInGroupAndSave ();
+        nonvirtual void          SkipToEndOfCurrentGroup ();
+        nonvirtual void          ScanForwardFor (const char* setOfChars); // stop when next char is a member of 'setOfChars'
         // (nb: doesn't look at current/prev chars - just FOLLOWING ones
         // (at eof returns no error, but does return)
         nonvirtual bool SearchForwardFor (const char* searchFor, size_t maxCharsToExamine = size_t (-1));

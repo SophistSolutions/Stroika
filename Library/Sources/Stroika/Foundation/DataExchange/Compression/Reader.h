@@ -43,11 +43,11 @@ namespace Stroika::Foundation::DataExchange::Compression {
 
     public:
         nonvirtual InputStream<std::byte>::Ptr Compress (const InputStream<std::byte>::Ptr& src) const;
-        nonvirtual BLOB Compress (const BLOB& src) const;
+        nonvirtual BLOB                        Compress (const BLOB& src) const;
 
     public:
         nonvirtual InputStream<std::byte>::Ptr Decompress (const InputStream<std::byte>::Ptr& src) const;
-        nonvirtual BLOB Decompress (const BLOB& src) const;
+        nonvirtual BLOB                        Decompress (const BLOB& src) const;
 
     protected:
         nonvirtual _IRep& _GetRep ();

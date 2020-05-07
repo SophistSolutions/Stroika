@@ -85,13 +85,13 @@ namespace {
             }
         }
         TCHAR* lpMsgBuf = nullptr;
-        if (not::FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                nullptr,
-                                win32Err,
-                                MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                                reinterpret_cast<TCHAR*> (&lpMsgBuf),
-                                0,
-                                nullptr)) {
+        if (not ::FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                 nullptr,
+                                 win32Err,
+                                 MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                                 reinterpret_cast<TCHAR*> (&lpMsgBuf),
+                                 0,
+                                 nullptr)) {
             return CString::Format (SDKSTR ("Win32 error# %d"), static_cast<DWORD> (win32Err));
         }
         SDKString result = lpMsgBuf;

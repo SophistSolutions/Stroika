@@ -200,8 +200,8 @@ namespace Stroika::Foundation::DataExchange {
         };
 
         template <typename T>
-        nonvirtual T As_ (type_<T>) const;
-        nonvirtual String As_ (type_<String>) const;
+        nonvirtual T       As_ (type_<T>) const;
+        nonvirtual String  As_ (type_<String>) const;
         nonvirtual wstring As_ (type_<wstring>) const;
 
     protected:

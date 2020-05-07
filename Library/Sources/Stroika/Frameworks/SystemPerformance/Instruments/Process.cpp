@@ -167,7 +167,7 @@ namespace {
     private:
         void setupToken_ ()
         {
-            if (not::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
+            if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
                 if (::GetLastError () == ERROR_NO_TOKEN) {
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (::ImpersonateSelf (SecurityImpersonation));
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
@@ -247,7 +247,7 @@ namespace {
             te32.dwSize = sizeof (THREADENTRY32);
 
             // Retrieve information about the first thread, and exit if unsuccessful
-            if (not::Thread32First (hThreadSnap, &te32)) {
+            if (not ::Thread32First (hThreadSnap, &te32)) {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
@@ -1613,7 +1613,7 @@ namespace {
             DWORD cbNeeded;
 
             Set<pid_t> result;
-            if (not::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
+            if (not ::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
                 AssertNotReached ();
                 return result;
             }
@@ -1675,13 +1675,13 @@ namespace {
                                 const int kCmdLineOffset_        = 0x40;
 #endif
                                 /* get the address of ProcessParameters */
-                                if (not::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 UNICODE_STRING commandLine;
 
                                 /* read the CommandLine UNICODE_STRING structure */
-                                if (not::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine, sizeof (commandLine), NULL)) {
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine, sizeof (commandLine), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 {

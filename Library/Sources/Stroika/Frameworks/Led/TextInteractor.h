@@ -453,8 +453,8 @@ namespace Stroika::Frameworks::Led {
 
         public:
             nonvirtual UpdateMode GetUpdateMode () const;
-            nonvirtual size_t GetFrom () const;
-            nonvirtual size_t GetTo () const;
+            nonvirtual size_t     GetFrom () const;
+            nonvirtual size_t     GetTo () const;
 
         private:
             TextInteractor* fTextInteractor;

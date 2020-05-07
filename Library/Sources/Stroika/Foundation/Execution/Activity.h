@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Execution {
     /**
      */
     template <typename CTOR_ARG>
-    Activity (const CTOR_ARG& b)->Activity<CTOR_ARG>;
+    Activity (const CTOR_ARG& b) -> Activity<CTOR_ARG>;
 
     /**
      *  When creating the activity would be expensive, just capture it in a lambda, and only convert that lambda to

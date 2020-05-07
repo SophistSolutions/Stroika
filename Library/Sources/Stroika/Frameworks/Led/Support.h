@@ -596,8 +596,8 @@ namespace Stroika::Frameworks::Led {
         static bool FormatAvailable_TEXT ();
         static bool FormatAvailable (Led_ClipFormat clipType);
 
-        nonvirtual bool  GoodClip () const; // avoid exceptions usage for now - and just use flag
-        nonvirtual void* GetData () const;
+        nonvirtual bool   GoodClip () const; // avoid exceptions usage for now - and just use flag
+        nonvirtual void*  GetData () const;
         nonvirtual size_t GetDataLength () const;
 
     private:
@@ -639,8 +639,8 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual const void* PeekAtData () const;
-        nonvirtual VARTYPE GetArrayElementType () const;
-        nonvirtual size_t GetLength () const;
+        nonvirtual VARTYPE     GetArrayElementType () const;
+        nonvirtual size_t      GetLength () const;
 
     private:
         SAFEARRAY*  fSafeArray;
@@ -757,7 +757,7 @@ namespace Stroika::Frameworks::Led {
         // any other DDE.
 
         // Use this for more low level extensions of the DDE support...
-        static DWORD    sDDEMLInstance; //  The DDEML instance identifier.
+        static DWORD             sDDEMLInstance; //  The DDEML instance identifier.
         static HDDEDATA CALLBACK SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
         static const char*       SkipToNextArgument (const char* pFormat);
         static HSZ               ClientArguments (const char* pFormat, ...);

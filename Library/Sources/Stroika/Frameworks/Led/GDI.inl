@@ -1007,7 +1007,7 @@ namespace Stroika::Frameworks::Led {
         static RgnHandle lhsRgn = ::NewRgn ();
         ::SetRectRgn (lhsRgn, (short)lhs.left, (short)lhs.top, (short)lhs.right, (short)lhs.bottom);
         ::SectRgn (lhsRgn, rhs.GetOSRep (), result);
-        return not::EmptyRgn (result);
+        return not ::EmptyRgn (result);
 #elif qPlatform_Windows
         Led_Region lhsRgn = lhs;
         Led_Region result;
@@ -1021,7 +1021,7 @@ namespace Stroika::Frameworks::Led {
         static RgnHandle rhsRgn = ::NewRgn ();
         ::SetRectRgn (rhsRgn, (short)rhs.left, (short)rhs.top, (short)rhs.right, (short)rhs.bottom);
         ::SectRgn (lhs.GetOSRep (), rhsRgn, result);
-        return not::EmptyRgn (result);
+        return not ::EmptyRgn (result);
 #elif qPlatform_Windows
         Led_Region rhsRgn = rhs;
         Led_Region result;
@@ -1033,7 +1033,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         static RgnHandle result = ::NewRgn ();
         ::SectRgn (lhs.GetOSRep (), rhs.GetOSRep (), result);
-        return not::EmptyRgn (result);
+        return not ::EmptyRgn (result);
 #elif qPlatform_Windows
         Led_Region result;
         return result.CombineRgn (const_cast<Led_Region*> (&lhs), const_cast<Led_Region*> (&rhs), RGN_AND) != NULLREGION;

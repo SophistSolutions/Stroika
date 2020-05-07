@@ -796,10 +796,10 @@ namespace Stroika::Frameworks::Service {
         nonvirtual bool                  IsInstalled_ () const noexcept;
         nonvirtual void                  SetServiceStatus_ (DWORD dwState) noexcept;
         nonvirtual void                  ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-        static void WINAPI StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-        nonvirtual void    Handler_ (DWORD dwOpcode) noexcept;
-        static void WINAPI StaticHandler_ (DWORD dwOpcode) noexcept;
-        nonvirtual void    OnStopRequest_ () noexcept;
+        static void WINAPI               StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+        nonvirtual void                  Handler_ (DWORD dwOpcode) noexcept;
+        static void WINAPI               StaticHandler_ (DWORD dwOpcode) noexcept;
+        nonvirtual void                  OnStopRequest_ () noexcept;
 
     private:
         static WindowsService*      s_SvcRunningTHIS_;

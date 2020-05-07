@@ -139,15 +139,15 @@ private:
     nonvirtual void MakeHandleIfNeeded_ ();
 
 private:
-    static size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP);
+    static size_t     s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP);
     nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize);
 
 private:
-    static size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+    static size_t     s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
     nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes);
 
 private:
-    static size_t s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+    static size_t     s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
     nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes);
 
 private:

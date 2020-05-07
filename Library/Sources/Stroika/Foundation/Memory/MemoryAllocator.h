@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual STLAllocator<T, BASE_ALLOCATOR> select_on_container_copy_construction () const;
 
     public:
-        nonvirtual pointer address (reference v) const noexcept;
+        nonvirtual pointer       address (reference v) const noexcept;
         nonvirtual const_pointer address (const_reference v) const noexcept;
 
     public:

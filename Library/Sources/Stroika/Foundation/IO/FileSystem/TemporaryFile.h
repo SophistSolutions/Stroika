@@ -65,7 +65,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         ~ScopedTmpDir ();
 
     public:
-        nonvirtual operator Directory () const;
+        nonvirtual           operator Directory () const;
         nonvirtual Directory GetDirectory () const;
 
     private:

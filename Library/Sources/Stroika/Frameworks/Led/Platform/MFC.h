@@ -214,11 +214,11 @@ namespace Stroika::Frameworks::Led::Platform {
 
         // Window message hooks NEEDED to get basic editor functionality
     protected:
-        afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
-        afx_msg void OnPaint ();
-        afx_msg BOOL OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message);
-        afx_msg UINT OnGetDlgCode ();
-        afx_msg void OnChar (UINT nChar, UINT nRepCnt, UINT /*nFlags*/);
+        afx_msg int     OnCreate (LPCREATESTRUCT lpCreateStruct);
+        afx_msg void    OnPaint ();
+        afx_msg BOOL    OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message);
+        afx_msg UINT    OnGetDlgCode ();
+        afx_msg void    OnChar (UINT nChar, UINT nRepCnt, UINT /*nFlags*/);
         afx_msg LRESULT OnUniChar (WPARAM wParam, LPARAM lParam);
         afx_msg LRESULT OnIMEChar (WPARAM wParam, LPARAM lParam);
         afx_msg LRESULT OnIME_COMPOSITION (WPARAM wParam, LPARAM lParam);
@@ -231,12 +231,12 @@ namespace Stroika::Frameworks::Led::Platform {
         afx_msg void    OnSetFocus (CWnd* pOldWnd);
         afx_msg void    OnKillFocus (CWnd* pNewWnd);
         afx_msg void    OnSize (UINT nType, int cx, int cy);
-        afx_msg BOOL OnEraseBkgnd (CDC* pDC);
-        afx_msg void OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-        afx_msg void OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-        afx_msg BOOL OnMouseWheel (UINT fFlags, short zDelta, CPoint point);
-        afx_msg void OnEnable (BOOL bEnable);
-        afx_msg void OnTimer (UINT_PTR nEventID);
+        afx_msg BOOL    OnEraseBkgnd (CDC* pDC);
+        afx_msg void    OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+        afx_msg void    OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+        afx_msg BOOL    OnMouseWheel (UINT fFlags, short zDelta, CPoint point);
+        afx_msg void    OnEnable (BOOL bEnable);
+        afx_msg void    OnTimer (UINT_PTR nEventID);
 
         // Disambiguate mixins
     public:
@@ -271,39 +271,39 @@ namespace Stroika::Frameworks::Led::Platform {
         Led_MFC_MimicMFCAPIHelper () = default;
 
     public:
-        nonvirtual BOOL Create (DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
-        nonvirtual BOOL CanUndo () const;
-        nonvirtual int  GetLineCount_CEdit () const; // HAD to rename cuz of conflict...
-        nonvirtual BOOL GetModify () const;
-        nonvirtual void SetModify (BOOL bModified = TRUE);
-        nonvirtual void GetRect (LPRECT lpRect) const;
+        nonvirtual BOOL  Create (DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
+        nonvirtual BOOL  CanUndo () const;
+        nonvirtual int   GetLineCount_CEdit () const; // HAD to rename cuz of conflict...
+        nonvirtual BOOL  GetModify () const;
+        nonvirtual void  SetModify (BOOL bModified = TRUE);
+        nonvirtual void  GetRect (LPRECT lpRect) const;
         nonvirtual DWORD GetSel () const;
         nonvirtual void  GetSel (int& nStartChar, int& nEndChar) const;
         nonvirtual int   GetLine (int nIndex, LPTSTR lpszBuffer) const;
         nonvirtual int   GetLine (int nIndex, LPTSTR lpszBuffer, int nMaxLength) const;
         nonvirtual void  EmptyUndoBuffer ();
-        nonvirtual BOOL FmtLines (BOOL bAddEOL);
-        nonvirtual void LimitText (int nChars = 0);
-        nonvirtual int  LineFromChar (int nIndex = -1) const;
-        nonvirtual int  LineIndex (int nLine = -1) const;
-        nonvirtual int  LineLength (int nLine = -1) const;
-        nonvirtual void LineScroll (int nLines, int nChars = 0);
-        nonvirtual void ReplaceSel (LPCTSTR lpszNewText);
-        nonvirtual void SetPasswordChar (TCHAR ch);
-        nonvirtual void SetRect (LPCRECT lpRect);
-        nonvirtual void SetRectNP (LPCRECT lpRect);
-        nonvirtual void SetSel (DWORD dwSelection, BOOL bNoScroll = FALSE);
-        nonvirtual void SetSel (int nStartChar, int nEndChar, BOOL bNoScroll = FALSE);
-        nonvirtual BOOL SetTabStops (int nTabStops, LPINT rgTabStops);
-        nonvirtual void SetTabStops ();
-        nonvirtual BOOL SetTabStops (const int& cxEachStop); // takes an 'int'
-        nonvirtual BOOL Undo ();
-        nonvirtual void Clear ();
-        nonvirtual void Copy ();
-        nonvirtual void Cut ();
-        nonvirtual void Paste ();
-        nonvirtual BOOL SetReadOnly (BOOL bReadOnly = TRUE);
-        nonvirtual int  GetFirstVisibleLine () const;
+        nonvirtual BOOL  FmtLines (BOOL bAddEOL);
+        nonvirtual void  LimitText (int nChars = 0);
+        nonvirtual int   LineFromChar (int nIndex = -1) const;
+        nonvirtual int   LineIndex (int nLine = -1) const;
+        nonvirtual int   LineLength (int nLine = -1) const;
+        nonvirtual void  LineScroll (int nLines, int nChars = 0);
+        nonvirtual void  ReplaceSel (LPCTSTR lpszNewText);
+        nonvirtual void  SetPasswordChar (TCHAR ch);
+        nonvirtual void  SetRect (LPCRECT lpRect);
+        nonvirtual void  SetRectNP (LPCRECT lpRect);
+        nonvirtual void  SetSel (DWORD dwSelection, BOOL bNoScroll = FALSE);
+        nonvirtual void  SetSel (int nStartChar, int nEndChar, BOOL bNoScroll = FALSE);
+        nonvirtual BOOL  SetTabStops (int nTabStops, LPINT rgTabStops);
+        nonvirtual void  SetTabStops ();
+        nonvirtual BOOL  SetTabStops (const int& cxEachStop); // takes an 'int'
+        nonvirtual BOOL  Undo ();
+        nonvirtual void  Clear ();
+        nonvirtual void  Copy ();
+        nonvirtual void  Cut ();
+        nonvirtual void  Paste ();
+        nonvirtual BOOL  SetReadOnly (BOOL bReadOnly = TRUE);
+        nonvirtual int   GetFirstVisibleLine () const;
         nonvirtual TCHAR GetPasswordChar () const;
     };
 
@@ -401,13 +401,13 @@ namespace Stroika::Frameworks::Led::Platform {
 
         // mouse down tracking... and drag and drop...
     protected:
-        virtual bool    IsADragSelect (Led_Point clickedWhere) const;
-        nonvirtual void HandleDragSelect (UINT nFlags, CPoint oPoint);
-        nonvirtual void HandleSharedDragOverUpdateSelCode ();
+        virtual bool          IsADragSelect (Led_Point clickedWhere) const;
+        nonvirtual void       HandleDragSelect (UINT nFlags, CPoint oPoint);
+        nonvirtual void       HandleSharedDragOverUpdateSelCode ();
         nonvirtual DROPEFFECT HelperDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
         nonvirtual DROPEFFECT HelperDragOver (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
-        nonvirtual BOOL HelperDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point);
-        nonvirtual void HelperDragLeave ();
+        nonvirtual BOOL       HelperDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point);
+        nonvirtual void       HelperDragLeave ();
 
     protected:
         CPoint     fDragPoint;  // current position
@@ -612,14 +612,14 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void HandleException () const;
 
     public:
-        afx_msg void OnChar (UINT nChar, UINT nRepCnt, UINT nFlags);
+        afx_msg void    OnChar (UINT nChar, UINT nRepCnt, UINT nFlags);
         afx_msg LRESULT OnIMEChar (WPARAM wParam, LPARAM lParam);
         afx_msg void    OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags);
         afx_msg LRESULT OnMsgPaste (WPARAM wParam, LPARAM lParam);
         afx_msg void    OnLButtonDown (UINT nFlags, CPoint oPoint);
         afx_msg void    OnLButtonUp (UINT /*nFlags*/, CPoint oPoint);
         afx_msg void    OnLButtonDblClk (UINT /*nFlags*/, CPoint oPoint);
-        afx_msg BOOL OnCmdMsg (UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
+        afx_msg BOOL    OnCmdMsg (UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 
     protected:
         DECLARE_MESSAGE_MAP ()

@@ -565,7 +565,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     public:
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     public:
-        bool       fTraceThisReader{false}; // very noisy - off by default even for tracemode
+        bool              fTraceThisReader{false}; // very noisy - off by default even for tracemode
         nonvirtual String TraceLeader_ () const;
 #endif
 

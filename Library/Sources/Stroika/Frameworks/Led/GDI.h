@@ -127,7 +127,7 @@ namespace Stroika::Frameworks::Led {
                 <p>Note - this used to take/return Led_Distance - but in Led 3.0 - it changed to take/return TWIPS (see SPR#0767);</p>
                 <p>Now there is an overloaded version using Led_Distance that takes a Led_Tablet as argument.</p>
         */
-        virtual Led_TWIPS ComputeTabStopAfterPosition (Led_TWIPS afterPos) const = 0;
+        virtual Led_TWIPS       ComputeTabStopAfterPosition (Led_TWIPS afterPos) const = 0;
         nonvirtual Led_Distance ComputeTabStopAfterPosition (Led_Tablet_* tablet, Led_Distance afterPos) const;
     };
 
@@ -293,15 +293,15 @@ namespace Stroika::Frameworks::Led {
         nonvirtual CoordinateType GetBottom () const;
         nonvirtual CoordinateType GetRight () const;
         nonvirtual bool           IsEmpty () const; /* contains no bits - ie one side <= zero length */
-        nonvirtual DistanceType GetHeight () const;
-        nonvirtual DistanceType GetWidth () const;
-        nonvirtual POINT_TYPE GetTopLeft () const;
-        nonvirtual POINT_TYPE GetTopRight () const;
-        nonvirtual POINT_TYPE GetBotRight () const;
-        nonvirtual POINT_TYPE GetOrigin () const;
-        nonvirtual SIZE_TYPE GetSize () const;
-        nonvirtual bool      Contains (POINT_TYPE p) const;
-        nonvirtual bool      Contains (THIS_TYPE r) const;
+        nonvirtual DistanceType   GetHeight () const;
+        nonvirtual DistanceType   GetWidth () const;
+        nonvirtual POINT_TYPE     GetTopLeft () const;
+        nonvirtual POINT_TYPE     GetTopRight () const;
+        nonvirtual POINT_TYPE     GetBotRight () const;
+        nonvirtual POINT_TYPE     GetOrigin () const;
+        nonvirtual SIZE_TYPE      GetSize () const;
+        nonvirtual bool           Contains (POINT_TYPE p) const;
+        nonvirtual bool           Contains (THIS_TYPE r) const;
 
         nonvirtual void SetOrigin (POINT_TYPE p);
         nonvirtual void SetTop (CoordinateType top);
@@ -435,7 +435,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const Led_Region& operator= (const Led_Region& rhs);
 
     public:
-        nonvirtual bool IsEmpty () const;
+        nonvirtual bool     IsEmpty () const;
         nonvirtual Led_Rect GetBoundingRect () const;
 
     public:
@@ -867,8 +867,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -893,7 +893,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void    SetOSRep (LOGFONT logFont);
         nonvirtual void    LightSetOSRep (LOGFONT logFont);
 #elif qStroika_FeatureSupported_XWindows
-        static string mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
+        static string     mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
         nonvirtual string GetOSRep () const;
         nonvirtual void   SetFromOSRep (const string& osRep);
 #endif
@@ -1299,20 +1299,20 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual operator GrafPtr () const;
 #elif qPlatform_Windows
-        nonvirtual operator HDC () const;
+        nonvirtual          operator HDC () const;
 #endif
 
     public:
         nonvirtual Led_Coordinate CvtFromTWIPSV (Led_TWIPS from) const;
         nonvirtual Led_Coordinate CvtFromTWIPSH (Led_TWIPS from) const;
-        nonvirtual Led_TWIPS CvtToTWIPSV (Led_Coordinate from) const;
-        nonvirtual Led_TWIPS CvtToTWIPSH (Led_Coordinate from) const;
+        nonvirtual Led_TWIPS      CvtToTWIPSV (Led_Coordinate from) const;
+        nonvirtual Led_TWIPS      CvtToTWIPSH (Led_Coordinate from) const;
 
     public:
-        nonvirtual Led_Point CvtFromTWIPS (Led_TWIPS_Point from) const;
+        nonvirtual Led_Point       CvtFromTWIPS (Led_TWIPS_Point from) const;
         nonvirtual Led_TWIPS_Point CvtToTWIPS (Led_Point from) const;
-        nonvirtual Led_Rect CvtFromTWIPS (Led_TWIPS_Rect from) const;
-        nonvirtual Led_TWIPS_Rect CvtToTWIPS (Led_Rect from) const;
+        nonvirtual Led_Rect        CvtFromTWIPS (Led_TWIPS_Rect from) const;
+        nonvirtual Led_TWIPS_Rect  CvtToTWIPS (Led_Rect from) const;
 
     public:
         nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Coordinate scrollBy);
@@ -1325,29 +1325,29 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual void SetPort ();
 #elif qPlatform_Windows
-        nonvirtual BOOL BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
-        nonvirtual BOOL CreateCompatibleDC (Led_Tablet_* pDC);
+        nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
+        nonvirtual BOOL     CreateCompatibleDC (Led_Tablet_* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
         nonvirtual COLORREF SetBkColor (COLORREF crColor);
-        nonvirtual BOOL IsPrinting () const;
-        nonvirtual BOOL RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
-        nonvirtual BOOL TextOut (int x, int y, LPCTSTR lpszString, int nCount);
+        nonvirtual BOOL     IsPrinting () const;
+        nonvirtual BOOL     RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
+        nonvirtual BOOL     TextOut (int x, int y, LPCTSTR lpszString, int nCount);
         //      nonvirtual  SIZE    GetTextExtent (LPCTSTR lpszString, int nCount) const;
-        nonvirtual int SetBkMode (int nBkMode);
-        nonvirtual SIZE GetWindowExt () const;
-        nonvirtual SIZE GetViewportExt () const;
-        nonvirtual BOOL Rectangle (int x1, int y1, int x2, int y2);
-        nonvirtual BOOL Rectangle (const RECT& r);
-        nonvirtual BOOL Rectangle (LPCRECT lpRect);
-        nonvirtual BOOL GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
+        nonvirtual int     SetBkMode (int nBkMode);
+        nonvirtual SIZE    GetWindowExt () const;
+        nonvirtual SIZE    GetViewportExt () const;
+        nonvirtual BOOL    Rectangle (int x1, int y1, int x2, int y2);
+        nonvirtual BOOL    Rectangle (const RECT& r);
+        nonvirtual BOOL    Rectangle (LPCRECT lpRect);
+        nonvirtual BOOL    GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
-        nonvirtual HFONT SelectObject (HFONT hFont);
+        nonvirtual HFONT   SelectObject (HFONT hFont);
 #endif
-        nonvirtual POINT SetWindowOrg (int x, int y);
-        nonvirtual int   GetDeviceCaps (int nIndex) const;
-        nonvirtual BOOL Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
-        nonvirtual HDC Detach ();
+        nonvirtual POINT   SetWindowOrg (int x, int y);
+        nonvirtual int     GetDeviceCaps (int nIndex) const;
+        nonvirtual BOOL    Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
+        nonvirtual HDC     Detach ();
 #elif qStroika_FeatureSupported_XWindows
     public:
         nonvirtual void SetFont (const Led_FontSpecification& fontSpec);
@@ -1533,9 +1533,9 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual Led_Size GetImageSize () const;
-        nonvirtual BOOL CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight);
-        nonvirtual BOOL CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight);
-        nonvirtual void LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName);
+        nonvirtual BOOL     CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight);
+        nonvirtual BOOL     CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight);
+        nonvirtual void     LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName);
 
     private:
         HBITMAP  m_hObject;
@@ -1556,7 +1556,7 @@ namespace Stroika::Frameworks::Led {
         ~OffscreenTablet ();
 
     public:
-        nonvirtual void Setup (Led_Tablet origTablet);
+        nonvirtual void       Setup (Led_Tablet origTablet);
         nonvirtual Led_Tablet PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect = 0);
         nonvirtual void       BlastBitmapToOrigTablet ();
 
@@ -1770,13 +1770,13 @@ namespace Stroika::Frameworks::Led {
     private:
         nonvirtual bool Available () const; //tmphack - don't think this is ever used
     public:
-        nonvirtual void ForgetPosition ();
-        nonvirtual void NotifyPosition (HWND pWnd, const SHORT x, const SHORT y);
-        nonvirtual void NotifyOfFontChange (HWND hWnd, const LOGFONT& lf);
-        nonvirtual void IMEOn (HWND pWnd);
-        nonvirtual void IMEOff (HWND pWnd);
-        nonvirtual void Enable ();
-        nonvirtual void Disable ();
+        nonvirtual void    ForgetPosition ();
+        nonvirtual void    NotifyPosition (HWND pWnd, const SHORT x, const SHORT y);
+        nonvirtual void    NotifyOfFontChange (HWND hWnd, const LOGFONT& lf);
+        nonvirtual void    IMEOn (HWND pWnd);
+        nonvirtual void    IMEOff (HWND pWnd);
+        nonvirtual void    Enable ();
+        nonvirtual void    Disable ();
         nonvirtual wstring GetCompositionResultStringW (HWND hWnd);
 
     private:

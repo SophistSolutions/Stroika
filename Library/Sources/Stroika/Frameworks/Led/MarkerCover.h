@@ -78,7 +78,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual const MARKERINFO& GetInfo (size_t charAfterPos) const;
-        nonvirtual MarkerVector GetInfoMarkers (size_t charAfterPos, size_t nTCharsFollowing) const;
+        nonvirtual MarkerVector      GetInfoMarkers (size_t charAfterPos, size_t nTCharsFollowing) const;
         nonvirtual vector<pair<MARKERINFO, size_t>> GetInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
         virtual void                                SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers);
         virtual void                                SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t>>& infoForMarkers);

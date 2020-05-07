@@ -76,8 +76,8 @@ namespace {
                         DbgTrace (L"Opened experiment DB: %s", L"MEMORY");
                     }
                 }
-                DB (const DB&)         = delete;
-                nonvirtual DB& operator= (const DB&) = delete;
+                DB (const DB&)                 = delete;
+                nonvirtual DB&         operator= (const DB&) = delete;
                 nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
                 {
                     String insertSQL = [&] () {

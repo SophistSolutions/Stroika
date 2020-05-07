@@ -82,7 +82,7 @@ namespace Stroika::Frameworks::Led {
 
         public:
             nonvirtual PartitionMarker* GetPartitionMarker () const;
-            nonvirtual size_t GetSubRow () const;
+            nonvirtual size_t           GetSubRow () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
         public:
@@ -112,9 +112,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetPreviousRowReference (RowReference* adjustMeInPlace) const; // return true if there is a previous, and false if at the beginning
 
         // NB: if ith==1, that means do NOTHING - for convenience...
-        nonvirtual bool GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
-        nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const; // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
-        nonvirtual RowReference GetIthRowReference (size_t ith) const;                                   // ERROR if ith doesn't exist...(1 th is first row)
+        nonvirtual bool         GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
+        nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const;         // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
+        nonvirtual RowReference GetIthRowReference (size_t ith) const;                                           // ERROR if ith doesn't exist...(1 th is first row)
 
         nonvirtual size_t GetRowNumber (RowReference rowRef) const; // Use of row numbers is discouraged, but this routine
         // can be helpful in implementing those APIs anyhow
@@ -175,14 +175,14 @@ namespace Stroika::Frameworks::Led {
         virtual Led_Rect GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
 
     public:
-        nonvirtual size_t GetStartOfRow (RowReference row) const;
-        nonvirtual size_t GetEndOfRow (RowReference row) const;
-        nonvirtual size_t GetRealEndOfRow (RowReference row) const;
+        nonvirtual size_t       GetStartOfRow (RowReference row) const;
+        nonvirtual size_t       GetEndOfRow (RowReference row) const;
+        nonvirtual size_t       GetRealEndOfRow (RowReference row) const;
         nonvirtual RowReference GetRowReferenceContainingPosition (size_t charPosition) const;
-        nonvirtual size_t GetRowLength (RowReference row) const;
+        nonvirtual size_t       GetRowLength (RowReference row) const;
 
     public:
-        virtual Led_Distance GetRowHeight (size_t rowNumber) const override;
+        virtual Led_Distance    GetRowHeight (size_t rowNumber) const override;
         nonvirtual Led_Distance GetRowHeight (RowReference row) const;
 
     public:
@@ -270,12 +270,12 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual Led_Distance GetPixelHeight () const;
-        nonvirtual size_t GetRowCount () const;
-        nonvirtual size_t PeekRowCount () const;
-        nonvirtual size_t GetLastRow () const;
+        nonvirtual size_t       GetRowCount () const;
+        nonvirtual size_t       PeekRowCount () const;
+        nonvirtual size_t       GetLastRow () const;
         nonvirtual Led_Distance GetRowHeight (size_t ithRow) const;
-        nonvirtual size_t GetLineRelativeRowStartPosition (size_t ithRow) const;
-        nonvirtual size_t LineRelativePositionInWhichRow (size_t charPos) const; // ZERO based charPos - ie zero is just before first byte in first row
+        nonvirtual size_t       GetLineRelativeRowStartPosition (size_t ithRow) const;
+        nonvirtual size_t       LineRelativePositionInWhichRow (size_t charPos) const; // ZERO based charPos - ie zero is just before first byte in first row
 
     public:
         nonvirtual Led_Distance GetInterLineSpace () const;

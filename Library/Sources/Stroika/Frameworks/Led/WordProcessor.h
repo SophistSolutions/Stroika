@@ -164,7 +164,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void              SetJustification (size_t from, size_t to, Led_Justification justification);
 
     public:
-        static StandardTabStopList GetDefaultStandardTabStopList ();
+        static StandardTabStopList     GetDefaultStandardTabStopList ();
         nonvirtual StandardTabStopList GetStandardTabStopList (size_t characterPos) const;
         nonvirtual bool                GetStandardTabStopList (size_t from, size_t to, StandardTabStopList* tabStops) const;
         nonvirtual void                SetStandardTabStopList (size_t from, size_t to, StandardTabStopList tabStops);
@@ -180,21 +180,21 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void      SetFirstIndent (size_t from, size_t to, Led_TWIPS firstIndent);
 
     public:
-        nonvirtual Led_TWIPS GetSpaceBefore (size_t characterPos) const;
-        nonvirtual bool      GetSpaceBefore (size_t from, size_t to, Led_TWIPS* sb) const;
-        nonvirtual void      SetSpaceBefore (size_t from, size_t to, Led_TWIPS sb);
-        nonvirtual Led_TWIPS GetSpaceAfter (size_t characterPos) const;
-        nonvirtual bool      GetSpaceAfter (size_t from, size_t to, Led_TWIPS* sa) const;
-        nonvirtual void      SetSpaceAfter (size_t from, size_t to, Led_TWIPS sa);
+        nonvirtual Led_TWIPS       GetSpaceBefore (size_t characterPos) const;
+        nonvirtual bool            GetSpaceBefore (size_t from, size_t to, Led_TWIPS* sb) const;
+        nonvirtual void            SetSpaceBefore (size_t from, size_t to, Led_TWIPS sb);
+        nonvirtual Led_TWIPS       GetSpaceAfter (size_t characterPos) const;
+        nonvirtual bool            GetSpaceAfter (size_t from, size_t to, Led_TWIPS* sa) const;
+        nonvirtual void            SetSpaceAfter (size_t from, size_t to, Led_TWIPS sa);
         nonvirtual Led_LineSpacing GetLineSpacing (size_t characterPos) const;
         nonvirtual bool            GetLineSpacing (size_t from, size_t to, Led_LineSpacing* sl) const;
         nonvirtual void            SetLineSpacing (size_t from, size_t to, Led_LineSpacing sl);
-        nonvirtual ListStyle     GetListStyle (size_t characterPos) const;
-        nonvirtual bool          GetListStyle (size_t from, size_t to, ListStyle* listStyle) const;
-        nonvirtual void          SetListStyle (size_t from, size_t to, ListStyle listStyle, bool autoFormat = false);
-        nonvirtual unsigned char GetListIndentLevel (size_t characterPos) const;
-        nonvirtual bool          GetListIndentLevel (size_t from, size_t to, unsigned char* indentLevel) const;
-        nonvirtual void          SetListIndentLevel (size_t from, size_t to, unsigned char indentLevel, bool autoFormat = false);
+        nonvirtual ListStyle       GetListStyle (size_t characterPos) const;
+        nonvirtual bool            GetListStyle (size_t from, size_t to, ListStyle* listStyle) const;
+        nonvirtual void            SetListStyle (size_t from, size_t to, ListStyle listStyle, bool autoFormat = false);
+        nonvirtual unsigned char   GetListIndentLevel (size_t characterPos) const;
+        nonvirtual bool            GetListIndentLevel (size_t from, size_t to, unsigned char* indentLevel) const;
+        nonvirtual void            SetListIndentLevel (size_t from, size_t to, unsigned char indentLevel, bool autoFormat = false);
 
     protected:
         virtual Led_tString  GetListLeader (size_t paragraphMarkerPos) const;
@@ -644,10 +644,10 @@ namespace Stroika::Frameworks::Led {
         Led_TWIPS fFirstIndent;
 
     public:
-        nonvirtual Led_TWIPS GetSpaceBefore () const;
-        nonvirtual void      SetSpaceBefore (Led_TWIPS sb);
-        nonvirtual Led_TWIPS GetSpaceAfter () const;
-        nonvirtual void      SetSpaceAfter (Led_TWIPS sa);
+        nonvirtual Led_TWIPS       GetSpaceBefore () const;
+        nonvirtual void            SetSpaceBefore (Led_TWIPS sb);
+        nonvirtual Led_TWIPS       GetSpaceAfter () const;
+        nonvirtual void            SetSpaceAfter (Led_TWIPS sa);
         nonvirtual Led_LineSpacing GetLineSpacing () const;
         nonvirtual void            SetLineSpacing (Led_LineSpacing sl);
 
@@ -734,14 +734,14 @@ namespace Stroika::Frameworks::Led {
         bool fFirstIndentValid;
 
     public:
-        nonvirtual Led_TWIPS GetSpaceBefore () const;
-        nonvirtual void      SetSpaceBefore (Led_TWIPS sb);
-        nonvirtual bool      GetSpaceBefore_Valid () const;
-        nonvirtual void      InvalidateSpaceBefore ();
-        nonvirtual Led_TWIPS GetSpaceAfter () const;
-        nonvirtual void      SetSpaceAfter (Led_TWIPS sa);
-        nonvirtual bool      GetSpaceAfter_Valid () const;
-        nonvirtual void      InvalidateSpaceAfter ();
+        nonvirtual Led_TWIPS       GetSpaceBefore () const;
+        nonvirtual void            SetSpaceBefore (Led_TWIPS sb);
+        nonvirtual bool            GetSpaceBefore_Valid () const;
+        nonvirtual void            InvalidateSpaceBefore ();
+        nonvirtual Led_TWIPS       GetSpaceAfter () const;
+        nonvirtual void            SetSpaceAfter (Led_TWIPS sa);
+        nonvirtual bool            GetSpaceAfter_Valid () const;
+        nonvirtual void            InvalidateSpaceAfter ();
         nonvirtual Led_LineSpacing GetLineSpacing () const;
         nonvirtual void            SetLineSpacing (Led_LineSpacing sl);
         nonvirtual bool            GetLineSpacing_Valid () const;
@@ -1263,9 +1263,9 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual Led_Point TableCoordinates2Window (const Led_Point& p) const;
-        nonvirtual Led_Rect TableCoordinates2Window (const Led_Rect& r) const;
+        nonvirtual Led_Rect  TableCoordinates2Window (const Led_Rect& r) const;
         nonvirtual Led_Point WindowCoordinates2Table (const Led_Point& p) const;
-        nonvirtual Led_Rect WindowCoordinates2Table (const Led_Rect& r) const;
+        nonvirtual Led_Rect  WindowCoordinates2Table (const Led_Rect& r) const;
 
     public:
         virtual bool     GetCaretShownSituation () const;

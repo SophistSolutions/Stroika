@@ -1005,7 +1005,7 @@ namespace {
         struct PerTunerFactorySettingsType_ {
             optional<FrequencyType_> MirrorOperationFrequency;
             optional<FrequencyType_> MirrorResonantFrequency;
-            nonvirtual String ToString () const
+            nonvirtual String        ToString () const
             {
                 StringBuilder out;
                 out += L"{";

@@ -1938,7 +1938,7 @@ Led_FontMetrics TextImager::GetFontMetricsAt (
 #else
     size_t /*charAfterPos*/
 #endif
-    ) const
+) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Led_Tablet> (tablet));

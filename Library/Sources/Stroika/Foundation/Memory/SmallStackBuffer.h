@@ -127,19 +127,19 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual iterator begin ();
+        nonvirtual iterator       begin ();
         nonvirtual const_iterator begin () const;
 
     public:
         /**
          */
-        nonvirtual iterator end ();
+        nonvirtual iterator       end ();
         nonvirtual const_iterator end () const;
 
     public:
         /**
          */
-        nonvirtual reference at (size_t i);
+        nonvirtual reference       at (size_t i);
         nonvirtual const_reference at (size_t i) const;
 
     public:

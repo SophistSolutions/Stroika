@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool More (T* current, bool advance);
         nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual bool More (nullptr_t, bool advance);
-        nonvirtual T Current () const;
+        nonvirtual T    Current () const;
 
     public:
         // Warning - intrinsically slow

@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
             *((X*)this) = v;
             return *this;
         }
-        operator X && () = delete; // didn't help -- https://stroika.atlassian.net/browse/STK-582
+        operator X&& () = delete; // didn't help -- https://stroika.atlassian.net/browse/STK-582
         ~TemporaryElementReference_ ()
         {
             // now remaining problem with this strategy is that if we have

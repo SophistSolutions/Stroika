@@ -98,8 +98,8 @@ protected:
     virtual TextStore* PeekAtTextStore () const override;
 
 public:
-    virtual void OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid) override;
-    virtual void OnDrawMetafile (CDC* pDC, const CRect& rcBounds) override;
+    virtual void  OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid) override;
+    virtual void  OnDrawMetafile (CDC* pDC, const CRect& rcBounds) override;
     afx_msg BOOL  OnEraseBkgnd (CDC* pDC);
     virtual void  DoPropExchange (CPropExchange* pPX) override;
     virtual void  OnResetState () override;
@@ -172,76 +172,76 @@ protected:
 #endif
 
 protected:
-    afx_msg UINT OLE_VersionNumber ();
-    afx_msg BSTR OLE_ShortVersionString ();
-    afx_msg BOOL OLE_GetReadOnly ();
-    afx_msg void OLE_SetReadOnly (BOOL bNewValue);
-    afx_msg BOOL OLE_GetEnabled ();
-    afx_msg void OLE_SetEnabled (BOOL bNewValue);
-    afx_msg BOOL OLE_GetEnableAutoChangesBackgroundColor ();
-    afx_msg void OLE_SetEnableAutoChangesBackgroundColor (BOOL bNewValue);
-    afx_msg int  OLE_GetWindowMarginTop ();
-    afx_msg void OLE_SetWindowMarginTop (int windowMarginTop);
-    afx_msg int  OLE_GetWindowMarginLeft ();
-    afx_msg void OLE_SetWindowMarginLeft (int windowMarginLeft);
-    afx_msg int  OLE_GetWindowMarginBottom ();
-    afx_msg void OLE_SetWindowMarginBottom (int windowMarginBottom);
-    afx_msg int  OLE_GetWindowMarginRight ();
-    afx_msg void OLE_SetWindowMarginRight (int windowMarginRight);
-    afx_msg int  OLE_GetPrintMarginTop ();
-    afx_msg void OLE_SetPrintMarginTop (int printMarginTop);
-    afx_msg int  OLE_GetPrintMarginLeft ();
-    afx_msg void OLE_SetPrintMarginLeft (int printMarginLeft);
-    afx_msg int  OLE_GetPrintMarginBottom ();
-    afx_msg void OLE_SetPrintMarginBottom (int printMarginBottom);
-    afx_msg int  OLE_GetPrintMarginRight ();
-    afx_msg void OLE_SetPrintMarginRight (int printMarginRight);
-    afx_msg UINT GetHasVerticalScrollBar ();
-    afx_msg void SetHasVerticalScrollBar (UINT bNewValue);
-    afx_msg UINT GetHasHorizontalScrollBar ();
-    afx_msg void SetHasHorizontalScrollBar (UINT bNewValue);
-    afx_msg BSTR GetBufferText ();
-    afx_msg void SetBufferText (LPCTSTR text);
-    afx_msg BSTR GetBufferTextCRLF ();
-    afx_msg void SetBufferTextCRLF (LPCTSTR text);
-    afx_msg BSTR GetBufferTextAsRTF ();
-    afx_msg string GetBufferTextAsRTF_ ();
-    afx_msg void   SetBufferTextAsRTF (LPCTSTR text);
-    afx_msg BSTR GetBufferTextAsHTML ();
-    afx_msg void SetBufferTextAsHTML (LPCTSTR text);
+    afx_msg UINT    OLE_VersionNumber ();
+    afx_msg BSTR    OLE_ShortVersionString ();
+    afx_msg BOOL    OLE_GetReadOnly ();
+    afx_msg void    OLE_SetReadOnly (BOOL bNewValue);
+    afx_msg BOOL    OLE_GetEnabled ();
+    afx_msg void    OLE_SetEnabled (BOOL bNewValue);
+    afx_msg BOOL    OLE_GetEnableAutoChangesBackgroundColor ();
+    afx_msg void    OLE_SetEnableAutoChangesBackgroundColor (BOOL bNewValue);
+    afx_msg int     OLE_GetWindowMarginTop ();
+    afx_msg void    OLE_SetWindowMarginTop (int windowMarginTop);
+    afx_msg int     OLE_GetWindowMarginLeft ();
+    afx_msg void    OLE_SetWindowMarginLeft (int windowMarginLeft);
+    afx_msg int     OLE_GetWindowMarginBottom ();
+    afx_msg void    OLE_SetWindowMarginBottom (int windowMarginBottom);
+    afx_msg int     OLE_GetWindowMarginRight ();
+    afx_msg void    OLE_SetWindowMarginRight (int windowMarginRight);
+    afx_msg int     OLE_GetPrintMarginTop ();
+    afx_msg void    OLE_SetPrintMarginTop (int printMarginTop);
+    afx_msg int     OLE_GetPrintMarginLeft ();
+    afx_msg void    OLE_SetPrintMarginLeft (int printMarginLeft);
+    afx_msg int     OLE_GetPrintMarginBottom ();
+    afx_msg void    OLE_SetPrintMarginBottom (int printMarginBottom);
+    afx_msg int     OLE_GetPrintMarginRight ();
+    afx_msg void    OLE_SetPrintMarginRight (int printMarginRight);
+    afx_msg UINT    GetHasVerticalScrollBar ();
+    afx_msg void    SetHasVerticalScrollBar (UINT bNewValue);
+    afx_msg UINT    GetHasHorizontalScrollBar ();
+    afx_msg void    SetHasHorizontalScrollBar (UINT bNewValue);
+    afx_msg BSTR    GetBufferText ();
+    afx_msg void    SetBufferText (LPCTSTR text);
+    afx_msg BSTR    GetBufferTextCRLF ();
+    afx_msg void    SetBufferTextCRLF (LPCTSTR text);
+    afx_msg BSTR    GetBufferTextAsRTF ();
+    afx_msg string  GetBufferTextAsRTF_ ();
+    afx_msg void    SetBufferTextAsRTF (LPCTSTR text);
+    afx_msg BSTR    GetBufferTextAsHTML ();
+    afx_msg void    SetBufferTextAsHTML (LPCTSTR text);
     afx_msg VARIANT GetBufferTextAsDIB ();
     afx_msg long    GetBufferLength ();
     afx_msg long    GetMaxLength ();
     afx_msg void    SetMaxLength (long maxLength);
-    afx_msg BOOL GetSupportContextMenu ();
-    afx_msg void SetSupportContextMenu (BOOL bNewValue);
-    afx_msg BOOL OLE_GetHideDisabledContextMenuItems ();
-    afx_msg void OLE_SetHideDisabledContextMenuItems (BOOL bNewValue);
-    afx_msg BOOL GetSmartCutAndPaste ();
-    afx_msg void SetSmartCutAndPaste (BOOL bNewValue);
-    afx_msg BOOL OLE_GetSmartQuoteMode ();
-    afx_msg void OLE_SetSmartQuoteMode (BOOL bNewValue);
-    afx_msg BOOL GetWrapToWindow ();
-    afx_msg void SetWrapToWindow (BOOL bNewValue);
-    afx_msg BOOL GetShowParagraphGlyphs ();
-    afx_msg void SetShowParagraphGlyphs (BOOL bNewValue);
-    afx_msg BOOL GetShowTabGlyphs ();
-    afx_msg void SetShowTabGlyphs (BOOL bNewValue);
-    afx_msg BOOL GetShowSpaceGlyphs ();
-    afx_msg void SetShowSpaceGlyphs (BOOL bNewValue);
-    afx_msg BOOL OLE_GetUseSelectEOLBOLRowHilightStyle ();
-    afx_msg void OLE_SetUseSelectEOLBOLRowHilightStyle (BOOL bNewValue);
-    afx_msg BOOL OLE_GetShowSecondaryHilight ();
-    afx_msg void OLE_SetShowSecondaryHilight (BOOL bNewValue);
+    afx_msg BOOL    GetSupportContextMenu ();
+    afx_msg void    SetSupportContextMenu (BOOL bNewValue);
+    afx_msg BOOL    OLE_GetHideDisabledContextMenuItems ();
+    afx_msg void    OLE_SetHideDisabledContextMenuItems (BOOL bNewValue);
+    afx_msg BOOL    GetSmartCutAndPaste ();
+    afx_msg void    SetSmartCutAndPaste (BOOL bNewValue);
+    afx_msg BOOL    OLE_GetSmartQuoteMode ();
+    afx_msg void    OLE_SetSmartQuoteMode (BOOL bNewValue);
+    afx_msg BOOL    GetWrapToWindow ();
+    afx_msg void    SetWrapToWindow (BOOL bNewValue);
+    afx_msg BOOL    GetShowParagraphGlyphs ();
+    afx_msg void    SetShowParagraphGlyphs (BOOL bNewValue);
+    afx_msg BOOL    GetShowTabGlyphs ();
+    afx_msg void    SetShowTabGlyphs (BOOL bNewValue);
+    afx_msg BOOL    GetShowSpaceGlyphs ();
+    afx_msg void    SetShowSpaceGlyphs (BOOL bNewValue);
+    afx_msg BOOL    OLE_GetUseSelectEOLBOLRowHilightStyle ();
+    afx_msg void    OLE_SetUseSelectEOLBOLRowHilightStyle (BOOL bNewValue);
+    afx_msg BOOL    OLE_GetShowSecondaryHilight ();
+    afx_msg void    OLE_SetShowSecondaryHilight (BOOL bNewValue);
 
     // Hidable text
 protected:
-    afx_msg BOOL OLE_GetShowHidableText ();
-    afx_msg void OLE_SetShowHidableText (BOOL bNewValue);
+    afx_msg BOOL      OLE_GetShowHidableText ();
+    afx_msg void      OLE_SetShowHidableText (BOOL bNewValue);
     afx_msg OLE_COLOR OLE_GetHidableTextColor ();
     afx_msg void      OLE_SetHidableTextColor (OLE_COLOR color);
-    afx_msg BOOL OLE_GetHidableTextColored ();
-    afx_msg void OLE_SetHidableTextColored (BOOL bNewValue);
+    afx_msg BOOL      OLE_GetHidableTextColored ();
+    afx_msg void      OLE_SetHidableTextColored (BOOL bNewValue);
 
     // Spell checking
 protected:
@@ -276,8 +276,8 @@ protected:
     afx_msg IDispatch* OLE_MakeNewUserMenuItem ();
     afx_msg IDispatch* OLE_MakeNewAcceleratorElement ();
     afx_msg void       OLE_InvokeCommand (const VARIANT& command);
-    afx_msg BOOL OLE_CommandEnabled (const VARIANT& command);
-    afx_msg BOOL OLE_CommandChecked (const VARIANT& command);
+    afx_msg BOOL       OLE_CommandEnabled (const VARIANT& command);
+    afx_msg BOOL       OLE_CommandChecked (const VARIANT& command);
     afx_msg IDispatch* OLE_MakeNewToolbarList ();
     nonvirtual CComPtr<IDispatch> MakeNewToolbar ();
     afx_msg IDispatch* OLE_MakeNewToolbar ();
@@ -288,8 +288,8 @@ protected:
     afx_msg IDispatch* OLE_MakeBuiltinToolbar (LPCOLESTR builtinToolbarName);
     nonvirtual CComPtr<IDispatch> MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
     afx_msg IDispatch* OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
-    afx_msg VARIANT OLE_GetAcceleratorTable ();
-    afx_msg void    OLE_SetAcceleratorTable (VARIANT& newValue);
+    afx_msg VARIANT    OLE_GetAcceleratorTable ();
+    afx_msg void       OLE_SetAcceleratorTable (VARIANT& newValue);
 
 private:
     struct ToolBarIconSpec {
@@ -318,36 +318,36 @@ private:
 
 protected:
     //selection-based APIs
-    afx_msg long GetSelStart ();
-    afx_msg void SetSelStart (long start);
-    afx_msg long GetSelLength ();
-    afx_msg void SetSelLength (long length);
-    afx_msg BSTR GetSelText ();
-    afx_msg void SetSelText (LPCTSTR text);
-    afx_msg BSTR GetSelTextAsRTF ();
-    afx_msg void SetSelTextAsRTF (LPCTSTR text);
-    afx_msg BSTR GetSelTextAsHTML ();
-    afx_msg void SetSelTextAsHTML (LPCTSTR text);
+    afx_msg long      GetSelStart ();
+    afx_msg void      SetSelStart (long start);
+    afx_msg long      GetSelLength ();
+    afx_msg void      SetSelLength (long length);
+    afx_msg BSTR      GetSelText ();
+    afx_msg void      SetSelText (LPCTSTR text);
+    afx_msg BSTR      GetSelTextAsRTF ();
+    afx_msg void      SetSelTextAsRTF (LPCTSTR text);
+    afx_msg BSTR      GetSelTextAsHTML ();
+    afx_msg void      SetSelTextAsHTML (LPCTSTR text);
     afx_msg OLE_COLOR GetSelColor ();
     afx_msg void      SetSelColor (OLE_COLOR color);
-    afx_msg BSTR GetSelFontFace ();
-    afx_msg void SetSelFontFace (LPCTSTR fontFace);
-    afx_msg long GetSelFontSize ();
-    afx_msg void SetSelFontSize (long size);
-    afx_msg long GetSelBold ();
-    afx_msg void SetSelBold (long bold);
-    afx_msg long GetSelItalic ();
-    afx_msg void SetSelItalic (long italic);
-    afx_msg long GetSelStrikeThru ();
-    afx_msg void SetSelStrikeThru (long strikeThru);
-    afx_msg long GetSelUnderline ();
-    afx_msg void SetSelUnderline (long underline);
-    afx_msg UINT OLE_GetSelJustification ();
-    afx_msg void OLE_SetSelJustification (UINT justification);
-    afx_msg UINT OLE_GetSelListStyle ();
-    afx_msg void OLE_SetSelListStyle (UINT listStyle);
-    afx_msg UINT OLE_GetSelHidable ();
-    afx_msg void OLE_SetSelHidable (UINT hidable);
+    afx_msg BSTR      GetSelFontFace ();
+    afx_msg void      SetSelFontFace (LPCTSTR fontFace);
+    afx_msg long      GetSelFontSize ();
+    afx_msg void      SetSelFontSize (long size);
+    afx_msg long      GetSelBold ();
+    afx_msg void      SetSelBold (long bold);
+    afx_msg long      GetSelItalic ();
+    afx_msg void      SetSelItalic (long italic);
+    afx_msg long      GetSelStrikeThru ();
+    afx_msg void      SetSelStrikeThru (long strikeThru);
+    afx_msg long      GetSelUnderline ();
+    afx_msg void      SetSelUnderline (long underline);
+    afx_msg UINT      OLE_GetSelJustification ();
+    afx_msg void      OLE_SetSelJustification (UINT justification);
+    afx_msg UINT      OLE_GetSelListStyle ();
+    afx_msg void      OLE_SetSelListStyle (UINT listStyle);
+    afx_msg UINT      OLE_GetSelHidable ();
+    afx_msg void      OLE_SetSelHidable (UINT hidable);
 
     afx_msg void AboutBox ();
     afx_msg void LoadFile (LPCTSTR filename);

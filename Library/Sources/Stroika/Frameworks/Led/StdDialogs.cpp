@@ -1700,7 +1700,7 @@ bool Led_StdDialogHelper_FindDialog::HandleCommandClick (int itemNum)
             Rect   itemRect;
             short  itemType = 0;
             ::GetDialogItem (GetDialogPtr (), itemNum, &itemType, &itemHandle, &itemRect);
-            ::SetControlValue (ControlHandle (itemHandle), not::GetControlValue (ControlHandle (itemHandle)));
+            ::SetControlValue (ControlHandle (itemHandle), not ::GetControlValue (ControlHandle (itemHandle)));
         }
         default:
             return inherited::HandleCommandClick (itemNum);
@@ -1903,7 +1903,7 @@ bool Led_StdDialogHelper_ReplaceDialog::HandleCommandClick (int itemNum)
             Rect   itemRect;
             short  itemType = 0;
             ::GetDialogItem (GetDialogPtr (), itemNum, &itemType, &itemHandle, &itemRect);
-            ::SetControlValue (ControlHandle (itemHandle), not::GetControlValue (ControlHandle (itemHandle)));
+            ::SetControlValue (ControlHandle (itemHandle), not ::GetControlValue (ControlHandle (itemHandle)));
         }
         default:
             return inherited::HandleCommandClick (itemNum);

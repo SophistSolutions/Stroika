@@ -516,7 +516,7 @@ namespace Stroika::Foundation::Common {
 #endif
         }
     };
-    // clang-format on
+// clang-format on
 }
 
 /*

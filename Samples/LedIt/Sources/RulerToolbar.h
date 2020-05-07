@@ -179,14 +179,14 @@ protected:
     RulerItem*   GetFreeTab ();
     LedItView*   GetView ();
 
-    CTabRulerItem* GetHitTabPix (CPoint pt);
-    afx_msg void   OnLButtonDown (UINT nFlags, CPoint point);
-    afx_msg void   OnLButtonUp (UINT nFlags, CPoint point);
-    afx_msg void   OnMouseMove (UINT nFlags, CPoint point);
-    afx_msg void   OnSysColorChange ();
-    afx_msg void   OnWindowPosChanging (WINDOWPOS FAR* lpwndpos);
-    afx_msg void   OnShowWindow (BOOL bShow, UINT nStatus);
-    afx_msg void   OnWindowPosChanged (WINDOWPOS FAR* lpwndpos);
+    CTabRulerItem*  GetHitTabPix (CPoint pt);
+    afx_msg void    OnLButtonDown (UINT nFlags, CPoint point);
+    afx_msg void    OnLButtonUp (UINT nFlags, CPoint point);
+    afx_msg void    OnMouseMove (UINT nFlags, CPoint point);
+    afx_msg void    OnSysColorChange ();
+    afx_msg void    OnWindowPosChanging (WINDOWPOS FAR* lpwndpos);
+    afx_msg void    OnShowWindow (BOOL bShow, UINT nStatus);
+    afx_msg void    OnWindowPosChanged (WINDOWPOS FAR* lpwndpos);
     afx_msg LRESULT OnSizeParent (WPARAM wParam, LPARAM lParam);
     DECLARE_MESSAGE_MAP ()
 private:

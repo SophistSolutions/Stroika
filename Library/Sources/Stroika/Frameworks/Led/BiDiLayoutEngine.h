@@ -75,7 +75,7 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual const Led_tChar* PeekAtRealText () const;
         nonvirtual const Led_tChar* PeekAtVirtualText () const;
-        nonvirtual size_t GetTextLength () const;
+        nonvirtual size_t           GetTextLength () const;
 
     public:
         virtual void PeekAtRealText_ (const Led_tChar** startText, const Led_tChar** endText) const    = 0;
@@ -110,7 +110,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void CopyOutVirtualText (const ScriptRunElt& scriptRunElt, Led_tChar* buf) const;
 
     public:
-        nonvirtual void PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const;
+        nonvirtual void        PeekAtRealText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const;
         nonvirtual Led_tString GetRealText () const;
         nonvirtual Led_tString GetRealText (const ScriptRunElt& scriptRunElt) const;
         nonvirtual void        PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const;

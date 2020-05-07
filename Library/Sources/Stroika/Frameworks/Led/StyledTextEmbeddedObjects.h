@@ -249,7 +249,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual PictureHandle GetPictureHandle () const;
-        nonvirtual size_t GetPictureByteSize () const;
+        nonvirtual size_t        GetPictureByteSize () const;
 
     private:
         PictureHandle fPictureHandle;
@@ -389,7 +389,7 @@ namespace Stroika::Frameworks::Led {
         Led_URLD fURLData;
 
     protected:
-        nonvirtual Led_tString GetDisplayString () const;
+        nonvirtual Led_tString           GetDisplayString () const;
         nonvirtual Led_FontSpecification GetDisplayFont (const RunElement& runElement) const;
     };
 
@@ -438,7 +438,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual StandardMacPictureStyleMarker::PictureHandle GetPictureHandle () const;
-        nonvirtual size_t GetPictureByteSize () const;
+        nonvirtual size_t                                       GetPictureByteSize () const;
         nonvirtual const Led_URLD& GetURLData () const;
         nonvirtual void            SetURLData (const Led_URLD& urlData);
 
@@ -556,7 +556,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual const void* GetData () const;
-        nonvirtual size_t GetDataLength () const;
+        nonvirtual size_t      GetDataLength () const;
 
     private:
         void*                   fData;

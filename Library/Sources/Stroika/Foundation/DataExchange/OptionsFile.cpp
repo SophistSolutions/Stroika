@@ -112,7 +112,7 @@ OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const
         };
 }
 
-const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = [] ([[maybe_unused]] const String & /*moduleName*/) -> optional<Configuration::Version> {
+const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = [] ([[maybe_unused]] const String& /*moduleName*/) -> optional<Configuration::Version> {
     return optional<Configuration::Version> (); // default to don't know
 };
 

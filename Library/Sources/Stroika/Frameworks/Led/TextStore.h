@@ -123,7 +123,7 @@ namespace Stroika::Frameworks::Led {
 
         // utilities to simplify refering to beginning/end of buffer.
     public:
-        static size_t GetStart ();
+        static size_t     GetStart ();
         nonvirtual size_t GetEnd () const;
 
         // Type of indexing conversion
@@ -338,12 +338,12 @@ namespace Stroika::Frameworks::Led {
             *  if there is no NL. This corresponds to being AFTER the last displayed character.
             */
     public:
-        virtual size_t GetStartOfLine (size_t lineNumber) const;
-        virtual size_t GetStartOfLineContainingPosition (size_t charPosition) const;
-        virtual size_t GetEndOfLine (size_t lineNumber) const;
-        virtual size_t GetEndOfLineContainingPosition (size_t afterPos) const;
-        virtual size_t GetLineContainingPosition (size_t charPosition) const;
-        virtual size_t GetLineCount () const;
+        virtual size_t    GetStartOfLine (size_t lineNumber) const;
+        virtual size_t    GetStartOfLineContainingPosition (size_t charPosition) const;
+        virtual size_t    GetEndOfLine (size_t lineNumber) const;
+        virtual size_t    GetEndOfLineContainingPosition (size_t afterPos) const;
+        virtual size_t    GetLineContainingPosition (size_t charPosition) const;
+        virtual size_t    GetLineCount () const;
         nonvirtual size_t GetLineLength (size_t lineNumber) const; // end-start
 
         /*

@@ -278,7 +278,7 @@ URI URI::Combine (const URI& uri) const
      *          return r;
      *      }
      */
-    if (not*this) {
+    if (not *this) {
         return uri;
     }
 

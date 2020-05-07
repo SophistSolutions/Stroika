@@ -166,8 +166,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     private:
-        nonvirtual void ShrinkHeadLinksIfNeeded ();
-        nonvirtual void GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo);
+        nonvirtual void   ShrinkHeadLinksIfNeeded ();
+        nonvirtual void   GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo);
         nonvirtual size_t DetermineLinkHeight () const;
 
         size_t fLength;

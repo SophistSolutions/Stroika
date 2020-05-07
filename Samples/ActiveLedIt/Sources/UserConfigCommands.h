@@ -32,9 +32,9 @@ public:
     UserCommandNameNumberRegistry ();
 
 public:
-    nonvirtual UINT Enter (const wstring& internalName);
-    nonvirtual bool Lookup (UINT cmdNum, wstring* internalName);
-    nonvirtual bool Lookup (const wstring& internalName, UINT* cmdNum);
+    nonvirtual UINT    Enter (const wstring& internalName);
+    nonvirtual bool    Lookup (UINT cmdNum, wstring* internalName);
+    nonvirtual bool    Lookup (const wstring& internalName, UINT* cmdNum);
     nonvirtual wstring Lookup (UINT cmdNum);
 
 private:

@@ -37,8 +37,8 @@ public:
 
 #if qUseNavServices
 protected:
-    static pascal void StaticNavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams, NavCallBackUserData ioUserData);
-    virtual void       NavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams);
+    static pascal void    StaticNavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams, NavCallBackUserData ioUserData);
+    virtual void          NavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams);
     static pascal Boolean StaticNavObjectFilterProc (AEDesc* theItem, void* info, void* callBackUD, NavFilterModes filterMode);
     virtual bool          NavObjectFilterProc (AEDesc* theItem, void* info, NavFilterModes filterMode);
 
@@ -48,7 +48,7 @@ protected:
 
 protected:
 #if !qUseNavServices && !TARGET_CARBON
-    static pascal short SFGetDlgHook (short item, DialogPtr dialog, void* myData);
+    static pascal short   SFGetDlgHook (short item, DialogPtr dialog, void* myData);
     static pascal Boolean SFFilterProc (CInfoPBPtr pb, void* myData);
 #endif
 

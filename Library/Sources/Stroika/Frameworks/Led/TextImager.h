@@ -705,9 +705,9 @@ namespace Stroika::Frameworks::Led {
                                  eDefaultSelectedTextBackgroundColor,
                                  eMaxDefaultColorIndex };
         nonvirtual Led_Color* GetDefaultTextColor (DefaultColorIndex dci) const;
-        nonvirtual Led_Color GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
-        nonvirtual void      ClearDefaultTextColor (DefaultColorIndex dci);
-        nonvirtual void      SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor);
+        nonvirtual Led_Color  GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
+        nonvirtual void       ClearDefaultTextColor (DefaultColorIndex dci);
+        nonvirtual void       SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor);
 
     private:
         Led_Color* fDefaultColorIndex[eMaxDefaultColorIndex];

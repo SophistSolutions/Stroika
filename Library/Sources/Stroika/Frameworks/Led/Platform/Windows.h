@@ -2105,7 +2105,7 @@ namespace Stroika::Frameworks::Led::Platform {
                     Assert (::IsWindow (hWnd));
                     // This SHOULD work, according to the docs, but seems to hang on HT-J 3.5??? - LGP 950524
                     // Seems to work on all versions since NTJ 3.5 however...
-                    while (not::ShowCaret (hWnd)) {
+                    while (not ::ShowCaret (hWnd)) {
                     }
 
                     ::SetCaretPos (caretRect.GetLeft (), caretRect.GetTop ());
@@ -2263,7 +2263,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     bool Led_Win32_Helper<BASE_INTERACTOR>::OnCopyCommand_Before ()
     {
-        if (not::OpenClipboard (GetValidatedHWND ())) {
+        if (not ::OpenClipboard (GetValidatedHWND ())) {
             OnBadUserInput ();
             return false;
         }
@@ -2279,14 +2279,14 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_Win32_Helper<BASE_INTERACTOR>::OnCopyCommand_After ()
     {
         inherited::OnCopyCommand_After ();
-        if (not::CloseClipboard ()) {
+        if (not ::CloseClipboard ()) {
             OnBadUserInput ();
         }
     }
     template <typename BASE_INTERACTOR>
     bool Led_Win32_Helper<BASE_INTERACTOR>::OnPasteCommand_Before ()
     {
-        if (not::OpenClipboard (GetValidatedHWND ())) {
+        if (not ::OpenClipboard (GetValidatedHWND ())) {
             OnBadUserInput ();
             return false;
         }
@@ -2301,7 +2301,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_Win32_Helper<BASE_INTERACTOR>::OnPasteCommand_After ()
     {
         inherited::OnPasteCommand_After ();
-        if (not::CloseClipboard ()) {
+        if (not ::CloseClipboard ()) {
             OnBadUserInput ();
         }
     }

@@ -172,7 +172,7 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
         }
     }
 
-    if (not::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
+    if (not ::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
         DWORD error = ::GetLastError ();
         if (error != ERROR_ALREADY_EXISTS) {
             IO::FileSystem::Exception::ThrowSystemErrNo (error, ToPath (directoryPath));

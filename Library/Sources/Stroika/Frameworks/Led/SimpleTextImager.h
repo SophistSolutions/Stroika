@@ -139,9 +139,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetPreviousRowReference (RowReference* adjustMeInPlace) const; // return true if there is a previous, and false if at the beginning
 
         // NB: if ith==1, that means do NOTHING - for convenience...
-        nonvirtual bool GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
-        nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const; // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
-        nonvirtual RowReference GetIthRowReference (size_t ith) const;                                   // ERROR if ith doesn't exist...(1 th is first row)
+        nonvirtual bool         GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
+        nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const;         // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
+        nonvirtual RowReference GetIthRowReference (size_t ith) const;                                           // ERROR if ith doesn't exist...(1 th is first row)
 
         nonvirtual size_t GetRowNumber (RowReference rowRef) const; // Use of row numbers is discouraged, but this routine
         // can be helpful in implementing those APIs anyhow
@@ -206,11 +206,11 @@ namespace Stroika::Frameworks::Led {
         virtual Led_Rect GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
 
     public:
-        nonvirtual size_t GetStartOfRow (RowReference row) const;
-        nonvirtual size_t GetEndOfRow (RowReference row) const;
-        nonvirtual size_t GetRealEndOfRow (RowReference row) const;
+        nonvirtual size_t       GetStartOfRow (RowReference row) const;
+        nonvirtual size_t       GetEndOfRow (RowReference row) const;
+        nonvirtual size_t       GetRealEndOfRow (RowReference row) const;
         nonvirtual RowReference GetRowReferenceContainingPosition (size_t charPosition) const;
-        nonvirtual size_t GetRowLength (RowReference row) const;
+        nonvirtual size_t       GetRowLength (RowReference row) const;
 
     public:
         virtual Led_Distance GetRowHeight (size_t rowNumber) const override;

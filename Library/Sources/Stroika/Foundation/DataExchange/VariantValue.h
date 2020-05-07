@@ -295,11 +295,11 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual RETURNTYPE As () const;
 
     private:
-        nonvirtual Memory::BLOB AsBLOB_ () const;
-        nonvirtual IntegerType_ AsInteger_ () const;
+        nonvirtual Memory::BLOB         AsBLOB_ () const;
+        nonvirtual IntegerType_         AsInteger_ () const;
         nonvirtual UnsignedIntegerType_ AsUnsignedInteger_ () const;
-        nonvirtual FloatType_ AsFloatType_ () const;
-        nonvirtual String AsString_ () const;
+        nonvirtual FloatType_           AsFloatType_ () const;
+        nonvirtual String               AsString_ () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

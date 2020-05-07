@@ -3438,7 +3438,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
 namespace {
 #if qPlatform_Windows
     shared_ptr<set<CodePage>> s_EnumCodePagesProc_Accumulator_;
-    BOOL FAR PASCAL EnumCodePagesProc_ (LPTSTR lpCodePageString)
+    BOOL FAR PASCAL           EnumCodePagesProc_ (LPTSTR lpCodePageString)
     {
         s_EnumCodePagesProc_Accumulator_->insert (_ttoi (lpCodePageString));
         return (1);

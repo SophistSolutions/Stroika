@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual T    GetAt (size_t i) const;
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
         nonvirtual T& operator[] (size_t i);
-        nonvirtual T operator[] (size_t i) const;
+        nonvirtual T  operator[] (size_t i) const;
 
         nonvirtual size_t GetLength () const;
         nonvirtual void   SetLength (size_t newLength, ArgByValueType<T> fillValue);
@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     public:
-        nonvirtual T Current () const;           //  Error to call if Done (), otherwise OK
+        nonvirtual T      Current () const;      //  Error to call if Done (), otherwise OK
         nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
         nonvirtual bool   More (T* current, bool advance);
         nonvirtual bool   Done () const;

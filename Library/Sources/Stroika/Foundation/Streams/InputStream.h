@@ -308,7 +308,7 @@ namespace Stroika::Foundation::Streams {
          *  @see ReadNonBlocking ()
          */
         nonvirtual optional<ElementType> Read () const;
-        nonvirtual size_t Read (ElementType* intoStart, ElementType* intoEnd) const;
+        nonvirtual size_t                Read (ElementType* intoStart, ElementType* intoEnd) const;
 
     public:
         /**
@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Streams {
          *
          */
         nonvirtual optional<ElementType> Peek () const;
-        nonvirtual size_t Peek (ElementType* intoStart, ElementType* intoEnd) const;
+        nonvirtual size_t                Peek (ElementType* intoStart, ElementType* intoEnd) const;
 
     public:
         /**
@@ -483,7 +483,7 @@ namespace Stroika::Foundation::Streams {
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-        nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+        nonvirtual size_t       ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 
     protected:
         /**

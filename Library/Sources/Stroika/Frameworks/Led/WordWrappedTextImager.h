@@ -124,7 +124,7 @@ namespace Stroika::Frameworks::Led {
         TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
 
     public:
-        virtual void GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
+        virtual void            GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
         nonvirtual Led_Distance GetHeight () const;
     };
 

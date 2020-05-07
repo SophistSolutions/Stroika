@@ -122,7 +122,7 @@ namespace Stroika::Frameworks::Led {
                                                                 ,
                                                                 CollectLookupCacheElt* fillingCache = NULL
 #endif
-                                                                ) const;
+        ) const;
 
     private:
         class TextChunk;

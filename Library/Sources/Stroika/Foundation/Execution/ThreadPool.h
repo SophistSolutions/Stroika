@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Execution {
     private:
         // Called internally from threadpool tasks - to wait until there is a new task to run.
         // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
-        nonvirtual void WaitForNextTask_ (TaskType* result);
+        nonvirtual void    WaitForNextTask_ (TaskType* result);
         nonvirtual TPInfo_ mkThread_ ();
 
     private:

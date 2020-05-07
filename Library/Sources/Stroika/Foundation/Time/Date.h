@@ -414,7 +414,7 @@ namespace Stroika::Foundation::Time {
          *  \brief  Syntactic sure for *this = this->AddDays (1);
          */
         nonvirtual Date& operator++ ();
-        nonvirtual Date operator++ (int);
+        nonvirtual Date  operator++ (int);
 
     public:
         /**
@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Time {
          *  Date                operator- (SignedJulianRepType daysOffset)  Syntactic sugar on AddDays(-arg)
          */
         nonvirtual SignedJulianRepType operator- (const Date& rhs) const;
-        nonvirtual Date operator- (SignedJulianRepType daysOffset) const;
+        nonvirtual Date                operator- (SignedJulianRepType daysOffset) const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

@@ -175,10 +175,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         // to be simpler. Don't need to worry as much about this special case,
         // and they can just return chars (and throw on eof).
 
-        nonvirtual void PutBackLastChar () const;
-        nonvirtual char GetNextChar () const;
-        nonvirtual char PeekNextChar () const;
-        nonvirtual void ConsumeNextChar () const;
+        nonvirtual void   PutBackLastChar () const;
+        nonvirtual char   GetNextChar () const;
+        nonvirtual char   PeekNextChar () const;
+        nonvirtual void   ConsumeNextChar () const;
         nonvirtual string GrabString (size_t from, size_t to = size_t (-1)); // doesn't move seek_to () position (rather restores it)
         // if no end specified (-1), then grab from to current seekpos
     };
@@ -780,7 +780,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void   write (const void* buffer, size_t bytes) override;
 
         nonvirtual const void* PeekAtData () const;
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t      GetLength () const;
 
     private:
         char*  fData;

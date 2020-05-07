@@ -139,7 +139,7 @@ public:
     virtual size_t       GetLength () const override;
     virtual void         GetStartEnd (size_t* start, size_t* end) const override;
 
-    nonvirtual void AddToChildList (Marker* marker);
+    nonvirtual void   AddToChildList (Marker* marker);
     nonvirtual size_t CountChildren () const;
     nonvirtual bool   CountChildrenMoreThan (size_t n) const; // return true iff at least n children
 
@@ -1548,7 +1548,7 @@ void ChunkedArrayTextStore::CollectAllMarkersInRangeInto_Helper_MO (size_t from,
                                                                     ,
                                                                     CollectLookupCacheElt* fillingCache
 #endif
-                                                                    ) const
+) const
 {
     ChunkedArrayMarkerOwnerHook* camoh = dynamic_cast<ChunkedArrayMarkerOwnerHook*> (owner->fTextStoreHook);
     AssertNotNull (camoh);

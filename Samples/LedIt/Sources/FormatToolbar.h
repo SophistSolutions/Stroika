@@ -37,8 +37,8 @@ public:
 public:
     class LocalComboBox : public CComboBox {
     public:
-        static int m_nFontHeight;
-        int        m_nLimitText;
+        static int      m_nFontHeight;
+        int             m_nLimitText;
         nonvirtual BOOL HasFocus ()
         {
             HWND hWnd = ::GetFocus ();
@@ -79,7 +79,7 @@ public:
         int m_nTwipsLast;
 
     public:
-        nonvirtual void EnumFontSizes (CDC& dc, LPCTSTR pFontName);
+        nonvirtual void        EnumFontSizes (CDC& dc, LPCTSTR pFontName);
         static BOOL FAR PASCAL EnumSizeCallBack (LOGFONT FAR* lplf, LPNEWTEXTMETRIC lpntm, int FontType, LPVOID lpv);
         nonvirtual void        TwipsToPointString (LPTSTR lpszBuf, int nTwips);
         nonvirtual void        SetTwipSize (int nSize);

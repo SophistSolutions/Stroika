@@ -93,7 +93,7 @@ namespace Stroika::Frameworks::Led {
         Led_Color fSelectedColor;
 
     private:
-        nonvirtual size_t MapColorIdx (const Led_Color& c) const;
+        nonvirtual size_t    MapColorIdx (const Led_Color& c) const;
         nonvirtual Led_Color MapColorIdx (size_t i) const;
 
     private:

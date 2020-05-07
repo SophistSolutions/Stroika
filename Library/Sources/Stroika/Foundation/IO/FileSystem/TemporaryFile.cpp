@@ -110,7 +110,7 @@ AppTempFileManager::AppTempFileManager ()
     CreateDirectory (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
         String d = tmpDir + Format (L"%s-%d-%d\\", exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
-        if (not::CreateDirectoryW (d.c_str (), nullptr)) {
+        if (not ::CreateDirectoryW (d.c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error == ERROR_ALREADY_EXISTS) {
                 continue; // try again
