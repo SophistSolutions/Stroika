@@ -186,25 +186,11 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     */
-    template <typename TYPE>
-    [[deprecated ("Since Stroika 2.1a5 - use CompareResultNormalizer or ThreeWayCompare")]] constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
-    {
-        return ThreeWayCompare (lhs, rhs);
-    }
-
-    /**
      * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
      * different sized values and just returning an int, but don't want the warnings about overflow etc.
      */
     template <typename FROM_INT_TYPE>
     strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
-
-    template <typename FROM_INT_TYPE>
-    [[deprecated ("since Stroika 2.1a5 - use CompareResultNormalizer")]] inline strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f)
-    {
-        return CompareResultNormalizer (f);
-    }
 
     /**
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and
@@ -445,19 +431,6 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     */
-    template <typename BASE_COMPARER>
-    [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
-    {
-        return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
-    }
-    template <typename BASE_COMPARER>
-    [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
-    {
-        return EqualsComparerAdapter<BASE_COMPARER>{move (baseComparer)};
-    }
-
-    /**
      *  \brief Use this to wrap any basic comparer, and produce a Less comparer
      *
      *  \note this requires the argument comparer is eStrictInOrder, eInOrderOrEquals, or eThreeWayCompare
@@ -477,19 +450,6 @@ namespace Stroika::Foundation::Common {
     private:
         BASE_COMPARER fBASE_COMPARER_;
     };
-
-    /**
-     */
-    template <typename BASE_COMPARER>
-    [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
-    {
-        return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
-    }
-    template <typename BASE_COMPARER>
-    [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
-    {
-        return InOrderComparerAdapter<BASE_COMPARER>{move (baseComparer)};
-    }
 
     /**
      *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer
@@ -512,8 +472,38 @@ namespace Stroika::Foundation::Common {
         BASE_COMPARER fBASE_COMPARER_;
     };
 
-    /**
-     */
+    ///////////////////// DEPRECATED //////////////////////////
+
+    template <typename TYPE>
+    [[deprecated ("Since Stroika 2.1a5 - use CompareResultNormalizer or ThreeWayCompare")]] constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
+    {
+        return ThreeWayCompare (lhs, rhs);
+    }
+    template <typename FROM_INT_TYPE>
+    [[deprecated ("since Stroika 2.1a5 - use CompareResultNormalizer")]] inline strong_ordering CompareResultNormalizeHelper (FROM_INT_TYPE f)
+    {
+        return CompareResultNormalizer (f);
+    }
+    template <typename BASE_COMPARER>
+    [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
+    {
+        return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
+    }
+    template <typename BASE_COMPARER>
+    [[deprecated ("Since Stroika v2.1a5 - use EqualsComparerAdapter directly")]] constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
+    {
+        return EqualsComparerAdapter<BASE_COMPARER>{move (baseComparer)};
+    }
+    template <typename BASE_COMPARER>
+    [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
+    {
+        return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
+    }
+    template <typename BASE_COMPARER>
+    [[deprecated ("Since Stroika v2.1a5 - use InOrderComparerAdapter directly")]] constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
+    {
+        return InOrderComparerAdapter<BASE_COMPARER>{move (baseComparer)};
+    }
     template <typename BASE_COMPARER>
     [[deprecated ("Since Stroika v2.1a5 - use ThreeWayComparerAdapter directly")]] constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
     {
