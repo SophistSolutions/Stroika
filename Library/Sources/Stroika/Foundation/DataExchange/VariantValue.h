@@ -83,7 +83,8 @@ namespace Stroika::Foundation::DataExchange {
      *  So for now - we just store the largest signed and unsigned integer types and cast down to what
      *  the user users/requests.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *  \note Comparisons:
+     *        TBD
      *
      *  TODO:
      *

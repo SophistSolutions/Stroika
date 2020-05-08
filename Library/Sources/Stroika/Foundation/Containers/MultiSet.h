@@ -91,7 +91,8 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *  \note Comparisons:
+     *        TBD
      *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.

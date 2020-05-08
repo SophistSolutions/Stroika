@@ -78,7 +78,8 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *  \note Comparisons:
+     *        TBD - ref common docs
      */
     class BLOB : private Debug::AssertExternallySynchronizedLock {
     public:

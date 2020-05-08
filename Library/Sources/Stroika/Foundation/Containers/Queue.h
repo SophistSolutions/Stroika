@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
-     *  \note Note About Comparisons
+     *  \note Comparisons:
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
      *      o   For now, no ThreeWayCompare, but probably should be
      */
