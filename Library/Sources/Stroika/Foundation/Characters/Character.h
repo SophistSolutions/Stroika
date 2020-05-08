@@ -196,7 +196,7 @@ namespace std {
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
         constexpr equal_to (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
-        constexpr bool                                  operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
+        inline bool                                     operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
         Stroika::Foundation::Characters::CompareOptions fCompareOptions;
     };
 }
@@ -216,7 +216,7 @@ namespace std
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
         constexpr compare_three_way (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
-        constexpr auto                                  operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
+        inline auto                                     operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
         Stroika::Foundation::Characters::CompareOptions fCompareOptions;
     };
 }

@@ -162,7 +162,7 @@ namespace std {
         : fCompareOptions{co}
     {
     }
-    constexpr bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
+    inline bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
     {
         using namespace Stroika::Foundation::Characters;
         using SIGNED_WCHART_ = make_signed_t<wchar_t>;
@@ -188,7 +188,7 @@ namespace std
         : fCompareOptions{co}
     {
     }
-    constexpr auto compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
+    inline auto compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
     {
         using namespace Stroika::Foundation::Characters;
         using SIGNED_WCHART_ = make_signed_t<wchar_t>;
