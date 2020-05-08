@@ -133,7 +133,6 @@ namespace std {
     inline bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
     {
         using namespace Stroika::Foundation::Characters;
-        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
         switch (fCompareOptions) {
             case CompareOptions::eCaseInsensitive:
                 return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive) == 0;
