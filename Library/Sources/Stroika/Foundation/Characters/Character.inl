@@ -123,38 +123,6 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************* Character operators **********************************
-     ********************************************************************************
-     */
-    inline bool operator< (Character lhs, Character rhs)
-    {
-        return Character::ThreeWayComparer{}(lhs, rhs) < 0;
-    }
-    inline bool operator<= (Character lhs, Character rhs)
-    {
-        return Character::ThreeWayComparer{}(lhs, rhs) <= 0;
-    }
-    inline bool operator== (Character lhs, Character rhs)
-    {
-        return Character::ThreeWayComparer{}(lhs, rhs) == 0;
-    }
-    inline bool operator!= (Character lhs, Character rhs)
-    {
-        return Character::ThreeWayComparer{}(lhs, rhs) != 0;
-    }
-    inline bool operator>= (Character lhs, Character rhs)
-    {
-        return Character::ThreeWayComparer{}(lhs, rhs) >= 0;
-    }
-    inline bool operator> (Character lhs, Character rhs)
-    {
-        return Character::ThreeWayComparer{}(lhs, rhs) > 0;
-    }
-#endif
-
 }
 
 namespace std {
@@ -203,5 +171,39 @@ namespace std
         }
     }
 }
+
+#if __cpp_impl_three_way_comparison < 201907
+namespace Stroika::Foundation::Characters {
+    /*
+     ********************************************************************************
+     ************************* Character operators **********************************
+     ********************************************************************************
+     */
+    inline bool operator< (Character lhs, Character rhs)
+    {
+        return Character::ThreeWayComparer{}(lhs, rhs) < 0;
+    }
+    inline bool operator<= (Character lhs, Character rhs)
+    {
+        return Character::ThreeWayComparer{}(lhs, rhs) <= 0;
+    }
+    inline bool operator== (Character lhs, Character rhs)
+    {
+        return Character::ThreeWayComparer{}(lhs, rhs) == 0;
+    }
+    inline bool operator!= (Character lhs, Character rhs)
+    {
+        return Character::ThreeWayComparer{}(lhs, rhs) != 0;
+    }
+    inline bool operator>= (Character lhs, Character rhs)
+    {
+        return Character::ThreeWayComparer{}(lhs, rhs) >= 0;
+    }
+    inline bool operator> (Character lhs, Character rhs)
+    {
+        return Character::ThreeWayComparer{}(lhs, rhs) > 0;
+    }
+}
+#endif
 
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/
