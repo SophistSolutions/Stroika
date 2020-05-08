@@ -157,6 +157,27 @@ namespace Stroika::Foundation::Characters {
 
 }
 
+namespace std {
+    constexpr equal_to<Stroika::Foundation::Characters::Character>::equal_to (Stroika::Foundation::Characters::CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    constexpr bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
+        switch (fCompareOptions) {
+            case CompareOptions::eCaseInsensitive:
+                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive) == 0;
+            case CompareOptions::eWithCase:
+                return lhs.GetCharacterCode () == rhs.GetCharacterCode ();
+            default:
+                AssertNotReached ();
+                return false;
+        }
+    }
+}
+
 #if __cpp_lib_three_way_comparison < 201907L
 namespace Stroika::Foundation::Common
 #else
@@ -179,27 +200,6 @@ namespace std
             default:
                 AssertNotReached ();
                 return Common::kEqual;
-        }
-    }
-}
-
-namespace std {
-    constexpr equal_to<Stroika::Foundation::Characters::Character>::equal_to (Stroika::Foundation::Characters::CompareOptions co)
-        : fCompareOptions{co}
-    {
-    }
-    constexpr bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
-    {
-        using namespace Stroika::Foundation::Characters;
-        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
-        switch (fCompareOptions) {
-            case CompareOptions::eCaseInsensitive:
-                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive) == 0;
-            case CompareOptions::eWithCase:
-                return lhs.GetCharacterCode () == rhs.GetCharacterCode ();
-            default:
-                AssertNotReached ();
-                return false;
         }
     }
 }
