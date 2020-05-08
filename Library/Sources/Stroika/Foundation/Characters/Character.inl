@@ -123,29 +123,6 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    /*
-     ********************************************************************************
-     ************************* Character::ThreeWayComparer **************************
-     ********************************************************************************
-     */
-    constexpr Character::ThreeWayComparer::ThreeWayComparer (CompareOptions co)
-        : fCompareOptions{co}
-    {
-    }
-    constexpr Common::strong_ordering Character::ThreeWayComparer::operator() (const Character& lhs, const Character& rhs) const
-    {
-        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
-        switch (fCompareOptions) {
-            case CompareOptions::eCaseInsensitive:
-                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive);
-            case CompareOptions::eWithCase:
-                return Common::ThreeWayCompare (static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()), static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ()));
-            default:
-                AssertNotReached ();
-                return Common::kEqual;
-        }
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -190,7 +167,7 @@ namespace std
         : fCompareOptions{co}
     {
     }
-    constexpr auto compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character&& lhs, Stroika::Foundation::Characters::Character&& rhs) const
+    constexpr auto compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
     {
         using namespace Stroika::Foundation::Characters;
         using SIGNED_WCHART_ = make_signed_t<wchar_t>;
@@ -202,6 +179,27 @@ namespace std
             default:
                 AssertNotReached ();
                 return Common::kEqual;
+        }
+    }
+}
+
+namespace std {
+    constexpr equal_to<Stroika::Foundation::Characters::Character>::equal_to (Stroika::Foundation::Characters::CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    constexpr bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
+        switch (fCompareOptions) {
+            case CompareOptions::eCaseInsensitive:
+                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive) == 0;
+            case CompareOptions::eWithCase:
+                return lhs.GetCharacterCode () == rhs.GetCharacterCode ();
+            default:
+                AssertNotReached ();
+                return false;
         }
     }
 }
