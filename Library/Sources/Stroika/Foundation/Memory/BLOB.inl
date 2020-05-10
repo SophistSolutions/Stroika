@@ -387,8 +387,8 @@ namespace Stroika::Foundation::Memory {
     }
     inline bool operator== (const BLOB& lhs, const BLOB& rhs)
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        shared_lock<const AssertExternallySynchronizedLock> critSecR{rhs};
+        shared_lock<const BLOB::AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        shared_lock<const BLOB::AssertExternallySynchronizedLock> critSecR{rhs};
         if (lhs.fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
