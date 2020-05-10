@@ -55,7 +55,7 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     static const String_Constant                       kLabeled_10_{L"HTTP/1.0"};
     static const String_Constant                       kLabeled_11_{L"HTTP/1.1"};
-    auto                                               versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+    auto                                               versionStringComparer = equal_to<String>{Characters::CompareOptions::eCaseInsensitive};
     if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
         fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
     }
@@ -73,7 +73,7 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 bool Request::GetKeepAliveRequested () const
 {
     if (auto connectionHdr = this->fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kConnection)) {
-        return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive");
+        return equal_to<String>{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive");
     }
     // @todo convert version to number and compare that way
     return fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne;

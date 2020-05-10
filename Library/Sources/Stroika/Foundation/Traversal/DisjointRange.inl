@@ -315,20 +315,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     constexpr bool DisjointRange<T, RANGE_TYPE>::operator== (const DisjointRange& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return SubRanges () == rhs.SubRanges ();
     }
 #endif
-
-    /*
-     ********************************************************************************
-     **************** DisjointRange<T, RANGE_TYPE>::EqualsComparer ******************
-     ********************************************************************************
-     */
-    template <typename T, typename RANGE_TYPE>
-    inline bool DisjointRange<T, RANGE_TYPE>::EqualsComparer::operator() (const DisjointRange& lhs, const DisjointRange& rhs) const
-    {
-        return lhs.SubRanges () == rhs.SubRanges ();
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -339,12 +328,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     inline bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
-        return typename DisjointRange<T, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
+        return lhs.SubRanges () == rhs.SubRanges ();
     }
     template <typename T, typename RANGE_TYPE>
     inline bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
-        return not typename DisjointRange<T, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
+        return not(lhs == rhs);
     }
 #endif
 

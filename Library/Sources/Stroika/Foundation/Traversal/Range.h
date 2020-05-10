@@ -312,7 +312,6 @@ namespace Stroika::Foundation::Traversal {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  Simply indirect to @Range::EqualsComparer
          */
         constexpr bool operator== (const Range& rhs) const;
 #endif

@@ -389,7 +389,6 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare () (and @Blob::EqualsComparer)
      */
 #if __cpp_impl_three_way_comparison < 201907
     bool operator< (const BLOB& lhs, const BLOB& rhs);

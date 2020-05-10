@@ -113,13 +113,14 @@ namespace Stroika::Foundation::Traversal {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  Simply indirect to @DisjointRange::EqualsComparer
+         *  This returns true if the constituent subranges are all equal. This amounts to checking
+         *  if the 'covered points' are all equal.
          */
         constexpr bool operator== (const DisjointRange& rhs) const;
 #endif
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<DisjointRange>;
 
     public:
         /**
@@ -161,18 +162,8 @@ namespace Stroika::Foundation::Traversal {
         static constexpr bool sNoisyDebugTrace_ = false;
     };
 
-    /**
-     *  This returns true if the constituent subranges are all equal. This amounts to checking
-     *  if the 'covered points' are all equal.
-     */
-    template <typename T, typename RANGE_TYPE>
-    struct DisjointRange<T, RANGE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const DisjointRange& lhs, const DisjointRange& rhs) const;
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @DisjointRange<T, RANGE_TYPE>::EqualsComparer
      */
     template <typename T, typename RANGE_TYPE>
     bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
