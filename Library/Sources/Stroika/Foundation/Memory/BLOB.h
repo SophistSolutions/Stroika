@@ -330,6 +330,11 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual BLOB operator+ (const BLOB& rhs) const;
 
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator== (const BLOB& lhs, const BLOB& rhs);
+#endif
+
     private:
         struct BasicRep_;
         struct ZeroRep_;

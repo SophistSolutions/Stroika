@@ -398,7 +398,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return not (lhs == rhs);
+        return not(lhs == rhs);
     }
 #endif
 
