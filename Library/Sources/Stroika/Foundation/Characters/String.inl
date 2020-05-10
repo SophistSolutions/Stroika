@@ -735,15 +735,15 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator!= (const String& lhs, const String& rhs)
     {
-        return not String::equal_to<String>{}(lhs, rhs);
+        return not equal_to<String>{}(lhs, rhs);
     }
     inline bool operator!= (const String& lhs, const wchar_t* rhs)
     {
-        return not String::equal_to<String>{}(lhs, rhs);
+        return not equal_to<String>{}(lhs, rhs);
     }
     inline bool operator!= (const wchar_t* lhs, const String& rhs)
     {
-        return not String::equal_to<String>{}(lhs, rhs);
+        return not equal_to<String>{}(lhs, rhs);
     }
 #endif
 
