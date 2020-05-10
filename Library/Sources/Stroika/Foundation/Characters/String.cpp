@@ -768,7 +768,7 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
     if (accessor._ConstGetRep ()._GetLength () == 0) {
         return false;
     }
-    return Character::ThreeWayComparer{co}(accessor._ConstGetRep ().GetAt (0), c) == 0;
+    return equal_to<Character>{co}(accessor._ConstGetRep ().GetAt (0), c);
 }
 
 bool String::StartsWith (const String& subString, CompareOptions co) const
@@ -796,7 +796,7 @@ bool String::EndsWith (const Character& c, CompareOptions co) const
     if (thisStrLen == 0) {
         return false;
     }
-    return Character::ThreeWayComparer{co}(useRep.GetAt (thisStrLen - 1), c) == 0;
+    return equal_to<Character>{co}(useRep.GetAt (thisStrLen - 1), c);
 }
 
 bool String::EndsWith (const String& subString, CompareOptions co) const
@@ -808,7 +808,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
         return false;
     }
 #if qDebug
-    bool referenceResult = Common::compare_three_way<String, String>{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString) == Common::kEqual; // this check isnt threadsafe - redo
+    bool referenceResult = equal_to<String>{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString); // this check isnt threadsafe - redo
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
