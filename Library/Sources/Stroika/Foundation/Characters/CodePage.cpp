@@ -3780,7 +3780,7 @@ namespace Stroika::Foundation::Characters {
             static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
             return kConverter_;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(charset, L"ISO-8859-1")) {
+        else if (equal_to<String>{CompareOptions::eCaseInsensitive}(charset, L"ISO-8859-1")) {
             static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
             return kConverter_;
         }
