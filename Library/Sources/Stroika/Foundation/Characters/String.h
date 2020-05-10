@@ -227,6 +227,20 @@ namespace Stroika::Foundation::Containers {
 }
 
 namespace Stroika::Foundation::Characters {
+    class String;
+}
+
+#if __cpp_lib_three_way_comparison < 201907L
+namespace Stroika::Foundation::Common
+#else
+namespace std
+#endif
+{
+    template <>
+    struct compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>;
+};
+
+namespace Stroika::Foundation::Characters {
 
     class RegularExpression;
     class RegularExpressionMatch;
@@ -1157,10 +1171,15 @@ namespace Stroika::Foundation::Characters {
         nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
 
     public:
-        struct ThreeWayComparer;
+        // Can mark as deprecated when we fix Common::ThreeWayComparer not to call this, which we can do after we can rid of all nested
+        // ThreeWayCompare members which dont vector here (and probably then can get rid of Common::ThreeWayComparer)
+
+        // soon to mark deprecated - using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<String, String>;
+        using ThreeWayComparer = Common::compare_three_way<String, String>;
 
     public:
-        struct EqualsComparer;
+        //@todo DEPRECATE
+        using EqualsComparer = std::equal_to<String>;
 
     public:
         struct LessComparer;
@@ -1280,6 +1299,8 @@ namespace Stroika::Foundation::Characters {
     public:
         friend wostream& operator<< (wostream& out, const String& s);
         friend String    operator+ (const wchar_t* lhs, const String& rhs);
+        friend struct std::equal_to<String>;
+        friend struct Common::compare_three_way<String, String>;
     };
 
     template <>
@@ -1315,77 +1336,6 @@ namespace Stroika::Foundation::Characters {
     pair<const Character*, const Character*> String::GetData () const;
     template <>
     pair<const wchar_t*, const wchar_t*> String::GetData () const;
-
-    /**
-     */
-    struct String::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
-        // Extra overloads a slight performance improvement
-        nonvirtual Common::strong_ordering operator() (const String& lhs, const String& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const wstring_view& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const Character* lhs, const String& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const Character* lhs, const wstring_view& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const String& lhs, const Character* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const Character* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const Character* lhs, const Character* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const String& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const wstring_view& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const String& lhs, const wchar_t* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const wchar_t* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const wchar_t* rhs) const;
-
-        CompareOptions fCompareOptions;
-
-    private:
-        template <typename LT, typename RT>
-        Common::strong_ordering                         Cmp_ (LT lhs, RT rhs) const;
-        static pair<const Character*, const Character*> Access_ (const String& s);
-        static pair<const Character*, const Character*> Access_ (const wstring_view& s);
-        static pair<const Character*, const Character*> Access_ (const Character* lhs);
-        static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
-    };
-
-    /**
-     *  \brief very similar to ThreeWayComparer but returns true if equals, and slightly more performant than ThreeWayComparer
-     */
-    struct String::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer (CompareOptions co = CompareOptions::eWithCase);
-        // Extra overloads a slight performance improvement
-        nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const String& rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const String& rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const wchar_t* rhs) const;
-
-        CompareOptions fCompareOptions;
-
-    private:
-        template <typename LT, typename RT>
-        bool                                            Cmp_ (LT lhs, RT rhs) const;
-        static pair<const Character*, const Character*> Access_ (const String& s);
-        static pair<const Character*, const Character*> Access_ (const wstring_view& s);
-        static pair<const Character*, const Character*> Access_ (const Character* lhs);
-        static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
-    };
-
-    /**
-     *  \brief very similar to ThreeWayComparer but returns true if less
-     */
-    struct String::LessComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
-        constexpr LessComparer (CompareOptions co = CompareOptions::eWithCase);
-        template <typename T1, typename T2>
-        nonvirtual bool operator() (T1 lhs, T2 rhs) const;
-
-    private:
-        String::ThreeWayComparer fComparer_;
-    };
 
     /**
      * Protected helper Rep class.
@@ -1548,6 +1498,101 @@ namespace std {
         {
             return hash<wstring> () (arg.As<wstring> ());
         }
+    };
+}
+
+namespace std {
+    /**
+     *  Specialize equal_to<Character> to allow optional case insensitive compares
+     */
+    template <>
+    struct equal_to<Stroika::Foundation::Characters::String> {
+        /**
+         *  optional CompareOptions to CTOR allows for case insensative compares
+         */
+        constexpr equal_to (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+
+        /**
+         * Extra overloads a slight performance improvement
+         */
+        nonvirtual bool operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::String& rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::String& rhs) const;
+        nonvirtual bool operator() (const Stroika::Foundation::Characters::Character* lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::Character* rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const Stroika::Foundation::Characters::Character* rhs) const;
+        nonvirtual bool operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::Character* rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const Stroika::Foundation::Characters::String& rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const Stroika::Foundation::Characters::String& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+
+        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
+
+    private:
+        template <typename LT, typename RT>
+        bool                                                                                                              Cmp_ (LT lhs, RT rhs) const;
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const Stroika::Foundation::Characters::String& s);
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const wstring_view& s);
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const Stroika::Foundation::Characters::Character* lhs);
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const wchar_t* lhs);
+    };
+}
+
+#if __cpp_lib_three_way_comparison < 201907L
+namespace Stroika::Foundation::Common
+#else
+namespace std
+#endif
+{
+    /**
+     *  Specialize compare_three_way<Character,Character> to allow optional case insensitive compares
+     */
+    template <>
+    struct compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String> {
+        /**
+         *  optional CompareOptions to CTOR allows for case insensative compares
+         */
+        constexpr compare_three_way (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+
+        // Extra overloads a slight performance improvement
+        nonvirtual Common::strong_ordering operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::String& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const wstring_view& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::String& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Stroika::Foundation::Characters::Character* lhs, const wstring_view& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::Character* rhs) const;
+        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const Stroika::Foundation::Characters::Character* rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::Character* rhs) const;
+        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const Stroika::Foundation::Characters::String& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const wstring_view& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const Stroika::Foundation::Characters::String& lhs, const wchar_t* rhs) const;
+        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const wchar_t* rhs) const;
+        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+
+        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
+
+    private:
+        template <typename LT, typename RT>
+        Common::strong_ordering                                                                                           Cmp_ (LT lhs, RT rhs) const;
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const Stroika::Foundation::Characters::String& s);
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const wstring_view& s);
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const Stroika::Foundation::Characters::Character* lhs);
+        static pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> Access_ (const wchar_t* lhs);
+    };
+}
+
+namespace Stroika::Foundation::Characters {
+    /**
+     *  \brief very similar to ThreeWayComparer but returns true if less
+     */
+    struct String::LessComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+        constexpr LessComparer (CompareOptions co = CompareOptions::eWithCase);
+        template <typename T1, typename T2>
+        nonvirtual bool operator() (T1 lhs, T2 rhs) const;
+
+    private:
+        Common::compare_three_way<String, String> fComparer_;
     };
 }
 

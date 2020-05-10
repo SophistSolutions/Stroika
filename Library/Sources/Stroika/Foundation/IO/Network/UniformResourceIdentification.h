@@ -169,7 +169,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     /**
      *  schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
      */
-    struct SchemeType::ThreeWayComparer : String::ThreeWayComparer {
+    struct SchemeType::ThreeWayComparer : Common::compare_three_way<String, String> {
         constexpr ThreeWayComparer ();
     };
 

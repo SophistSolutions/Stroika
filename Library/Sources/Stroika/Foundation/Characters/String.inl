@@ -622,112 +622,21 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering String::operator<=> (const String& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return Common::compare_three_way<String, String>{}(*this, rhs) <=> 0;
     }
     inline strong_ordering String::operator<=> (const wchar_t* rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return Common::compare_three_way<String, String>{}(*this, rhs) <=> 0;
     }
     inline bool String::operator== (const String& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return equal_to<String>{}(*this, rhs);
     }
     inline bool String::operator== (const wchar_t* rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return equal_to<String>{}(*this, rhs);
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ************************** String::EqualsComparer ******************************
-     ********************************************************************************
-     */
-    constexpr String::EqualsComparer::EqualsComparer (CompareOptions co)
-        : fCompareOptions{co}
-    {
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring_view& s)
-    {
-        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ()) + s.size ()));
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const Character* s)
-    {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wchar_t* s)
-    {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const String& s)
-    {
-        return _SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
-    }
-    template <typename LT, typename RT>
-    inline bool String::EqualsComparer::Cmp_ (LT lhs, RT rhs) const
-    {
-        pair<const Character*, const Character*> l = Access_ (lhs);
-        pair<const Character*, const Character*> r = Access_ (rhs);
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions) == 0;
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const String& rhs) const
-    {
-        if (lhs.GetLength () != rhs.GetLength ()) {
-            return false; // performance tweak
-        }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
-        }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
 
     /*
      ********************************************************************************
@@ -742,93 +651,6 @@ namespace Stroika::Foundation::Characters {
     inline bool String::LessComparer::operator() (T1 lhs, T2 rhs) const
     {
         return fComparer_ (lhs, rhs) < 0;
-    }
-
-    /*
-     ********************************************************************************
-     ************************* String::ThreeWayComparer *****************************
-     ********************************************************************************
-     */
-    constexpr String::ThreeWayComparer::ThreeWayComparer (CompareOptions co)
-        : fCompareOptions{co}
-    {
-    }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wstring_view& s)
-    {
-        return s.empty ()
-                   ? make_pair<const Character*, const Character*> (nullptr, nullptr)
-                   : make_pair (reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ()) + s.size ()));
-    }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const Character* s)
-    {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
-    }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wchar_t* s)
-    {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
-    }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const String& s)
-    {
-        return _SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
-    }
-    template <typename LT, typename RT>
-    inline Common::strong_ordering String::ThreeWayComparer::Cmp_ (LT lhs, RT rhs) const
-    {
-        pair<const Character*, const Character*> l = Access_ (lhs);
-        pair<const Character*, const Character*> r = Access_ (rhs);
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline Common::strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
     }
 
     /*
@@ -892,16 +714,16 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator== (const String& lhs, const String& rhs)
     {
-        return String::EqualsComparer{}(lhs, rhs);
+        return String::equal_to<String>{}(lhs, rhs);
     }
     inline bool operator== (const String& lhs, const wchar_t* rhs)
     {
-        return String::EqualsComparer{}(lhs, rhs);
+        return String::equal_to<String>{}(lhs, rhs);
     }
     inline bool operator== (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
-        return String::EqualsComparer{}(lhs, rhs);
+        return String::equal_to<String>{}(lhs, rhs);
     }
 #endif
 
@@ -913,15 +735,15 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator!= (const String& lhs, const String& rhs)
     {
-        return not String::EqualsComparer{}(lhs, rhs);
+        return not String::equal_to<String>{}(lhs, rhs);
     }
     inline bool operator!= (const String& lhs, const wchar_t* rhs)
     {
-        return not String::EqualsComparer{}(lhs, rhs);
+        return not String::equal_to<String>{}(lhs, rhs);
     }
     inline bool operator!= (const wchar_t* lhs, const String& rhs)
     {
-        return not String::EqualsComparer{}(lhs, rhs);
+        return not String::equal_to<String>{}(lhs, rhs);
     }
 #endif
 
@@ -991,6 +813,194 @@ namespace Stroika::Foundation::Characters {
         String_ModuleInit_ ();
         Execution::ModuleDependency fBlockAllocationDependency;
     };
+}
+
+namespace std {
+    constexpr equal_to<Stroika::Foundation::Characters::String>::equal_to (Stroika::Foundation::Characters::CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> equal_to<Stroika::Foundation::Characters::String>::Access_ (const wstring_view& s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        using namespace Stroika::Foundation::Traversal;
+        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ()) + s.size ()));
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> equal_to<Stroika::Foundation::Characters::String>::Access_ (const Stroika::Foundation::Characters::Character* s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> equal_to<Stroika::Foundation::Characters::String>::Access_ (const wchar_t* s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> equal_to<Stroika::Foundation::Characters::String>::Access_ (const Stroika::Foundation::Characters::String& s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        return String::_SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
+    }
+    template <typename LT, typename RT>
+    inline bool equal_to<Stroika::Foundation::Characters::String>::Cmp_ (LT lhs, RT rhs) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        pair<const Character*, const Character*> l = Access_ (lhs);
+        pair<const Character*, const Character*> r = Access_ (rhs);
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions) == 0;
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::String& rhs) const
+    {
+        if (lhs.GetLength () != rhs.GetLength ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const wstring_view& lhs, const wstring_view& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::Character* lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const wstring_view& lhs, const Stroika::Foundation::Characters::Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const wchar_t* lhs, const Stroika::Foundation::Characters::String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const wchar_t* lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool equal_to<Stroika::Foundation::Characters::String>::operator() (const wchar_t* lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+}
+
+#if __cpp_lib_three_way_comparison < 201907L
+namespace Stroika::Foundation::Common
+#else
+namespace std
+#endif
+{
+    constexpr compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::compare_three_way (Stroika::Foundation::Characters::CompareOptions co)
+        : fCompareOptions{co}
+    {
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::Access_ (const wstring_view& s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        return s.empty ()
+                   ? make_pair<const Character*, const Character*> (nullptr, nullptr)
+                   : make_pair (reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ()) + s.size ()));
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::Access_ (const Stroika::Foundation::Characters::Character* s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::Access_ (const wchar_t* s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        RequireNotNull (s);
+        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
+    }
+    inline pair<const Stroika::Foundation::Characters::Character*, const Stroika::Foundation::Characters::Character*> compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::Access_ (const Stroika::Foundation::Characters::String& s)
+    {
+        using namespace Stroika::Foundation::Characters;
+        return String::_SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
+    }
+    template <typename LT, typename RT>
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::Cmp_ (LT lhs, RT rhs) const
+    {
+        using namespace Stroika::Foundation::Characters;
+        pair<const Character*, const Character*> l = Access_ (lhs);
+        pair<const Character*, const Character*> r = Access_ (rhs);
+        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const wstring_view& lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::Character* lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& lhs, const Stroika::Foundation::Characters::Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const wstring_view& lhs, const Stroika::Foundation::Characters::Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::Character* lhs, const Stroika::Foundation::Characters::Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const wchar_t* lhs, const Stroika::Foundation::Characters::String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const wchar_t* lhs, const wstring_view& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline Common::strong_ordering compare_three_way<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String>::operator() (const wchar_t* lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
 }
 
 namespace {

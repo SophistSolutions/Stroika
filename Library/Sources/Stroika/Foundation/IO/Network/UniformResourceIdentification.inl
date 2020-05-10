@@ -47,7 +47,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ********************************************************************************
      */
     constexpr SchemeType::ThreeWayComparer::ThreeWayComparer ()
-        : String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}
+        : compare_three_way{Characters::CompareOptions::eCaseInsensitive}
     {
     }
 
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         if (cmp != Common::kEqual) {
             return cmp;
         }
-        return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{
+        return Common::OptionalThreeWayComparer<String, Common::compare_three_way<String, String>>{
             String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
