@@ -3776,7 +3776,7 @@ namespace Stroika::Foundation::Characters {
     const codecvt<wchar_t, char, mbstate_t>& LookupCodeConverter (const String& charset)
     {
         // https://svn.apache.org/repos/asf/stdcxx/trunk/examples/include/codecvte.h almost works for ISO 8859-1 but I cannot use it (license)
-        if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(charset, L"utf-8")) {
+        if (equal_to<String>{CompareOptions::eCaseInsensitive}(charset, L"utf-8")) {
             static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
             return kConverter_;
         }

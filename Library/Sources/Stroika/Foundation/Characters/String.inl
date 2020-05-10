@@ -714,16 +714,16 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator== (const String& lhs, const String& rhs)
     {
-        return String::equal_to<String>{}(lhs, rhs);
+        return equal_to<String>{}(lhs, rhs);
     }
     inline bool operator== (const String& lhs, const wchar_t* rhs)
     {
-        return String::equal_to<String>{}(lhs, rhs);
+        return equal_to<String>{}(lhs, rhs);
     }
     inline bool operator== (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
-        return String::equal_to<String>{}(lhs, rhs);
+        return equal_to<String>{}(lhs, rhs);
     }
 #endif
 
