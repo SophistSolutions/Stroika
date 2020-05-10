@@ -1171,15 +1171,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
 
     public:
-        // Can mark as deprecated when we fix Common::ThreeWayComparer not to call this, which we can do after we can rid of all nested
-        // ThreeWayCompare members which dont vector here (and probably then can get rid of Common::ThreeWayComparer)
-
-        // soon to mark deprecated - using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<String, String>;
+        // @todo GO BACK TO THIS ASAP - using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<String, String>;
         using ThreeWayComparer = Common::compare_three_way<String, String>;
 
     public:
-        //@todo DEPRECATE
-        using EqualsComparer = std::equal_to<String>;
+        using EqualsComparer [[deprecated ("use std::equal_to in  in 2.1a5")]] = std::equal_to<String>;
 
     public:
         struct LessComparer;
@@ -1455,7 +1451,7 @@ namespace Stroika::Foundation::Characters {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @String::ThreeWayComparer
+     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::compare_three_way<String, String>
      */
     bool operator< (const String& lhs, const String& rhs);
     bool operator< (const String& lhs, const wchar_t* rhs);

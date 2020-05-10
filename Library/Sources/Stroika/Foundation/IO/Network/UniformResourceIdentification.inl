@@ -158,7 +158,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
             return cmp;
         }
         return Common::OptionalThreeWayComparer<String, Common::compare_three_way<String, String>>{
-            String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
+            Common::compare_three_way<String, String>{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
 #if __cpp_impl_three_way_comparison < 201907
